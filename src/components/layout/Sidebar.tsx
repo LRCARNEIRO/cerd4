@@ -12,7 +12,9 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
-  Globe
+  Globe,
+  Lightbulb,
+  FileOutput
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -27,11 +29,13 @@ const navItems: NavItem[] = [
   { title: 'Painel Geral', href: '/', icon: LayoutDashboard },
   { title: 'Plano de Trabalho', href: '/plano-trabalho', icon: ClipboardList },
   { title: 'Common Core', href: '/common-core', icon: FileText },
-  { title: 'Estatísticas', href: '/estatisticas', icon: BarChart3, badge: 'Novo' },
+  { title: 'Estatísticas', href: '/estatisticas', icon: BarChart3, badge: 'Interseccional' },
   { title: 'Orçamento', href: '/orcamento', icon: DollarSign },
   { title: 'Recomendações ONU', href: '/recomendacoes', icon: AlertTriangle, badge: '5' },
   { title: 'Fontes de Dados', href: '/fontes', icon: Database },
-  { title: 'Grupos Focais', href: '/grupos-focais', icon: Users }
+  { title: 'Grupos Focais', href: '/grupos-focais', icon: Users },
+  { title: 'Conclusões', href: '/conclusoes', icon: Lightbulb, badge: 'Novo' },
+  { title: 'Gerar Relatórios', href: '/gerar-relatorios', icon: FileOutput, badge: 'Novo' }
 ];
 
 export function Sidebar() {
