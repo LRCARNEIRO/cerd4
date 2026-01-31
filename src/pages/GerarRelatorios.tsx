@@ -4,10 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown } from 'lucide-react';
+import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
+import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -251,8 +252,11 @@ export default function GerarRelatorios() {
         </Card>
       </div>
 
-      <Tabs defaultValue="lacunas-db" className="w-full">
+      <Tabs defaultValue="tematicos" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="tematicos" className="gap-1">
+            <PieChart className="w-4 h-4" /> Relatórios Temáticos
+          </TabsTrigger>
           <TabsTrigger value="lacunas-db" className="gap-1">
             <AlertTriangle className="w-4 h-4" /> Lacunas (Banco de Dados)
           </TabsTrigger>
@@ -269,6 +273,11 @@ export default function GerarRelatorios() {
             <ListChecks className="w-4 h-4" /> Guidelines
           </TabsTrigger>
         </TabsList>
+
+        {/* ABA: RELATÓRIOS TEMÁTICOS */}
+        <TabsContent value="tematicos">
+          <ThematicReportGenerator />
+        </TabsContent>
 
         {/* ABA: LACUNAS DO BANCO */}
         <TabsContent value="lacunas-db">
