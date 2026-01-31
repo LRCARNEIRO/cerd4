@@ -4,10 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2 } from 'lucide-react';
+import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 // Estrutura Common Core Document (HRI/CORE/BRA)
 const commonCoreEstrutura = [
@@ -69,12 +72,54 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function GerarRelatorios() {
+  const [generatingReport, setGeneratingReport] = useState<string | null>(null);
+  
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: conclusoes, isLoading: loadingConclusoes } = useConclusoesAnaliticas();
 
   const isLoading = loadingLacunas || loadingRespostas || loadingStats || loadingConclusoes;
+
+  const handleGenerateReport = async (type: 'common-core' | 'cerd-iv', format: 'pdf' | 'html') => {
+    setGeneratingReport(`${type}-${format}`);
+    try {
+      toast.info('Gerando relatório...', { description: 'Aguarde enquanto buscamos os dados do banco.' });
+      
+      const { data, error } = await supabase.functions.invoke('generate-report', {
+        body: { type, format }
+      });
+
+      if (error) throw error;
+
+      // Open HTML in new tab for printing/saving
+      const blob = new Blob([data], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const newWindow = window.open(url, '_blank');
+      
+      if (newWindow) {
+        toast.success('Relatório gerado!', { 
+          description: 'Use Ctrl+P para salvar como PDF ou copie o conteúdo para um documento Word.' 
+        });
+      } else {
+        // Fallback: download file
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${type === 'common-core' ? 'HRI-CORE-BRA-2026' : 'CERD-IV-BRA-2026'}.html`;
+        link.click();
+        toast.success('Relatório baixado!', { description: 'Abra o arquivo HTML no navegador.' });
+      }
+      
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      toast.error('Erro ao gerar relatório', { 
+        description: error instanceof Error ? error.message : 'Tente novamente.' 
+      });
+    } finally {
+      setGeneratingReport(null);
+    }
+  };
 
   // Calcular progresso baseado nos dados reais
   const totalLacunas = stats?.total || 0;
@@ -141,10 +186,20 @@ export default function GerarRelatorios() {
                   <p className="font-medium">{progressoRelatorios.commonCore.responsavel}</p>
                 </div>
               </div>
-              <Button className="w-full gap-2">
-                <Download className="w-4 h-4" />
-                Gerar Rascunho Common Core
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  className="flex-1 gap-2" 
+                  onClick={() => handleGenerateReport('common-core', 'html')}
+                  disabled={generatingReport !== null}
+                >
+                  {generatingReport === 'common-core-html' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                  Gerar HTML/PDF
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -176,10 +231,21 @@ export default function GerarRelatorios() {
                   <p className="font-medium">{totalLacunas}</p>
                 </div>
               </div>
-              <Button variant="secondary" className="w-full gap-2">
-                <Download className="w-4 h-4" />
-                Gerar Rascunho CERD IV
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="secondary" 
+                  className="flex-1 gap-2"
+                  onClick={() => handleGenerateReport('cerd-iv', 'html')}
+                  disabled={generatingReport !== null}
+                >
+                  {generatingReport === 'cerd-iv-html' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileDown className="w-4 h-4" />
+                  )}
+                  Gerar HTML/PDF
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
