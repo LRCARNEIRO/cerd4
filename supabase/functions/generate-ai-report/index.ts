@@ -196,12 +196,38 @@ function prepareDataContext(
 
   sections.push(`## RESUMO ESTATÍSTICO
 - Total de lacunas/recomendações ONU analisadas: ${stats.totalLacunas}
-- Cumpridas: ${stats.cumpridas} (${(stats.cumpridas/stats.totalLacunas*100).toFixed(1)}%)
-- Parcialmente cumpridas: ${stats.parciais} (${(stats.parciais/stats.totalLacunas*100).toFixed(1)}%)
-- Não cumpridas: ${stats.naoCumpridas} (${(stats.naoCumpridas/stats.totalLacunas*100).toFixed(1)}%)
+- Cumpridas: ${stats.cumpridas} (${stats.totalLacunas > 0 ? (stats.cumpridas/stats.totalLacunas*100).toFixed(1) : 0}%)
+- Parcialmente cumpridas: ${stats.parciais} (${stats.totalLacunas > 0 ? (stats.parciais/stats.totalLacunas*100).toFixed(1) : 0}%)
+- Não cumpridas: ${stats.naoCumpridas} (${stats.totalLacunas > 0 ? (stats.naoCumpridas/stats.totalLacunas*100).toFixed(1) : 0}%)
 - Retrocessos identificados: ${stats.retrocessos}
 - Prioridade crítica: ${stats.criticas}
 - Prioridade alta: ${stats.altas}`);
+
+  // Add Census 2022 and PNAD 2024 context
+  sections.push(`## DADOS DEMOGRÁFICOS (Censo 2022 - IBGE)
+- População total: 203.080.756
+- Pardos: 92,1 milhões (45,3%) - maior grupo pela primeira vez desde 1991
+- Brancos: 88,2 milhões (43,5%)
+- Pretos: 20,7 milhões (10,2%) - crescimento de 42,3% desde 2010
+- Total negros (pretos + pardos): 112,8 milhões (55,5%) - maioria da população
+- Indígenas: 1.693.535 (0,83%) - aumento de 89% desde 2010
+- Quilombolas: 1.327.802 (0,65%) - primeira contagem censitária oficial
+- Amarelos: 850.000 (0,4%)
+Fonte: IBGE Censo Demográfico 2022 (divulgado dezembro/2023)
+
+## INDICADORES DE DESIGUALDADE RACIAL (PNAD 2023-2024)
+- Renda: Pessoas negras ganham 58,3% do que pessoas brancas (R$ 2.199 vs R$ 3.730 em 2023)
+- Analfabetismo: Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%)
+- Analfabetismo idosos negros (60+): 21,8% vs 8,1% entre brancos
+- Taxa geral de analfabetismo: 5,3% (9,1 milhões de pessoas)
+- Desemprego negro: 8,2% vs branco: 5,5%
+Fonte: PNAD Contínua 2023/2024 (IBGE), Cedra
+
+## VIOLÊNCIA E SEGURANÇA (Atlas da Violência 2025)
+- Risco de homicídio: Pessoa negra tem 2,7x mais chance de ser vítima
+- Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
+- Letalidade policial: 83,5% das vítimas são negras
+Fonte: IPEA/FBSP Atlas da Violência 2025, Fiocruz 1º Informe Epidemiológico 2025`);
 
   // Lacunas details
   if (lacunas.length > 0) {

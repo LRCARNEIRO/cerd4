@@ -36,7 +36,7 @@ export function DadosGeraisTab() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">População Total (Censo 2022)</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoTotal)}</p>
-            <p className="text-xs text-muted-foreground mt-1">Fonte: IBGE/Censo 2022</p>
+            <p className="text-xs text-muted-foreground mt-1">Fonte: IBGE/Censo 2022 (Dez/2023)</p>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-2">
@@ -159,14 +159,15 @@ export function DadosGeraisTab() {
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Tendência:</strong> Aumento consistente da autodeclaração como pessoa negra, 
-                refletindo maior conscientização e valorização da identidade racial.
+                <strong>Tendência (Censo 2022):</strong> Pela primeira vez desde 1991, pardos (45,3%) superam brancos (43,5%) 
+                como maior grupo racial. População negra (pretos + pardos) é 55,5% do Brasil. 
+                Indígenas cresceram 89% desde 2010. Quilombolas foram contados oficialmente pela primeira vez (1,3 milhão).
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
               <FileText className="w-3 h-3" />
               <a href={fonteDados.pnad.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                {fonteDados.pnad.nome} 2018-2024 | Projeção 2025-2026 <ExternalLink className="w-3 h-3" />
+                {fonteDados.pnad.nome} 2018-2024 | Censo 2022 <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>
@@ -282,7 +283,7 @@ export function DadosGeraisTab() {
           </Table>
           <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
             <FileText className="w-3 h-3" />
-            Fontes: PNAD Contínua/IBGE (2018-2024), Projeção própria (2025-2026)
+            Fontes: PNAD Contínua/IBGE (2018-2024), Cedra 2025. Renda de pessoas negras equivale a 58,3% da de brancas.
           </p>
         </CardContent>
       </Card>

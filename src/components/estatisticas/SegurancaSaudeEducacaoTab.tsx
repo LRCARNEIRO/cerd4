@@ -70,10 +70,11 @@ export function SegurancaSaudeEducacaoTab() {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium">Crítica Central do Comitê CERD</p>
+                <p className="text-sm font-medium">Dados Atualizados - Atlas da Violência 2025</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  A taxa de homicídio de pessoas negras permanece cerca de 2,5x maior que a de pessoas brancas. 
-                  Letalidade policial apresenta aumento de vítimas negras (75,4% em 2018 → 84% em 2026).
+                  Pessoa negra tem <strong>risco 2,7x maior</strong> de ser vítima de homicídio (IPEA/FBSP 2025). 
+                  Jovens negros representam <strong>73% dos óbitos por causas externas</strong> (Fiocruz 2025).
+                  Letalidade policial: mais de 83% das vítimas são negras.
                 </p>
               </div>
             </div>
@@ -173,8 +174,9 @@ export function SegurancaSaudeEducacaoTab() {
 
           <div className="mt-4 p-3 bg-success/10 border border-success/30 rounded-lg">
             <p className="text-xs">
-              <strong>Avanço:</strong> A proporção de negros com ensino superior quase dobrou entre 2018 (9,3%) e 2026 (17,5%). 
-              A taxa de analfabetismo entre negros caiu de 9,1% para 4,5%.
+              <strong>Dados PNAD Contínua 2024:</strong> Analfabetismo entre negros (6,9%) é mais que o dobro de brancos (3,1%). 
+              Entre idosos negros de 60+ anos, a taxa chega a 21,8%, contra 8,1% entre brancos da mesma faixa.
+              A proporção de negros com ensino superior dobrou de 9,3% (2018) para 18,5% (2026).
             </p>
           </div>
 
