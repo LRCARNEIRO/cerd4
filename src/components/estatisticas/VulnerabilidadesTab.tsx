@@ -86,16 +86,16 @@ export function VulnerabilidadesTab() {
               </ResponsiveContainer>
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
-              <p className="text-xs font-medium">Interpretação:</p>
+              <p className="text-xs font-medium">Interpretação (Fontes: PNAD 2024, Atlas da Violência 2025):</p>
               <ul className="text-xs text-muted-foreground mt-1 space-y-1">
-                <li>• <strong>Renda:</strong> Brancos ganham 1,50x mais que negros (melhoria de 13% desde 2018)</li>
-                <li>• <strong>Desemprego:</strong> Negros têm 1,45x mais desemprego (melhoria de 16%)</li>
-                <li>• <strong>Homicídio:</strong> Negros são assassinados 2,45x mais (redução lenta)</li>
+                <li>• <strong>Renda:</strong> Pessoas negras ganham 58,3% do que ganham pessoas brancas (Cedra/IBGE 2025)</li>
+                <li>• <strong>Desemprego:</strong> Negros têm 1,5x mais desemprego que brancos</li>
+                <li>• <strong>Homicídio:</strong> Risco 2,7x maior para pessoa negra (IPEA/FBSP 2025)</li>
               </ul>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               <FileText className="w-3 h-3 inline mr-1" />
-              Fontes: PNAD/IBGE, Atlas da Violência 2018-2024 | Projeção 2025-2026
+              Fontes: PNAD Contínua/IBGE 2024, Atlas da Violência 2025, Cedra 2025
             </p>
           </CardContent>
         </Card>
