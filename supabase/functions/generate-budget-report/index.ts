@@ -864,39 +864,82 @@ function generateFullHTML(
         <div class="section-icon">🔗</div>
         <div>
           <h2 class="section-title">Cruzamento: Orçamento × Indicadores Sociais</h2>
-          <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores</p>
+          <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores da população negra</p>
         </div>
       </div>
       
       <div class="table-container">
         <div class="table-header">
-          <h3>Indicadores Socioeconômicos × Execução Orçamentária</h3>
-          <p>Análise da relação entre investimento e resultados</p>
+          <h3>Tabela: Indicadores Socioeconômicos da População Negra × Execução Orçamentária</h3>
+          <p>Valores desagregados por raça com evolução temporal e análise comparativa</p>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Indicador</th>
-              <th>Categoria</th>
-              <th>Fonte</th>
-              <th>Tendência</th>
-              <th>Análise</th>
+              <th style="width: 15%;">Indicador</th>
+              <th style="width: 10%;">Categoria</th>
+              <th style="width: 18%;">Pop. Negra (valores)</th>
+              <th style="width: 18%;">Pop. Branca (valores)</th>
+              <th style="width: 8%;">Tendência</th>
+              <th style="width: 31%;">Análise Interseccional</th>
             </tr>
           </thead>
           <tbody>
-            ${indicadores.slice(0, 10).map((ind: any) => `
-              <tr>
-                <td><strong>${ind.nome}</strong></td>
-                <td>${ind.categoria}</td>
-                <td>${ind.fonte}</td>
-                <td class="${ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : ''}">${ind.tendencia || '-'}</td>
-                <td style="font-size: 0.75rem; color: var(--text-muted);">${ind.analise_interseccional?.substring(0, 100) || '-'}...</td>
-              </tr>
-            `).join('')}
+            ${indicadores.slice(0, 15).map((ind: any) => {
+              // Extrair dados por raça do indicador
+              const dados = ind.dados || {};
+              const negros = dados.negros || dados.negras || dados.pretos_pardos || {};
+              const brancos = dados.brancos || dados.brancas || {};
+              
+              // Pegar anos disponíveis
+              const anosNegros = Object.keys(negros).filter(k => !isNaN(Number(k))).sort();
+              const anosBrancos = Object.keys(brancos).filter(k => !isNaN(Number(k))).sort();
+              
+              // Formatar valores da pop negra
+              let valoresNegros = '-';
+              if (anosNegros.length > 0) {
+                const ultimoAno = anosNegros[anosNegros.length - 1];
+                const penultimoAno = anosNegros.length > 1 ? anosNegros[anosNegros.length - 2] : null;
+                const valorAtual = negros[ultimoAno];
+                const valorAnterior = penultimoAno ? negros[penultimoAno] : null;
+                
+                if (valorAnterior !== null) {
+                  valoresNegros = '<strong>' + ultimoAno + ':</strong> ' + valorAtual + '%<br><span style="color: var(--text-muted);">' + penultimoAno + ': ' + valorAnterior + '%</span>';
+                } else {
+                  valoresNegros = '<strong>' + ultimoAno + ':</strong> ' + valorAtual + '%';
+                }
+              }
+              
+              // Formatar valores da pop branca
+              let valoresBrancos = '-';
+              if (anosBrancos.length > 0) {
+                const ultimoAno = anosBrancos[anosBrancos.length - 1];
+                const penultimoAno = anosBrancos.length > 1 ? anosBrancos[anosBrancos.length - 2] : null;
+                const valorAtual = brancos[ultimoAno];
+                const valorAnterior = penultimoAno ? brancos[penultimoAno] : null;
+                
+                if (valorAnterior !== null) {
+                  valoresBrancos = '<strong>' + ultimoAno + ':</strong> ' + valorAtual + '%<br><span style="color: var(--text-muted);">' + penultimoAno + ': ' + valorAnterior + '%</span>';
+                } else {
+                  valoresBrancos = '<strong>' + ultimoAno + ':</strong> ' + valorAtual + '%';
+                }
+              }
+              
+              return '<tr>' +
+                '<td><strong>' + ind.nome + '</strong><br><span style="font-size: 0.7rem; color: var(--text-muted);">Fonte: ' + ind.fonte + '</span></td>' +
+                '<td>' + ind.categoria + '</td>' +
+                '<td style="font-size: 0.85rem;">' + valoresNegros + '</td>' +
+                '<td style="font-size: 0.85rem;">' + valoresBrancos + '</td>' +
+                '<td class="' + (ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : '') + '">' + (ind.tendencia || '-') + '</td>' +
+                '<td style="font-size: 0.8rem; line-height: 1.4;">' + (ind.analise_interseccional || '-') + '</td>' +
+              '</tr>';
+            }).join('')}
           </tbody>
         </table>
         <div class="table-footer">
-          <strong>Fontes:</strong> IBGE, IPEA, DataSUS, INEP, MDS | <strong>Período:</strong> 2018-2026
+          <strong>Fontes:</strong> IBGE/PNAD Contínua, IPEA, DataSUS/SIM, INEP/Censo Escolar, MDS/CadÚnico | 
+          <strong>Período:</strong> 2018-2026 | 
+          <strong>Nota:</strong> Valores percentuais referentes às taxas oficiais publicadas pelos órgãos de origem
         </div>
       </div>
     </div>
