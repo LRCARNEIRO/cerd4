@@ -1,0 +1,590 @@
+import type {
+  WorkPlanMeta,
+  CERDRecommendation,
+  InvestigationAxis,
+  StatisticalIndicator,
+  DataSource,
+  CommonCoreSection,
+  UNObservation,
+  DashboardStats,
+  FocalGroup,
+  BudgetData
+} from '@/types/cerd';
+
+// Metas do Plano de Trabalho CERD
+export const workPlanMetas: WorkPlanMeta[] = [
+  {
+    id: 'meta-1',
+    numero: 1,
+    titulo: 'Contexto da Convenção e Revisão das Obrigações',
+    descricao: 'Apresentar a trajetória de compromissos do Estado no cumprimento das obrigações convencionais e a revisão das observações conclusivas do Comitê no último relatório.',
+    resultadosEsperados: [
+      'Trajetória da Convenção e Obrigações: ratificação da Convenção Interamericana contra o Racismo (2021)',
+      'Observações Relatório CERD (2022): Matriz das Observações Finais (CERD/C/BRA/CO/18-20)',
+      'Revisão do III Relatório (2004-2017): linha de base para o novo período'
+    ],
+    status: 'em_andamento',
+    progresso: 35,
+    prazoInicio: '2026-01-01',
+    prazoFim: '2026-02-28',
+    responsavel: 'CDG/UFF'
+  },
+  {
+    id: 'meta-2',
+    numero: 2,
+    titulo: 'Evolução Normativa e Institucional (2018-2025)',
+    descricao: 'Produção de evidências sobre a inscrição do Estado brasileiro como agente promotor de medidas normativas e de um aparato institucional no campo do combate à discriminação racial.',
+    resultadosEsperados: [
+      'Avanços Legislativos: equiparação da Injúria Racial ao Racismo, novos marcos de reserva de vagas',
+      'Institucionalidade: recriação do MIR, retomada de conselhos participativos',
+      'Judiciário e Racismo: impactos normativos da ADPF 963, jurisprudência recente STF/STJ'
+    ],
+    status: 'em_andamento',
+    progresso: 20,
+    prazoInicio: '2026-01-01',
+    prazoFim: '2026-02-28',
+    responsavel: 'CDG/UFF'
+  },
+  {
+    id: 'meta-3',
+    numero: 3,
+    titulo: 'Monitoramento da Ação Governamental',
+    descricao: 'Conjunto de Medidas Administrativas, Orçamentárias e Políticas adotadas pelo Estado brasileiro no cumprimento das obrigações convencionais.',
+    resultadosEsperados: [
+      'Enfrentamento à Violência e Segurança Pública (par. 32-36 ONU)',
+      'Direitos Territoriais: Indígenas e Quilombolas (par. 47-53 ONU)',
+      'Saúde e Impactos da Pandemia (par. 15-17 ONU)',
+      'Ações Afirmativas e Trabalho (par. 18-23 ONU)',
+      'Educação, Cultura e Comunicação (par. 28-29)'
+    ],
+    status: 'nao_iniciada',
+    progresso: 0,
+    prazoInicio: '2026-01-15',
+    prazoFim: '2026-02-28',
+    responsavel: 'CDG/UFF'
+  },
+  {
+    id: 'meta-4',
+    numero: 4,
+    titulo: 'Consolidação, Classificação e Recomendações',
+    descricao: 'Síntese estratégica para o Governo Brasileiro.',
+    resultadosEsperados: [
+      'Matriz de Responsividade: Cumprido / Parcialmente Cumprido / Não Cumprido / Retrocesso',
+      'Lacunas Críticas: áreas sem dados ou ações (ex: Ciganos/Roma)',
+      'Diretrizes para o IV Relatório: sugestões de redação e ênfases estratégicas'
+    ],
+    status: 'nao_iniciada',
+    progresso: 0,
+    prazoInicio: '2026-02-01',
+    prazoFim: '2026-02-28',
+    responsavel: 'CDG/UFF'
+  }
+];
+
+// Recomendações CERD priorizadas
+export const cerdRecommendations: CERDRecommendation[] = [
+  {
+    id: 'rec-1',
+    paragrafo: '17(a)',
+    eixo: 'Saúde',
+    tema: 'Direito à saúde e efeitos da pandemia COVID-19',
+    recomendacao: 'Garantir acesso equitativo aos serviços de saúde para a população negra e povos indígenas',
+    statusCumprimento: 'parcialmente_cumprido',
+    prioridade: 'critica',
+    acoesBrasil: [
+      'Execução da Política Nacional de Saúde Integral da População Negra',
+      'Ações específicas para saúde indígena e quilombola'
+    ],
+    lacunas: ['Dados sobre mortalidade materna desagregados por raça'],
+    fontesEvidencia: ['SINAN', 'SIM', 'SINASC', 'DataSUS'],
+    ultimaAtualizacao: '2026-01-15'
+  },
+  {
+    id: 'rec-2',
+    paragrafo: '19(c)',
+    eixo: 'Educação',
+    tema: 'Disparidades no acesso à educação',
+    recomendacao: 'Eliminar disparidades raciais no acesso e permanência na educação',
+    statusCumprimento: 'parcialmente_cumprido',
+    prioridade: 'alta',
+    acoesBrasil: [
+      'Renovação da Lei de Cotas no Ensino Superior',
+      'Programa de Bolsa Permanência'
+    ],
+    lacunas: ['Dados atualizados de evasão por raça'],
+    fontesEvidencia: ['INEP', 'Censo Escolar', 'ENEM'],
+    ultimaAtualizacao: '2026-01-10'
+  },
+  {
+    id: 'rec-3',
+    paragrafo: '23(a)',
+    eixo: 'Trabalho e Renda',
+    tema: 'Pobreza, trabalho e renda',
+    recomendacao: 'Combater disparidades raciais no mercado de trabalho e redução da pobreza',
+    statusCumprimento: 'parcialmente_cumprido',
+    prioridade: 'critica',
+    acoesBrasil: [
+      'Bolsa Família com priorização racial',
+      'Ações de empregabilidade para juventude negra'
+    ],
+    lacunas: ['Dados de trabalho informal por raça'],
+    fontesEvidencia: ['RAIS', 'CAGED', 'CadÚnico', 'PNAD Contínua'],
+    ultimaAtualizacao: '2026-01-08'
+  },
+  {
+    id: 'rec-4',
+    paragrafo: '36(a-d)',
+    eixo: 'Segurança Pública',
+    tema: 'Uso excessivo de força por agentes da lei',
+    recomendacao: 'Investigar e punir uso excessivo de força policial contra população negra',
+    statusCumprimento: 'nao_cumprido',
+    prioridade: 'critica',
+    acoesBrasil: [
+      'ADPF 635 - Ações sobre operações em favelas',
+      'Programa de câmeras corporais'
+    ],
+    lacunas: [
+      'Dados de letalidade policial por raça',
+      'Estatísticas de condenações'
+    ],
+    fontesEvidencia: ['Fórum de Segurança Pública', 'SINESP', 'Ministério Público'],
+    ultimaAtualizacao: '2026-01-12'
+  },
+  {
+    id: 'rec-5',
+    paragrafo: '47-53',
+    eixo: 'Direitos Territoriais',
+    tema: 'Terras indígenas e quilombolas',
+    recomendacao: 'Garantir demarcação de terras indígenas e titulação de territórios quilombolas',
+    statusCumprimento: 'parcialmente_cumprido',
+    prioridade: 'critica',
+    acoesBrasil: [
+      'Retomada de processos de demarcação',
+      'Ações contra garimpo ilegal'
+    ],
+    lacunas: ['Status atualizado do Marco Temporal'],
+    fontesEvidencia: ['FUNAI', 'INCRA', 'Fundação Palmares'],
+    ultimaAtualizacao: '2026-01-14'
+  }
+];
+
+// Eixos de Investigação (Quadro de Investigação do Plano)
+export const investigationAxes: InvestigationAxis[] = [
+  {
+    id: 'eixo-1',
+    numero: 1,
+    nome: 'Estrutura Normativa e Institucional',
+    descricao: 'Arcabouço legal e institucional de combate à discriminação racial',
+    temas: [
+      {
+        id: 'tema-1-1',
+        nome: 'Estatísticas e Censo',
+        paragrafosONU: ['12a', '12b'],
+        questoesInvestigacao: [
+          'O Censo 2022 garantiu cobertura total em áreas indígenas/quilombolas?',
+          'O critério de autoidentificação foi respeitado em todos os registros administrativos?'
+        ],
+        fontesEvidencia: ['Microdados do Censo 2022 (IBGE)', 'RAIS', 'CadÚnico', 'SINAN'],
+        indicadores: ['Cobertura censitária', 'Taxa de autoidentificação']
+      },
+      {
+        id: 'tema-1-2',
+        nome: 'Legislação Antirracista',
+        paragrafosONU: ['14a'],
+        questoesInvestigacao: [
+          'O Estatuto da Igualdade Racial (Lei 12.288) foi efetivamente regulamentado e implementado nos níveis estadual e municipal?'
+        ],
+        fontesEvidencia: ['Leis estaduais/municipais', 'Planos de igualdade racial'],
+        indicadores: ['Número de regulamentações', 'Municípios com planos']
+      },
+      {
+        id: 'tema-1-3',
+        nome: 'Capacidade Institucional',
+        paragrafosONU: ['14c'],
+        questoesInvestigacao: [
+          'O SINAPIR e os órgãos de igualdade racial (MIR/MPI) receberam recursos suficientes ou sofreram desmonte?'
+        ],
+        fontesEvidencia: ['LOA vs. Execução (SIOP)', 'Organogramas', 'Decretos'],
+        indicadores: ['Orçamento executado', 'Número de servidores']
+      }
+    ]
+  },
+  {
+    id: 'eixo-2',
+    numero: 2,
+    nome: 'Violência Racializada e Justiça',
+    descricao: 'Segurança pública, letalidade e acesso à justiça',
+    temas: [
+      {
+        id: 'tema-2-1',
+        nome: 'Letalidade Policial',
+        paragrafosONU: ['32', '33', '34', '35', '36'],
+        questoesInvestigacao: [
+          'Houve redução nas mortes por intervenção policial de pessoas negras?',
+          'Qual o status do cumprimento da ADPF 635?'
+        ],
+        fontesEvidencia: ['Fórum de Segurança Pública', 'SINESP', 'STF'],
+        indicadores: ['Taxa de letalidade por raça', 'Número de operações em favelas']
+      }
+    ]
+  },
+  {
+    id: 'eixo-3',
+    numero: 3,
+    nome: 'Direitos Econômicos e Sociais',
+    descricao: 'Saúde, educação, trabalho e proteção social',
+    temas: [
+      {
+        id: 'tema-3-1',
+        nome: 'Saúde da População Negra',
+        paragrafosONU: ['15', '16', '17'],
+        questoesInvestigacao: [
+          'A Política Nacional de Saúde Integral da População Negra está sendo executada?',
+          'Qual foi o impacto desigual da COVID-19 por raça?'
+        ],
+        fontesEvidencia: ['DataSUS', 'SINAN', 'SIM', 'SINASC'],
+        indicadores: ['Mortalidade materna por raça', 'Óbitos COVID por raça']
+      }
+    ]
+  }
+];
+
+// Fontes de dados oficiais
+export const dataSources: DataSource[] = [
+  {
+    id: 'fonte-1',
+    sigla: 'IBGE/Censo',
+    nomeCompleto: 'Censo Demográfico 2022',
+    orgaoResponsavel: 'Instituto Brasileiro de Geografia e Estatística',
+    urlAcesso: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
+    tipoAcesso: 'sidra',
+    descricao: 'Censo demográfico com dados de população, características socioeconômicas e territoriais',
+    indicadoresDisponiveis: ['População total', 'Distribuição por raça/cor', 'Renda', 'Escolaridade'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Município'],
+    periodicidade: 'Decenal',
+    ultimaAtualizacao: '2023-12-01'
+  },
+  {
+    id: 'fonte-2',
+    sigla: 'RAIS',
+    nomeCompleto: 'Relação Anual de Informações Sociais',
+    orgaoResponsavel: 'Ministério do Trabalho e Emprego',
+    urlAcesso: 'http://bi.mte.gov.br/bgcaged/',
+    tipoAcesso: 'portal',
+    descricao: 'Dados de vínculos empregatícios formais',
+    indicadoresDisponiveis: ['Emprego formal', 'Remuneração média', 'Setores econômicos'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Escolaridade', 'Idade', 'CBO'],
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024-12-01'
+  },
+  {
+    id: 'fonte-3',
+    sigla: 'CAGED',
+    nomeCompleto: 'Cadastro Geral de Empregados e Desempregados',
+    orgaoResponsavel: 'Ministério do Trabalho e Emprego',
+    urlAcesso: 'http://bi.mte.gov.br/bgcaged/',
+    tipoAcesso: 'portal',
+    descricao: 'Saldo de empregos formais mensais',
+    indicadoresDisponiveis: ['Admissões', 'Desligamentos', 'Saldo'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'Setor'],
+    periodicidade: 'Mensal',
+    ultimaAtualizacao: '2025-12-01'
+  },
+  {
+    id: 'fonte-4',
+    sigla: 'CadÚnico',
+    nomeCompleto: 'Cadastro Único para Programas Sociais',
+    orgaoResponsavel: 'Ministério do Desenvolvimento Social',
+    urlAcesso: 'https://aplicacoes.mds.gov.br/sagi/vis/data3/v.php',
+    tipoAcesso: 'portal',
+    descricao: 'Registro de famílias de baixa renda',
+    indicadoresDisponiveis: ['Famílias cadastradas', 'Renda familiar', 'Beneficiários Bolsa Família'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Município', 'Quilombola', 'Indígena'],
+    periodicidade: 'Mensal',
+    ultimaAtualizacao: '2025-12-01'
+  },
+  {
+    id: 'fonte-5',
+    sigla: 'SINAN',
+    nomeCompleto: 'Sistema de Informação de Agravos de Notificação',
+    orgaoResponsavel: 'Ministério da Saúde',
+    urlAcesso: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    tipoAcesso: 'portal',
+    descricao: 'Notificações de agravos de saúde pública',
+    indicadoresDisponiveis: ['Violência doméstica', 'Intoxicações', 'Doenças ocupacionais'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF'],
+    periodicidade: 'Contínua',
+    ultimaAtualizacao: '2025-12-01'
+  },
+  {
+    id: 'fonte-6',
+    sigla: 'SIDRA/PNAD',
+    nomeCompleto: 'PNAD Contínua - Sistema IBGE de Recuperação Automática',
+    orgaoResponsavel: 'IBGE',
+    urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/pnadct',
+    tipoAcesso: 'api',
+    descricao: 'Pesquisa amostral trimestral sobre mercado de trabalho e condições de vida',
+    indicadoresDisponiveis: ['Desemprego', 'Renda', 'Informalidade', 'Trabalho infantil'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Escolaridade'],
+    periodicidade: 'Trimestral',
+    ultimaAtualizacao: '2025-09-01'
+  }
+];
+
+// Seções do Common Core Document
+export const commonCoreSections: CommonCoreSection[] = [
+  {
+    id: 'ccd-1',
+    numero: 'I.A',
+    titulo: 'Características demográficas, econômicas, sociais e culturais',
+    tituloIngles: 'Demographic, economic, social and cultural characteristics',
+    statusAtualizacao: 'desatualizado',
+    ultimaVersao: 2020,
+    periodoCobertura: '2010-2020',
+    subsecoes: [
+      {
+        id: 'ccd-1-1',
+        numero: 'I.A.i',
+        titulo: 'Características demográficas',
+        conteudoAtual: 'Dados do Censo 2010 e projeções até 2017',
+        indicadoresNecessarios: ['População total 2022', 'Distribuição por raça/cor 2022', 'Taxa de crescimento'],
+        fontesNecessarias: ['Censo 2022', 'PNAD Contínua'],
+        statusAtualizacao: 'desatualizado',
+        notas: 'Necessário atualizar com dados do Censo 2022'
+      },
+      {
+        id: 'ccd-1-2',
+        numero: 'I.A.ii',
+        titulo: 'Características econômicas',
+        conteudoAtual: 'PIB e indicadores macroeconômicos até 2017',
+        indicadoresNecessarios: ['PIB 2018-2025', 'Renda per capita', 'Gini por raça'],
+        fontesNecessarias: ['IBGE', 'BCB', 'IPEA'],
+        statusAtualizacao: 'desatualizado'
+      }
+    ]
+  },
+  {
+    id: 'ccd-2',
+    numero: 'I.B',
+    titulo: 'Estrutura constitucional, política e legal',
+    tituloIngles: 'Constitutional, political and legal structure',
+    statusAtualizacao: 'parcial',
+    ultimaVersao: 2020,
+    periodoCobertura: '1988-2020',
+    subsecoes: [
+      {
+        id: 'ccd-2-1',
+        numero: 'I.B.i',
+        titulo: 'Sistema de governo',
+        conteudoAtual: 'Estrutura federativa e sistema de governo',
+        indicadoresNecessarios: ['Composição atual do governo', 'Estrutura ministerial 2023-2025'],
+        fontesNecessarias: ['Decreto de estrutura regimental'],
+        statusAtualizacao: 'parcial'
+      }
+    ]
+  }
+];
+
+// Grupos focais específicos
+export const focalGroups: FocalGroup[] = [
+  {
+    id: 'grupo-1',
+    nome: 'Quilombolas',
+    populacao: 1327802,
+    fontePopulacao: 'Censo 2022',
+    indicadoresEspecificos: ['Territórios titulados', 'Acesso a serviços básicos', 'Renda média'],
+    politicasEspecificas: ['PNGTAQ', 'Titulação de territórios'],
+    observacoesONU: ['47', '48', '49']
+  },
+  {
+    id: 'grupo-2',
+    nome: 'Povos Indígenas',
+    populacao: 1693535,
+    fontePopulacao: 'Censo 2022',
+    indicadoresEspecificos: ['Terras demarcadas', 'Saúde indígena', 'Educação bilíngue'],
+    politicasEspecificas: ['Demarcação de terras', 'SESAI'],
+    observacoesONU: ['50', '51', '52', '53']
+  },
+  {
+    id: 'grupo-3',
+    nome: 'Ciganos/Romani',
+    populacao: undefined,
+    fontePopulacao: 'Dados não disponíveis',
+    indicadoresEspecificos: [],
+    politicasEspecificas: ['Política Nacional para Ciganos (em elaboração)'],
+    observacoesONU: ['54', '55']
+  },
+  {
+    id: 'grupo-4',
+    nome: 'Juventude Negra',
+    indicadoresEspecificos: ['Homicídios 15-29 anos', 'Desemprego juvenil', 'Evasão escolar'],
+    politicasEspecificas: ['Programa Juventude Negra Viva', 'Plano Juventude Viva'],
+    observacoesONU: ['32', '33', '34']
+  }
+];
+
+// Dados orçamentários simulados
+export const budgetData: BudgetData[] = [
+  {
+    id: 'orc-1',
+    programa: 'Promoção da Igualdade Racial',
+    acao: 'Políticas de Promoção da Igualdade Racial',
+    esfera: 'federal',
+    ano: 2024,
+    valorAutorizado: 89000000,
+    valorEmpenhado: 72000000,
+    valorLiquidado: 65000000,
+    valorPago: 58000000,
+    fonteRecurso: 'Tesouro',
+    politicaRacial: true,
+    categoriaRacial: 'Geral'
+  },
+  {
+    id: 'orc-2',
+    programa: 'Titulação de Territórios Quilombolas',
+    acao: 'Regularização de Territórios Quilombolas',
+    esfera: 'federal',
+    ano: 2024,
+    valorAutorizado: 45000000,
+    valorEmpenhado: 38000000,
+    valorLiquidado: 32000000,
+    valorPago: 28000000,
+    fonteRecurso: 'Tesouro',
+    politicaRacial: true,
+    categoriaRacial: 'Quilombolas'
+  },
+  {
+    id: 'orc-3',
+    programa: 'Proteção de Terras Indígenas',
+    acao: 'Demarcação e Proteção de Terras Indígenas',
+    esfera: 'federal',
+    ano: 2024,
+    valorAutorizado: 120000000,
+    valorEmpenhado: 98000000,
+    valorLiquidado: 85000000,
+    valorPago: 72000000,
+    fonteRecurso: 'Tesouro',
+    politicaRacial: true,
+    categoriaRacial: 'Indígenas'
+  }
+];
+
+// Observações da ONU
+export const unObservations: UNObservation[] = [
+  {
+    id: 'obs-1',
+    documento: 'CERD/C/BRA/CO/18-20',
+    dataDocumento: '2022-12-01',
+    paragrafo: '28',
+    tipo: 'preocupacao',
+    tema: 'Discurso de ódio',
+    texto: 'O Comitê está preocupado com relatos de declarações racistas feitas por autoridades públicas, incluindo políticos, que incitam discriminação e violência contra afro-brasileiros e povos indígenas.',
+    respostaBrasil: 'O governo brasileiro reorientou seu discurso oficial, reconhecendo o racismo estrutural e adotando postura ativa de valorização da diversidade étnico-racial.',
+    statusAtendimento: 'parcialmente_cumprido',
+    acoesPendentes: ['Mecanismos de responsabilização de autoridades']
+  },
+  {
+    id: 'obs-2',
+    documento: 'CERD/C/BRA/CO/18-20',
+    dataDocumento: '2022-12-01',
+    paragrafo: '14c',
+    tipo: 'preocupacao',
+    tema: 'Desmonte institucional',
+    texto: 'O Comitê está preocupado com o desmantelamento das estruturas institucionais de promoção da igualdade racial.',
+    respostaBrasil: 'Recriação do Ministério da Igualdade Racial (MIR) em 2023 e retomada de conselhos participativos.',
+    statusAtendimento: 'cumprido',
+    acoesPendentes: []
+  }
+];
+
+// Indicadores estatísticos exemplo
+export const statisticalIndicators: StatisticalIndicator[] = [
+  {
+    id: 'ind-1',
+    categoria: 'demografico',
+    nome: 'População por raça/cor',
+    fonte: 'IBGE - Censo 2022',
+    valorAtual: 203080756,
+    unidade: 'habitantes',
+    ano: 2022,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Branca', valor: 88260000 },
+          { categoria: 'Preta', valor: 20665000 },
+          { categoria: 'Parda', valor: 92140000 },
+          { categoria: 'Amarela', valor: 850000 },
+          { categoria: 'Indígena', valor: 1693000 }
+        ]
+      }
+    ],
+    tendencia: 'estavel'
+  },
+  {
+    id: 'ind-2',
+    categoria: 'trabalho',
+    nome: 'Taxa de desemprego',
+    fonte: 'PNAD Contínua',
+    valorAtual: 6.9,
+    unidade: '%',
+    ano: 2024,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Branca', valor: 5.2 },
+          { categoria: 'Preta', valor: 9.1 },
+          { categoria: 'Parda', valor: 8.3 }
+        ]
+      },
+      {
+        tipo: 'genero',
+        valores: [
+          { categoria: 'Homens', valor: 5.8 },
+          { categoria: 'Mulheres', valor: 8.2 }
+        ]
+      }
+    ],
+    tendencia: 'decrescente'
+  },
+  {
+    id: 'ind-3',
+    categoria: 'seguranca',
+    nome: 'Taxa de homicídios (por 100 mil)',
+    fonte: 'Fórum Brasileiro de Segurança Pública',
+    valorAtual: 22.4,
+    unidade: 'por 100 mil',
+    ano: 2023,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Negros', valor: 31.2 },
+          { categoria: 'Não-negros', valor: 11.8 }
+        ]
+      },
+      {
+        tipo: 'idade',
+        valores: [
+          { categoria: '15-29 anos', valor: 48.6 },
+          { categoria: '30+ anos', valor: 12.1 }
+        ]
+      }
+    ],
+    tendencia: 'decrescente'
+  }
+];
+
+// Dashboard Stats
+export const dashboardStats: DashboardStats = {
+  totalRecomendacoes: 68,
+  recomendacoesCumpridas: 12,
+  recomendacoesParciais: 28,
+  recomendacoesNaoCumpridas: 24,
+  metasPlanoTrabalho: 4,
+  metasConcluidas: 0,
+  indicadoresAtualizados: 45,
+  indicadoresDesatualizados: 23,
+  ultimaAtualizacao: '2026-01-31'
+};
