@@ -138,7 +138,9 @@ export function DadosGeraisTab() {
               <TrendingUp className="w-5 h-5 text-primary" />
               Evolução da Autodeclaração Racial (2018-2026)
             </CardTitle>
-            <CardDescription>% da população branca vs negra (pretos + pardos)</CardDescription>
+            <CardDescription>
+              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual (2018-2024) + Projeções (2025-2026)
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-72">
@@ -163,19 +165,26 @@ export function DadosGeraisTab() {
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Dados oficiais SIDRA/IBGE (Tabela 9605):</strong> Pardos: 92.083.286 (45,34%) | Brancos: 88.252.121 (43,46%) | 
-                Pretos: 20.656.458 (10,17%) | Indígenas (cor/raça): 1.227.642 (0,60%) | Amarelos: 850.130 (0,42%). 
-                Pela primeira vez desde 1991, pardos superam brancos como maior grupo. População negra (pretos + pardos): 112.739.744 (55,51%).
+                <strong>Dados PNAD Contínua Anual (SIDRA Tabela 6403):</strong> Série histórica 2018-2024 | Ano-referência 2022 (Censo) confirma: 
+                Pardos 45,34%, Brancos 43,46%, Pretos 10,17%. População negra (pretos + pardos): 55,51%.
                 <br />
-                <span className="text-muted-foreground italic">Nota: A contagem específica de pessoas indígenas do Censo 2022 totaliza 1.693.535 (pergunta adicional, diferente de cor/raça).</span>
+                <span className="text-muted-foreground italic">Nota: Anos 2025-2026 são projeções baseadas em tendência histórica. O Censo 2022 (Tabela 9605) é a fotografia demográfica oficial.</span>
               </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-              <FileText className="w-3 h-3" />
-              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                SIDRA/IBGE Tabela 9605 | Censo 2022 (22/12/2023) <ExternalLink className="w-3 h-3" />
-              </a>
-            </p>
+            <div className="text-xs text-muted-foreground mt-2 space-y-1">
+              <p className="flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                  SIDRA/IBGE Tabela 6403 | PNAD Contínua Anual - Cor/Raça <ExternalLink className="w-3 h-3" />
+                </a>
+              </p>
+              <p className="flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                  SIDRA/IBGE Tabela 9605 | Censo 2022 (ref. 2022) <ExternalLink className="w-3 h-3" />
+                </a>
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -184,7 +193,9 @@ export function DadosGeraisTab() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2026)</CardTitle>
-          <CardDescription>Evolução anual de renda, desemprego e pobreza</CardDescription>
+          <CardDescription>
+            Evolução anual de renda, desemprego e pobreza | PNAD Contínua Trimestral/Anual (SIDRA Tabelas 6403, 6800, 6381)
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -210,6 +221,7 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6800 - Rendimento médio</p>
             </div>
 
             {/* Desemprego */}
@@ -234,6 +246,7 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6381 - Taxa de desocupação</p>
             </div>
 
             {/* Pobreza */}
@@ -258,6 +271,7 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">Síntese de Indicadores Sociais - IBGE</p>
             </div>
           </div>
 
@@ -287,10 +301,24 @@ export function DadosGeraisTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            Fontes: PNAD Contínua/IBGE (2018-2024). Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023).
-          </p>
+          <div className="text-xs text-muted-foreground mt-4 space-y-1">
+            <p className="flex items-center gap-1">
+              <FileText className="w-3 h-3" />
+              <strong>Fontes SIDRA/IBGE:</strong>
+            </p>
+            <p className="ml-4">
+              <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                Tabela 6800 - Rendimento médio por cor/raça
+              </a> | 
+              <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6381 - Taxa de desocupação
+              </a> | 
+              <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6403 - Características gerais
+              </a>
+            </p>
+            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023). Anos 2025-2026 são projeções.</p>
+          </div>
         </CardContent>
       </Card>
     </div>
