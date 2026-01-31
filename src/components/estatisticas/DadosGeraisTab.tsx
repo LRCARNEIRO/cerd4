@@ -164,8 +164,10 @@ export function DadosGeraisTab() {
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
                 <strong>Dados oficiais SIDRA/IBGE (Tabela 9605):</strong> Pardos: 92.083.286 (45,34%) | Brancos: 88.252.121 (43,46%) | 
-                Pretos: 20.665.498 (10,17%) | Indígenas: 1.693.535 (0,83%) | Amarelos: 850.136 (0,42%). 
-                Pela primeira vez desde 1991, pardos superam brancos como maior grupo. População negra (pretos + pardos): 112.748.784 (55,51%).
+                Pretos: 20.656.458 (10,17%) | Indígenas (cor/raça): 1.227.642 (0,60%) | Amarelos: 850.130 (0,42%). 
+                Pela primeira vez desde 1991, pardos superam brancos como maior grupo. População negra (pretos + pardos): 112.739.744 (55,51%).
+                <br />
+                <span className="text-muted-foreground italic">Nota: A contagem específica de pessoas indígenas do Censo 2022 totaliza 1.693.535 (pergunta adicional, diferente de cor/raça).</span>
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">

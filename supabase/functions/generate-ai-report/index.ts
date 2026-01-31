@@ -214,11 +214,15 @@ Data de referência (SIDRA): 22/12/2023
 - Brancos: 88.252.121 (43,46%)
 - Pretos: 20.656.458 (10,17%)
 - Total população negra (pretos + pardos): 112.739.744 (55,51%)
-- Indígenas (cor/raça no Censo 2022): 1.227.642 (0,83%)
+- Indígenas (cor/raça Tabela 9605): 1.227.642 (0,60%)
+- Indígenas (contagem específica Censo 2022): 1.693.535 (0,83%) - 391 etnias, 295 línguas
 - Amarelos: 850.130 (0,42%)
+- Quilombolas (primeira contagem censitária): 1.327.802 em 1.696 municípios
 
 Fontes oficiais IBGE:
 - SIDRA Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
+- Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
+- Quilombolas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
 
 ## INDICADORES DE DESIGUALDADE RACIAL (PNAD 2023-2024 - IBGE)
 - Renda: Pessoas negras ganham 58,9% do que pessoas brancas (R$ 2.199 vs R$ 3.730 em 2023)

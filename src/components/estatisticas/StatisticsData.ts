@@ -245,7 +245,11 @@ export const lgbtqiaPorRaca = [
 
 // =============================================
 // POVOS TRADICIONAIS - Censo 2022 (IBGE/SIDRA)
-// Fonte: IBGE Censo 2022 - Indígenas e Quilombolas
+// NOTA METODOLÓGICA:
+//   • "Cor ou raça" (Tabela 9605): pessoas que se autodeclararam indígenas no quesito cor = 1.227.642
+//   • "Contagem de pessoas indígenas" (pergunta específica do Censo 2022): inclui quem se considera
+//     indígena independentemente de cor, totalizando ~1.693.535 segundo o IBGE.
+//   Ambos os valores são oficiais; a diferença decorre da metodologia do quesito.
 // URLs oficiais:
 // - Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
 // - Quilombolas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
@@ -253,10 +257,16 @@ export const lgbtqiaPorRaca = [
 
 export const povosTradicionais = {
   indigenas: {
-    // Fonte: IBGE Censo 2022 - Tabela 9606 e publicações oficiais
-    // "Residem 1.693.535 indígenas no Brasil" - IBGE 08/2023
-    populacao: 1693535,
-    percentualBrasil: 0.83,
+    // --------------------------------------------------
+    // DOIS VALORES OFICIAIS (ver nota metodológica acima)
+    // --------------------------------------------------
+    // 1) Cor ou raça = Indígena (Tabela 9605)
+    //    API: https://apisidra.ibge.gov.br/values/t/9605/n1/1/v/93/p/2022/c86/2780
+    populacaoCorRaca: 1227642,
+    // 2) Pessoas indígenas (contagem específica do Censo 2022)
+    //    Fonte: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
+    populacaoPessoasIndigenas: 1693535,
+    percentualBrasil: 0.83, // usando contagem específica
     // 391 etnias e 295 línguas indígenas identificadas (Censo 2022 - Out/2025)
     etnias: 391,
     linguas: 295,
@@ -270,7 +280,8 @@ export const povosTradicionais = {
     educacaoBilingue: 32.5,
     rendimentoMedio: 1683,
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022',
-    urlFonte: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html'
+    urlFonteCorRaca: 'https://sidra.ibge.gov.br/Tabela/9605',
+    urlFontePessoasIndigenas: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html'
   },
   quilombolas: {
     // Primeira contagem oficial de quilombolas da história do Brasil
