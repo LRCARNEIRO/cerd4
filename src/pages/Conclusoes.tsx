@@ -2,517 +2,390 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Scale, Target, FileWarning, Lightbulb, BarChart3, ArrowRight, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Scale, Target, Lightbulb, BarChart3, ArrowRight, Loader2, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-
-// Análise: O que o Estado FEZ (2018-2026)
-const avancos = [
-  {
-    area: 'Demarcação de Terras Indígenas',
-    periodo2018_2022: { acoes: 2, descricao: 'Apenas 2 terras homologadas' },
-    periodo2023_2025: { acoes: 11, descricao: '11 terras homologadas + retomada FUNAI' },
-    variacao: '+450%',
-    avaliacao: 'avanço significativo'
-  },
-  {
-    area: 'Orçamento Igualdade Racial',
-    periodo2018_2022: { acoes: 'R$ 45M/ano', descricao: 'Média anual MIR/SEPPIR' },
-    periodo2023_2025: { acoes: 'R$ 285M/ano', descricao: 'Recriação do MIR + programas' },
-    variacao: '+533%',
-    avaliacao: 'avanço significativo'
-  },
-  {
-    area: 'Lei de Cotas',
-    periodo2018_2022: { acoes: 'Vigência', descricao: 'Lei 12.711/2012 em aplicação' },
-    periodo2023_2025: { acoes: 'Renovação', descricao: 'Lei 14.723/2023 - prorrogação até 2033' },
-    variacao: '+10 anos',
-    avaliacao: 'avanço'
-  },
-  {
-    area: 'Programa Juventude Negra Viva',
-    periodo2018_2022: { acoes: 'Inexistente', descricao: 'Sem política específica' },
-    periodo2023_2025: { acoes: 'Criação', descricao: 'Decreto 11.786/2023 + R$ 285M' },
-    variacao: 'Novo',
-    avaliacao: 'avanço significativo'
-  },
-  {
-    area: 'SINAPIR',
-    periodo2018_2022: { acoes: '22 estados', descricao: 'Adesões estaduais' },
-    periodo2023_2025: { acoes: '26 estados + DF', descricao: 'Cobertura total + fortalecimento' },
-    variacao: '+4 UFs',
-    avaliacao: 'avanço'
-  },
-  {
-    area: 'Titulação Quilombola',
-    periodo2018_2022: { acoes: '0 títulos', descricao: 'Paralisia total no INCRA' },
-    periodo2023_2025: { acoes: '12 títulos', descricao: 'Retomada de processos' },
-    variacao: 'Retomada',
-    avaliacao: 'avanço parcial'
-  }
-];
-
-// Análise: O que o Estado DEIXOU DE FAZER
-const omissoes = [
-  {
-    area: 'Letalidade Policial',
-    problema: 'Negros são 83% das vítimas',
-    recomendacaoCERD: 'Reforma das forças de segurança',
-    situacao2018_2022: 'Aumento de mortes',
-    situacao2023_2025: 'Câmeras corporais em 8 UFs apenas',
-    status: 'insuficiente'
-  },
-  {
-    area: 'Encarceramento em Massa',
-    problema: '67% da população prisional é negra',
-    recomendacaoCERD: 'Políticas de desencarceramento',
-    situacao2018_2022: 'Aumento de 12%',
-    situacao2023_2025: 'Sem redução significativa',
-    status: 'omissão'
-  },
-  {
-    area: 'Povos Ciganos',
-    problema: 'Inexistência de dados e políticas',
-    recomendacaoCERD: 'Levantamento censitário e políticas específicas',
-    situacao2018_2022: 'Nenhuma ação',
-    situacao2023_2025: 'Primeiro mapeamento MUNIC 2024',
-    status: 'insuficiente'
-  },
-  {
-    area: 'Reparação Histórica',
-    problema: 'Ausência de política reparatória',
-    recomendacaoCERD: 'Programa nacional de reparação',
-    situacao2018_2022: 'Nenhuma iniciativa',
-    situacao2023_2025: 'GT criado, sem avanço concreto',
-    status: 'omissão'
-  },
-  {
-    area: 'Desigualdade de Renda',
-    problema: 'Brancos ganham 1,55x mais que negros',
-    recomendacaoCERD: 'Políticas afirmativas no mercado de trabalho',
-    situacao2018_2022: 'Sem políticas',
-    situacao2023_2025: 'Cotas em concursos federais (30%)',
-    status: 'insuficiente'
-  },
-  {
-    area: 'Violência contra Mulheres Negras',
-    problema: '65,8% das vítimas de feminicídio',
-    recomendacaoCERD: 'Políticas interseccionais de enfrentamento',
-    situacao2018_2022: 'Lei Maria da Penha genérica',
-    situacao2023_2025: 'Casas da Mulher com recorte racial em 5 UFs',
-    status: 'insuficiente'
-  }
-];
-
-// Síntese do período
-const sintesePeriodo = {
-  periodo1: {
-    nome: '2018-2022',
-    caracteristica: 'Desmonte institucional',
-    pontos: [
-      'Extinção do Ministério da Igualdade Racial',
-      'Paralisia na demarcação de terras',
-      'Corte de 70% do orçamento',
-      'Aumento da violência policial',
-      'Nenhuma titulação quilombola'
-    ]
-  },
-  periodo2: {
-    nome: '2023-2025',
-    caracteristica: 'Reconstrução com lacunas',
-    pontos: [
-      'Recriação do MIR',
-      'Aumento orçamentário expressivo',
-      'Retomada de demarcações',
-      'Programas para juventude negra',
-      'Persistência da violência letal'
-    ]
-  }
-};
-
-// Cumprimento das recomendações CERD
-const cumprimentoCERD = [
-  { recomendacao: 'Combate ao racismo institucional', cumprimento: 35 },
-  { recomendacao: 'Redução da violência policial', cumprimento: 15 },
-  { recomendacao: 'Demarcação de terras indígenas', cumprimento: 55 },
-  { recomendacao: 'Titulação quilombola', cumprimento: 25 },
-  { recomendacao: 'Políticas para ciganos', cumprimento: 10 },
-  { recomendacao: 'Educação antirracista', cumprimento: 40 },
-  { recomendacao: 'Desigualdade econômica', cumprimento: 30 },
-  { recomendacao: 'Acesso à saúde', cumprimento: 45 }
-];
-
-// Fio condutor / Tese central
-const teseCentral = {
-  titulo: 'O Paradoxo da Igualdade Racial no Brasil (2018-2026)',
-  argumento: `O período 2018-2026 revela um Estado brasileiro em contradição: enquanto avança em políticas afirmativas setoriais 
-  (cotas, demarcação, orçamento), mantém estruturas de violência e exclusão que perpetuam o racismo sistêmico. 
-  
-  A análise dos dados demonstra que:
-  
-  1. O PERÍODO 2018-2022 foi marcado pelo desmonte deliberado das políticas de igualdade racial, com extinção de órgãos, 
-  cortes orçamentários de 70% e paralisia na execução de direitos territoriais.
-  
-  2. O PERÍODO 2023-2025 iniciou um processo de reconstrução institucional com aumento orçamentário de 533% e retomada 
-  de demarcações, mas não conseguiu reverter indicadores estruturais de violência e desigualdade.
-  
-  3. A PERSISTÊNCIA DA VIOLÊNCIA LETAL contra jovens negros (taxa 2,55x maior) e a manutenção do encarceramento em massa 
-  (67% negros) demonstram que a mudança de governo, sozinha, não altera as estruturas de racismo institucional.
-  
-  4. OS POVOS TRADICIONAIS (indígenas, quilombolas e ciganos) continuam enfrentando barreiras para acesso a direitos básicos, 
-  com taxas de titulação irrisórias (5% dos quilombos) e inexistência de dados sobre ciganos até 2024.
-  
-  5. A INTERSECCIONALIDADE revela que mulheres negras pobres são o grupo mais vulnerável em praticamente todos os indicadores, 
-  evidenciando a sobreposição de opressões de raça, gênero e classe.`,
-  conclusao: `O Brasil avançou em criar institucionalidade para políticas raciais, mas falhou em transformar indicadores 
-  estruturais de desigualdade e violência. Para o próximo ciclo (CERD V), recomenda-se foco em: (a) redução da letalidade 
-  policial, (b) aceleração da titulação de territórios tradicionais, (c) políticas de reparação histórica, e 
-  (d) produção de dados interseccionais sistemáticos.`
-};
+import { useConclusoesAnaliticas, useLacunasStats, useLacunasIdentificadas } from '@/hooks/useLacunasData';
 
 export default function Conclusoes() {
+  const { data: conclusoes, isLoading: loadingConclusoes } = useConclusoesAnaliticas();
+  const { data: stats, isLoading: loadingStats } = useLacunasStats();
+  const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
+
+  const isLoading = loadingConclusoes || loadingStats || loadingLacunas;
+
+  // Agrupar conclusões por tipo
+  const conclusoesAgrupadas = {
+    lacuna_persistente: conclusoes?.filter(c => c.tipo === 'lacuna_persistente') || [],
+    avanco: conclusoes?.filter(c => c.tipo === 'avanco') || [],
+    retrocesso: conclusoes?.filter(c => c.tipo === 'retrocesso') || [],
+  };
+
+  // Calcular cumprimento por eixo temático baseado nos dados reais
+  const cumprimentoPorEixo = Object.entries(stats?.porEixo || {}).map(([eixo, total]) => {
+    const cumpridas = lacunas?.filter(l => l.eixo_tematico === eixo && l.status_cumprimento === 'cumprido').length || 0;
+    const parciais = lacunas?.filter(l => l.eixo_tematico === eixo && l.status_cumprimento === 'parcialmente_cumprido').length || 0;
+    const percentual = total > 0 ? Math.round(((cumpridas * 100) + (parciais * 50)) / total) : 0;
+    
+    const eixoLabels: Record<string, string> = {
+      legislacao_justica: 'Legislação e Justiça',
+      politicas_institucionais: 'Políticas Institucionais',
+      seguranca_publica: 'Segurança Pública',
+      saude: 'Saúde',
+      educacao: 'Educação',
+      trabalho_renda: 'Trabalho e Renda',
+      terra_territorio: 'Terra e Território',
+      cultura_patrimonio: 'Cultura e Patrimônio',
+      participacao_social: 'Participação Social',
+      dados_estatisticas: 'Dados e Estatísticas'
+    };
+
+    return {
+      eixo: eixoLabels[eixo] || eixo,
+      cumprimento: percentual
+    };
+  }).sort((a, b) => b.cumprimento - a.cumprimento);
+
+  // Tese central da análise
+  const teseCentral = conclusoesAgrupadas.lacuna_persistente.find(c => 
+    c.titulo.includes('Paradoxo')
+  );
+
   return (
     <DashboardLayout
       title="Conclusões"
       subtitle="Análise: O que o Estado brasileiro fez e deixou de fazer (2018-2026)"
     >
-      {/* Tese Central */}
-      <Card className="mb-6 border-2 border-primary">
-        <CardHeader className="bg-primary/5">
-          <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="w-6 h-6 text-primary" />
-            {teseCentral.titulo}
-          </CardTitle>
-          <CardDescription>
-            Fio condutor da análise baseada no conjunto de dados 2018-2026
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="prose prose-sm max-w-none text-muted-foreground">
-            {teseCentral.argumento.split('\n\n').map((paragrafo, i) => (
-              <p key={i} className="mb-3 text-sm leading-relaxed">{paragrafo}</p>
-            ))}
-          </div>
-          <div className="mt-6 p-4 bg-accent/10 border border-accent/30 rounded-lg">
-            <p className="text-sm font-medium text-accent-foreground mb-2 flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              Conclusão para o Relatório CERD IV:
-            </p>
-            <p className="text-sm text-muted-foreground">{teseCentral.conclusao}</p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-muted rounded-lg">
+              <Database className="w-5 h-5 text-foreground" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Total Lacunas</p>
+              <p className="text-xl font-bold">{isLoading ? '...' : stats?.total || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-success/10 rounded-lg">
+              <CheckCircle2 className="w-5 h-5 text-success" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Cumpridas</p>
+              <p className="text-xl font-bold text-success">{isLoading ? '...' : stats?.porStatus.cumprido || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-warning/10 rounded-lg">
+              <AlertTriangle className="w-5 h-5 text-warning" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Parciais</p>
+              <p className="text-xl font-bold text-warning">{isLoading ? '...' : stats?.porStatus.parcialmente_cumprido || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-destructive/10 rounded-lg">
+              <XCircle className="w-5 h-5 text-destructive" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Não Cumpridas</p>
+              <p className="text-xl font-bold text-destructive">{isLoading ? '...' : stats?.porStatus.nao_cumprido || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Lightbulb className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Conclusões</p>
+              <p className="text-xl font-bold">{isLoading ? '...' : conclusoes?.length || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      <Tabs defaultValue="comparativo" className="w-full">
+      {/* Tese Central */}
+      {teseCentral && (
+        <Card className="mb-6 border-2 border-primary">
+          <CardHeader className="bg-primary/5">
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="w-6 h-6 text-primary" />
+              {teseCentral.titulo}
+            </CardTitle>
+            <CardDescription>
+              Fio condutor da análise baseada no conjunto de dados 2018-2026
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="prose prose-sm max-w-none text-muted-foreground">
+              <p className="text-sm leading-relaxed whitespace-pre-line">{teseCentral.argumento_central}</p>
+            </div>
+            {teseCentral.evidencias && teseCentral.evidencias.length > 0 && (
+              <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                <p className="text-xs font-medium text-muted-foreground mb-2">Evidências:</p>
+                <ul className="space-y-1">
+                  {teseCentral.evidencias.map((ev, i) => (
+                    <li key={i} className="text-sm flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      {ev}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      <Tabs defaultValue="analises" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="comparativo" className="gap-1">
-            <Scale className="w-4 h-4" /> Comparativo 2018-2022 vs 2023-2025
+          <TabsTrigger value="analises" className="gap-1">
+            <Lightbulb className="w-4 h-4" /> Análises do Banco
           </TabsTrigger>
           <TabsTrigger value="avancos" className="gap-1">
-            <CheckCircle2 className="w-4 h-4" /> O que FEZ
+            <CheckCircle2 className="w-4 h-4" /> Avanços (2023-2025)
           </TabsTrigger>
-          <TabsTrigger value="omissoes" className="gap-1">
-            <XCircle className="w-4 h-4" /> O que DEIXOU de fazer
+          <TabsTrigger value="retrocessos" className="gap-1">
+            <TrendingDown className="w-4 h-4" /> Retrocessos (2018-2022)
           </TabsTrigger>
           <TabsTrigger value="cumprimento" className="gap-1">
-            <BarChart3 className="w-4 h-4" /> Cumprimento CERD
+            <BarChart3 className="w-4 h-4" /> Cumprimento por Eixo
           </TabsTrigger>
         </TabsList>
 
-        {/* ABA: COMPARATIVO */}
-        <TabsContent value="comparativo">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Período 2018-2022 */}
-            <Card className="border-l-4 border-l-destructive">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-destructive">
-                  <TrendingDown className="w-5 h-5" />
-                  {sintesePeriodo.periodo1.nome}
-                </CardTitle>
-                <CardDescription>{sintesePeriodo.periodo1.caracteristica}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {sintesePeriodo.periodo1.pontos.map((ponto, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <XCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-                      <span>{ponto}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+        {/* ABA: ANÁLISES DO BANCO */}
+        <TabsContent value="analises">
+          {loadingConclusoes ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Carregando análises do banco...</span>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {conclusoes?.map((conclusao) => (
+                <Card key={conclusao.id} className={cn(
+                  'border-l-4',
+                  conclusao.tipo === 'avanco' && 'border-l-success',
+                  conclusao.tipo === 'retrocesso' && 'border-l-destructive',
+                  conclusao.tipo === 'lacuna_persistente' && 'border-l-warning',
+                  conclusao.tipo === 'omissao' && 'border-l-destructive'
+                )}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        {conclusao.tipo === 'avanco' && <TrendingUp className="w-5 h-5 text-success" />}
+                        {conclusao.tipo === 'retrocesso' && <TrendingDown className="w-5 h-5 text-destructive" />}
+                        {conclusao.tipo === 'lacuna_persistente' && <AlertTriangle className="w-5 h-5 text-warning" />}
+                        {conclusao.tipo === 'omissao' && <XCircle className="w-5 h-5 text-destructive" />}
+                        {conclusao.titulo}
+                      </CardTitle>
+                      <Badge variant="outline">{conclusao.periodo}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">{conclusao.argumento_central}</p>
+                    
+                    {conclusao.evidencias && conclusao.evidencias.length > 0 && (
+                      <div className="p-3 bg-muted/50 rounded-lg mb-3">
+                        <p className="text-xs font-medium text-muted-foreground mb-1">Evidências:</p>
+                        <ul className="text-sm space-y-0.5">
+                          {conclusao.evidencias.slice(0, 4).map((ev, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-primary">•</span>
+                              {ev}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
-            {/* Período 2023-2025 */}
-            <Card className="border-l-4 border-l-success">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-success">
-                  <TrendingUp className="w-5 h-5" />
-                  {sintesePeriodo.periodo2.nome}
-                </CardTitle>
-                <CardDescription>{sintesePeriodo.periodo2.caracteristica}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {sintesePeriodo.periodo2.pontos.map((ponto, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
-                      <span>{ponto}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+                    <div className="flex flex-wrap gap-2">
+                      {conclusao.eixos_tematicos?.map((eixo, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {eixo.replace(/_/g, ' ')}
+                        </Badge>
+                      ))}
+                      {conclusao.grupos_focais?.map((grupo, i) => (
+                        <Badge key={i} variant="secondary" className="text-xs">
+                          {grupo.replace(/_/g, ' ')}
+                        </Badge>
+                      ))}
+                    </div>
 
-          {/* Tabela Comparativa */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Evolução por Área de Política</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-2 font-medium">Área</th>
-                      <th className="text-left py-3 px-2 font-medium text-destructive">2018-2022</th>
-                      <th className="text-left py-3 px-2 font-medium text-success">2023-2025</th>
-                      <th className="text-center py-3 px-2 font-medium">Variação</th>
-                      <th className="text-center py-3 px-2 font-medium">Avaliação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {avancos.map((item, i) => (
-                      <tr key={i} className="border-b hover:bg-muted/50">
-                        <td className="py-3 px-2 font-medium">{item.area}</td>
-                        <td className="py-3 px-2">
-                          <div>
-                            <span className="font-semibold">{item.periodo2018_2022.acoes}</span>
-                            <p className="text-xs text-muted-foreground">{item.periodo2018_2022.descricao}</p>
-                          </div>
-                        </td>
-                        <td className="py-3 px-2">
-                          <div>
-                            <span className="font-semibold">{item.periodo2023_2025.acoes}</span>
-                            <p className="text-xs text-muted-foreground">{item.periodo2023_2025.descricao}</p>
-                          </div>
-                        </td>
-                        <td className="py-3 px-2 text-center">
-                          <Badge variant="outline" className="bg-success/10 text-success border-success/30">
-                            {item.variacao}
+                    {(conclusao.relevancia_common_core || conclusao.relevancia_cerd_iv) && (
+                      <div className="mt-3 flex gap-2">
+                        {conclusao.relevancia_common_core && (
+                          <Badge className="bg-primary/10 text-primary text-xs">
+                            Relevante para Common Core
                           </Badge>
-                        </td>
-                        <td className="py-3 px-2 text-center">
-                          <Badge className={cn(
-                            item.avaliacao === 'avanço significativo' && 'bg-success text-success-foreground',
-                            item.avaliacao === 'avanço' && 'bg-success/70 text-success-foreground',
-                            item.avaliacao === 'avanço parcial' && 'bg-warning text-warning-foreground'
-                          )}>
-                            {item.avaliacao}
+                        )}
+                        {conclusao.relevancia_cerd_iv && (
+                          <Badge className="bg-accent/10 text-accent text-xs">
+                            Relevante para CERD IV
                           </Badge>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+
+              {(!conclusoes || conclusoes.length === 0) && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Nenhuma conclusão analítica encontrada no banco de dados.</p>
+                </div>
+              )}
+            </div>
+          )}
         </TabsContent>
 
-        {/* ABA: O QUE FEZ */}
+        {/* ABA: AVANÇOS */}
         <TabsContent value="avancos">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {avancos.map((item, i) => (
-              <Card key={i} className="border-t-4 border-t-success">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {conclusoesAgrupadas.avanco.map((conclusao) => (
+              <Card key={conclusao.id} className="border-t-4 border-t-success">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-success" />
-                    {item.area}
+                    {conclusao.titulo}
                   </CardTitle>
+                  <CardDescription>{conclusao.periodo}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">2018-2022:</span>
-                      <span className="font-semibold">{item.periodo2018_2022.acoes}</span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground mx-auto" />
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">2023-2025:</span>
-                      <span className="font-semibold text-success">{item.periodo2023_2025.acoes}</span>
-                    </div>
-                    <div className="pt-2 border-t">
-                      <Badge className="bg-success/10 text-success">
-                        Variação: {item.variacao}
-                      </Badge>
-                    </div>
-                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">{conclusao.argumento_central}</p>
+                  
+                  {conclusao.evidencias && (
+                    <ul className="space-y-1">
+                      {conclusao.evidencias.slice(0, 3).map((ev, i) => (
+                        <li key={i} className="text-sm flex items-start gap-2">
+                          <CheckCircle2 className="w-3 h-3 text-success mt-1" />
+                          {ev}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          <Card className="mt-6 bg-success/5 border-success/30">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 text-success flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold mb-2">Síntese dos Avanços (2023-2025)</h3>
-                  <p className="text-sm text-muted-foreground">
-                    A retomada institucional a partir de 2023 resultou em: recriação do MIR, aumento orçamentário médio de 533%, 
-                    aceleração na demarcação de terras indígenas (11 homologações vs. 2 no período anterior), renovação da Lei de Cotas 
-                    por mais 10 anos, e criação de programa específico para juventude negra. No entanto, esses avanços ainda não 
-                    reverteram indicadores estruturais de desigualdade.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
-        {/* ABA: O QUE DEIXOU DE FAZER */}
-        <TabsContent value="omissoes">
+        {/* ABA: RETROCESSOS */}
+        <TabsContent value="retrocessos">
           <div className="space-y-4">
-            {omissoes.map((item, i) => (
-              <Card key={i} className={cn(
-                'border-l-4',
-                item.status === 'omissão' ? 'border-l-destructive' : 'border-l-warning'
-              )}>
+            {conclusoesAgrupadas.retrocesso.map((conclusao) => (
+              <Card key={conclusao.id} className="border-l-4 border-l-destructive">
                 <CardContent className="pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                      <h3 className="font-semibold flex items-center gap-2">
-                        {item.status === 'omissão' ? (
-                          <XCircle className="w-5 h-5 text-destructive" />
-                        ) : (
-                          <AlertTriangle className="w-5 h-5 text-warning" />
-                        )}
-                        {item.area}
-                      </h3>
-                      <p className="text-sm text-destructive mt-1">{item.problema}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">Recomendação CERD:</p>
-                      <p className="text-sm font-medium">{item.recomendacaoCERD}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">2018-2022:</p>
-                      <p className="text-sm">{item.situacao2018_2022}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">2023-2025:</p>
-                      <p className="text-sm">{item.situacao2023_2025}</p>
-                      <Badge className={cn(
-                        'mt-2',
-                        item.status === 'omissão' ? 'bg-destructive' : 'bg-warning'
-                      )}>
-                        {item.status === 'omissão' ? 'Omissão persistente' : 'Ação insuficiente'}
-                      </Badge>
+                  <div className="flex items-start gap-3">
+                    <TrendingDown className="w-6 h-6 text-destructive flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold">{conclusao.titulo}</h3>
+                        <Badge variant="outline">{conclusao.periodo}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">{conclusao.argumento_central}</p>
+                      
+                      {conclusao.evidencias && (
+                        <div className="p-3 bg-destructive/5 rounded-lg">
+                          <ul className="space-y-1">
+                            {conclusao.evidencias.map((ev, i) => (
+                              <li key={i} className="text-sm flex items-start gap-2">
+                                <XCircle className="w-3 h-3 text-destructive mt-1 flex-shrink-0" />
+                                {ev}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          <Card className="mt-6 bg-destructive/5 border-destructive/30">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <FileWarning className="w-6 h-6 text-destructive flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold mb-2">Síntese das Omissões e Insuficiências</h3>
-                  <p className="text-sm text-muted-foreground">
-                    O Estado brasileiro falhou em: (1) reduzir a letalidade policial contra jovens negros, que permanece 2,55x maior; 
-                    (2) implementar políticas de desencarceramento; (3) avançar na titulação quilombola (apenas 5% titulados); 
-                    (4) criar políticas específicas para povos ciganos; (5) instituir programa de reparação histórica; e 
-                    (6) reduzir significativamente a desigualdade de renda racial. Estas lacunas serão destacadas no CERD IV.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
-        {/* ABA: CUMPRIMENTO CERD */}
+        {/* ABA: CUMPRIMENTO */}
         <TabsContent value="cumprimento">
-          <Card className="mb-6">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-primary" />
-                Grau de Cumprimento das Recomendações CERD (Observações Finais 2022)
+                Grau de Cumprimento das Recomendações por Eixo Temático
               </CardTitle>
               <CardDescription>
-                Avaliação percentual de cumprimento baseada em indicadores objetivos
+                Baseado nas {stats?.total || 0} lacunas identificadas no banco de dados
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {cumprimentoCERD.map((item, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">{item.recomendacao}</span>
-                      <span className={cn(
-                        'text-sm font-bold',
-                        item.cumprimento < 30 ? 'text-destructive' :
-                        item.cumprimento < 50 ? 'text-warning' :
-                        'text-success'
-                      )}>
-                        {item.cumprimento}%
-                      </span>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cumprimentoPorEixo.map((item, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">{item.eixo}</span>
+                        <span className={cn(
+                          'text-sm font-bold',
+                          item.cumprimento >= 50 && 'text-success',
+                          item.cumprimento >= 30 && item.cumprimento < 50 && 'text-warning',
+                          item.cumprimento < 30 && 'text-destructive'
+                        )}>
+                          {item.cumprimento}%
+                        </span>
+                      </div>
+                      <Progress 
+                        value={item.cumprimento} 
+                        className={cn(
+                          'h-3',
+                          item.cumprimento >= 50 && '[&>div]:bg-success',
+                          item.cumprimento >= 30 && item.cumprimento < 50 && '[&>div]:bg-warning',
+                          item.cumprimento < 30 && '[&>div]:bg-destructive'
+                        )}
+                      />
                     </div>
-                    <Progress 
-                      value={item.cumprimento} 
-                      className={cn(
-                        'h-3',
-                        item.cumprimento < 30 ? '[&>div]:bg-destructive' :
-                        item.cumprimento < 50 ? '[&>div]:bg-warning' :
-                        '[&>div]:bg-success'
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 bg-destructive/10 rounded-lg">
-                  <p className="text-2xl font-bold text-destructive">2</p>
-                  <p className="text-xs text-muted-foreground">Abaixo de 20%</p>
-                  <p className="text-xs font-medium">Crítico</p>
+                  ))}
                 </div>
-                <div className="p-4 bg-warning/10 rounded-lg">
-                  <p className="text-2xl font-bold text-warning">4</p>
-                  <p className="text-xs text-muted-foreground">20-50%</p>
-                  <p className="text-xs font-medium">Insuficiente</p>
-                </div>
-                <div className="p-4 bg-success/10 rounded-lg">
-                  <p className="text-2xl font-bold text-success">2</p>
-                  <p className="text-xs text-muted-foreground">Acima de 50%</p>
-                  <p className="text-xs font-medium">Em progresso</p>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 
-          <Card className="bg-primary/5 border-primary/30">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <Target className="w-6 h-6 text-primary flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold mb-2">Média de Cumprimento: 32%</h3>
-                  <p className="text-sm text-muted-foreground">
-                    O Brasil cumpriu, em média, apenas 32% das recomendações do Comitê CERD das Observações Finais de 2022. 
-                    As áreas mais críticas são: políticas para povos ciganos (10%), redução da violência policial (15%) e 
-                    titulação quilombola (25%). As áreas com maior progresso são: demarcação indígena (55%) e acesso à saúde (45%).
-                  </p>
-                  <div className="mt-4 p-3 bg-background rounded-lg border">
-                    <p className="text-xs font-medium mb-1">Implicação para o CERD IV:</p>
-                    <p className="text-xs text-muted-foreground">
-                      O relatório deverá reconhecer avanços institucionais (MIR, orçamento, cotas), mas também evidenciar 
-                      lacunas persistentes e apresentar plano de ação concreto para as áreas críticas.
-                    </p>
-                  </div>
+          {/* Resumo por status */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base">Distribuição por Status de Cumprimento</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div className="p-4 bg-success/10 rounded-lg">
+                  <p className="text-3xl font-bold text-success">{stats?.porStatus.cumprido || 0}</p>
+                  <p className="text-sm text-muted-foreground">Cumpridas</p>
+                </div>
+                <div className="p-4 bg-warning/10 rounded-lg">
+                  <p className="text-3xl font-bold text-warning">{stats?.porStatus.parcialmente_cumprido || 0}</p>
+                  <p className="text-sm text-muted-foreground">Parcialmente</p>
+                </div>
+                <div className="p-4 bg-destructive/10 rounded-lg">
+                  <p className="text-3xl font-bold text-destructive">{stats?.porStatus.nao_cumprido || 0}</p>
+                  <p className="text-sm text-muted-foreground">Não Cumpridas</p>
+                </div>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-3xl font-bold">{stats?.porPrioridade.critica || 0}</p>
+                  <p className="text-sm text-muted-foreground">Prioridade Crítica</p>
                 </div>
               </div>
             </CardContent>
