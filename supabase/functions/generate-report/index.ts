@@ -656,21 +656,27 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
           </tr>
           <tr>
             <td><strong>Pretos</strong></td>
-            <td>20.665.498</td>
+            <td>20.656.458</td>
             <td>10,17%</td>
-            <td>Crescimento de 42,3% desde 2010</td>
+            <td>Tabela 9605 (cor/raça)</td>
           </tr>
           <tr>
             <td><strong>Total Negros (Pretos + Pardos)</strong></td>
-            <td>112.748.784</td>
+            <td>112.739.744</td>
             <td>55,51%</td>
             <td>Maioria da população brasileira</td>
           </tr>
           <tr>
-            <td><strong>Povos Indígenas</strong></td>
+            <td><strong>Povos Indígenas (cor/raça)</strong></td>
+            <td>1.227.642</td>
+            <td>0,60%</td>
+            <td>Tabela 9605 - quesito cor ou raça</td>
+          </tr>
+          <tr>
+            <td><strong>Povos Indígenas (contagem específica)</strong></td>
             <td>1.693.535</td>
             <td>0,83%</td>
-            <td>Aumento de 89% desde 2010 (391 etnias, 295 línguas)</td>
+            <td>Censo 2022 - pergunta específica (391 etnias, 295 línguas)</td>
           </tr>
           <tr>
             <td><strong>Quilombolas</strong></td>
@@ -680,9 +686,9 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
           </tr>
           <tr>
             <td><strong>Amarelos</strong></td>
-            <td>850.136</td>
+            <td>850.130</td>
             <td>0,42%</td>
-            <td>Retorno aos níveis de 1991</td>
+            <td>Tabela 9605</td>
           </tr>
         </tbody>
       </table>
