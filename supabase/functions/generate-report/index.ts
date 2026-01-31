@@ -620,7 +620,8 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
       <h3>A. Características demográficas, econômicas, sociais e culturais</h3>
       
       <div class="highlight-box">
-        <h4>📊 População (Censo 2022 - IBGE)</h4>
+        <h4>📊 População (SIDRA/IBGE - Censo 2022)</h4>
+        <p>Fonte oficial: <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank">SIDRA/IBGE Tabela 9605</a> - Divulgado em 22/12/2023</p>
         <p>O Censo 2022 representa um marco histórico na coleta de dados demográficos brasileiros, 
         incluindo pela primeira vez categorias específicas para comunidades quilombolas e povos ciganos.</p>
       </div>
@@ -643,55 +644,62 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
           </tr>
           <tr>
             <td><strong>Pardos</strong></td>
-            <td>92.100.000</td>
-            <td>45,3%</td>
+            <td>92.083.286</td>
+            <td>45,34%</td>
             <td>Pela 1ª vez desde 1991, maior grupo racial</td>
           </tr>
           <tr>
             <td><strong>Brancos</strong></td>
-            <td>88.200.000</td>
-            <td>43,5%</td>
+            <td>88.252.121</td>
+            <td>43,46%</td>
             <td>Segundo maior grupo</td>
           </tr>
           <tr>
             <td><strong>Pretos</strong></td>
-            <td>20.700.000</td>
-            <td>10,2%</td>
+            <td>20.665.498</td>
+            <td>10,17%</td>
             <td>Crescimento de 42,3% desde 2010</td>
           </tr>
           <tr>
             <td><strong>Total Negros (Pretos + Pardos)</strong></td>
-            <td>112.800.000</td>
-            <td>55,5%</td>
+            <td>112.748.784</td>
+            <td>55,51%</td>
             <td>Maioria da população brasileira</td>
           </tr>
           <tr>
             <td><strong>Povos Indígenas</strong></td>
             <td>1.693.535</td>
             <td>0,83%</td>
-            <td>Aumento de 89% desde 2010 (305 etnias)</td>
+            <td>Aumento de 89% desde 2010 (391 etnias, 295 línguas)</td>
           </tr>
           <tr>
             <td><strong>Quilombolas</strong></td>
             <td>1.327.802</td>
             <td>0,65%</td>
-            <td>Primeira contagem censitária oficial</td>
+            <td>Primeira contagem censitária oficial (1.696 municípios)</td>
           </tr>
           <tr>
             <td><strong>Amarelos</strong></td>
-            <td>850.000</td>
-            <td>0,4%</td>
+            <td>850.136</td>
+            <td>0,42%</td>
             <td>Retorno aos níveis de 1991</td>
           </tr>
         </tbody>
       </table>
       
+      <p style="font-size: 9pt; color: #64748b; margin-top: 0.3cm;">
+        <strong>Fontes oficiais SIDRA/IBGE:</strong><br>
+        • Tabela 9605: <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank">https://sidra.ibge.gov.br/Tabela/9605</a><br>
+        • Indígenas: <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html" target="_blank">IBGE Educa - Indígenas</a><br>
+        • Quilombolas: <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html" target="_blank">IBGE Educa - Quilombolas</a>
+      </p>
+      
       <div class="highlight-box">
-        <h4>📈 Dados de Desigualdade Racial (PNAD 2023-2024)</h4>
+        <h4>📈 Dados de Desigualdade Racial (PNAD 2023-2024 - IBGE)</h4>
         <ul>
-          <li><strong>Renda:</strong> Pessoas negras ganham em média 58,3% do que ganham pessoas brancas (R$ 2.199 vs R$ 3.730)</li>
-          <li><strong>Analfabetismo:</strong> Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%)</li>
-          <li><strong>Violência:</strong> Risco de homicídio para negros é 2,7x maior (Atlas da Violência 2025)</li>
+          <li><strong>Renda:</strong> Pessoas negras ganham em média 58,9% do que ganham pessoas brancas (R$ 2.199 vs R$ 3.730)</li>
+          <li><strong>Analfabetismo:</strong> Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%) - PNAD Educação 2024</li>
+          <li><strong>Violência:</strong> Risco de homicídio para negros é 2,7x maior (Atlas da Violência 2025 - IPEA/FBSP)</li>
           <li><strong>Juventude:</strong> 73% dos óbitos por causas externas são de jovens negros (Fiocruz 2025)</li>
         </ul>
       </div>

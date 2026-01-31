@@ -36,7 +36,11 @@ export function DadosGeraisTab() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">População Total (Censo 2022)</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoTotal)}</p>
-            <p className="text-xs text-muted-foreground mt-1">Fonte: IBGE/Censo 2022 (Dez/2023)</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA/IBGE Tabela 9605 (22/12/2023) <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-2">
@@ -120,8 +124,8 @@ export function DadosGeraisTab() {
             </Table>
             <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
               <FileText className="w-3 h-3" />
-              <a href={fonteDados.censo.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                {fonteDados.censo.nome} <ExternalLink className="w-3 h-3" />
+              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA/IBGE - Tabela 9605: População por cor/raça (Censo 2022) <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>
@@ -159,15 +163,15 @@ export function DadosGeraisTab() {
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Tendência (Censo 2022):</strong> Pela primeira vez desde 1991, pardos (45,3%) superam brancos (43,5%) 
-                como maior grupo racial. População negra (pretos + pardos) é 55,5% do Brasil. 
-                Indígenas cresceram 89% desde 2010. Quilombolas foram contados oficialmente pela primeira vez (1,3 milhão).
+                <strong>Dados oficiais SIDRA/IBGE (Tabela 9605):</strong> Pardos: 92.083.286 (45,34%) | Brancos: 88.252.121 (43,46%) | 
+                Pretos: 20.665.498 (10,17%) | Indígenas: 1.693.535 (0,83%) | Amarelos: 850.136 (0,42%). 
+                Pela primeira vez desde 1991, pardos superam brancos como maior grupo. População negra (pretos + pardos): 112.748.784 (55,51%).
               </p>
             </div>
             <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
               <FileText className="w-3 h-3" />
-              <a href={fonteDados.pnad.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                {fonteDados.pnad.nome} 2018-2024 | Censo 2022 <ExternalLink className="w-3 h-3" />
+              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA/IBGE Tabela 9605 | Censo 2022 (22/12/2023) <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>
@@ -283,7 +287,7 @@ export function DadosGeraisTab() {
           </Table>
           <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
             <FileText className="w-3 h-3" />
-            Fontes: PNAD Contínua/IBGE (2018-2024), Cedra 2025. Renda de pessoas negras equivale a 58,3% da de brancas.
+            Fontes: PNAD Contínua/IBGE (2018-2024). Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023).
           </p>
         </CardContent>
       </Card>
