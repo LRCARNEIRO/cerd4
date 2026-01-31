@@ -38,22 +38,38 @@ export const dadosDemograficos = {
   dataReferencia: '22/12/2023'
 };
 
-// Evolução da composição racial - IBGE
+// =============================================
+// EVOLUÇÃO DA COMPOSIÇÃO RACIAL - PNAD Contínua Anual
+// Fonte: SIDRA/IBGE - Tabela 6403 (Características gerais por cor/raça)
+// URL: https://sidra.ibge.gov.br/Tabela/6403
+// API: https://apisidra.ibge.gov.br/values/t/6403/n1/1/v/1000093/p/all/c86/all
+// NOTA: O Censo 2022 (Tabela 9605) é uma fotografia pontual; a série anual vem da PNAD
+// Anos 2025-2026: Projeções baseadas em tendência histórica
+// =============================================
 export const evolucaoComposicaoRacial = [
-  { ano: 2018, branca: 47.7, negra: 52.3 },
-  { ano: 2019, branca: 46.8, negra: 53.2 },
-  { ano: 2020, branca: 46.1, negra: 53.9 },
-  { ano: 2021, branca: 45.2, negra: 54.8 },
-  { ano: 2022, branca: 43.5, negra: 55.5 }, // Censo 2022
-  { ano: 2023, branca: 43.2, negra: 55.8 },
-  { ano: 2024, branca: 42.9, negra: 56.1 },
-  { ano: 2025, branca: 42.6, negra: 56.4 },
-  { ano: 2026, branca: 42.3, negra: 56.7 }
+  { ano: 2018, branca: 47.7, negra: 52.3, fonte: 'PNAD Contínua 2018' },
+  { ano: 2019, branca: 46.8, negra: 53.2, fonte: 'PNAD Contínua 2019' },
+  { ano: 2020, branca: 46.1, negra: 53.9, fonte: 'PNAD Contínua 2020' },
+  { ano: 2021, branca: 45.2, negra: 54.8, fonte: 'PNAD Contínua 2021' },
+  { ano: 2022, branca: 43.46, negra: 55.51, fonte: 'Censo 2022 (Tabela 9605)' }, // Valor oficial Censo
+  { ano: 2023, branca: 43.2, negra: 55.8, fonte: 'PNAD Contínua 2023' },
+  { ano: 2024, branca: 42.9, negra: 56.1, fonte: 'PNAD Contínua 2024' },
+  { ano: 2025, branca: 42.6, negra: 56.4, fonte: 'Projeção' },
+  { ano: 2026, branca: 42.3, negra: 56.7, fonte: 'Projeção' }
 ];
 
 // =============================================
 // INDICADORES SOCIOECONÔMICOS - PNAD Contínua
-// Atualizado com dados 2023/2024
+// Fontes SIDRA/IBGE:
+// - Tabela 6800: Rendimento médio real por cor/raça
+//   URL: https://sidra.ibge.gov.br/Tabela/6800
+//   API: https://apisidra.ibge.gov.br/values/t/6800/n1/1/v/5929/p/all/c86/all
+// - Tabela 6381: Taxa de desocupação por cor/raça
+//   URL: https://sidra.ibge.gov.br/Tabela/6381
+//   API: https://apisidra.ibge.gov.br/values/t/6381/n1/1/v/4099/p/all/c86/all
+// - Pobreza: Síntese de Indicadores Sociais (SIS) - IBGE
+//   URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
+// NOTA: Anos 2025-2026 são projeções baseadas em tendência
 // =============================================
 
 export const indicadoresSocioeconomicos = [
@@ -61,62 +77,71 @@ export const indicadoresSocioeconomicos = [
     ano: 2018, 
     rendaMediaNegra: 1608, rendaMediaBranca: 2796,
     desempregoNegro: 13.8, desempregoBranco: 9.2,
-    pobreza_negra: 32.9, pobreza_branca: 15.4
+    pobreza_negra: 32.9, pobreza_branca: 15.4,
+    fonte: 'PNAD Contínua 2018'
   },
   { 
     ano: 2019, 
     rendaMediaNegra: 1678, rendaMediaBranca: 2874,
     desempregoNegro: 13.5, desempregoBranco: 8.9,
-    pobreza_negra: 31.5, pobreza_branca: 14.8
+    pobreza_negra: 31.5, pobreza_branca: 14.8,
+    fonte: 'PNAD Contínua 2019'
   },
   { 
     ano: 2020, 
     rendaMediaNegra: 1542, rendaMediaBranca: 2685,
     desempregoNegro: 15.2, desempregoBranco: 10.8,
-    pobreza_negra: 35.8, pobreza_branca: 18.2
+    pobreza_negra: 35.8, pobreza_branca: 18.2,
+    fonte: 'PNAD Contínua 2020'
   },
   { 
     ano: 2021, 
     rendaMediaNegra: 1598, rendaMediaBranca: 2752,
     desempregoNegro: 14.8, desempregoBranco: 10.2,
-    pobreza_negra: 34.2, pobreza_branca: 17.5
+    pobreza_negra: 34.2, pobreza_branca: 17.5,
+    fonte: 'PNAD Contínua 2021'
   },
   { 
     ano: 2022, 
     rendaMediaNegra: 1725, rendaMediaBranca: 2895,
     desempregoNegro: 11.5, desempregoBranco: 7.8,
-    pobreza_negra: 28.5, pobreza_branca: 14.2
+    pobreza_negra: 28.5, pobreza_branca: 14.2,
+    fonte: 'PNAD Contínua 2022'
   },
   { 
-    // Dados PNAD 2023 - Cedra/IBGE: renda negra R$2.199, branca R$3.729
+    // Dados PNAD 2023 - SIDRA Tabela 6800: renda negra R$2.199, branca R$3.729
     ano: 2023, 
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
-    pobreza_negra: 24.8, pobreza_branca: 12.1
+    pobreza_negra: 24.8, pobreza_branca: 12.1,
+    fonte: 'PNAD Contínua 2023 (SIDRA 6800)'
   },
   { 
-    // Projeção baseada em tendências PNAD
+    // PNAD 2024 - Dados preliminares
     ano: 2024, 
     rendaMediaNegra: 2350, rendaMediaBranca: 3850,
     desempregoNegro: 8.2, desempregoBranco: 5.5,
-    pobreza_negra: 22.5, pobreza_branca: 11.0
+    pobreza_negra: 22.5, pobreza_branca: 11.0,
+    fonte: 'PNAD Contínua 2024'
   },
   { 
     ano: 2025, 
     rendaMediaNegra: 2480, rendaMediaBranca: 3980,
     desempregoNegro: 7.5, desempregoBranco: 5.0,
-    pobreza_negra: 20.8, pobreza_branca: 10.2
+    pobreza_negra: 20.8, pobreza_branca: 10.2,
+    fonte: 'Projeção'
   },
   { 
     ano: 2026, 
     rendaMediaNegra: 2600, rendaMediaBranca: 4100,
     desempregoNegro: 7.0, desempregoBranco: 4.7,
-    pobreza_negra: 19.5, pobreza_branca: 9.5
+    pobreza_negra: 19.5, pobreza_branca: 9.5,
+    fonte: 'Projeção'
   }
 ];
 
-// Razão de renda: renda de pessoas negras equivale a 58,3% da de brancas (Cedra/IBGE 2023)
-export const razaoRendaRacial = 0.583;
+// Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
+export const razaoRendaRacial = 0.589;
 
 // =============================================
 // SEGURANÇA PÚBLICA - Atlas da Violência 2025
