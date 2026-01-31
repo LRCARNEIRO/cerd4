@@ -11,6 +11,8 @@ import Orcamento from "./pages/Orcamento";
 import Recomendacoes from "./pages/Recomendacoes";
 import Fontes from "./pages/Fontes";
 import GruposFocais from "./pages/GruposFocais";
+import Conclusoes from "./pages/Conclusoes";
+import GerarRelatorios from "./pages/GerarRelatorios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/recomendacoes" element={<Recomendacoes />} />
           <Route path="/fontes" element={<Fontes />} />
           <Route path="/grupos-focais" element={<GruposFocais />} />
+          <Route path="/conclusoes" element={<Conclusoes />} />
+          <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
