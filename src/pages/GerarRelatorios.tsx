@@ -4,12 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign } from 'lucide-react';
+import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
+import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -253,8 +254,11 @@ export default function GerarRelatorios() {
         </Card>
       </div>
 
-      <Tabs defaultValue="tematicos" className="w-full">
+      <Tabs defaultValue="ia-generator" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="ia-generator" className="gap-1">
+            <Sparkles className="w-4 h-4" /> Relatórios com IA
+          </TabsTrigger>
           <TabsTrigger value="tematicos" className="gap-1">
             <PieChart className="w-4 h-4" /> Relatórios Temáticos
           </TabsTrigger>
@@ -278,7 +282,51 @@ export default function GerarRelatorios() {
           </TabsTrigger>
         </TabsList>
 
-        {/* ABA: RELATÓRIOS TEMÁTICOS */}
+        {/* ABA: RELATÓRIOS COM IA */}
+        <TabsContent value="ia-generator">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <AIReportGenerator defaultType="common-core" />
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-violet-500" />
+                  Como funciona?
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm text-muted-foreground">
+                <p>
+                  O <strong>Gerador com IA</strong> utiliza Inteligência Artificial (Lovable AI / Gemini 3) 
+                  para analisar todos os dados do banco de dados e gerar relatórios técnicos estruturados.
+                </p>
+                <div className="space-y-2">
+                  <p className="font-medium text-foreground">Características:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Usa <strong>exclusivamente</strong> dados do BD (não inventa informações)</li>
+                    <li>Gera análises interseccionais automaticamente</li>
+                    <li>Inclui evolução temporal 2018-2026</li>
+                    <li>Correlaciona orçamento × indicadores × lacunas</li>
+                    <li>Formato pronto para impressão/PDF</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <p className="font-medium text-foreground">Tipos de relatório:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Common Core:</strong> Documento básico para tratados ONU</li>
+                    <li><strong>CERD IV:</strong> Relatório periódico ao Comitê</li>
+                    <li><strong>Temático:</strong> Por eixo ou grupo focal</li>
+                    <li><strong>Orçamentário:</strong> Execução financeira detalhada</li>
+                  </ul>
+                </div>
+                <div className="bg-violet-50 border border-violet-200 rounded-lg p-3">
+                  <p className="text-violet-800 text-xs">
+                    💡 <strong>Dica:</strong> Quanto mais dados no banco, mais rico será o relatório gerado. 
+                    Use o botão "Importar Dados" no painel principal para adicionar novas informações.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
         <TabsContent value="tematicos">
           <ThematicReportGenerator />
         </TabsContent>
