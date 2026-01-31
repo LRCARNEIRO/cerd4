@@ -78,6 +78,69 @@ export type Database = {
         }
         Relationships: []
       }
+      dados_orcamentarios: {
+        Row: {
+          ano: number
+          created_at: string
+          dotacao_autorizada: number | null
+          dotacao_inicial: number | null
+          eixo_tematico: string | null
+          empenhado: number | null
+          esfera: string
+          fonte_dados: string
+          grupo_focal: string | null
+          id: string
+          liquidado: number | null
+          observacoes: string | null
+          orgao: string
+          pago: number | null
+          percentual_execucao: number | null
+          programa: string
+          updated_at: string
+          url_fonte: string | null
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          dotacao_autorizada?: number | null
+          dotacao_inicial?: number | null
+          eixo_tematico?: string | null
+          empenhado?: number | null
+          esfera: string
+          fonte_dados: string
+          grupo_focal?: string | null
+          id?: string
+          liquidado?: number | null
+          observacoes?: string | null
+          orgao: string
+          pago?: number | null
+          percentual_execucao?: number | null
+          programa: string
+          updated_at?: string
+          url_fonte?: string | null
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          dotacao_autorizada?: number | null
+          dotacao_inicial?: number | null
+          eixo_tematico?: string | null
+          empenhado?: number | null
+          esfera?: string
+          fonte_dados?: string
+          grupo_focal?: string | null
+          id?: string
+          liquidado?: number | null
+          observacoes?: string | null
+          orgao?: string
+          pago?: number | null
+          percentual_execucao?: number | null
+          programa?: string
+          updated_at?: string
+          url_fonte?: string | null
+        }
+        Relationships: []
+      }
       indicadores_interseccionais: {
         Row: {
           analise_interseccional: string | null
