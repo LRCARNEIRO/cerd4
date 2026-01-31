@@ -4,11 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart } from 'lucide-react';
+import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
+import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -257,17 +258,20 @@ export default function GerarRelatorios() {
           <TabsTrigger value="tematicos" className="gap-1">
             <PieChart className="w-4 h-4" /> Relatórios Temáticos
           </TabsTrigger>
+          <TabsTrigger value="orcamento" className="gap-1">
+            <DollarSign className="w-4 h-4" /> Orçamento
+          </TabsTrigger>
           <TabsTrigger value="lacunas-db" className="gap-1">
-            <AlertTriangle className="w-4 h-4" /> Lacunas (Banco de Dados)
+            <AlertTriangle className="w-4 h-4" /> Lacunas (Banco)
           </TabsTrigger>
           <TabsTrigger value="respostas-db" className="gap-1">
             <FileCheck className="w-4 h-4" /> Respostas CERD III
           </TabsTrigger>
           <TabsTrigger value="common-core" className="gap-1">
-            <BookOpen className="w-4 h-4" /> Estrutura Common Core
+            <BookOpen className="w-4 h-4" /> Common Core
           </TabsTrigger>
           <TabsTrigger value="cerd-iv" className="gap-1">
-            <FileText className="w-4 h-4" /> Estrutura CERD IV
+            <FileText className="w-4 h-4" /> CERD IV
           </TabsTrigger>
           <TabsTrigger value="guidelines" className="gap-1">
             <ListChecks className="w-4 h-4" /> Guidelines
@@ -277,6 +281,11 @@ export default function GerarRelatorios() {
         {/* ABA: RELATÓRIOS TEMÁTICOS */}
         <TabsContent value="tematicos">
           <ThematicReportGenerator />
+        </TabsContent>
+
+        {/* ABA: ORÇAMENTO */}
+        <TabsContent value="orcamento">
+          <BudgetReportGenerator />
         </TabsContent>
 
         {/* ABA: LACUNAS DO BANCO */}

@@ -220,3 +220,102 @@ export function useLacunasStats() {
     },
   });
 }
+
+// Interface para dados orçamentários
+export interface DadoOrcamentario {
+  id: string;
+  programa: string;
+  orgao: string;
+  esfera: 'federal' | 'estadual' | 'municipal';
+  ano: number;
+  dotacao_inicial: number | null;
+  dotacao_autorizada: number | null;
+  empenhado: number | null;
+  liquidado: number | null;
+  pago: number | null;
+  percentual_execucao: number | null;
+  grupo_focal: string | null;
+  eixo_tematico: string | null;
+  fonte_dados: string;
+  url_fonte: string | null;
+  observacoes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Hook para buscar dados orçamentários
+export function useDadosOrcamentarios(filters?: {
+  programa?: string;
+  grupo_focal?: string;
+  eixo_tematico?: string;
+  ano?: number;
+}) {
+  return useQuery({
+    queryKey: ['dados-orcamentarios', filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('dados_orcamentarios')
+        .select('*')
+        .order('programa')
+        .order('ano');
+
+      if (filters?.programa) {
+        query = query.eq('programa', filters.programa);
+      }
+      if (filters?.grupo_focal) {
+        query = query.eq('grupo_focal', filters.grupo_focal);
+      }
+      if (filters?.eixo_tematico) {
+        query = query.eq('eixo_tematico', filters.eixo_tematico);
+      }
+      if (filters?.ano) {
+        query = query.eq('ano', filters.ano);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as DadoOrcamentario[];
+    },
+  });
+}
+
+// Hook para estatísticas orçamentárias
+export function useOrcamentoStats() {
+  return useQuery({
+    queryKey: ['orcamento-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('dados_orcamentarios')
+        .select('ano, pago, grupo_focal, programa');
+
+      if (error) throw error;
+
+      const registros = data || [];
+      
+      const periodo1 = registros.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const periodo2 = registros.filter(r => r.ano >= 2023 && r.ano <= 2026);
+
+      const totalPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+      const totalPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+
+      const porAno: Record<number, number> = {};
+      registros.forEach(r => {
+        porAno[r.ano] = (porAno[r.ano] || 0) + (Number(r.pago) || 0);
+      });
+
+      const porPrograma: Record<string, number> = {};
+      registros.forEach(r => {
+        porPrograma[r.programa] = (porPrograma[r.programa] || 0) + (Number(r.pago) || 0);
+      });
+
+      return {
+        totalPeriodo1,
+        totalPeriodo2,
+        variacao: totalPeriodo1 > 0 ? ((totalPeriodo2 - totalPeriodo1) / totalPeriodo1 * 100) : 0,
+        porAno,
+        porPrograma,
+        totalRegistros: registros.length,
+      };
+    },
+  });
+}

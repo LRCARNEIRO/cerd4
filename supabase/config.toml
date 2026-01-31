@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-thematic-report]
 verify_jwt = false
+
+[functions.generate-budget-report]
+verify_jwt = false
