@@ -18,9 +18,11 @@ export const dadosDemograficos = {
     // Dados oficiais SIDRA/IBGE - Tabela 9605
     { raca: 'Parda', percentual: 45.34, populacao: 92083286 },
     { raca: 'Branca', percentual: 43.46, populacao: 88252121 },
-    { raca: 'Preta', percentual: 10.17, populacao: 20665498 },
-    { raca: 'Indígena', percentual: 0.83, populacao: 1693535 },
-    { raca: 'Amarela', percentual: 0.42, populacao: 850136 }
+    // ATENÇÃO: valores validados na API oficial (Censo 2022, Brasil, Ano=2022, Variável=População residente)
+    // URL: https://apisidra.ibge.gov.br/values/t/9605/n1/1/v/93/p/2022/c86/all
+    { raca: 'Preta', percentual: 10.17, populacao: 20656458 },
+    { raca: 'Indígena', percentual: 0.83, populacao: 1227642 },
+    { raca: 'Amarela', percentual: 0.42, populacao: 850130 }
   ],
   // Dados quilombolas: primeira contagem oficial da história
   // Fonte: IBGE Censo 2022 - Quilombolas
@@ -28,8 +30,8 @@ export const dadosDemograficos = {
   quilombolas: 1327802,
   municipiosComQuilombolas: 1696,
   quilombolasEmTerritorios: 167202, // 12,6% em territórios reconhecidos
-  // População negra = pretos + pardos
-  populacaoNegra: 112748784, // 92.083.286 + 20.665.498
+  // População negra = pretos + pardos (Tabela 9605 / Censo 2022)
+  populacaoNegra: 112739744, // 92.083.286 + 20.656.458
   percentualNegro: 55.51,
   fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9605',
   urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
