@@ -59,29 +59,65 @@ export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGener
     
     try {
       toast.info('Gerando relatório com IA...', { 
-        description: 'A IA está analisando os dados do banco. Isso pode levar alguns segundos.',
-        duration: 5000 
+        description: 'A IA está analisando os dados do banco. Isso pode levar 15-30 segundos.',
+        duration: 30000 
       });
 
-      const { data, error } = await supabase.functions.invoke('generate-ai-report', {
-        body: { 
+      // Use fetch directly to get the HTML response properly
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-ai-report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ 
           tipo,
           eixo_tematico: eixo,
           grupo_focal: grupo,
           esfera: esfera
-        }
+        })
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('429');
+        }
+        if (response.status === 402) {
+          throw new Error('402');
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${response.status}`);
+      }
+
+      const htmlContent = await response.text();
+      
+      // Check if it's an error response
+      if (htmlContent.startsWith('{') && htmlContent.includes('"error"')) {
+        const errorObj = JSON.parse(htmlContent);
+        throw new Error(errorObj.error);
+      }
 
       // Open in new window
-      const blob = new Blob([data], { type: 'text/html' });
+      const blob = new Blob([htmlContent], { type: 'text/html; charset=utf-8' });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-
-      toast.success('Relatório gerado com sucesso!', {
-        description: 'O documento foi aberto em uma nova aba.'
-      });
+      const newWindow = window.open(url, '_blank');
+      
+      if (!newWindow) {
+        // If popup blocked, offer download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio-${tipo}-${new Date().toISOString().split('T')[0]}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        toast.success('Relatório baixado!', {
+          description: 'O popup foi bloqueado, então o arquivo foi baixado.'
+        });
+      } else {
+        toast.success('Relatório gerado com sucesso!', {
+          description: 'O documento foi aberto em uma nova aba.'
+        });
+      }
 
     } catch (error: any) {
       console.error('Erro ao gerar relatório:', error);
