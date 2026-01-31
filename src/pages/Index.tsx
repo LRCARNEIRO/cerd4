@@ -4,6 +4,7 @@ import { MetaProgressCard } from '@/components/dashboard/MetaProgressCard';
 import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
 import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
+import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { 
   dashboardStats, 
   workPlanMetas, 
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useLacunasStats, useOrcamentoStats, useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 
 const budgetTrendData = [
   { ano: 2018, autorizado: 45000000, empenhado: 38000000, pago: 32000000 },
@@ -33,6 +35,9 @@ const budgetTrendData = [
 
 export default function Index() {
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
+  const { data: lacunasStats } = useLacunasStats();
+  const { data: orcamentoStats } = useOrcamentoStats();
+  const { data: indicadores } = useIndicadoresInterseccionais();
 
   return (
     <DashboardLayout 
@@ -42,7 +47,7 @@ export default function Index() {
       {/* Hero Section */}
       <div className="header-gradient rounded-lg p-6 mb-6 animate-fade-in">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex-1">
             <h2 className="text-xl font-bold text-white">
               Sistema de Subsídios para o IV Relatório CERD
             </h2>
@@ -50,17 +55,18 @@ export default function Index() {
               Elaboração de evidências para o Estado brasileiro no ciclo de monitoramento 2018–2025, 
               conforme artigo 9º da Convenção Internacional sobre Eliminação de Discriminação Racial.
             </p>
-            <div className="flex gap-3 mt-4">
-              <Button variant="secondary" size="sm" asChild>
+            <div className="flex flex-wrap gap-3 mt-4">
+              <DataUploadButton />
+              <Button variant="secondary" size="lg" asChild>
                 <Link to="/plano-trabalho">
                   Ver Plano de Trabalho
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20" asChild>
-                <Link to="/recomendacoes">
+              <Button variant="outline" size="lg" className="bg-white/10 border-white/30 text-white hover:bg-white/20" asChild>
+                <Link to="/gerar-relatorios">
                   <FileText className="w-4 h-4 mr-2" />
-                  Recomendações ONU
+                  Gerar Relatórios
                 </Link>
               </Button>
             </div>
@@ -70,6 +76,10 @@ export default function Index() {
             <p className="text-white font-medium">
               {new Date(dashboardStats.ultimaAtualizacao).toLocaleDateString('pt-BR')}
             </p>
+            <div className="mt-2 text-xs text-white/60">
+              <p>{lacunasStats?.total || 0} lacunas | {indicadores?.length || 0} indicadores</p>
+              <p>{orcamentoStats?.totalRegistros || 0} registros orçamentários</p>
+            </div>
           </div>
         </div>
       </div>

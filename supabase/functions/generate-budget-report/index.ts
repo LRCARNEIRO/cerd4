@@ -10,6 +10,54 @@ interface BudgetReportRequest {
   programa?: string;
   grupo_focal?: string;
   eixo_tematico?: string;
+  esfera?: string;
+}
+
+const esferaLabels: Record<string, string> = {
+  federal: 'Federal',
+  estadual: 'Estadual',
+  municipal: 'Municipal',
+};
+
+const grupoLabels: Record<string, string> = {
+  negros: 'População Negra',
+  indigenas: 'Povos Indígenas',
+  quilombolas: 'Comunidades Quilombolas',
+  ciganos: 'Povos Ciganos (Roma)',
+  juventude_negra: 'Juventude Negra',
+  mulheres_negras: 'Mulheres Negras',
+  lgbtqia_negros: 'LGBTQIA+ Negros',
+  religioes_matriz_africana: 'Religiões de Matriz Africana',
+  pcd_negros: 'PcD Negros',
+  idosos_negros: 'Idosos Negros',
+  geral: 'Geral',
+  outros: 'Outros Grupos',
+};
+
+const eixoLabels: Record<string, string> = {
+  legislacao_justica: 'Legislação e Justiça',
+  politicas_institucionais: 'Políticas Institucionais',
+  seguranca_publica: 'Segurança Pública',
+  saude: 'Saúde',
+  educacao: 'Educação',
+  trabalho_renda: 'Trabalho e Renda',
+  terra_territorio: 'Terra e Território',
+  cultura_patrimonio: 'Cultura e Patrimônio',
+  participacao_social: 'Participação Social',
+  dados_estatisticas: 'Dados e Estatísticas',
+};
+
+function formatCurrency(value: number): string {
+  if (!value) return 'R$ 0';
+  if (value >= 1000000000) return `${(value / 1000000000).toFixed(2)} bi`;
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)} mi`;
+  if (value >= 1000) return `${(value / 1000).toFixed(0)} mil`;
+  return value.toFixed(0);
+}
+
+function formatFullCurrency(value: number): string {
+  if (!value) return 'R$ 0,00';
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 }
 
 serve(async (req) => {
@@ -24,20 +72,15 @@ serve(async (req) => {
 
     const body = await req.json().catch(() => ({})) as BudgetReportRequest;
     
-    console.log('Gerando relatório orçamentário');
+    console.log('Gerando relatório orçamentário completo');
 
-    // Fetch budget data
-    let orcamentoQuery = supabase.from('dados_orcamentarios').select('*').order('programa').order('ano');
+    // Fetch all data
+    let orcamentoQuery = supabase.from('dados_orcamentarios').select('*').order('esfera').order('programa').order('ano');
     
-    if (body.programa) {
-      orcamentoQuery = orcamentoQuery.eq('programa', body.programa);
-    }
-    if (body.grupo_focal) {
-      orcamentoQuery = orcamentoQuery.eq('grupo_focal', body.grupo_focal);
-    }
-    if (body.eixo_tematico) {
-      orcamentoQuery = orcamentoQuery.eq('eixo_tematico', body.eixo_tematico);
-    }
+    if (body.programa) orcamentoQuery = orcamentoQuery.eq('programa', body.programa);
+    if (body.grupo_focal) orcamentoQuery = orcamentoQuery.eq('grupo_focal', body.grupo_focal);
+    if (body.eixo_tematico) orcamentoQuery = orcamentoQuery.eq('eixo_tematico', body.eixo_tematico);
+    if (body.esfera) orcamentoQuery = orcamentoQuery.eq('esfera', body.esfera);
 
     const [orcamentoResult, indicadoresResult, lacunasResult] = await Promise.all([
       orcamentoQuery,
@@ -53,9 +96,93 @@ serve(async (req) => {
     const indicadores = indicadoresResult.data || [];
     const lacunas = lacunasResult.data || [];
 
-    console.log(`Dados: ${orcamento.length} registros orçamentários, ${indicadores.length} indicadores`);
+    console.log(`Dados: ${orcamento.length} registros orçamentários, ${indicadores.length} indicadores, ${lacunas.length} lacunas`);
 
-    const htmlContent = generateBudgetReportHTML(orcamento, indicadores, lacunas);
+    // Group data by multiple dimensions
+    const byEsfera: Record<string, any[]> = { federal: [], estadual: [], municipal: [] };
+    const byPrograma: Record<string, any[]> = {};
+    const byGrupo: Record<string, any[]> = {};
+    const byAno: Record<number, any[]> = {};
+    const byEixo: Record<string, any[]> = {};
+
+    orcamento.forEach(o => {
+      const esfera = o.esfera || 'federal';
+      if (!byEsfera[esfera]) byEsfera[esfera] = [];
+      byEsfera[esfera].push(o);
+
+      if (!byPrograma[o.programa]) byPrograma[o.programa] = [];
+      byPrograma[o.programa].push(o);
+
+      const grupo = o.grupo_focal || 'geral';
+      if (!byGrupo[grupo]) byGrupo[grupo] = [];
+      byGrupo[grupo].push(o);
+
+      if (!byAno[o.ano]) byAno[o.ano] = [];
+      byAno[o.ano].push(o);
+
+      const eixo = o.eixo_tematico || 'outros';
+      if (!byEixo[eixo]) byEixo[eixo] = [];
+      byEixo[eixo].push(o);
+    });
+
+    // Calculate statistics
+    const anos = Object.keys(byAno).map(Number).sort();
+    const periodo1 = orcamento.filter(o => o.ano >= 2018 && o.ano <= 2022);
+    const periodo2 = orcamento.filter(o => o.ano >= 2023 && o.ano <= 2026);
+
+    const stats: {
+      totalGeral: number;
+      totalPeriodo1: number;
+      totalPeriodo2: number;
+      totalProgramas: number;
+      totalFederal: number;
+      totalEstadual: number;
+      totalMunicipal: number;
+      variacao: number;
+    } = {
+      totalGeral: orcamento.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      totalPeriodo1: periodo1.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      totalPeriodo2: periodo2.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      totalProgramas: Object.keys(byPrograma).length,
+      totalFederal: byEsfera.federal.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      totalEstadual: byEsfera.estadual.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      totalMunicipal: byEsfera.municipal.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0),
+      variacao: 0,
+    };
+
+    stats.variacao = stats.totalPeriodo1 > 0 
+      ? ((stats.totalPeriodo2 - stats.totalPeriodo1) / stats.totalPeriodo1 * 100) 
+      : 0;
+
+    // Generate year-by-year evolution data
+    const evolucaoAnual = anos.map(ano => ({
+      ano,
+      total: byAno[ano]?.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0) || 0,
+      federal: byAno[ano]?.filter(o => o.esfera === 'federal').reduce((acc, o) => acc + parseFloat(o.pago || 0), 0) || 0,
+      estadual: byAno[ano]?.filter(o => o.esfera === 'estadual').reduce((acc, o) => acc + parseFloat(o.pago || 0), 0) || 0,
+      municipal: byAno[ano]?.filter(o => o.esfera === 'municipal').reduce((acc, o) => acc + parseFloat(o.pago || 0), 0) || 0,
+    }));
+
+    // Generate insights crossing budget with indicators
+    const insights = generateInsights(orcamento, indicadores, lacunas, stats);
+
+    // Get unique sources
+    const fontes = [...new Set(orcamento.map(o => o.fonte_dados).filter(Boolean))];
+    const urls = [...new Set(orcamento.map(o => o.url_fonte).filter(Boolean))];
+
+    const htmlContent = generateFullHTML(
+      stats, 
+      evolucaoAnual, 
+      byEsfera, 
+      byPrograma, 
+      byGrupo, 
+      byEixo,
+      insights, 
+      indicadores,
+      lacunas,
+      fontes,
+      urls
+    );
 
     return new Response(htmlContent, {
       headers: {
@@ -74,65 +201,79 @@ serve(async (req) => {
   }
 });
 
-function generateBudgetReportHTML(orcamento: any[], indicadores: any[], lacunas: any[]): string {
-  // Group by program
-  const programas: Record<string, any[]> = {};
-  orcamento.forEach(o => {
-    if (!programas[o.programa]) programas[o.programa] = [];
-    programas[o.programa].push(o);
-  });
+function generateInsights(orcamento: any[], indicadores: any[], lacunas: any[], stats: any): string[] {
+  const insights: string[] = [];
 
-  // Calculate totals by period
-  const periodo1 = orcamento.filter(o => o.ano >= 2018 && o.ano <= 2022);
-  const periodo2 = orcamento.filter(o => o.ano >= 2023 && o.ano <= 2026);
+  // Budget variation insight
+  if (stats.variacao > 50) {
+    insights.push(`📈 <strong>Aumento expressivo de ${stats.variacao.toFixed(0)}%</strong> no orçamento entre os períodos 2018-2022 e 2023-2026, sinalizando priorização das políticas de igualdade racial no atual governo.`);
+  } else if (stats.variacao < -20) {
+    insights.push(`📉 <strong>Redução de ${Math.abs(stats.variacao).toFixed(0)}%</strong> no orçamento executado entre os períodos, indicando possível desinvestimento em políticas raciais.`);
+  }
 
-  const totalPeriodo1 = periodo1.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0);
-  const totalPeriodo2 = periodo2.reduce((acc, o) => acc + parseFloat(o.pago || 0), 0);
-  const variacaoPercentual = totalPeriodo1 > 0 ? ((totalPeriodo2 - totalPeriodo1) / totalPeriodo1 * 100).toFixed(1) : 0;
+  // Federal vs state/municipal
+  const totalSubnacional = stats.totalEstadual + stats.totalMunicipal;
+  if (totalSubnacional > 0) {
+    const proporcaoSubnacional = (totalSubnacional / stats.totalGeral * 100).toFixed(1);
+    insights.push(`🏛️ Os entes subnacionais (estados e municípios) representam <strong>${proporcaoSubnacional}%</strong> do orçamento total mapeado, evidenciando a importância da articulação federativa.`);
+  } else {
+    insights.push(`⚠️ <strong>Ausência de dados orçamentários estaduais e municipais</strong> no sistema. Recomenda-se a coleta junto às Secretarias de Promoção da Igualdade Racial estaduais.`);
+  }
 
-  // Yearly totals
-  const anosTotais: Record<number, number> = {};
-  orcamento.forEach(o => {
-    anosTotais[o.ano] = (anosTotais[o.ano] || 0) + parseFloat(o.pago || 0);
-  });
-
-  // Group by grupo_focal
-  const grupoFocalTotais: Record<string, { periodo1: number, periodo2: number }> = {};
-  orcamento.forEach(o => {
-    const grupo = o.grupo_focal || 'outros';
-    if (!grupoFocalTotais[grupo]) grupoFocalTotais[grupo] = { periodo1: 0, periodo2: 0 };
-    if (o.ano <= 2022) {
-      grupoFocalTotais[grupo].periodo1 += parseFloat(o.pago || 0);
-    } else {
-      grupoFocalTotais[grupo].periodo2 += parseFloat(o.pago || 0);
+  // Cross with indicators
+  const desempregoIndicador = indicadores.find(i => i.nome?.toLowerCase().includes('desemprego'));
+  if (desempregoIndicador?.dados) {
+    const dados = desempregoIndicador.dados;
+    const negros = dados.negros || dados.negras || {};
+    const brancos = dados.brancos || dados.brancas || {};
+    const anos = Object.keys(negros).sort();
+    if (anos.length >= 2) {
+      const primeiro = parseFloat(negros[anos[0]]) || 0;
+      const ultimo = parseFloat(negros[anos[anos.length - 1]]) || 0;
+      if (primeiro > 0 && ultimo > 0) {
+        const variacao = ((ultimo - primeiro) / primeiro * 100).toFixed(1);
+        insights.push(`📊 Taxa de desemprego da população negra variou <strong>${variacao}%</strong> entre ${anos[0]} e ${anos[anos.length - 1]}, segundo ${desempregoIndicador.fonte}.`);
+      }
     }
-  });
+  }
 
-  const grupoLabels: Record<string, string> = {
-    negros: 'População Negra',
-    indigenas: 'Povos Indígenas',
-    quilombolas: 'Quilombolas',
-    ciganos: 'Povos Ciganos',
-    juventude_negra: 'Juventude Negra',
-    mulheres_negras: 'Mulheres Negras',
-    outros: 'Outros'
-  };
+  // Cross with lacunas
+  const lacunasTrabalho = lacunas.filter(l => l.eixo_tematico === 'trabalho_renda');
+  if (lacunasTrabalho.length > 0) {
+    const naoCumpridas = lacunasTrabalho.filter(l => l.status_cumprimento === 'nao_cumprido').length;
+    insights.push(`⚠️ Das ${lacunasTrabalho.length} recomendações da ONU sobre Trabalho e Renda, <strong>${naoCumpridas} ainda não foram cumpridas</strong>, apesar dos investimentos realizados.`);
+  }
 
-  // Generate insights by crossing budget with indicators
-  const insights = generateInsights(orcamento, indicadores, lacunas);
+  return insights;
+}
 
+function generateFullHTML(
+  stats: any, 
+  evolucaoAnual: any[], 
+  byEsfera: Record<string, any[]>, 
+  byPrograma: Record<string, any[]>,
+  byGrupo: Record<string, any[]>,
+  byEixo: Record<string, any[]>,
+  insights: string[], 
+  indicadores: any[],
+  lacunas: any[],
+  fontes: string[],
+  urls: string[]
+): string {
+  const dataGeracao = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório Orçamentário - Políticas Raciais 2018-2026</title>
+  <title>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2026)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #1e3a5f;
-      --primary-light: #2c5282;
+      --primary: #047857;
+      --primary-dark: #065f46;
       --accent: #c7a82b;
       --success: #22c55e;
       --warning: #eab308;
@@ -151,12 +292,23 @@ function generateBudgetReportHTML(orcamento: any[], indicadores: any[], lacunas:
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      font-size: 11pt;
     }
     
     .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
     
+    .print-header {
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      padding: 16px 24px;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      margin: 20px 24px;
+    }
+    
+    .print-header strong { color: #1e40af; }
+    
     .hero {
-      background: linear-gradient(135deg, #047857 0%, #065f46 50%, #064e3b 100%);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, #064e3b 100%);
       color: white;
       padding: 60px 0;
       position: relative;
@@ -178,7 +330,7 @@ function generateBudgetReportHTML(orcamento: any[], indicadores: any[], lacunas:
       color: var(--accent);
       padding: 6px 16px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -187,518 +339,670 @@ function generateBudgetReportHTML(orcamento: any[], indicadores: any[], lacunas:
     
     .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
       font-weight: 800;
       margin-bottom: 12px;
     }
     
-    .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 700px; }
+    .hero p { font-size: 1rem; opacity: 0.9; max-width: 800px; }
     
     .hero-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      margin-top: 40px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
     }
     
     .hero-stat {
       background: rgba(255,255,255,0.1);
       backdrop-filter: blur(10px);
       border-radius: 12px;
-      padding: 20px;
+      padding: 16px;
       text-align: center;
     }
     
     .hero-stat-value {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 800;
       display: block;
     }
     
-    .hero-stat-label { font-size: 0.85rem; opacity: 0.8; margin-top: 4px; }
+    .hero-stat-label { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
     
-    .section { padding: 50px 0; }
+    .section { padding: 40px 0; }
+    .section-alt { background: white; }
     
     .section-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 30px;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
     }
     
     .section-icon {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       background: var(--primary);
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
     
     .section-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       color: var(--primary);
     }
     
-    .section-subtitle { font-size: 0.875rem; color: var(--text-muted); }
+    .section-subtitle { font-size: 0.8rem; color: var(--text-muted); }
     
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      margin-bottom: 30px;
-    }
-    
-    .comparison-card {
+    .table-container {
       background: white;
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-    
-    .comparison-card h3 {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-    
-    .comparison-value {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    
-    .comparison-change {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-    
-    .change-positive { background: #dcfce7; color: #166534; }
-    .change-negative { background: #fee2e2; color: #991b1b; }
-    
-    .chart-container {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       margin-bottom: 24px;
     }
     
-    .chart-title {
+    .table-header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+    }
+    
+    .table-header h3 {
+      font-size: 1rem;
       font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 16px;
-      font-size: 1.1rem;
+      margin-bottom: 4px;
     }
     
-    .chart-source {
+    .table-header p {
       font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 12px;
-      font-style: italic;
+      opacity: 0.8;
     }
-    
-    .chart-wrapper { height: 350px; position: relative; }
     
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      font-size: 0.85rem;
     }
     
-    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    th, td { 
+      padding: 10px 14px; 
+      text-align: left; 
+      border-bottom: 1px solid var(--border); 
+    }
     
     th {
-      background: var(--primary);
-      color: white;
+      background: #f1f5f9;
+      color: var(--text);
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     
     tr:hover { background: #f8fafc; }
     
+    .table-footer {
+      background: #f8fafc;
+      padding: 12px 20px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    
+    .table-footer a { color: var(--primary); text-decoration: none; }
+    .table-footer a:hover { text-decoration: underline; }
+    
     .trend-up { color: var(--success); font-weight: 600; }
     .trend-down { color: var(--danger); font-weight: 600; }
+    .trend-stable { color: var(--text-muted); }
+    
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    
+    .chart-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .chart-title {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    
+    .chart-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    
+    .chart-source {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .chart-wrapper { height: 300px; position: relative; }
     
     .insight-card {
       background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
       border: 1px solid #fbbf24;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
     }
     
-    .insight-card h4 {
-      color: #92400e;
-      font-size: 1rem;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .insight-card p { color: #78350f; font-size: 0.9rem; line-height: 1.5; }
+    
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    
+    .stat-card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      text-align: center;
     }
     
-    .insight-card p { color: #78350f; font-size: 0.95rem; }
+    .stat-card-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    
+    .stat-card-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
     
     .footer {
       background: #0f172a;
       color: white;
       padding: 40px 0;
-      text-align: center;
+      margin-top: 40px;
     }
     
-    .footer p { opacity: 0.7; font-size: 0.875rem; margin-bottom: 8px; }
+    .footer-content { text-align: center; }
+    .footer p { opacity: 0.7; font-size: 0.8rem; margin-bottom: 8px; }
+    .footer strong { opacity: 1; }
+    
+    .sources-section {
+      background: #f1f5f9;
+      padding: 24px;
+      border-radius: 12px;
+      margin-top: 24px;
+    }
+    
+    .sources-section h4 {
+      font-size: 1rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    
+    .sources-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 8px;
+    }
+    
+    .sources-list li {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      list-style: none;
+      padding-left: 16px;
+      position: relative;
+    }
+    
+    .sources-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+    }
     
     @media print {
+      .print-header { display: none; }
+      body { font-size: 10pt; }
       .hero { padding: 30px 0; }
-      .section { padding: 20px 0; }
-      .chart-wrapper { height: 250px; }
+      .section { padding: 20px 0; page-break-inside: avoid; }
+      .chart-wrapper { height: 200px; }
+      .table-container { page-break-inside: avoid; }
     }
     
     @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
       .hero-stats { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
+  <div class="print-header">
+    <strong>📄 Para salvar como PDF:</strong> Use Ctrl+P (ou Cmd+P no Mac) → Destino: "Salvar como PDF"<br>
+    <strong>📝 Para salvar como Word:</strong> Copie todo o conteúdo (Ctrl+A) e cole no Microsoft Word
+  </div>
+
   <section class="hero">
     <div class="container hero-content">
-      <span class="hero-badge">💰 Análise Orçamentária</span>
-      <h1>Orçamento das Políticas Raciais</h1>
-      <p>Análise comparativa da execução orçamentária dos programas de promoção da igualdade racial, 
-         com evolução 2018-2026 e cruzamento com indicadores socioeconômicos.</p>
+      <span class="hero-badge">💰 Análise Orçamentária Integrada</span>
+      <h1>Orçamento das Políticas de Igualdade Racial</h1>
+      <p>Análise consolidada da execução orçamentária dos programas de promoção da igualdade racial nas esferas federal, estadual e municipal, com evolução ano a ano (2018-2026) e cruzamento com indicadores socioeconômicos.</p>
       
       <div class="hero-stats">
         <div class="hero-stat">
-          <span class="hero-stat-value">R$ ${formatCurrency(totalPeriodo1)}</span>
-          <span class="hero-stat-label">Período 2018-2022</span>
+          <span class="hero-stat-value">R$ ${formatCurrency(stats.totalGeral)}</span>
+          <span class="hero-stat-label">Total Executado</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-value">R$ ${formatCurrency(totalPeriodo2)}</span>
-          <span class="hero-stat-label">Período 2023-2026</span>
+          <span class="hero-stat-value">R$ ${formatCurrency(stats.totalPeriodo1)}</span>
+          <span class="hero-stat-label">2018-2022</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-value" style="color: ${Number(variacaoPercentual) >= 0 ? '#22c55e' : '#ef4444'};">
-            ${Number(variacaoPercentual) >= 0 ? '+' : ''}${variacaoPercentual}%
+          <span class="hero-stat-value">R$ ${formatCurrency(stats.totalPeriodo2)}</span>
+          <span class="hero-stat-label">2023-2026</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" style="color: ${stats.variacao >= 0 ? '#22c55e' : '#ef4444'};">
+            ${stats.variacao >= 0 ? '+' : ''}${stats.variacao.toFixed(0)}%
           </span>
           <span class="hero-stat-label">Variação</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-value">${Object.keys(programas).length}</span>
-          <span class="hero-stat-label">Programas Analisados</span>
+          <span class="hero-stat-value">${stats.totalProgramas}</span>
+          <span class="hero-stat-label">Programas</span>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section" style="background: white;">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-icon">📊</div>
-        <div>
-          <h2 class="section-title">Evolução Orçamentária Ano a Ano</h2>
-          <p class="section-subtitle">Total executado (pago) por ano - todos os programas</p>
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart-title">Execução Orçamentária Total (2018-2026)</div>
-        <div class="chart-wrapper">
-          <canvas id="evolucaoChart"></canvas>
-        </div>
-        <p class="chart-source">Fonte: SIOP/Portal da Transparência | Elaboração: CDG/UFF</p>
-      </div>
-      
-      <div class="comparison-grid">
-        ${Object.entries(grupoFocalTotais).map(([grupo, totais]) => {
-          const variacao = totais.periodo1 > 0 ? ((totais.periodo2 - totais.periodo1) / totais.periodo1 * 100).toFixed(0) : 100;
-          return `
-            <div class="comparison-card">
-              <h3>${grupoLabels[grupo] || grupo}</h3>
-              <div class="comparison-value">R$ ${formatCurrency(totais.periodo2)}</div>
-              <span class="comparison-change ${Number(variacao) >= 0 ? 'change-positive' : 'change-negative'}">
-                ${Number(variacao) >= 0 ? '↑' : '↓'} ${Math.abs(Number(variacao))}% vs 2018-2022
-              </span>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-icon">📈</div>
-        <div>
-          <h2 class="section-title">Comparativo por Programa</h2>
-          <p class="section-subtitle">Evolução do orçamento executado por programa 2018-2026</p>
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart-title">Comparativo de Programas: 2018-2022 vs 2023-2026</div>
-        <div class="chart-wrapper">
-          <canvas id="programasChart"></canvas>
-        </div>
-        <p class="chart-source">Fonte: SIOP/Portal da Transparência | Valores em milhões de reais</p>
-      </div>
-      
-      ${Object.entries(programas).map(([programa, registros]) => `
-        <div class="chart-container">
-          <div class="chart-title">${programa}</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Ano</th>
-                <th>Órgão</th>
-                <th>Dotação Autorizada</th>
-                <th>Empenhado</th>
-                <th>Pago</th>
-                <th>Execução</th>
-                <th>Observações</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${registros.map((r: any) => `
-                <tr>
-                  <td><strong>${r.ano}</strong></td>
-                  <td>${r.orgao}</td>
-                  <td>R$ ${formatCurrency(r.dotacao_autorizada)}</td>
-                  <td>R$ ${formatCurrency(r.empenhado)}</td>
-                  <td>R$ ${formatCurrency(r.pago)}</td>
-                  <td class="${r.percentual_execucao >= 75 ? 'trend-up' : r.percentual_execucao < 60 ? 'trend-down' : ''}">${r.percentual_execucao}%</td>
-                  <td style="font-size: 0.8rem; color: var(--text-muted);">${r.observacoes || '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <p class="chart-source">Fonte: ${registros[0].fonte_dados} | URL: ${registros[0].url_fonte}</p>
-        </div>
-      `).join('')}
-    </div>
-  </section>
-
-  <section class="section" style="background: white;">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-icon">💡</div>
-        <div>
-          <h2 class="section-title">Insights: Orçamento × Indicadores Sociais</h2>
-          <p class="section-subtitle">Cruzamento entre execução orçamentária e evolução dos indicadores</p>
-        </div>
-      </div>
-      
-      ${insights.map(insight => `
-        <div class="insight-card">
-          <h4>💡 ${insight.titulo}</h4>
-          <p>${insight.texto}</p>
-        </div>
-      `).join('')}
-      
-      <div class="chart-container">
-        <div class="chart-title">Correlação: Investimento em Políticas Raciais vs Indicadores Sociais</div>
-        <div class="chart-wrapper">
-          <canvas id="correlacaoChart"></canvas>
-        </div>
-        <p class="chart-source">Fonte: SIOP, IBGE/PNAD, FBSP | Elaboração: CDG/UFF</p>
-      </div>
-    </div>
-  </section>
-
+  <!-- Sumário Executivo -->
   <section class="section">
     <div class="container">
       <div class="section-header">
         <div class="section-icon">📋</div>
         <div>
-          <h2 class="section-title">Síntese Executiva</h2>
-          <p class="section-subtitle">Principais conclusões da análise orçamentária</p>
+          <h2 class="section-title">Sumário Executivo</h2>
+          <p class="section-subtitle">Principais achados e insights da análise orçamentária</p>
         </div>
       </div>
       
-      <div class="insight-card" style="background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); border-color: #3b82f6;">
-        <h4 style="color: #1e40af;">📊 Período 2018-2022: Desmonte Institucional</h4>
-        <p style="color: #1e3a8a;">A extinção da SEPPIR (2019) e a absorção de programas pelo MMFDH resultaram em 
-        queda média de 65% na execução orçamentária das políticas de igualdade racial. O programa 
-        Brasil Quilombola sofreu redução de 72% e a proteção de terras indígenas caiu 66%.</p>
+      ${insights.map(insight => `
+        <div class="insight-card">
+          <p>${insight}</p>
+        </div>
+      `).join('')}
+      
+      <div class="grid-3" style="margin-top: 24px;">
+        <div class="stat-card">
+          <div class="stat-card-value" style="color: #1e40af;">R$ ${formatCurrency(stats.totalFederal)}</div>
+          <div class="stat-card-label">Esfera Federal</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" style="color: #7c3aed;">R$ ${formatCurrency(stats.totalEstadual)}</div>
+          <div class="stat-card-label">Esfera Estadual</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value" style="color: #059669;">R$ ${formatCurrency(stats.totalMunicipal)}</div>
+          <div class="stat-card-label">Esfera Municipal</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Evolução Ano a Ano -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">📈</div>
+        <div>
+          <h2 class="section-title">Evolução Orçamentária Ano a Ano</h2>
+          <p class="section-subtitle">Total executado (pago) por ano, discriminado por esfera de governo</p>
+        </div>
       </div>
       
-      <div class="insight-card" style="background: linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%); border-color: #22c55e;">
-        <h4 style="color: #166534;">✓ Período 2023-2026: Reconstrução</h4>
-        <p style="color: #14532d;">A recriação do MIR e do MPI (2023) marca uma inflexão orçamentária significativa. 
-        O investimento total cresceu ${variacaoPercentual}%, com destaque para o programa Brasil Quilombola 
-        (+${((grupoFocalTotais['quilombolas']?.periodo2 || 0) / (grupoFocalTotais['quilombolas']?.periodo1 || 1) * 100 - 100).toFixed(0)}%) 
-        e Proteção de Terras Indígenas (+${((grupoFocalTotais['indigenas']?.periodo2 || 0) / (grupoFocalTotais['indigenas']?.periodo1 || 1) * 100 - 100).toFixed(0)}%).</p>
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">Execução Orçamentária por Esfera (2018-2026)</div>
+          <div class="chart-subtitle">Valores em milhões de reais - Federal, Estadual e Municipal</div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="evolucaoChart"></canvas>
+        </div>
+        <p class="chart-source">
+          <strong>Fontes:</strong> ${fontes.slice(0, 3).join(', ') || 'SIOP/Portal da Transparência'} | 
+          <strong>Elaboração:</strong> CDG/UFF - Sistema de Monitoramento CERD | 
+          <strong>Data:</strong> ${dataGeracao}
+        </p>
+      </div>
+
+      <!-- Tabela de Evolução Anual -->
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Tabela 1: Evolução da Execução Orçamentária por Ano e Esfera (2018-2026)</h3>
+          <p>Valores em reais - Consolidação de todos os programas de políticas raciais</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Ano</th>
+              <th>Federal</th>
+              <th>Estadual</th>
+              <th>Municipal</th>
+              <th>Total</th>
+              <th>Variação Anual</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${evolucaoAnual.map((ano, idx) => {
+              const anterior = idx > 0 ? evolucaoAnual[idx - 1].total : 0;
+              const variacao = anterior > 0 ? ((ano.total - anterior) / anterior * 100) : 0;
+              return `
+                <tr>
+                  <td><strong>${ano.ano}</strong></td>
+                  <td>${formatFullCurrency(ano.federal)}</td>
+                  <td>${formatFullCurrency(ano.estadual)}</td>
+                  <td>${formatFullCurrency(ano.municipal)}</td>
+                  <td><strong>${formatFullCurrency(ano.total)}</strong></td>
+                  <td class="${variacao > 0 ? 'trend-up' : variacao < 0 ? 'trend-down' : 'trend-stable'}">
+                    ${idx === 0 ? '-' : `${variacao >= 0 ? '+' : ''}${variacao.toFixed(1)}%`}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <strong>Fonte:</strong> ${fontes.slice(0, 2).join(', ') || 'SIOP/Portal da Transparência'} | 
+          <strong>Nota:</strong> Valores referentes ao montante efetivamente pago (empenhado e liquidado)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Análise por Esfera -->
+  ${Object.entries(byEsfera).filter(([_, registros]) => registros.length > 0).map(([esfera, registros]) => {
+    const programasEsfera: Record<string, any[]> = {};
+    registros.forEach((r: any) => {
+      if (!programasEsfera[r.programa]) programasEsfera[r.programa] = [];
+      programasEsfera[r.programa].push(r);
+    });
+    
+    const totalEsfera = registros.reduce((acc: number, o: any) => acc + parseFloat(o.pago || 0), 0);
+    
+    return `
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-icon">${esfera === 'federal' ? '🏛️' : esfera === 'estadual' ? '🗺️' : '🏙️'}</div>
+          <div>
+            <h2 class="section-title">Esfera ${esferaLabels[esfera] || esfera}</h2>
+            <p class="section-subtitle">Total: R$ ${formatCurrency(totalEsfera)} | ${Object.keys(programasEsfera).length} programas</p>
+          </div>
+        </div>
+        
+        ${Object.entries(programasEsfera).map(([programa, regs], idx) => `
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Tabela ${idx + 2}: ${programa}</h3>
+              <p>Órgão: ${(regs as any[])[0]?.orgao || '-'} | Grupo Focal: ${grupoLabels[(regs as any[])[0]?.grupo_focal] || 'Geral'}</p>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Ano</th>
+                  <th>Dotação Autorizada</th>
+                  <th>Empenhado</th>
+                  <th>Liquidado</th>
+                  <th>Pago</th>
+                  <th>Execução</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(regs as any[]).sort((a, b) => a.ano - b.ano).map((r: any) => `
+                  <tr>
+                    <td><strong>${r.ano}</strong></td>
+                    <td>${formatFullCurrency(r.dotacao_autorizada || 0)}</td>
+                    <td>${formatFullCurrency(r.empenhado || 0)}</td>
+                    <td>${formatFullCurrency(r.liquidado || 0)}</td>
+                    <td><strong>${formatFullCurrency(r.pago || 0)}</strong></td>
+                    <td class="${(r.percentual_execucao || 0) >= 75 ? 'trend-up' : (r.percentual_execucao || 0) < 50 ? 'trend-down' : ''}">${r.percentual_execucao || 0}%</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div class="table-footer">
+              <strong>Fonte:</strong> ${(regs as any[])[0]?.fonte_dados || 'SIOP'} | 
+              ${(regs as any[])[0]?.url_fonte ? `<a href="${(regs as any[])[0]?.url_fonte}" target="_blank">Acessar fonte original</a> | ` : ''}
+              ${(regs as any[])[0]?.observacoes ? `<strong>Obs:</strong> ${(regs as any[])[0]?.observacoes}` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+    `;
+  }).join('')}
+
+  <!-- Análise por Grupo Focal -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">👥</div>
+        <div>
+          <h2 class="section-title">Distribuição por Grupo Focal</h2>
+          <p class="section-subtitle">Orçamento destinado a cada grupo populacional específico</p>
+        </div>
+      </div>
+      
+      <div class="grid-2">
+        <div class="chart-container">
+          <div class="chart-header">
+            <div class="chart-title">Distribuição por Grupo Focal</div>
+            <div class="chart-subtitle">Total executado (2018-2026)</div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="grupoChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="table-container">
+          <div class="table-header">
+            <h3>Comparativo 2018-2022 vs 2023-2026 por Grupo</h3>
+            <p>Variação percentual entre os períodos</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Grupo Focal</th>
+                <th>2018-2022</th>
+                <th>2023-2026</th>
+                <th>Variação</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.entries(byGrupo).map(([grupo, regs]) => {
+                const p1 = (regs as any[]).filter((r: any) => r.ano <= 2022).reduce((acc: number, r: any) => acc + parseFloat(r.pago || 0), 0);
+                const p2 = (regs as any[]).filter((r: any) => r.ano >= 2023).reduce((acc: number, r: any) => acc + parseFloat(r.pago || 0), 0);
+                const variacao = p1 > 0 ? ((p2 - p1) / p1 * 100) : (p2 > 0 ? 100 : 0);
+                return `
+                  <tr>
+                    <td>${grupoLabels[grupo] || grupo}</td>
+                    <td>${formatFullCurrency(p1)}</td>
+                    <td>${formatFullCurrency(p2)}</td>
+                    <td class="${variacao > 0 ? 'trend-up' : variacao < 0 ? 'trend-down' : ''}">${variacao >= 0 ? '+' : ''}${variacao.toFixed(0)}%</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cruzamento com Indicadores -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">🔗</div>
+        <div>
+          <h2 class="section-title">Cruzamento: Orçamento × Indicadores Sociais</h2>
+          <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores</p>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Indicadores Socioeconômicos × Execução Orçamentária</h3>
+          <p>Análise da relação entre investimento e resultados</p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Indicador</th>
+              <th>Categoria</th>
+              <th>Fonte</th>
+              <th>Tendência</th>
+              <th>Análise</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${indicadores.slice(0, 10).map((ind: any) => `
+              <tr>
+                <td><strong>${ind.nome}</strong></td>
+                <td>${ind.categoria}</td>
+                <td>${ind.fonte}</td>
+                <td class="${ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : ''}">${ind.tendencia || '-'}</td>
+                <td style="font-size: 0.75rem; color: var(--text-muted);">${ind.analise_interseccional?.substring(0, 100) || '-'}...</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <strong>Fontes:</strong> IBGE, IPEA, DataSUS, INEP, MDS | <strong>Período:</strong> 2018-2026
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fontes e Referências -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="sources-section">
+        <h4>📚 Fontes de Dados e Referências</h4>
+        <ul class="sources-list">
+          ${fontes.map(f => `<li>${f}</li>`).join('')}
+          ${urls.slice(0, 5).map(u => `<li><a href="${u}" target="_blank">${u}</a></li>`).join('')}
+          <li>Sistema Integrado de Planejamento e Orçamento (SIOP)</li>
+          <li>Portal da Transparência do Governo Federal</li>
+          <li>Secretarias Estaduais de Promoção da Igualdade Racial</li>
+          <li>Lei Orçamentária Anual (LOA) 2018-2026</li>
+        </ul>
       </div>
     </div>
   </section>
 
   <footer class="footer">
-    <div class="container">
-      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial</strong></p>
-      <p>Gerado em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-      <p style="margin-top: 16px; font-size: 0.75rem;">CDG/UFF • MIR • MRE</p>
+    <div class="container footer-content">
+      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2026)</strong></p>
+      <p>Gerado automaticamente pelo Sistema de Monitoramento CERD Brasil</p>
+      <p style="margin-top: 12px;">
+        <strong>CDG/UFF</strong> • Grupo de Pesquisa sobre Tratados de Direitos Humanos<br>
+        <strong>MIR</strong> • Ministério da Igualdade Racial<br>
+        <strong>MRE</strong> • Ministério das Relações Exteriores
+      </p>
+      <p style="margin-top: 12px; opacity: 0.5;">Data de geração: ${dataGeracao}</p>
     </div>
   </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Evolução ano a ano
+      // Gráfico de Evolução por Esfera
       const evolucaoCtx = document.getElementById('evolucaoChart');
       if (evolucaoCtx) {
         new Chart(evolucaoCtx, {
-          type: 'line',
+          type: 'bar',
           data: {
-            labels: ${JSON.stringify(Object.keys(anosTotais).sort())},
+            labels: ${JSON.stringify(evolucaoAnual.map(a => a.ano))},
+            datasets: [
+              {
+                label: 'Federal',
+                data: ${JSON.stringify(evolucaoAnual.map(a => a.federal / 1000000))},
+                backgroundColor: '#1e40af',
+                stack: 'Stack 0',
+              },
+              {
+                label: 'Estadual',
+                data: ${JSON.stringify(evolucaoAnual.map(a => a.estadual / 1000000))},
+                backgroundColor: '#7c3aed',
+                stack: 'Stack 0',
+              },
+              {
+                label: 'Municipal',
+                data: ${JSON.stringify(evolucaoAnual.map(a => a.municipal / 1000000))},
+                backgroundColor: '#059669',
+                stack: 'Stack 0',
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom' },
+              title: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                stacked: true,
+                title: { display: true, text: 'Milhões (R$)' }
+              },
+              x: { stacked: true }
+            }
+          }
+        });
+      }
+
+      // Gráfico por Grupo Focal
+      const grupoData = ${JSON.stringify(Object.entries(byGrupo).map(([g, regs]) => ({
+        label: grupoLabels[g] || g,
+        value: (regs as any[]).reduce((acc: number, r: any) => acc + parseFloat(r.pago || 0), 0) / 1000000
+      })))};
+      
+      const grupoCtx = document.getElementById('grupoChart');
+      if (grupoCtx) {
+        new Chart(grupoCtx, {
+          type: 'doughnut',
+          data: {
+            labels: grupoData.map(g => g.label),
             datasets: [{
-              label: 'Total Executado (R$ milhões)',
-              data: ${JSON.stringify(Object.keys(anosTotais).sort().map(ano => (anosTotais[Number(ano)] / 1000000).toFixed(2)))},
-              borderColor: '#047857',
-              backgroundColor: 'rgba(4, 120, 87, 0.1)',
-              fill: true,
-              tension: 0.3,
-              pointRadius: 6,
-              pointBackgroundColor: '#047857',
-              borderWidth: 3
+              data: grupoData.map(g => g.value),
+              backgroundColor: ['#047857', '#1e40af', '#7c3aed', '#dc2626', '#eab308', '#ec4899', '#06b6d4', '#f97316'],
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: (ctx) => 'R$ ' + ctx.parsed.y + ' milhões'
-                }
-              }
-            },
-            scales: {
-              y: { 
-                beginAtZero: true,
-                title: { display: true, text: 'R$ milhões' }
-              }
-            }
-          }
-        });
-      }
-
-      // Comparativo por programa
-      const programasCtx = document.getElementById('programasChart');
-      if (programasCtx) {
-        const programasData = ${JSON.stringify(Object.entries(programas).map(([nome, regs]) => {
-          const p1 = (regs as any[]).filter(r => r.ano <= 2022).reduce((acc, r) => acc + parseFloat(r.pago || 0), 0) / 1000000;
-          const p2 = (regs as any[]).filter(r => r.ano > 2022).reduce((acc, r) => acc + parseFloat(r.pago || 0), 0) / 1000000;
-          return { nome: nome.substring(0, 25), p1: p1.toFixed(2), p2: p2.toFixed(2) };
-        }))};
-        
-        new Chart(programasCtx, {
-          type: 'bar',
-          data: {
-            labels: programasData.map(p => p.nome),
-            datasets: [
-              {
-                label: '2018-2022',
-                data: programasData.map(p => p.p1),
-                backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                borderColor: '#ef4444',
-                borderWidth: 1
-              },
-              {
-                label: '2023-2026',
-                data: programasData.map(p => p.p2),
-                backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                borderColor: '#22c55e',
-                borderWidth: 1
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: 'bottom' }
-            },
-            scales: {
-              y: { 
-                beginAtZero: true,
-                title: { display: true, text: 'R$ milhões' }
-              }
-            }
-          }
-        });
-      }
-
-      // Correlação orçamento x indicadores
-      const correlacaoCtx = document.getElementById('correlacaoChart');
-      if (correlacaoCtx) {
-        new Chart(correlacaoCtx, {
-          type: 'line',
-          data: {
-            labels: ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025'],
-            datasets: [
-              {
-                label: 'Orçamento (índice 2018=100)',
-                data: [100, 45, 32, 28, 35, 280, 420, 510],
-                borderColor: '#047857',
-                backgroundColor: 'transparent',
-                yAxisID: 'y',
-                tension: 0.3,
-                borderWidth: 3
-              },
-              {
-                label: 'Desemprego Negros (%)',
-                data: [14.5, 13.8, 16.2, 15.1, 11.8, 10.5, 9.2, 8.5],
-                borderColor: '#ef4444',
-                backgroundColor: 'transparent',
-                yAxisID: 'y1',
-                tension: 0.3,
-                borderWidth: 2,
-                borderDash: [5, 5]
-              },
-              {
-                label: 'Taxa Homicídio Negros (por 100mil)',
-                data: [185, 172, 165, 155, 142, 138, 128, 122],
-                borderColor: '#eab308',
-                backgroundColor: 'transparent',
-                yAxisID: 'y1',
-                tension: 0.3,
-                borderWidth: 2,
-                borderDash: [5, 5]
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { position: 'bottom' } },
-            scales: {
-              y: {
-                type: 'linear',
-                position: 'left',
-                title: { display: true, text: 'Orçamento (índice)' }
-              },
-              y1: {
-                type: 'linear',
-                position: 'right',
-                title: { display: true, text: 'Indicadores sociais' },
-                grid: { drawOnChartArea: false }
-              }
+              legend: { position: 'right', labels: { font: { size: 10 } } }
             }
           }
         });
@@ -707,70 +1011,4 @@ function generateBudgetReportHTML(orcamento: any[], indicadores: any[], lacunas:
   </script>
 </body>
 </html>`;
-}
-
-function formatCurrency(value: number): string {
-  if (value >= 1000000000) {
-    return (value / 1000000000).toFixed(2) + ' bi';
-  } else if (value >= 1000000) {
-    return (value / 1000000).toFixed(1) + ' mi';
-  } else if (value >= 1000) {
-    return (value / 1000).toFixed(0) + ' mil';
-  }
-  return value.toFixed(0);
-}
-
-function generateInsights(orcamento: any[], indicadores: any[], lacunas: any[]): any[] {
-  const insights = [];
-
-  // Insight 1: Correlação orçamento x desemprego
-  const desemprego = indicadores.find(i => i.nome.includes('desemprego'));
-  if (desemprego) {
-    const dados = desemprego.dados?.negros || {};
-    const var2018_2024 = dados['2024'] && dados['2018'] ? ((dados['2024'] - dados['2018']) / dados['2018'] * 100).toFixed(1) : null;
-    if (var2018_2024) {
-      insights.push({
-        titulo: 'Desemprego Negro × Orçamento',
-        texto: `A taxa de desemprego entre negros caiu ${Math.abs(Number(var2018_2024))}% entre 2018 e 2024 (de ${dados['2018']}% para ${dados['2024']}%). 
-                O período de maior queda coincide com o aumento de investimentos em políticas de trabalho e renda a partir de 2023.`
-      });
-    }
-  }
-
-  // Insight 2: Letalidade policial x Juventude Negra Viva
-  const letalidade = indicadores.find(i => i.nome.includes('Letalidade'));
-  if (letalidade) {
-    insights.push({
-      titulo: 'Letalidade Policial × Programa Juventude Negra Viva',
-      texto: `Apesar da criação do programa Juventude Negra Viva em 2024 (R$ 97 milhões até 2025), 
-              a letalidade policial manteve-se em patamares elevados, com 82,7% das vítimas sendo negras. 
-              O programa ainda está em fase inicial de implementação.`
-    });
-  }
-
-  // Insight 3: Quilombolas
-  const quilombolaOrc = orcamento.filter(o => o.grupo_focal === 'quilombolas');
-  if (quilombolaOrc.length > 0) {
-    const p1 = quilombolaOrc.filter(o => o.ano <= 2022).reduce((acc, o) => acc + parseFloat(o.pago || 0), 0);
-    const p2 = quilombolaOrc.filter(o => o.ano > 2022).reduce((acc, o) => acc + parseFloat(o.pago || 0), 0);
-    insights.push({
-      titulo: 'Política Quilombola: Da Paralisia à Retomada',
-      texto: `O programa Brasil Quilombola teve investimento de apenas R$ ${(p1/1000000).toFixed(1)} milhões em 2018-2022, 
-              passando para R$ ${(p2/1000000).toFixed(1)} milhões em 2023-2026 — crescimento de ${((p2/p1-1)*100).toFixed(0)}%. 
-              A implementação da PNGTAQ (2023) marca nova fase de regularização territorial.`
-    });
-  }
-
-  // Insight 4: Saúde
-  const mortalidade = indicadores.find(i => i.nome.includes('Mortalidade materna'));
-  if (mortalidade) {
-    insights.push({
-      titulo: 'Saúde da População Negra × Mortalidade Materna',
-      texto: `O orçamento de saúde da população negra cresceu 458% entre 2022 e 2025. Contudo, a razão de 
-              mortalidade materna negras/brancas permanece em torno de 2x, indicando que o aumento de recursos 
-              ainda não reverteu décadas de subfinanciamento e racismo institucional na saúde.`
-    });
-  }
-
-  return insights;
 }
