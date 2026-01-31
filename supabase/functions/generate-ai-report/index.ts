@@ -203,31 +203,38 @@ function prepareDataContext(
 - Prioridade crítica: ${stats.criticas}
 - Prioridade alta: ${stats.altas}`);
 
-  // Add Census 2022 and PNAD 2024 context
-  sections.push(`## DADOS DEMOGRÁFICOS (Censo 2022 - IBGE)
-- População total: 203.080.756
-- Pardos: 92,1 milhões (45,3%) - maior grupo pela primeira vez desde 1991
-- Brancos: 88,2 milhões (43,5%)
-- Pretos: 20,7 milhões (10,2%) - crescimento de 42,3% desde 2010
-- Total negros (pretos + pardos): 112,8 milhões (55,5%) - maioria da população
-- Indígenas: 1.693.535 (0,83%) - aumento de 89% desde 2010
-- Quilombolas: 1.327.802 (0,65%) - primeira contagem censitária oficial
-- Amarelos: 850.000 (0,4%)
-Fonte: IBGE Censo Demográfico 2022 (divulgado dezembro/2023)
+  // Add Census 2022 official SIDRA/IBGE data
+  sections.push(`## DADOS DEMOGRÁFICOS OFICIAIS (SIDRA/IBGE - Censo 2022)
+Fonte: Tabela 9605 - População residente, por cor ou raça (https://sidra.ibge.gov.br/Tabela/9605)
+Data de referência: 22/12/2023
 
-## INDICADORES DE DESIGUALDADE RACIAL (PNAD 2023-2024)
-- Renda: Pessoas negras ganham 58,3% do que pessoas brancas (R$ 2.199 vs R$ 3.730 em 2023)
-- Analfabetismo: Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%)
+- População total: 203.080.756
+- Pardos: 92.083.286 (45,34%) - maior grupo pela primeira vez desde 1991
+- Brancos: 88.252.121 (43,46%)
+- Pretos: 20.665.498 (10,17%) - crescimento de 42,3% desde 2010
+- Total população negra (pretos + pardos): 112.748.784 (55,51%) - maioria absoluta
+- Indígenas: 1.693.535 (0,83%) - aumento de 89% desde 2010, 391 etnias, 295 línguas
+- Quilombolas: 1.327.802 (0,65%) - primeira contagem censitária oficial em 1.696 municípios
+- Amarelos: 850.136 (0,42%)
+
+Fontes oficiais IBGE:
+- SIDRA Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
+- Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
+- Quilombolas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
+
+## INDICADORES DE DESIGUALDADE RACIAL (PNAD 2023-2024 - IBGE)
+- Renda: Pessoas negras ganham 58,9% do que pessoas brancas (R$ 2.199 vs R$ 3.730 em 2023)
+- Analfabetismo: Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%) - PNAD Educação 2024
 - Analfabetismo idosos negros (60+): 21,8% vs 8,1% entre brancos
 - Taxa geral de analfabetismo: 5,3% (9,1 milhões de pessoas)
 - Desemprego negro: 8,2% vs branco: 5,5%
-Fonte: PNAD Contínua 2023/2024 (IBGE), Cedra
+Fonte: PNAD Contínua 2023/2024 (IBGE)
 
-## VIOLÊNCIA E SEGURANÇA (Atlas da Violência 2025)
+## VIOLÊNCIA E SEGURANÇA (Atlas da Violência 2025 - IPEA/FBSP)
 - Risco de homicídio: Pessoa negra tem 2,7x mais chance de ser vítima
-- Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
+- Jovens negros: 73% dos óbitos por causas externas (Fiocruz 1º Informe Epidemiológico 2025)
 - Letalidade policial: 83,5% das vítimas são negras
-Fonte: IPEA/FBSP Atlas da Violência 2025, Fiocruz 1º Informe Epidemiológico 2025`);
+Fonte: IPEA/FBSP Atlas da Violência 2025, Fiocruz`);
 
   // Lacunas details
   if (lacunas.length > 0) {

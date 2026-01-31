@@ -1,28 +1,39 @@
 // =============================================
-// DADOS ESTATÍSTICOS ATUALIZADOS
-// Fontes: IBGE Censo 2022, PNAD Contínua 2024, IPEA, DataSUS, INEP, FBSP, ANTRA
+// DADOS ESTATÍSTICOS OFICIAIS - SIDRA/IBGE
+// Fonte primária: SIDRA/IBGE (api.sidra.ibge.gov.br)
+// Tabelas utilizadas: 9605, 9606 (Censo 2022 - Cor ou Raça)
 // Última atualização: Janeiro 2026
 // =============================================
 
 // =============================================
-// DADOS DEMOGRÁFICOS - CENSO 2022 (IBGE)
-// Resultados definitivos divulgados em dezembro/2023
+// DADOS DEMOGRÁFICOS - CENSO 2022 (IBGE/SIDRA)
+// Tabela SIDRA 9605: População residente, por cor ou raça
+// URL: https://sidra.ibge.gov.br/Tabela/9605
+// Resultados definitivos divulgados em 22/12/2023
 // =============================================
 
 export const dadosDemograficos = {
   populacaoTotal: 203080756,
   composicaoRacial: [
-    { raca: 'Parda', percentual: 45.3, populacao: 92100000 },
-    { raca: 'Branca', percentual: 43.5, populacao: 88200000 },
-    { raca: 'Preta', percentual: 10.2, populacao: 20700000 },
+    // Dados oficiais SIDRA/IBGE - Tabela 9605
+    { raca: 'Parda', percentual: 45.34, populacao: 92083286 },
+    { raca: 'Branca', percentual: 43.46, populacao: 88252121 },
+    { raca: 'Preta', percentual: 10.17, populacao: 20665498 },
     { raca: 'Indígena', percentual: 0.83, populacao: 1693535 },
-    { raca: 'Amarela', percentual: 0.4, populacao: 850000 }
+    { raca: 'Amarela', percentual: 0.42, populacao: 850136 }
   ],
+  // Dados quilombolas: primeira contagem oficial da história
+  // Fonte: IBGE Censo 2022 - Quilombolas
+  // URL: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
   quilombolas: 1327802,
-  populacaoNegra: 112800000, // pretos + pardos
-  percentualNegro: 55.5,
-  fonte: 'IBGE Censo Demográfico 2022',
-  dataReferencia: 'Dezembro/2023'
+  municipiosComQuilombolas: 1696,
+  quilombolasEmTerritorios: 167202, // 12,6% em territórios reconhecidos
+  // População negra = pretos + pardos
+  populacaoNegra: 112748784, // 92.083.286 + 20.665.498
+  percentualNegro: 55.51,
+  fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9605',
+  urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
+  dataReferencia: '22/12/2023'
 };
 
 // Evolução da composição racial - IBGE
@@ -231,22 +242,37 @@ export const lgbtqiaPorRaca = [
 ];
 
 // =============================================
-// POVOS TRADICIONAIS - Censo 2022
+// POVOS TRADICIONAIS - Censo 2022 (IBGE/SIDRA)
+// Fonte: IBGE Censo 2022 - Indígenas e Quilombolas
+// URLs oficiais:
+// - Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
+// - Quilombolas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
 // =============================================
 
 export const povosTradicionais = {
   indigenas: {
+    // Fonte: IBGE Censo 2022 - Tabela 9606 e publicações oficiais
+    // "Residem 1.693.535 indígenas no Brasil" - IBGE 08/2023
     populacao: 1693535,
     percentualBrasil: 0.83,
+    // 391 etnias e 295 línguas indígenas identificadas (Censo 2022 - Out/2025)
+    etnias: 391,
+    linguas: 295,
+    // Mais da metade vive na Amazônia Legal
+    populacaoAmazoniaLegal: 867910, // ~51,2%
+    populacaoUrbana: 863590, // Mais da metade vive nas cidades (Dez/2024)
     terrasHomologadas2018_2022: 2,
     terrasHomologadas2023_2025: 11,
     mortalidadeInfantil: 42.8,
     acessoSaude: 68.5,
     educacaoBilingue: 32.5,
     rendimentoMedio: 1683,
-    fonte: 'IBGE Censo 2022'
+    fonte: 'IBGE/SIDRA - Censo Demográfico 2022',
+    urlFonte: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html'
   },
   quilombolas: {
+    // Primeira contagem oficial de quilombolas da história do Brasil
+    // Fonte: IBGE Censo 2022 - "Brasil tem 1,3 milhão de quilombolas em 1.696 municípios" (27/07/2023)
     populacao: 1327802,
     percentualBrasil: 0.65,
     municipiosComQuilombolas: 1696,
@@ -255,10 +281,14 @@ export const povosTradicionais = {
     percentualEmTerritorios: 12.6,
     comunidadesCertificadas: 3524,
     comunidadesTituladas: 178,
+    // Região Nordeste concentra maior população quilombola
+    regiaoNordeste: 868496, // 65,4% do total
     acessoAgua: 45.2,
     acessoSaneamento: 28.5,
     bolsaFamilia: 78.5,
-    fonte: 'IBGE Censo 2022 - Primeira contagem oficial'
+    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Quilombolas',
+    urlFonte: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html',
+    dataReferencia: '27/07/2023'
   },
   ciganos: {
     populacaoEstimada: 800000,
@@ -350,12 +380,42 @@ export const evolucaoDesigualdade = [
 ];
 
 // =============================================
-// FONTES DE DADOS - URLs atualizadas
+// FONTES DE DADOS - URLs OFICIAIS SIDRA/IBGE
+// IMPORTANTE: Apenas fontes ibge.gov.br são permitidas
 // =============================================
 
 export const fonteDados = {
+  // Fontes primárias SIDRA/IBGE (obrigatórias)
+  sidra: { 
+    nome: 'SIDRA/IBGE - Sistema IBGE de Recuperação Automática', 
+    url: 'https://sidra.ibge.gov.br',
+    api: 'https://apisidra.ibge.gov.br'
+  },
+  tabela9605: {
+    nome: 'Tabela 9605: População residente, por cor ou raça, nos Censos Demográficos',
+    url: 'https://sidra.ibge.gov.br/Tabela/9605',
+    descricao: 'Censo 2022 - População por cor/raça'
+  },
+  tabela9606: {
+    nome: 'Tabela 9606: População residente, por cor ou raça, segundo o sexo e a idade',
+    url: 'https://sidra.ibge.gov.br/Tabela/9606',
+    descricao: 'Censo 2022 - População por cor/raça, sexo e idade'
+  },
   ibge: { nome: 'IBGE', url: 'https://www.ibge.gov.br' },
   censo: { nome: 'Censo Demográfico 2022', url: 'https://censo2022.ibge.gov.br' },
+  educaIbge: { nome: 'IBGE Educa', url: 'https://educa.ibge.gov.br' },
+  indigenas: { 
+    nome: 'Censo 2022 - Indígenas', 
+    url: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html'
+  },
+  quilombolas: { 
+    nome: 'Censo 2022 - Quilombolas', 
+    url: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html'
+  },
+  corRaca: {
+    nome: 'Censo 2022 - Cor ou Raça',
+    url: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/18319-cor-ou-raca.html'
+  },
   pnad: { nome: 'PNAD Contínua', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
   pnadEducacao: { nome: 'PNAD Contínua - Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
   desigualdadesRaciais: { nome: 'Desigualdades Sociais por Cor ou Raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/25844-desigualdades-sociais-por-cor-ou-raca.html' },
@@ -364,48 +424,65 @@ export const fonteDados = {
   atlasViolencia: { nome: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia' },
   fbsp: { nome: 'Fórum Brasileiro de Segurança Pública', url: 'https://forumseguranca.org.br' },
   inep: { nome: 'INEP/Censo da Educação', url: 'https://www.gov.br/inep' },
-  antra: { nome: 'ANTRA/GGB', url: 'https://antrabrasil.org' },
   stn: { nome: 'STN/SICONFI', url: 'https://siconfi.tesouro.gov.br' },
   sof: { nome: 'SOF/SIGA Brasil', url: 'https://www12.senado.leg.br/orcamento/sigabrasil' },
-  cedra: { nome: 'Centro de Estudos e Dados sobre Desigualdades Raciais', url: 'https://www.cedra.org.br' },
   fiocruz: { nome: 'Fiocruz', url: 'https://www.fiocruz.br' }
 };
 
 // =============================================
-// RESUMO EXECUTIVO - Dados-chave atualizados
+// CHAMADAS API SIDRA - Para extração automatizada
+// =============================================
+
+export const chamadasApiSidra = {
+  // Tabela 9605 - População por cor/raça - Brasil
+  populacaoCorRacaBrasil: 'https://apisidra.ibge.gov.br/values/t/9605/n1/all/v/allxp/p/all/c86/allxt/f/n',
+  // Tabela 9606 - População por cor/raça, sexo e idade - Brasil
+  populacaoCorRacaSexoIdade: 'https://apisidra.ibge.gov.br/values/t/9606/n1/all/v/allxp/p/all/c86/allxt/c2/allxt/c287/allxt/f/n',
+  // Documentação da API
+  documentacao: 'https://servicodados.ibge.gov.br/api/docs/agregados?versao=3'
+};
+
+// =============================================
+// RESUMO EXECUTIVO - Dados-chave SIDRA/IBGE
 // =============================================
 
 export const resumoExecutivo = {
   populacao: {
+    // Dados oficiais SIDRA Tabela 9605 - Censo 2022
     total: 203080756,
-    negra: 112800000,
-    percentualNegro: 55.5,
+    parda: 92083286,
+    branca: 88252121,
+    preta: 20665498,
+    negra: 112748784, // parda + preta
+    percentualNegro: 55.51,
     indigena: 1693535,
+    amarela: 850136,
     quilombola: 1327802
   },
   desigualdadeRenda: {
     rendaNegra2023: 2199,
     rendaBranca2023: 3730,
-    razao: 0.583,
-    descricao: 'Renda de pessoas negras equivale a 58,3% da de brancas'
+    razao: 0.589,
+    descricao: 'Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023)'
   },
   educacao: {
     analfabetismoNegro2024: 6.9,
     analfabetismoBranco2024: 3.1,
-    razao: 2.2,
-    descricao: 'Taxa de analfabetismo entre negros é mais que o dobro de brancos'
+    razao: 2.23,
+    descricao: 'Taxa de analfabetismo entre negros é 2,2x maior que brancos (PNAD Educação 2024)'
   },
   violencia: {
     riscoHomicidioNegro: 2.7,
     jovensNegrosObitosExternos: 73,
-    descricao: 'Pessoa negra tem risco 2,7x maior de ser vítima de homicídio'
+    descricao: 'Pessoa negra tem risco 2,7x maior de ser vítima de homicídio (Atlas Violência 2025)'
   },
   fontesPrincipais: [
-    'IBGE Censo 2022 (dezembro/2023)',
+    'SIDRA/IBGE Tabela 9605 - População por cor/raça (22/12/2023)',
+    'SIDRA/IBGE Tabela 9606 - População por cor/raça, sexo e idade',
+    'IBGE Censo 2022 - Indígenas (08/2023)',
+    'IBGE Censo 2022 - Quilombolas (27/07/2023)',
     'PNAD Contínua 2023/2024',
     'PNAD Educação 2024 (junho/2025)',
-    'Atlas da Violência 2025 (maio/2025)',
-    'Cedra/IBGE - Desigualdades Raciais (março/2025)',
-    'Fiocruz - Informe Juventude (agosto/2025)'
+    'Atlas da Violência 2025 (maio/2025)'
   ]
 };
