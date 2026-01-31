@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
-  FileText, DollarSign, BarChart3, Shield, Database 
+  FileText, DollarSign, BarChart3, Shield, Database, Globe 
 } from 'lucide-react';
 
 // Componentes de abas
@@ -22,6 +22,7 @@ import {
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 import { OrcamentoTab } from '@/components/estatisticas/OrcamentoTab';
+import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 
 export default function Estatisticas() {
   return (
@@ -72,6 +73,9 @@ export default function Estatisticas() {
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Indicadores (BD)
           </TabsTrigger>
+          <TabsTrigger value="fontes-dados" className="gap-1">
+            <Globe className="w-4 h-4" /> Fontes de Dados
+          </TabsTrigger>
           
           {/* Interseccionais */}
           <TabsTrigger value="vulnerabilidades" className="gap-1">
@@ -120,6 +124,11 @@ export default function Estatisticas() {
         {/* Indicadores do banco de dados */}
         <TabsContent value="indicadores-db">
           <IndicadoresDbTab />
+        </TabsContent>
+
+        {/* Fontes de Dados */}
+        <TabsContent value="fontes-dados">
+          <FontesDadosTab />
         </TabsContent>
 
         {/* Vulnerabilidades cruzadas */}
