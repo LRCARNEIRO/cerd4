@@ -1,0 +1,147 @@
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { 
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+} from 'recharts';
+import { Layers, Filter, FileText } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { 
+  radarVulnerabilidades, 
+  evolucaoDesigualdade, 
+  interseccionalidadeTrabalho 
+} from './StatisticsData';
+
+export function VulnerabilidadesTab() {
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Layers className="w-5 h-5 text-primary" />
+              Índice de Vulnerabilidade por Grupo (0-100)
+            </CardTitle>
+            <CardDescription>
+              Quanto maior o valor, maior a vulnerabilidade em cada eixo
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarVulnerabilidades}>
+                  <PolarGrid stroke="hsl(var(--border))" />
+                  <PolarAngleAxis dataKey="eixo" tick={{ fontSize: 11 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
+                  <Radar name="Mulher Negra" dataKey="mulherNegra" stroke="hsl(var(--destructive))" fill="hsl(var(--destructive))" fillOpacity={0.3} />
+                  <Radar name="Homem Negro" dataKey="homemNegro" stroke="hsl(var(--warning))" fill="hsl(var(--warning))" fillOpacity={0.3} />
+                  <Radar name="Mulher Branca" dataKey="mulherBranca" stroke="hsl(var(--chart-1))" fill="hsl(var(--chart-1))" fillOpacity={0.3} />
+                  <Radar name="Homem Branco" dataKey="homemBranco" stroke="hsl(var(--chart-2))" fill="hsl(var(--chart-2))" fillOpacity={0.3} />
+                  <Legend />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              <FileText className="w-3 h-3 inline mr-1" />
+              Fonte: Síntese de indicadores IBGE/IPEA/DataSUS 2024 | Elaboração própria
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Evolução das Razões de Desigualdade Racial (2018-2026)</CardTitle>
+            <CardDescription>
+              Razão entre indicadores de negros e brancos (1.0 = igualdade)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={evolucaoDesigualdade}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                  <YAxis domain={[1, 3]} tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value: number) => [value.toFixed(2), '']}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="razaoRenda" name="Renda (brancos/negros)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="razaoDesemprego" name="Desemprego (negros/brancos)" stroke="hsl(var(--warning))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negros/brancos)" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-3 p-3 bg-muted rounded-lg">
+              <p className="text-xs font-medium">Interpretação:</p>
+              <ul className="text-xs text-muted-foreground mt-1 space-y-1">
+                <li>• <strong>Renda:</strong> Brancos ganham 1,50x mais que negros (melhoria de 13% desde 2018)</li>
+                <li>• <strong>Desemprego:</strong> Negros têm 1,45x mais desemprego (melhoria de 16%)</li>
+                <li>• <strong>Homicídio:</strong> Negros são assassinados 2,45x mais (redução lenta)</li>
+              </ul>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              <FileText className="w-3 h-3 inline mr-1" />
+              Fontes: PNAD/IBGE, Atlas da Violência 2018-2024 | Projeção 2025-2026
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Filter className="w-5 h-5 text-primary" />
+            Cruzamento Completo: Raça × Gênero × Faixa Etária (Trabalho)
+          </CardTitle>
+          <CardDescription>
+            Dados de 2024 - PNAD Contínua/IBGE
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Grupo</TableHead>
+                <TableHead className="text-right">Renda Média</TableHead>
+                <TableHead className="text-right">Desemprego (%)</TableHead>
+                <TableHead className="text-right">Informalidade (%)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {interseccionalidadeTrabalho.map(item => (
+                <TableRow key={item.grupo}>
+                  <TableCell className="font-medium text-sm">{item.grupo}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(item.renda)}</TableCell>
+                  <TableCell className={cn("text-right", item.desemprego > 15 && "text-destructive font-semibold")}>
+                    {item.desemprego}%
+                  </TableCell>
+                  <TableCell className={cn("text-right", item.informalidade > 50 && "text-warning font-semibold")}>
+                    {item.informalidade}%
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <p className="text-xs text-muted-foreground mt-4">
+            <FileText className="w-3 h-3 inline mr-1" />
+            Fonte: PNAD Contínua/IBGE 2024 | Microanálise por raça/cor × sexo × faixa etária
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
