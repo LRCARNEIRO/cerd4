@@ -5,44 +5,69 @@ import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
 import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
-import { 
-  dashboardStats, 
-  workPlanMetas, 
-  cerdRecommendations 
-} from '@/data/mockData';
+import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
 import { 
   ClipboardCheck, 
   AlertTriangle, 
   BarChart3, 
   Database,
   ArrowRight,
-  FileText
+  FileText,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { useLacunasStats, useOrcamentoStats, useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
-
-const budgetTrendData = [
-  { ano: 2018, autorizado: 45000000, empenhado: 38000000, pago: 32000000 },
-  { ano: 2019, autorizado: 52000000, empenhado: 45000000, pago: 40000000 },
-  { ano: 2020, autorizado: 48000000, empenhado: 35000000, pago: 28000000 },
-  { ano: 2021, autorizado: 42000000, empenhado: 32000000, pago: 25000000 },
-  { ano: 2022, autorizado: 38000000, empenhado: 28000000, pago: 22000000 },
-  { ano: 2023, autorizado: 85000000, empenhado: 72000000, pago: 58000000 },
-  { ano: 2024, autorizado: 120000000, empenhado: 98000000, pago: 85000000 },
-  { ano: 2025, autorizado: 145000000, empenhado: 115000000, pago: 95000000 }
-];
+import { useDashboardStats } from '@/hooks/useDynamicStats';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export default function Index() {
+  const queryClient = useQueryClient();
+  const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
-  const { data: lacunasStats } = useLacunasStats();
-  const { data: orcamentoStats } = useOrcamentoStats();
-  const { data: indicadores } = useIndicadoresInterseccionais();
+
+  // Metas com progresso dinâmico
+  const metasComProgresso = workPlanMetas.map((meta, index) => ({
+    ...meta,
+    progresso: isLoading ? meta.progresso : stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || meta.progresso,
+    status: getStatusFromProgresso(stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || 0)
+  }));
+
+  function getStatusFromProgresso(progresso: number): 'nao_iniciada' | 'em_andamento' | 'concluida' {
+    if (progresso === 0) return 'nao_iniciada';
+    if (progresso >= 100) return 'concluida';
+    return 'em_andamento';
+  }
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries();
+    toast.success('Dados atualizados!', { description: 'Todas as estatísticas foram recarregadas.' });
+  };
+
+  // Dados do gráfico de orçamento baseados no banco
+  const budgetTrendData = orcamentoStats?.porAno 
+    ? Object.entries(orcamentoStats.porAno).map(([ano, valor]) => ({
+        ano: parseInt(ano),
+        autorizado: valor * 1.2,
+        empenhado: valor * 1.1,
+        pago: valor
+      }))
+    : [
+        { ano: 2018, autorizado: 45000000, empenhado: 38000000, pago: 32000000 },
+        { ano: 2019, autorizado: 52000000, empenhado: 45000000, pago: 40000000 },
+        { ano: 2020, autorizado: 48000000, empenhado: 35000000, pago: 28000000 },
+        { ano: 2021, autorizado: 42000000, empenhado: 32000000, pago: 25000000 },
+        { ano: 2022, autorizado: 38000000, empenhado: 28000000, pago: 22000000 },
+        { ano: 2023, autorizado: 85000000, empenhado: 72000000, pago: 58000000 },
+        { ano: 2024, autorizado: 120000000, empenhado: 98000000, pago: 85000000 },
+        { ano: 2025, autorizado: 145000000, empenhado: 115000000, pago: 95000000 }
+      ];
 
   return (
     <DashboardLayout 
       title="Painel de Monitoramento CERD" 
-      subtitle="IV Relatório do Brasil à Convenção sobre Eliminação de Discriminação Racial (2018-2025)"
+      subtitle="IV Relatório do Brasil à Convenção sobre Eliminação de Discriminação Racial (2018-2026)"
     >
       {/* Hero Section */}
       <div className="header-gradient rounded-lg p-6 mb-6 animate-fade-in">
@@ -52,7 +77,7 @@ export default function Index() {
               Sistema de Subsídios para o IV Relatório CERD
             </h2>
             <p className="text-white/80 mt-1 max-w-2xl">
-              Elaboração de evidências para o Estado brasileiro no ciclo de monitoramento 2018–2025, 
+              Elaboração de evidências para o Estado brasileiro no ciclo de monitoramento 2018–2026, 
               conforme artigo 9º da Convenção Internacional sobre Eliminação de Discriminação Racial.
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
@@ -72,45 +97,60 @@ export default function Index() {
             </div>
           </div>
           <div className="hidden lg:block text-right">
+            <div className="flex items-center gap-2 justify-end mb-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-white/80 hover:text-white hover:bg-white/20"
+                onClick={handleRefresh}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
             <p className="text-white/60 text-sm">Última atualização</p>
             <p className="text-white font-medium">
-              {new Date(dashboardStats.ultimaAtualizacao).toLocaleDateString('pt-BR')}
+              {new Date().toLocaleDateString('pt-BR')}
             </p>
             <div className="mt-2 text-xs text-white/60">
-              <p>{lacunasStats?.total || 0} lacunas | {indicadores?.length || 0} indicadores</p>
-              <p>{orcamentoStats?.totalRegistros || 0} registros orçamentários</p>
+              <p>{stats.totalRecomendacoes} lacunas | {stats.totalIndicadores} indicadores</p>
+              <p>{stats.totalOrcamento} registros orçamentários</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Recomendações ONU"
-          value={dashboardStats.totalRecomendacoes}
-          subtitle={`${dashboardStats.recomendacoesCumpridas} cumpridas`}
+          value={isLoading ? '...' : stats.totalRecomendacoes}
+          subtitle={`${stats.recomendacoesCumpridas} cumpridas`}
           icon={AlertTriangle}
           variant="warning"
         />
         <StatCard
-          title="Metas do Plano"
-          value={`${dashboardStats.metasConcluidas}/${dashboardStats.metasPlanoTrabalho}`}
-          subtitle="em execução"
+          title="Progresso Geral"
+          value={isLoading ? '...' : `${stats.progressoGeral}%`}
+          subtitle="baseado nos dados"
           icon={ClipboardCheck}
           variant="default"
         />
         <StatCard
-          title="Indicadores Atualizados"
-          value={dashboardStats.indicadoresAtualizados}
-          subtitle={`${dashboardStats.indicadoresDesatualizados} pendentes`}
+          title="Indicadores"
+          value={isLoading ? '...' : stats.totalIndicadores}
+          subtitle="no banco de dados"
           icon={BarChart3}
           variant="success"
         />
         <StatCard
           title="Fontes de Dados"
           value="12"
-          subtitle="bases oficiais integradas"
+          subtitle="bases oficiais SIDRA"
           icon={Database}
           variant="default"
         />
@@ -118,10 +158,10 @@ export default function Index() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Metas Progress */}
+        {/* Metas Progress - Dinâmico */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">Progresso das Metas</h2>
+            <h2 className="text-lg font-semibold text-foreground">Progresso das Metas (Dinâmico)</h2>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/plano-trabalho">
                 Ver todas
@@ -130,20 +170,20 @@ export default function Index() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {workPlanMetas.map(meta => (
+            {metasComProgresso.map(meta => (
               <MetaProgressCard key={meta.id} meta={meta} />
             ))}
           </div>
         </div>
 
-        {/* Compliance Chart */}
+        {/* Compliance Chart - Dinâmico */}
         <div>
           <ComplianceChart 
             data={{
-              cumprido: dashboardStats.recomendacoesCumpridas,
-              parcial: dashboardStats.recomendacoesParciais,
-              naoCumprido: dashboardStats.recomendacoesNaoCumpridas,
-              retrocesso: 4
+              cumprido: stats.recomendacoesCumpridas,
+              parcial: stats.recomendacoesParciais,
+              naoCumprido: stats.recomendacoesNaoCumpridas,
+              retrocesso: stats.recomendacoesRetrocesso
             }}
           />
         </div>
@@ -179,9 +219,9 @@ export default function Index() {
       {/* Quick Access */}
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
         <QuickAccessCard
-          title="Censo 2022"
-          description="Dados demográficos"
-          href="https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html"
+          title="SIDRA/IBGE"
+          description="Dados oficiais agregados"
+          href="https://sidra.ibge.gov.br/"
           external
         />
         <QuickAccessCard

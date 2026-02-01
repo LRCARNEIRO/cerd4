@@ -4,16 +4,18 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign, Sparkles } from 'lucide-react';
+import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign, Sparkles, RefreshCw, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
+import { useCerdIVProgress, useCommonCoreProgress } from '@/hooks/useDynamicStats';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Estrutura Common Core Document (HRI/CORE/BRA)
 const commonCoreEstrutura = [
@@ -76,11 +78,16 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 
 export default function GerarRelatorios() {
   const [generatingReport, setGeneratingReport] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: conclusoes, isLoading: loadingConclusoes } = useConclusoesAnaliticas();
+  
+  // Hooks dinâmicos para progresso
+  const cerdProgress = useCerdIVProgress();
+  const commonCoreProgress = useCommonCoreProgress();
 
   const isLoading = loadingLacunas || loadingRespostas || loadingStats || loadingConclusoes;
 
@@ -124,6 +131,11 @@ export default function GerarRelatorios() {
     }
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries();
+    toast.success('Dados atualizados!', { description: 'Estatísticas recalculadas com base no banco.' });
+  };
+
   // Calcular progresso baseado nos dados reais
   const totalLacunas = stats?.total || 0;
   const cumpridas = stats?.porStatus.cumprido || 0;
@@ -134,16 +146,18 @@ export default function GerarRelatorios() {
     commonCore: {
       nome: 'Common Core Document (HRI/CORE/BRA)',
       periodo: '2018-2026',
-      progresso: 72,
+      progresso: commonCoreProgress.progresso,
       prazo: 'Dezembro 2025',
-      responsavel: 'CDG/UFF + MRE'
+      responsavel: 'CDG/UFF + MRE',
+      indicadores: `${commonCoreProgress.preenchidos}/${commonCoreProgress.total} indicadores`
     },
     cerdIV: {
       nome: 'CERD IV - Relatório Periódico',
       periodo: '2018-2026',
-      progresso: progressoReal,
+      progresso: cerdProgress.progressoGeral,
       prazo: 'Março 2026',
-      responsavel: 'CDG/UFF + MIR + MRE'
+      responsavel: 'CDG/UFF + MIR + MRE',
+      lacunas: totalLacunas
     }
   };
 
@@ -160,7 +174,15 @@ export default function GerarRelatorios() {
       title="Gerar Relatórios"
       subtitle="Common Core Document (HRI/CORE/BRA) e CERD IV (2018-2026)"
     >
-      {/* Status Geral */}
+      {/* Header com refresh */}
+      <div className="flex justify-end mb-4">
+        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading} className="gap-2">
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+          Atualizar dados
+        </Button>
+      </div>
+
+      {/* Status Geral - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card className="border-t-4 border-t-primary">
           <CardHeader>
@@ -174,7 +196,7 @@ export default function GerarRelatorios() {
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm">Progresso</span>
+                  <span className="text-sm">Progresso (Dinâmico)</span>
                   <span className="text-sm font-bold">{progressoRelatorios.commonCore.progresso}%</span>
                 </div>
                 <Progress value={progressoRelatorios.commonCore.progresso} className="h-3" />
@@ -185,9 +207,12 @@ export default function GerarRelatorios() {
                   <p className="font-medium">{progressoRelatorios.commonCore.prazo}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Responsável:</p>
-                  <p className="font-medium">{progressoRelatorios.commonCore.responsavel}</p>
+                  <p className="text-muted-foreground">Indicadores:</p>
+                  <p className="font-medium">{progressoRelatorios.commonCore.indicadores}</p>
                 </div>
+              </div>
+              <div className="p-2 bg-muted rounded text-xs">
+                <p><strong>Status:</strong> {commonCoreProgress.atualizados} atualizados, {commonCoreProgress.parciais} parciais, {commonCoreProgress.desatualizados} desatualizados</p>
               </div>
               <div className="flex gap-2">
                 <Button 
@@ -231,8 +256,11 @@ export default function GerarRelatorios() {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Lacunas no banco:</p>
-                  <p className="font-medium">{totalLacunas}</p>
+                  <p className="font-medium">{progressoRelatorios.cerdIV.lacunas}</p>
                 </div>
+              </div>
+              <div className="p-2 bg-muted rounded text-xs">
+                <p><strong>Seções:</strong> Respostas OF {cerdProgress.secoes.respostasOF}%, Dados {cerdProgress.secoes.dadosEstatisticos}%, Povos {cerdProgress.secoes.povosTradicionais}%</p>
               </div>
               <div className="flex gap-2">
                 <Button 

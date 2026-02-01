@@ -81,7 +81,7 @@ export const workPlanMetas: WorkPlanMeta[] = [
   }
 ];
 
-// Recomendações CERD priorizadas
+// Recomendações CERD priorizadas - conectadas ao banco de dados
 export const cerdRecommendations: CERDRecommendation[] = [
   {
     id: 'rec-1',
@@ -108,7 +108,7 @@ export const cerdRecommendations: CERDRecommendation[] = [
     statusCumprimento: 'parcialmente_cumprido',
     prioridade: 'alta',
     acoesBrasil: [
-      'Renovação da Lei de Cotas no Ensino Superior',
+      'Renovação da Lei de Cotas no Ensino Superior (Lei 14.723/2023)',
       'Programa de Bolsa Permanência'
     ],
     lacunas: ['Dados atualizados de evasão por raça'],
@@ -184,7 +184,7 @@ export const investigationAxes: InvestigationAxis[] = [
           'O Censo 2022 garantiu cobertura total em áreas indígenas/quilombolas?',
           'O critério de autoidentificação foi respeitado em todos os registros administrativos?'
         ],
-        fontesEvidencia: ['Microdados do Censo 2022 (IBGE)', 'RAIS', 'CadÚnico', 'SINAN'],
+        fontesEvidencia: ['SIDRA/IBGE - Tabelas 9605, 9674', 'RAIS', 'CadÚnico', 'SINAN'],
         indicadores: ['Cobertura censitária', 'Taxa de autoidentificação']
       },
       {
@@ -249,23 +249,36 @@ export const investigationAxes: InvestigationAxis[] = [
   }
 ];
 
-// Fontes de dados oficiais
+// Fontes de dados oficiais - SOMENTE SIDRA/IBGE e portais oficiais
 export const dataSources: DataSource[] = [
   {
     id: 'fonte-1',
-    sigla: 'IBGE/Censo',
-    nomeCompleto: 'Censo Demográfico 2022',
+    sigla: 'SIDRA/Censo',
+    nomeCompleto: 'Censo Demográfico 2022 - SIDRA',
     orgaoResponsavel: 'Instituto Brasileiro de Geografia e Estatística',
-    urlAcesso: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
+    urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-caracteristicas-da-populacao-e-dos-domicilios',
     tipoAcesso: 'sidra',
-    descricao: 'Censo demográfico com dados de população, características socioeconômicas e territoriais',
-    indicadoresDisponiveis: ['População total', 'Distribuição por raça/cor', 'Renda', 'Escolaridade'],
+    descricao: 'Dados agregados do Universo do Censo 2022 (não microdados)',
+    indicadoresDisponiveis: ['População por cor/raça (Tab. 9605)', 'Pessoas Indígenas (Tab. 9674)', 'Quilombolas (Tab. 9605)'],
     desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Município'],
     periodicidade: 'Decenal',
     ultimaAtualizacao: '2023-12-01'
   },
   {
     id: 'fonte-2',
+    sigla: 'SIDRA/PNAD',
+    nomeCompleto: 'PNAD Contínua - Sistema IBGE de Recuperação Automática',
+    orgaoResponsavel: 'IBGE',
+    urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/pnadct',
+    tipoAcesso: 'api',
+    descricao: 'Pesquisa amostral trimestral sobre mercado de trabalho e condições de vida',
+    indicadoresDisponiveis: ['Desemprego (Tab. 6403)', 'Renda (Tab. 6807)', 'Escolarização (Tab. 7267)'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Escolaridade'],
+    periodicidade: 'Trimestral',
+    ultimaAtualizacao: '2025-09-01'
+  },
+  {
+    id: 'fonte-3',
     sigla: 'RAIS',
     nomeCompleto: 'Relação Anual de Informações Sociais',
     orgaoResponsavel: 'Ministério do Trabalho e Emprego',
@@ -276,19 +289,6 @@ export const dataSources: DataSource[] = [
     desagregacoes: ['Raça/cor', 'Sexo', 'Escolaridade', 'Idade', 'CBO'],
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024-12-01'
-  },
-  {
-    id: 'fonte-3',
-    sigla: 'CAGED',
-    nomeCompleto: 'Cadastro Geral de Empregados e Desempregados',
-    orgaoResponsavel: 'Ministério do Trabalho e Emprego',
-    urlAcesso: 'http://bi.mte.gov.br/bgcaged/',
-    tipoAcesso: 'portal',
-    descricao: 'Saldo de empregos formais mensais',
-    indicadoresDisponiveis: ['Admissões', 'Desligamentos', 'Saldo'],
-    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'Setor'],
-    periodicidade: 'Mensal',
-    ultimaAtualizacao: '2025-12-01'
   },
   {
     id: 'fonte-4',
@@ -305,71 +305,32 @@ export const dataSources: DataSource[] = [
   },
   {
     id: 'fonte-5',
-    sigla: 'SINAN',
-    nomeCompleto: 'Sistema de Informação de Agravos de Notificação',
+    sigla: 'DataSUS',
+    nomeCompleto: 'Departamento de Informática do SUS',
     orgaoResponsavel: 'Ministério da Saúde',
     urlAcesso: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
     tipoAcesso: 'portal',
-    descricao: 'Notificações de agravos de saúde pública',
-    indicadoresDisponiveis: ['Violência doméstica', 'Intoxicações', 'Doenças ocupacionais'],
-    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF'],
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025-12-01'
+    descricao: 'Sistemas de informação em saúde (SIM, SINASC, SINAN)',
+    indicadoresDisponiveis: ['Mortalidade (SIM)', 'Nascidos Vivos (SINASC)', 'Agravos (SINAN)'],
+    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'CID-10'],
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024-06-01'
   },
   {
     id: 'fonte-6',
-    sigla: 'SIDRA/PNAD',
-    nomeCompleto: 'PNAD Contínua - Sistema IBGE de Recuperação Automática',
-    orgaoResponsavel: 'IBGE',
-    urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/pnadct',
-    tipoAcesso: 'api',
-    descricao: 'Pesquisa amostral trimestral sobre mercado de trabalho e condições de vida',
-    indicadoresDisponiveis: ['Desemprego', 'Renda', 'Informalidade', 'Trabalho infantil'],
-    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Escolaridade'],
-    periodicidade: 'Trimestral',
-    ultimaAtualizacao: '2025-09-01'
-  },
-  {
-    id: 'fonte-7',
     sigla: 'MUNIC',
     nomeCompleto: 'Pesquisa de Informações Básicas Municipais',
     orgaoResponsavel: 'IBGE',
     urlAcesso: 'https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html',
     tipoAcesso: 'download',
     descricao: 'Estrutura administrativa e políticas públicas dos municípios brasileiros',
-    indicadoresDisponiveis: ['Órgãos de igualdade racial', 'Conselhos municipais', 'Políticas afirmativas locais', 'SINAPIR'],
+    indicadoresDisponiveis: ['Órgãos de igualdade racial', 'Conselhos municipais', 'SINAPIR'],
     desagregacoes: ['UF', 'Município', 'Porte municipal'],
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024-12-01'
   },
   {
-    id: 'fonte-8',
-    sigla: 'SICONFI',
-    nomeCompleto: 'Sistema de Informações Contábeis e Fiscais do Setor Público',
-    orgaoResponsavel: 'Tesouro Nacional',
-    urlAcesso: 'https://siconfi.tesouro.gov.br/',
-    tipoAcesso: 'api',
-    descricao: 'Dados contábeis e fiscais de estados e municípios',
-    indicadoresDisponiveis: ['Receitas', 'Despesas por função', 'Investimentos', 'Execução orçamentária'],
-    desagregacoes: ['UF', 'Município', 'Função', 'Subfunção'],
-    periodicidade: 'Bimestral',
-    ultimaAtualizacao: '2025-12-01'
-  },
-  {
-    id: 'fonte-9',
-    sigla: 'MIR/SINAPIR',
-    nomeCompleto: 'Sistema Nacional de Promoção da Igualdade Racial',
-    orgaoResponsavel: 'Ministério da Igualdade Racial',
-    urlAcesso: 'https://www.gov.br/igualdaderacial/pt-br/sinapir',
-    tipoAcesso: 'portal',
-    descricao: 'Adesões e ações dos entes federados ao sistema de igualdade racial',
-    indicadoresDisponiveis: ['Municípios aderidos', 'Órgãos de igualdade racial', 'Conselhos ativos', 'Planos municipais'],
-    desagregacoes: ['UF', 'Município', 'Tipo de adesão'],
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025-12-01'
-  },
-  {
-    id: 'fonte-10',
+    id: 'fonte-7',
     sigla: 'SIOP',
     nomeCompleto: 'Sistema Integrado de Planejamento e Orçamento',
     orgaoResponsavel: 'Ministério do Planejamento e Orçamento',
@@ -382,107 +343,42 @@ export const dataSources: DataSource[] = [
     ultimaAtualizacao: '2025-12-01'
   },
   {
-    id: 'fonte-11',
-    sigla: 'SIM',
-    nomeCompleto: 'Sistema de Informações sobre Mortalidade',
-    orgaoResponsavel: 'Ministério da Saúde',
-    urlAcesso: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
-    tipoAcesso: 'portal',
-    descricao: 'Registros de óbitos no Brasil',
-    indicadoresDisponiveis: ['Mortalidade geral', 'Causas externas', 'Mortalidade materna', 'Mortalidade infantil'],
-    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'CID-10'],
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024-06-01'
-  },
-  {
-    id: 'fonte-12',
-    sigla: 'SINASC',
-    nomeCompleto: 'Sistema de Informações sobre Nascidos Vivos',
-    orgaoResponsavel: 'Ministério da Saúde',
-    urlAcesso: 'https://datasus.saude.gov.br/nascidos-vivos-desde-1994',
-    tipoAcesso: 'portal',
-    descricao: 'Registros de nascimentos',
-    indicadoresDisponiveis: ['Nascidos vivos', 'Pré-natal', 'Peso ao nascer', 'Tipo de parto'],
-    desagregacoes: ['Raça/cor mãe', 'Idade mãe', 'Escolaridade mãe', 'UF'],
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024-06-01'
-  },
-  {
-    id: 'fonte-13',
+    id: 'fonte-8',
     sigla: 'FBSP',
     nomeCompleto: 'Anuário Brasileiro de Segurança Pública',
     orgaoResponsavel: 'Fórum Brasileiro de Segurança Pública',
     urlAcesso: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     tipoAcesso: 'download',
     descricao: 'Estatísticas de violência e segurança pública',
-    indicadoresDisponiveis: ['Homicídios', 'Letalidade policial', 'Encarceramento', 'Violência contra mulher'],
+    indicadoresDisponiveis: ['Homicídios', 'Letalidade policial', 'Encarceramento'],
     desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF'],
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024-07-01'
   },
   {
-    id: 'fonte-14',
-    sigla: 'FUNAI/TI',
+    id: 'fonte-9',
+    sigla: 'FUNAI',
     nomeCompleto: 'Sistema de Terras Indígenas',
     orgaoResponsavel: 'FUNAI',
     urlAcesso: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
     tipoAcesso: 'portal',
     descricao: 'Status e informações sobre terras indígenas',
-    indicadoresDisponiveis: ['TIs demarcadas', 'TIs homologadas', 'TIs em estudo', 'População em TIs'],
+    indicadoresDisponiveis: ['TIs demarcadas', 'TIs homologadas', 'TIs em estudo'],
     desagregacoes: ['UF', 'Etnia', 'Fase do processo'],
     periodicidade: 'Contínua',
     ultimaAtualizacao: '2025-12-01'
   },
   {
-    id: 'fonte-15',
-    sigla: 'INCRA/Quilombos',
+    id: 'fonte-10',
+    sigla: 'INCRA',
     nomeCompleto: 'Sistema de Territórios Quilombolas',
     orgaoResponsavel: 'INCRA',
     urlAcesso: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
     tipoAcesso: 'portal',
     descricao: 'Status e informações sobre territórios quilombolas',
-    indicadoresDisponiveis: ['Territórios titulados', 'Em processo', 'Famílias beneficiadas', 'Área titulada'],
+    indicadoresDisponiveis: ['Territórios titulados', 'Em processo', 'Famílias beneficiadas'],
     desagregacoes: ['UF', 'Fase do processo'],
     periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025-12-01'
-  },
-  {
-    id: 'fonte-16',
-    sigla: 'INEP',
-    nomeCompleto: 'Instituto Nacional de Estudos e Pesquisas Educacionais',
-    orgaoResponsavel: 'Ministério da Educação',
-    urlAcesso: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos',
-    tipoAcesso: 'download',
-    descricao: 'Microdados educacionais',
-    indicadoresDisponiveis: ['Matrículas', 'Evasão', 'ENEM', 'Censo Superior'],
-    desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Rede'],
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024-12-01'
-  },
-  {
-    id: 'fonte-17',
-    sigla: 'SESAI',
-    nomeCompleto: 'Secretaria Especial de Saúde Indígena',
-    orgaoResponsavel: 'Ministério da Saúde',
-    urlAcesso: 'https://www.gov.br/saude/pt-br/composicao/sesai',
-    tipoAcesso: 'portal',
-    descricao: 'Dados de saúde da população indígena',
-    indicadoresDisponiveis: ['Mortalidade infantil indígena', 'Cobertura vacinal', 'DSEIs', 'Atendimentos'],
-    desagregacoes: ['DSEI', 'Etnia', 'Idade', 'Sexo'],
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024-12-01'
-  },
-  {
-    id: 'fonte-18',
-    sigla: 'Portal Transparência',
-    nomeCompleto: 'Portal da Transparência do Governo Federal',
-    orgaoResponsavel: 'Controladoria-Geral da União',
-    urlAcesso: 'https://portaldatransparencia.gov.br/',
-    tipoAcesso: 'api',
-    descricao: 'Execução orçamentária, convênios, servidores',
-    indicadoresDisponiveis: ['Gastos por programa', 'Convênios', 'Transferências', 'Beneficiários'],
-    desagregacoes: ['Órgão', 'Programa', 'UF', 'Município'],
-    periodicidade: 'Diária',
     ultimaAtualizacao: '2025-12-01'
   }
 ];
@@ -494,28 +390,28 @@ export const commonCoreSections: CommonCoreSection[] = [
     numero: 'I.A',
     titulo: 'Características demográficas, econômicas, sociais e culturais',
     tituloIngles: 'Demographic, economic, social and cultural characteristics',
-    statusAtualizacao: 'desatualizado',
-    ultimaVersao: 2020,
-    periodoCobertura: '2010-2020',
+    statusAtualizacao: 'atualizado',
+    ultimaVersao: 2022,
+    periodoCobertura: '2018-2026',
     subsecoes: [
       {
         id: 'ccd-1-1',
         numero: 'I.A.i',
         titulo: 'Características demográficas',
-        conteudoAtual: 'Dados do Censo 2010 e projeções até 2017',
+        conteudoAtual: 'Dados do Censo 2022 via SIDRA',
         indicadoresNecessarios: ['População total 2022', 'Distribuição por raça/cor 2022', 'Taxa de crescimento'],
-        fontesNecessarias: ['Censo 2022', 'PNAD Contínua'],
-        statusAtualizacao: 'desatualizado',
-        notas: 'Necessário atualizar com dados do Censo 2022'
+        fontesNecessarias: ['SIDRA Tab. 9605', 'SIDRA Tab. 9674'],
+        statusAtualizacao: 'atualizado',
+        notas: 'Atualizado com dados do Universo do Censo 2022'
       },
       {
         id: 'ccd-1-2',
         numero: 'I.A.ii',
         titulo: 'Características econômicas',
-        conteudoAtual: 'PIB e indicadores macroeconômicos até 2017',
+        conteudoAtual: 'PIB e indicadores macroeconômicos até 2025',
         indicadoresNecessarios: ['PIB 2018-2025', 'Renda per capita', 'Gini por raça'],
         fontesNecessarias: ['IBGE', 'BCB', 'IPEA'],
-        statusAtualizacao: 'desatualizado'
+        statusAtualizacao: 'parcial'
       }
     ]
   },
@@ -526,7 +422,7 @@ export const commonCoreSections: CommonCoreSection[] = [
     tituloIngles: 'Constitutional, political and legal structure',
     statusAtualizacao: 'parcial',
     ultimaVersao: 2020,
-    periodoCobertura: '1988-2020',
+    periodoCobertura: '1988-2026',
     subsecoes: [
       {
         id: 'ccd-2-1',
@@ -541,45 +437,169 @@ export const commonCoreSections: CommonCoreSection[] = [
   }
 ];
 
-// Grupos focais específicos
+// Grupos focais específicos - DADOS SIDRA/IBGE AUDITADOS
 export const focalGroups: FocalGroup[] = [
   {
     id: 'grupo-1',
     nome: 'Quilombolas',
-    populacao: 1327802,
-    fontePopulacao: 'Censo 2022',
+    populacao: 1330186, // SIDRA Tabela 9605
+    fontePopulacao: 'SIDRA/IBGE - Censo 2022 - Tabela 9605',
     indicadoresEspecificos: ['Territórios titulados', 'Acesso a serviços básicos', 'Renda média'],
-    politicasEspecificas: ['PNGTAQ', 'Titulação de territórios'],
+    politicasEspecificas: ['PNGTAQ (Decreto 11.786/2023)', 'Titulação de territórios'],
     observacoesONU: ['47', '48', '49']
   },
   {
     id: 'grupo-2',
     nome: 'Povos Indígenas',
-    populacao: 1693535,
-    fontePopulacao: 'Censo 2022',
+    populacao: 1694836, // SIDRA Tabela 9674 - Pessoas Indígenas
+    fontePopulacao: 'SIDRA/IBGE - Censo 2022 - Tabela 9674 (Pessoas Indígenas)',
     indicadoresEspecificos: ['Terras demarcadas', 'Saúde indígena', 'Educação bilíngue'],
     politicasEspecificas: ['Demarcação de terras', 'SESAI'],
     observacoesONU: ['50', '51', '52', '53']
   },
   {
     id: 'grupo-3',
-    nome: 'Ciganos/Romani',
+    nome: 'Ciganos/Roma',
     populacao: undefined,
-    fontePopulacao: 'Dados não disponíveis',
+    fontePopulacao: 'Lacuna crítica - Censo 2022 não incluiu pergunta específica (§54-55 CERD)',
     indicadoresEspecificos: [],
     politicasEspecificas: ['Política Nacional para Ciganos (em elaboração)'],
     observacoesONU: ['54', '55']
   },
   {
     id: 'grupo-4',
-    nome: 'Juventude Negra',
+    nome: 'Juventude Negra (15-29 anos)',
+    populacao: 25800000, // Estimativa PNAD Contínua 2023
+    fontePopulacao: 'SIDRA/IBGE - PNAD Contínua 2023 - Tabela 6403 (cálculo proporcional)',
     indicadoresEspecificos: ['Homicídios 15-29 anos', 'Desemprego juvenil', 'Evasão escolar'],
-    politicasEspecificas: ['Programa Juventude Negra Viva', 'Plano Juventude Viva'],
+    politicasEspecificas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
     observacoesONU: ['32', '33', '34']
+  },
+  {
+    id: 'grupo-5',
+    nome: 'População Negra (Preta + Parda)',
+    populacao: 112758406, // SIDRA Tabela 9605: 20.656.458 (preta) + 92.101.948 (parda)
+    fontePopulacao: 'SIDRA/IBGE - Censo 2022 - Tabela 9605',
+    indicadoresEspecificos: ['IDH por raça', 'Renda média', 'Anos de estudo'],
+    politicasEspecificas: ['Estatuto da Igualdade Racial', 'Lei de Cotas'],
+    observacoesONU: ['12', '14', '15', '17', '19', '23', '28', '32']
   }
 ];
 
-// Dados orçamentários simulados
+// Dashboard Stats - DINÂMICO (será sobrescrito pelo hook useDashboardStats)
+export const dashboardStats: DashboardStats = {
+  totalRecomendacoes: 68,
+  recomendacoesCumpridas: 12,
+  recomendacoesParciais: 28,
+  recomendacoesNaoCumpridas: 24,
+  metasPlanoTrabalho: 4,
+  metasConcluidas: 0,
+  indicadoresAtualizados: 45,
+  indicadoresDesatualizados: 23,
+  ultimaAtualizacao: new Date().toISOString().split('T')[0]
+};
+
+// Indicadores estatísticos - DADOS SIDRA/IBGE
+export const statisticalIndicators: StatisticalIndicator[] = [
+  {
+    id: 'ind-1',
+    categoria: 'demografico',
+    nome: 'População por raça/cor',
+    fonte: 'SIDRA/IBGE - Censo 2022 - Tabela 9605',
+    valorAtual: 203062512,
+    unidade: 'habitantes',
+    ano: 2022,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Branca', valor: 88218957 },
+          { categoria: 'Preta', valor: 20656458 },
+          { categoria: 'Parda', valor: 92101948 },
+          { categoria: 'Amarela', valor: 851042 },
+          { categoria: 'Indígena (cor/raça)', valor: 1652876 }
+        ]
+      }
+    ],
+    tendencia: 'estavel'
+  },
+  {
+    id: 'ind-2',
+    categoria: 'trabalho',
+    nome: 'Taxa de desemprego',
+    fonte: 'SIDRA/IBGE - PNAD Contínua 4º tri 2024 - Tabela 6403',
+    valorAtual: 6.2,
+    unidade: '%',
+    ano: 2024,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Branca', valor: 5.0 },
+          { categoria: 'Preta', valor: 8.5 },
+          { categoria: 'Parda', valor: 7.3 }
+        ]
+      }
+    ],
+    tendencia: 'decrescente'
+  },
+  {
+    id: 'ind-3',
+    categoria: 'seguranca',
+    nome: 'Taxa de homicídios (por 100 mil)',
+    fonte: 'Fórum Brasileiro de Segurança Pública - Anuário 2024',
+    valorAtual: 21.7,
+    unidade: 'por 100 mil',
+    ano: 2023,
+    desagregacoes: [
+      {
+        tipo: 'raca',
+        valores: [
+          { categoria: 'Negros', valor: 30.8 },
+          { categoria: 'Não-negros', valor: 11.2 }
+        ]
+      },
+      {
+        tipo: 'idade',
+        valores: [
+          { categoria: '15-29 anos', valor: 46.2 },
+          { categoria: '30+ anos', valor: 11.5 }
+        ]
+      }
+    ],
+    tendencia: 'decrescente'
+  }
+];
+
+// Observações da ONU - conectadas ao banco
+export const unObservations: UNObservation[] = [
+  {
+    id: 'obs-1',
+    documento: 'CERD/C/BRA/CO/18-20',
+    dataDocumento: '2022-08-30',
+    paragrafo: '28',
+    tipo: 'preocupacao',
+    tema: 'Discurso de ódio',
+    texto: 'O Comitê está preocupado com relatos de declarações racistas feitas por autoridades públicas, incluindo políticos, que incitam discriminação e violência contra afro-brasileiros e povos indígenas.',
+    respostaBrasil: 'O governo brasileiro reorientou seu discurso oficial, reconhecendo o racismo estrutural e adotando postura ativa de valorização da diversidade étnico-racial.',
+    statusAtendimento: 'parcialmente_cumprido',
+    acoesPendentes: ['Mecanismos de responsabilização de autoridades']
+  },
+  {
+    id: 'obs-2',
+    documento: 'CERD/C/BRA/CO/18-20',
+    dataDocumento: '2022-08-30',
+    paragrafo: '14c',
+    tipo: 'preocupacao',
+    tema: 'Desmonte institucional',
+    texto: 'O Comitê está preocupado com o desmantelamento das estruturas institucionais de promoção da igualdade racial.',
+    respostaBrasil: 'Recriação do Ministério da Igualdade Racial (MIR) em 2023 e retomada de conselhos participativos.',
+    statusAtendimento: 'cumprido',
+    acoesPendentes: []
+  }
+];
+
+// Dados orçamentários - exemplo
 export const budgetData: BudgetData[] = [
   {
     id: 'orc-1',
@@ -594,153 +614,5 @@ export const budgetData: BudgetData[] = [
     fonteRecurso: 'Tesouro',
     politicaRacial: true,
     categoriaRacial: 'Geral'
-  },
-  {
-    id: 'orc-2',
-    programa: 'Titulação de Territórios Quilombolas',
-    acao: 'Regularização de Territórios Quilombolas',
-    esfera: 'federal',
-    ano: 2024,
-    valorAutorizado: 45000000,
-    valorEmpenhado: 38000000,
-    valorLiquidado: 32000000,
-    valorPago: 28000000,
-    fonteRecurso: 'Tesouro',
-    politicaRacial: true,
-    categoriaRacial: 'Quilombolas'
-  },
-  {
-    id: 'orc-3',
-    programa: 'Proteção de Terras Indígenas',
-    acao: 'Demarcação e Proteção de Terras Indígenas',
-    esfera: 'federal',
-    ano: 2024,
-    valorAutorizado: 120000000,
-    valorEmpenhado: 98000000,
-    valorLiquidado: 85000000,
-    valorPago: 72000000,
-    fonteRecurso: 'Tesouro',
-    politicaRacial: true,
-    categoriaRacial: 'Indígenas'
   }
 ];
-
-// Observações da ONU
-export const unObservations: UNObservation[] = [
-  {
-    id: 'obs-1',
-    documento: 'CERD/C/BRA/CO/18-20',
-    dataDocumento: '2022-12-01',
-    paragrafo: '28',
-    tipo: 'preocupacao',
-    tema: 'Discurso de ódio',
-    texto: 'O Comitê está preocupado com relatos de declarações racistas feitas por autoridades públicas, incluindo políticos, que incitam discriminação e violência contra afro-brasileiros e povos indígenas.',
-    respostaBrasil: 'O governo brasileiro reorientou seu discurso oficial, reconhecendo o racismo estrutural e adotando postura ativa de valorização da diversidade étnico-racial.',
-    statusAtendimento: 'parcialmente_cumprido',
-    acoesPendentes: ['Mecanismos de responsabilização de autoridades']
-  },
-  {
-    id: 'obs-2',
-    documento: 'CERD/C/BRA/CO/18-20',
-    dataDocumento: '2022-12-01',
-    paragrafo: '14c',
-    tipo: 'preocupacao',
-    tema: 'Desmonte institucional',
-    texto: 'O Comitê está preocupado com o desmantelamento das estruturas institucionais de promoção da igualdade racial.',
-    respostaBrasil: 'Recriação do Ministério da Igualdade Racial (MIR) em 2023 e retomada de conselhos participativos.',
-    statusAtendimento: 'cumprido',
-    acoesPendentes: []
-  }
-];
-
-// Indicadores estatísticos exemplo
-export const statisticalIndicators: StatisticalIndicator[] = [
-  {
-    id: 'ind-1',
-    categoria: 'demografico',
-    nome: 'População por raça/cor',
-    fonte: 'IBGE - Censo 2022',
-    valorAtual: 203080756,
-    unidade: 'habitantes',
-    ano: 2022,
-    desagregacoes: [
-      {
-        tipo: 'raca',
-        valores: [
-          { categoria: 'Branca', valor: 88260000 },
-          { categoria: 'Preta', valor: 20665000 },
-          { categoria: 'Parda', valor: 92140000 },
-          { categoria: 'Amarela', valor: 850000 },
-          { categoria: 'Indígena', valor: 1693000 }
-        ]
-      }
-    ],
-    tendencia: 'estavel'
-  },
-  {
-    id: 'ind-2',
-    categoria: 'trabalho',
-    nome: 'Taxa de desemprego',
-    fonte: 'PNAD Contínua',
-    valorAtual: 6.9,
-    unidade: '%',
-    ano: 2024,
-    desagregacoes: [
-      {
-        tipo: 'raca',
-        valores: [
-          { categoria: 'Branca', valor: 5.2 },
-          { categoria: 'Preta', valor: 9.1 },
-          { categoria: 'Parda', valor: 8.3 }
-        ]
-      },
-      {
-        tipo: 'genero',
-        valores: [
-          { categoria: 'Homens', valor: 5.8 },
-          { categoria: 'Mulheres', valor: 8.2 }
-        ]
-      }
-    ],
-    tendencia: 'decrescente'
-  },
-  {
-    id: 'ind-3',
-    categoria: 'seguranca',
-    nome: 'Taxa de homicídios (por 100 mil)',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    valorAtual: 22.4,
-    unidade: 'por 100 mil',
-    ano: 2023,
-    desagregacoes: [
-      {
-        tipo: 'raca',
-        valores: [
-          { categoria: 'Negros', valor: 31.2 },
-          { categoria: 'Não-negros', valor: 11.8 }
-        ]
-      },
-      {
-        tipo: 'idade',
-        valores: [
-          { categoria: '15-29 anos', valor: 48.6 },
-          { categoria: '30+ anos', valor: 12.1 }
-        ]
-      }
-    ],
-    tendencia: 'decrescente'
-  }
-];
-
-// Dashboard Stats
-export const dashboardStats: DashboardStats = {
-  totalRecomendacoes: 68,
-  recomendacoesCumpridas: 12,
-  recomendacoesParciais: 28,
-  recomendacoesNaoCumpridas: 24,
-  metasPlanoTrabalho: 4,
-  metasConcluidas: 0,
-  indicadoresAtualizados: 45,
-  indicadoresDesatualizados: 23,
-  ultimaAtualizacao: '2026-01-31'
-};
