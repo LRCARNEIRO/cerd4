@@ -478,7 +478,8 @@ export const focalGroups: FocalGroup[] = [
   {
     id: 'grupo-5',
     nome: 'População Negra (Preta + Parda)',
-    populacao: 112758406, // SIDRA Tabela 9605: 20.656.458 (preta) + 92.101.948 (parda)
+    // SIDRA Tabela 9605: 20.656.458 (preta) + 92.083.286 (parda) = 112.739.744
+    populacao: 112739744,
     fontePopulacao: 'SIDRA/IBGE - Censo 2022 - Tabela 9605',
     indicadoresEspecificos: ['IDH por raça', 'Renda média', 'Anos de estudo'],
     politicasEspecificas: ['Estatuto da Igualdade Racial', 'Lei de Cotas'],
@@ -505,19 +506,22 @@ export const statisticalIndicators: StatisticalIndicator[] = [
     id: 'ind-1',
     categoria: 'demografico',
     nome: 'População por raça/cor',
-    fonte: 'SIDRA/IBGE - Censo 2022 - Tabela 9605',
-    valorAtual: 203062512,
+    fonte: 'SIDRA/IBGE - Censo 2022 - Tabela 9514',
+    // VALOR CORRETO: 203.080.756 (Tabela 9514)
+    // URL: https://sidra.ibge.gov.br/Tabela/9514
+    valorAtual: 203080756,
     unidade: 'habitantes',
     ano: 2022,
     desagregacoes: [
       {
         tipo: 'raca',
         valores: [
-          { categoria: 'Branca', valor: 88218957 },
+          // Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
+          { categoria: 'Branca', valor: 88252121 },
           { categoria: 'Preta', valor: 20656458 },
-          { categoria: 'Parda', valor: 92101948 },
-          { categoria: 'Amarela', valor: 851042 },
-          { categoria: 'Indígena (cor/raça)', valor: 1652876 }
+          { categoria: 'Parda', valor: 92083286 },
+          { categoria: 'Amarela', valor: 850130 },
+          { categoria: 'Indígena (cor/raça)', valor: 1227642 }
         ]
       }
     ],
