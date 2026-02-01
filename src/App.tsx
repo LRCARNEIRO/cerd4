@@ -13,6 +13,7 @@ import Fontes from "./pages/Fontes";
 import GruposFocais from "./pages/GruposFocais";
 import Conclusoes from "./pages/Conclusoes";
 import GerarRelatorios from "./pages/GerarRelatorios";
+import Normativa from "./pages/Normativa";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/grupos-focais" element={<GruposFocais />} />
           <Route path="/conclusoes" element={<Conclusoes />} />
           <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
+          <Route path="/normativa" element={<Normativa />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
