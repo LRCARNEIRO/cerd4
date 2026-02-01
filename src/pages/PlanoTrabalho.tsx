@@ -5,19 +5,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, Target, Users, FileText, CheckCircle2 } from 'lucide-react';
+import { Calendar, Target, Users, FileText, CheckCircle2, RefreshCw, Loader2, Database } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useDashboardStats } from '@/hooks/useDynamicStats';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export default function PlanoTrabalho() {
-  const progressoGeral = Math.round(
-    workPlanMetas.reduce((acc, m) => acc + m.progresso, 0) / workPlanMetas.length
-  );
+  const queryClient = useQueryClient();
+  const { stats, isLoading } = useDashboardStats();
+
+  // Metas com progresso dinâmico
+  const metasComProgresso = workPlanMetas.map((meta, index) => ({
+    ...meta,
+    progresso: isLoading ? meta.progresso : stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || meta.progresso,
+    status: getStatusFromProgresso(stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || 0)
+  }));
+
+  function getStatusFromProgresso(progresso: number): 'nao_iniciada' | 'em_andamento' | 'concluida' {
+    if (progresso === 0) return 'nao_iniciada';
+    if (progresso >= 100) return 'concluida';
+    return 'em_andamento';
+  }
+
+  const progressoGeral = isLoading ? 0 : stats.progressoGeral;
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries();
+    toast.success('Dados atualizados!', { description: 'O progresso foi recalculado com base nos dados do banco.' });
+  };
 
   return (
     <DashboardLayout
       title="Plano de Trabalho"
       subtitle="TED - Elaboração de subsídios para o IV Relatório CERD"
     >
-      {/* Overview */}
+      {/* Overview - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="pt-6">
@@ -32,7 +55,7 @@ export default function PlanoTrabalho() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className={progressoGeral > 50 ? 'border-success/50' : ''}>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-success/10 rounded-lg">
@@ -40,7 +63,9 @@ export default function PlanoTrabalho() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Progresso Geral</p>
-                <p className="text-2xl font-bold">{progressoGeral}%</p>
+                <p className="text-2xl font-bold">
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : `${progressoGeral}%`}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -62,36 +87,54 @@ export default function PlanoTrabalho() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-warning/10 rounded-lg">
-                <Users className="w-5 h-5 text-warning" />
+                <Database className="w-5 h-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Executor</p>
-                <p className="text-lg font-bold">CDG/UFF</p>
+                <p className="text-sm text-muted-foreground">Dados no BD</p>
+                <p className="text-lg font-bold">{isLoading ? '...' : `${stats.totalRecomendacoes + stats.totalIndicadores}`}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar - Dinâmico */}
       <Card className="mb-6">
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Progresso do Projeto</span>
-            <span className="text-sm text-muted-foreground">{progressoGeral}% concluído</span>
+            <span className="text-sm font-medium">Progresso do Projeto (Dinâmico)</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{progressoGeral}% concluído</span>
+              <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
           </div>
           <Progress value={progressoGeral} className="h-3" />
           <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>Janeiro 2026</span>
             <span>Fevereiro 2026</span>
           </div>
+          <div className="mt-3 p-2 bg-muted rounded text-xs text-muted-foreground">
+            <p>O progresso é calculado automaticamente com base nos dados inseridos no banco:</p>
+            <ul className="list-disc list-inside mt-1">
+              <li>Meta 1: Lacunas e Respostas CERD III ({stats.metasProgresso.meta1}%)</li>
+              <li>Meta 2: Normativas e Institucional ({stats.metasProgresso.meta2}%)</li>
+              <li>Meta 3: Indicadores e Orçamento ({stats.metasProgresso.meta3}%)</li>
+              <li>Meta 4: Conclusões e Classificação ({stats.metasProgresso.meta4}%)</li>
+            </ul>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Metas */}
-      <h2 className="text-lg font-semibold text-foreground mb-4">Metas do Plano</h2>
+      {/* Metas - Dinâmicas */}
+      <h2 className="text-lg font-semibold text-foreground mb-4">Metas do Plano (Progresso Automático)</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {workPlanMetas.map(meta => (
+        {metasComProgresso.map(meta => (
           <MetaProgressCard key={meta.id} meta={meta} />
         ))}
       </div>

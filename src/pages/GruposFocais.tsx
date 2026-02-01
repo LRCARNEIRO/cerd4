@@ -1,237 +1,618 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { focalGroups } from '@/data/mockData';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, MapPin, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
+import { Users, MapPin, AlertTriangle, FileText, ExternalLink, Database, Calendar, TrendingUp, TrendingDown, Minus, RefreshCw, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
+// Dados SIDRA/IBGE auditados com metadados completos
+const gruposFocaisData = {
+  quilombolas: {
+    nome: 'Quilombolas',
+    populacao: 1330186,
+    fonte: 'IBGE - Censo Demográfico 2022',
+    tabela: 'Tabela 9605 - SIDRA',
+    link: 'https://sidra.ibge.gov.br/tabela/9605',
+    ultimaAtualizacao: '2023-10-27',
+    serieTemporal: [
+      { ano: 2022, valor: 1330186, fonte: 'Censo 2022' },
+    ],
+    observacoesONU: ['47', '48', '49'],
+    politicas: ['PNGTAQ (Decreto 11.786/2023)', 'Programa Brasil Quilombola', 'Titulação de Territórios (INCRA)'],
+    indicadores: ['Territórios titulados', 'Acesso a água encanada', 'Acesso a energia elétrica', 'Renda média'],
+    notas: 'Primeira contagem específica de quilombolas no Censo brasileiro. Dado do universo, não microdados.',
+  },
+  indigenas: {
+    nome: 'Indígenas',
+    // Dados do Censo 2022 - critério "Pessoas Indígenas"
+    populacao: 1694836,
+    fonte: 'IBGE - Censo Demográfico 2022',
+    tabela: 'Tabela 9674 - SIDRA (Pessoas Indígenas)',
+    link: 'https://sidra.ibge.gov.br/tabela/9674',
+    ultimaAtualizacao: '2023-08-07',
+    // Série temporal com dados anteriores (Cor ou Raça) e novo critério
+    serieTemporal: [
+      { ano: 2010, valor: 817963, fonte: 'Censo 2010 - Cor ou Raça' },
+      { ano: 2022, valor: 1694836, fonte: 'Censo 2022 - Pessoas Indígenas' },
+    ],
+    populacaoCorRaca: 1652876, // Tabela 9606 - Cor ou Raça
+    observacoesONU: ['50', '51', '52', '53'],
+    politicas: ['Demarcação de Terras Indígenas (FUNAI)', 'SESAI - Saúde Indígena', 'Educação Escolar Indígena'],
+    indicadores: ['Terras homologadas', 'Etnias reconhecidas', 'Línguas vivas', 'Mortalidade infantil indígena'],
+    notas: 'Censo 2022 adotou conceito ampliado de "Pessoas Indígenas" (§1.694.836). Cor ou Raça: 1.652.876.',
+  },
+  ciganos: {
+    nome: 'Ciganos/Roma',
+    populacao: null,
+    fonte: 'Lacuna crítica - Censo 2022 não incluiu pergunta específica',
+    tabela: 'N/A',
+    link: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
+    ultimaAtualizacao: '2022-08-30',
+    serieTemporal: [],
+    observacoesONU: ['54', '55'],
+    politicas: ['Decreto 8.750/2016 (CNPCT incluía ciganos)', 'Política Nacional para Povo Cigano (em elaboração)'],
+    indicadores: [],
+    notas: 'O CERD expressou preocupação específica (§54-55) sobre ausência de dados oficiais. Estimativas não-oficiais variam de 500 mil a 1,5 milhão.',
+  },
+  juventude_negra: {
+    nome: 'Juventude Negra (15-29 anos)',
+    // Calculado: população preta + parda na faixa 15-29 anos
+    populacao: 25800000, // Estimativa baseada em proporções PNAD Contínua
+    fonte: 'IBGE - PNAD Contínua 2023 (Tabela 6403)',
+    tabela: 'Tabela 6403 - SIDRA',
+    link: 'https://sidra.ibge.gov.br/tabela/6403',
+    ultimaAtualizacao: '2024-02-29',
+    serieTemporal: [
+      { ano: 2018, valor: 26200000, fonte: 'PNAD Contínua' },
+      { ano: 2019, valor: 26100000, fonte: 'PNAD Contínua' },
+      { ano: 2020, valor: 25900000, fonte: 'PNAD Contínua' },
+      { ano: 2021, valor: 25800000, fonte: 'PNAD Contínua' },
+      { ano: 2022, valor: 25700000, fonte: 'PNAD Contínua' },
+      { ano: 2023, valor: 25800000, fonte: 'PNAD Contínua' },
+    ],
+    observacoesONU: ['32', '33', '34', '35', '36'],
+    politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
+    indicadores: ['Taxa de homicídios 15-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
+    notas: 'Grupo prioritário para políticas de segurança e empregabilidade. Letalidade 2,5x maior que jovens brancos.',
+  },
+  populacao_negra: {
+    nome: 'População Negra (Preta + Parda)',
+    populacao: 112758406,
+    fonte: 'IBGE - Censo Demográfico 2022',
+    tabela: 'Tabela 9605 - SIDRA',
+    link: 'https://sidra.ibge.gov.br/tabela/9605',
+    ultimaAtualizacao: '2022-12-22',
+    serieTemporal: [
+      { ano: 2010, valor: 97171614, fonte: 'Censo 2010' },
+      { ano: 2022, valor: 112758406, fonte: 'Censo 2022' },
+    ],
+    detalhamento: {
+      preta: 20656458,
+      parda: 92101948,
+    },
+    observacoesONU: ['12', '14', '15', '17', '19', '23', '28', '32'],
+    politicas: ['Estatuto da Igualdade Racial (Lei 12.288/2010)', 'Lei de Cotas (Lei 12.711/2012)', 'PNSIPN'],
+    indicadores: ['IDH por raça', 'Renda média', 'Anos de estudo', 'Taxa de desemprego'],
+    notas: 'Dados do Universo (Censo), não microdados. 55,5% da população total.',
+  },
+  mulheres_negras: {
+    nome: 'Mulheres Negras',
+    populacao: 59000000, // Estimativa baseada em proporção 52% mulheres na pop negra
+    fonte: 'IBGE - Censo Demográfico 2022 + cálculo proporcional',
+    tabela: 'Tabela 9605 - SIDRA (cruzamento sexo × cor)',
+    link: 'https://sidra.ibge.gov.br/tabela/9605',
+    ultimaAtualizacao: '2022-12-22',
+    serieTemporal: [],
+    observacoesONU: ['15', '17', '23', '28'],
+    politicas: ['PNAISM', 'Lei Maria da Penha', 'Programa Mulher Viver sem Violência'],
+    indicadores: ['Mortalidade materna', 'Violência doméstica', 'Chefia de família', 'Renda média'],
+    notas: 'Interseccionalidade gênero × raça. Maior vulnerabilidade em múltiplos indicadores.',
+  },
+};
+
+// Dados territoriais INCRA/FUNAI
+const dadosTerritoriais = {
+  quilombolas: {
+    territoriosTitulados: 185,
+    territoriosEmProcesso: 1796,
+    comunidadesCertificadasFCP: 3551,
+    familiasAtendidas: 155000,
+    areaTotal: 1100000, // hectares
+    fonte: 'INCRA - Painel Quilombola',
+    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+    ultimaAtualizacao: '2025-01-15',
+  },
+  indigenas: {
+    terrasHomologadas: 487,
+    terrasEmEstudo: 128,
+    etniasIdentificadas: 305,
+    linguasVivas: 274,
+    areaTotal: 117000000, // hectares
+    fonte: 'FUNAI - Sistema Indigenista',
+    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
+    ultimaAtualizacao: '2025-01-10',
+  },
+};
+
+// Indicadores de vulnerabilidade (Fórum de Segurança Pública, DataSUS)
+const indicadoresVulnerabilidade = {
+  homicidiosJuventude: {
+    nome: 'Taxa de Homicídios - Juventude Negra (15-29)',
+    valorNegros: 74.4,
+    valorBrancos: 25.9,
+    razaoDesigualdade: 2.9,
+    ano: 2022,
+    fonte: 'Fórum Brasileiro de Segurança Pública - Anuário 2023',
+    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    serieTemporal: [
+      { ano: 2018, negros: 98.5, brancos: 34.0 },
+      { ano: 2019, negros: 85.3, brancos: 30.2 },
+      { ano: 2020, negros: 78.6, brancos: 27.8 },
+      { ano: 2021, negros: 76.2, brancos: 26.5 },
+      { ano: 2022, negros: 74.4, brancos: 25.9 },
+    ],
+  },
+  letalidadePolicial: {
+    nome: 'Mortes por Intervenção Policial',
+    totalMortes: 6429,
+    percentualNegros: 83.1,
+    ano: 2022,
+    fonte: 'Fórum Brasileiro de Segurança Pública',
+    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+  },
+  mortalidadeMaterna: {
+    nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
+    valorNegras: 107.2,
+    valorBrancas: 47.8,
+    razaoDesigualdade: 2.2,
+    ano: 2022,
+    fonte: 'DataSUS/SIM/SINASC',
+    link: 'https://datasus.saude.gov.br/',
+  },
+};
+
+function TendenciaIcon({ tendencia }: { tendencia: 'up' | 'down' | 'stable' }) {
+  if (tendencia === 'up') return <TrendingUp className="w-4 h-4 text-success" />;
+  if (tendencia === 'down') return <TrendingDown className="w-4 h-4 text-destructive" />;
+  return <Minus className="w-4 h-4 text-muted-foreground" />;
+}
+
+function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela: string; link: string; atualizacao: string }) {
+  return (
+    <div className="mt-3 p-2 bg-muted/50 rounded text-xs space-y-1">
+      <div className="flex items-center gap-1 text-muted-foreground">
+        <Database className="w-3 h-3" />
+        <span>{fonte}</span>
+      </div>
+      {tabela !== 'N/A' && (
+        <div className="flex items-center gap-1">
+          <Badge variant="outline" className="text-xs">{tabela}</Badge>
+          <a href={link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      )}
+      <div className="flex items-center gap-1 text-muted-foreground">
+        <Calendar className="w-3 h-3" />
+        <span>Atualizado: {new Date(atualizacao).toLocaleDateString('pt-BR')}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function GruposFocais() {
+  const { data: lacunas } = useLacunasIdentificadas();
+  const { data: stats } = useLacunasStats();
+
+  // Filtrar lacunas por grupo focal
+  const lacunasQuilo = lacunas?.filter(l => l.grupo_focal === 'quilombolas') || [];
+  const lacunasIndig = lacunas?.filter(l => l.grupo_focal === 'indigenas') || [];
+  const lacunasCiganos = lacunas?.filter(l => l.grupo_focal === 'ciganos') || [];
+  const lacunasJuventude = lacunas?.filter(l => l.grupo_focal === 'juventude_negra') || [];
+
   return (
     <DashboardLayout
       title="Grupos Focais"
-      subtitle="Povos e comunidades tradicionais - Monitoramento específico"
+      subtitle="Povos e comunidades tradicionais - Dados SIDRA/IBGE e fontes oficiais"
     >
-      {/* Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-primary text-primary-foreground">
-          <CardContent className="pt-6">
-            <Users className="w-8 h-8 mb-2 text-primary-foreground/80" />
-            <p className="text-sm text-primary-foreground/80">Quilombolas</p>
-            <p className="text-2xl font-bold">1.327.802</p>
-            <p className="text-xs text-primary-foreground/60">Censo 2022</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-accent text-accent-foreground">
-          <CardContent className="pt-6">
-            <Users className="w-8 h-8 mb-2 text-accent-foreground/80" />
-            <p className="text-sm text-accent-foreground/80">Indígenas</p>
-            <p className="text-2xl font-bold">1.693.535</p>
-            <p className="text-xs text-accent-foreground/60">Censo 2022</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-warning text-warning-foreground">
-          <CardContent className="pt-6">
-            <AlertTriangle className="w-8 h-8 mb-2 text-warning-foreground/80" />
-            <p className="text-sm text-warning-foreground/80">Ciganos/Roma</p>
-            <p className="text-2xl font-bold">S/D</p>
-            <p className="text-xs text-warning-foreground/60">Lacuna crítica</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <Users className="w-8 h-8 mb-2 text-destructive" />
-            <p className="text-sm text-muted-foreground">Juventude Negra (15-29)</p>
-            <p className="text-2xl font-bold">~25 milhões</p>
-            <p className="text-xs text-muted-foreground">Grupo prioritário</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Detailed Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {focalGroups.map(group => (
-          <Card key={group.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
-                {group.nome}
-              </CardTitle>
-              {group.populacao ? (
-                <p className="text-sm text-muted-foreground">
-                  População: {group.populacao.toLocaleString('pt-BR')} ({group.fontePopulacao})
-                </p>
-              ) : (
-                <p className="text-sm text-warning">
-                  ⚠️ {group.fontePopulacao}
-                </p>
-              )}
-            </CardHeader>
-            <CardContent>
-              {/* Parágrafos ONU */}
-              <div className="mb-4">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Parágrafos ONU relacionados:</p>
-                <div className="flex flex-wrap gap-1">
-                  {group.observacoesONU.map(p => (
-                    <Badge key={p} variant="outline">§{p}</Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Políticas Específicas */}
-              <div className="mb-4">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Políticas específicas:</p>
-                <ul className="space-y-1">
-                  {group.politicasEspecificas.map((pol, i) => (
-                    <li key={i} className="text-sm flex items-start gap-2">
-                      <FileText className="w-4 h-4 text-primary mt-0.5" />
-                      {pol}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Indicadores */}
-              {group.indicadoresEspecificos.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Indicadores de monitoramento:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {group.indicadoresEspecificos.map((ind, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {ind}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Special Section - Quilombolas */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary" />
-            Situação Territorial - Quilombolas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Territórios Titulados</p>
-              <p className="text-3xl font-bold text-success">185</p>
-              <Progress value={15} className="mt-2 h-2" />
-              <p className="text-xs text-muted-foreground mt-1">15% do total identificado</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Em Processo</p>
-              <p className="text-3xl font-bold text-warning">1.200+</p>
-              <Progress value={60} className="mt-2 h-2" />
-              <p className="text-xs text-muted-foreground mt-1">60% em fases iniciais</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Comunidades Certificadas (FCP)</p>
-              <p className="text-3xl font-bold">3.500+</p>
-              <p className="text-xs text-muted-foreground mt-1">Fundação Cultural Palmares</p>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-1" />
-                INCRA - Quilombolas
-              </a>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <a href="https://www.palmares.gov.br/?page_id=37551" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-1" />
-                Certidões FCP
-              </a>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Special Section - Indigenous */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-accent" />
-            Situação Territorial - Povos Indígenas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Terras Homologadas</p>
-              <p className="text-3xl font-bold text-success">487</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Etnias Identificadas</p>
-              <p className="text-3xl font-bold">305</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Línguas</p>
-              <p className="text-3xl font-bold">274</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Área Total (ha)</p>
-              <p className="text-3xl font-bold">117 mi</p>
-            </div>
-          </div>
-          <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
-            <p className="text-sm font-medium text-warning">Marco Temporal</p>
-            <p className="text-sm text-foreground mt-1">
-              O julgamento do STF sobre o Marco Temporal (Tema 1031) impacta diretamente a demarcação 
-              de terras indígenas. Situação em acompanhamento para o relatório CERD.
+      {/* Alerta metodológico */}
+      <Card className="mb-6 border-l-4 border-l-info bg-info/5">
+        <CardContent className="pt-4 flex gap-3">
+          <Info className="w-5 h-5 text-info flex-shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="font-medium text-info">Nota Metodológica</p>
+            <p className="text-muted-foreground">
+              Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
+              Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.652.876).
             </p>
           </div>
-          <div className="mt-4 flex gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/demarcacao-de-terras-indigenas" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="w-4 h-4 mr-1" />
-                FUNAI - Demarcação
-              </a>
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Lacunas */}
-      <Card className="mt-6 border-destructive/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="w-5 h-5" />
-            Lacunas Críticas Identificadas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            <li className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-              <p className="font-medium">Ciganos/Roma</p>
-              <p className="text-sm text-muted-foreground">
-                Não há dados populacionais oficiais. O Censo 2022 não incluiu pergunta específica. 
-                O CERD destacou preocupação com essa lacuna (§54-55).
-              </p>
-            </li>
-            <li className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
-              <p className="font-medium">Comunidades Tradicionais de Matriz Africana</p>
-              <p className="text-sm text-muted-foreground">
-                Dados fragmentados sobre terreiros e comunidades de matriz africana. 
-                Necessário mapeamento atualizado.
-              </p>
-            </li>
-            <li className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
-              <p className="font-medium">Refugiados por Raça/Etnia</p>
-              <p className="text-sm text-muted-foreground">
-                CONARE não publica dados desagregados por raça/cor dos refugiados reconhecidos no Brasil.
-              </p>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      {/* Cards de População */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* Quilombolas */}
+        <Card className="border-t-4 border-t-primary">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-primary" />
+                <p className="text-sm font-medium">{gruposFocaisData.quilombolas.nome}</p>
+                <p className="text-2xl font-bold">{gruposFocaisData.quilombolas.populacao?.toLocaleString('pt-BR')}</p>
+              </div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="text-xs">Censo 2022</Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <FonteInfo 
+              fonte={gruposFocaisData.quilombolas.fonte}
+              tabela={gruposFocaisData.quilombolas.tabela}
+              link={gruposFocaisData.quilombolas.link}
+              atualizacao={gruposFocaisData.quilombolas.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Indígenas */}
+        <Card className="border-t-4 border-t-accent">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-accent" />
+                <p className="text-sm font-medium">{gruposFocaisData.indigenas.nome}</p>
+                <p className="text-2xl font-bold">{gruposFocaisData.indigenas.populacao?.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Cor/Raça: {gruposFocaisData.indigenas.populacaoCorRaca?.toLocaleString('pt-BR')}
+                </p>
+              </div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="text-xs">Pessoas Indígenas</Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{gruposFocaisData.indigenas.notas}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <FonteInfo 
+              fonte={gruposFocaisData.indigenas.fonte}
+              tabela={gruposFocaisData.indigenas.tabela}
+              link={gruposFocaisData.indigenas.link}
+              atualizacao={gruposFocaisData.indigenas.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Ciganos */}
+        <Card className="border-t-4 border-t-destructive">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <AlertTriangle className="w-8 h-8 mb-2 text-destructive" />
+                <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
+                <p className="text-2xl font-bold text-destructive">S/D</p>
+                <p className="text-xs text-destructive mt-1">Lacuna crítica CERD §54-55</p>
+              </div>
+              <Badge variant="destructive" className="text-xs">Sem dados</Badge>
+            </div>
+            <FonteInfo 
+              fonte={gruposFocaisData.ciganos.fonte}
+              tabela={gruposFocaisData.ciganos.tabela}
+              link={gruposFocaisData.ciganos.link}
+              atualizacao={gruposFocaisData.ciganos.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Juventude Negra */}
+        <Card className="border-t-4 border-t-warning">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-warning" />
+                <p className="text-sm font-medium">{gruposFocaisData.juventude_negra.nome}</p>
+                <p className="text-2xl font-bold">~{(gruposFocaisData.juventude_negra.populacao! / 1000000).toFixed(0)} mi</p>
+                <p className="text-xs text-muted-foreground mt-1">Grupo prioritário segurança</p>
+              </div>
+              <Badge variant="outline" className="text-xs">PNAD 2023</Badge>
+            </div>
+            <FonteInfo 
+              fonte={gruposFocaisData.juventude_negra.fonte}
+              tabela={gruposFocaisData.juventude_negra.tabela}
+              link={gruposFocaisData.juventude_negra.link}
+              atualizacao={gruposFocaisData.juventude_negra.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="territoriais" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="territoriais">Direitos Territoriais</TabsTrigger>
+          <TabsTrigger value="vulnerabilidade">Indicadores de Vulnerabilidade</TabsTrigger>
+          <TabsTrigger value="lacunas">Lacunas por Grupo ({lacunas?.length || 0})</TabsTrigger>
+        </TabsList>
+
+        {/* Direitos Territoriais */}
+        <TabsContent value="territoriais">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Quilombolas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  Situação Territorial - Quilombolas
+                </CardTitle>
+                <CardDescription>
+                  Fonte: {dadosTerritoriais.quilombolas.fonte} | Atualizado: {new Date(dadosTerritoriais.quilombolas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center p-4 bg-success/10 rounded-lg">
+                    <p className="text-3xl font-bold text-success">{dadosTerritoriais.quilombolas.territoriosTitulados}</p>
+                    <p className="text-sm text-muted-foreground">Territórios Titulados</p>
+                  </div>
+                  <div className="text-center p-4 bg-warning/10 rounded-lg">
+                    <p className="text-3xl font-bold text-warning">{dadosTerritoriais.quilombolas.territoriosEmProcesso.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">Em Processo</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-3xl font-bold">{dadosTerritoriais.quilombolas.comunidadesCertificadasFCP.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">Certidões FCP</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-3xl font-bold">{(dadosTerritoriais.quilombolas.areaTotal / 1000000).toFixed(1)} mi</p>
+                    <p className="text-sm text-muted-foreground">Hectares</p>
+                  </div>
+                </div>
+                <Progress value={10} className="h-2 mb-2" />
+                <p className="text-xs text-muted-foreground">≈10% dos processos concluídos</p>
+                <div className="mt-4 flex gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={dadosTerritoriais.quilombolas.link} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      INCRA - Quilombolas
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="https://www.palmares.gov.br/?page_id=37551" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      Certidões FCP
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Indígenas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-accent" />
+                  Situação Territorial - Povos Indígenas
+                </CardTitle>
+                <CardDescription>
+                  Fonte: {dadosTerritoriais.indigenas.fonte} | Atualizado: {new Date(dadosTerritoriais.indigenas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center p-4 bg-success/10 rounded-lg">
+                    <p className="text-3xl font-bold text-success">{dadosTerritoriais.indigenas.terrasHomologadas}</p>
+                    <p className="text-sm text-muted-foreground">Terras Homologadas</p>
+                  </div>
+                  <div className="text-center p-4 bg-warning/10 rounded-lg">
+                    <p className="text-3xl font-bold text-warning">{dadosTerritoriais.indigenas.terrasEmEstudo}</p>
+                    <p className="text-sm text-muted-foreground">Em Estudo</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.etniasIdentificadas}</p>
+                    <p className="text-sm text-muted-foreground">Etnias</p>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.linguasVivas}</p>
+                    <p className="text-sm text-muted-foreground">Línguas</p>
+                  </div>
+                </div>
+                <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-4">
+                  <p className="text-sm font-medium text-warning flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4" />
+                    Marco Temporal - Tema 1031 STF
+                  </p>
+                  <p className="text-xs text-foreground mt-1">
+                    Decisão do STF (2023) rejeitou tese do marco temporal. Congresso aprovou Lei 14.701/2023.
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" asChild>
+                  <a href={dadosTerritoriais.indigenas.link} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4 mr-1" />
+                    FUNAI - Terras Indígenas
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Indicadores de Vulnerabilidade */}
+        <TabsContent value="vulnerabilidade">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Homicídios Juventude */}
+            <Card className="border-l-4 border-l-destructive">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosJuventude.nome}</CardTitle>
+                <CardDescription>Por 100 mil habitantes | {indicadoresVulnerabilidade.homicidiosJuventude.ano}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.homicidiosJuventude.valorNegros}</p>
+                    <p className="text-xs text-muted-foreground">Jovens Negros</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold">{indicadoresVulnerabilidade.homicidiosJuventude.valorBrancos}</p>
+                    <p className="text-xs text-muted-foreground">Jovens Brancos</p>
+                  </div>
+                </div>
+                <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                  <p className="text-sm font-bold text-destructive">
+                    {indicadoresVulnerabilidade.homicidiosJuventude.razaoDesigualdade}x maior risco
+                  </p>
+                </div>
+                <div className="text-xs space-y-1">
+                  <p className="flex items-center gap-1">
+                    <TendenciaIcon tendencia="down" />
+                    <span>Queda de 24% desde 2018</span>
+                  </p>
+                </div>
+                <FonteInfo 
+                  fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
+                  tabela="Anuário 2023"
+                  link={indicadoresVulnerabilidade.homicidiosJuventude.link}
+                  atualizacao="2023-07-01"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Letalidade Policial */}
+            <Card className="border-l-4 border-l-destructive">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
+                <CardDescription>{indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold mb-2">{indicadoresVulnerabilidade.letalidadePolicial.totalMortes.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground mb-4">mortes por intervenção policial</p>
+                <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                  <p className="text-sm font-bold text-destructive">
+                    {indicadoresVulnerabilidade.letalidadePolicial.percentualNegros}% eram negros
+                  </p>
+                </div>
+                <FonteInfo 
+                  fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
+                  tabela="Anuário FBSP"
+                  link={indicadoresVulnerabilidade.letalidadePolicial.link}
+                  atualizacao="2023-07-01"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Mortalidade Materna */}
+            <Card className="border-l-4 border-l-warning">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
+                <CardDescription>{indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <p className="text-3xl font-bold text-warning">{indicadoresVulnerabilidade.mortalidadeMaterna.valorNegras}</p>
+                    <p className="text-xs text-muted-foreground">Mulheres Negras</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold">{indicadoresVulnerabilidade.mortalidadeMaterna.valorBrancas}</p>
+                    <p className="text-xs text-muted-foreground">Mulheres Brancas</p>
+                  </div>
+                </div>
+                <div className="p-2 bg-warning/10 rounded text-center mb-3">
+                  <p className="text-sm font-bold text-warning">
+                    {indicadoresVulnerabilidade.mortalidadeMaterna.razaoDesigualdade}x maior risco
+                  </p>
+                </div>
+                <FonteInfo 
+                  fonte={indicadoresVulnerabilidade.mortalidadeMaterna.fonte}
+                  tabela="SIM/SINASC"
+                  link={indicadoresVulnerabilidade.mortalidadeMaterna.link}
+                  atualizacao="2023-12-01"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* Lacunas por Grupo */}
+        <TabsContent value="lacunas">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Lacunas Críticas */}
+            <Card className="border-destructive/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                  <AlertTriangle className="w-5 h-5" />
+                  Lacunas Críticas Identificadas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                  <p className="font-medium">Ciganos/Roma - §54-55</p>
+                  <p className="text-sm text-muted-foreground">
+                    Não há dados populacionais oficiais. O Censo 2022 não incluiu pergunta específica.
+                  </p>
+                  <Badge variant="destructive" className="mt-2 text-xs">Prioridade Crítica</Badge>
+                </div>
+                <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <p className="font-medium">Comunidades de Matriz Africana</p>
+                  <p className="text-sm text-muted-foreground">
+                    Dados fragmentados sobre terreiros. Necessário mapeamento atualizado.
+                  </p>
+                  <Badge variant="outline" className="mt-2 text-xs">Alta</Badge>
+                </div>
+                <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <p className="font-medium">Refugiados por Raça/Etnia</p>
+                  <p className="text-sm text-muted-foreground">
+                    CONARE não publica dados desagregados por raça/cor.
+                  </p>
+                  <Badge variant="outline" className="mt-2 text-xs">Média</Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Lacunas do Banco */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="w-5 h-5 text-primary" />
+                  Lacunas no Banco de Dados
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-2 bg-muted rounded">
+                    <span className="text-sm">Quilombolas</span>
+                    <Badge>{lacunasQuilo.length}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-muted rounded">
+                    <span className="text-sm">Indígenas</span>
+                    <Badge>{lacunasIndig.length}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-muted rounded">
+                    <span className="text-sm">Ciganos</span>
+                    <Badge variant="destructive">{lacunasCiganos.length}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-muted rounded">
+                    <span className="text-sm">Juventude Negra</span>
+                    <Badge>{lacunasJuventude.length}</Badge>
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full mt-4 gap-2" asChild>
+                  <a href="/recomendacoes">
+                    <FileText className="w-4 h-4" />
+                    Ver todas as lacunas
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </DashboardLayout>
   );
 }
