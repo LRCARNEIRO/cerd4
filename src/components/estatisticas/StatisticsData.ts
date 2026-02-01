@@ -25,9 +25,10 @@ export const dadosDemograficos = {
     { raca: 'Amarela', percentual: 0.42, populacao: 850130 }
   ],
   // Dados quilombolas: primeira contagem oficial da história
-  // Fonte: IBGE Censo 2022 - Quilombolas
-  // URL: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
-  quilombolas: 1327802,
+  // Fonte: IBGE Censo 2022 - SIDRA Tabela 9578
+  // URL: https://sidra.ibge.gov.br/Tabela/9578
+  // API: https://apisidra.ibge.gov.br/values/t/9578/n1/1/v/93/p/2022/c741/all
+  quilombolas: 1330186,
   municipiosComQuilombolas: 1696,
   quilombolasEmTerritorios: 167202, // 12,6% em territórios reconhecidos
   // População negra = pretos + pardos (Tabela 9605 / Censo 2022)
@@ -310,8 +311,10 @@ export const povosTradicionais = {
   },
   quilombolas: {
     // Primeira contagem oficial de quilombolas da história do Brasil
-    // Fonte: IBGE Censo 2022 - "Brasil tem 1,3 milhão de quilombolas em 1.696 municípios" (27/07/2023)
-    populacao: 1327802,
+    // Fonte: IBGE Censo 2022 - SIDRA Tabela 9578: População residente, total e quilombola
+    // URL: https://sidra.ibge.gov.br/Tabela/9578
+    // API: https://apisidra.ibge.gov.br/values/t/9578/n1/1/v/93/p/2022/c741/all
+    populacao: 1330186,
     percentualBrasil: 0.65,
     municipiosComQuilombolas: 1696,
     domiciliosQuilombolas: 473970,
@@ -324,9 +327,9 @@ export const povosTradicionais = {
     acessoAgua: 45.2,
     acessoSaneamento: 28.5,
     bolsaFamilia: 78.5,
-    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Quilombolas',
-    urlFonte: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html',
-    dataReferencia: '27/07/2023'
+    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9578',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9578',
+    dataReferencia: '22/12/2023'
   },
   ciganos: {
     populacaoEstimada: 800000,
