@@ -1,16 +1,1 @@
-project_id = "bssseleaqfeqwpqjprpe"
-
-[functions.generate-report]
-verify_jwt = false
-
-[functions.generate-thematic-report]
-verify_jwt = false
-
-[functions.generate-budget-report]
-verify_jwt = false
-
-[functions.process-data-upload]
-verify_jwt = false
-
-[functions.generate-ai-report]
-verify_jwt = false
+project_id = "dglurebltgfusdpzccdt"
