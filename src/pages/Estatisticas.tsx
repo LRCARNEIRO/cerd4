@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
-  FileText, DollarSign, BarChart3, Shield, Database, Globe 
+  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen 
 } from 'lucide-react';
 
 // Componentes de abas
@@ -23,6 +23,7 @@ import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 import { OrcamentoTab } from '@/components/estatisticas/OrcamentoTab';
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
+import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 
 export default function Estatisticas() {
   return (
@@ -55,8 +56,13 @@ export default function Estatisticas() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="dados-gerais" className="w-full">
+      <Tabs defaultValue="common-core" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
+          {/* Common Core - Nova aba principal */}
+          <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
+            <BookOpen className="w-4 h-4" /> Common Core (77)
+          </TabsTrigger>
+          
           {/* Dados gerais e CERD */}
           <TabsTrigger value="dados-gerais" className="gap-1">
             <Database className="w-4 h-4" /> Dados Gerais
@@ -100,6 +106,11 @@ export default function Estatisticas() {
             <Briefcase className="w-4 h-4" /> Classe Social
           </TabsTrigger>
         </TabsList>
+
+        {/* Common Core - 77 Tabelas */}
+        <TabsContent value="common-core">
+          <CommonCoreTab />
+        </TabsContent>
 
         {/* Dados Gerais / Common Core */}
         <TabsContent value="dados-gerais">
