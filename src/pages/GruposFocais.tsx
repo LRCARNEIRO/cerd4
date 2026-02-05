@@ -27,22 +27,26 @@ const gruposFocaisData = {
   },
   indigenas: {
     nome: 'Indígenas',
-    // Dados do Censo 2022 - critério "Pessoas Indígenas"
+    // Dados do Censo 2022 - critério "Pessoas Indígenas" (metodologia ampliada)
+    // Fonte oficial: https://www.ibge.gov.br/brasil-indigena/
     populacao: 1694836,
-    fonte: 'IBGE - Censo Demográfico 2022',
-    tabela: 'Tabela 9674 - SIDRA (Pessoas Indígenas)',
-    link: 'https://sidra.ibge.gov.br/tabela/9674',
-    ultimaAtualizacao: '2023-08-07',
+    fonte: 'IBGE - Censo Demográfico 2022 (Pessoas Indígenas)',
+    // CORREÇÃO: Tabela 9674 é sobre INTERNET, não população indígena!
+    // Tabela correta: 9595 (Pessoas Indígenas) ou consulta especial Brasil Indígena
+    tabela: 'Tabela 9595 - SIDRA (Pessoas Indígenas)',
+    link: 'https://sidra.ibge.gov.br/tabela/9595',
+    linkEspecial: 'https://www.ibge.gov.br/brasil-indigena/',
+    ultimaAtualizacao: '2024-10-24',
     // Série temporal com dados anteriores (Cor ou Raça) e novo critério
     serieTemporal: [
-      { ano: 2010, valor: 817963, fonte: 'Censo 2010 - Cor ou Raça' },
+      { ano: 2010, valor: 896917, fonte: 'Censo 2010 - Pessoas Indígenas' },
       { ano: 2022, valor: 1694836, fonte: 'Censo 2022 - Pessoas Indígenas' },
     ],
-    populacaoCorRaca: 1652876, // Tabela 9606 - Cor ou Raça
+    populacaoCorRaca: 1227642, // Tabela 9605 - Cor ou Raça (indígena como categoria)
     observacoesONU: ['50', '51', '52', '53'],
     politicas: ['Demarcação de Terras Indígenas (FUNAI)', 'SESAI - Saúde Indígena', 'Educação Escolar Indígena'],
     indicadores: ['Terras homologadas', 'Etnias reconhecidas', 'Línguas vivas', 'Mortalidade infantil indígena'],
-    notas: 'Censo 2022 adotou conceito ampliado de "Pessoas Indígenas" (§1.694.836). Cor ou Raça: 1.652.876.',
+    notas: 'Censo 2022: metodologia ampliada contou 1.694.836 Pessoas Indígenas. Cor/Raça (Tab. 9605): 1.227.642. Fonte: ibge.gov.br/brasil-indigena',
   },
   ciganos: {
     nome: 'Ciganos/Roma',
@@ -113,27 +117,35 @@ const gruposFocaisData = {
   },
 };
 
-// Dados territoriais INCRA/FUNAI
+// Dados territoriais INCRA/FUNAI - AUDITADOS E CORRIGIDOS
 const dadosTerritoriais = {
   quilombolas: {
     territoriosTitulados: 185,
     territoriosEmProcesso: 1796,
-    comunidadesCertificadasFCP: 3551,
+    comunidadesCertificadasFCP: 3596, // Atualizado FCP 2025
     familiasAtendidas: 155000,
     areaTotal: 1100000, // hectares
-    fonte: 'INCRA - Painel Quilombola',
+    fonte: 'INCRA - Painel Quilombola / Fundação Palmares',
     link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+    linkFCP: 'https://www.gov.br/palmares/pt-br/servicos/certidoes-expedidas-as-comunidades-remanescentes-de-quilombos-crqs',
     ultimaAtualizacao: '2025-01-15',
+    notaFonte: 'INCRA: dados de titulação. FCP: certidões de autodefinição.',
   },
   indigenas: {
-    terrasHomologadas: 487,
-    terrasEmEstudo: 128,
-    etniasIdentificadas: 305,
-    linguasVivas: 274,
-    areaTotal: 117000000, // hectares
-    fonte: 'FUNAI - Sistema Indigenista',
-    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
-    ultimaAtualizacao: '2025-01-10',
+    // CORREÇÃO: Dados oficiais FUNAI - Geoprocessamento (ago/2025)
+    // Fonte: https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas
+    terrasTotal: 644, // Total de terras indígenas registradas
+    terrasHomologadas: 496, // Homologadas + regularizadas
+    terrasEmEstudo: 148, // Em identificação, declaradas, etc.
+    // CORREÇÃO: Censo 2022 identificou 391 etnias e 295 línguas
+    etniasIdentificadas: 391,
+    linguasVivas: 295,
+    areaTotal: 117400000, // hectares (1,174 milhão km²)
+    fonte: 'FUNAI - Coord. de Geoprocessamento (ago/2025)',
+    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
+    linkPainel: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas#painel',
+    ultimaAtualizacao: '2025-08-20',
+    notaFonte: 'Dados geoespaciais atualizados mensalmente. Etnias/línguas: IBGE Censo 2022.',
   },
 };
 
@@ -376,7 +388,8 @@ export default function GruposFocais() {
                 </div>
                 <Progress value={10} className="h-2 mb-2" />
                 <p className="text-xs text-muted-foreground">≈10% dos processos concluídos</p>
-                <div className="mt-4 flex gap-2">
+                <p className="text-xs text-muted-foreground mb-2">{dadosTerritoriais.quilombolas.notaFonte}</p>
+                <div className="mt-4 flex gap-2 flex-wrap">
                   <Button variant="outline" size="sm" asChild>
                     <a href={dadosTerritoriais.quilombolas.link} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-1" />
@@ -384,7 +397,7 @@ export default function GruposFocais() {
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href="https://www.palmares.gov.br/?page_id=37551" target="_blank" rel="noopener noreferrer">
+                    <a href={dadosTerritoriais.quilombolas.linkFCP} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="w-4 h-4 mr-1" />
                       Certidões FCP
                     </a>
@@ -406,23 +419,24 @@ export default function GruposFocais() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center p-4 bg-info/10 rounded-lg">
+                    <p className="text-3xl font-bold text-info">{dadosTerritoriais.indigenas.terrasTotal}</p>
+                    <p className="text-sm text-muted-foreground">Total TIs Registradas</p>
+                  </div>
                   <div className="text-center p-4 bg-success/10 rounded-lg">
                     <p className="text-3xl font-bold text-success">{dadosTerritoriais.indigenas.terrasHomologadas}</p>
-                    <p className="text-sm text-muted-foreground">Terras Homologadas</p>
-                  </div>
-                  <div className="text-center p-4 bg-warning/10 rounded-lg">
-                    <p className="text-3xl font-bold text-warning">{dadosTerritoriais.indigenas.terrasEmEstudo}</p>
-                    <p className="text-sm text-muted-foreground">Em Estudo</p>
+                    <p className="text-sm text-muted-foreground">Homologadas/Regularizadas</p>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.etniasIdentificadas}</p>
-                    <p className="text-sm text-muted-foreground">Etnias</p>
+                    <p className="text-sm text-muted-foreground">Etnias (Censo 2022)</p>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
                     <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.linguasVivas}</p>
-                    <p className="text-sm text-muted-foreground">Línguas</p>
+                    <p className="text-sm text-muted-foreground">Línguas (Censo 2022)</p>
                   </div>
                 </div>
+                <p className="text-xs text-muted-foreground mb-2">{dadosTerritoriais.indigenas.notaFonte}</p>
                 <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-4">
                   <p className="text-sm font-medium text-warning flex items-center gap-1">
                     <AlertTriangle className="w-4 h-4" />
@@ -432,12 +446,20 @@ export default function GruposFocais() {
                     Decisão do STF (2023) rejeitou tese do marco temporal. Congresso aprovou Lei 14.701/2023.
                   </p>
                 </div>
-                <Button variant="outline" size="sm" asChild>
-                  <a href={dadosTerritoriais.indigenas.link} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-1" />
-                    FUNAI - Terras Indígenas
-                  </a>
-                </Button>
+                <div className="flex gap-2 flex-wrap">
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={dadosTerritoriais.indigenas.link} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      FUNAI - Geoprocessamento
+                    </a>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <a href="https://www.ibge.gov.br/brasil-indigena/" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="w-4 h-4 mr-1" />
+                      IBGE - Brasil Indígena
+                    </a>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

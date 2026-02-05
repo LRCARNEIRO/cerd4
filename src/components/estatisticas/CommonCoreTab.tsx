@@ -262,11 +262,13 @@ const tabelasDemograficas: CommonCoreTable[] = [
         ['Preta', '7.335.130', '10.554.336', '14.351.162', '20.656.458', '10,17%'],
         ['Parda', '62.316.085', '65.318.092', '82.820.452', '92.083.286', '45,34%'],
         ['Amarela', '630.658', '761.583', '2.105.353', '850.130', '0,42%'],
+        // ATENÇÃO: Indígena por COR/RAÇA (Tabela 9605) = 1.227.642
+        // Pessoas Indígenas (metodologia ampliada) = 1.694.836 (ver ibge.gov.br/brasil-indigena)
         ['Indígena (cor/raça)', '294.148', '734.127', '821.501', '1.227.642', '0,60%'],
         ['Negra (Preta+Parda)', '69.651.215', '75.872.428', '97.171.614', '112.739.744', '55,51%']
       ]
     },
-    notas: 'População negra = pretos + pardos. Indígenas por cor/raça: 1.227.642 (Tabela 9605). Contagem específica de Pessoas Indígenas: 1.693.535 (metodologia ampliada).',
+    notas: 'População negra = pretos + pardos. Indígenas por cor/raça (Tab. 9605): 1.227.642. Contagem ampliada de Pessoas Indígenas (Censo 2022): 1.694.836 (fonte: ibge.gov.br/brasil-indigena).',
     tendencia: 'crescente'
   },
   {
