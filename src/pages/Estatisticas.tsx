@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
-  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen 
+  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle 
 } from 'lucide-react';
 
 // Componentes de abas
@@ -24,6 +24,7 @@ import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 import { OrcamentoTab } from '@/components/estatisticas/OrcamentoTab';
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
+import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 
 export default function Estatisticas() {
   return (
@@ -61,6 +62,11 @@ export default function Estatisticas() {
           {/* Common Core - Nova aba principal */}
           <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
             <BookOpen className="w-4 h-4" /> Common Core (77)
+          </TabsTrigger>
+          
+          {/* DADOS NOVOS - Nova aba */}
+          <TabsTrigger value="dados-novos" className="gap-1 bg-accent/20">
+            <PlusCircle className="w-4 h-4" /> Dados Novos
           </TabsTrigger>
           
           {/* Dados gerais e CERD */}
@@ -110,6 +116,11 @@ export default function Estatisticas() {
         {/* Common Core - 77 Tabelas */}
         <TabsContent value="common-core">
           <CommonCoreTab />
+        </TabsContent>
+
+        {/* DADOS NOVOS - Indicadores ainda não registrados */}
+        <TabsContent value="dados-novos">
+          <DadosNovosTab />
         </TabsContent>
 
         {/* Dados Gerais / Common Core */}
