@@ -451,8 +451,11 @@ export const focalGroups: FocalGroup[] = [
   {
     id: 'grupo-2',
     nome: 'Povos Indígenas',
-    populacao: 1694836, // SIDRA Tabela 9674 - Pessoas Indígenas
-    fontePopulacao: 'SIDRA/IBGE - Censo 2022 - Tabela 9674 (Pessoas Indígenas)',
+    // DADO CORRETO: IBGE Brasil Indígena - 1.694.836 Pessoas Indígenas (metodologia ampliada)
+    // NÃO usar Tabela 9674 (que é sobre internet)!
+    // Fonte correta: https://www.ibge.gov.br/brasil-indigena/ e Tabela 9595
+    populacao: 1694836,
+    fontePopulacao: 'IBGE - Censo 2022 - Pessoas Indígenas (ibge.gov.br/brasil-indigena)',
     indicadoresEspecificos: ['Terras demarcadas', 'Saúde indígena', 'Educação bilíngue'],
     politicasEspecificas: ['Demarcação de terras', 'SESAI'],
     observacoesONU: ['50', '51', '52', '53']
