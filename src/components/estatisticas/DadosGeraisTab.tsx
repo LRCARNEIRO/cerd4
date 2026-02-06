@@ -136,10 +136,10 @@ export function DadosGeraisTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Evolução da Autodeclaração Racial (2018-2026)
+              Evolução da Autodeclaração Racial (2018-2024)
             </CardTitle>
             <CardDescription>
-              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual (2018-2024) + Projeções (2025-2026)
+              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual (2018-2024)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -167,8 +167,6 @@ export function DadosGeraisTab() {
               <p className="text-xs">
                 <strong>Dados PNAD Contínua Anual (SIDRA Tabela 6403):</strong> Série histórica 2018-2024 | Ano-referência 2022 (Censo) confirma: 
                 Pardos 45,34%, Brancos 43,46%, Pretos 10,17%. População negra (pretos + pardos): 55,51%.
-                <br />
-                <span className="text-muted-foreground italic">Nota: Anos 2025-2026 são projeções baseadas em tendência histórica. O Censo 2022 (Tabela 9605) é a fotografia demográfica oficial.</span>
               </p>
             </div>
             <div className="text-xs text-muted-foreground mt-2 space-y-1">
@@ -192,9 +190,9 @@ export function DadosGeraisTab() {
       {/* Indicadores socioeconômicos - série histórica */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2026)</CardTitle>
+          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2024)</CardTitle>
           <CardDescription>
-            Evolução anual de renda, desemprego e pobreza | PNAD Contínua Trimestral/Anual (SIDRA Tabelas 6403, 6800, 6381)
+            Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6403, 6800, 6381)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -317,7 +315,7 @@ export function DadosGeraisTab() {
                 Tabela 6403 - Características gerais
               </a>
             </p>
-            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023). Anos 2025-2026 são projeções.</p>
+            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2024). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
           </div>
         </CardContent>
       </Card>

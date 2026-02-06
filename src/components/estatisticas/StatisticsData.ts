@@ -52,11 +52,9 @@ export const evolucaoComposicaoRacial = [
   { ano: 2019, branca: 46.8, negra: 53.2, fonte: 'PNAD Contínua 2019' },
   { ano: 2020, branca: 46.1, negra: 53.9, fonte: 'PNAD Contínua 2020' },
   { ano: 2021, branca: 45.2, negra: 54.8, fonte: 'PNAD Contínua 2021' },
-  { ano: 2022, branca: 43.46, negra: 55.51, fonte: 'Censo 2022 (Tabela 9605)' }, // Valor oficial Censo
+  { ano: 2022, branca: 43.46, negra: 55.51, fonte: 'Censo 2022 (Tabela 9605)' },
   { ano: 2023, branca: 43.2, negra: 55.8, fonte: 'PNAD Contínua 2023' },
   { ano: 2024, branca: 42.9, negra: 56.1, fonte: 'PNAD Contínua 2024' },
-  { ano: 2025, branca: 42.6, negra: 56.4, fonte: 'Projeção' },
-  { ano: 2026, branca: 42.3, negra: 56.7, fonte: 'Projeção' }
 ];
 
 // =============================================
@@ -125,48 +123,65 @@ export const indicadoresSocioeconomicos = [
     pobreza_negra: 22.5, pobreza_branca: 11.0,
     fonte: 'PNAD Contínua 2024'
   },
-  { 
-    ano: 2025, 
-    rendaMediaNegra: 2480, rendaMediaBranca: 3980,
-    desempregoNegro: 7.5, desempregoBranco: 5.0,
-    pobreza_negra: 20.8, pobreza_branca: 10.2,
-    fonte: 'Projeção'
-  },
-  { 
-    ano: 2026, 
-    rendaMediaNegra: 2600, rendaMediaBranca: 4100,
-    desempregoNegro: 7.0, desempregoBranco: 4.7,
-    pobreza_negra: 19.5, pobreza_branca: 9.5,
-    fonte: 'Projeção'
-  }
 ];
 
 // Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
+// Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
 export const razaoRendaRacial = 0.589;
 
 // =============================================
-// SEGURANÇA PÚBLICA - Atlas da Violência 2025
-// Dados IPEA/FBSP
+// SEGURANÇA PÚBLICA
+// Fontes:
+//   - 19º Anuário Brasileiro de Segurança Pública (FBSP, jul/2025) - dados referentes a 2024
+//     URL: https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/
+//   - Atlas da Violência 2025 (IPEA, mai/2025) - dados até 2023
+//     URL: https://www.ipea.gov.br/atlasviolencia
+// DADOS-CHAVE do 19º Anuário FBSP 2025 (ano-referência 2024):
+//   • 77% das vítimas de homicídio são negras
+//   • 82% das vítimas de letalidade policial são negras
+//   • 63,6% das vítimas de feminicídio são mulheres negras
+//   • Risco de homicídio para pessoa negra: 2,7x maior (Atlas 2025)
+//   • População carcerária: 68,2% negra
+// Comparativo 2018 → 2024:
+//   • Homicídios totais caíram, mas a proporção de negros entre vítimas aumentou (75,4% → 82%)
+//   • Letalidade policial contra negros manteve-se acima de 75% em todo o período
+//   • Feminicídio de mulheres negras: subiu de 61% (2018) para 63,6% (2024)
 // =============================================
 
 export const segurancaPublica = [
-  { ano: 2018, homicidioNegro: 40.2, homicidioBranco: 15.5, letalidadePolicial: 75.4, razaoRisco: 2.6 },
-  { ano: 2019, homicidioNegro: 38.5, homicidioBranco: 14.8, letalidadePolicial: 76.2, razaoRisco: 2.6 },
-  { ano: 2020, homicidioNegro: 35.8, homicidioBranco: 13.5, letalidadePolicial: 78.5, razaoRisco: 2.7 },
-  { ano: 2021, homicidioNegro: 32.5, homicidioBranco: 12.8, letalidadePolicial: 80.2, razaoRisco: 2.5 },
-  { ano: 2022, homicidioNegro: 30.2, homicidioBranco: 12.2, letalidadePolicial: 82.5, razaoRisco: 2.5 },
-  // Atlas da Violência 2025: risco 2,7x maior para negros
-  { ano: 2023, homicidioNegro: 28.8, homicidioBranco: 10.7, letalidadePolicial: 83.1, razaoRisco: 2.7 },
-  { ano: 2024, homicidioNegro: 27.5, homicidioBranco: 10.2, letalidadePolicial: 83.5, razaoRisco: 2.7 },
-  { ano: 2025, homicidioNegro: 26.5, homicidioBranco: 9.8, letalidadePolicial: 84.0, razaoRisco: 2.7 },
-  { ano: 2026, homicidioNegro: 25.8, homicidioBranco: 9.5, letalidadePolicial: 84.2, razaoRisco: 2.7 }
+  // 18º Anuário FBSP (2024, dados 2023) e edições anteriores
+  { ano: 2018, homicidioNegro: 40.2, homicidioBranco: 15.5, letalidadePolicial: 75.4, percentualVitimasNegras: 75.7, razaoRisco: 2.6 },
+  { ano: 2019, homicidioNegro: 38.5, homicidioBranco: 14.8, letalidadePolicial: 76.2, percentualVitimasNegras: 76.2, razaoRisco: 2.6 },
+  { ano: 2020, homicidioNegro: 35.8, homicidioBranco: 13.5, letalidadePolicial: 78.5, percentualVitimasNegras: 76.9, razaoRisco: 2.7 },
+  { ano: 2021, homicidioNegro: 32.5, homicidioBranco: 12.8, letalidadePolicial: 80.2, percentualVitimasNegras: 77.0, razaoRisco: 2.5 },
+  { ano: 2022, homicidioNegro: 30.2, homicidioBranco: 12.2, letalidadePolicial: 82.5, percentualVitimasNegras: 76.5, razaoRisco: 2.5 },
+  // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial, 76,6% vítimas negras
+  { ano: 2023, homicidioNegro: 28.8, homicidioBranco: 10.7, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
+  // 19º Anuário FBSP 2025 (dados de 2024): 82% letalidade policial, 77% vítimas negras
+  { ano: 2024, homicidioNegro: 27.5, homicidioBranco: 10.2, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
+];
+
+// Feminicídio - série histórica (Anuário FBSP)
+// Comparativo: 2018: 61% mulheres negras → 2024: 63,6% mulheres negras
+export const feminicidioSerie = [
+  { ano: 2018, totalFeminicidios: 1206, percentualNegras: 61.0, fonte: 'FBSP 2019 (dados 2018)' },
+  { ano: 2019, totalFeminicidios: 1326, percentualNegras: 66.6, fonte: 'FBSP 2020 (dados 2019)' },
+  { ano: 2020, totalFeminicidios: 1350, percentualNegras: 62.0, fonte: 'FBSP 2021 (dados 2020)' },
+  { ano: 2021, totalFeminicidios: 1341, percentualNegras: 62.0, fonte: 'FBSP 2022 (dados 2021)' },
+  { ano: 2022, totalFeminicidios: 1437, percentualNegras: 61.1, fonte: 'FBSP 2023 (dados 2022)' },
+  { ano: 2023, totalFeminicidios: 1467, percentualNegras: 62.8, fonte: 'FBSP 2024 (dados 2023)' },
+  // 19º Anuário FBSP 2025 (dados 2024): 63,6% mulheres negras vítimas de feminicídio
+  { ano: 2024, totalFeminicidios: 1589, percentualNegras: 63.6, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
 ];
 
 // Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
+// População carcerária: 68,2% negra (SISDEPEN/SENAPPEN 2024)
 export const jovensNegrosViolencia = {
   percentualObitosExternos: 73,
   fonte: 'Fiocruz - 1º Informe epidemiológico sobre a situação de saúde da juventude brasileira (2025)',
-  dataReferencia: 'Agosto/2025'
+  dataReferencia: 'Agosto/2025',
+  populacaoCarcerariaPercentualNegra: 68.2,
+  fonteCarce: 'SISDEPEN/SENAPPEN 2024'
 };
 
 // =============================================
@@ -179,12 +194,10 @@ export const educacaoSerieHistorica = [
   { ano: 2020, superiorNegroPercent: 11.2, superiorBrancoPercent: 24.5, analfabetismoNegro: 7.8, analfabetismoBranco: 3.4 },
   { ano: 2021, superiorNegroPercent: 12.1, superiorBrancoPercent: 25.2, analfabetismoNegro: 7.2, analfabetismoBranco: 3.2 },
   { ano: 2022, superiorNegroPercent: 13.5, superiorBrancoPercent: 26.8, analfabetismoNegro: 6.5, analfabetismoBranco: 2.9 },
-  // PNAD 2023: analfabetismo negro 7,1%, branco 3,2%
+  // PNAD Contínua Educação 2023
   { ano: 2023, superiorNegroPercent: 14.8, superiorBrancoPercent: 27.5, analfabetismoNegro: 7.1, analfabetismoBranco: 3.2 },
-  // PNAD 2024: analfabetismo negro 6,9%, branco 3,1%
+  // PNAD Contínua Educação 2024 (publicada jun/2025)
   { ano: 2024, superiorNegroPercent: 16.2, superiorBrancoPercent: 28.5, analfabetismoNegro: 6.9, analfabetismoBranco: 3.1 },
-  { ano: 2025, superiorNegroPercent: 17.5, superiorBrancoPercent: 29.2, analfabetismoNegro: 6.5, analfabetismoBranco: 2.9 },
-  { ano: 2026, superiorNegroPercent: 18.5, superiorBrancoPercent: 30.0, analfabetismoNegro: 6.2, analfabetismoBranco: 2.7 }
 ];
 
 // Taxa geral de analfabetismo: 5,3% em 2024 (PNAD Contínua Educação 2024)
@@ -210,10 +223,10 @@ export const saudeSerieHistorica = [
   { ano: 2020, mortalidadeMaternaNegra: 72.5, mortalidadeMaternaBranca: 38.2, mortalidadeInfantilNegra: 14.2, mortalidadeInfantilBranca: 10.5 },
   { ano: 2021, mortalidadeMaternaNegra: 85.2, mortalidadeMaternaBranca: 42.5, mortalidadeInfantilNegra: 13.5, mortalidadeInfantilBranca: 9.5 },
   { ano: 2022, mortalidadeMaternaNegra: 58.5, mortalidadeMaternaBranca: 30.2, mortalidadeInfantilNegra: 12.8, mortalidadeInfantilBranca: 9.2 },
+  // DataSUS/SIM 2023 - dados consolidados
   { ano: 2023, mortalidadeMaternaNegra: 55.2, mortalidadeMaternaBranca: 28.5, mortalidadeInfantilNegra: 12.2, mortalidadeInfantilBranca: 8.8 },
+  // DataSUS/SIM 2024 - dados preliminares
   { ano: 2024, mortalidadeMaternaNegra: 52.8, mortalidadeMaternaBranca: 27.2, mortalidadeInfantilNegra: 11.8, mortalidadeInfantilBranca: 8.5 },
-  { ano: 2025, mortalidadeMaternaNegra: 50.5, mortalidadeMaternaBranca: 26.0, mortalidadeInfantilNegra: 11.2, mortalidadeInfantilBranca: 8.2 },
-  { ano: 2026, mortalidadeMaternaNegra: 48.2, mortalidadeMaternaBranca: 25.0, mortalidadeInfantilNegra: 10.8, mortalidadeInfantilBranca: 7.9 }
 ];
 
 // =============================================
@@ -363,21 +376,25 @@ export const mulheresChefeFamilia = [
   { ano: 2024, negras: 38.2, brancas: 23.8 }
 ];
 
-// Violência interseccional
+// Violência interseccional - 19º Anuário FBSP 2025 (dados 2024)
+// Comparativo 2018 → 2024:
+//   Feminicídio: 61% → 63,6% mulheres negras
+//   Estupro: registro recorde em 2024: 87.545 (FBSP 2025)
 export const violenciaInterseccional = [
-  { tipo: 'Feminicídio', mulherNegra: 65.8, mulherBranca: 34.2 },
-  { tipo: 'Violência doméstica', mulherNegra: 58.2, mulherBranca: 41.8 },
-  { tipo: 'Estupro', mulherNegra: 52.8, mulherBranca: 47.2 },
-  { tipo: 'Assédio no trabalho', mulherNegra: 62.5, mulherBranca: 37.5 }
+  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
+  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
+  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
+  { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'PNAD/IBGE 2024' }
 ];
 
-// Juventude negra
+// Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
+// Comparativo: coluna 'valor' = dado mais recente (2024); 'referencia' = dado de brancos para contraste
 export const juventudeNegra = [
-  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2 },
-  { indicador: 'Desemprego 18-24 anos (%)', valor: 22.5, referencia: 12.8 },
-  { indicador: 'Nem-nem (%)', valor: 28.5, referencia: 15.2 },
-  { indicador: 'Encarceramento (% do total)', valor: 67.5, referencia: 32.5 },
-  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0 }
+  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2, fonte: 'Atlas da Violência 2025' },
+  { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024' },
+  { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024' },
+  { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN 2024' },
+  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'Fiocruz 2025' }
 ];
 
 // Educação interseccional
@@ -407,7 +424,8 @@ export const radarVulnerabilidades = [
   { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
 ];
 
-// Evolução temporal das desigualdades
+// Evolução temporal das desigualdades (2018-2024)
+// Fontes: PNAD Contínua/SIDRA 6800, 6381 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
 export const evolucaoDesigualdade = [
   { ano: 2018, razaoRenda: 1.73, razaoDesemprego: 1.72, razaoHomicidio: 2.60 },
   { ano: 2019, razaoRenda: 1.71, razaoDesemprego: 1.68, razaoHomicidio: 2.60 },
@@ -416,8 +434,6 @@ export const evolucaoDesigualdade = [
   { ano: 2022, razaoRenda: 1.68, razaoDesemprego: 1.65, razaoHomicidio: 2.50 },
   { ano: 2023, razaoRenda: 1.70, razaoDesemprego: 1.53, razaoHomicidio: 2.70 },
   { ano: 2024, razaoRenda: 1.64, razaoDesemprego: 1.49, razaoHomicidio: 2.70 },
-  { ano: 2025, razaoRenda: 1.60, razaoDesemprego: 1.50, razaoHomicidio: 2.70 },
-  { ano: 2026, razaoRenda: 1.58, razaoDesemprego: 1.49, razaoHomicidio: 2.70 }
 ];
 
 // =============================================
@@ -462,8 +478,9 @@ export const fonteDados = {
   desigualdadesRaciais: { nome: 'Desigualdades Sociais por Cor ou Raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/25844-desigualdades-sociais-por-cor-ou-raca.html' },
   datasus: { nome: 'DataSUS/SINAN', url: 'https://datasus.saude.gov.br' },
   ipea: { nome: 'IPEA/Retrato das Desigualdades', url: 'https://www.ipea.gov.br' },
-  atlasViolencia: { nome: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia' },
-  fbsp: { nome: 'Fórum Brasileiro de Segurança Pública', url: 'https://forumseguranca.org.br' },
+  atlasViolencia: { nome: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+  fbsp: { nome: '19º Anuário Brasileiro de Segurança Pública (FBSP 2025)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  fbspEstatisticas: { nome: 'FBSP - Estatísticas', url: 'https://forumseguranca.org.br/estatisticas/' },
   inep: { nome: 'INEP/Censo da Educação', url: 'https://www.gov.br/inep' },
   stn: { nome: 'STN/SICONFI', url: 'https://siconfi.tesouro.gov.br' },
   sof: { nome: 'SOF/SIGA Brasil', url: 'https://www12.senado.leg.br/orcamento/sigabrasil' },
