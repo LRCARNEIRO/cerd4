@@ -14,9 +14,9 @@ export function SegurancaSaudeEducacaoTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Shield className="w-5 h-5 text-destructive" />
-            Segurança Pública - Violência Letal por Raça (2018-2026)
+            Segurança Pública - Violência Letal por Raça (2018-2024)
           </CardTitle>
-          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial</CardDescription>
+          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial | 19º Anuário FBSP 2025 + Atlas da Violência 2025</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -70,11 +70,12 @@ export function SegurancaSaudeEducacaoTab() {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium">Dados Atualizados - Atlas da Violência 2025</p>
+                <p className="text-sm font-medium">19º Anuário FBSP 2025 (dados 2024) + Atlas da Violência 2025</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Pessoa negra tem <strong>risco 2,7x maior</strong> de ser vítima de homicídio (IPEA/FBSP 2025). 
-                  Jovens negros representam <strong>73% dos óbitos por causas externas</strong> (Fiocruz 2025).
-                  Letalidade policial: mais de 83% das vítimas são negras.
+                  Pessoa negra tem <strong>risco 2,7x maior</strong> de ser vítima de homicídio (Atlas da Violência 2025/IPEA). 
+                  <strong>77% das vítimas</strong> de homicídio em 2024 são negras (FBSP 2025). Em 2018, eram 75,7%.
+                  Letalidade policial: <strong>82% das vítimas são negras</strong> (FBSP 2025). Em 2018: 75,4%.
+                  Jovens negros: <strong>73% dos óbitos por causas externas</strong> (Fiocruz 2025).
                 </p>
               </div>
             </div>
@@ -106,8 +107,12 @@ export function SegurancaSaudeEducacaoTab() {
           </Table>
           <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
             <FileText className="w-3 h-3" />
-            <a href={fonteDados.fbsp.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              {fonteDados.fbsp.nome} / Atlas da Violência <ExternalLink className="w-3 h-3" />
+            <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+              19º Anuário FBSP 2025 <ExternalLink className="w-3 h-3" />
+            </a>
+            {' | '}
+            <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+              Atlas da Violência 2025 (IPEA) <ExternalLink className="w-3 h-3" />
             </a>
           </p>
         </CardContent>
@@ -118,7 +123,7 @@ export function SegurancaSaudeEducacaoTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
-            Educação - Indicadores por Raça (2018-2026)
+            Educação - Indicadores por Raça (2018-2024)
           </CardTitle>
           <CardDescription>Ensino superior completo e analfabetismo</CardDescription>
         </CardHeader>
@@ -174,9 +179,9 @@ export function SegurancaSaudeEducacaoTab() {
 
           <div className="mt-4 p-3 bg-success/10 border border-success/30 rounded-lg">
             <p className="text-xs">
-              <strong>Dados PNAD Contínua 2024:</strong> Analfabetismo entre negros (6,9%) é mais que o dobro de brancos (3,1%). 
-              Entre idosos negros de 60+ anos, a taxa chega a 21,8%, contra 8,1% entre brancos da mesma faixa.
-              A proporção de negros com ensino superior dobrou de 9,3% (2018) para 18,5% (2026).
+              <strong>PNAD Contínua Educação 2024:</strong> Analfabetismo entre negros caiu de 9,1% (2018) para 6,9% (2024), mas segue mais que o dobro de brancos (3,1%). 
+              Entre idosos negros de 60+ anos, a taxa chega a 21,8%, contra 8,1% entre brancos.
+              Ensino superior entre negros: de 9,3% (2018) para 16,2% (2024) — avanço de 74%.
             </p>
           </div>
 
@@ -220,7 +225,7 @@ export function SegurancaSaudeEducacaoTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />
-            Saúde - Indicadores por Raça (2018-2026)
+            Saúde - Indicadores por Raça (2018-2024)
           </CardTitle>
           <CardDescription>Mortalidade materna e infantil por 100 mil nascidos vivos</CardDescription>
         </CardHeader>

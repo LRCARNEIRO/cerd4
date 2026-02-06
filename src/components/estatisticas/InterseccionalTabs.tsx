@@ -39,7 +39,7 @@ export function RacaGeneroTab() {
               <Heart className="w-5 h-5 text-destructive" />
               Violência contra Mulheres por Raça (%)
             </CardTitle>
-            <CardDescription>Fórum Brasileiro de Segurança Pública 2024</CardDescription>
+            <CardDescription>19º Anuário FBSP 2025 (dados 2024)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -64,7 +64,7 @@ export function RacaGeneroTab() {
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               <FileText className="w-3 h-3 inline mr-1" />
-              Mulheres negras são 65,8% das vítimas de feminicídio
+              Mulheres negras são 63,6% das vítimas de feminicídio (19º Anuário FBSP 2025, dados 2024). Em 2018: 61%.
             </p>
           </CardContent>
         </Card>
@@ -276,7 +276,7 @@ export function LgbtqiaTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça</h3>
               <p className="text-sm text-muted-foreground">
-                Pessoas LGBTQIA+ negras enfrentam <strong>dupla discriminação</strong>. Em 2024, 68,2% das vítimas de violência LGBTfóbica eram negras. 
+                Pessoas LGBTQIA+ negras enfrentam <strong>dupla discriminação</strong>. Em 2024, 68,2% das vítimas de violência LGBTfóbica eram negras (ANTRA 2025). 
                 O Brasil segue líder mundial em assassinatos de pessoas trans, com mulheres trans negras sendo as mais vulneráveis.
               </p>
             </div>
