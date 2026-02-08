@@ -388,6 +388,45 @@ function gerarFiosCondutores(
     relevancia: 'media'
   });
 
+  // FIO 8: Administração Pública — MUNIC/ESTADIC 2024
+  fios.push({
+    id: 'adm-publica-munic-estadic',
+    titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
+    tipo: 'lacuna_critica',
+    argumento: `A MUNIC/ESTADIC 2024 (IBGE) revela que apenas 2 estados possuem Fundos de Igualdade Racial ativos, e a maioria dos municípios carece de órgão dedicado ou conselho municipal de igualdade racial. A pesquisa mostra lacunas graves na institucionalização de políticas raciais em nível subnacional — especialmente para povos ciganos e indígenas, que praticamente não possuem estrutura específica em nenhuma esfera. Dos 5.570 municípios, menos de 5% possuem legislação municipal específica sobre igualdade racial.`,
+    evidencias: [
+      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa' },
+      { texto: 'Menos de 5% dos municípios com legislação racial específica', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
+      { texto: 'Perfil de gestores municipais: maioria brancos e homens', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
+      { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'MUNIC/ESTADIC 2024', tipo: 'qualitativa' },
+      { texto: 'Conselhos de igualdade racial presentes em ~8% dos municípios', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
+    ],
+    eixos: ['politicas_institucionais', 'dados_estatisticas'],
+    grupos: ['geral', 'ciganos', 'indigenas'],
+    relevancia: 'alta',
+    comparativo2018: `Em 2018 a pesquisa anterior (MUNIC 2019) já indicava fragilidade. Em 2024, apesar da recriação do MIR a nível federal, a capilarização para estados e municípios segue extremamente deficiente.`
+  });
+
+  // FIO 9: COVID-19 e Desigualdade Racial
+  fios.push({
+    id: 'covid-desigualdade-racial',
+    titulo: 'COVID-19: Pandemia Expôs e Aprofundou a Desigualdade Racial',
+    tipo: 'retrocesso',
+    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: excesso de mortalidade de +57% entre negros vs +38% entre brancos; letalidade hospitalar indígena de 62%; mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
+    evidencias: [
+      { texto: 'Excesso de mortalidade COVID negros: +57% vs brancos +38%', fonte: 'Fiocruz / Boletim Observatório COVID-19', tipo: 'quantitativa' },
+      { texto: 'Letalidade hospitalar indígena por COVID: 62%', fonte: 'DataSUS / SESAI', tipo: 'quantitativa' },
+      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
+      { texto: 'Insegurança alimentar grave: 18% lares negros vs 8% brancos', fonte: 'POF/IBGE 2022', tipo: 'quantitativa' },
+      { texto: 'Mulheres negras: últimas a recuperar emprego pós-pandemia', fonte: 'PNAD Contínua 2023', tipo: 'quantitativa' },
+      { texto: 'Acesso a UTI: negros com 30% menos chance de internação em UTI', fonte: 'Fiocruz', tipo: 'quantitativa' },
+    ],
+    eixos: ['saude', 'trabalho_renda', 'dados_estatisticas'],
+    grupos: ['negros', 'indigenas', 'mulheres_negras', 'idosos_negros'],
+    relevancia: 'alta',
+    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros e os efeitos de longo prazo (Long COVID, perda educacional) afetam desproporcionalmente crianças e jovens negros.`
+  });
+
   // FIO 7: Respostas CERD III - o que o Brasil respondeu e o que falta
   if (respostas.length > 0) {
     const naoCumpridas = respostas.filter(r => r.grau_atendimento === 'nao_cumprido');

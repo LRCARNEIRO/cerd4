@@ -2,7 +2,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign, HeartPulse } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -61,15 +61,17 @@ export default function Conclusoes() {
 
   return (
     <DashboardLayout
-      title="Conclusões Analíticas — Meta 4"
-      subtitle="Cruzamento exaustivo dos dados do Escopo do Projeto: Base Estatística × Orçamentária × Normativa (2018→2024)"
+      title="Conclusões Analíticas — Política Racial no Brasil"
+      subtitle="Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × MUNIC/ESTADIC × COVID-19 (2018→2024)"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <Badge variant="outline" className="gap-1"><BarChart3 className="w-3 h-3" />Base Estatística</Badge>
-          <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />Base Orçamentária</Badge>
-          <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />Base Normativa</Badge>
+          <Badge variant="outline" className="gap-1"><BarChart3 className="w-3 h-3" />Estatísticas</Badge>
+          <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />Orçamento</Badge>
+          <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />Normativa</Badge>
+          <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />MUNIC/ESTADIC</Badge>
+          <Badge variant="outline" className="gap-1 bg-destructive/10"><Heart className="w-3 h-3" />COVID-19</Badge>
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} lacunas ONU</Badge>
           <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores</Badge>
         </div>

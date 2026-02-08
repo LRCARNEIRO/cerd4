@@ -3,72 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { FileText, Download, CheckCircle2, AlertTriangle, Globe, BookOpen, FileCheck, ListChecks, ExternalLink, Loader2, FileDown, PieChart, DollarSign, Sparkles, RefreshCw, Database } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
-import { useCerdIVProgress, useCommonCoreProgress } from '@/hooks/useDynamicStats';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
-// Estrutura Common Core Document (HRI/CORE/BRA)
-const commonCoreEstrutura = [
-  {
-    secao: 'I',
-    titulo: 'General information about the reporting State',
-    tituloPortugues: 'Informações gerais sobre o Estado',
-    subsecoes: [
-      { num: 'A', titulo: 'Demographic, economic, social and cultural characteristics', status: 'atualizado', fontes: ['Censo 2022', 'PNAD', 'PIB/IBGE'] },
-      { num: 'B', titulo: 'Constitutional, political and legal structure', status: 'atualizado', fontes: ['Constituição', 'STF', 'TSE'] }
-    ]
-  },
-  {
-    secao: 'II',
-    titulo: 'General framework for the protection and promotion of human rights',
-    tituloPortugues: 'Marco geral de proteção e promoção dos direitos humanos',
-    subsecoes: [
-      { num: 'A', titulo: 'Acceptance of international human rights norms', status: 'atualizado', fontes: ['MRE', 'ONU'] },
-      { num: 'B', titulo: 'Legal framework for the protection of human rights', status: 'parcial', fontes: ['STF', 'MDHC'] },
-      { num: 'C', titulo: 'Framework for promotion of human rights at national level', status: 'parcial', fontes: ['MDHC', 'MIR'] },
-      { num: 'D', titulo: 'Reporting process at the national level', status: 'atualizado', fontes: ['CDG/UFF', 'MRE'] }
-    ]
-  },
-  {
-    secao: 'III',
-    titulo: 'Information on non-discrimination, equality and effective remedies',
-    tituloPortugues: 'Informações sobre não-discriminação, igualdade e recursos efetivos',
-    subsecoes: [
-      { num: 'A', titulo: 'Non-discrimination and equality', status: 'atualizado', fontes: ['Constituição', 'Leis antidiscriminação'] },
-      { num: 'B', titulo: 'Effective remedies', status: 'parcial', fontes: ['Judiciário', 'Ouvidorias'] }
-    ]
-  }
-];
-
-// Estrutura CERD IV (Relatório Periódico)
-const cerdIVEstrutura = [
-  { parte: 'I', titulo: 'Introdução', conteudo: 'Metodologia, período de cobertura (2018-2026), participação da sociedade civil', status: 'rascunho' },
-  { parte: 'II', titulo: 'Respostas às Observações Finais (CERD/C/BRA/CO/18-20)', conteudo: 'Resposta ponto a ponto às recomendações de 2022', status: 'em_elaboracao' },
-  { parte: 'III', titulo: 'Medidas legislativas, judiciárias e administrativas', conteudo: 'Novas leis, decisões judiciais e políticas públicas 2018-2026', status: 'em_elaboracao' },
-  { parte: 'IV', titulo: 'Aplicação dos artigos da Convenção', conteudo: 'Art. 2 a 7 - Medidas específicas por artigo', status: 'pendente' },
-  { parte: 'V', titulo: 'Dados estatísticos desagregados', conteudo: 'Indicadores interseccionais: raça × gênero × idade × classe × deficiência', status: 'coletado' },
-  { parte: 'VI', titulo: 'Povos tradicionais', conteudo: 'Indígenas, quilombolas e ciganos - situação e políticas', status: 'em_elaboracao' },
-  { parte: 'VII', titulo: 'Conclusões e compromissos', conteudo: 'Síntese de avanços, lacunas e plano de ação', status: 'pendente' }
-];
-
 const statusLabels: Record<string, { label: string; color: string }> = {
-  atualizado: { label: 'Atualizado', color: 'bg-success text-success-foreground' },
-  parcial: { label: 'Parcial', color: 'bg-warning text-warning-foreground' },
-  desatualizado: { label: 'Desatualizado', color: 'bg-destructive text-destructive-foreground' },
-  rascunho: { label: 'Rascunho', color: 'bg-muted text-muted-foreground' },
-  em_elaboracao: { label: 'Em elaboração', color: 'bg-primary/70 text-primary-foreground' },
-  pendente: { label: 'Pendente', color: 'bg-destructive/70 text-destructive-foreground' },
-  coletado: { label: 'Dados coletados', color: 'bg-success/70 text-success-foreground' },
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
   parcialmente_cumprido: { label: 'Parcial', color: 'bg-warning text-warning-foreground' },
   nao_cumprido: { label: 'Não Cumprido', color: 'bg-destructive text-destructive-foreground' },
@@ -77,91 +20,27 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function GerarRelatorios() {
-  const [generatingReport, setGeneratingReport] = useState<string | null>(null);
   const queryClient = useQueryClient();
   
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
-  const { data: conclusoes, isLoading: loadingConclusoes } = useConclusoesAnaliticas();
-  
-  // Hooks dinâmicos para progresso
-  const cerdProgress = useCerdIVProgress();
-  const commonCoreProgress = useCommonCoreProgress();
+  const { data: conclusoes } = useConclusoesAnaliticas();
+  const { data: indicadores } = useIndicadoresInterseccionais();
+  const { data: orcStats } = useOrcamentoStats();
 
-  const isLoading = loadingLacunas || loadingRespostas || loadingStats || loadingConclusoes;
-
-  const handleGenerateReport = async (type: 'common-core' | 'cerd-iv', format: 'pdf' | 'html') => {
-    setGeneratingReport(`${type}-${format}`);
-    try {
-      toast.info('Gerando relatório...', { description: 'Aguarde enquanto buscamos os dados do banco.' });
-      
-      const { data, error } = await supabase.functions.invoke('generate-report', {
-        body: { type, format }
-      });
-
-      if (error) throw error;
-
-      // Open HTML in new tab for printing/saving
-      const blob = new Blob([data], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const newWindow = window.open(url, '_blank');
-      
-      if (newWindow) {
-        toast.success('Relatório gerado!', { 
-          description: 'Use Ctrl+P para salvar como PDF ou copie o conteúdo para um documento Word.' 
-        });
-      } else {
-        // Fallback: download file
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${type === 'common-core' ? 'HRI-CORE-BRA-2026' : 'CERD-IV-BRA-2026'}.html`;
-        link.click();
-        toast.success('Relatório baixado!', { description: 'Abra o arquivo HTML no navegador.' });
-      }
-      
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error generating report:', error);
-      toast.error('Erro ao gerar relatório', { 
-        description: error instanceof Error ? error.message : 'Tente novamente.' 
-      });
-    } finally {
-      setGeneratingReport(null);
-    }
-  };
+  const isLoading = loadingLacunas || loadingRespostas || loadingStats;
 
   const handleRefresh = () => {
     queryClient.invalidateQueries();
-    toast.success('Dados atualizados!', { description: 'Estatísticas recalculadas com base no banco.' });
   };
 
-  // Calcular progresso baseado nos dados reais
   const totalLacunas = stats?.total || 0;
   const cumpridas = stats?.porStatus.cumprido || 0;
   const parciais = stats?.porStatus.parcialmente_cumprido || 0;
-  const progressoReal = totalLacunas > 0 ? Math.round(((cumpridas * 100) + (parciais * 50)) / totalLacunas) : 0;
+  const naoCumpridas = stats?.porStatus.nao_cumprido || 0;
+  const retrocessos = stats?.porStatus.retrocesso || 0;
 
-  const progressoRelatorios = {
-    commonCore: {
-      nome: 'Common Core Document (HRI/CORE/BRA)',
-      periodo: '2018-2026',
-      progresso: commonCoreProgress.progresso,
-      prazo: 'Dezembro 2025',
-      responsavel: 'CDG/UFF + MRE',
-      indicadores: `${commonCoreProgress.preenchidos}/${commonCoreProgress.total} indicadores`
-    },
-    cerdIV: {
-      nome: 'CERD IV - Relatório Periódico',
-      periodo: '2018-2026',
-      progresso: cerdProgress.progressoGeral,
-      prazo: 'Março 2026',
-      responsavel: 'CDG/UFF + MIR + MRE',
-      lacunas: totalLacunas
-    }
-  };
-
-  // Contagem de respostas por status
   const respostasStats = {
     cumprido: respostasCerd?.filter(r => r.grau_atendimento === 'cumprido').length || 0,
     parcialmente_cumprido: respostasCerd?.filter(r => r.grau_atendimento === 'parcialmente_cumprido').length || 0,
@@ -171,113 +50,64 @@ export default function GerarRelatorios() {
 
   return (
     <DashboardLayout
-      title="Gerar Relatórios"
-      subtitle="Common Core Document (HRI/CORE/BRA) e CERD IV (2018-2026)"
+      title="Gerar Relatórios Analíticos"
+      subtitle="Análise de políticas raciais com base nos dados do sistema — Lacunas ONU, Orçamento, Indicadores"
     >
-      {/* Header com refresh */}
-      <div className="flex justify-end mb-4">
-        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading} className="gap-2">
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          Atualizar dados
+      {/* Header analítico */}
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{totalLacunas} lacunas ONU</Badge>
+          <Badge variant="outline" className="gap-1"><FileCheck className="w-3 h-3" />{respostasCerd?.length || 0} respostas CERD III</Badge>
+          <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />{orcStats?.totalRegistros || 0} registros orçamentários</Badge>
+          <Badge variant="outline" className="gap-1"><TrendingUp className="w-3 h-3" />{indicadores?.length || 0} indicadores</Badge>
+          <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />{conclusoes?.length || 0} conclusões</Badge>
+        </div>
+        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+          <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />
+          Atualizar
         </Button>
       </div>
 
-      {/* Status Geral - Dinâmico */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="border-t-4 border-t-primary">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <BookOpen className="w-5 h-5 text-primary" />
-              {progressoRelatorios.commonCore.nome}
-            </CardTitle>
-            <CardDescription>Período: {progressoRelatorios.commonCore.periodo}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-sm">Progresso (Dinâmico)</span>
-                  <span className="text-sm font-bold">{progressoRelatorios.commonCore.progresso}%</span>
-                </div>
-                <Progress value={progressoRelatorios.commonCore.progresso} className="h-3" />
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Prazo:</p>
-                  <p className="font-medium">{progressoRelatorios.commonCore.prazo}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Indicadores:</p>
-                  <p className="font-medium">{progressoRelatorios.commonCore.indicadores}</p>
-                </div>
-              </div>
-              <div className="p-2 bg-muted rounded text-xs">
-                <p><strong>Status:</strong> {commonCoreProgress.atualizados} atualizados, {commonCoreProgress.parciais} parciais, {commonCoreProgress.desatualizados} desatualizados</p>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  className="flex-1 gap-2" 
-                  onClick={() => handleGenerateReport('common-core', 'html')}
-                  disabled={generatingReport !== null}
-                >
-                  {generatingReport === 'common-core-html' ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileDown className="w-4 h-4" />
-                  )}
-                  Gerar HTML/PDF
-                </Button>
-              </div>
-            </div>
+      {/* Panorama analítico - substituir cards de gestão por síntese de dados */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+        <Card className="border-success/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Cumpridas</p>
+            <p className="text-lg font-bold text-success">{cumpridas}</p>
+            <p className="text-xs text-muted-foreground">{totalLacunas > 0 ? Math.round(cumpridas/totalLacunas*100) : 0}%</p>
           </CardContent>
         </Card>
-
-        <Card className="border-t-4 border-t-accent">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="w-5 h-5 text-accent" />
-              {progressoRelatorios.cerdIV.nome}
-            </CardTitle>
-            <CardDescription>Período: {progressoRelatorios.cerdIV.periodo}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-sm">Progresso (baseado no banco)</span>
-                  <span className="text-sm font-bold">{progressoRelatorios.cerdIV.progresso}%</span>
-                </div>
-                <Progress value={progressoRelatorios.cerdIV.progresso} className="h-3" />
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Prazo:</p>
-                  <p className="font-medium">{progressoRelatorios.cerdIV.prazo}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Lacunas no banco:</p>
-                  <p className="font-medium">{progressoRelatorios.cerdIV.lacunas}</p>
-                </div>
-              </div>
-              <div className="p-2 bg-muted rounded text-xs">
-                <p><strong>Seções:</strong> Respostas OF {cerdProgress.secoes.respostasOF}%, Dados {cerdProgress.secoes.dadosEstatisticos}%, Povos {cerdProgress.secoes.povosTradicionais}%</p>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="secondary" 
-                  className="flex-1 gap-2"
-                  onClick={() => handleGenerateReport('cerd-iv', 'html')}
-                  disabled={generatingReport !== null}
-                >
-                  {generatingReport === 'cerd-iv-html' ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <FileDown className="w-4 h-4" />
-                  )}
-                  Gerar HTML/PDF
-                </Button>
-              </div>
-            </div>
+        <Card className="border-warning/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Parciais</p>
+            <p className="text-lg font-bold text-warning">{parciais}</p>
+            <p className="text-xs text-muted-foreground">{totalLacunas > 0 ? Math.round(parciais/totalLacunas*100) : 0}%</p>
+          </CardContent>
+        </Card>
+        <Card className="border-destructive/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Não cumpridas</p>
+            <p className="text-lg font-bold text-destructive">{naoCumpridas}</p>
+            <p className="text-xs text-muted-foreground">{totalLacunas > 0 ? Math.round(naoCumpridas/totalLacunas*100) : 0}%</p>
+          </CardContent>
+        </Card>
+        <Card className="border-destructive/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Retrocessos</p>
+            <p className="text-lg font-bold text-destructive">{retrocessos}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Orçamento</p>
+            <p className="text-lg font-bold">{orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}%` : 'N/A'}</p>
+            <p className="text-xs text-muted-foreground">variação entre períodos</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Prioridade crítica</p>
+            <p className="text-lg font-bold">{stats?.porPrioridade.critica || 0}</p>
           </CardContent>
         </Card>
       </div>
@@ -288,25 +118,16 @@ export default function GerarRelatorios() {
             <Sparkles className="w-4 h-4" /> Relatórios com IA
           </TabsTrigger>
           <TabsTrigger value="tematicos" className="gap-1">
-            <PieChart className="w-4 h-4" /> Relatórios Temáticos
+            <PieChart className="w-4 h-4" /> Temáticos
           </TabsTrigger>
           <TabsTrigger value="orcamento" className="gap-1">
             <DollarSign className="w-4 h-4" /> Orçamento
           </TabsTrigger>
           <TabsTrigger value="lacunas-db" className="gap-1">
-            <AlertTriangle className="w-4 h-4" /> Lacunas (Banco)
+            <AlertTriangle className="w-4 h-4" /> Lacunas ONU ({totalLacunas})
           </TabsTrigger>
           <TabsTrigger value="respostas-db" className="gap-1">
-            <FileCheck className="w-4 h-4" /> Respostas CERD III
-          </TabsTrigger>
-          <TabsTrigger value="common-core" className="gap-1">
-            <BookOpen className="w-4 h-4" /> Common Core
-          </TabsTrigger>
-          <TabsTrigger value="cerd-iv" className="gap-1">
-            <FileText className="w-4 h-4" /> CERD IV
-          </TabsTrigger>
-          <TabsTrigger value="guidelines" className="gap-1">
-            <ListChecks className="w-4 h-4" /> Guidelines
+            <FileCheck className="w-4 h-4" /> Respostas CERD III ({respostasCerd?.length || 0})
           </TabsTrigger>
         </TabsList>
 
@@ -318,43 +139,39 @@ export default function GerarRelatorios() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-violet-500" />
-                  Como funciona?
+                  Relatórios Analíticos com IA
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-sm text-muted-foreground">
                 <p>
-                  O <strong>Gerador com IA</strong> utiliza Inteligência Artificial (Lovable AI / Gemini 3) 
-                  para analisar todos os dados do banco de dados e gerar relatórios técnicos estruturados.
+                  Gere relatórios <strong>analíticos e conclusivos</strong> sobre a política racial brasileira,
+                  cruzando lacunas da ONU, dados orçamentários, indicadores e evidências do banco de dados.
                 </p>
                 <div className="space-y-2">
-                  <p className="font-medium text-foreground">Características:</p>
+                  <p className="font-medium text-foreground">O que os relatórios analisam:</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Usa <strong>exclusivamente</strong> dados do BD (não inventa informações)</li>
-                    <li>Gera análises interseccionais automaticamente</li>
-                    <li>Inclui evolução temporal 2018-2026</li>
-                    <li>Correlaciona orçamento × indicadores × lacunas</li>
-                    <li>Formato pronto para impressão/PDF</li>
+                    <li>Desigualdade racial estrutural (2018→2024): avanços e retrocessos</li>
+                    <li>Cruzamento orçamento × resultados de indicadores sociais</li>
+                    <li>Cumprimento das recomendações da ONU (CERD III e Observações Finais)</li>
+                    <li>Interseccionalidade: raça × gênero × idade × território</li>
+                    <li>Impacto COVID-19 e fragilidade institucional (MUNIC/ESTADIC)</li>
                   </ul>
                 </div>
                 <div className="space-y-2">
-                  <p className="font-medium text-foreground">Tipos de relatório:</p>
+                  <p className="font-medium text-foreground">Tipos disponíveis:</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li><strong>Common Core:</strong> Documento básico para tratados ONU</li>
-                    <li><strong>CERD IV:</strong> Relatório periódico ao Comitê</li>
-                    <li><strong>Temático:</strong> Por eixo ou grupo focal</li>
-                    <li><strong>Orçamentário:</strong> Execução financeira detalhada</li>
+                    <li><strong>Common Core:</strong> Análise demográfica e socioeconômica por raça</li>
+                    <li><strong>CERD IV:</strong> Balanço das políticas raciais para a ONU</li>
+                    <li><strong>Temático:</strong> Análise aprofundada por eixo ou grupo</li>
+                    <li><strong>Orçamentário:</strong> Análise de execução orçamentária racial</li>
                   </ul>
-                </div>
-                <div className="bg-violet-50 border border-violet-200 rounded-lg p-3">
-                  <p className="text-violet-800 text-xs">
-                    💡 <strong>Dica:</strong> Quanto mais dados no banco, mais rico será o relatório gerado. 
-                    Use o botão "Importar Dados" no painel principal para adicionar novas informações.
-                  </p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
+
+        {/* ABA: TEMÁTICOS */}
         <TabsContent value="tematicos">
           <ThematicReportGenerator />
         </TabsContent>
@@ -371,9 +188,9 @@ export default function GerarRelatorios() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-6 h-6 text-primary flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold mb-1">Lacunas Identificadas para o Relatório CERD IV</h3>
+                  <h3 className="font-semibold mb-1">Lacunas Identificadas — Recomendações ONU não cumpridas</h3>
                   <p className="text-sm text-muted-foreground">
-                    {totalLacunas} lacunas mapeadas no banco de dados, vinculadas às recomendações do CERD/C/BRA/CO/18-20
+                    {totalLacunas} observações/recomendações do Comitê CERD mapeadas, com análise de cumprimento e evidências
                   </p>
                 </div>
               </div>
@@ -383,7 +200,6 @@ export default function GerarRelatorios() {
           {loadingLacunas ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              <span className="ml-2 text-muted-foreground">Carregando lacunas...</span>
             </div>
           ) : (
             <>
@@ -425,24 +241,24 @@ export default function GerarRelatorios() {
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
                     <div className="p-3 bg-success/10 rounded-lg">
-                      <p className="text-2xl font-bold text-success">{stats?.porStatus.cumprido || 0}</p>
+                      <p className="text-2xl font-bold text-success">{cumpridas}</p>
                       <p className="text-xs text-muted-foreground">Cumpridas</p>
                     </div>
                     <div className="p-3 bg-warning/10 rounded-lg">
-                      <p className="text-2xl font-bold text-warning">{stats?.porStatus.parcialmente_cumprido || 0}</p>
+                      <p className="text-2xl font-bold text-warning">{parciais}</p>
                       <p className="text-xs text-muted-foreground">Parciais</p>
                     </div>
                     <div className="p-3 bg-destructive/10 rounded-lg">
-                      <p className="text-2xl font-bold text-destructive">{stats?.porStatus.nao_cumprido || 0}</p>
+                      <p className="text-2xl font-bold text-destructive">{naoCumpridas}</p>
                       <p className="text-xs text-muted-foreground">Não Cumpridas</p>
                     </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-2xl font-bold">{stats?.porPrioridade.critica || 0}</p>
-                      <p className="text-xs text-muted-foreground">Críticas</p>
+                    <div className="p-3 bg-destructive/10 rounded-lg">
+                      <p className="text-2xl font-bold text-destructive">{retrocessos}</p>
+                      <p className="text-xs text-muted-foreground">Retrocessos</p>
                     </div>
                     <div className="p-3 bg-primary/10 rounded-lg">
-                      <p className="text-2xl font-bold text-primary">{conclusoes?.length || 0}</p>
-                      <p className="text-xs text-muted-foreground">Conclusões</p>
+                      <p className="text-2xl font-bold text-primary">{stats?.porPrioridade.critica || 0}</p>
+                      <p className="text-xs text-muted-foreground">Críticas</p>
                     </div>
                   </div>
                 </CardContent>
@@ -458,9 +274,9 @@ export default function GerarRelatorios() {
               <div className="flex items-start gap-3">
                 <FileCheck className="w-6 h-6 text-warning flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold mb-1">Respostas às Lacunas do CERD III</h3>
+                  <h3 className="font-semibold mb-1">Respostas às Críticas do CERD III — Balanço Analítico</h3>
                   <p className="text-sm text-muted-foreground">
-                    {respostasCerd?.length || 0} críticas do relatório anterior com respostas estruturadas
+                    {respostasCerd?.length || 0} críticas do relatório anterior com avaliação de cumprimento
                   </p>
                 </div>
               </div>
@@ -532,191 +348,6 @@ export default function GerarRelatorios() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* ABA: COMMON CORE */}
-        <TabsContent value="common-core">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                Estrutura do Common Core Document (HRI/CORE/BRA/2026)
-              </CardTitle>
-              <CardDescription>
-                Documento base comum formando parte dos relatórios dos Estados-Parte - Atualização 2018-2026
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4 flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=HRI%2FCORE%2FBRA%2F2020&Lang=en" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Ver versão atual (2020)
-                  </a>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a href="https://www.ohchr.org/en/treaty-bodies/harmonized-reporting-guidelines-2006" target="_blank" rel="noopener noreferrer">
-                    <FileCheck className="w-4 h-4 mr-2" />
-                    Guidelines OHCHR
-                  </a>
-                </Button>
-              </div>
-
-              <Accordion type="multiple" className="w-full">
-                {commonCoreEstrutura.map((secao) => (
-                  <AccordionItem key={secao.secao} value={secao.secao}>
-                    <AccordionTrigger className="hover:no-underline">
-                      <div className="flex items-center gap-3 flex-1">
-                        <Badge variant="outline" className="font-mono">{secao.secao}</Badge>
-                        <div className="flex-1 text-left">
-                          <p className="font-medium">{secao.titulo}</p>
-                          <p className="text-xs text-muted-foreground">{secao.tituloPortugues}</p>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="pl-10 space-y-3">
-                        {secao.subsecoes.map((sub) => (
-                          <div key={sub.num} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <span className="font-mono text-sm">{secao.secao}.{sub.num}</span>
-                              <span className="text-sm">{sub.titulo}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="flex gap-1">
-                                {sub.fontes.map((f, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs">{f}</Badge>
-                                ))}
-                              </div>
-                              <Badge className={statusLabels[sub.status].color}>
-                                {statusLabels[sub.status].label}
-                              </Badge>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ABA: CERD IV */}
-        <TabsContent value="cerd-iv">
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-accent" />
-                Estrutura do CERD IV - Relatório Periódico (2018-2026)
-              </CardTitle>
-              <CardDescription>
-                Relatório do Brasil ao Comitê para a Eliminação da Discriminação Racial
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {cerdIVEstrutura.map((parte) => (
-                  <div key={parte.parte} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <Badge variant="outline" className="font-mono text-lg px-3 py-1">{parte.parte}</Badge>
-                      <div>
-                        <p className="font-medium">{parte.titulo}</p>
-                        <p className="text-sm text-muted-foreground">{parte.conteudo}</p>
-                      </div>
-                    </div>
-                    <Badge className={statusLabels[parte.status].color}>
-                      {statusLabels[parte.status].label}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ABA: GUIDELINES */}
-        <TabsContent value="guidelines">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-primary" />
-                  Common Core Document Guidelines
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <p className="text-sm font-medium">HRI/GEN/2/Rev.6</p>
-                  <p className="text-xs text-muted-foreground">Harmonized guidelines on reporting (2006, revisado)</p>
-                </div>
-                <ul className="text-sm space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Informações gerais sobre o Estado</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Marco jurídico de proteção dos direitos humanos</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Não-discriminação e igualdade</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Recursos efetivos</span>
-                  </li>
-                </ul>
-                <Button variant="outline" size="sm" className="w-full mt-4" asChild>
-                  <a href="https://www.ohchr.org/en/treaty-bodies/harmonized-reporting-guidelines-2006" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Acessar Guidelines OHCHR
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-accent" />
-                  CERD Reporting Guidelines
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 bg-muted/50 rounded-lg">
-                  <p className="text-sm font-medium">CERD/C/2007/1</p>
-                  <p className="text-xs text-muted-foreground">Guidelines for CERD-specific document</p>
-                </div>
-                <ul className="text-sm space-y-2">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Resposta às observações finais anteriores</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Artigos 1-7 da Convenção</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Dados estatísticos desagregados</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-success mt-0.5" />
-                    <span>Medidas legislativas, judiciais e administrativas</span>
-                  </li>
-                </ul>
-                <Button variant="outline" size="sm" className="w-full mt-4" asChild>
-                  <a href="https://tbinternet.ohchr.org/_layouts/15/TreatyBodyExternal/Treaty.aspx?Treaty=CERD" target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Acessar CERD Treaty Body
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </DashboardLayout>
