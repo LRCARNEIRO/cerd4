@@ -1,17 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend, PieChart, Pie, Cell 
 } from 'recharts';
-import { Users, TrendingUp, FileText, ExternalLink } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign } from 'lucide-react';
 import { 
   dadosDemograficos, 
   evolucaoComposicaoRacial, 
   indicadoresSocioeconomicos,
   fonteDados 
 } from './StatisticsData';
+import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
@@ -319,6 +321,148 @@ export function DadosGeraisTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Orçamento - dados do banco */}
+      <OrcamentoResumoSection />
     </div>
+  );
+}
+
+// Seção de Orçamento extraída do banco de dados
+function OrcamentoResumoSection() {
+  const { data: orcDados, isLoading: loadingDados } = useDadosOrcamentarios();
+  const { data: stats, isLoading: loadingStats } = useOrcamentoStats();
+
+  const formatCurrencyCompact = (value: number) => {
+    if (value >= 1_000_000_000) return `R$ ${(value / 1_000_000_000).toFixed(1)} bi`;
+    if (value >= 1_000_000) return `R$ ${(value / 1_000_000).toFixed(0)} mi`;
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
+  };
+
+  if (loadingDados || loadingStats) {
+    return <Skeleton className="h-64" />;
+  }
+
+  if (!stats || stats.totalRegistros === 0) {
+    return (
+      <Card className="border-l-4 border-l-warning">
+        <CardContent className="pt-6">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-warning" />
+            <strong>Orçamento:</strong> Nenhum dado orçamentário no banco. Insira dados na aba "Base Orçamentária → Orçamento" para visualizar aqui.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const evolucaoPorAno = stats.porAno ? Object.entries(stats.porAno)
+    .map(([ano, pago]) => ({ ano: Number(ano), pago: pago as number }))
+    .sort((a, b) => a.ano - b.ano) : [];
+
+  const porPrograma = stats.porPrograma ? Object.entries(stats.porPrograma)
+    .map(([programa, pago]) => ({ programa, pago: pago as number }))
+    .sort((a, b) => b.pago - a.pago)
+    .slice(0, 6) : [];
+
+  const variacaoPositiva = stats.variacao > 0;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">
+          <DollarSign className="w-5 h-5 text-primary" />
+          Orçamento de Políticas Raciais (Dados do Banco)
+        </CardTitle>
+        <CardDescription>
+          {stats.totalRegistros} registros | Períodos 2018-2022 vs 2023-2026 | Fonte: SIOP/Portal da Transparência
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* Cards resumo */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+          <div className="p-3 bg-muted rounded-lg text-center">
+            <p className="text-xs text-muted-foreground">2018-2022</p>
+            <p className="text-lg font-bold">{formatCurrencyCompact(stats.totalPeriodo1)}</p>
+          </div>
+          <div className="p-3 bg-muted rounded-lg text-center">
+            <p className="text-xs text-muted-foreground">2023-2026</p>
+            <p className="text-lg font-bold text-success">{formatCurrencyCompact(stats.totalPeriodo2)}</p>
+          </div>
+          <div className="p-3 bg-muted rounded-lg text-center flex items-center justify-center gap-2">
+            {variacaoPositiva ? (
+              <TrendingUp className="w-4 h-4 text-success" />
+            ) : (
+              <TrendingDown className="w-4 h-4 text-destructive" />
+            )}
+            <div>
+              <p className="text-xs text-muted-foreground">Variação</p>
+              <p className={`text-lg font-bold ${variacaoPositiva ? 'text-success' : 'text-destructive'}`}>
+                {variacaoPositiva ? '+' : ''}{stats.variacao.toFixed(0)}%
+              </p>
+            </div>
+          </div>
+          <div className="p-3 bg-muted rounded-lg text-center">
+            <p className="text-xs text-muted-foreground">Programas</p>
+            <p className="text-lg font-bold">{Object.keys(stats.porPrograma || {}).length}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Evolução anual */}
+          {evolucaoPorAno.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-3">Evolução Anual (Valor Pago)</h4>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={evolucaoPorAno}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrencyCompact(v)} />
+                    <Tooltip 
+                      formatter={(value: number) => [formatCurrencyCompact(value), 'Pago']}
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                    />
+                    <Line type="monotone" dataKey="pago" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
+          {/* Por programa */}
+          {porPrograma.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium mb-3">Top Programas (Valor Pago)</h4>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={porPrograma} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrencyCompact(v)} />
+                    <YAxis dataKey="programa" type="category" tick={{ fontSize: 8 }} width={120} />
+                    <Tooltip 
+                      formatter={(value: number) => [formatCurrencyCompact(value), 'Pago']}
+                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                    />
+                    <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
+          <FileText className="w-3 h-3" />
+          Fontes: 
+          <a href={fonteDados.stn.url} target="_blank" rel="noopener noreferrer" className="hover:underline mx-1">
+            {fonteDados.stn.nome} <ExternalLink className="w-3 h-3 inline" />
+          </a> |
+          <a href={fonteDados.sof.url} target="_blank" rel="noopener noreferrer" className="hover:underline mx-1">
+            {fonteDados.sof.nome} <ExternalLink className="w-3 h-3 inline" />
+          </a>
+        </p>
+      </CardContent>
+    </Card>
   );
 }
