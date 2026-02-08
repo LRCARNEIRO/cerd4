@@ -148,9 +148,9 @@ export default function Index() {
           variant="success"
         />
         <StatCard
-          title="Fontes de Dados"
-          value="12"
-          subtitle="bases oficiais SIDRA"
+          title="Registros Orçament."
+          value={isLoading ? '...' : stats.totalOrcamento}
+          subtitle={`${orcamentoStats?.porEsfera ? Object.keys(orcamentoStats.porEsfera).length : 0} esferas`}
           icon={Database}
           variant="default"
         />

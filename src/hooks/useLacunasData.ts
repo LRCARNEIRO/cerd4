@@ -279,14 +279,14 @@ export function useDadosOrcamentarios(filters?: {
   });
 }
 
-// Hook para estatísticas orçamentárias
+// Hook para estatísticas orçamentárias com dados por esfera
 export function useOrcamentoStats() {
   return useQuery({
     queryKey: ['orcamento-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('dados_orcamentarios')
-        .select('ano, pago, grupo_focal, programa');
+        .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao');
 
       if (error) throw error;
 
@@ -308,12 +308,21 @@ export function useOrcamentoStats() {
         porPrograma[r.programa] = (porPrograma[r.programa] || 0) + (Number(r.pago) || 0);
       });
 
+      // Por esfera
+      const porEsfera: Record<string, { total: number; programas: number }> = {};
+      registros.forEach(r => {
+        if (!porEsfera[r.esfera]) porEsfera[r.esfera] = { total: 0, programas: 0 };
+        porEsfera[r.esfera].total += Number(r.pago) || 0;
+        porEsfera[r.esfera].programas++;
+      });
+
       return {
         totalPeriodo1,
         totalPeriodo2,
         variacao: totalPeriodo1 > 0 ? ((totalPeriodo2 - totalPeriodo1) / totalPeriodo1 * 100) : 0,
         porAno,
         porPrograma,
+        porEsfera,
         totalRegistros: registros.length,
       };
     },
