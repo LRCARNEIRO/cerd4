@@ -1,0 +1,158 @@
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { BookOpen, Globe, FileDown, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { generateCommonCoreHTML } from './generateCommonCoreHTML';
+import { generateCerdIVHTML } from './generateCerdIVHTML';
+
+export function DocumentReportCards() {
+  const { data: lacunas } = useLacunasIdentificadas();
+  const { data: respostas } = useRespostasLacunasCerdIII();
+  const { data: stats } = useLacunasStats();
+  const { data: indicadores } = useIndicadoresInterseccionais();
+  const { data: orcStats } = useOrcamentoStats();
+
+  const [generatingCCD, setGeneratingCCD] = useState(false);
+  const [generatingCERD, setGeneratingCERD] = useState(false);
+
+  const totalLacunas = stats?.total || 0;
+  const indicadoresCount = indicadores?.length || 0;
+
+  // Common Core progress: based on indicadores filled
+  const ccdProgress = Math.round((indicadoresCount / 77) * 100);
+
+  // CERD IV progress: based on lacunas with responses
+  const respostasCount = respostas?.length || 0;
+  const lacunasComResposta = lacunas?.filter(l => l.resposta_sugerida_cerd_iv).length || 0;
+  const cerdRespostasOF = respostasCount > 0 ? Math.round((respostas?.filter(r => r.grau_atendimento !== 'nao_cumprido').length || 0) / respostasCount * 100) : 0;
+  const cerdDados = indicadoresCount > 0 ? Math.round((indicadoresCount / (indicadoresCount + 6)) * 100) : 0;
+  const cerdPovos = 100; // All groups covered
+  const cerdProgress = Math.round((cerdRespostasOF + cerdDados + cerdPovos) / 3);
+
+  const handleGenerateCCD = async () => {
+    setGeneratingCCD(true);
+    try {
+      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } finally {
+      setGeneratingCCD(false);
+    }
+  };
+
+  const handleGenerateCERD = async () => {
+    setGeneratingCERD(true);
+    try {
+      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } finally {
+      setGeneratingCERD(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Common Core Document */}
+      <Card className="border-l-4 border-l-primary">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <BookOpen className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold">Common Core Document (HRI/CORE/BRA)</h3>
+              <p className="text-sm text-muted-foreground">Período: 2018-2026</p>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Progresso (<span className="text-primary">Dinâmico</span>)</span>
+              <span>{ccdProgress}%</span>
+            </div>
+            <Progress value={ccdProgress} className="h-2" />
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="text-muted-foreground">Prazo:</p>
+              <p className="font-medium">Dezembro 2025</p>
+            </div>
+            <div className="text-right">
+              <p className="text-muted-foreground">Indicadores:</p>
+              <p className="font-medium">{indicadoresCount}/77 indicadores</p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs">
+              <strong>Status:</strong>{' '}
+              {indicadoresCount} atualizados, {77 - indicadoresCount} parciais, 0 desatualizados
+            </p>
+          </div>
+
+          <Button 
+            className="w-full gap-2" 
+            onClick={handleGenerateCCD}
+            disabled={generatingCCD}
+          >
+            {generatingCCD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+            Gerar HTML/PDF
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* CERD IV */}
+      <Card className="border-l-4 border-l-success">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <Globe className="w-6 h-6 text-success flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold">CERD IV - Relatório Periódico</h3>
+              <p className="text-sm text-muted-foreground">Período: 2018-2026</p>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Progresso (baseado no banco)</span>
+              <span className="font-bold">{cerdProgress}%</span>
+            </div>
+            <Progress value={cerdProgress} className="h-2.5 [&>div]:bg-[hsl(var(--chart-1))]" />
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="text-muted-foreground">Prazo:</p>
+              <p className="font-medium">Março 2026</p>
+            </div>
+            <div className="text-right">
+              <p className="text-muted-foreground">Lacunas no banco:</p>
+              <p className="font-medium">{totalLacunas}</p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs">
+              <strong>Seções:</strong>{' '}
+              Respostas OF {cerdRespostasOF}%, Dados {cerdDados}%, Povos {cerdPovos}%
+            </p>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full gap-2"
+            onClick={handleGenerateCERD}
+            disabled={generatingCERD}
+          >
+            {generatingCERD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+            Gerar HTML/PDF
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

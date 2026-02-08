@@ -9,6 +9,7 @@ import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, u
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
+import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { useQueryClient } from '@tanstack/react-query';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
@@ -68,7 +69,10 @@ export default function GerarRelatorios() {
         </Button>
       </div>
 
-      {/* Panorama analítico - substituir cards de gestão por síntese de dados */}
+      {/* Cards de geração de documentos */}
+      <DocumentReportCards />
+
+      {/* Panorama analítico */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
         <Card className="border-success/30">
           <CardContent className="pt-3 pb-3 text-center">
