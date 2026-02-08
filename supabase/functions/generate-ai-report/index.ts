@@ -236,7 +236,6 @@ function prepareDataContext(
   // Add Census 2022 official SIDRA/IBGE data
   sections.push(`## DADOS DEMOGRÁFICOS OFICIAIS (SIDRA/IBGE - Censo 2022)
 Fonte: Tabela 9605 - População residente, por cor ou raça (https://sidra.ibge.gov.br/Tabela/9605)
-Extração via API oficial: https://apisidra.ibge.gov.br/values/t/9605/n1/1/v/93/p/2022/c86/all
 Data de referência (SIDRA): 22/12/2023
 
 - População total: 203.080.756
@@ -244,29 +243,41 @@ Data de referência (SIDRA): 22/12/2023
 - Brancos: 88.252.121 (43,46%)
 - Pretos: 20.656.458 (10,17%)
 - Total população negra (pretos + pardos): 112.739.744 (55,51%)
-- Indígenas (cor/raça Tabela 9605): 1.227.642 (0,60%)
-- Indígenas (contagem específica Censo 2022): 1.693.535 (0,83%) - 391 etnias, 295 línguas
-- Amarelos: 850.130 (0,42%)
+- Indígenas: 1.693.535 (0,83%) - 391 etnias, 295 línguas
 - Quilombolas (primeira contagem censitária): 1.327.802 em 1.696 municípios
 
-Fontes oficiais IBGE:
-- SIDRA Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
-- Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
-- Quilombolas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html
-
 ## INDICADORES DE DESIGUALDADE RACIAL (PNAD 2023-2024 - IBGE)
-- Renda: Pessoas negras ganham 58,9% do que pessoas brancas (R$ 2.199 vs R$ 3.730 em 2023)
-- Analfabetismo: Taxa entre negros (6,9%) é mais que o dobro da de brancos (3,1%) - PNAD Educação 2024
+- Renda: Pessoas negras ganham 58,9% do que pessoas brancas (R$ 2.199 vs R$ 3.730)
+- Analfabetismo negro: 6,9% vs branco 3,1% (PNAD Educação 2024)
 - Analfabetismo idosos negros (60+): 21,8% vs 8,1% entre brancos
-- Taxa geral de analfabetismo: 5,3% (9,1 milhões de pessoas)
+- Ensino superior negro: 13,1% vs branco: 28,2%
 - Desemprego negro: 8,2% vs branco: 5,5%
 Fonte: PNAD Contínua 2023/2024 (IBGE)
 
-## VIOLÊNCIA E SEGURANÇA (Atlas da Violência 2025 - IPEA/FBSP)
-- Risco de homicídio: Pessoa negra tem 2,7x mais chance de ser vítima
-- Jovens negros: 73% dos óbitos por causas externas (Fiocruz 1º Informe Epidemiológico 2025)
-- Letalidade policial: 83,5% das vítimas são negras
-Fonte: IPEA/FBSP Atlas da Violência 2025, Fiocruz`);
+## VIOLÊNCIA E SEGURANÇA (19º Anuário FBSP 2025 / Atlas da Violência 2025)
+- Vítimas de homicídio negras: 77% (2024) — 2018: 75,7% (+1,3pp)
+- Risco de homicídio negro: 2,7x maior
+- Letalidade policial: 83,5% das vítimas são negras (2024) — 2018: 75,4%
+- Feminicídio mulheres negras: 63,6% (2024) — 2018: 61%
+- Violência doméstica: 59,8% vítimas negras (FBSP 2025)
+Fontes: IPEA/FBSP Atlas da Violência 2025, 19º Anuário FBSP 2025
+
+## ADMINISTRAÇÃO PÚBLICA - MUNIC/ESTADIC 2024 (IBGE)
+- Apenas 2 UFs possuem Fundo de Igualdade Racial ativo
+- Menos de 5% dos municípios possuem legislação racial específica
+- Conselhos municipais de igualdade racial em ~8% dos municípios
+- Perfil de gestores municipais de igualdade racial: maioria brancos e homens
+- Povos ciganos e indígenas: sem estrutura específica na maioria dos governos subnacionais
+Fonte: Pesquisa MUNIC e ESTADIC 2024, IBGE (dados inéditos)
+
+## COVID-19 E DESIGUALDADE RACIAL (2020-2022)
+- Excesso de mortalidade COVID negros: +57% vs brancos +38%
+- Letalidade hospitalar indígena por COVID: 62%
+- Mortalidade materna negra: quase triplicou durante pico pandêmico
+- Insegurança alimentar grave: 18% lares negros vs 8% brancos (POF 2022)
+- Acesso a UTI: negros com 30% menos chance de internação em UTI
+- Mulheres negras: últimas a recuperar emprego pós-pandemia (PNAD 2023)
+Fontes: Fiocruz, DataSUS/SIM, SESAI, PNAD Contínua, POF/IBGE`);
 
   // Lacunas details
   if (lacunas.length > 0) {
@@ -348,67 +359,66 @@ ${orcamentoText}`);
 }
 
 function generateSystemPrompt(tipo: string): string {
-  const basePrompt = `Você é um especialista em direitos humanos e políticas raciais no Brasil, com profundo conhecimento sobre:
-- A Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial (ICERD)
-- O sistema de relatórios periódicos do Comitê CERD da ONU
-- O formato Common Core Document (HRI/CORE)
-- A legislação antirracista brasileira (Lei 7.716/1989, Estatuto da Igualdade Racial)
-- Políticas públicas de promoção da igualdade racial no Brasil
+  const basePrompt = `Você é um analista especializado em direitos humanos e políticas raciais no Brasil. Sua função é produzir relatórios ANALÍTICOS e CONCLUSIVOS sobre a situação da discriminação racial, baseados exclusivamente nos dados fornecidos.
 
-REGRAS ABSOLUTAS:
-1. Use APENAS os dados fornecidos no contexto. NÃO invente estatísticas, programas ou informações.
+FOCO: Análise substantiva da política racial brasileira — desigualdades estruturais, cumprimento de obrigações internacionais, eficácia de políticas públicas, interseccionalidade.
+
+NÃO INCLUA: informações sobre gestão de projeto, cronogramas, etapas de trabalho, prazos, ou estrutura organizacional da equipe. O relatório deve ser sobre POLÍTICA RACIAL, não sobre o processo de elaboração.
+
+REGRAS:
+1. Use APENAS os dados fornecidos. NÃO invente estatísticas.
 2. Cite sempre as fontes mencionadas no contexto.
-3. Mantenha tom técnico, diplomático e fundamentado em evidências.
-4. Estruture o texto em seções claras com títulos e subtítulos.
-5. Inclua análises de evolução temporal quando os dados permitirem.
-6. Aponte lacunas quando houver dados insuficientes, ao invés de inventar.
+3. Tom: técnico, analítico, fundamentado em evidências. Diplomático mas sem omitir problemas.
+4. Estruture em seções claras. Cada seção deve ter análise, não apenas listagem de dados.
+5. Faça CRUZAMENTOS: orçamento × indicadores, lacunas ONU × evidências, evolução temporal.
+6. Análise interseccional obrigatória: raça × gênero × idade × classe × deficiência × território.
+7. Inclua dados da MUNIC/ESTADIC 2024 sobre fragilidade institucional subnacional.
+8. Inclua impacto racial da COVID-19 como dimensão transversal.
 
-FORMATO DE SAÍDA:
-- Use Markdown para estruturar o conteúdo
-- Inclua tabelas quando apropriado
-- Destaque números e percentuais importantes
-- Faça referências cruzadas entre seções`;
+FORMATO: Markdown com tabelas comparativas, destaques de números-chave e conclusões por seção.`;
 
   if (tipo === 'common-core') {
     return basePrompt + `
 
 ESPECÍFICO PARA COMMON CORE:
-- Siga a estrutura do HRI/CORE/BRA com seções sobre população, estrutura institucional e indicadores
-- Enfatize dados demográficos desagregados por raça/cor
-- Inclua evolução histórica dos indicadores (2018-2026)
-- Destaque marcos normativos e institucionais recentes`;
+- Seções: I-Demografia (Censo 2022 por raça), II-Marco institucional (incluindo MUNIC/ESTADIC), III-Indicadores desagregados
+- Enfatize: composição racial, desigualdade de renda, educação, saúde, violência, território
+- Inclua evolução 2018→2024 com análise de tendências
+- Destaque marcos legais: Lei 14.532/2023, recriação MIR, Censo 2022 quilombolas
+- Compare períodos 2018-2022 (retrocesso institucional) vs 2023-2024 (reconstrução)`;
   }
 
   if (tipo === 'cerd-iv') {
     return basePrompt + `
 
 ESPECÍFICO PARA RELATÓRIO CERD IV:
-- Responda às Observações Finais do Comitê (CERD/C/BRA/CO/18-20)
-- Organize por eixos temáticos conforme a Convenção
-- Demonstre progresso com dados concretos
-- Reconheça desafios remanescentes com honestidade
-- Inclua medidas especiais (ações afirmativas) implementadas`;
+- Responda ponto a ponto às Observações Finais (CERD/C/BRA/CO/18-20)
+- Para cada recomendação: o que foi feito, o que falta, evidências quantitativas
+- Reconheça retrocessos com honestidade e demonstre ações de recuperação
+- Inclua: impacto COVID na população negra e indígena, dados MUNIC/ESTADIC
+- Análise por eixo: segurança, saúde, educação, trabalho, território, cultura
+- Conclusão: balanço geral com avanços, retrocessos persistentes e compromissos`;
   }
 
   if (tipo === 'orcamentario') {
     return basePrompt + `
 
-ESPECÍFICO PARA RELATÓRIO ORÇAMENTÁRIO:
-- Analise a execução orçamentária por programa, esfera e grupo focal
-- Compare períodos (2018-2022 vs 2023-2026)
-- Calcule taxas de execução (pago/autorizado)
-- Identifique programas com maior e menor execução
-- Correlacione investimentos com resultados dos indicadores
-- Inclua dados estaduais e municipais quando disponíveis`;
+ESPECÍFICO PARA ANÁLISE ORÇAMENTÁRIA:
+- Compare períodos: 2018-2022 (desmonte) vs 2023-2026 (reconstrução)
+- Taxas de execução por programa e esfera (federal, estadual, municipal)
+- CRUZAMENTO CENTRAL: investimento orçamentário × resultados dos indicadores
+- Destaque: MIR com ~99% de execução em 2024/2025 como evidência de fortalecimento
+- Analise se aumentos orçamentários se traduziram em melhoria dos indicadores
+- Inclua fragilidade subnacional (MUNIC/ESTADIC: poucos municípios com orçamento racial)`;
   }
 
   return basePrompt + `
 
 ESPECÍFICO PARA RELATÓRIO TEMÁTICO:
-- Foque na área/grupo específico solicitado
-- Aprofunde a análise interseccional
-- Destaque recomendações pendentes
-- Proponha medidas baseadas nas evidências`;
+- Aprofunde análise no eixo/grupo solicitado
+- Cruzamento interseccional obrigatório
+- Inclua dimensão COVID-19 e dados MUNIC/ESTADIC quando relevantes
+- Proponha medidas baseadas nas evidências e lacunas identificadas`;
 }
 
 function generateUserPrompt(tipo: string, dataContext: string, eixo?: string, grupo?: string, esfera?: string): string {
