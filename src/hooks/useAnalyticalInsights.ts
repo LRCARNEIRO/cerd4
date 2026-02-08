@@ -299,12 +299,18 @@ function gerarFiosCondutores(
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio, mortalidade materna, informalidade laboral e violência doméstica atingem desproporcionalmente mulheres negras.`,
-      evidencias: evidMulheres.slice(0, 6),
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (2x maior que branca — DataSUS), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
+      evidencias: [
+        { texto: 'Feminicídio: 63,6% das vítimas são mulheres negras (2024)', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
+        { texto: 'Violência doméstica: 59,8% vítimas negras', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
+        { texto: 'Mortalidade materna negra: 52,8 vs branca 27,2 por 100 mil NV', fonte: 'DataSUS/SIM 2024', tipo: 'quantitativa' as const },
+        { texto: 'Informalidade mulher negra 18-29: 51,2%', fonte: 'PNAD Contínua 2024', tipo: 'quantitativa' as const },
+        ...evidMulheres.slice(0, 4),
+      ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (FBSP 2025). Mortalidade materna negra permanece 2x maior que branca.`
+      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna negra: 62,8 → 52,8 por 100 mil NV (melhoria absoluta, mas razão negra/branca permanece ~2x). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
     });
   }
 

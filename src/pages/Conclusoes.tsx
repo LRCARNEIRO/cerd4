@@ -2,13 +2,24 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
+import {
+  ViolenciaRacialChart, FeminicidioChart, EducacaoComparativaChart,
+  SaudeComparativaChart, RendaComparativaChart, DesigualdadeEvolucaoChart,
+  ViolenciaInterseccionalChart, TabelaSinteseComparativa,
+  RadarVulnerabilidadesChart, ClassePorRacaChart
+} from '@/components/conclusoes/ComparativeCharts';
+import {
+  dadosDemograficos, resumoExecutivo, segurancaPublica, feminicidioSerie,
+  educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos,
+  povosTradicionais
+} from '@/components/estatisticas/StatisticsData';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -26,61 +37,41 @@ const eixoLabels: Record<string, string> = {
 export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
-    isLoading,
-    fiosCondutores,
-    conclusoesDinamicas,
-    insightsCruzamento,
-    sinteseExecutiva,
-    stats,
-    lacunas,
-    respostas,
-    orcStats,
-    indicadores,
+    isLoading, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores,
   } = useAnalyticalInsights();
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries();
-  };
+  const handleRefresh = () => { queryClient.invalidateQueries(); };
 
-  // Agrupar conclusões por tipo
   const conclusoesAgrupadas = {
     lacuna_persistente: conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente'),
     avanco: conclusoesDinamicas.filter(c => c.tipo === 'avanco'),
     retrocesso: conclusoesDinamicas.filter(c => c.tipo === 'retrocesso'),
   };
 
-  // Cumprimento por eixo
-  const cumprimentoPorEixo = Object.entries(stats?.porEixo || {}).map(([eixo, total]) => {
-    const cumpridas = lacunas?.filter(l => l.eixo_tematico === eixo && l.status_cumprimento === 'cumprido').length || 0;
-    const parciais = lacunas?.filter(l => l.eixo_tematico === eixo && l.status_cumprimento === 'parcialmente_cumprido').length || 0;
-    const percentual = (total as number) > 0 ? Math.round(((cumpridas * 100) + (parciais * 50)) / (total as number)) : 0;
-    return { eixo: eixoLabels[eixo] || eixo, cumprimento: percentual };
-  }).sort((a, b) => b.cumprimento - a.cumprimento);
+  // Dados do Escopo para síntese
+  const seg2018 = segurancaPublica[0];
+  const seg2024 = segurancaPublica[segurancaPublica.length - 1];
+  const edu2018 = educacaoSerieHistorica[0];
+  const edu2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+  const eco2018 = indicadoresSocioeconomicos[0];
+  const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+  const fem2018 = feminicidioSerie[0];
+  const fem2024 = feminicidioSerie[feminicidioSerie.length - 1];
 
   return (
     <DashboardLayout
-      title="Conclusões Analíticas"
-      subtitle="Meta 4: O que o Estado brasileiro fez e deixou de fazer (2018-2024) — Atualizado automaticamente"
+      title="Conclusões Analíticas — Meta 4"
+      subtitle="Cruzamento exaustivo dos dados do Escopo do Projeto: Base Estatística × Orçamentária × Normativa (2018→2024)"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <Badge variant="outline" className="gap-1">
-            <Database className="w-3 h-3" />
-            {indicadores?.length || 0} indicadores
-          </Badge>
-          <Badge variant="outline" className="gap-1">
-            <FileText className="w-3 h-3" />
-            {stats?.total || 0} lacunas ONU
-          </Badge>
-          <Badge variant="outline" className="gap-1">
-            <Scale className="w-3 h-3" />
-            {respostas?.length || 0} respostas CERD III
-          </Badge>
-          <Badge variant="outline" className="gap-1">
-            <Landmark className="w-3 h-3" />
-            {orcStats?.totalRegistros || 0} reg. orçamentários
-          </Badge>
+          <Badge variant="outline" className="gap-1"><BarChart3 className="w-3 h-3" />Base Estatística</Badge>
+          <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />Base Orçamentária</Badge>
+          <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />Base Normativa</Badge>
+          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} lacunas ONU</Badge>
+          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores</Badge>
         </div>
         <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
           <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />
@@ -88,97 +79,105 @@ export default function Conclusoes() {
         </Button>
       </div>
 
-      {/* Loading state */}
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">Carregando e cruzando dados...</span>
+          <span className="ml-3 text-muted-foreground">Cruzando dados do Escopo...</span>
         </div>
       )}
 
-      {!isLoading && sinteseExecutiva && (
+      {!isLoading && (
         <>
-          {/* Status Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          {/* DADOS-CHAVE DO ESCOPO - Cards numéricos */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
             <Card>
-              <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                <div className="p-2 bg-muted rounded-lg">
-                  <Database className="w-5 h-5 text-foreground" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Lacunas</p>
-                  <p className="text-xl font-bold">{sinteseExecutiva.totalLacunas}</p>
-                </div>
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Pop. negra</p>
+                <p className="text-lg font-bold">{dadosDemograficos.percentualNegro}%</p>
+                <p className="text-xs text-muted-foreground">{(dadosDemograficos.populacaoNegra / 1e6).toFixed(0)}M</p>
+              </CardContent>
+            </Card>
+            <Card className="border-destructive/30">
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Homicídio negro</p>
+                <p className="text-lg font-bold text-destructive">{seg2024.percentualVitimasNegras}%</p>
+                <p className="text-xs text-muted-foreground">2018: {seg2018.percentualVitimasNegras}%</p>
+              </CardContent>
+            </Card>
+            <Card className="border-destructive/30">
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Feminicídio negro</p>
+                <p className="text-lg font-bold text-destructive">{fem2024.percentualNegras}%</p>
+                <p className="text-xs text-muted-foreground">2018: {fem2018.percentualNegras}%</p>
+              </CardContent>
+            </Card>
+            <Card className="border-success/30">
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Superior negro</p>
+                <p className="text-lg font-bold text-success">{edu2024.superiorNegroPercent}%</p>
+                <p className="text-xs text-muted-foreground">2018: {edu2018.superiorNegroPercent}%</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                <div className="p-2 bg-success/10 rounded-lg">
-                  <CheckCircle2 className="w-5 h-5 text-success" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Cumprimento</p>
-                  <p className="text-xl font-bold text-success">{sinteseExecutiva.percentualPositivo}%</p>
-                </div>
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Renda negra</p>
+                <p className="text-lg font-bold">R$ {eco2024.rendaMediaNegra}</p>
+                <p className="text-xs text-success">+{((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}% vs 2018</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                <div className="p-2 bg-destructive/10 rounded-lg">
-                  <XCircle className="w-5 h-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Não cumprido</p>
-                  <p className="text-xl font-bold text-destructive">{sinteseExecutiva.percentualNegativo}%</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                <div className="p-2 bg-warning/10 rounded-lg">
-                  <TrendingDown className="w-5 h-5 text-warning" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Retrocessos</p>
-                  <p className="text-xl font-bold text-warning">{sinteseExecutiva.retrocessos}</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Link2 className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Fios Condutores</p>
-                  <p className="text-xl font-bold">{fiosCondutores.length}</p>
-                </div>
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-xs text-muted-foreground">Razão renda</p>
+                <p className="text-lg font-bold text-warning">{(eco2024.rendaMediaBranca/eco2024.rendaMediaNegra).toFixed(2)}x</p>
+                <p className="text-xs text-muted-foreground">Negro = {(eco2024.rendaMediaNegra/eco2024.rendaMediaBranca*100).toFixed(0)}% do branco</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Síntese Executiva Dinâmica */}
+          {/* SÍNTESE EXECUTIVA */}
           <Card className="mb-6 border-2 border-primary">
             <CardHeader className="bg-primary/5">
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="w-6 h-6 text-primary" />
-                Síntese Executiva (Gerada a partir do Banco de Dados)
+                Síntese Executiva: O que os dados revelam
               </CardTitle>
               <CardDescription>
-                Atualizada automaticamente com base em {sinteseExecutiva.totalLacunas} lacunas, {sinteseExecutiva.totalRespostasCERDIII} respostas CERD III, {sinteseExecutiva.totalIndicadores} indicadores e {sinteseExecutiva.totalOrcamento} registros orçamentários
+                Cruzamento de {stats?.total || 0} lacunas ONU + {respostas?.length || 0} respostas CERD III + dados FBSP/PNAD/DataSUS/SIOP 2018→2024
               </CardDescription>
             </CardHeader>
-            <CardContent className="pt-6">
-              <p className="text-sm leading-relaxed text-muted-foreground">{sinteseExecutiva.narrativa}</p>
+            <CardContent className="pt-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+                  <p className="text-xs font-semibold text-destructive mb-2">⚠️ PIORA RELATIVA (2018→2024)</p>
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    <li>• Homicídio: vítimas negras {seg2018.percentualVitimasNegras}% → {seg2024.percentualVitimasNegras}% (+{(seg2024.percentualVitimasNegras-seg2018.percentualVitimasNegras).toFixed(1)}pp)</li>
+                    <li>• Letalidade policial negra: {seg2018.letalidadePolicial}% → {seg2024.letalidadePolicial}% (+{(seg2024.letalidadePolicial-seg2018.letalidadePolicial).toFixed(1)}pp)</li>
+                    <li>• Feminicídio mulheres negras: {fem2018.percentualNegras}% → {fem2024.percentualNegras}% (+{(fem2024.percentualNegras-fem2018.percentualNegras).toFixed(1)}pp)</li>
+                    <li>• Risco homicídio negro: persistente em {seg2024.razaoRisco}x maior</li>
+                    <li>• Gap absoluto renda: R$ {eco2018.rendaMediaBranca-eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca-eco2024.rendaMediaNegra} (aumentou!)</li>
+                  </ul>
+                </div>
+                <div className="p-4 bg-success/5 border border-success/20 rounded-lg">
+                  <p className="text-xs font-semibold text-success mb-2">✓ AVANÇOS (2018→2024)</p>
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    <li>• Superior completo negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}% (+{(edu2024.superiorNegroPercent-edu2018.superiorNegroPercent).toFixed(1)}pp)</li>
+                    <li>• Analfabetismo negro: {edu2018.analfabetismoNegro}% → {edu2024.analfabetismoNegro}% ({(edu2024.analfabetismoNegro-edu2018.analfabetismoNegro).toFixed(1)}pp)</li>
+                    <li>• Desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}% ({(eco2024.desempregoNegro-eco2018.desempregoNegro).toFixed(1)}pp)</li>
+                    <li>• Renda média negra: R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra} (+{((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}%)</li>
+                    <li>• Censo 2022: primeira contagem de quilombolas ({povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')})</li>
+                    <li>• Recriação do MIR e Lei 14.532/2023 (racismo = crime inafiançável)</li>
+                  </ul>
+                </div>
+              </div>
               
-              {sinteseExecutiva.eixosMaisProblematicos.length > 0 && (
-                <div className="mt-4 p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
-                  <p className="text-xs font-semibold text-destructive mb-2">⚠️ Eixos mais críticos (maior % não-cumprimento):</p>
+              {sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 && (
+                <div className="p-4 bg-warning/5 border border-warning/20 rounded-lg">
+                  <p className="text-xs font-semibold text-warning mb-2">⚡ EIXOS MAIS CRÍTICOS (lacunas ONU não cumpridas)</p>
                   <div className="space-y-2">
                     {sinteseExecutiva.eixosMaisProblematicos.map((e, i) => (
                       <div key={i} className="flex items-center justify-between">
-                        <span className="text-sm">{e.eixo} ({e.total} lacunas)</span>
-                        <Badge variant="destructive">{Math.round(e.gravidade * 100)}% não cumprido</Badge>
+                        <span className="text-xs">{e.eixo} ({e.total} lacunas)</span>
+                        <Badge variant="destructive" className="text-xs">{Math.round(e.gravidade * 100)}% não cumprido</Badge>
                       </div>
                     ))}
                   </div>
@@ -187,27 +186,62 @@ export default function Conclusoes() {
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="fios" className="w-full">
+          <Tabs defaultValue="infograficos" className="w-full">
             <TabsList className="mb-6 flex-wrap h-auto gap-1">
-              <TabsTrigger value="fios" className="gap-1">
-                <Link2 className="w-4 h-4" /> Fios Condutores
-              </TabsTrigger>
-              <TabsTrigger value="cruzamentos" className="gap-1">
-                <Zap className="w-4 h-4" /> Cruzamentos & Insights
-              </TabsTrigger>
-              <TabsTrigger value="lacunas" className="gap-1">
-                <AlertTriangle className="w-4 h-4" /> Lacunas Persistentes ({conclusoesAgrupadas.lacuna_persistente.length})
-              </TabsTrigger>
-              <TabsTrigger value="avancos" className="gap-1">
-                <TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})
-              </TabsTrigger>
-              <TabsTrigger value="retrocessos" className="gap-1">
-                <TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})
-              </TabsTrigger>
-              <TabsTrigger value="cumprimento" className="gap-1">
-                <BarChart3 className="w-4 h-4" /> Por Eixo
-              </TabsTrigger>
+              <TabsTrigger value="infograficos" className="gap-1"><BarChart3 className="w-4 h-4" /> Infográficos Comparativos</TabsTrigger>
+              <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Tabela Síntese</TabsTrigger>
+              <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosCondutores.length})</TabsTrigger>
+              <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
+              <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
+              <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
+              <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
             </TabsList>
+
+            {/* ABA: INFOGRÁFICOS */}
+            <TabsContent value="infograficos">
+              <div className="space-y-6">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Dados do Escopo do Projeto</strong> — Gráficos comparativos 2018→2024 extraídos da Base Estatística (FBSP, PNAD, DataSUS, SIDRA/IBGE). 
+                      Cada gráfico fundamenta um argumento para o CERD IV / Common Core.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Segurança + Feminicídio */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ViolenciaRacialChart />
+                  <FeminicidioChart />
+                </div>
+
+                {/* Violência interseccional + Radar */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ViolenciaInterseccionalChart />
+                  <RadarVulnerabilidadesChart />
+                </div>
+
+                {/* Educação + Saúde */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <EducacaoComparativaChart />
+                  <SaudeComparativaChart />
+                </div>
+
+                {/* Renda + Desigualdade */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <RendaComparativaChart />
+                  <DesigualdadeEvolucaoChart />
+                </div>
+
+                {/* Classe por raça */}
+                <ClassePorRacaChart />
+              </div>
+            </TabsContent>
+
+            {/* ABA: TABELA SÍNTESE */}
+            <TabsContent value="sintese">
+              <TabelaSinteseComparativa />
+            </TabsContent>
 
             {/* ABA: FIOS CONDUTORES */}
             <TabsContent value="fios">
@@ -217,36 +251,33 @@ export default function Conclusoes() {
                     <div className="flex items-start gap-3">
                       <Link2 className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-sm">O que são Fios Condutores?</p>
+                        <p className="font-semibold text-sm">Fios Condutores — a "cola" do quebra-cabeças</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          São argumentos transversais que conectam diferentes eixos temáticos, evidências e dados orçamentários 
-                          para formar uma narrativa coerente sobre a atuação do Estado brasileiro na agenda racial. Cada fio é 
-                          gerado automaticamente pelo cruzamento das {sinteseExecutiva.totalLacunas} lacunas, {sinteseExecutiva.totalRespostasCERDIII} respostas CERD III 
-                          e {sinteseExecutiva.totalOrcamento} registros orçamentários do banco de dados.
+                          Argumentos transversais gerados pelo cruzamento das bases do Escopo: dados estatísticos (FBSP, PNAD, DataSUS) × 
+                          {stats?.total || 0} lacunas ONU × {respostas?.length || 0} respostas CERD III × {orcStats?.totalRegistros || 0} registros orçamentários. 
+                          Cada fio conecta números, eixos e comparativos para formar narrativas consistentes para o relatório.
                         </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-
                 {fiosCondutores.map((fio) => (
                   <FioCondutorCard key={fio.id} fio={fio} />
                 ))}
               </div>
             </TabsContent>
 
-            {/* ABA: CRUZAMENTOS & INSIGHTS */}
+            {/* ABA: CRUZAMENTOS */}
             <TabsContent value="cruzamentos">
               <div className="space-y-4">
                 <Card className="bg-muted/30">
                   <CardContent className="pt-6">
                     <p className="text-sm text-muted-foreground">
-                      Insights gerados pelo cruzamento automático de lacunas ONU × orçamento × indicadores × respostas CERD III. 
-                      Estes alertas e correlações ajudam a identificar padrões e contradições na política racial brasileira.
+                      Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III. 
+                      Identificam padrões, contradições e correlações na política racial brasileira.
                     </p>
                   </CardContent>
                 </Card>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {insightsCruzamento.map((insight) => (
                     <InsightCard key={insight.id} insight={insight} />
@@ -255,11 +286,11 @@ export default function Conclusoes() {
               </div>
             </TabsContent>
 
-            {/* ABA: LACUNAS PERSISTENTES */}
+            {/* ABA: LACUNAS */}
             <TabsContent value="lacunas">
               <div className="space-y-4">
                 {conclusoesAgrupadas.lacuna_persistente.length === 0 ? (
-                  <EmptyState message="Nenhuma lacuna persistente identificada com os dados atuais." />
+                  <EmptyState message="Nenhuma lacuna persistente identificada." />
                 ) : (
                   conclusoesAgrupadas.lacuna_persistente.map((c) => (
                     <ConclusaoCard key={c.id} conclusao={c} />
@@ -272,7 +303,7 @@ export default function Conclusoes() {
             <TabsContent value="avancos">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {conclusoesAgrupadas.avanco.length === 0 ? (
-                  <EmptyState message="Nenhum avanço identificado com os dados atuais." />
+                  <EmptyState message="Nenhum avanço identificado." />
                 ) : (
                   conclusoesAgrupadas.avanco.map((c) => (
                     <ConclusaoCard key={c.id} conclusao={c} />
@@ -285,104 +316,13 @@ export default function Conclusoes() {
             <TabsContent value="retrocessos">
               <div className="space-y-4">
                 {conclusoesAgrupadas.retrocesso.length === 0 ? (
-                  <EmptyState message="Nenhum retrocesso identificado com os dados atuais." />
+                  <EmptyState message="Nenhum retrocesso identificado." />
                 ) : (
                   conclusoesAgrupadas.retrocesso.map((c) => (
                     <ConclusaoCard key={c.id} conclusao={c} />
                   ))
                 )}
               </div>
-            </TabsContent>
-
-            {/* ABA: CUMPRIMENTO POR EIXO */}
-            <TabsContent value="cumprimento">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-primary" />
-                      Grau de Cumprimento por Eixo Temático
-                    </CardTitle>
-                    <CardDescription>
-                      Baseado nas {stats?.total || 0} lacunas do banco de dados
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {cumprimentoPorEixo.length > 0 ? (
-                      <div className="space-y-4">
-                        {cumprimentoPorEixo.map((item, i) => (
-                          <div key={i}>
-                            <div className="flex justify-between mb-1">
-                              <span className="text-sm font-medium">{item.eixo}</span>
-                              <span className={cn(
-                                'text-sm font-bold',
-                                item.cumprimento >= 50 && 'text-success',
-                                item.cumprimento >= 30 && item.cumprimento < 50 && 'text-warning',
-                                item.cumprimento < 30 && 'text-destructive'
-                              )}>
-                                {item.cumprimento}%
-                              </span>
-                            </div>
-                            <Progress 
-                              value={item.cumprimento} 
-                              className={cn(
-                                'h-3',
-                                item.cumprimento >= 50 && '[&>div]:bg-success',
-                                item.cumprimento >= 30 && item.cumprimento < 50 && '[&>div]:bg-warning',
-                                item.cumprimento < 30 && '[&>div]:bg-destructive'
-                              )}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState message="Insira dados de lacunas para visualizar o cumprimento por eixo." />
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Distribuição por Status</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-success/10 rounded-lg text-center">
-                        <p className="text-3xl font-bold text-success">{stats?.porStatus.cumprido || 0}</p>
-                        <p className="text-sm text-muted-foreground">Cumpridas</p>
-                      </div>
-                      <div className="p-4 bg-warning/10 rounded-lg text-center">
-                        <p className="text-3xl font-bold text-warning">{stats?.porStatus.parcialmente_cumprido || 0}</p>
-                        <p className="text-sm text-muted-foreground">Parcialmente</p>
-                      </div>
-                      <div className="p-4 bg-destructive/10 rounded-lg text-center">
-                        <p className="text-3xl font-bold text-destructive">{stats?.porStatus.nao_cumprido || 0}</p>
-                        <p className="text-sm text-muted-foreground">Não Cumpridas</p>
-                      </div>
-                      <div className="p-4 bg-muted rounded-lg text-center">
-                        <p className="text-3xl font-bold">{stats?.porStatus.retrocesso || 0}</p>
-                        <p className="text-sm text-muted-foreground">Retrocesso</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card className="mt-6 bg-primary/5">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-3">
-                    <RefreshCw className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-sm">Atualização Automática</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Todas as conclusões, fios condutores e cruzamentos são recalculados automaticamente 
-                        a cada atualização dos dados no banco. Insira ou corrija dados nas bases Estatística, 
-                        Orçamentária e Normativa e clique "Atualizar" para ver o impacto.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
           </Tabs>
         </>
@@ -404,7 +344,6 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
     avanco: { icon: CheckCircle2, color: 'border-l-success', bg: 'bg-success/5', label: 'Avanço' },
     retrocesso: { icon: TrendingDown, color: 'border-l-destructive', bg: 'bg-destructive/5', label: 'Retrocesso' },
   };
-
   const config = tipoConfig[fio.tipo];
   const Icon = config.icon;
 
@@ -426,33 +365,25 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4 whitespace-pre-line">{fio.argumento}</p>
-
         {fio.comparativo2018 && (
           <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg mb-4">
             <p className="text-xs font-semibold text-primary mb-1">📊 Comparativo 2018 → 2024:</p>
             <p className="text-xs text-muted-foreground">{fio.comparativo2018}</p>
           </div>
         )}
-
         {fio.evidencias.length > 0 && (
           <div className={cn('p-3 rounded-lg mb-3', config.bg)}>
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              Evidências do banco ({fio.evidencias.length}):
-            </p>
+            <p className="text-xs font-medium text-muted-foreground mb-2">Evidências ({fio.evidencias.length}):</p>
             <ul className="space-y-1">
-              {fio.evidencias.slice(0, 6).map((ev, i) => (
+              {fio.evidencias.slice(0, 8).map((ev, i) => (
                 <li key={i} className="text-xs flex items-start gap-2">
                   <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                  <span>
-                    <strong>{ev.texto}</strong>
-                    <span className="text-muted-foreground ml-1">({ev.fonte})</span>
-                  </span>
+                  <span><strong>{ev.texto}</strong> <span className="text-muted-foreground">({ev.fonte})</span></span>
                 </li>
               ))}
             </ul>
           </div>
         )}
-
         <div className="flex flex-wrap gap-1.5">
           {fio.eixos.map((e, i) => (
             <Badge key={i} variant="outline" className="text-xs">{eixoLabels[e] || e}</Badge>
@@ -470,7 +401,6 @@ function InsightCard({ insight }: { insight: InsightCruzamento }) {
     contradição: { color: 'border-l-warning', icon: Zap, iconColor: 'text-warning' },
     correlação: { color: 'border-l-primary', icon: Link2, iconColor: 'text-primary' },
   };
-
   const config = tipoConfig[insight.tipo];
   const Icon = config.icon;
 
@@ -513,17 +443,11 @@ function ConclusaoCard({ conclusao }: { conclusao: ConclusaoDinamica }) {
             {conclusao.tipo === 'lacuna_persistente' && <AlertTriangle className="w-5 h-5 text-warning" />}
             {conclusao.titulo}
           </CardTitle>
-          <div className="flex gap-2">
-            <Badge variant="outline">{conclusao.periodo}</Badge>
-            {conclusao.fromDatabase && (
-              <Badge className="bg-primary/10 text-primary text-xs">Dinâmico</Badge>
-            )}
-          </div>
+          <Badge variant="outline">{conclusao.periodo}</Badge>
         </div>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-3 whitespace-pre-line">{conclusao.argumento_central}</p>
-        
         {conclusao.evidencias.length > 0 && (
           <div className="p-3 bg-muted/50 rounded-lg mb-3">
             <p className="text-xs font-medium text-muted-foreground mb-2">Evidências ({conclusao.evidencias.length}):</p>
@@ -537,21 +461,15 @@ function ConclusaoCard({ conclusao }: { conclusao: ConclusaoDinamica }) {
             </ul>
           </div>
         )}
-
         {conclusao.fiosCondutores.length > 0 && (
           <div className="flex items-center gap-1.5 mb-2">
             <Link2 className="w-3 h-3 text-primary" />
-            <span className="text-xs text-primary font-medium">
-              Conectado a: {conclusao.fiosCondutores.join(', ')}
-            </span>
+            <span className="text-xs text-primary font-medium">Conectado a: {conclusao.fiosCondutores.join(', ')}</span>
           </div>
         )}
-
         <div className="flex flex-wrap gap-1.5">
           {conclusao.eixos.map((eixo, i) => (
-            <Badge key={i} variant="outline" className="text-xs">
-              {eixoLabels[eixo] || eixo.replace(/_/g, ' ')}
-            </Badge>
+            <Badge key={i} variant="outline" className="text-xs">{eixoLabels[eixo] || eixo.replace(/_/g, ' ')}</Badge>
           ))}
           {conclusao.relevancia_cerd_iv && (
             <Badge className="bg-accent/10 text-accent-foreground text-xs">CERD IV</Badge>
