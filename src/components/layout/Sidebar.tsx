@@ -200,8 +200,8 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <Globe className="w-5 h-5 text-sidebar-primary-foreground" />
+          <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden">
+            <img src="/favicon.png" alt="CERD Brasil" className="w-full h-full object-cover" />
           </div>
           {!collapsed && (
             <div className="animate-fade-in">
