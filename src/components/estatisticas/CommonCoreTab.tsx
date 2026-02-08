@@ -15,9 +15,9 @@ import { cn } from '@/lib/utils';
 // ============================================
 
 // Status de atualização das tabelas
-type UpdateStatus = 'atualizado' | 'parcial' | 'desatualizado';
+export type UpdateStatus = 'atualizado' | 'parcial' | 'desatualizado';
 
-interface CommonCoreTable {
+export interface CommonCoreTable {
   id: string;
   numero: number;
   titulo: string;
@@ -43,7 +43,7 @@ interface CommonCoreTable {
 // EIXO I - DADOS DEMOGRÁFICOS (Tabelas 1-10)
 // ============================================
 
-const tabelasDemograficas: CommonCoreTable[] = [
+export const tabelasDemograficas: CommonCoreTable[] = [
   {
     id: 'cc-1',
     numero: 1,
@@ -302,7 +302,7 @@ const tabelasDemograficas: CommonCoreTable[] = [
 // EIXO II - DADOS ECONÔMICOS (Tabelas 11-17)
 // ============================================
 
-const tabelasEconomicas: CommonCoreTable[] = [
+export const tabelasEconomicas: CommonCoreTable[] = [
   {
     id: 'cc-11',
     numero: 11,
@@ -502,7 +502,7 @@ const tabelasEconomicas: CommonCoreTable[] = [
 // EIXO III - EDUCAÇÃO (Tabelas 18-29)
 // ============================================
 
-const tabelasEducacao: CommonCoreTable[] = [
+export const tabelasEducacao: CommonCoreTable[] = [
   {
     id: 'cc-18',
     numero: 18,
@@ -824,7 +824,7 @@ const tabelasEducacao: CommonCoreTable[] = [
 // EIXO IV - SAÚDE (Tabelas 30-42)
 // ============================================
 
-const tabelasSaude: CommonCoreTable[] = [
+export const tabelasSaude: CommonCoreTable[] = [
   {
     id: 'cc-30',
     numero: 30,
@@ -1150,7 +1150,7 @@ const tabelasSaude: CommonCoreTable[] = [
 // EIXO V - TRABALHO (Tabelas 43-50)
 // ============================================
 
-const tabelasTrabalho: CommonCoreTable[] = [
+export const tabelasTrabalho: CommonCoreTable[] = [
   {
     id: 'cc-43',
     numero: 43,
@@ -1371,7 +1371,7 @@ const tabelasTrabalho: CommonCoreTable[] = [
 // EIXO VI - POBREZA E DESIGUALDADE (Tabelas 51-58)
 // ============================================
 
-const tabelasPobreza: CommonCoreTable[] = [
+export const tabelasPobreza: CommonCoreTable[] = [
   {
     id: 'cc-51',
     numero: 51,
@@ -1577,7 +1577,7 @@ const tabelasPobreza: CommonCoreTable[] = [
 // EIXO VII - SEGURANÇA PÚBLICA (Tabelas 59-69)
 // ============================================
 
-const tabelasSeguranca: CommonCoreTable[] = [
+export const tabelasSeguranca: CommonCoreTable[] = [
   {
     id: 'cc-59',
     numero: 59,
@@ -1857,7 +1857,7 @@ const tabelasSeguranca: CommonCoreTable[] = [
 // EIXO VIII - HABITAÇÃO E SANEAMENTO (Tabelas 70-75)
 // ============================================
 
-const tabelasHabitacao: CommonCoreTable[] = [
+export const tabelasHabitacao: CommonCoreTable[] = [
   {
     id: 'cc-70',
     numero: 70,
@@ -2018,7 +2018,7 @@ const tabelasHabitacao: CommonCoreTable[] = [
 // EIXO IX - SISTEMA POLÍTICO (Tabelas 76-77)
 // ============================================
 
-const tabelasSistemaPolitico: CommonCoreTable[] = [
+export const tabelasSistemaPolitico: CommonCoreTable[] = [
   {
     id: 'cc-76',
     numero: 76,

@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
+import { SerieTemporalGrupos } from '@/components/grupos-focais/SerieTemporalGrupos';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-
 // Dados SIDRA/IBGE auditados com metadados completos
 const gruposFocaisData = {
   quilombolas: {
@@ -346,12 +346,18 @@ export default function GruposFocais() {
         </Card>
       </div>
 
-      <Tabs defaultValue="territoriais" className="w-full">
-        <TabsList className="mb-4">
+      <Tabs defaultValue="serie-temporal" className="w-full">
+        <TabsList className="mb-4 flex-wrap h-auto gap-1">
+          <TabsTrigger value="serie-temporal">📈 Série Temporal</TabsTrigger>
           <TabsTrigger value="territoriais">Direitos Territoriais</TabsTrigger>
           <TabsTrigger value="vulnerabilidade">Indicadores de Vulnerabilidade</TabsTrigger>
           <TabsTrigger value="lacunas">Lacunas por Grupo ({lacunas?.length || 0})</TabsTrigger>
         </TabsList>
+
+        {/* Série Temporal */}
+        <TabsContent value="serie-temporal">
+          <SerieTemporalGrupos />
+        </TabsContent>
 
         {/* Direitos Territoriais */}
         <TabsContent value="territoriais">
