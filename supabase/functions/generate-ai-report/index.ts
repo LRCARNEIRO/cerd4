@@ -86,6 +86,33 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { tipo, eixo_tematico, grupo_focal, esfera } = await req.json() as AIReportRequest;
 
+    // Input validation
+    const validTipos = ['common-core', 'cerd-iv', 'tematico', 'orcamentario'];
+    const validEixos = ['todos', 'legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const validGrupos = ['todos', 'negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
+    const validEsferas = ['todas', 'federal', 'estadual', 'municipal'];
+
+    if (!tipo || !validTipos.includes(tipo)) {
+      return new Response(JSON.stringify({ error: 'Invalid tipo parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (eixo_tematico && !validEixos.includes(eixo_tematico)) {
+      return new Response(JSON.stringify({ error: 'Invalid eixo_tematico parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (grupo_focal && !validGrupos.includes(grupo_focal)) {
+      return new Response(JSON.stringify({ error: 'Invalid grupo_focal parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (esfera && !validEsferas.includes(esfera)) {
+      return new Response(JSON.stringify({ error: 'Invalid esfera parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log(`Gerando relatório ${tipo} com IA`);
 
     // Fetch all relevant data from database

@@ -94,6 +94,29 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = await req.json().catch(() => ({})) as BudgetReportRequest;
+
+    // Input validation
+    const validEsferas = ['federal', 'estadual', 'municipal'];
+    if (body.esfera && !validEsferas.includes(body.esfera)) {
+      return new Response(JSON.stringify({ error: 'Invalid esfera parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (body.programa && (typeof body.programa !== 'string' || body.programa.length > 500)) {
+      return new Response(JSON.stringify({ error: 'Invalid programa parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (body.grupo_focal && (typeof body.grupo_focal !== 'string' || body.grupo_focal.length > 100)) {
+      return new Response(JSON.stringify({ error: 'Invalid grupo_focal parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (body.eixo_tematico && (typeof body.eixo_tematico !== 'string' || body.eixo_tematico.length > 100)) {
+      return new Response(JSON.stringify({ error: 'Invalid eixo_tematico parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     console.log('Gerando relatório orçamentário completo');
 
