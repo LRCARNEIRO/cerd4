@@ -14,6 +14,8 @@ import {
   fonteDados 
 } from './StatisticsData';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { AdmPublicaSection } from './AdmPublicaSection';
+import { CovidRacialSection } from './CovidRacialSection';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
@@ -324,6 +326,22 @@ export function DadosGeraisTab() {
 
       {/* Orçamento - dados do banco */}
       <OrcamentoResumoSection />
+
+      {/* Administração Pública - MUNIC/ESTADIC 2024 */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          🏛️ Administração Pública e Igualdade Racial
+        </h2>
+        <AdmPublicaSection />
+      </div>
+
+      {/* COVID-19 e Desigualdade Racial */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          🦠 COVID-19 e Desigualdade Racial
+        </h2>
+        <CovidRacialSection />
+      </div>
     </div>
   );
 }
