@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
-  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle 
+  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
+  Landmark, HeartPulse
 } from 'lucide-react';
 
 // Componentes de abas
@@ -25,6 +26,8 @@ import { OrcamentoTab } from '@/components/estatisticas/OrcamentoTab';
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
+import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
+import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 
 export default function Estatisticas() {
   return (
@@ -84,6 +87,12 @@ export default function Estatisticas() {
           </TabsTrigger>
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Indicadores (BD)
+          </TabsTrigger>
+          <TabsTrigger value="adm-publica" className="gap-1 bg-chart-3/10">
+            <Landmark className="w-4 h-4" /> Adm Pública
+          </TabsTrigger>
+          <TabsTrigger value="covid-racial" className="gap-1 bg-destructive/10">
+            <HeartPulse className="w-4 h-4" /> COVID
           </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
@@ -146,6 +155,16 @@ export default function Estatisticas() {
         {/* Indicadores do banco de dados */}
         <TabsContent value="indicadores-db">
           <IndicadoresDbTab />
+        </TabsContent>
+
+        {/* Adm Pública - MUNIC/ESTADIC 2024 */}
+        <TabsContent value="adm-publica">
+          <AdmPublicaSection />
+        </TabsContent>
+
+        {/* COVID-19 e Desigualdade Racial */}
+        <TabsContent value="covid-racial">
+          <CovidRacialSection />
         </TabsContent>
 
         {/* Fontes de Dados */}
