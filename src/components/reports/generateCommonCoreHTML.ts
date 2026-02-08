@@ -3,11 +3,17 @@ import {
   dadosDemograficos, indicadoresSocioeconomicos, educacaoSerieHistorica,
   saudeSerieHistorica, segurancaPublica, povosTradicionais
 } from '@/components/estatisticas/StatisticsData';
+import {
+  tabelasDemograficas, tabelasEconomicas, tabelasEducacao,
+  tabelasSaude, tabelasTrabalho, tabelasPobreza,
+  tabelasSeguranca, tabelasHabitacao, tabelasSistemaPolitico,
+  type CommonCoreTable
+} from '@/components/estatisticas/CommonCoreTab';
 
 const STYLES = `
 @page { size: A4; margin: 2.5cm; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Open Sans', sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a2e; max-width: 21cm; margin: 0 auto; padding: 2cm; background: white; }
+body { font-family: 'Open Sans', sans-serif; font-size: 10pt; line-height: 1.5; color: #1a1a2e; max-width: 21cm; margin: 0 auto; padding: 2cm; background: white; }
 .header { text-align: center; margin-bottom: 2cm; border-bottom: 3px solid #1e3a5f; padding-bottom: 1.5cm; }
 .header h1 { font-family: 'Merriweather', serif; font-size: 18pt; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 1px; }
 .header .subtitle { font-size: 14pt; margin-top: 0.5cm; color: #2c5282; }
@@ -18,36 +24,79 @@ h3 { font-family: 'Merriweather', serif; font-size: 12pt; font-weight: 700; marg
 h4 { font-size: 11pt; font-weight: 600; margin-top: 0.8cm; margin-bottom: 0.2cm; color: #334155; }
 p { text-align: justify; margin-bottom: 0.5cm; }
 .section { margin-bottom: 1.5cm; page-break-inside: avoid; }
-.highlight-box { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 0.8cm; margin: 0.5cm 0; border-left: 4px solid #1e3a5f; border-radius: 0 8px 8px 0; }
-table { width: 100%; border-collapse: collapse; margin: 0.5cm 0; font-size: 10pt; }
-th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+.highlight-box { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 0.6cm; margin: 0.5cm 0; border-left: 4px solid #1e3a5f; border-radius: 0 8px 8px 0; }
+table { width: 100%; border-collapse: collapse; margin: 0.5cm 0; font-size: 9pt; }
+th, td { border: 1px solid #cbd5e1; padding: 5px 8px; text-align: left; }
 th { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; font-weight: 600; }
 tr:nth-child(even) { background: #f8fafc; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 9pt; font-weight: 600; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; font-weight: 600; }
 .badge-success { background: #dcfce7; color: #166534; }
 .badge-warning { background: #fef3c7; color: #92400e; }
 .badge-danger { background: #fee2e2; color: #991b1b; }
-.badge-info { background: #dbeafe; color: #1e40af; }
-.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1cm; margin: 0.5cm 0; }
-.data-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.8cm; text-align: center; }
-.data-card-value { font-size: 24pt; font-weight: 700; color: #1e3a5f; }
-.data-card-label { font-size: 9pt; color: #64748b; margin-top: 0.2cm; }
+.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5cm; margin: 0.5cm 0; }
+.data-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5cm; text-align: center; }
+.data-card-value { font-size: 20pt; font-weight: 700; color: #1e3a5f; }
+.data-card-label { font-size: 8pt; color: #64748b; margin-top: 0.1cm; }
 .trend-up { color: #22c55e; } .trend-down { color: #ef4444; } .trend-stable { color: #64748b; }
-.footer { margin-top: 2cm; padding-top: 1cm; border-top: 2px solid #1e3a5f; font-size: 9pt; text-align: center; color: #64748b; }
-.toc { margin: 1cm 0; padding: 1cm; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+.footer { margin-top: 2cm; padding-top: 1cm; border-top: 2px solid #1e3a5f; font-size: 8pt; text-align: center; color: #64748b; }
+.toc { margin: 1cm 0; padding: 0.8cm; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
 .toc h3 { margin-top: 0; color: #1e3a5f; }
 .toc ul { list-style: none; padding-left: 0; }
-.toc li { margin: 0.3cm 0; padding-left: 1cm; position: relative; }
+.toc li { margin: 0.2cm 0; padding-left: 1cm; position: relative; font-size: 10pt; }
 .toc li::before { content: "→"; position: absolute; left: 0; color: #c7a82b; }
 ul, ol { margin-left: 1cm; margin-bottom: 0.5cm; }
 li { margin-bottom: 0.2cm; }
-.print-instructions { background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 1cm; margin-bottom: 1cm; border: 1px solid #3b82f6; border-radius: 8px; }
+.eixo-header { background: #1e3a5f; color: white; padding: 0.4cm 0.6cm; margin: 1cm 0 0.5cm 0; border-radius: 4px; }
+.eixo-header h3 { color: white; margin: 0; font-size: 12pt; }
+.table-meta { font-size: 8pt; color: #64748b; margin-top: 0.2cm; }
+.table-meta a { color: #2563eb; text-decoration: underline; }
+.print-instructions { background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 0.8cm; margin-bottom: 1cm; border: 1px solid #3b82f6; border-radius: 8px; }
 .print-instructions strong { color: #1e40af; }
 @media print { .print-instructions { display: none; } body { padding: 0; } }
 `;
 
 function formatNum(n: number): string {
   return n.toLocaleString('pt-BR');
+}
+
+function renderTable(t: CommonCoreTable): string {
+  const trendIcon = t.tendencia === 'crescente' ? '↑' : t.tendencia === 'decrescente' ? '↓' : '→';
+  const statusBadge = t.statusAtualizacao === 'atualizado'
+    ? '<span class="badge badge-success">Atualizado</span>'
+    : t.statusAtualizacao === 'parcial'
+      ? '<span class="badge badge-warning">Parcial</span>'
+      : '<span class="badge badge-danger">Desatualizado</span>';
+
+  const headerCells = t.dados.headers.map(h => `<th>${h}</th>`).join('');
+  const bodyRows = t.dados.rows.map(row =>
+    `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+  ).join('');
+
+  return `
+    <div style="page-break-inside: avoid; margin-bottom: 0.8cm;">
+      <h4>Tabela ${t.numero}: ${t.titulo} ${trendIcon} ${statusBadge}</h4>
+      <p style="font-size: 9pt; font-style: italic; color: #475569; margin-bottom: 0.2cm;">${t.tituloIngles}</p>
+      ${t.descricao ? `<p style="font-size: 9pt;">${t.descricao}</p>` : ''}
+      <table>
+        <thead><tr>${headerCells}</tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+      <div class="table-meta">
+        <strong>Fonte:</strong> ${t.fonteCompleta || t.fonte}
+        ${t.tabelaSidra ? ` | <strong>SIDRA:</strong> ${t.tabelaSidra}` : ''}
+        | <strong>Período:</strong> ${t.periodoAtualizado}
+        ${t.urlFonte ? ` | <a href="${t.urlFonte}" target="_blank">Ver fonte oficial</a>` : ''}
+      </div>
+      ${t.notas ? `<p style="font-size: 8pt; color: #92400e; margin-top: 0.2cm;"><em>Nota: ${t.notas}</em></p>` : ''}
+    </div>
+  `;
+}
+
+function renderEixo(titulo: string, numero: string, tabelas: CommonCoreTable[]): string {
+  return `
+    <div class="eixo-header"><h3>Eixo ${numero} — ${titulo} (${tabelas.length} tabelas)</h3></div>
+    ${tabelas.map(t => renderTable(t)).join('')}
+  `;
 }
 
 export function generateCommonCoreHTML(
@@ -57,16 +106,14 @@ export function generateCommonCoreHTML(
   orcStats: any
 ): string {
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
-  const edu2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
-  const saude2024 = saudeSerieHistorica[saudeSerieHistorica.length - 1];
 
   const cumpridas = stats?.porStatus?.cumprido || 0;
   const parciais = stats?.porStatus?.parcialmente_cumprido || 0;
   const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
   const total = stats?.total || 0;
 
-  // Build indicadores by category
+  // Indicadores interseccionais by category
   const categorias: Record<string, IndicadorInterseccional[]> = {};
   indicadores.forEach(ind => {
     if (!categorias[ind.categoria]) categorias[ind.categoria] = [];
@@ -100,7 +147,7 @@ export function generateCommonCoreHTML(
     const analise = inds.find(i => i.analise_interseccional)?.analise_interseccional || '';
 
     return `
-      <h3>${catLabels[cat] || cat}</h3>
+      <h4>${catLabels[cat] || cat}</h4>
       <table>
         <thead><tr><th>Indicador</th><th>Fonte</th><th>Negros</th><th>Brancos</th><th>Tendência</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -108,6 +155,15 @@ export function generateCommonCoreHTML(
       ${analise ? `<div class="highlight-box"><h4>📈 Análise Interseccional</h4><p>${analise}</p></div>` : ''}
     `;
   }).join('');
+
+  // Count all 77 tables
+  const allTables = [
+    ...tabelasDemograficas, ...tabelasEconomicas, ...tabelasEducacao,
+    ...tabelasSaude, ...tabelasTrabalho, ...tabelasPobreza,
+    ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico
+  ];
+  const totalTabelas = allTables.length;
+  const atualizadas = allTables.filter(t => t.statusAtualizacao === 'atualizado').length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -139,8 +195,17 @@ export function generateCommonCoreHTML(
       <li><strong>I.</strong> Informações gerais sobre o Estado</li>
       <li><strong>II.</strong> Marco geral de proteção e promoção dos direitos humanos</li>
       <li><strong>III.</strong> Informações sobre não discriminação e igualdade</li>
-      <li><strong>IV.</strong> Dados estatísticos desagregados</li>
-      <li><strong>Anexos:</strong> Indicadores interseccionais e gráficos</li>
+      <li><strong>IV.</strong> Dados Estatísticos Desagregados — ${totalTabelas} Tabelas em 9 Dimensões</li>
+      <li style="padding-left: 2cm;">IV.1 Demografia (${tabelasDemograficas.length})</li>
+      <li style="padding-left: 2cm;">IV.2 Economia (${tabelasEconomicas.length})</li>
+      <li style="padding-left: 2cm;">IV.3 Educação (${tabelasEducacao.length})</li>
+      <li style="padding-left: 2cm;">IV.4 Saúde (${tabelasSaude.length})</li>
+      <li style="padding-left: 2cm;">IV.5 Trabalho (${tabelasTrabalho.length})</li>
+      <li style="padding-left: 2cm;">IV.6 Pobreza e Desigualdade (${tabelasPobreza.length})</li>
+      <li style="padding-left: 2cm;">IV.7 Segurança Pública (${tabelasSeguranca.length})</li>
+      <li style="padding-left: 2cm;">IV.8 Sistema Eleitoral (${tabelasHabitacao.length})</li>
+      <li style="padding-left: 2cm;">IV.9 Participação Social (${tabelasSistemaPolitico.length})</li>
+      <li><strong>Anexos:</strong> Indicadores interseccionais e análise CERD</li>
     </ul>
   </div>
 
@@ -188,7 +253,6 @@ export function generateCommonCoreHTML(
   <h2>II. Marco Geral de Proteção e Promoção dos Direitos Humanos</h2>
   <div class="section">
     <h3>A. Marco Institucional (2018-2026)</h3>
-    <p>O período 2018-2026 registrou mudanças institucionais significativas no marco brasileiro de promoção da igualdade racial:</p>
     <div class="highlight-box">
       <h4>🏛️ Período 2023-2026: Reconstrução Institucional</h4>
       <ul>
@@ -198,7 +262,6 @@ export function generateCommonCoreHTML(
         <li><strong>Demarcação de terras:</strong> 11 territórios indígenas homologados</li>
       </ul>
     </div>
-    <h4>Principais marcos legislativos</h4>
     <table>
       <thead><tr><th>Lei/Decreto</th><th>Ano</th><th>Objeto</th></tr></thead>
       <tbody>
@@ -219,51 +282,33 @@ export function generateCommonCoreHTML(
       <div class="data-card"><div class="data-card-value" style="color:#eab308">${parciais}</div><div class="data-card-label">Parcialmente Cumpridas</div></div>
       <div class="data-card"><div class="data-card-value" style="color:#ef4444">${naoCumpridas}</div><div class="data-card-label">Não Cumpridas</div></div>
     </div>
-    <table>
-      <thead><tr><th>Status</th><th>Quantidade</th><th>Percentual</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge badge-success">Cumprido</span></td><td>${cumpridas}</td><td>${total > 0 ? Math.round(cumpridas/total*100) : 0}%</td></tr>
-        <tr><td><span class="badge badge-warning">Parcialmente Cumprido</span></td><td>${parciais}</td><td>${total > 0 ? Math.round(parciais/total*100) : 0}%</td></tr>
-        <tr><td><span class="badge badge-danger">Não Cumprido</span></td><td>${naoCumpridas}</td><td>${total > 0 ? Math.round(naoCumpridas/total*100) : 0}%</td></tr>
-      </tbody>
-    </table>
+
+    <h3>B. Indicadores Interseccionais por Categoria</h3>
+    ${indicadoresHTML}
   </div>
 
-  <h2>IV. Dados Estatísticos Desagregados</h2>
+  <h2>IV. Dados Estatísticos Desagregados — ${totalTabelas} Tabelas Oficiais</h2>
   <div class="section">
-    <p>Em resposta à solicitação do Comitê por dados desagregados abrangentes (parágrafo 7 das observações finais), o Brasil apresenta os seguintes indicadores interseccionais:</p>
-    ${indicadoresHTML}
+    <div class="highlight-box">
+      <h4>📋 Resumo das ${totalTabelas} Tabelas do Common Core</h4>
+      <p>${atualizadas} tabelas atualizadas (${Math.round(atualizadas/totalTabelas*100)}%) | Fontes: IBGE/SIDRA, DataSUS, INEP, FBSP, TSE, MDS/SUAS, BCB</p>
+      <p>Período de cobertura: 1980-2024 | Dados mais recentes: 2023/2024</p>
+    </div>
 
-    <h3>Educação (Dados do Escopo)</h3>
-    <table>
-      <thead><tr><th>Indicador</th><th>Negro 2024</th><th>Branco 2024</th><th>Tendência</th></tr></thead>
-      <tbody>
-        <tr><td>Ensino Superior Completo (%)</td><td>${edu2024.superiorNegroPercent}%</td><td>${edu2024.superiorBrancoPercent}%</td><td class="trend-up">↑ melhoria</td></tr>
-        <tr><td>Analfabetismo (%)</td><td>${edu2024.analfabetismoNegro}%</td><td>${edu2024.analfabetismoBranco}%</td><td class="trend-up">↓ decrescente</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Segurança Pública (Dados do Escopo)</h3>
-    <table>
-      <thead><tr><th>Indicador</th><th>2024</th><th>Tendência</th></tr></thead>
-      <tbody>
-        <tr><td>Vítimas negras de homicídio (%)</td><td>${seg2024.percentualVitimasNegras}%</td><td class="trend-down">↑ piora</td></tr>
-        <tr><td>Letalidade policial negra (%)</td><td>${seg2024.letalidadePolicial}%</td><td class="trend-down">↑ piora</td></tr>
-        <tr><td>Risco homicídio negro (razão)</td><td>${seg2024.razaoRisco}x</td><td class="trend-stable">→ estável</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Saúde (Dados do Escopo)</h3>
-    <table>
-      <thead><tr><th>Indicador</th><th>Negra 2024</th><th>Branca 2024</th><th>Tendência</th></tr></thead>
-      <tbody>
-        <tr><td>Mortalidade materna (por 100 mil NV)</td><td>${saude2024.mortalidadeMaternaNegra}</td><td>${saude2024.mortalidadeMaternaBranca}</td><td class="trend-up">↓ melhoria</td></tr>
-      </tbody>
-    </table>
+    ${renderEixo('Características Demográficas', 'I', tabelasDemograficas)}
+    ${renderEixo('Características Econômicas', 'II', tabelasEconomicas)}
+    ${renderEixo('Educação', 'III', tabelasEducacao)}
+    ${renderEixo('Saúde', 'IV', tabelasSaude)}
+    ${renderEixo('Trabalho e Previdência', 'V', tabelasTrabalho)}
+    ${renderEixo('Pobreza e Desigualdade', 'VI', tabelasPobreza)}
+    ${renderEixo('Segurança Pública', 'VII', tabelasSeguranca)}
+    ${renderEixo('Sistema Eleitoral', 'VIII', tabelasHabitacao)}
+    ${renderEixo('Participação Social', 'IX', tabelasSistemaPolitico)}
   </div>
 
   <div class="footer">
     <p>HRI/CORE/BRA/2026 — Documento Básico Comum do Brasil</p>
+    <p>${totalTabelas} tabelas estatísticas oficiais em 9 dimensões temáticas</p>
     <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com MIR e MRE</p>
     <p>Gerado automaticamente em ${new Date().toLocaleDateString('pt-BR')} — Dados de fontes oficiais (IBGE, FBSP, DataSUS, SIOP)</p>
   </div>
