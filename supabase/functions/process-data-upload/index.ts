@@ -93,6 +93,21 @@ serve(async (req) => {
       throw new Error('Nenhum arquivo enviado');
     }
 
+    // File validation
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      return new Response(JSON.stringify({ error: 'Arquivo muito grande. Limite: 10MB' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const allowedTypes = ['text/plain', 'text/csv', 'application/pdf', 'text/markdown', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (file.type && !allowedTypes.includes(file.type)) {
+      return new Response(JSON.stringify({ error: 'Tipo de arquivo não suportado' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log(`Processando arquivo: ${file.name}, tipo: ${file.type}, tamanho: ${file.size}`);
 
     // Read file content
@@ -177,6 +192,19 @@ IMPORTANTE:
       extractedData = { indicadores: [], orcamento: [], lacunas: [], conclusoes: [] };
     }
 
+    // Sanitize and validate extracted data before insertion
+    const sanitizeStr = (s: any, maxLen: number): string => {
+      if (typeof s !== 'string') return '';
+      return s.substring(0, maxLen).trim();
+    };
+    const sanitizeNum = (n: any): number | null => {
+      if (n === null || n === undefined) return null;
+      const parsed = Number(n);
+      return isNaN(parsed) ? null : parsed;
+    };
+    const validEsferas = ['federal', 'estadual', 'municipal'];
+    const validTendencias = ['aumento', 'reducao', 'estável'];
+
     // Insert extracted data into database
     const results = {
       indicadores_inseridos: 0,
@@ -186,91 +214,125 @@ IMPORTANTE:
       erros: [] as string[],
     };
 
+    // Limit total records to prevent abuse
+    const MAX_RECORDS = 100;
+
     // Insert indicadores
     if (extractedData.indicadores && extractedData.indicadores.length > 0) {
-      for (const ind of extractedData.indicadores) {
+      for (const ind of extractedData.indicadores.slice(0, MAX_RECORDS)) {
         try {
+          if (!ind.nome || !ind.categoria || !ind.fonte) {
+            results.erros.push(`Indicador inválido: campos obrigatórios ausentes`);
+            continue;
+          }
           const { error } = await supabase.from('indicadores_interseccionais').insert({
-            nome: ind.nome,
-            categoria: ind.categoria,
-            fonte: ind.fonte,
-            url_fonte: ind.url_fonte,
-            dados: ind.dados,
-            tendencia: ind.tendencia,
+            nome: sanitizeStr(ind.nome, 255),
+            categoria: sanitizeStr(ind.categoria, 100),
+            fonte: sanitizeStr(ind.fonte, 255),
+            url_fonte: ind.url_fonte ? sanitizeStr(ind.url_fonte, 500) : null,
+            dados: ind.dados || {},
+            tendencia: validTendencias.includes(ind.tendencia || '') ? ind.tendencia : null,
             desagregacao_raca: true,
             desagregacao_genero: true,
           });
           if (error) throw error;
           results.indicadores_inseridos++;
         } catch (e: any) {
-          results.erros.push(`Indicador ${ind.nome}: ${e.message}`);
+          results.erros.push(`Indicador ${sanitizeStr(ind.nome, 50)}: ${e.message}`);
         }
       }
     }
 
     // Insert orcamento
     if (extractedData.orcamento && extractedData.orcamento.length > 0) {
-      for (const orc of extractedData.orcamento) {
+      for (const orc of extractedData.orcamento.slice(0, MAX_RECORDS)) {
         try {
+          if (!orc.programa || !orc.orgao || !orc.ano || !orc.fonte_dados) {
+            results.erros.push(`Orçamento inválido: campos obrigatórios ausentes`);
+            continue;
+          }
+          const ano = Number(orc.ano);
+          if (isNaN(ano) || ano < 2000 || ano > 2030) {
+            results.erros.push(`Orçamento ${orc.programa}: ano inválido ${orc.ano}`);
+            continue;
+          }
+          const esfera = validEsferas.includes(orc.esfera) ? orc.esfera : 'federal';
           const { error } = await supabase.from('dados_orcamentarios').insert({
-            programa: orc.programa,
-            orgao: orc.orgao,
-            esfera: orc.esfera || 'federal',
-            ano: orc.ano,
-            dotacao_inicial: orc.dotacao_inicial,
-            dotacao_autorizada: orc.dotacao_autorizada,
-            empenhado: orc.empenhado,
-            liquidado: orc.liquidado,
-            pago: orc.pago,
-            percentual_execucao: orc.percentual_execucao,
-            grupo_focal: orc.grupo_focal,
-            eixo_tematico: orc.eixo_tematico,
-            fonte_dados: orc.fonte_dados,
-            url_fonte: orc.url_fonte,
-            observacoes: orc.observacoes,
+            programa: sanitizeStr(orc.programa, 255),
+            orgao: sanitizeStr(orc.orgao, 255),
+            esfera,
+            ano,
+            dotacao_inicial: sanitizeNum(orc.dotacao_inicial),
+            dotacao_autorizada: sanitizeNum(orc.dotacao_autorizada),
+            empenhado: sanitizeNum(orc.empenhado),
+            liquidado: sanitizeNum(orc.liquidado),
+            pago: sanitizeNum(orc.pago),
+            percentual_execucao: sanitizeNum(orc.percentual_execucao),
+            grupo_focal: orc.grupo_focal ? sanitizeStr(orc.grupo_focal, 100) : null,
+            eixo_tematico: orc.eixo_tematico ? sanitizeStr(orc.eixo_tematico, 100) : null,
+            fonte_dados: sanitizeStr(orc.fonte_dados, 255),
+            url_fonte: orc.url_fonte ? sanitizeStr(orc.url_fonte, 500) : null,
+            observacoes: orc.observacoes ? sanitizeStr(orc.observacoes, 1000) : null,
           });
           if (error) throw error;
           results.orcamento_inseridos++;
         } catch (e: any) {
-          results.erros.push(`Orçamento ${orc.programa}/${orc.ano}: ${e.message}`);
+          results.erros.push(`Orçamento ${sanitizeStr(orc.programa, 50)}/${orc.ano}: ${e.message}`);
         }
       }
     }
 
     // Insert lacunas
+    const validEixosTematicos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const validGruposFocais = ['negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
+    const validStatus = ['cumprido', 'parcialmente_cumprido', 'nao_cumprido', 'retrocesso', 'em_andamento'];
+    const validPrioridades = ['critica', 'alta', 'media', 'baixa'];
+
     if (extractedData.lacunas && extractedData.lacunas.length > 0) {
-      for (const lac of extractedData.lacunas) {
+      for (const lac of extractedData.lacunas.slice(0, MAX_RECORDS)) {
         try {
+          if (!lac.paragrafo || !lac.tema || !lac.descricao_lacuna || !lac.eixo_tematico) {
+            results.erros.push(`Lacuna inválida: campos obrigatórios ausentes`);
+            continue;
+          }
+          if (!validEixosTematicos.includes(lac.eixo_tematico)) {
+            results.erros.push(`Lacuna ${sanitizeStr(lac.tema, 50)}: eixo_tematico inválido`);
+            continue;
+          }
           const { error } = await supabase.from('lacunas_identificadas').insert({
-            paragrafo: lac.paragrafo,
-            tema: lac.tema,
-            descricao_lacuna: lac.descricao_lacuna,
+            paragrafo: sanitizeStr(lac.paragrafo, 50),
+            tema: sanitizeStr(lac.tema, 255),
+            descricao_lacuna: sanitizeStr(lac.descricao_lacuna, 2000),
             eixo_tematico: lac.eixo_tematico as any,
-            grupo_focal: (lac.grupo_focal || 'geral') as any,
+            grupo_focal: (validGruposFocais.includes(lac.grupo_focal) ? lac.grupo_focal : 'geral') as any,
             tipo_observacao: 'recomendacao' as any,
-            status_cumprimento: (lac.status_cumprimento || 'nao_cumprido') as any,
-            prioridade: (lac.prioridade || 'media') as any,
-            evidencias_encontradas: lac.evidencias_encontradas,
-            fontes_dados: lac.fontes_dados,
+            status_cumprimento: (validStatus.includes(lac.status_cumprimento) ? lac.status_cumprimento : 'nao_cumprido') as any,
+            prioridade: (validPrioridades.includes(lac.prioridade) ? lac.prioridade : 'media') as any,
+            evidencias_encontradas: Array.isArray(lac.evidencias_encontradas) ? lac.evidencias_encontradas.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
+            fontes_dados: Array.isArray(lac.fontes_dados) ? lac.fontes_dados.slice(0, 20).map((f: any) => sanitizeStr(f, 500)) : null,
           });
           if (error) throw error;
           results.lacunas_inseridas++;
         } catch (e: any) {
-          results.erros.push(`Lacuna ${lac.tema}: ${e.message}`);
+          results.erros.push(`Lacuna ${sanitizeStr(lac.tema, 50)}: ${e.message}`);
         }
       }
     }
 
     // Insert conclusoes
     if (extractedData.conclusoes && extractedData.conclusoes.length > 0) {
-      for (const conc of extractedData.conclusoes) {
+      for (const conc of extractedData.conclusoes.slice(0, MAX_RECORDS)) {
         try {
+          if (!conc.titulo || !conc.tipo || !conc.periodo || !conc.argumento_central) {
+            results.erros.push(`Conclusão inválida: campos obrigatórios ausentes`);
+            continue;
+          }
           const { error } = await supabase.from('conclusoes_analiticas').insert({
-            titulo: conc.titulo,
-            tipo: conc.tipo,
-            periodo: conc.periodo,
-            argumento_central: conc.argumento_central,
-            evidencias: conc.evidencias,
+            titulo: sanitizeStr(conc.titulo, 255),
+            tipo: sanitizeStr(conc.tipo, 100),
+            periodo: sanitizeStr(conc.periodo, 50),
+            argumento_central: sanitizeStr(conc.argumento_central, 5000),
+            evidencias: Array.isArray(conc.evidencias) ? conc.evidencias.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
           });
           if (error) throw error;
           results.conclusoes_inseridas++;

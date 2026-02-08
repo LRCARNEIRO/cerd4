@@ -89,6 +89,26 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { eixo_tematico, grupo_focal, titulo_personalizado } = await req.json() as ThematicReportRequest;
+
+    // Input validation
+    const validEixos = ['todos', 'legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const validGrupos = ['todos', 'negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
+
+    if (eixo_tematico && !validEixos.includes(eixo_tematico)) {
+      return new Response(JSON.stringify({ error: 'Invalid eixo_tematico parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (grupo_focal && !validGrupos.includes(grupo_focal)) {
+      return new Response(JSON.stringify({ error: 'Invalid grupo_focal parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (titulo_personalizado && (typeof titulo_personalizado !== 'string' || titulo_personalizado.length > 200)) {
+      return new Response(JSON.stringify({ error: 'Invalid titulo_personalizado parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     console.log(`Generating thematic report for eixo: ${eixo_tematico}, grupo: ${grupo_focal}`);
 

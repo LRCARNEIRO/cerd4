@@ -45,6 +45,20 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { type, format } = await req.json() as ReportRequest;
+
+    // Input validation
+    const validTypes = ['common-core', 'cerd-iv'];
+    const validFormats = ['pdf', 'docx', 'html'];
+    if (!type || !validTypes.includes(type)) {
+      return new Response(JSON.stringify({ error: 'Invalid type parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (format && !validFormats.includes(format)) {
+      return new Response(JSON.stringify({ error: 'Invalid format parameter' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     console.log(`Gerando relatório ${type} em formato ${format}`);
 
