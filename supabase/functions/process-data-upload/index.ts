@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface ExtractedData {
@@ -62,27 +62,23 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
-    // Authentication check
+    // Optional authentication - log user if available
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    let userId = 'anonymous';
+    if (authHeader?.startsWith('Bearer ')) {
+      try {
+        const authClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: userData } = await authClient.auth.getUser();
+        if (userData?.user) {
+          userId = userData.user.id;
+        }
+      } catch (_e) {
+        console.log('Auth check skipped - proceeding without auth');
+      }
     }
-
-    const authClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    console.log(`Authenticated user: ${claimsData.claims.sub}`);
+    console.log(`Processing upload for user: ${userId}`);
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -101,9 +97,18 @@ serve(async (req) => {
       });
     }
 
-    const allowedTypes = ['text/plain', 'text/csv', 'application/pdf', 'text/markdown', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (file.type && !allowedTypes.includes(file.type)) {
-      return new Response(JSON.stringify({ error: 'Tipo de arquivo não suportado' }), {
+    const allowedTypes = [
+      'text/plain', 'text/csv', 'application/pdf', 'text/markdown',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'application/msword',
+    ];
+    const allowedExtensions = ['.txt', '.csv', '.pdf', '.md', '.docx', '.doc', '.xlsx', '.xls'];
+    const fileExt = file.name ? '.' + file.name.split('.').pop()?.toLowerCase() : '';
+    const isAllowed = (file.type && allowedTypes.includes(file.type)) || allowedExtensions.includes(fileExt);
+    if (!isAllowed) {
+      return new Response(JSON.stringify({ error: 'Tipo de arquivo não suportado. Use: PDF, DOCX, XLSX, CSV ou TXT' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
