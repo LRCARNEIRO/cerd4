@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -381,6 +382,9 @@ export default function Normativa() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Histórico de Versões */}
+      <SnapshotManager />
     </DashboardLayout>
   );
 }

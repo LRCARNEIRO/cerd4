@@ -210,6 +210,55 @@ IMPORTANTE:
     const validEsferas = ['federal', 'estadual', 'municipal'];
     const validTendencias = ['aumento', 'reducao', 'estável'];
 
+    // === SNAPSHOT: Save current state before inserting ===
+    console.log('Creating snapshot before import...');
+    const tabelasAfetadas: string[] = [];
+    const snapshotData: Record<string, any[]> = {};
+    let totalRegistros = 0;
+
+    if (extractedData.indicadores && extractedData.indicadores.length > 0) {
+      const { data: existing } = await supabase.from('indicadores_interseccionais').select('*');
+      snapshotData.indicadores_interseccionais = existing || [];
+      totalRegistros += (existing || []).length;
+      tabelasAfetadas.push('indicadores_interseccionais');
+    }
+    if (extractedData.orcamento && extractedData.orcamento.length > 0) {
+      const { data: existing } = await supabase.from('dados_orcamentarios').select('*');
+      snapshotData.dados_orcamentarios = existing || [];
+      totalRegistros += (existing || []).length;
+      tabelasAfetadas.push('dados_orcamentarios');
+    }
+    if (extractedData.lacunas && extractedData.lacunas.length > 0) {
+      const { data: existing } = await supabase.from('lacunas_identificadas').select('*');
+      snapshotData.lacunas_identificadas = existing || [];
+      totalRegistros += (existing || []).length;
+      tabelasAfetadas.push('lacunas_identificadas');
+    }
+    if (extractedData.conclusoes && extractedData.conclusoes.length > 0) {
+      const { data: existing } = await supabase.from('conclusoes_analiticas').select('*');
+      snapshotData.conclusoes_analiticas = existing || [];
+      totalRegistros += (existing || []).length;
+      tabelasAfetadas.push('conclusoes_analiticas');
+    }
+
+    if (tabelasAfetadas.length > 0) {
+      const { error: snapError } = await supabase.from('data_snapshots').insert({
+        nome: `Backup antes de importar: ${file.name}`,
+        descricao: `Snapshot automático criado antes da importação do arquivo ${file.name}`,
+        arquivo_origem: file.name,
+        usuario_id: userId,
+        snapshot_data: snapshotData,
+        tabelas_afetadas: tabelasAfetadas,
+        total_registros: totalRegistros,
+      });
+      if (snapError) {
+        console.error('Snapshot error:', snapError);
+        // Don't block import, just log
+      } else {
+        console.log(`Snapshot created: ${tabelasAfetadas.length} tables, ${totalRegistros} records`);
+      }
+    }
+
     // Insert extracted data into database
     const results = {
       indicadores_inseridos: 0,
@@ -217,6 +266,7 @@ IMPORTANTE:
       lacunas_inseridas: 0,
       conclusoes_inseridas: 0,
       erros: [] as string[],
+      snapshot_criado: tabelasAfetadas.length > 0,
     };
 
     // Limit total records to prevent abuse

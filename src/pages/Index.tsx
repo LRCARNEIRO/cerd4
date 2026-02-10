@@ -5,6 +5,7 @@ import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
 import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
+import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
 import { 
   ClipboardCheck, 
@@ -243,6 +244,9 @@ export default function Index() {
           external
         />
       </div>
+
+      {/* Histórico de Versões */}
+      <SnapshotManager />
     </DashboardLayout>
   );
 }
