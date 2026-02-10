@@ -141,6 +141,42 @@ export type Database = {
         }
         Relationships: []
       }
+      data_snapshots: {
+        Row: {
+          arquivo_origem: string | null
+          created_at: string
+          descricao: string | null
+          id: string
+          nome: string
+          snapshot_data: Json
+          tabelas_afetadas: string[]
+          total_registros: number
+          usuario_id: string | null
+        }
+        Insert: {
+          arquivo_origem?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome: string
+          snapshot_data: Json
+          tabelas_afetadas: string[]
+          total_registros?: number
+          usuario_id?: string | null
+        }
+        Update: {
+          arquivo_origem?: string | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          nome?: string
+          snapshot_data?: Json
+          tabelas_afetadas?: string[]
+          total_registros?: number
+          usuario_id?: string | null
+        }
+        Relationships: []
+      }
       indicadores_interseccionais: {
         Row: {
           analise_interseccional: string | null
