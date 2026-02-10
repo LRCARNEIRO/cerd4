@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encode as base64Encode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -52,6 +53,35 @@ interface ExtractedData {
   }>;
 }
 
+const SYSTEM_PROMPT = `Você é um especialista em extração de dados de documentos sobre políticas públicas raciais, direitos humanos e discriminação racial no contexto do Brasil e da ONU/CERD.
+
+Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
+
+1. INDICADORES SOCIAIS (taxa de desemprego, homicídios, educação, saúde por raça/gênero)
+2. DADOS ORÇAMENTÁRIOS (programas, valores, anos, órgãos responsáveis)
+3. LACUNAS/RECOMENDAÇÕES (pontos pendentes, recomendações de organismos internacionais, compromissos assumidos)
+4. CONCLUSÕES ANALÍTICAS (análises, achados, posicionamentos e compromissos do documento)
+
+IMPORTANTE para documentos internacionais como a Declaração de Durban:
+- Extraia TODAS as recomendações e compromissos como LACUNAS (mesmo que sejam metas futuras)
+- Extraia os principais posicionamentos e achados como CONCLUSÕES
+- Use "geral" como grupo_focal quando não especificado
+- Use eixos temáticos válidos: legislacao_justica, politicas_institucionais, seguranca_publica, saude, educacao, trabalho_renda, terra_territorio, cultura_patrimonio, participacao_social, dados_estatisticas
+- Use status: cumprido, parcialmente_cumprido, nao_cumprido, retrocesso, em_andamento
+- Use prioridades: critica, alta, media, baixa
+- Use grupos focais: negros, indigenas, quilombolas, ciganos, religioes_matriz_africana, juventude_negra, mulheres_negras, lgbtqia_negros, pcd_negros, idosos_negros, geral
+
+Retorne um JSON válido com a estrutura:
+{
+  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"grupo1": {"ano": valor}}, "tendencia": "aumento|reducao|estável" }],
+  "orcamento": [{ "programa": "", "orgao": "", "esfera": "federal|estadual|municipal", "ano": N, "dotacao_autorizada": N, "empenhado": N, "pago": N, "percentual_execucao": N, "grupo_focal": "", "fonte_dados": "", "url_fonte": "", "observacoes": "" }],
+  "lacunas": [{ "paragrafo": "§N", "tema": "", "descricao_lacuna": "", "eixo_tematico": "", "grupo_focal": "", "status_cumprimento": "", "prioridade": "", "evidencias_encontradas": [], "fontes_dados": [] }],
+  "conclusoes": [{ "titulo": "", "tipo": "achado|recomendacao|compromisso|analise", "periodo": "YYYY ou YYYY-YYYY", "argumento_central": "", "evidencias": [] }]
+}
+
+Se não encontrar dados de uma categoria, retorne array vazio [].
+Extraia o MÁXIMO possível de itens relevantes.`;
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -62,7 +92,6 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
-    // Optional authentication - log user if available
     const authHeader = req.headers.get('Authorization');
     let userId = 'anonymous';
     if (authHeader?.startsWith('Bearer ')) {
@@ -71,54 +100,77 @@ serve(async (req) => {
           global: { headers: { Authorization: authHeader } },
         });
         const { data: userData } = await authClient.auth.getUser();
-        if (userData?.user) {
-          userId = userData.user.id;
-        }
-      } catch (_e) {
-        console.log('Auth check skipped - proceeding without auth');
-      }
+        if (userData?.user) userId = userData.user.id;
+      } catch (_e) { /* skip */ }
     }
     console.log(`Processing upload for user: ${userId}`);
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     const formData = await req.formData();
     const file = formData.get('file') as File;
     
-    if (!file) {
-      throw new Error('Nenhum arquivo enviado');
-    }
+    if (!file) throw new Error('Nenhum arquivo enviado');
 
-    // File validation
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       return new Response(JSON.stringify({ error: 'Arquivo muito grande. Limite: 10MB' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const allowedTypes = [
-      'text/plain', 'text/csv', 'application/pdf', 'text/markdown',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel',
-      'application/msword',
-    ];
     const allowedExtensions = ['.txt', '.csv', '.pdf', '.md', '.docx', '.doc', '.xlsx', '.xls'];
     const fileExt = file.name ? '.' + file.name.split('.').pop()?.toLowerCase() : '';
-    const isAllowed = (file.type && allowedTypes.includes(file.type)) || allowedExtensions.includes(fileExt);
-    if (!isAllowed) {
-      return new Response(JSON.stringify({ error: 'Tipo de arquivo não suportado. Use: PDF, DOCX, XLSX, CSV ou TXT' }), {
+    if (!allowedExtensions.includes(fileExt)) {
+      return new Response(JSON.stringify({ error: 'Tipo de arquivo não suportado' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     console.log(`Processando arquivo: ${file.name}, tipo: ${file.type}, tamanho: ${file.size}`);
 
-    // Read file content
-    const fileContent = await file.text();
-    
-    // Use AI to extract structured data from the document
+    // Build AI messages based on file type
+    const isPdf = fileExt === '.pdf';
+    const isDocx = fileExt === '.docx' || fileExt === '.doc';
+    const isBinary = isPdf || isDocx || fileExt === '.xlsx' || fileExt === '.xls';
+
+    let userMessages: any[];
+
+    if (isBinary) {
+      // For binary files (PDF, DOCX, XLSX), send as base64 to multimodal Gemini
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const base64Data = base64Encode(uint8Array);
+      
+      const mimeType = isPdf ? 'application/pdf' 
+        : isDocx ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+      console.log(`Sending ${file.name} as base64 (${mimeType}), size: ${base64Data.length} chars`);
+
+      userMessages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: `Analise este documento "${file.name}" e extraia todos os dados estruturados possíveis. Extraia o máximo de lacunas, recomendações, conclusões e indicadores relevantes para o monitoramento de políticas públicas raciais no Brasil.`
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:${mimeType};base64,${base64Data}`
+            }
+          }
+        ]
+      }];
+    } else {
+      // For text files, send content directly
+      const fileContent = await file.text();
+      userMessages = [{
+        role: 'user',
+        content: `Analise este documento "${file.name}" e extraia os dados estruturados:\n\n${fileContent.substring(0, 80000)}`
+      }];
+    }
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -128,63 +180,32 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          {
-            role: 'system',
-            content: `Você é um especialista em extração de dados de documentos sobre políticas públicas raciais no Brasil.
-            
-Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
-
-1. INDICADORES SOCIAIS (taxa de desemprego, homicídios, educação, saúde por raça/gênero)
-2. DADOS ORÇAMENTÁRIOS (programas, valores, anos, órgãos responsáveis)
-3. LACUNAS/RECOMENDAÇÕES (pontos pendentes de relatórios ONU/CERD)
-4. CONCLUSÕES ANALÍTICAS (análises e achados do documento)
-
-Para cada dado encontrado, identifique:
-- A FONTE (nome da instituição/pesquisa)
-- A DATA/ANO de referência
-- O URL de origem se disponível
-- Valores numéricos com evolução temporal quando possível (2018-2026)
-
-Retorne um JSON válido com a estrutura:
-{
-  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"brancos": {"2018": N, "2019": N...}, "negros": {...}}, "tendencia": "aumento|reducao|estável" }],
-  "orcamento": [{ "programa": "", "orgao": "", "esfera": "federal|estadual|municipal", "ano": N, "dotacao_autorizada": N, "empenhado": N, "pago": N, "percentual_execucao": N, "grupo_focal": "", "fonte_dados": "", "url_fonte": "", "observacoes": "" }],
-  "lacunas": [{ "paragrafo": "", "tema": "", "descricao_lacuna": "", "eixo_tematico": "", "grupo_focal": "", "status_cumprimento": "", "prioridade": "", "evidencias_encontradas": [], "fontes_dados": [] }],
-  "conclusoes": [{ "titulo": "", "tipo": "", "periodo": "", "argumento_central": "", "evidencias": [] }]
-}
-
-IMPORTANTE: 
-- Extraia TODOS os dados numéricos disponíveis
-- Preserve as referências exatas das fontes
-- Identifique a evolução temporal (série histórica 2018-2026)
-- Classifique corretamente por esfera (federal/estadual/municipal)
-- Se não encontrar dados de uma categoria, retorne array vazio []`
-          },
-          {
-            role: 'user',
-            content: `Analise este documento e extraia os dados estruturados:\n\n${fileContent.substring(0, 50000)}`
-          }
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...userMessages,
         ],
         temperature: 0.1,
-        max_tokens: 8000,
+        max_tokens: 16000,
       }),
     });
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI API error:', errorText);
+      console.error('AI API error:', aiResponse.status, errorText);
+      if (aiResponse.status === 429) {
+        return new Response(JSON.stringify({ error: 'Limite de requisições excedido. Tente novamente em alguns minutos.' }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
       throw new Error('Erro ao processar documento com IA');
     }
 
     const aiResult = await aiResponse.json();
     const aiContent = aiResult.choices?.[0]?.message?.content || '';
     
-    console.log('AI response received, parsing...');
+    console.log('AI response received, length:', aiContent.length);
     
-    // Extract JSON from AI response
     let extractedData: ExtractedData;
     try {
-      // Try to find JSON in the response
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         extractedData = JSON.parse(jsonMatch[0]);
@@ -193,11 +214,28 @@ IMPORTANTE:
       }
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
-      console.log('AI Content:', aiContent.substring(0, 1000));
+      console.log('AI Content preview:', aiContent.substring(0, 500));
       extractedData = { indicadores: [], orcamento: [], lacunas: [], conclusoes: [] };
     }
 
-    // Sanitize and validate extracted data before insertion
+    const totalItems = (extractedData.indicadores?.length || 0) + 
+                       (extractedData.orcamento?.length || 0) + 
+                       (extractedData.lacunas?.length || 0) + 
+                       (extractedData.conclusoes?.length || 0);
+
+    console.log(`Extracted: ${extractedData.indicadores?.length || 0} indicadores, ${extractedData.orcamento?.length || 0} orcamento, ${extractedData.lacunas?.length || 0} lacunas, ${extractedData.conclusoes?.length || 0} conclusoes`);
+
+    // Build proposed changes for user review (DO NOT auto-insert)
+    const proposedChanges: Array<{
+      id: string;
+      tabela: string;
+      tipo: string;
+      titulo: string;
+      descricao: string;
+      impacto: string[];
+      dados: Record<string, any>;
+    }> = [];
+
     const sanitizeStr = (s: any, maxLen: number): string => {
       if (typeof s !== 'string') return '';
       return s.substring(0, maxLen).trim();
@@ -207,208 +245,129 @@ IMPORTANTE:
       const parsed = Number(n);
       return isNaN(parsed) ? null : parsed;
     };
-    const validEsferas = ['federal', 'estadual', 'municipal'];
-    const validTendencias = ['aumento', 'reducao', 'estável'];
 
-    // === SNAPSHOT: Save current state before inserting ===
-    console.log('Creating snapshot before import...');
-    const tabelasAfetadas: string[] = [];
-    const snapshotData: Record<string, any[]> = {};
-    let totalRegistros = 0;
-
-    if (extractedData.indicadores && extractedData.indicadores.length > 0) {
-      const { data: existing } = await supabase.from('indicadores_interseccionais').select('*');
-      snapshotData.indicadores_interseccionais = existing || [];
-      totalRegistros += (existing || []).length;
-      tabelasAfetadas.push('indicadores_interseccionais');
-    }
-    if (extractedData.orcamento && extractedData.orcamento.length > 0) {
-      const { data: existing } = await supabase.from('dados_orcamentarios').select('*');
-      snapshotData.dados_orcamentarios = existing || [];
-      totalRegistros += (existing || []).length;
-      tabelasAfetadas.push('dados_orcamentarios');
-    }
-    if (extractedData.lacunas && extractedData.lacunas.length > 0) {
-      const { data: existing } = await supabase.from('lacunas_identificadas').select('*');
-      snapshotData.lacunas_identificadas = existing || [];
-      totalRegistros += (existing || []).length;
-      tabelasAfetadas.push('lacunas_identificadas');
-    }
-    if (extractedData.conclusoes && extractedData.conclusoes.length > 0) {
-      const { data: existing } = await supabase.from('conclusoes_analiticas').select('*');
-      snapshotData.conclusoes_analiticas = existing || [];
-      totalRegistros += (existing || []).length;
-      tabelasAfetadas.push('conclusoes_analiticas');
-    }
-
-    if (tabelasAfetadas.length > 0) {
-      const { error: snapError } = await supabase.from('data_snapshots').insert({
-        nome: `Backup antes de importar: ${file.name}`,
-        descricao: `Snapshot automático criado antes da importação do arquivo ${file.name}`,
-        arquivo_origem: file.name,
-        usuario_id: userId,
-        snapshot_data: snapshotData,
-        tabelas_afetadas: tabelasAfetadas,
-        total_registros: totalRegistros,
-      });
-      if (snapError) {
-        console.error('Snapshot error:', snapError);
-        // Don't block import, just log
-      } else {
-        console.log(`Snapshot created: ${tabelasAfetadas.length} tables, ${totalRegistros} records`);
-      }
-    }
-
-    // Insert extracted data into database
-    const results = {
-      indicadores_inseridos: 0,
-      orcamento_inseridos: 0,
-      lacunas_inseridas: 0,
-      conclusoes_inseridas: 0,
-      erros: [] as string[],
-      snapshot_criado: tabelasAfetadas.length > 0,
-    };
-
-    // Limit total records to prevent abuse
-    const MAX_RECORDS = 100;
-
-    // Insert indicadores
-    if (extractedData.indicadores && extractedData.indicadores.length > 0) {
-      for (const ind of extractedData.indicadores.slice(0, MAX_RECORDS)) {
-        try {
-          if (!ind.nome || !ind.categoria || !ind.fonte) {
-            results.erros.push(`Indicador inválido: campos obrigatórios ausentes`);
-            continue;
-          }
-          const { error } = await supabase.from('indicadores_interseccionais').insert({
-            nome: sanitizeStr(ind.nome, 255),
-            categoria: sanitizeStr(ind.categoria, 100),
-            fonte: sanitizeStr(ind.fonte, 255),
-            url_fonte: ind.url_fonte ? sanitizeStr(ind.url_fonte, 500) : null,
-            dados: ind.dados || {},
-            tendencia: validTendencias.includes(ind.tendencia || '') ? ind.tendencia : null,
-            desagregacao_raca: true,
-            desagregacao_genero: true,
-          });
-          if (error) throw error;
-          results.indicadores_inseridos++;
-        } catch (e: any) {
-          results.erros.push(`Indicador ${sanitizeStr(ind.nome, 50)}: ${e.message}`);
-        }
-      }
-    }
-
-    // Insert orcamento
-    if (extractedData.orcamento && extractedData.orcamento.length > 0) {
-      for (const orc of extractedData.orcamento.slice(0, MAX_RECORDS)) {
-        try {
-          if (!orc.programa || !orc.orgao || !orc.ano || !orc.fonte_dados) {
-            results.erros.push(`Orçamento inválido: campos obrigatórios ausentes`);
-            continue;
-          }
-          const ano = Number(orc.ano);
-          if (isNaN(ano) || ano < 2000 || ano > 2030) {
-            results.erros.push(`Orçamento ${orc.programa}: ano inválido ${orc.ano}`);
-            continue;
-          }
-          const esfera = validEsferas.includes(orc.esfera) ? orc.esfera : 'federal';
-          const { error } = await supabase.from('dados_orcamentarios').insert({
-            programa: sanitizeStr(orc.programa, 255),
-            orgao: sanitizeStr(orc.orgao, 255),
-            esfera,
-            ano,
-            dotacao_inicial: sanitizeNum(orc.dotacao_inicial),
-            dotacao_autorizada: sanitizeNum(orc.dotacao_autorizada),
-            empenhado: sanitizeNum(orc.empenhado),
-            liquidado: sanitizeNum(orc.liquidado),
-            pago: sanitizeNum(orc.pago),
-            percentual_execucao: sanitizeNum(orc.percentual_execucao),
-            grupo_focal: orc.grupo_focal ? sanitizeStr(orc.grupo_focal, 100) : null,
-            eixo_tematico: orc.eixo_tematico ? sanitizeStr(orc.eixo_tematico, 100) : null,
-            fonte_dados: sanitizeStr(orc.fonte_dados, 255),
-            url_fonte: orc.url_fonte ? sanitizeStr(orc.url_fonte, 500) : null,
-            observacoes: orc.observacoes ? sanitizeStr(orc.observacoes, 1000) : null,
-          });
-          if (error) throw error;
-          results.orcamento_inseridos++;
-        } catch (e: any) {
-          results.erros.push(`Orçamento ${sanitizeStr(orc.programa, 50)}/${orc.ano}: ${e.message}`);
-        }
-      }
-    }
-
-    // Insert lacunas
     const validEixosTematicos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
     const validGruposFocais = ['negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
     const validStatus = ['cumprido', 'parcialmente_cumprido', 'nao_cumprido', 'retrocesso', 'em_andamento'];
     const validPrioridades = ['critica', 'alta', 'media', 'baixa'];
+    const validEsferas = ['federal', 'estadual', 'municipal'];
 
-    if (extractedData.lacunas && extractedData.lacunas.length > 0) {
-      for (const lac of extractedData.lacunas.slice(0, MAX_RECORDS)) {
-        try {
-          if (!lac.paragrafo || !lac.tema || !lac.descricao_lacuna || !lac.eixo_tematico) {
-            results.erros.push(`Lacuna inválida: campos obrigatórios ausentes`);
-            continue;
-          }
-          if (!validEixosTematicos.includes(lac.eixo_tematico)) {
-            results.erros.push(`Lacuna ${sanitizeStr(lac.tema, 50)}: eixo_tematico inválido`);
-            continue;
-          }
-          const { error } = await supabase.from('lacunas_identificadas').insert({
-            paragrafo: sanitizeStr(lac.paragrafo, 50),
-            tema: sanitizeStr(lac.tema, 255),
-            descricao_lacuna: sanitizeStr(lac.descricao_lacuna, 2000),
-            eixo_tematico: lac.eixo_tematico as any,
-            grupo_focal: (validGruposFocais.includes(lac.grupo_focal) ? lac.grupo_focal : 'geral') as any,
-            tipo_observacao: 'recomendacao' as any,
-            status_cumprimento: (validStatus.includes(lac.status_cumprimento) ? lac.status_cumprimento : 'nao_cumprido') as any,
-            prioridade: (validPrioridades.includes(lac.prioridade) ? lac.prioridade : 'media') as any,
-            evidencias_encontradas: Array.isArray(lac.evidencias_encontradas) ? lac.evidencias_encontradas.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
-            fontes_dados: Array.isArray(lac.fontes_dados) ? lac.fontes_dados.slice(0, 20).map((f: any) => sanitizeStr(f, 500)) : null,
-          });
-          if (error) throw error;
-          results.lacunas_inseridas++;
-        } catch (e: any) {
-          results.erros.push(`Lacuna ${sanitizeStr(lac.tema, 50)}: ${e.message}`);
-        }
-      }
+    let idx = 0;
+
+    // Build indicador proposals
+    for (const ind of (extractedData.indicadores || []).slice(0, 100)) {
+      if (!ind.nome || !ind.categoria || !ind.fonte) continue;
+      proposedChanges.push({
+        id: `change_${idx++}`,
+        tabela: 'indicadores_interseccionais',
+        tipo: 'indicador',
+        titulo: sanitizeStr(ind.nome, 255),
+        descricao: `${sanitizeStr(ind.categoria, 100)} — Fonte: ${sanitizeStr(ind.fonte, 100)}`,
+        impacto: ['estatisticas', 'relatorios', 'cerd_iv'],
+        dados: {
+          nome: sanitizeStr(ind.nome, 255),
+          categoria: sanitizeStr(ind.categoria, 100),
+          fonte: sanitizeStr(ind.fonte, 255),
+          url_fonte: ind.url_fonte ? sanitizeStr(ind.url_fonte, 500) : null,
+          dados: ind.dados || {},
+          tendencia: ['aumento', 'reducao', 'estável'].includes(ind.tendencia || '') ? ind.tendencia : null,
+          desagregacao_raca: true,
+          desagregacao_genero: true,
+        },
+      });
     }
 
-    // Insert conclusoes
-    if (extractedData.conclusoes && extractedData.conclusoes.length > 0) {
-      for (const conc of extractedData.conclusoes.slice(0, MAX_RECORDS)) {
-        try {
-          if (!conc.titulo || !conc.tipo || !conc.periodo || !conc.argumento_central) {
-            results.erros.push(`Conclusão inválida: campos obrigatórios ausentes`);
-            continue;
-          }
-          const { error } = await supabase.from('conclusoes_analiticas').insert({
-            titulo: sanitizeStr(conc.titulo, 255),
-            tipo: sanitizeStr(conc.tipo, 100),
-            periodo: sanitizeStr(conc.periodo, 50),
-            argumento_central: sanitizeStr(conc.argumento_central, 5000),
-            evidencias: Array.isArray(conc.evidencias) ? conc.evidencias.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
-          });
-          if (error) throw error;
-          results.conclusoes_inseridas++;
-        } catch (e: any) {
-          results.erros.push(`Conclusão ${conc.titulo}: ${e.message}`);
-        }
-      }
+    // Build orcamento proposals
+    for (const orc of (extractedData.orcamento || []).slice(0, 100)) {
+      if (!orc.programa || !orc.orgao || !orc.ano || !orc.fonte_dados) continue;
+      const ano = Number(orc.ano);
+      if (isNaN(ano) || ano < 2000 || ano > 2030) continue;
+      proposedChanges.push({
+        id: `change_${idx++}`,
+        tabela: 'dados_orcamentarios',
+        tipo: 'orcamento',
+        titulo: `${sanitizeStr(orc.programa, 100)} (${ano})`,
+        descricao: `${sanitizeStr(orc.orgao, 100)} — ${validEsferas.includes(orc.esfera) ? orc.esfera : 'federal'}`,
+        impacto: ['orcamento', 'relatorios'],
+        dados: {
+          programa: sanitizeStr(orc.programa, 255),
+          orgao: sanitizeStr(orc.orgao, 255),
+          esfera: validEsferas.includes(orc.esfera) ? orc.esfera : 'federal',
+          ano,
+          dotacao_inicial: sanitizeNum(orc.dotacao_inicial),
+          dotacao_autorizada: sanitizeNum(orc.dotacao_autorizada),
+          empenhado: sanitizeNum(orc.empenhado),
+          liquidado: sanitizeNum(orc.liquidado),
+          pago: sanitizeNum(orc.pago),
+          percentual_execucao: sanitizeNum(orc.percentual_execucao),
+          grupo_focal: orc.grupo_focal ? sanitizeStr(orc.grupo_focal, 100) : null,
+          eixo_tematico: orc.eixo_tematico ? sanitizeStr(orc.eixo_tematico, 100) : null,
+          fonte_dados: sanitizeStr(orc.fonte_dados, 255),
+          url_fonte: orc.url_fonte ? sanitizeStr(orc.url_fonte, 500) : null,
+          observacoes: orc.observacoes ? sanitizeStr(orc.observacoes, 1000) : null,
+        },
+      });
     }
 
-    console.log('Processing complete:', results);
+    // Build lacuna proposals
+    for (const lac of (extractedData.lacunas || []).slice(0, 100)) {
+      if (!lac.paragrafo || !lac.tema || !lac.descricao_lacuna) continue;
+      const eixo = validEixosTematicos.includes(lac.eixo_tematico) ? lac.eixo_tematico : 'politicas_institucionais';
+      proposedChanges.push({
+        id: `change_${idx++}`,
+        tabela: 'lacunas_identificadas',
+        tipo: 'lacuna',
+        titulo: sanitizeStr(lac.tema, 255),
+        descricao: sanitizeStr(lac.descricao_lacuna, 300),
+        impacto: ['conclusoes', 'relatorios', 'metas', 'cerd_iv'],
+        dados: {
+          paragrafo: sanitizeStr(lac.paragrafo, 50),
+          tema: sanitizeStr(lac.tema, 255),
+          descricao_lacuna: sanitizeStr(lac.descricao_lacuna, 2000),
+          eixo_tematico: eixo,
+          grupo_focal: validGruposFocais.includes(lac.grupo_focal) ? lac.grupo_focal : 'geral',
+          tipo_observacao: 'recomendacao',
+          status_cumprimento: validStatus.includes(lac.status_cumprimento) ? lac.status_cumprimento : 'nao_cumprido',
+          prioridade: validPrioridades.includes(lac.prioridade) ? lac.prioridade : 'media',
+          evidencias_encontradas: Array.isArray(lac.evidencias_encontradas) ? lac.evidencias_encontradas.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
+          fontes_dados: Array.isArray(lac.fontes_dados) ? lac.fontes_dados.slice(0, 20).map((f: any) => sanitizeStr(f, 500)) : null,
+        },
+      });
+    }
+
+    // Build conclusao proposals
+    for (const conc of (extractedData.conclusoes || []).slice(0, 100)) {
+      if (!conc.titulo || !conc.tipo || !conc.periodo || !conc.argumento_central) continue;
+      proposedChanges.push({
+        id: `change_${idx++}`,
+        tabela: 'conclusoes_analiticas',
+        tipo: 'conclusao',
+        titulo: sanitizeStr(conc.titulo, 255),
+        descricao: sanitizeStr(conc.argumento_central, 300),
+        impacto: ['conclusoes', 'relatorios', 'common_core', 'cerd_iv'],
+        dados: {
+          titulo: sanitizeStr(conc.titulo, 255),
+          tipo: sanitizeStr(conc.tipo, 100),
+          periodo: sanitizeStr(conc.periodo, 50),
+          argumento_central: sanitizeStr(conc.argumento_central, 5000),
+          evidencias: Array.isArray(conc.evidencias) ? conc.evidencias.slice(0, 20).map((e: any) => sanitizeStr(e, 500)) : null,
+        },
+      });
+    }
+
+    console.log(`Built ${proposedChanges.length} proposed changes for review`);
 
     return new Response(JSON.stringify({
       success: true,
-      message: `Documento processado com sucesso!`,
-      results,
-      extractedData: {
+      message: `${proposedChanges.length} alterações identificadas para revisão`,
+      proposedChanges,
+      summary: {
         indicadores: extractedData.indicadores?.length || 0,
         orcamento: extractedData.orcamento?.length || 0,
         lacunas: extractedData.lacunas?.length || 0,
         conclusoes: extractedData.conclusoes?.length || 0,
-      }
+        total: totalItems,
+      },
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -417,8 +376,7 @@ IMPORTANTE:
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
     console.error('Erro ao processar upload:', error);
     return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
