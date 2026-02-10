@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, FileText, CheckCircle, XCircle, Loader2, Database, BarChart3, AlertTriangle, FileSpreadsheet, Link as LinkIcon, Globe } from 'lucide-react';
+import { Upload, FileText, CheckCircle, Loader2, Database, FileSpreadsheet, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,7 +19,8 @@ export function DataUploadButton() {
   const [urlInput, setUrlInput] = useState('');
   const [proposedChanges, setProposedChanges] = useState<ProposedChange[] | null>(null);
   const [importComplete, setImportComplete] = useState(false);
-  const [importResult, setImportResult] = useState<string>('');
+  const [importResult, setImportResult] = useState('');
+  const [fileName, setFileName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -52,11 +53,12 @@ export function DataUploadButton() {
 
     setIsProcessing(true);
     setUploadProgress(10);
+    setFileName(selectedFile.name);
 
     try {
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 80));
-      }, 1000);
+        setUploadProgress(prev => Math.min(prev + 5, 85));
+      }, 1500);
 
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -70,33 +72,20 @@ export function DataUploadButton() {
 
       if (error) throw error;
 
-      // Convert extracted data to proposed changes for review
-      const changes: ProposedChange[] = [];
-      let idx = 0;
-
-      if (data.extractedData) {
-        // The edge function already inserted the data, but we show what was inserted
-        // For future: switch to preview-only mode
-      }
-
-      if (data.results) {
-        // Show success with what was auto-inserted
-        if (data.results.indicadores_inseridos > 0 || data.results.orcamento_inseridos > 0 ||
-            data.results.lacunas_inseridas > 0 || data.results.conclusoes_inseridas > 0) {
-          toast.success('Dados importados com sucesso!', {
-            description: `${data.results.indicadores_inseridos} indicadores, ${data.results.orcamento_inseridos} orçamento, ${data.results.lacunas_inseridas} lacunas, ${data.results.conclusoes_inseridas} conclusões. Snapshot de backup criado automaticamente.`
-          });
-          queryClient.invalidateQueries();
-          setImportComplete(true);
-        } else {
-          toast.warning('Nenhum dado extraído do documento', {
-            description: 'O documento pode não conter dados estruturados reconhecíveis.'
-          });
-        }
-
-        if (data.results.erros && data.results.erros.length > 0) {
-          console.warn('Import warnings:', data.results.erros);
-        }
+      if (data?.proposedChanges && data.proposedChanges.length > 0) {
+        // Show review interface
+        const changes: ProposedChange[] = data.proposedChanges.map((c: any) => ({
+          ...c,
+          accepted: true, // default to accepted
+        }));
+        setProposedChanges(changes);
+        toast.info(`${changes.length} alterações identificadas para revisão`, {
+          description: `Indicadores: ${data.summary?.indicadores || 0}, Lacunas: ${data.summary?.lacunas || 0}, Conclusões: ${data.summary?.conclusoes || 0}`
+        });
+      } else {
+        toast.warning('Nenhum dado estruturado extraído do documento', {
+          description: 'O documento pode não conter dados reconhecíveis para o sistema.'
+        });
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -113,6 +102,7 @@ export function DataUploadButton() {
 
     setIsProcessing(true);
     setUploadProgress(10);
+    setFileName(urlInput.trim());
 
     try {
       const progressInterval = setInterval(() => {
@@ -149,6 +139,18 @@ export function DataUploadButton() {
     }
   };
 
+  const handleReviewComplete = () => {
+    setImportComplete(true);
+    setProposedChanges(null);
+    setImportResult('Alterações aprovadas aplicadas com sucesso.');
+    queryClient.invalidateQueries();
+  };
+
+  const handleReviewCancel = () => {
+    setProposedChanges(null);
+    toast.info('Revisão cancelada — nenhuma alteração foi aplicada.');
+  };
+
   const handleClose = () => {
     setIsOpen(false);
     setSelectedFile(null);
@@ -157,14 +159,17 @@ export function DataUploadButton() {
     setUploadProgress(0);
     setImportComplete(false);
     setImportResult('');
+    setFileName('');
   };
 
-  const getFileIcon = (fileName: string) => {
-    if (fileName.endsWith('.pdf')) return <FileText className="w-8 h-8 text-red-500" />;
-    if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) return <FileText className="w-8 h-8 text-blue-500" />;
-    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')) return <FileSpreadsheet className="w-8 h-8 text-green-500" />;
+  const getFileIcon = (name: string) => {
+    if (name.endsWith('.pdf')) return <FileText className="w-8 h-8 text-red-500" />;
+    if (name.endsWith('.docx') || name.endsWith('.doc')) return <FileText className="w-8 h-8 text-blue-500" />;
+    if (name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.csv')) return <FileSpreadsheet className="w-8 h-8 text-green-500" />;
     return <FileText className="w-8 h-8 text-muted-foreground" />;
   };
+
+  const showingReview = proposedChanges && proposedChanges.length > 0;
 
   return (
     <>
@@ -178,140 +183,134 @@ export function DataUploadButton() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className={showingReview ? 'max-w-2xl' : 'max-w-lg'}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Database className="w-5 h-5 text-primary" />
-              Importar Dados para o Sistema
+              {showingReview ? 'Revisar Alterações Propostas' : 'Importar Dados para o Sistema'}
             </DialogTitle>
-            <DialogDescription>
-              Envie documentos ou cole links de legislação para alimentar o sistema.
-              Backup automático antes de cada importação.
-            </DialogDescription>
+            {!showingReview && (
+              <p className="text-sm text-muted-foreground">
+                Envie documentos ou cole links. A IA extrairá dados e você revisará antes de aplicar.
+              </p>
+            )}
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-           <Tabs defaultValue="file">
-            <TabsList className="w-full">
-              <TabsTrigger value="file" className="flex-1 gap-1">
-                <Upload className="w-3 h-3" /> Arquivo
-              </TabsTrigger>
-              <TabsTrigger value="url" className="flex-1 gap-1">
-                <Globe className="w-3 h-3" /> URL / Link
-              </TabsTrigger>
-            </TabsList>
+          {showingReview ? (
+            <ReviewChanges
+              changes={proposedChanges}
+              fileName={fileName}
+              onComplete={handleReviewComplete}
+              onCancel={handleReviewCancel}
+            />
+          ) : (
+            <div className="space-y-4 py-4">
+              <Tabs defaultValue="file">
+                <TabsList className="w-full">
+                  <TabsTrigger value="file" className="flex-1 gap-1">
+                    <Upload className="w-3 h-3" /> Arquivo
+                  </TabsTrigger>
+                  <TabsTrigger value="url" className="flex-1 gap-1">
+                    <Globe className="w-3 h-3" /> URL / Link
+                  </TabsTrigger>
+                </TabsList>
 
-            <TabsContent value="file" className="space-y-4 mt-4">
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                selectedFile ? 'border-primary bg-primary/5' : 'border-muted-foreground/30 hover:border-primary/50'
-              }`}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.docx,.xlsx,.xls,.csv,.txt"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              
-              {selectedFile ? (
-                <div className="flex items-center justify-center gap-3">
-                  {getFileIcon(selectedFile.name)}
-                  <div className="text-left">
-                    <p className="font-medium text-sm">{selectedFile.name}</p>
+                <TabsContent value="file" className="space-y-4 mt-4">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                      selectedFile ? 'border-primary bg-primary/5' : 'border-muted-foreground/30 hover:border-primary/50'
+                    }`}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.xlsx,.xls,.csv,.txt"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    {selectedFile ? (
+                      <div className="flex items-center justify-center gap-3">
+                        {getFileIcon(selectedFile.name)}
+                        <div className="text-left">
+                          <p className="font-medium text-sm">{selectedFile.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+                        <p className="text-sm font-medium">Clique para selecionar ou arraste um arquivo</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PDF, DOCX, XLSX, CSV ou TXT (máx. 10MB)
+                        </p>
+                      </>
+                    )}
+                  </div>
+
+                  {selectedFile && !isProcessing && !importComplete && (
+                    <Button onClick={handleUpload} className="w-full gap-2">
+                      <Upload className="w-4 h-4" />
+                      Processar Arquivo com IA
+                    </Button>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="url" className="space-y-4 mt-4">
+                  <div className="space-y-3">
+                    <Input
+                      placeholder="https://www.planalto.gov.br/ccivil_03/..."
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                    />
                     <p className="text-xs text-muted-foreground">
-                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      Cole o link de uma página com legislação, dados estatísticos ou relatórios.
                     </p>
+                    <div className="flex flex-wrap gap-1">
+                      {['planalto.gov.br', 'ibge.gov.br', 'ipea.gov.br', 'gov.br'].map(domain => (
+                        <Badge key={domain} variant="outline" className="text-xs">
+                          <Globe className="w-3 h-3 mr-1" />
+                          {domain}
+                        </Badge>
+                      ))}
+                    </div>
+                    {urlInput.trim() && !isProcessing && !importComplete && (
+                      <Button onClick={handleUrlImport} className="w-full gap-2">
+                        <Globe className="w-4 h-4" />
+                        Importar URL
+                      </Button>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              {isProcessing && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span className="text-sm">Processando com IA... (PDFs grandes podem levar até 30s)</span>
+                  </div>
+                  <Progress value={uploadProgress} className="h-2" />
+                </div>
+              )}
+
+              {importComplete && (
+                <div className="rounded-lg p-4 bg-green-50 border border-green-200">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-green-800">Importação concluída!</p>
+                      <p className="text-sm text-green-700 mt-1">
+                        {importResult || 'Dados aplicados com sucesso.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <>
-                  <Upload className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
-                  <p className="text-sm font-medium">Clique para selecionar ou arraste um arquivo</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    PDF, DOCX, XLSX, CSV ou TXT (máx. 10MB)
-                  </p>
-                </>
               )}
             </div>
-            </TabsContent>
-
-            <TabsContent value="url" className="space-y-4 mt-4">
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="https://www.planalto.gov.br/ccivil_03/..."
-                    value={urlInput}
-                    onChange={(e) => setUrlInput(e.target.value)}
-                    className="flex-1"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Cole o link de uma página com legislação, dados estatísticos ou relatórios.
-                  O sistema irá extrair automaticamente as informações relevantes.
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {['planalto.gov.br', 'ibge.gov.br', 'ipea.gov.br', 'gov.br'].map(domain => (
-                    <Badge key={domain} variant="outline" className="text-xs">
-                      <Globe className="w-3 h-3 mr-1" />
-                      {domain}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-           </Tabs>
-
-            {/* Processing Progress */}
-            {isProcessing && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                  <span className="text-sm">Processando com IA...</span>
-                </div>
-                <Progress value={uploadProgress} className="h-2" />
-              </div>
-            )}
-
-            {/* Import Complete */}
-            {importComplete && (
-              <div className="rounded-lg p-4 bg-green-50 border border-green-200">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-green-800">Importação concluída!</p>
-                    <p className="text-sm text-green-700 mt-1">
-                      {importResult || 'Backup automático criado. Use Rollback para restaurar se necessário.'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleClose}>
-              {importComplete ? 'Fechar' : 'Cancelar'}
-            </Button>
-            {!importComplete && !isProcessing && (
-              <>
-                {selectedFile && (
-                  <Button onClick={handleUpload} className="gap-2">
-                    <Upload className="w-4 h-4" />
-                    Processar Arquivo
-                  </Button>
-                )}
-                {urlInput.trim() && !selectedFile && (
-                  <Button onClick={handleUrlImport} className="gap-2">
-                    <Globe className="w-4 h-4" />
-                    Importar URL
-                  </Button>
-                )}
-              </>
-            )}
-          </DialogFooter>
+          )}
         </DialogContent>
       </Dialog>
     </>
