@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.restore-snapshot]
 verify_jwt = false
+
+[functions.confirm-import]
+verify_jwt = false
+
+[functions.import-url]
+verify_jwt = false

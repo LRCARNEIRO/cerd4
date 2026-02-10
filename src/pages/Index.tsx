@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { MetaProgressCard } from '@/components/dashboard/MetaProgressCard';
@@ -15,15 +16,18 @@ import {
   ArrowRight,
   FileText,
   RefreshCw,
-  Loader2
+  Loader2,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export default function Index() {
+  const [showRollback, setShowRollback] = useState(false);
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
@@ -99,6 +103,15 @@ export default function Index() {
           </div>
           <div className="hidden lg:block text-right">
             <div className="flex items-center gap-2 justify-end mb-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-white/80 hover:text-white hover:bg-white/20 gap-1"
+                onClick={() => setShowRollback(true)}
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span className="text-xs">Rollback</span>
+              </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -247,6 +260,19 @@ export default function Index() {
 
       {/* Histórico de Versões */}
       <SnapshotManager />
+
+      {/* Rollback Dialog */}
+      <Dialog open={showRollback} onOpenChange={setShowRollback}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RotateCcw className="w-5 h-5" />
+              Restaurar Versão Anterior
+            </DialogTitle>
+          </DialogHeader>
+          <SnapshotManager />
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
