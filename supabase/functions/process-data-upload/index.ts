@@ -184,7 +184,7 @@ serve(async (req) => {
           ...userMessages,
         ],
         temperature: 0.1,
-        max_tokens: 16000,
+        max_tokens: 65000,
       }),
     });
 
@@ -206,7 +206,9 @@ serve(async (req) => {
     
     let extractedData: ExtractedData;
     try {
-      const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
+      // Remove markdown code fences if present
+      let cleanContent = aiContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+      const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         extractedData = JSON.parse(jsonMatch[0]);
       } else {
@@ -215,7 +217,23 @@ serve(async (req) => {
     } catch (parseError) {
       console.error('Error parsing AI response:', parseError);
       console.log('AI Content preview:', aiContent.substring(0, 500));
-      extractedData = { indicadores: [], orcamento: [], lacunas: [], conclusoes: [] };
+      // Attempt to recover truncated JSON by closing open brackets
+      try {
+        let cleanContent = aiContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+        let jsonStr = cleanContent.match(/\{[\s\S]*/)?.[0] || '';
+        // Remove trailing incomplete entry (after last complete }, or ],)
+        jsonStr = jsonStr.replace(/,\s*\{[^}]*$/, '');
+        // Count and close open brackets
+        const openBraces = (jsonStr.match(/\{/g) || []).length - (jsonStr.match(/\}/g) || []).length;
+        const openBrackets = (jsonStr.match(/\[/g) || []).length - (jsonStr.match(/\]/g) || []).length;
+        for (let i = 0; i < openBrackets; i++) jsonStr += ']';
+        for (let i = 0; i < openBraces; i++) jsonStr += '}';
+        extractedData = JSON.parse(jsonStr);
+        console.log('Recovered truncated JSON successfully');
+      } catch (recoveryError) {
+        console.error('JSON recovery also failed:', recoveryError);
+        extractedData = { indicadores: [], orcamento: [], lacunas: [], conclusoes: [] };
+      }
     }
 
     const totalItems = (extractedData.indicadores?.length || 0) + 
