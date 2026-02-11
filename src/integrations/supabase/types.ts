@@ -190,6 +190,7 @@ export type Database = {
           desagregacao_orientacao_sexual: boolean | null
           desagregacao_raca: boolean | null
           desagregacao_territorio: boolean | null
+          documento_origem: string[] | null
           fonte: string
           id: string
           lacunas_relacionadas: string[] | null
@@ -211,6 +212,7 @@ export type Database = {
           desagregacao_orientacao_sexual?: boolean | null
           desagregacao_raca?: boolean | null
           desagregacao_territorio?: boolean | null
+          documento_origem?: string[] | null
           fonte: string
           id?: string
           lacunas_relacionadas?: string[] | null
@@ -232,6 +234,7 @@ export type Database = {
           desagregacao_orientacao_sexual?: boolean | null
           desagregacao_raca?: boolean | null
           desagregacao_territorio?: boolean | null
+          documento_origem?: string[] | null
           fonte?: string
           id?: string
           lacunas_relacionadas?: string[] | null
