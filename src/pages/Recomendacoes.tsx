@@ -1,15 +1,17 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, MessageSquare, Database, Loader2 } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2 } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
+import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
+import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
+import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -69,8 +71,8 @@ export default function Recomendacoes() {
 
   return (
     <DashboardLayout
-      title="Lacunas e Recomendações ONU"
-      subtitle="CERD/C/BRA/CO/18-20 - Análise de Cumprimento 2018-2026"
+      title="Recomendações"
+      subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2026"
     >
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -131,12 +133,19 @@ export default function Recomendacoes() {
         </Card>
       </div>
 
-      <Tabs defaultValue="lacunas" className="w-full">
-        <TabsList className="mb-6">
+      <Tabs defaultValue="observacoes" className="w-full">
+        <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
           <TabsTrigger value="lacunas">Lacunas Identificadas</TabsTrigger>
           <TabsTrigger value="respostas">Respostas CERD III</TabsTrigger>
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
+          <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
+          <TabsTrigger value="durban">Durban</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="observacoes">
+          <ObservacoesFinaisTab />
+        </TabsContent>
 
         <TabsContent value="lacunas">
           {/* Filters */}
@@ -295,6 +304,14 @@ export default function Recomendacoes() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="rgs">
+          <RecomendacoesGeraisTab />
+        </TabsContent>
+
+        <TabsContent value="durban">
+          <DurbanTab />
         </TabsContent>
       </Tabs>
     </DashboardLayout>
