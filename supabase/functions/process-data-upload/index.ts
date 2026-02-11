@@ -80,7 +80,8 @@ Retorne um JSON válido com a estrutura:
 }
 
 Se não encontrar dados de uma categoria, retorne array vazio [].
-Extraia o MÁXIMO possível de itens relevantes.`;
+Extraia até 30 itens mais relevantes por categoria. Seja conciso nos textos.
+IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem comentários, sem explicações.`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -171,12 +172,16 @@ serve(async (req) => {
       }];
     }
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90000);
+
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
@@ -184,9 +189,11 @@ serve(async (req) => {
           ...userMessages,
         ],
         temperature: 0.1,
-        max_tokens: 65000,
+        max_tokens: 32000,
       }),
     });
+
+    clearTimeout(timeout);
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
