@@ -49,7 +49,7 @@ const navSections: NavSection[] = [
       { title: 'Painel Geral', href: '/', icon: LayoutDashboard },
       { title: 'Plano de Trabalho', href: '/plano-trabalho', icon: ClipboardList },
       { title: 'Common Core (77)', href: '/common-core', icon: BookOpen, badge: '77' },
-      { title: 'Recomendações ONU', href: '/recomendacoes', icon: AlertTriangle, badge: '5' },
+      { title: 'Recomendações', href: '/recomendacoes', icon: AlertTriangle },
       { title: 'Documentos Balizadores', href: '/documentos-balizadores', icon: FileText },
       { title: 'Fontes de Dados', href: '/fontes', icon: Database },
     ]
