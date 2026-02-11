@@ -83,33 +83,61 @@ function formatGroupName(key: string): string {
   return labels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
-function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
-  const dados = indicador.dados || {};
-  
-  // Prepare data for chart - transform nested object to array
-  const chartData: Record<string, any>[] = [];
-  const groups = Object.keys(dados).filter(key => 
-    typeof dados[key] === 'object' && 
-    !['por_uf_2024', 'idade_media_vitima'].includes(key)
+// Detect if top-level keys are years (numeric strings like "2016", "2020")
+function isYearKey(key: string): boolean {
+  return /^\d{4}$/.test(key);
+}
+
+// Normalize data: always returns { groups: string[], years: string[], chartData: Record[] }
+function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
+  const objectKeys = Object.keys(dados).filter(
+    key => typeof dados[key] === 'object' && !['por_uf_2024', 'idade_media_vitima', 'unidade'].includes(key)
   );
-  
-  // Get all years
-  const allYears = new Set<string>();
-  groups.forEach(group => {
-    Object.keys(dados[group] || {}).forEach(year => allYears.add(year));
-  });
-  
-  const sortedYears = Array.from(allYears).sort();
-  
-  sortedYears.forEach(year => {
-    const point: Record<string, any> = { ano: year };
-    groups.forEach(group => {
-      if (dados[group] && dados[group][year] !== undefined) {
-        point[group] = dados[group][year];
-      }
+
+  if (objectKeys.length === 0) return { groups: [], years: [], chartData: [] };
+
+  const topKeysAreYears = objectKeys.every(isYearKey);
+
+  if (topKeysAreYears) {
+    // Transpose: top-level = years, sub-keys = metrics/groups
+    const sortedYears = objectKeys.sort();
+    const metricsSet = new Set<string>();
+    sortedYears.forEach(year => {
+      Object.keys(dados[year] || {}).forEach(m => metricsSet.add(m));
     });
-    chartData.push(point);
-  });
+    const groups = Array.from(metricsSet);
+    const chartData = sortedYears.map(year => {
+      const point: Record<string, any> = { ano: year };
+      groups.forEach(metric => {
+        if (dados[year]?.[metric] !== undefined) {
+          point[metric] = dados[year][metric];
+        }
+      });
+      return point;
+    });
+    return { groups, years: sortedYears, chartData };
+  } else {
+    // Standard: top-level = groups, sub-keys = years
+    const allYears = new Set<string>();
+    objectKeys.forEach(group => {
+      Object.keys(dados[group] || {}).forEach(year => allYears.add(year));
+    });
+    const sortedYears = Array.from(allYears).sort();
+    const chartData = sortedYears.map(year => {
+      const point: Record<string, any> = { ano: year };
+      objectKeys.forEach(group => {
+        if (dados[group]?.[year] !== undefined) {
+          point[group] = dados[group][year];
+        }
+      });
+      return point;
+    });
+    return { groups: objectKeys, years: sortedYears, chartData };
+  }
+}
+
+function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
+  const { groups, chartData } = normalizeIndicadorData(indicador.dados || {});
 
   if (chartData.length === 0) {
     return (
@@ -160,31 +188,20 @@ function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
 }
 
 function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
-  const dados = indicador.dados || {};
-  
-  // Get all groups and years
-  const groups = Object.keys(dados).filter(key => 
-    typeof dados[key] === 'object' && 
-    !['por_uf_2024', 'idade_media_vitima'].includes(key)
-  );
-  
-  const allYears = new Set<string>();
-  groups.forEach(group => {
-    Object.keys(dados[group] || {}).forEach(year => allYears.add(year));
-  });
-  
-  const sortedYears = Array.from(allYears).sort();
+  const { groups, years: sortedYears, chartData } = normalizeIndicadorData(indicador.dados || {});
 
   if (groups.length === 0) {
     return <div className="text-center py-4 text-muted-foreground text-sm">Dados não disponíveis</div>;
   }
 
-  // Calculate variation
+  // Calculate variation per group using normalized chartData
   const getVariation = (group: string) => {
-    const years = sortedYears.filter(y => dados[group]?.[y] !== undefined);
-    if (years.length < 2) return null;
-    const first = dados[group][years[0]];
-    const last = dados[group][years[years.length - 1]];
+    const values = chartData
+      .filter(d => d[group] !== undefined)
+      .map(d => d[group] as number);
+    if (values.length < 2) return null;
+    const first = values[0];
+    const last = values[values.length - 1];
     if (first === 0) return null;
     return ((last - first) / first * 100).toFixed(1);
   };
@@ -207,15 +224,19 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
             return (
               <TableRow key={group}>
                 <TableCell className="font-medium">{formatGroupName(group)}</TableCell>
-                {sortedYears.map(year => (
-                  <TableCell key={year} className="text-center">
-                    {dados[group]?.[year] !== undefined 
-                      ? typeof dados[group][year] === 'number' 
-                        ? dados[group][year].toLocaleString('pt-BR')
-                        : dados[group][year]
-                      : '-'}
-                  </TableCell>
-                ))}
+                {sortedYears.map((year, yi) => {
+                  const row = chartData[yi];
+                  const val = row?.[group];
+                  return (
+                    <TableCell key={year} className="text-center">
+                      {val !== undefined
+                        ? typeof val === 'number'
+                          ? val.toLocaleString('pt-BR')
+                          : val
+                        : '-'}
+                    </TableCell>
+                  );
+                })}
                 <TableCell className="text-center">
                   {variation !== null && (
                     <Badge 
