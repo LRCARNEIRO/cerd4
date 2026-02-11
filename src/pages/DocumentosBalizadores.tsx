@@ -2,7 +2,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download, FileText, Globe, BookOpen, Scale, AlertTriangle, Shield, Users, Gavel } from 'lucide-react';
+import { Download, FileText, Globe, BookOpen, Scale, AlertTriangle, Shield, Users, Gavel, ClipboardList, Table, FileSearch, PenTool } from 'lucide-react';
 
 interface DocumentoBalizador {
   titulo: string;
@@ -118,6 +118,123 @@ const documentos: DocumentoBalizador[] = [
     descricao: 'Relatório anual do Comitê CERD à Assembleia Geral da ONU, contendo decisões, recomendações gerais e atividades do período mais recente.',
     arquivo: '/documentos/CERD-Report-2025.pdf',
     icon: Gavel,
+    cor: 'text-muted-foreground',
+  },
+  // --- Documentos analíticos e de trabalho ---
+  {
+    titulo: 'Quadro de Monitoramento CERD-Brasil (Planilha)',
+    tituloOriginal: 'Monitoring Framework CERD-Brazil - Final Version',
+    tipo: 'Instrumento Analítico',
+    data: '2025',
+    sigla: 'Quadro Monitoramento',
+    descricao: 'Planilha mestra com 30 colunas cruzando todos os eixos de pesquisa (I-V), questões de investigação, evidências, parágrafos CERD (inglês/português), deficiências identificadas, recomendações de ação, respostas do Brasil, estado de responsividade, dimensão interseccional e lacunas de invisibilidade. Inclui vínculos com ODS 18 e riscos de retrocesso.',
+    arquivo: '/documentos/Quadro-Monitoramento-CERD-Brasil.xlsx',
+    icon: Table,
+    cor: 'text-primary',
+    paragrafosChave: ['Eixo I - Normativo/Institucional', 'Eixo II - Violência/Justiça', 'Eixo III - Território/Indígenas', 'Eixo IV - DESCA', 'Eixo V - Grupos Focais']
+  },
+  {
+    titulo: 'Cruzamento: Quadro de Investigação × RGs × Durban',
+    tituloOriginal: 'Cross-reference: Investigation Framework × General Recommendations × Durban',
+    tipo: 'Instrumento Analítico',
+    data: '2025',
+    sigla: 'Cruzamento RGs/Durban',
+    descricao: 'Quadro de investigação baseado nas Observações Finais CERD 2022, cruzando cada tema com as Recomendações Gerais aplicáveis e o Plano de Ação de Durban. Organizado em 5 eixos com questões de investigação, fontes de evidência e linha do tempo legislativa (2018-2025).',
+    arquivo: '/documentos/Cruzamento-Quadro-Investigacao-RGs-Durban.docx',
+    icon: FileSearch,
+    cor: 'text-primary',
+    paragrafosChave: ['Eixo I - Estrutura Normativa', 'Eixo II - Violência Racializada', 'Eixo III - Território', 'Eixo IV - DESCA', 'Eixo V - Grupos Focais']
+  },
+  {
+    titulo: 'Plano de Trabalho CERD (TED MIR/UFF)',
+    tituloOriginal: 'Work Plan - CERD Report Production',
+    tipo: 'Plano de Trabalho',
+    data: '2026',
+    sigla: 'PT CERD',
+    descricao: 'Plano de Trabalho oficial do TED entre MIR e CDG/UFF para elaboração dos subsídios ao IV Relatório CERD. Define 4 Metas: (1) Contexto e revisão de obrigações, (2) Evolução normativa/institucional 2018-2025, (3) Monitoramento da ação governamental, (4) Consolidação e recomendações. Inclui Quadro de Investigação como anexo metodológico.',
+    arquivo: '/documentos/Plano-de-Trabalho-CERD.pdf',
+    icon: ClipboardList,
+    cor: 'text-primary',
+    paragrafosChave: ['Meta 1 - Obrigações', 'Meta 2 - Normativa/Institucional', 'Meta 3 - Monitoramento', 'Meta 4 - Consolidação']
+  },
+  {
+    titulo: 'Índice de Recomendações e Notas (Observações CERD)',
+    tituloOriginal: 'Index of Recommendations and Notes - CERD Concluding Observations',
+    tipo: 'Documento Analítico',
+    data: '2022',
+    sigla: 'Índice CERD CO',
+    descricao: 'Índice completo das 68+ recomendações diretas do CERD organizadas por tema, com indicação de prioridade (§68 e §69). Identifica 30 temas com número de sub-recomendações, páginas e parágrafos. Inclui anotações sobre conexões entre parágrafos e implicações para o IV Relatório.',
+    arquivo: '/documentos/CERD-Conclusoes-Indice-Recomendacoes.docx',
+    icon: BookOpen,
+    cor: 'text-destructive',
+    paragrafosChave: ['30 temas mapeados', '§68 Follow-up prioritário', '§69 Particular importância', '68+ recomendações diretas']
+  },
+  {
+    titulo: 'CCD Brasil 2020 - Dados para Atualização',
+    tituloOriginal: 'Common Core Document - Data Update Guide',
+    tipo: 'Guia de Atualização',
+    data: '2020/2025',
+    sigla: 'CCD Atualização',
+    descricao: 'Mapeamento de todos os dados do CCD 2020 com última data de atualização e fontes. Identifica que a maioria dos dados param em 2010-2015 (Censo 2010, PNAD 2014-2015). Orienta a atualização para Censo 2022, PNAD Contínua, FBSP 2025, INEP e DataSUS mais recentes.',
+    arquivo: '/documentos/CCD-Brasil-2020-Dados-Atualizacao.docx',
+    icon: Table,
+    cor: 'text-primary',
+    paragrafosChave: ['Demografia → Censo 2022', 'Economia → PNAD Contínua', 'Educação → INEP/Censo Escolar', 'Saúde → DataSUS/SIM', 'Segurança → FBSP 2025', 'Justiça → CNJ']
+  },
+  {
+    titulo: 'III Relatório Brasil 2018 - Resumo e Sistematização',
+    tituloOriginal: 'III Report Brazil 2018 - Summary and Systematization',
+    tipo: 'Documento Analítico',
+    data: '2018',
+    sigla: 'III Relatório Resumo',
+    descricao: 'Sistematização analítica do III Relatório CERD do Brasil (2004-2017) por artigos da Convenção. Destaca: inquéritos por racismo com apenas 4% de condenação (§59), 68% da população de favelas sendo negra, papel do IBGE na classificação racial, e o desafio de segregação espacial e encarceramento em massa.',
+    arquivo: '/documentos/III-Relatorio-Brasil-2018-Resumo.docx',
+    icon: FileText,
+    cor: 'text-muted-foreground',
+  },
+  {
+    titulo: 'Follow-up 2026 - Resumo e Anotações',
+    tituloOriginal: 'Follow-up 2026 - Summary and Annotations',
+    tipo: 'Documento Analítico',
+    data: '2026',
+    sigla: 'FCO Anotações',
+    descricao: 'Análise crítica da resposta brasileira de janeiro/2026. Destaca que o Brasil respondeu mais com medidas normativas do que com dados empíricos. Ponto forte: ações para quilombolas e regulamentação policial (Decreto 12.341/2024). Ponto fraco: ausência de dados sobre impacto da COVID-19 na população negra com recorte interseccional.',
+    arquivo: '/documentos/Follow-up-2026-Resumo-Anotacoes.docx',
+    icon: PenTool,
+    cor: 'text-primary',
+    paragrafosChave: ['Saúde Quilombola (PNASQ)', 'PRONASCI 2', 'Decreto 12.341/2024', 'Bolsa Família (+30% indígenas)', 'Lacuna: dados COVID interseccional']
+  },
+  {
+    titulo: 'Guidelines CERD - Anotações',
+    tituloOriginal: 'CERD Guidelines - Annotations',
+    tipo: 'Documento Analítico',
+    data: '2007/2025',
+    sigla: 'Guidelines Anotações',
+    descricao: 'Anotações sobre as Guidelines para relatórios CERD (CERD/C/2007/1), orientando a estrutura e conteúdo obrigatório do IV Relatório por artigos da Convenção.',
+    arquivo: '/documentos/Guidelines-Anotacoes.docx',
+    icon: Scale,
+    cor: 'text-muted-foreground',
+  },
+  {
+    titulo: 'Relatório Nacional Brasil ao HRC (UPR 2022)',
+    tituloOriginal: 'Human Rights Council - National Report Brazil 2022',
+    tipo: 'Relatório Nacional',
+    data: '2022',
+    sigla: 'HRC National Report',
+    descricao: 'Relatório nacional do Brasil ao Conselho de Direitos Humanos da ONU para a Revisão Periódica Universal (UPR). Apresenta a perspectiva oficial do governo sobre as políticas de direitos humanos implementadas.',
+    arquivo: '/documentos/HRC-National-Report-Brasil-2022.pdf',
+    icon: Globe,
+    cor: 'text-muted-foreground',
+  },
+  {
+    titulo: 'Guidelines para Elaboração de Recomendações Gerais',
+    tituloOriginal: 'Guidelines on the elaboration of general recommendations',
+    tipo: 'Diretrizes ONU',
+    data: 'S/D',
+    sigla: 'RG Guidelines',
+    descricao: 'Diretrizes internas do Comitê CERD para a elaboração de novas recomendações gerais. Útil para compreender a metodologia e os critérios que orientam as recomendações aplicáveis ao Brasil.',
+    arquivo: '/documentos/Guidelines-Elaboration-General-Recommendations.pdf',
+    icon: Scale,
     cor: 'text-muted-foreground',
   },
 ];
