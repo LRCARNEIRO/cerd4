@@ -50,7 +50,16 @@ interface IndicadorData {
   desagregacao_territorio?: boolean;
   desagregacao_deficiencia?: boolean;
   desagregacao_orientacao_sexual?: boolean;
+  documento_origem?: string[];
 }
+
+const DOCUMENTOS_FILTRO = [
+  'Todos',
+  'CERD Observações Finais 2022',
+  'Plano de Durban',
+  'Recomendações Gerais (RGs)',
+  'Follow-up 2026',
+];
 
 function formatGroupName(key: string): string {
   const labels: Record<string, string> = {
@@ -356,6 +365,7 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
 export function IndicadoresDbTab() {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
+  const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
 
   if (isLoading) {
     return (
@@ -375,27 +385,49 @@ export function IndicadoresDbTab() {
   // Get unique categories
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
-  // Filter by category
-  const indicadoresFiltrados = categoriaAtiva === 'todas' 
-    ? typedIndicadores 
-    : typedIndicadores.filter(i => i.categoria === categoriaAtiva);
+  // Filter by category and document
+  const indicadoresFiltrados = typedIndicadores.filter(i => {
+    const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
+    const docMatch = documentoAtivo === 'Todos' || (i.documento_origem || []).includes(documentoAtivo);
+    return catMatch && docMatch;
+  });
 
   return (
     <div className="space-y-6">
       <SummaryCards indicadores={typedIndicadores} />
       
+      {/* Document source filter */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">Documento de Origem:</p>
+        <div className="flex flex-wrap gap-2">
+          {DOCUMENTOS_FILTRO.map(doc => (
+            <Badge 
+              key={doc}
+              variant={documentoAtivo === doc ? "default" : "secondary"}
+              className="cursor-pointer transition-colors"
+              onClick={() => setDocumentoAtivo(doc)}
+            >
+              {doc}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2">
-        {categorias.map(cat => (
-          <Badge 
-            key={cat}
-            variant={categoriaAtiva === cat ? "default" : "outline"}
-            className="cursor-pointer transition-colors"
-            onClick={() => setCategoriaAtiva(cat)}
-          >
-            {cat === 'todas' ? 'Todas as categorias' : cat}
-          </Badge>
-        ))}
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">Categoria:</p>
+        <div className="flex flex-wrap gap-2">
+          {categorias.map(cat => (
+            <Badge 
+              key={cat}
+              variant={categoriaAtiva === cat ? "default" : "outline"}
+              className="cursor-pointer transition-colors"
+              onClick={() => setCategoriaAtiva(cat)}
+            >
+              {cat === 'todas' ? 'Todas as categorias' : cat}
+            </Badge>
+          ))}
+        </div>
       </div>
 
       {/* Indicadores detalhados */}
