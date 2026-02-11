@@ -50,6 +50,8 @@ const navSections: NavSection[] = [
       { title: 'Plano de Trabalho', href: '/plano-trabalho', icon: ClipboardList },
       { title: 'Common Core (77)', href: '/common-core', icon: BookOpen, badge: '77' },
       { title: 'Recomendações ONU', href: '/recomendacoes', icon: AlertTriangle, badge: '5' },
+      { title: 'Documentos Balizadores', href: '/documentos-balizadores', icon: FileText },
+      { title: 'Fontes de Dados', href: '/fontes', icon: Database },
     ]
   },
   {
@@ -68,7 +70,6 @@ const escopoSubsections: NavSection[] = [
     defaultOpen: false,
     items: [
       { title: 'Estatísticas Gerais', href: '/estatisticas', icon: BarChart3 },
-      { title: 'Fontes de Dados', href: '/fontes', icon: Database },
       { title: 'Grupos Focais', href: '/grupos-focais', icon: Users },
     ]
   },
