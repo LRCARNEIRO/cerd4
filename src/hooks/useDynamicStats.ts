@@ -60,72 +60,101 @@ export function useDashboardStats() {
   };
 }
 
+// Total de eixos temáticos definidos na Convenção
+const TOTAL_EIXOS = 10;
+// Total de parágrafos monitorados (§6-§65 das Observações Finais)
+const TOTAL_PARAGRAFOS_OF = 32;
+
 // Calcular progresso da Meta 1: Contexto da Convenção
+// Mede: cobertura de parágrafos das OF + respostas ao CERD III
 function calcularProgressoMeta1(lacunas: any[], respostas: any[]): number {
-  // Meta 1: Trajetória + Observações + Revisão CERD III
-  const temRespostas = respostas.length > 0;
-  const temLacunas = lacunas.length > 0;
+  // Cobertura de parágrafos (peso 60%)
+  const paragrafosUnicos = new Set(lacunas.map(l => l.paragrafo)).size;
+  const coberturaParagrafos = Math.min((paragrafosUnicos / TOTAL_PARAGRAFOS_OF) * 100, 100);
   
-  if (!temLacunas && !temRespostas) return 0;
-  if (temLacunas && temRespostas) return 60;
-  if (temLacunas || temRespostas) return 30;
-  return 0;
+  // Respostas ao CERD III (peso 40%)
+  const coberturaRespostas = respostas.length > 0 
+    ? Math.min(respostas.length * 10, 100)
+    : 0;
+  
+  return Math.round(coberturaParagrafos * 0.6 + coberturaRespostas * 0.4);
 }
 
 // Calcular progresso da Meta 2: Evolução Normativa
+// Mede: cumprimento das lacunas normativas + cobertura de eixos normativos
 function calcularProgressoMeta2(lacunas: any[]): number {
-  // Meta 2: Legislação + Institucionalidade + Judiciário
-  const lacunasNormativas = lacunas.filter(l => 
-    l.eixo_tematico === 'legislacao_justica' || 
-    l.eixo_tematico === 'politicas_institucionais'
-  );
+  const eixosNormativos = ['legislacao_justica', 'politicas_institucionais', 'participacao_social'];
+  const lacunasNormativas = lacunas.filter(l => eixosNormativos.includes(l.eixo_tematico));
   
   if (lacunasNormativas.length === 0) return 0;
   
-  const cumpridas = lacunasNormativas.filter(l => l.status_cumprimento === 'cumprido').length;
-  const parciais = lacunasNormativas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+  // Cobertura de eixos normativos (peso 30%)
+  const eixosCobertos = new Set(lacunasNormativas.map((l: any) => l.eixo_tematico)).size;
+  const coberturaEixos = (eixosCobertos / eixosNormativos.length) * 100;
   
-  return Math.round(((cumpridas * 100) + (parciais * 50)) / lacunasNormativas.length);
+  // Status de cumprimento (peso 70%)
+  const cumpridas = lacunasNormativas.filter((l: any) => l.status_cumprimento === 'cumprido').length;
+  const parciais = lacunasNormativas.filter((l: any) => l.status_cumprimento === 'parcialmente_cumprido').length;
+  const statusScore = ((cumpridas * 100) + (parciais * 50)) / lacunasNormativas.length;
+  
+  return Math.round(coberturaEixos * 0.3 + statusScore * 0.7);
 }
 
 // Calcular progresso da Meta 3: Monitoramento
+// Mede: cobertura de indicadores por eixo + cobertura orçamentária por eixo
 function calcularProgressoMeta3(indicadores: any[], orcamento: any): number {
-  // Meta 3: Indicadores + Orçamento
-  const temIndicadores = indicadores.length > 0;
+  // Cobertura de eixos com indicadores (peso 25%)
+  const eixosComIndicadores = new Set(indicadores.map((i: any) => i.categoria)).size;
+  const coberturaIndicadores = (eixosComIndicadores / TOTAL_EIXOS) * 100;
+  
+  // Densidade de indicadores: ideal = 3+ por eixo (peso 25%)
+  const densidadeIndicadores = Math.min((indicadores.length / (TOTAL_EIXOS * 3)) * 100, 100);
+  
+  // Cobertura orçamentária (peso 30%)
   const temOrcamento = (orcamento?.totalRegistros || 0) > 0;
+  const coberturaOrcamento = temOrcamento ? Math.min((orcamento.totalRegistros / 50) * 100, 100) : 0;
   
-  let progresso = 0;
-  if (temIndicadores) progresso += 30;
-  if (temOrcamento) progresso += 30;
+  // Série histórica (peso 20%)
+  const anosUnicos = orcamento?.porAno ? Object.keys(orcamento.porAno).length : 0;
+  const coberturaTemporal = Math.min((anosUnicos / 8) * 100, 100);
   
-  // Bônus por quantidade de dados
-  if (indicadores.length > 5) progresso += 10;
-  if ((orcamento?.totalRegistros || 0) > 10) progresso += 10;
-  
-  return Math.min(progresso, 80); // Cap em 80% até conclusão
+  return Math.round(
+    (coberturaIndicadores * 0.25) + 
+    (densidadeIndicadores * 0.25) + 
+    (coberturaOrcamento * 0.3) + 
+    (coberturaTemporal * 0.2)
+  );
 }
 
 // Calcular progresso da Meta 4: Consolidação
+// Mede: conclusões analíticas + classificação completa das lacunas + relevância
 function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
-  // Meta 4: Conclusões + Classificação
-  const temConclusoes = conclusoes.length > 0;
-  const temClassificacao = (lacunasStats?.total || 0) > 0;
+  if (!lacunasStats && conclusoes.length === 0) return 0;
   
-  if (!temConclusoes && !temClassificacao) return 0;
-  if (temConclusoes && temClassificacao) {
-    // Verificar qualidade das conclusões
-    const conclusoesRelevantes = conclusoes.filter(c => 
-      c.relevancia_cerd_iv || c.relevancia_common_core
-    ).length;
-    
-    const percentualRelevantes = conclusoes.length > 0 
-      ? (conclusoesRelevantes / conclusoes.length) * 100 
-      : 0;
-    
-    return Math.round(30 + (percentualRelevantes * 0.5));
-  }
+  // Classificação de lacunas por eixo (peso 40%)
+  const eixosClassificados = lacunasStats?.porEixo 
+    ? Object.values(lacunasStats.porEixo).filter((v: any) => v > 0).length 
+    : 0;
+  const coberturaClassificacao = (eixosClassificados / TOTAL_EIXOS) * 100;
   
-  return 20;
+  // Conclusões analíticas (peso 35%)
+  const coberturaConclusoes = conclusoes.length > 0 
+    ? Math.min((conclusoes.length / 10) * 100, 100)
+    : 0;
+  
+  // Relevância marcada nas conclusões (peso 25%)
+  const conclusoesRelevantes = conclusoes.filter((c: any) => 
+    c.relevancia_cerd_iv || c.relevancia_common_core
+  ).length;
+  const percentualRelevantes = conclusoes.length > 0 
+    ? (conclusoesRelevantes / conclusoes.length) * 100 
+    : 0;
+  
+  return Math.round(
+    (coberturaClassificacao * 0.4) + 
+    (coberturaConclusoes * 0.35) + 
+    (percentualRelevantes * 0.25)
+  );
 }
 
 // Hook para progresso do Common Core
