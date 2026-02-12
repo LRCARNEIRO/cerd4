@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, ExternalLink } from 'lucide-react';
+
+interface SourceInfo {
+  label: string;
+  url: string;
+}
 
 interface StatCardProps {
   title: string;
@@ -12,6 +17,7 @@ interface StatCardProps {
     positive?: boolean;
   };
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
+  sourceInfo?: SourceInfo;
 }
 
 const variantStyles = {
@@ -30,7 +36,7 @@ const iconVariantStyles = {
   danger: 'bg-destructive/20 text-destructive'
 };
 
-export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 'default' }: StatCardProps) {
+export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 'default', sourceInfo }: StatCardProps) {
   const isPrimary = variant === 'primary';
   
   return (
@@ -68,6 +74,22 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, variant = 
           </div>
         )}
       </div>
+      {sourceInfo && (
+        <div className="mt-3 pt-2 border-t border-border/50">
+          <a 
+            href={sourceInfo.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={cn(
+              'text-[10px] flex items-center gap-1 hover:underline',
+              isPrimary ? 'text-primary-foreground/60' : 'text-muted-foreground'
+            )}
+          >
+            <ExternalLink className="w-3 h-3 flex-shrink-0" />
+            {sourceInfo.label}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

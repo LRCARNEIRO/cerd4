@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ExternalLink, FileText } from 'lucide-react';
 
 interface BudgetChartProps {
   data: {
@@ -57,6 +58,22 @@ export function BudgetChart({ data }: BudgetChartProps) {
             <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+      <div className="mt-3 pt-2 border-t border-border/50 space-y-1">
+        <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes:</strong>
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <a href="https://www.siop.planejamento.gov.br/siop/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+            <ExternalLink className="w-2.5 h-2.5" /> SIOP — Execução Orçamentária
+          </a>
+          <a href="https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+            <ExternalLink className="w-2.5 h-2.5" /> Portal da Transparência — Função 14
+          </a>
+          <a href="https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-covid-19" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">
+            <ExternalLink className="w-2.5 h-2.5" /> Tesouro Transparente
+          </a>
+        </div>
       </div>
     </div>
   );

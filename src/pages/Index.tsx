@@ -17,7 +17,8 @@ import {
   FileText,
   RefreshCw,
   Loader2,
-  RotateCcw
+  RotateCcw,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -146,6 +147,7 @@ export default function Index() {
           subtitle={`${stats.recomendacoesCumpridas} cumpridas`}
           icon={AlertTriangle}
           variant="warning"
+          sourceInfo={{ label: 'CERD/C/BRA/CO/18-20 — OHCHR', url: 'https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FBRA%2FCO%2F18-20&Lang=en' }}
         />
         <StatCard
           title="Progresso Geral"
@@ -153,6 +155,7 @@ export default function Index() {
           subtitle="baseado nos dados"
           icon={ClipboardCheck}
           variant="default"
+          sourceInfo={{ label: 'Banco de dados — lacunas_identificadas', url: 'https://tbinternet.ohchr.org/_layouts/15/TreatyBodyExternal/countries.aspx?CountryCode=BRA&Lang=EN' }}
         />
         <StatCard
           title="Indicadores"
@@ -160,6 +163,7 @@ export default function Index() {
           subtitle="no banco de dados"
           icon={BarChart3}
           variant="success"
+          sourceInfo={{ label: 'SIDRA/IBGE + DataSUS + FBSP', url: 'https://sidra.ibge.gov.br/home/pnadct/brasil' }}
         />
         <StatCard
           title="Registros Orçament."
@@ -167,6 +171,7 @@ export default function Index() {
           subtitle={`${orcamentoStats?.porEsfera ? Object.keys(orcamentoStats.porEsfera).length : 0} esferas`}
           icon={Database}
           variant="default"
+          sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
         />
       </div>
 
@@ -234,26 +239,30 @@ export default function Index() {
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
         <QuickAccessCard
           title="SIDRA/IBGE"
-          description="Dados oficiais agregados"
-          href="https://sidra.ibge.gov.br/"
+          description="Tabelas por cor/raça"
+          href="https://sidra.ibge.gov.br/Tabela/9605"
+          detail="Tab. 9605 — População por cor/raça"
           external
         />
         <QuickAccessCard
           title="RAIS/CAGED"
-          description="Emprego formal"
-          href="http://bi.mte.gov.br/bgcaged/"
+          description="Emprego formal por raça"
+          href="http://bi.mte.gov.br/bgcaged/caged_isper/index.php"
+          detail="BI do MTE — CAGED/RAIS"
           external
         />
         <QuickAccessCard
           title="CadÚnico"
           description="Proteção social"
-          href="https://aplicacoes.mds.gov.br/sagi/vis/data3/v.php"
+          href="https://aplicacoes.mds.gov.br/sagi/vis/data3/v.php?q[]=zExdOwJbFwcNXR0mJC0%3D&q[]=pOjvAAA%3D"
+          detail="VIS Data — Famílias por raça"
           external
         />
         <QuickAccessCard
-          title="DataSUS"
-          description="Saúde pública"
-          href="https://datasus.saude.gov.br/"
+          title="DataSUS/TabNet"
+          description="Mortalidade por raça/cor"
+          href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10uf.def"
+          detail="SIM — Óbitos por causa e raça"
           external
         />
       </div>
@@ -281,11 +290,13 @@ function QuickAccessCard({
   title, 
   description, 
   href, 
+  detail,
   external 
 }: { 
   title: string; 
   description: string; 
   href: string; 
+  detail?: string;
   external?: boolean;
 }) {
   return (
@@ -298,6 +309,12 @@ function QuickAccessCard({
       <Database className="w-8 h-8 text-primary mb-2 group-hover:scale-110 transition-transform" />
       <h3 className="font-medium text-sm text-foreground">{title}</h3>
       <p className="text-xs text-muted-foreground">{description}</p>
+      {detail && (
+        <p className="text-[10px] text-primary/70 mt-1 flex items-center gap-0.5">
+          <ExternalLink className="w-2.5 h-2.5" />
+          {detail}
+        </p>
+      )}
     </a>
   );
 }
