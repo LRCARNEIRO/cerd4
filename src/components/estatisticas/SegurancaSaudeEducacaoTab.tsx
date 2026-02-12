@@ -211,12 +211,22 @@ export function SegurancaSaudeEducacaoTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            <a href={fonteDados.inep.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              {fonteDados.inep.nome} e PNAD Contínua <ExternalLink className="w-3 h-3" />
-            </a>
-          </p>
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs">
+              <a href="https://sidra.ibge.gov.br/Tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 7267 — Educação por cor/raça
+              </a>
+              <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> PNAD Contínua Educação 2024
+              </a>
+              <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> INEP — Censo Educação Superior
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -312,12 +322,22 @@ export function SegurancaSaudeEducacaoTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            <a href={fonteDados.datasus.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              {fonteDados.datasus.nome} / SIM / SINASC <ExternalLink className="w-3 h-3" />
-            </a>
-          </p>
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs">
+              <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Mortalidade
+              </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIM — Mortalidade materna por raça/cor
+              </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SINASC — Nascidos vivos
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
