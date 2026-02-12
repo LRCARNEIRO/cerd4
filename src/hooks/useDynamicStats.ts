@@ -126,8 +126,10 @@ function calcularProgressoMeta3(indicadores: any[], orcamento: any): number {
   );
 }
 
-// Calcular progresso da Meta 4: Consolidação
-// Mede: conclusões analíticas + classificação completa das lacunas + relevância
+// Calcular progresso da Meta 4: Consolidação (escopo aberto)
+// A Meta 4 não possui roteiro fechado — pesquisadores podem complementar a base
+// até o encerramento do projeto. O progresso usa escala assintótica (máx ~90%)
+// para refletir que 100% só será definido no fechamento do projeto.
 function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
   if (!lacunasStats && conclusoes.length === 0) return 0;
   
@@ -137,9 +139,11 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
     : 0;
   const coberturaClassificacao = (eixosClassificados / TOTAL_EIXOS) * 100;
   
-  // Conclusões analíticas (peso 35%)
+  // Conclusões analíticas — escala assintótica: cresce com volume mas sem teto fixo
+  // Fórmula: 90 * (1 - e^(-n/8)), onde n = número de conclusões
+  // Com 5 conclusões ≈ 41%, 10 ≈ 63%, 20 ≈ 82%, 30 ≈ 88%
   const coberturaConclusoes = conclusoes.length > 0 
-    ? Math.min((conclusoes.length / 10) * 100, 100)
+    ? 90 * (1 - Math.exp(-conclusoes.length / 8))
     : 0;
   
   // Relevância marcada nas conclusões (peso 25%)
@@ -150,11 +154,12 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
     ? (conclusoesRelevantes / conclusoes.length) * 100 
     : 0;
   
-  return Math.round(
-    (coberturaClassificacao * 0.4) + 
+  // Teto máximo de 90% — os 10% finais só serão alcançados no fechamento do projeto
+  const raw = (coberturaClassificacao * 0.4) + 
     (coberturaConclusoes * 0.35) + 
-    (percentualRelevantes * 0.25)
-  );
+    (percentualRelevantes * 0.25);
+  
+  return Math.round(Math.min(raw, 90));
 }
 
 // Hook para progresso do Common Core
