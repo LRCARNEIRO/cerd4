@@ -15,9 +15,11 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
+import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const categoriasNormativas = [
   { id: 'legislacao', titulo: 'Legislação Antidiscriminatória', descricao: 'Leis, decretos e normas', icon: Scale, meta: 'Meta 1', cor: 'bg-blue-500' },
@@ -29,6 +31,7 @@ const categoriasNormativas = [
 export default function Normativa() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
+  const [selectedRecomendacao, setSelectedRecomendacao] = useState<string | null>(null);
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -56,7 +59,17 @@ export default function Normativa() {
 
   // Impacted metas summary
   const allMetas = [...new Set(documentos.flatMap(d => d.metas_impactadas || []))];
+  const allRecomendacoes = [...new Set(documentos.flatMap(d => d.recomendacoes_impactadas || []))].sort();
+  const recomendacaoCoverage = allRecomendacoes.map(r => ({
+    recomendacao: r,
+    count: documentos.filter(d => d.recomendacoes_impactadas?.includes(r)).length,
+  }));
 
+  const filteredDocs = documentos.filter(doc =>
+    doc.titulo.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (!selectedCategoria || doc.categoria === selectedCategoria) &&
+    (!selectedRecomendacao || doc.recomendacoes_impactadas?.includes(selectedRecomendacao))
+  );
   const handleDeleteDoc = async (doc: any) => {
     setIsDeleting(true);
     try {
@@ -218,75 +231,68 @@ export default function Normativa() {
         })}
       </div>
 
+      {/* Recommendation coverage stats */}
+      <Card className="mb-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Cobertura por Recomendação CERD</CardTitle>
+          <CardDescription>Quantos documentos normativos respondem a cada recomendação do Comitê</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {recomendacaoCoverage.map(({ recomendacao, count }) => (
+              <Badge
+                key={recomendacao}
+                variant={selectedRecomendacao === recomendacao ? 'default' : 'outline'}
+                className="cursor-pointer text-xs gap-1 transition-all hover:shadow-sm"
+                onClick={() => setSelectedRecomendacao(selectedRecomendacao === recomendacao ? null : recomendacao)}
+              >
+                {recomendacao}
+                <span className="ml-1 bg-background/50 rounded-full px-1.5 text-[10px] font-bold">{count}</span>
+              </Badge>
+            ))}
+          </div>
+          {recomendacaoCoverage.length === 0 && (
+            <p className="text-sm text-muted-foreground">Nenhuma recomendação vinculada ainda.</p>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Recent documents from DB */}
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle>Documentos Recentes</CardTitle>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Buscar documentos..." className="pl-9 w-64" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <CardTitle>Documentos Normativos ({filteredDocs.length})</CardTitle>
+            <div className="flex items-center gap-2">
+              <Select value={selectedRecomendacao || 'all'} onValueChange={(v) => setSelectedRecomendacao(v === 'all' ? null : v)}>
+                <SelectTrigger className="w-[200px] text-xs h-9">
+                  <SelectValue placeholder="Filtrar por recomendação" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as recomendações</SelectItem>
+                  {allRecomendacoes.map(r => (
+                    <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input placeholder="Buscar..." className="pl-9 w-48 h-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {documentos
-              .filter(doc =>
-                doc.titulo.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                (!selectedCategoria || doc.categoria === selectedCategoria)
-              )
-              .map(doc => (
-                <div key={doc.id} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      {doc.url_origem ? <Globe className="w-5 h-5 text-primary" /> : <FileText className="w-5 h-5 text-primary" />}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-sm">{doc.titulo}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(doc.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                        </span>
-                        {doc.tamanho && <><span className="text-xs text-muted-foreground">•</span><span className="text-xs text-muted-foreground">{doc.tamanho}</span></>}
-                        {doc.total_itens_extraidos > 0 && (
-                          <Badge variant="outline" className="text-xs">{doc.total_itens_extraidos} itens</Badge>
-                        )}
-                      </div>
-                      {(doc.metas_impactadas?.length > 0) && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {doc.metas_impactadas.map((m: string) => (
-                            <Badge key={m} variant="secondary" className="text-xs">{m}</Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Badge variant={doc.status === 'processado' ? 'default' : 'secondary'} className={doc.status === 'processado' ? 'bg-green-500' : ''}>
-                      {doc.status === 'processado' ? 'Processado' : 'Pendente'}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={(e) => { e.stopPropagation(); setConfirmDelete(doc); }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+            {filteredDocs.map(doc => (
+              <NormativaDocCard key={doc.id} doc={doc} onDelete={setConfirmDelete} />
+            ))}
           </div>
 
-          {documentos.filter(doc =>
-            doc.titulo.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (!selectedCategoria || doc.categoria === selectedCategoria)
-          ).length === 0 && (
+          {filteredDocs.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>Nenhum documento encontrado</p>
-              <p className="text-xs mt-1">Importe documentos ou links usando o botão acima.</p>
+              <p className="text-xs mt-1">Ajuste os filtros ou importe documentos usando o botão acima.</p>
             </div>
           )}
         </CardContent>
