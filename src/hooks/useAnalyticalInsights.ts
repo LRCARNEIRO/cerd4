@@ -350,16 +350,23 @@ function gerarFiosCondutores(
       });
     }
 
+    // Nota sobre programas transversais excluídos
+    evidOrc.push({
+      texto: `NOTA METODOLÓGICA: 7 programas transversais com recorte racial foram excluídos desta análise (Agendas Transversais PPA R$ 405,3 bi, MCMV Faixa 1 R$ 42,8 bi, FEFC R$ 4,9 bi, Fundo Amazônia R$ 3,4 bi, Urbanização de Favelas R$ 3,2 bi, IBAMA/ICMBio R$ 1,85 bi, Operação Acolhida R$ 280 mi). São programas governamentais de escopo amplo que beneficiam indiretamente populações racializadas, mas não são políticas específicas de igualdade racial. Total excluído: R$ 461,7 bi em dotação / R$ 43,2 bi em valores pagos.`,
+      fonte: 'SIOP / Portal da Transparência / TSE / BNDES',
+      tipo: 'orcamentaria'
+    });
+
     fios.push({
       id: 'orcamento-vs-resultados',
       titulo: 'Investimento vs. Resultados: A Lacuna Orçamentária',
       tipo: 'correlacao',
-      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados, a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2026 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas.`,
+      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2026 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
       evidencias: evidOrc,
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
       relevancia: 'alta',
-      comparativo2018: `Orçamento para igualdade racial sofreu queda de até 90% entre 2016-2022, com recuperação parcial a partir de 2023.`
+      comparativo2018: `Orçamento para igualdade racial sofreu queda de até 90% entre 2016-2022, com recuperação parcial a partir de 2023. Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`
     });
   }
 
