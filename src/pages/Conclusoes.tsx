@@ -391,6 +391,85 @@ export default function Conclusoes() {
                     <InsightCard key={insight.id} insight={insight} />
                   ))}
                 </div>
+
+                {/* CONCLUSÃO-SÍNTESE: O Estado avançou? */}
+                <Card className="border-2 border-primary mt-6">
+                  <CardHeader className="bg-primary/5">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Scale className="w-6 h-6 text-primary" />
+                      Conclusão-Síntese: O Estado Brasileiro Avançou nas Políticas Raciais (2018–2025)?
+                    </CardTitle>
+                    <CardDescription>
+                      Resposta integrada a partir dos {fiosCondutores.length} fios condutores × {stats?.total || 0} lacunas ONU × dados FBSP/PNAD/DataSUS/SIOP
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
+                      <p className="text-sm font-semibold text-warning mb-2">⚖️ Veredicto: Avanço normativo-institucional real, porém insuficiente para reverter desigualdades estruturais</p>
+                    </div>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      O cruzamento exaustivo dos fios condutores revela um quadro de <strong>avanço parcial e assimétrico</strong>. 
+                      O Estado brasileiro avançou no plano <strong>normativo e institucional</strong> — recriação do MIR (2023), Lei 14.532/2023 
+                      (racismo crime inafiançável), Censo 2022 com contagem inédita de quilombolas, execução orçamentária recorde do MIR (~99% em 2024-2025) 
+                      e variação de {orcStats?.variacao >= 0 ? `+${orcStats?.variacao?.toFixed(0)}` : orcStats?.variacao?.toFixed(0)}% no orçamento entre períodos. 
+                      Houve também ganhos em <strong>educação</strong> (superior negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}%), 
+                      <strong>emprego</strong> (desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}%) e <strong>renda nominal</strong> (R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra}).
+                    </p>
+
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Porém, os indicadores estruturais de <strong>violência e desigualdade pioraram ou estagnaram</strong>: 
+                      vítimas negras de homicídio subiram de {seg2018.percentualVitimasNegras}% para {seg2024.percentualVitimasNegras}%, 
+                      feminicídio de mulheres negras de {fem2018.percentualNegras}% para {fem2024.percentualNegras}%, 
+                      letalidade policial negra de {seg2018.letalidadePolicial}% para {seg2024.letalidadePolicial}%, 
+                      e o gap absoluto de renda branca-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
+                      A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica e apenas 2 UFs mantêm Fundos de Igualdade Racial ativos, 
+                      evidenciando que os avanços federais não capilarizaram para governos subnacionais. 
+                      A COVID-19 (2020-2022) aprofundou todas as disparidades, e a recuperação pós-pandemia atinge desigualmente a população negra.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                        <p className="text-xs font-bold text-success mb-1">✓ ONDE AVANÇOU</p>
+                        <ul className="text-xs text-muted-foreground space-y-0.5">
+                          <li>• Marco legal antirracista</li>
+                          <li>• Recriação do MIR</li>
+                          <li>• Educação superior negra</li>
+                          <li>• Execução orçamentária 2023-25</li>
+                          <li>• Censo quilombola inédito</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <p className="text-xs font-bold text-destructive mb-1">✗ ONDE NÃO AVANÇOU</p>
+                        <ul className="text-xs text-muted-foreground space-y-0.5">
+                          <li>• Violência letal racial</li>
+                          <li>• Feminicídio negro</li>
+                          <li>• Letalidade policial</li>
+                          <li>• Gap absoluto de renda</li>
+                          <li>• Demarcação territorial</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                        <p className="text-xs font-bold text-warning mb-1">⚠ PARADOXO CENTRAL</p>
+                        <ul className="text-xs text-muted-foreground space-y-0.5">
+                          <li>• Leis avançam, implementação não</li>
+                          <li>• Orçamento cresce, resultados limitados</li>
+                          <li>• Federal avança, municipal estagna</li>
+                          <li>• Renda sobe, desigualdade persiste</li>
+                          <li>• Dados melhoram, lacunas permanecem</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-xs text-muted-foreground italic">
+                        <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} lacunas ONU (CERD/C/BRA/CO/18-20), 
+                        {respostas?.length || 0} respostas CERD III, {indicadores?.length || 0} indicadores interseccionais, 
+                        {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
