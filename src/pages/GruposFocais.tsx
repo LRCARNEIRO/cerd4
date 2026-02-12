@@ -125,22 +125,43 @@ const gruposFocaisData = {
 };
 
 // Dados territoriais INCRA/FUNAI - AUDITADOS E CORRIGIDOS - COM SÉRIE HISTÓRICA
+// NOTA DE AUDITORIA: Cada valor possui rastreabilidade para documento-fonte específico
 const dadosTerritoriais = {
   quilombolas: {
-    // Corrigido conforme auditoria: INCRA Nov/2025 e Palmares Abr/2025
+    // 245 territórios titulados: INCRA - Quadro Atual "Títulos Expedidos às Comunidades Quilombolas" (PDF)
+    // O PDF lista cada título com nº processo, comunidade, município, UF, área e data de expedição
     territoriosTitulados: 245,
+    fonteTerritoriosTitulados: 'INCRA - PDF "Títulos Expedidos às Comunidades Quilombolas"',
+    linkTerritoriosTitulados: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    // 384 títulos: mesmo PDF (um território pode receber múltiplos títulos parciais)
     titulosExpedidos: 384,
+    fonteTitulosExpedidos: 'INCRA - Total acumulado no PDF "Títulos Expedidos"',
+    linkTitulosExpedidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
     comunidadesAbrangidas: 395,
+    // 2.014 processos: INCRA - painel de processos abertos
     territoriosEmProcesso: 2014,
+    fonteProcessos: 'INCRA - Processos Abertos de Regularização Fundiária Quilombola',
+    linkProcessos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+    // 3.158 certidões: Fundação Cultural Palmares - Portarias de Certificação
     comunidadesCertificadasFCP: 3158,
+    fonteFCP: 'Fundação Cultural Palmares - Portarias de Certificação Quilombola',
+    linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/departamento-de-protecao-ao-patrimonio-afro-brasileiro/certificacao-quilombola/certificacao-quilombola',
     familiasAtendidas: 155000,
-    areaTotal: 1162002, // hectares titulados
-    fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Dados Abertos',
+    // 1.162.002 ha: soma das áreas no PDF de Títulos Expedidos
+    areaTotal: 1162002,
+    fonteArea: 'INCRA - Soma das áreas no PDF Títulos Expedidos (ha)',
+    linkArea: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Certificação',
     link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
     linkTitulos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
-    linkFCP: 'https://www.gov.br/palmares/pt-br/acesso-a-informacao/dados-abertos',
     ultimaAtualizacao: '2025-11-01',
-    notaFonte: 'INCRA: dados de titulação. FCP: certidões de autodefinição.',
+    notaFonte: 'Territórios/títulos/área: PDF "Títulos Expedidos" do INCRA (lista nominal). Certidões: Palmares - Portarias de Certificação.',
+    // Infraestrutura: Censo 2022 - Domicílios em territórios quilombolas
+    infraestrutura: {
+      fonte: 'IBGE - Censo 2022 (Domicílios em Territórios Quilombolas)',
+      link: 'https://sidra.ibge.gov.br/tabela/4696',
+      nota: 'Tabela 4696 - Características dos domicílios em territórios quilombolas',
+    },
     serieHistorica: [
       { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
       { ano: 2019, titulados: 159, certificacoesFCP: 2552, processosAbertos: 1720, areaHa: 995000 },
@@ -153,29 +174,48 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
+    // 644 TIs totais: FUNAI - Coordenação-Geral de Geoprocessamento
     terrasTotal: 644,
+    fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
+    linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
+    // 496 homologadas: FUNAI - TIs com decreto presidencial de homologação
     terrasHomologadas: 496,
+    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento)',
+    linkTerrasHomologadas: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     terrasEmEstudo: 148,
+    // 391 etnias e 295 línguas: IBGE Censo 2022 - Brasil Indígena
     etniasIdentificadas: 391,
+    fonteEtnias: 'IBGE - Censo 2022 (Brasil Indígena)',
+    linkEtnias: 'https://www.ibge.gov.br/brasil-indigena/',
     linguasVivas: 295,
+    fonteLinguas: 'IBGE - Censo 2022 (Brasil Indígena)',
+    linkLinguas: 'https://www.ibge.gov.br/brasil-indigena/',
+    // 117,4 mi ha: FUNAI - soma das áreas georreferenciadas
     areaTotal: 117400000,
+    fonteArea: 'FUNAI - Dados Geoespaciais (soma das áreas das TIs)',
+    linkArea: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     fonte: 'FUNAI - Coordenação de Geoprocessamento (ago/2025)',
     link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
     linkGeo: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     ultimaAtualizacao: '2025-08-20',
-    notaFonte: 'Dados geoespaciais atualizados mensalmente. Etnias/línguas: IBGE Censo 2022.',
-    // Detalhamento por fase do processo demarcatório (FUNAI)
+    notaFonte: 'TIs e áreas: FUNAI Geoprocessamento. Etnias/línguas: IBGE Censo 2022 (Brasil Indígena).',
+    // Detalhamento por fase do processo demarcatório
+    // Fontes: FUNAI relatórios anuais + ISA Terras Indígenas no Brasil
     fasesPeriodo1: { // 2018-2022
-      emEstudo: 27, // 8 (2018) + 19 (2019-2022)
-      delimitada: 2, // 2 em 2018, 0 depois
+      emEstudo: 27,
+      delimitada: 2,
       declarada: 1, // TI Kaxuyana-Tunayana (PA) em 2018
       homologada: 1, // TI Baía dos Guató (MT) em 2018
+      fonte: 'FUNAI - Relatórios Anuais / ISA - Terras Indígenas no Brasil',
+      linkISA: 'https://terrasindigenas.org.br/',
     },
     fasesPeriodo2: { // 2023-2025
       emEstudo: 36,
       delimitada: 9,
       declarada: 21,
       homologada: 20,
+      fonte: 'FUNAI - Relatórios Anuais / DOU (portarias e decretos)',
+      linkISA: 'https://terrasindigenas.org.br/',
     },
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
@@ -436,18 +476,30 @@ export default function GruposFocais() {
                     <div className="text-center p-4 bg-success/10 rounded-lg">
                       <p className="text-3xl font-bold text-success">{dadosTerritoriais.quilombolas.territoriosTitulados}</p>
                       <p className="text-sm text-muted-foreground">Territórios Titulados</p>
+                      <a href={dadosTerritoriais.quilombolas.linkTerritoriosTitulados} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> PDF INCRA
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-warning/10 rounded-lg">
                       <p className="text-3xl font-bold text-warning">{dadosTerritoriais.quilombolas.territoriosEmProcesso.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">Em Processo</p>
+                      <a href={dadosTerritoriais.quilombolas.linkProcessos} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> INCRA
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.quilombolas.comunidadesCertificadasFCP.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">Certidões FCP</p>
+                      <a href={dadosTerritoriais.quilombolas.linkFCP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> Palmares
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{(dadosTerritoriais.quilombolas.areaTotal / 1000000).toFixed(1)} mi</p>
                       <p className="text-sm text-muted-foreground">Hectares</p>
+                      <a href={dadosTerritoriais.quilombolas.linkArea} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> PDF INCRA
+                      </a>
                     </div>
                   </div>
                   <Progress value={10} className="h-2 mb-2" />
@@ -509,22 +561,37 @@ export default function GruposFocais() {
                         <span><strong className="text-destructive">12,6%</strong> da população quilombola</span>
                       </div>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                      Fonte: {dadosTerritoriais.quilombolas.infraestrutura.fonte} — <a href={dadosTerritoriais.quilombolas.infraestrutura.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{dadosTerritoriais.quilombolas.infraestrutura.nota}</a>
+                    </p>
                   </div>
 
-                  <p className="text-xs text-muted-foreground mt-2">{dadosTerritoriais.quilombolas.notaFonte}</p>
-                  <div className="mt-4 flex gap-2 flex-wrap">
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={dadosTerritoriais.quilombolas.link} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        INCRA - Quilombolas
-                      </a>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={dadosTerritoriais.quilombolas.linkFCP} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        Certidões FCP
-                      </a>
-                    </Button>
+                  {/* Bloco de auditabilidade */}
+                  <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
+                    <p className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Database className="w-3 h-3" /> Fontes de Verificação
+                    </p>
+                    <p className="text-xs text-muted-foreground">{dadosTerritoriais.quilombolas.notaFonte}</p>
+                    <div className="mt-2 flex gap-2 flex-wrap">
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={dadosTerritoriais.quilombolas.linkTitulos} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          PDF Títulos Expedidos
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={dadosTerritoriais.quilombolas.linkFCP} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Palmares - Certificação
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={dadosTerritoriais.quilombolas.link} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          INCRA - Quilombolas
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -545,18 +612,30 @@ export default function GruposFocais() {
                     <div className="text-center p-4 bg-info/10 rounded-lg">
                       <p className="text-3xl font-bold text-info">{dadosTerritoriais.indigenas.terrasTotal}</p>
                       <p className="text-sm text-muted-foreground">Total TIs Registradas</p>
+                      <a href={dadosTerritoriais.indigenas.linkTerrasTotal} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> FUNAI Geo
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-success/10 rounded-lg">
                       <p className="text-3xl font-bold text-success">{dadosTerritoriais.indigenas.terrasHomologadas}</p>
                       <p className="text-sm text-muted-foreground">Homologadas/Regularizadas</p>
+                      <a href={dadosTerritoriais.indigenas.linkTerrasHomologadas} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> FUNAI Geo
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.etniasIdentificadas}</p>
                       <p className="text-sm text-muted-foreground">Etnias (Censo 2022)</p>
+                      <a href={dadosTerritoriais.indigenas.linkEtnias} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> Brasil Indígena
+                      </a>
                     </div>
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.linguasVivas}</p>
                       <p className="text-sm text-muted-foreground">Línguas (Censo 2022)</p>
+                      <a href={dadosTerritoriais.indigenas.linkLinguas} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
+                        <ExternalLink className="w-3 h-3" /> Brasil Indígena
+                      </a>
                     </div>
                   </div>
 
@@ -572,6 +651,9 @@ export default function GruposFocais() {
                           <div className="flex justify-between"><span>Declarada</span><span className="font-medium">1 TI</span></div>
                           <div className="flex justify-between"><span>Homologada</span><span className="font-medium text-destructive">1 TI</span></div>
                         </div>
+                        <a href={dadosTerritoriais.indigenas.fasesPeriodo1.linkISA} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2">
+                          <ExternalLink className="w-3 h-3" /> ISA / FUNAI
+                        </a>
                       </div>
                       <div>
                         <p className="font-medium text-muted-foreground mb-1">2023-2025</p>
@@ -581,6 +663,9 @@ export default function GruposFocais() {
                           <div className="flex justify-between"><span>Declarada</span><span className="font-medium">21 TIs</span></div>
                           <div className="flex justify-between"><span>Homologada</span><span className="font-medium text-success">20 TIs</span></div>
                         </div>
+                        <a href={dadosTerritoriais.indigenas.fasesPeriodo2.linkISA} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2">
+                          <ExternalLink className="w-3 h-3" /> ISA / FUNAI
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -618,7 +703,13 @@ export default function GruposFocais() {
                     </div>
                   </div>
 
-                  <p className="text-xs text-muted-foreground mb-2">{dadosTerritoriais.indigenas.notaFonte}</p>
+                  {/* Bloco de auditabilidade */}
+                  <div className="p-3 bg-muted/50 rounded-lg border border-border mb-4">
+                    <p className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Database className="w-3 h-3" /> Fontes de Verificação
+                    </p>
+                    <p className="text-xs text-muted-foreground">{dadosTerritoriais.indigenas.notaFonte}</p>
+                  </div>
                   <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-4">
                     <p className="text-sm font-medium text-warning flex items-center gap-1">
                       <AlertTriangle className="w-4 h-4" />
@@ -630,15 +721,21 @@ export default function GruposFocais() {
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     <Button variant="outline" size="sm" asChild>
-                      <a href={dadosTerritoriais.indigenas.link} target="_blank" rel="noopener noreferrer">
+                      <a href={dadosTerritoriais.indigenas.linkGeo} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-1" />
-                        FUNAI - Geoprocessamento
+                        FUNAI Geoprocessamento
                       </a>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <a href="https://www.ibge.gov.br/brasil-indigena/" target="_blank" rel="noopener noreferrer">
+                      <a href={dadosTerritoriais.indigenas.linkEtnias} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-1" />
-                        IBGE - Brasil Indígena
+                        IBGE Brasil Indígena
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://terrasindigenas.org.br/" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        ISA - Terras Indígenas
                       </a>
                     </Button>
                   </div>
