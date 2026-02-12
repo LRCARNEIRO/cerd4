@@ -8,7 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 
@@ -258,12 +258,42 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
           })}
         </TableBody>
       </Table>
-      <div className="mt-2 text-xs text-muted-foreground flex items-center justify-between">
-        <span>Fonte: {indicador.fonte}</span>
+      <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-2">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <FileText className="w-3.5 h-3.5" />
+            <span className="font-medium">Fonte:</span>
+            <span>{indicador.fonte}</span>
+          </div>
+          {indicador.url_fonte && (
+            <a 
+              href={indicador.url_fonte} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+            >
+              <ExternalLink className="w-3 h-3" />
+              Verificar na fonte oficial
+            </a>
+          )}
+        </div>
+        {indicador.documento_origem && indicador.documento_origem.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <BookOpen className="w-3.5 h-3.5" />
+              Documento(s) de origem:
+            </span>
+            {indicador.documento_origem.map((doc, i) => (
+              <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0">
+                {doc}
+              </Badge>
+            ))}
+          </div>
+        )}
         {indicador.url_fonte && (
-          <a href={indicador.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-            Acessar fonte →
-          </a>
+          <p className="text-[10px] text-muted-foreground/70 italic truncate">
+            🔗 {indicador.url_fonte}
+          </p>
         )}
       </div>
     </div>
@@ -274,27 +304,30 @@ function IndicadorDetail({ indicador }: { indicador: IndicadorData }) {
   return (
     <Card className="mb-4">
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle className="text-base">{indicador.nome}</CardTitle>
             <CardDescription className="text-sm">
               {indicador.categoria}{indicador.subcategoria ? ` • ${indicador.subcategoria}` : ''}
+              {' • '}<span className="font-medium">{indicador.fonte}</span>
             </CardDescription>
           </div>
-          {indicador.tendencia && (
-            <Badge 
-              variant="outline"
-              className={cn(
-                "text-xs",
-                indicador.tendencia.includes('melhora') && "border-success text-success",
-                indicador.tendencia.includes('piora') && "border-destructive text-destructive",
-                indicador.tendencia.includes('estável') && "border-muted-foreground text-muted-foreground"
-              )}
-            >
-              <TrendingUp className="w-3 h-3 mr-1" />
-              {indicador.tendencia}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            {indicador.tendencia && (
+              <Badge 
+                variant="outline"
+                className={cn(
+                  "text-xs",
+                  indicador.tendencia.includes('melhora') && "border-success text-success",
+                  indicador.tendencia.includes('piora') && "border-destructive text-destructive",
+                  indicador.tendencia.includes('estável') && "border-muted-foreground text-muted-foreground"
+                )}
+              >
+                <TrendingUp className="w-3 h-3 mr-1" />
+                {indicador.tendencia}
+              </Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
