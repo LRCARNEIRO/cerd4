@@ -100,45 +100,34 @@ function calcularProgressoMeta2(lacunas: any[]): number {
   return Math.round(coberturaEixos * 0.3 + statusScore * 0.7);
 }
 
-// Calcular progresso da Meta 3: Monitoramento (escopo aberto)
-// O monitoramento é contínuo — novas fontes, indicadores e séries orçamentárias
-// podem ser incorporados até o encerramento. O progresso usa escala assintótica
-// (máx ~90%) para refletir que 100% só será definido no fechamento do projeto.
+// Calcular progresso da Meta 3: Monitoramento
+// Mede: cobertura de indicadores por eixo + cobertura orçamentária por eixo
 function calcularProgressoMeta3(indicadores: any[], orcamento: any): number {
   // Cobertura de eixos com indicadores (peso 25%)
   const eixosComIndicadores = new Set(indicadores.map((i: any) => i.categoria)).size;
   const coberturaIndicadores = (eixosComIndicadores / TOTAL_EIXOS) * 100;
   
-  // Densidade de indicadores — escala assintótica: 90 * (1 - e^(-n/30))
-  // Com 10 indicadores ≈ 25%, 30 ≈ 57%, 60 ≈ 77%, 90 ≈ 86%
-  const densidadeIndicadores = indicadores.length > 0
-    ? 90 * (1 - Math.exp(-indicadores.length / 30))
-    : 0;
+  // Densidade de indicadores: ideal = 3+ por eixo (peso 25%)
+  const densidadeIndicadores = Math.min((indicadores.length / (TOTAL_EIXOS * 3)) * 100, 100);
   
-  // Cobertura orçamentária — escala assintótica: 90 * (1 - e^(-n/50))
-  // Com 20 registros ≈ 30%, 50 ≈ 57%, 100 ≈ 77%, 150 ≈ 86%
-  const totalOrc = orcamento?.totalRegistros || 0;
-  const coberturaOrcamento = totalOrc > 0
-    ? 90 * (1 - Math.exp(-totalOrc / 50))
-    : 0;
+  // Cobertura orçamentária (peso 30%)
+  const temOrcamento = (orcamento?.totalRegistros || 0) > 0;
+  const coberturaOrcamento = temOrcamento ? Math.min((orcamento.totalRegistros / 50) * 100, 100) : 0;
   
   // Série histórica (peso 20%)
   const anosUnicos = orcamento?.porAno ? Object.keys(orcamento.porAno).length : 0;
   const coberturaTemporal = Math.min((anosUnicos / 8) * 100, 100);
   
-  // Teto máximo de 90% — os 10% finais só serão alcançados no fechamento do projeto
-  const raw = (coberturaIndicadores * 0.25) + 
+  return Math.round(
+    (coberturaIndicadores * 0.25) + 
     (densidadeIndicadores * 0.25) + 
     (coberturaOrcamento * 0.3) + 
-    (coberturaTemporal * 0.2);
-  
-  return Math.round(Math.min(raw, 90));
+    (coberturaTemporal * 0.2)
+  );
 }
 
-// Calcular progresso da Meta 4: Consolidação (escopo aberto)
-// A Meta 4 não possui roteiro fechado — pesquisadores podem complementar a base
-// até o encerramento do projeto. O progresso usa escala assintótica (máx ~90%)
-// para refletir que 100% só será definido no fechamento do projeto.
+// Calcular progresso da Meta 4: Consolidação
+// Mede: conclusões analíticas + classificação completa das lacunas + relevância
 function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
   if (!lacunasStats && conclusoes.length === 0) return 0;
   
@@ -148,11 +137,9 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
     : 0;
   const coberturaClassificacao = (eixosClassificados / TOTAL_EIXOS) * 100;
   
-  // Conclusões analíticas — escala assintótica: cresce com volume mas sem teto fixo
-  // Fórmula: 90 * (1 - e^(-n/8)), onde n = número de conclusões
-  // Com 5 conclusões ≈ 41%, 10 ≈ 63%, 20 ≈ 82%, 30 ≈ 88%
+  // Conclusões analíticas (peso 35%)
   const coberturaConclusoes = conclusoes.length > 0 
-    ? 90 * (1 - Math.exp(-conclusoes.length / 8))
+    ? Math.min((conclusoes.length / 10) * 100, 100)
     : 0;
   
   // Relevância marcada nas conclusões (peso 25%)
@@ -163,12 +150,11 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
     ? (conclusoesRelevantes / conclusoes.length) * 100 
     : 0;
   
-  // Teto máximo de 90% — os 10% finais só serão alcançados no fechamento do projeto
-  const raw = (coberturaClassificacao * 0.4) + 
+  return Math.round(
+    (coberturaClassificacao * 0.4) + 
     (coberturaConclusoes * 0.35) + 
-    (percentualRelevantes * 0.25);
-  
-  return Math.round(Math.min(raw, 90));
+    (percentualRelevantes * 0.25)
+  );
 }
 
 // Hook para progresso do Common Core
