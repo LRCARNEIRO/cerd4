@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend, PieChart, Pie, Cell 
 } from 'recharts';
-import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers } from 'lucide-react';
 import { 
   dadosDemograficos, 
   evolucaoComposicaoRacial, 
@@ -333,11 +334,61 @@ export function DadosGeraisTab() {
 function OrcamentoResumoSection() {
   const { data: orcDados, isLoading: loadingDados } = useDadosOrcamentarios();
   const { data: stats, isLoading: loadingStats } = useOrcamentoStats();
+  const [esferaFiltro, setEsferaFiltro] = useState<string | null>(null);
 
   const formatCurrencyCompact = (value: number) => {
     if (value >= 1_000_000_000) return `R$ ${(value / 1_000_000_000).toFixed(1)} bi`;
     if (value >= 1_000_000) return `R$ ${(value / 1_000_000).toFixed(0)} mi`;
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
+  };
+
+  // Dados filtrados por esfera
+  const dadosFiltrados = useMemo(() => {
+    if (!orcDados) return [];
+    if (!esferaFiltro) return orcDados;
+    return orcDados.filter(d => d.esfera.toLowerCase() === esferaFiltro.toLowerCase());
+  }, [orcDados, esferaFiltro]);
+
+  // Stats recalculadas para o filtro ativo
+  const statsFiltradas = useMemo(() => {
+    if (dadosFiltrados.length === 0) return null;
+
+    const periodo1 = dadosFiltrados.filter(r => r.ano >= 2018 && r.ano <= 2022);
+    const periodo2 = dadosFiltrados.filter(r => r.ano >= 2023 && r.ano <= 2026);
+    const totalPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+    const totalPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+
+    const porAno: Record<number, number> = {};
+    dadosFiltrados.forEach(r => { porAno[r.ano] = (porAno[r.ano] || 0) + (Number(r.pago) || 0); });
+
+    const porPrograma: Record<string, number> = {};
+    dadosFiltrados.forEach(r => { porPrograma[r.programa] = (porPrograma[r.programa] || 0) + (Number(r.pago) || 0); });
+
+    return {
+      totalPeriodo1,
+      totalPeriodo2,
+      variacao: totalPeriodo1 > 0 ? ((totalPeriodo2 - totalPeriodo1) / totalPeriodo1 * 100) : 0,
+      porAno,
+      porPrograma,
+      totalRegistros: dadosFiltrados.length,
+    };
+  }, [dadosFiltrados]);
+
+  // Esferas disponíveis nos dados
+  const esferasDisponiveis = useMemo(() => {
+    if (!orcDados) return [];
+    const esferas = [...new Set(orcDados.map(d => d.esfera))].sort();
+    return esferas.map(e => ({
+      valor: e,
+      label: e.charAt(0).toUpperCase() + e.slice(1),
+      count: orcDados.filter(d => d.esfera === e).length,
+    }));
+  }, [orcDados]);
+
+  const esferaIcons: Record<string, React.ReactNode> = {
+    federal: <Landmark className="w-3 h-3" />,
+    estadual: <Building2 className="w-3 h-3" />,
+    municipal: <MapPin className="w-3 h-3" />,
   };
 
   if (loadingDados || loadingStats) {
@@ -357,16 +408,17 @@ function OrcamentoResumoSection() {
     );
   }
 
-  const evolucaoPorAno = stats.porAno ? Object.entries(stats.porAno)
+  const activeStats = statsFiltradas || stats;
+  const evolucaoPorAno = activeStats.porAno ? Object.entries(activeStats.porAno)
     .map(([ano, pago]) => ({ ano: Number(ano), pago: pago as number }))
     .sort((a, b) => a.ano - b.ano) : [];
 
-  const porPrograma = stats.porPrograma ? Object.entries(stats.porPrograma)
+  const porPrograma = activeStats.porPrograma ? Object.entries(activeStats.porPrograma)
     .map(([programa, pago]) => ({ programa, pago: pago as number }))
     .sort((a, b) => b.pago - a.pago)
     .slice(0, 6) : [];
 
-  const variacaoPositiva = stats.variacao > 0;
+  const variacaoPositiva = activeStats.variacao > 0;
 
   return (
     <Card>
@@ -376,19 +428,48 @@ function OrcamentoResumoSection() {
           Orçamento de Políticas Raciais (Dados do Banco)
         </CardTitle>
         <CardDescription>
-          {stats.totalRegistros} registros | Períodos 2018-2022 vs 2023-2026 | Fonte: SIOP/Portal da Transparência
+          {activeStats.totalRegistros} registros{esferaFiltro ? ` — Esfera: ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''} | Períodos 2018-2022 vs 2023-2026 | Fonte: SIOP/Portal da Transparência
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Filtro por esfera */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          <button
+            onClick={() => setEsferaFiltro(null)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              esferaFiltro === null
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-muted text-muted-foreground border-border hover:bg-accent'
+            }`}
+          >
+            <Layers className="w-3 h-3" />
+            Todas ({stats.totalRegistros})
+          </button>
+          {esferasDisponiveis.map(e => (
+            <button
+              key={e.valor}
+              onClick={() => setEsferaFiltro(e.valor === esferaFiltro ? null : e.valor)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                esferaFiltro === e.valor
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-muted text-muted-foreground border-border hover:bg-accent'
+              }`}
+            >
+              {esferaIcons[e.valor.toLowerCase()] || <Landmark className="w-3 h-3" />}
+              {e.label} ({e.count})
+            </button>
+          ))}
+        </div>
+
         {/* Cards resumo */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
           <div className="p-3 bg-muted rounded-lg text-center">
             <p className="text-xs text-muted-foreground">2018-2022</p>
-            <p className="text-lg font-bold">{formatCurrencyCompact(stats.totalPeriodo1)}</p>
+            <p className="text-lg font-bold">{formatCurrencyCompact(activeStats.totalPeriodo1)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center">
             <p className="text-xs text-muted-foreground">2023-2026</p>
-            <p className="text-lg font-bold text-success">{formatCurrencyCompact(stats.totalPeriodo2)}</p>
+            <p className="text-lg font-bold text-success">{formatCurrencyCompact(activeStats.totalPeriodo2)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center flex items-center justify-center gap-2">
             {variacaoPositiva ? (
@@ -399,21 +480,45 @@ function OrcamentoResumoSection() {
             <div>
               <p className="text-xs text-muted-foreground">Variação</p>
               <p className={`text-lg font-bold ${variacaoPositiva ? 'text-success' : 'text-destructive'}`}>
-                {variacaoPositiva ? '+' : ''}{stats.variacao.toFixed(0)}%
+                {variacaoPositiva ? '+' : ''}{activeStats.variacao.toFixed(0)}%
               </p>
             </div>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center">
             <p className="text-xs text-muted-foreground">Programas</p>
-            <p className="text-lg font-bold">{Object.keys(stats.porPrograma || {}).length}</p>
+            <p className="text-lg font-bold">{Object.keys(activeStats.porPrograma || {}).length}</p>
           </div>
         </div>
+
+        {/* Mini resumo por esfera quando "Todas" selecionado */}
+        {!esferaFiltro && esferasDisponiveis.length > 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            {esferasDisponiveis.map(e => {
+              const esferaData = stats.porEsfera?.[e.valor];
+              if (!esferaData) return null;
+              return (
+                <button
+                  key={e.valor}
+                  onClick={() => setEsferaFiltro(e.valor)}
+                  className="p-3 bg-muted/50 border rounded-lg text-left hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    {esferaIcons[e.valor.toLowerCase()] || <Landmark className="w-3 h-3" />}
+                    <p className="text-xs font-medium">{e.label}</p>
+                  </div>
+                  <p className="text-sm font-bold">{formatCurrencyCompact(esferaData.total)}</p>
+                  <p className="text-xs text-muted-foreground">{e.count} registros</p>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Evolução anual */}
           {evolucaoPorAno.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-3">Evolução Anual (Valor Pago)</h4>
+              <h4 className="text-sm font-medium mb-3">Evolução Anual (Valor Pago){esferaFiltro ? ` — ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''}</h4>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={evolucaoPorAno}>
@@ -434,7 +539,7 @@ function OrcamentoResumoSection() {
           {/* Por programa */}
           {porPrograma.length > 0 && (
             <div>
-              <h4 className="text-sm font-medium mb-3">Top Programas (Valor Pago)</h4>
+              <h4 className="text-sm font-medium mb-3">Top Programas (Valor Pago){esferaFiltro ? ` — ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''}</h4>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={porPrograma} layout="vertical">
