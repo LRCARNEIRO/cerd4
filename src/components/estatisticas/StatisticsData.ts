@@ -48,13 +48,17 @@ export const dadosDemograficos = {
 // Anos 2025-2026: Projeções baseadas em tendência histórica
 // =============================================
 export const evolucaoComposicaoRacial = [
-  { ano: 2018, branca: 47.7, negra: 52.3, fonte: 'PNAD Contínua 2018' },
-  { ano: 2019, branca: 46.8, negra: 53.2, fonte: 'PNAD Contínua 2019' },
-  { ano: 2020, branca: 46.1, negra: 53.9, fonte: 'PNAD Contínua 2020' },
-  { ano: 2021, branca: 45.2, negra: 54.8, fonte: 'PNAD Contínua 2021' },
-  { ano: 2022, branca: 43.46, negra: 55.51, fonte: 'Censo 2022 (Tabela 9605)' },
-  { ano: 2023, branca: 43.2, negra: 55.8, fonte: 'PNAD Contínua 2023' },
-  { ano: 2024, branca: 42.9, negra: 56.1, fonte: 'PNAD Contínua 2024' },
+  // Valores corrigidos conforme auditoria: PNAD Contínua Trimestral - SIDRA Tabela 6403
+  // URL: https://sidra.ibge.gov.br/tabela/6403
+  // Média simples dos trimestres de cada ano
+  { ano: 2018, branca: 42.9, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2018 (SIDRA 6403)' },
+  { ano: 2019, branca: 42.4, negra: 56.6, fonte: 'PNAD Contínua Trimestral 2019 (SIDRA 6403)' },
+  { ano: 2020, branca: 43.1, negra: 56.0, fonte: 'PNAD Contínua Trimestral 2020 (SIDRA 6403)' },
+  { ano: 2021, branca: 43.4, negra: 55.6, fonte: 'PNAD Contínua Trimestral 2021 (SIDRA 6403)' },
+  { ano: 2022, branca: 43.1, negra: 55.8, fonte: 'PNAD Contínua Trimestral 2022 (SIDRA 6403)' },
+  { ano: 2023, branca: 42.7, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2023 (SIDRA 6403)' },
+  { ano: 2024, branca: 42.4, negra: 56.6, fonte: 'PNAD Contínua Trimestral 2024 (SIDRA 6403)' },
+  // NOTA: Para 2025, dados apenas dos 3 primeiros trimestres disponíveis
 ];
 
 // =============================================
@@ -287,7 +291,7 @@ export const lgbtqiaPorRaca = [
 // NOTA METODOLÓGICA:
 //   • "Cor ou raça" (Tabela 9605): pessoas que se autodeclararam indígenas no quesito cor = 1.227.642
 //   • "Contagem de pessoas indígenas" (pergunta específica do Censo 2022): inclui quem se considera
-//     indígena independentemente de cor, totalizando ~1.693.535 segundo o IBGE.
+//     indígena independentemente de cor, totalizando 1.694.836 segundo o IBGE (Tabela 9718).
 //   Ambos os valores são oficiais; a diferença decorre da metodologia do quesito.
 // URLs oficiais:
 // - Indígenas: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
@@ -304,7 +308,8 @@ export const povosTradicionais = {
     populacaoCorRaca: 1227642,
     // 2) Pessoas indígenas (contagem específica do Censo 2022)
     //    Fonte: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
-    populacaoPessoasIndigenas: 1693535,
+    // Corrigido conforme auditoria: Tabela 9718 SIDRA = 1.694.836
+    populacaoPessoasIndigenas: 1694836,
     percentualBrasil: 0.83, // usando contagem específica
     // 391 etnias e 295 línguas indígenas identificadas (Censo 2022 - Out/2025)
     etnias: 391,
@@ -312,8 +317,9 @@ export const povosTradicionais = {
     // Mais da metade vive na Amazônia Legal
     populacaoAmazoniaLegal: 867910, // ~51,2%
     populacaoUrbana: 863590, // Mais da metade vive nas cidades (Dez/2024)
-    terrasHomologadas2018_2022: 2,
-    terrasHomologadas2023_2025: 11,
+    // Corrigido conforme auditoria FUNAI: 2018: 1 homologação; 2023-2025: 20 homologações
+    terrasHomologadas2018_2022: 1,
+    terrasHomologadas2023_2025: 20,
     mortalidadeInfantil: 42.8,
     acessoSaude: 68.5,
     educacaoBilingue: 32.5,
@@ -333,13 +339,19 @@ export const povosTradicionais = {
     domiciliosQuilombolas: 473970,
     emTerritoriosReconhecidos: 167202,
     percentualEmTerritorios: 12.6,
-    comunidadesCertificadas: 3524,
-    comunidadesTituladas: 178,
+    // Corrigido conforme auditoria: Palmares Abr/2025 = 3.158 certidões; INCRA Nov/2025 = 245 territórios / 384 títulos
+    comunidadesCertificadas: 3158,
+    territoriosTitulados: 245,
+    titulosExpedidos: 384,
+    comunidadesAbrangidas: 395,
     // Região Nordeste concentra maior população quilombola
     regiaoNordeste: 868496, // 65,4% do total
-    acessoAgua: 45.2,
-    acessoSaneamento: 28.5,
-    bolsaFamilia: 78.5,
+    // Corrigido conforme auditoria: dados do Censo 2022 (infraestrutura quilombola)
+    acessoRedeAgua: 33.6, // Rede geral de água (vs 82,9% média nacional)
+    esgotamentoAdequado: 25.1, // vs 62,5% média nacional
+    coletaLixo: 50.4, // vs 82,5% média nacional
+    processosAbertosIncra: 2014, // INCRA Nov/2025
+    areaHectaresTitulados: 1162002, // 1,16 mi ha
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9578',
     urlFonte: 'https://sidra.ibge.gov.br/Tabela/9578',
     dataReferencia: '22/12/2023'
@@ -513,9 +525,9 @@ export const resumoExecutivo = {
     preta: 20665498,
     negra: 112748784, // parda + preta
     percentualNegro: 55.51,
-    indigena: 1693535,
+    indigena: 1694836, // Tabela 9718 - Pessoas indígenas
     amarela: 850136,
-    quilombola: 1327802
+    quilombola: 1330186 // Tabela 9578
   },
   desigualdadeRenda: {
     rendaNegra2023: 2199,

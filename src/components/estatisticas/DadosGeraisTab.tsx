@@ -141,7 +141,7 @@ export function DadosGeraisTab() {
               Evolução da Autodeclaração Racial (2018-2024)
             </CardTitle>
             <CardDescription>
-              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual (2018-2024)
+              % da população branca vs negra (pretos + pardos) | PNAD Contínua Trimestral - SIDRA Tabela 6403
             </CardDescription>
           </CardHeader>
           <CardContent>

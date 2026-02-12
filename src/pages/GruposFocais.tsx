@@ -120,15 +120,18 @@ const gruposFocaisData = {
 // Dados territoriais INCRA/FUNAI - AUDITADOS E CORRIGIDOS - COM SÉRIE HISTÓRICA
 const dadosTerritoriais = {
   quilombolas: {
-    territoriosTitulados: 185,
-    territoriosEmProcesso: 1796,
-    comunidadesCertificadasFCP: 3596,
+    // Corrigido conforme auditoria: INCRA Nov/2025 e Palmares Abr/2025
+    territoriosTitulados: 245,
+    titulosExpedidos: 384,
+    comunidadesAbrangidas: 395,
+    territoriosEmProcesso: 2014,
+    comunidadesCertificadasFCP: 3158,
     familiasAtendidas: 155000,
-    areaTotal: 1100000,
-    fonte: 'INCRA - Painel Quilombola / Fundação Palmares',
-    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
-    linkFCP: 'https://www.gov.br/palmares/pt-br/servicos/certidoes-expedidas-as-comunidades-remanescentes-de-quilombos-crqs',
-    ultimaAtualizacao: '2025-01-15',
+    areaTotal: 1162002, // hectares titulados
+    fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Dados Abertos',
+    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    linkFCP: 'https://www.gov.br/palmares/pt-br/acesso-a-informacao/dados-abertos',
+    ultimaAtualizacao: '2025-11-01',
     notaFonte: 'INCRA: dados de titulação. FCP: certidões de autodefinição.',
     serieHistorica: [
       { ano: 2018, titulados: 155, certificacoesFCP: 3010, processosAbertos: 1690, areaHa: 980000 },
@@ -138,7 +141,7 @@ const dadosTerritoriais = {
       { ano: 2022, titulados: 167, certificacoesFCP: 3400, processosAbertos: 1760, areaHa: 1030000 },
       { ano: 2023, titulados: 174, certificacoesFCP: 3480, processosAbertos: 1780, areaHa: 1060000 },
       { ano: 2024, titulados: 180, certificacoesFCP: 3550, processosAbertos: 1790, areaHa: 1080000 },
-      { ano: 2025, titulados: 185, certificacoesFCP: 3596, processosAbertos: 1796, areaHa: 1100000 },
+      { ano: 2025, titulados: 245, certificacoesFCP: 3158, processosAbertos: 2014, areaHa: 1162002 },
     ],
   },
   indigenas: {
@@ -169,7 +172,8 @@ const dadosTerritoriais = {
 // Indicadores de vulnerabilidade (Fórum de Segurança Pública, DataSUS)
 const indicadoresVulnerabilidade = {
   homicidiosJuventude: {
-    nome: 'Taxa de Homicídios - Juventude Negra (15-29)',
+    // Corrigido conforme auditoria: fonte usa faixa 12-29 anos, não 15-29
+    nome: 'Taxa de Homicídios - Juventude Negra (12-29)',
     valorNegros: 74.4,
     valorBrancos: 25.9,
     razaoDesigualdade: 2.9,
@@ -255,7 +259,7 @@ export default function GruposFocais() {
             <p className="font-medium text-info">Nota Metodológica</p>
             <p className="text-muted-foreground">
               Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
-              Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.652.876).
+              Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.227.642).
             </p>
           </div>
         </CardContent>
