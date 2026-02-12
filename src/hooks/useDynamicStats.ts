@@ -100,30 +100,39 @@ function calcularProgressoMeta2(lacunas: any[]): number {
   return Math.round(coberturaEixos * 0.3 + statusScore * 0.7);
 }
 
-// Calcular progresso da Meta 3: Monitoramento
-// Mede: cobertura de indicadores por eixo + cobertura orçamentária por eixo
+// Calcular progresso da Meta 3: Monitoramento (escopo aberto)
+// O monitoramento é contínuo — novas fontes, indicadores e séries orçamentárias
+// podem ser incorporados até o encerramento. O progresso usa escala assintótica
+// (máx ~90%) para refletir que 100% só será definido no fechamento do projeto.
 function calcularProgressoMeta3(indicadores: any[], orcamento: any): number {
   // Cobertura de eixos com indicadores (peso 25%)
   const eixosComIndicadores = new Set(indicadores.map((i: any) => i.categoria)).size;
   const coberturaIndicadores = (eixosComIndicadores / TOTAL_EIXOS) * 100;
   
-  // Densidade de indicadores: ideal = 3+ por eixo (peso 25%)
-  const densidadeIndicadores = Math.min((indicadores.length / (TOTAL_EIXOS * 3)) * 100, 100);
+  // Densidade de indicadores — escala assintótica: 90 * (1 - e^(-n/30))
+  // Com 10 indicadores ≈ 25%, 30 ≈ 57%, 60 ≈ 77%, 90 ≈ 86%
+  const densidadeIndicadores = indicadores.length > 0
+    ? 90 * (1 - Math.exp(-indicadores.length / 30))
+    : 0;
   
-  // Cobertura orçamentária (peso 30%)
-  const temOrcamento = (orcamento?.totalRegistros || 0) > 0;
-  const coberturaOrcamento = temOrcamento ? Math.min((orcamento.totalRegistros / 50) * 100, 100) : 0;
+  // Cobertura orçamentária — escala assintótica: 90 * (1 - e^(-n/50))
+  // Com 20 registros ≈ 30%, 50 ≈ 57%, 100 ≈ 77%, 150 ≈ 86%
+  const totalOrc = orcamento?.totalRegistros || 0;
+  const coberturaOrcamento = totalOrc > 0
+    ? 90 * (1 - Math.exp(-totalOrc / 50))
+    : 0;
   
   // Série histórica (peso 20%)
   const anosUnicos = orcamento?.porAno ? Object.keys(orcamento.porAno).length : 0;
   const coberturaTemporal = Math.min((anosUnicos / 8) * 100, 100);
   
-  return Math.round(
-    (coberturaIndicadores * 0.25) + 
+  // Teto máximo de 90% — os 10% finais só serão alcançados no fechamento do projeto
+  const raw = (coberturaIndicadores * 0.25) + 
     (densidadeIndicadores * 0.25) + 
     (coberturaOrcamento * 0.3) + 
-    (coberturaTemporal * 0.2)
-  );
+    (coberturaTemporal * 0.2);
+  
+  return Math.round(Math.min(raw, 90));
 }
 
 // Calcular progresso da Meta 4: Consolidação (escopo aberto)
