@@ -169,8 +169,8 @@ export function NormativaUpload() {
     }
   };
 
-  const handleReviewComplete = async (acceptedChanges: ImpactChange[]) => {
-    // Save document record
+  const handleReviewComplete = async (acceptedChanges: ImpactChange[], snapshotId?: string | null) => {
+    // Save document record with snapshot reference
     const metas = [...new Set(acceptedChanges.flatMap(c => c.metas_impactadas))];
     const secoes = [...new Set(acceptedChanges.flatMap(c => c.secoes_impactadas))];
     const recs = [...new Set(acceptedChanges.flatMap(c => c.recomendacoes_impactadas))];
@@ -190,6 +190,7 @@ export function NormativaUpload() {
       status: 'processado',
       total_itens_extraidos: acceptedChanges.length,
       resumo_impacto: resumo,
+      snapshot_id: snapshotId || null,
     });
 
     setImportComplete(true);

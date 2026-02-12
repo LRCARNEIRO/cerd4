@@ -29,7 +29,7 @@ export interface ImpactChange {
 interface Props {
   changes: ImpactChange[];
   fileName: string;
-  onComplete: (accepted: ImpactChange[]) => void;
+  onComplete: (accepted: ImpactChange[], snapshotId?: string | null) => void;
   onCancel: () => void;
 }
 
@@ -74,10 +74,10 @@ export function NormativaImpactReview({ changes: initialChanges, fileName, onCom
       if (error) throw error;
       if (data?.success) {
         toast.success(`${accepted.length} alterações aplicadas com backup automático!`, {
-          description: 'Use o botão "Restaurar Versão" para desfazer.',
+          description: 'Use o botão "Excluir" ou "Restaurar Versão" para desfazer.',
         });
         queryClient.invalidateQueries();
-        onComplete(accepted);
+        onComplete(accepted, data.snapshot_id);
       } else {
         throw new Error(data?.error || 'Erro ao confirmar');
       }

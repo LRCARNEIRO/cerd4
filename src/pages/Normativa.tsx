@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -8,15 +8,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   Upload, FileText, Scale, Building2, FileCheck, AlertCircle,
-  CheckCircle2, Clock, Download, Search, FolderOpen, RotateCcw, Globe,
+  CheckCircle2, Clock, Search, FolderOpen, RotateCcw, Globe, Trash2, Loader2,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 const categoriasNormativas = [
   { id: 'legislacao', titulo: 'Legislação Antidiscriminatória', descricao: 'Leis, decretos e normas', icon: Scale, meta: 'Meta 1', cor: 'bg-blue-500' },
@@ -29,6 +30,9 @@ export default function Normativa() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
   const [showRestore, setShowRestore] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   // Fetch documents from DB
   const { data: documentos = [] } = useQuery({
@@ -53,11 +57,59 @@ export default function Normativa() {
   // Impacted metas summary
   const allMetas = [...new Set(documentos.flatMap(d => d.metas_impactadas || []))];
 
+  const handleDeleteDoc = async (doc: any) => {
+    setIsDeleting(true);
+    try {
+      // If document has a snapshot, restore it to undo all changes
+      if (doc.snapshot_id) {
+        const { data, error } = await supabase.functions.invoke('restore-snapshot', {
+          body: { snapshot_id: doc.snapshot_id },
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Erro ao restaurar snapshot');
+      }
+
+      // Delete the document record
+      const { error: delError } = await supabase
+        .from('documentos_normativos')
+        .delete()
+        .eq('id', doc.id);
+      if (delError) throw delError;
+
+      toast.success('Documento excluído e alterações desfeitas!', {
+        description: doc.snapshot_id
+          ? 'O banco de dados foi restaurado ao estado anterior.'
+          : 'Registro removido (sem snapshot vinculado).',
+      });
+      queryClient.invalidateQueries();
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Erro ao excluir documento', {
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+      });
+    } finally {
+      setIsDeleting(false);
+      setConfirmDelete(null);
+    }
+  };
+
   return (
     <DashboardLayout
       title="Base Normativa/Institucional"
       subtitle="Gestão de dados jurídicos e institucionais para Meta 1 e Meta 2 do CERD IV"
     >
+      {/* GoBack button - top right prominent */}
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="destructive"
+          size="lg"
+          className="gap-2 shadow-lg"
+          onClick={() => setShowRestore(true)}
+        >
+          <RotateCcw className="w-5 h-5" />
+          GoBack / Restaurar Versão
+        </Button>
+      </div>
       {/* Alert */}
       <Card className="mb-6 border-l-4 border-l-amber-500">
         <CardContent className="pt-6">
@@ -94,13 +146,7 @@ export default function Normativa() {
             <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="font-medium text-foreground mb-2">Arraste arquivos ou clique para fazer upload</h3>
             <p className="text-sm text-muted-foreground mb-4">PDF, DOCX, XLSX, CSV ou TXT — URLs também aceitas</p>
-            <div className="flex justify-center gap-3">
-              <NormativaUpload />
-              <Button variant="outline" size="lg" className="gap-2" onClick={() => setShowRestore(true)}>
-                <RotateCcw className="w-5 h-5" />
-                Restaurar Versão
-              </Button>
-            </div>
+            <NormativaUpload />
           </div>
         </CardContent>
       </Card>
@@ -216,9 +262,19 @@ export default function Normativa() {
                       )}
                     </div>
                   </div>
-                  <Badge variant={doc.status === 'processado' ? 'default' : 'secondary'} className={doc.status === 'processado' ? 'bg-green-500' : ''}>
-                    {doc.status === 'processado' ? 'Processado' : 'Pendente'}
-                  </Badge>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge variant={doc.status === 'processado' ? 'default' : 'secondary'} className={doc.status === 'processado' ? 'bg-green-500' : ''}>
+                      {doc.status === 'processado' ? 'Processado' : 'Pendente'}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => { e.stopPropagation(); setConfirmDelete(doc); }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
           </div>
@@ -283,6 +339,58 @@ export default function Normativa() {
             Selecione um snapshot para desfazer todas as alterações feitas após ele. Os dados serão restaurados ao estado anterior.
           </p>
           <SnapshotManager />
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!confirmDelete} onOpenChange={() => setConfirmDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              Excluir Documento e Desfazer Alterações
+            </DialogTitle>
+            <DialogDescription>
+              Ao excluir este documento, todas as alterações que ele causou no banco de dados (metas, conclusões, indicadores, lacunas) serão desfeitas automaticamente.
+            </DialogDescription>
+          </DialogHeader>
+          {confirmDelete && (
+            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+              <p className="text-sm font-medium">{confirmDelete.titulo}</p>
+              <p className="text-xs text-muted-foreground">
+                {confirmDelete.total_itens_extraidos} itens serão removidos
+              </p>
+              {confirmDelete.metas_impactadas?.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {confirmDelete.metas_impactadas.map((m: string) => (
+                    <Badge key={m} variant="secondary" className="text-xs">{m}</Badge>
+                  ))}
+                </div>
+              )}
+              {!confirmDelete.snapshot_id && (
+                <p className="text-xs text-amber-600 mt-2">
+                  ⚠️ Este documento não tem snapshot vinculado. Apenas o registro será removido, sem restauração automática de dados.
+                </p>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)} disabled={isDeleting}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => confirmDelete && handleDeleteDoc(confirmDelete)}
+              disabled={isDeleting}
+              className="gap-2"
+            >
+              {isDeleting ? (
+                <><Loader2 className="w-4 h-4 animate-spin" />Excluindo...</>
+              ) : (
+                <><Trash2 className="w-4 h-4" />Excluir e Desfazer</>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </DashboardLayout>
