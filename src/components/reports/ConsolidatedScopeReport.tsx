@@ -7,6 +7,7 @@ import { useIndicadoresInterseccionais, useLacunasIdentificadas, useDadosOrcamen
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
+import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
   dadosDemograficos,
@@ -651,7 +652,7 @@ function generateConsolidatedHTML(data: {
       Relatório Consolidado do Escopo do Projeto + Conclusões Analíticas — Sistema CERD IV Brasil<br>
       CDG/UFF — Gerado automaticamente em ${now}
     </p>
-  </div>
+  ${getExportToolbarHTML('Relatorio-Consolidado-Escopo-CERD-IV')}
 </body>
 </html>`;
 }
