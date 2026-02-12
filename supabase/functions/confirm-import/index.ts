@@ -35,8 +35,9 @@ serve(async (req) => {
       totalRegistros += (existing || []).length;
     }
 
+    let snapshotId: string | null = null;
     if (tabelasAfetadas.length > 0) {
-      await supabase.from('data_snapshots').insert({
+      const { data: snapResult } = await supabase.from('data_snapshots').insert({
         nome: `Backup antes de importar: ${file_name || 'dados confirmados'}`,
         descricao: `Snapshot automático - ${items.length} itens confirmados pelo usuário`,
         arquivo_origem: file_name || null,
@@ -44,7 +45,8 @@ serve(async (req) => {
         snapshot_data: snapshotData,
         tabelas_afetadas: tabelasAfetadas,
         total_registros: totalRegistros,
-      });
+      }).select('id').single();
+      snapshotId = snapResult?.id || null;
     }
 
     const results = {
@@ -76,6 +78,7 @@ serve(async (req) => {
       success: true,
       message: `${items.length} itens inseridos com sucesso!`,
       results,
+      snapshot_id: snapshotId,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
