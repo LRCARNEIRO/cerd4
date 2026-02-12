@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,10 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { url } = await req.json();
     if (!url || typeof url !== 'string') {
@@ -24,7 +20,6 @@ serve(async (req) => {
       });
     }
 
-    // Validate URL
     let parsedUrl: URL;
     try {
       parsedUrl = new URL(url);
@@ -39,7 +34,6 @@ serve(async (req) => {
 
     console.log(`Fetching URL: ${url}`);
 
-    // Fetch the page content
     const pageResponse = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; CERDBot/1.0)',
@@ -53,10 +47,7 @@ serve(async (req) => {
       });
     }
 
-    const contentType = pageResponse.headers.get('content-type') || '';
     const pageContent = await pageResponse.text();
-
-    // Strip HTML tags for cleaner processing
     const cleanContent = pageContent
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -67,7 +58,6 @@ serve(async (req) => {
 
     console.log(`Page fetched, ${cleanContent.length} chars`);
 
-    // Use AI to extract structured data
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -137,61 +127,41 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
       };
     }
 
-    // Count extracted items
-    const totalItems = (extractedData.indicadores?.length || 0) +
-      (extractedData.orcamento?.length || 0) +
-      (extractedData.lacunas?.length || 0) +
-      (extractedData.conclusoes?.length || 0);
+    // Build proposedChanges array (same format as file upload)
+    const validEixos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const proposedChanges: any[] = [];
+    let idx = 0;
 
-    // Auto-insert if items found (with snapshot)
-    if (totalItems > 0) {
-      // Snapshot
-      const tabelasAfetadas: string[] = [];
-      const snapshotData: Record<string, any[]> = {};
-      let totalRegistros = 0;
-
-      const tables = ['indicadores_interseccionais', 'dados_orcamentarios', 'lacunas_identificadas', 'conclusoes_analiticas'];
-      for (const t of tables) {
-        const { data: existing } = await supabase.from(t).select('*');
-        if (existing && existing.length > 0) {
-          snapshotData[t] = existing;
-          totalRegistros += existing.length;
-          tabelasAfetadas.push(t);
-        }
-      }
-
-      if (tabelasAfetadas.length > 0) {
-        await supabase.from('data_snapshots').insert({
-          nome: `Backup antes de importar URL: ${parsedUrl.hostname}`,
-          descricao: `Import de ${url}`,
-          arquivo_origem: url,
-          usuario_id: 'user',
-          snapshot_data: snapshotData,
-          tabelas_afetadas: tabelasAfetadas,
-          total_registros: totalRegistros,
-        });
-      }
-
-      // Insert conclusoes at minimum (most common from URLs)
-      const validEixos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
-      let inserted = 0;
-
-      for (const conc of (extractedData.conclusoes || []).slice(0, 20)) {
-        if (!conc.titulo || !conc.argumento_central) continue;
-        const { error } = await supabase.from('conclusoes_analiticas').insert({
+    for (const conc of (extractedData.conclusoes || []).slice(0, 20)) {
+      if (!conc.titulo || !conc.argumento_central) continue;
+      proposedChanges.push({
+        id: `url-conc-${idx++}`,
+        tabela: 'conclusoes_analiticas',
+        tipo: 'conclusao',
+        titulo: String(conc.titulo).substring(0, 255),
+        descricao: String(conc.argumento_central).substring(0, 300),
+        impacto: extractedData.secoes_impactadas || [],
+        dados: {
           titulo: String(conc.titulo).substring(0, 255),
           tipo: String(conc.tipo || 'legislacao').substring(0, 100),
           periodo: String(conc.periodo || '2018-2026').substring(0, 50),
           argumento_central: String(conc.argumento_central).substring(0, 5000),
           evidencias: Array.isArray(conc.evidencias) ? conc.evidencias.slice(0, 10) : null,
-        });
-        if (!error) inserted++;
-      }
+        },
+      });
+    }
 
-      for (const lac of (extractedData.lacunas || []).slice(0, 20)) {
-        if (!lac.tema || !lac.descricao_lacuna) continue;
-        const eixo = validEixos.includes(lac.eixo_tematico) ? lac.eixo_tematico : 'legislacao_justica';
-        const { error } = await supabase.from('lacunas_identificadas').insert({
+    for (const lac of (extractedData.lacunas || []).slice(0, 20)) {
+      if (!lac.tema || !lac.descricao_lacuna) continue;
+      const eixo = validEixos.includes(lac.eixo_tematico) ? lac.eixo_tematico : 'legislacao_justica';
+      proposedChanges.push({
+        id: `url-lac-${idx++}`,
+        tabela: 'lacunas_identificadas',
+        tipo: 'lacuna',
+        titulo: String(lac.tema).substring(0, 255),
+        descricao: String(lac.descricao_lacuna).substring(0, 300),
+        impacto: extractedData.secoes_impactadas || [],
+        dados: {
           paragrafo: String(lac.paragrafo || 'URL').substring(0, 50),
           tema: String(lac.tema).substring(0, 255),
           descricao_lacuna: String(lac.descricao_lacuna).substring(0, 2000),
@@ -201,17 +171,58 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
           status_cumprimento: 'em_andamento',
           prioridade: 'media',
           fontes_dados: [url],
-        });
-        if (!error) inserted++;
-      }
+        },
+      });
+    }
 
-      extractedData.inserted = inserted;
+    for (const ind of (extractedData.indicadores || []).slice(0, 20)) {
+      if (!ind.nome || !ind.categoria) continue;
+      proposedChanges.push({
+        id: `url-ind-${idx++}`,
+        tabela: 'indicadores_interseccionais',
+        tipo: 'indicador',
+        titulo: String(ind.nome).substring(0, 255),
+        descricao: `Fonte: ${ind.fonte || url}`,
+        impacto: extractedData.secoes_impactadas || [],
+        dados: {
+          nome: String(ind.nome).substring(0, 255),
+          categoria: String(ind.categoria).substring(0, 100),
+          fonte: String(ind.fonte || parsedUrl.hostname).substring(0, 255),
+          url_fonte: url,
+          dados: ind.dados || {},
+          tendencia: ind.tendencia || null,
+        },
+      });
+    }
+
+    for (const orc of (extractedData.orcamento || []).slice(0, 20)) {
+      if (!orc.programa || !orc.orgao) continue;
+      proposedChanges.push({
+        id: `url-orc-${idx++}`,
+        tabela: 'dados_orcamentarios',
+        tipo: 'orcamento',
+        titulo: String(orc.programa).substring(0, 255),
+        descricao: `${orc.orgao} — ${orc.esfera || 'federal'}`,
+        impacto: extractedData.secoes_impactadas || [],
+        dados: {
+          programa: String(orc.programa).substring(0, 255),
+          orgao: String(orc.orgao).substring(0, 255),
+          esfera: String(orc.esfera || 'federal').substring(0, 50),
+          ano: orc.ano || new Date().getFullYear(),
+          fonte_dados: String(orc.fonte_dados || parsedUrl.hostname).substring(0, 255),
+          url_fonte: url,
+        },
+      });
     }
 
     return new Response(JSON.stringify({
       success: true,
-      ...extractedData,
-      total_items: totalItems,
+      titulo_pagina: extractedData.titulo_pagina,
+      resumo: extractedData.resumo,
+      relevancia_cerd: extractedData.relevancia_cerd,
+      secoes_impactadas: extractedData.secoes_impactadas,
+      proposedChanges,
+      total_items: proposedChanges.length,
       url,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

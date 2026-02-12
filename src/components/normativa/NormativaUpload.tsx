@@ -152,12 +152,7 @@ export function NormativaUpload() {
 
       if (data?.proposedChanges?.length > 0) {
         setProposedChanges(enrichWithImpact(data.proposedChanges));
-        toast.info(`${data.proposedChanges.length} alterações identificadas`);
-      } else if (data?.success && data?.total_items > 0) {
-        // URL import may directly insert (older flow)
-        setImportComplete(true);
-        setImportResult(`${data.total_items} dados extraídos de ${data.titulo_pagina || 'URL'}`);
-        queryClient.invalidateQueries();
+        toast.info(`${data.proposedChanges.length} alterações identificadas para revisão`);
       } else {
         toast.warning('Nenhum dado estruturado encontrado na URL');
       }
