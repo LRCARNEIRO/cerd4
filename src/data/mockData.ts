@@ -259,7 +259,7 @@ export const dataSources: DataSource[] = [
     urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-caracteristicas-da-populacao-e-dos-domicilios',
     tipoAcesso: 'sidra',
     descricao: 'Dados agregados do Universo do Censo 2022 (não microdados)',
-    indicadoresDisponiveis: ['População por cor/raça (Tab. 9605)', 'Pessoas Indígenas (Tab. 9674)', 'Quilombolas (Tab. 9605)'],
+    indicadoresDisponiveis: ['População por cor/raça (Tab. 9605)', 'Pessoas Indígenas (Tab. 9674)', 'Quilombolas (Tab. 9578)'],
     desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Município'],
     periodicidade: 'Decenal',
     ultimaAtualizacao: '2023-12-01'

@@ -14,8 +14,8 @@ const gruposFocaisData = {
     nome: 'Quilombolas',
     populacao: 1330186,
     fonte: 'IBGE - Censo Demográfico 2022',
-    tabela: 'Tabela 9605 - SIDRA',
-    link: 'https://sidra.ibge.gov.br/tabela/9605',
+    tabela: 'Tabela 9578 - SIDRA (Pessoas residentes em territórios quilombolas)',
+    link: 'https://sidra.ibge.gov.br/tabela/9578',
     ultimaAtualizacao: '2023-10-27',
     serieTemporal: [
       { ano: 2022, valor: 1330186, fonte: 'Censo 2022' },
