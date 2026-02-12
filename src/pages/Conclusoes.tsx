@@ -2,13 +2,14 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign, HeartPulse } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign, HeartPulse, Printer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
+import { generateSectionPDF, cardHTML, evidenceListHTML, tagsHTML, sectionTitleHTML, statCardHTML } from '@/utils/generateSectionPDF';
 import {
   ViolenciaRacialChart, FeminicidioChart, EducacaoComparativaChart,
   SaudeComparativaChart, RendaComparativaChart, DesigualdadeEvolucaoChart,
@@ -42,6 +43,91 @@ export default function Conclusoes() {
   } = useAnalyticalInsights();
 
   const handleRefresh = () => { queryClient.invalidateQueries(); };
+
+  const now = new Date().toLocaleString('pt-BR');
+
+  // PDF generators per section
+  const gerarPDFFios = () => {
+    const content = fiosCondutores.map(fio => {
+      const badgeType = fio.tipo === 'avanco' ? 'success' : fio.tipo === 'retrocesso' || fio.tipo === 'lacuna_critica' ? 'destructive' : 'info';
+      const evidencias = fio.evidencias.map(ev => `<strong>${ev.texto}</strong> (${ev.fonte})`);
+      const comparativo = fio.comparativo2018 ? `<div class="comparativo"><strong>📊 Comparativo 2018→2024:</strong> ${fio.comparativo2018}</div>` : '';
+      const eixos = fio.eixos.map(e => eixoLabels[e] || e);
+      return cardHTML(fio.titulo, fio.argumento, { text: fio.tipo.replace(/_/g, ' '), type: badgeType },
+        comparativo + evidenceListHTML(evidencias) + tagsHTML(eixos)
+      );
+    }).join('');
+    generateSectionPDF({ titulo: 'Fios Condutores', subtitulo: `${fiosCondutores.length} argumentos transversais — Base Estatística × Orçamentária × Normativa`, dataGeracao: now, conteudo: content });
+  };
+
+  const gerarPDFCruzamentos = () => {
+    const content = insightsCruzamento.map(ins => {
+      const badgeType = ins.tipo === 'alerta' ? 'destructive' : ins.tipo === 'progresso' ? 'success' : ins.tipo === 'contradição' ? 'warning' : 'info';
+      return cardHTML(ins.titulo, ins.descricao, { text: ins.tipo, type: badgeType }, evidenceListHTML(ins.dados));
+    }).join('');
+    generateSectionPDF({ titulo: 'Cruzamentos Analíticos', subtitulo: `${insightsCruzamento.length} insights identificados`, dataGeracao: now, conteudo: content });
+  };
+
+  const gerarPDFConclusoes = (tipo: 'lacuna_persistente' | 'avanco' | 'retrocesso', label: string) => {
+    const items = conclusoesDinamicas.filter(c => c.tipo === tipo);
+    const content = items.map(c => {
+      const badgeType = c.tipo === 'avanco' ? 'success' : c.tipo === 'retrocesso' ? 'destructive' : 'warning';
+      const eixos = c.eixos.map(e => eixoLabels[e] || e);
+      const extras = evidenceListHTML(c.evidencias) + tagsHTML([...eixos, ...(c.relevancia_cerd_iv ? ['CERD IV'] : [])]);
+      return cardHTML(c.titulo, c.argumento_central, { text: c.periodo, type: badgeType }, extras);
+    }).join('');
+    generateSectionPDF({ titulo: label, subtitulo: `${items.length} item(ns) identificado(s)`, dataGeracao: now, conteudo: content });
+  };
+
+  const gerarPDFSintese = () => {
+    const seg2018L = segurancaPublica[0];
+    const seg2024L = segurancaPublica[segurancaPublica.length - 1];
+    const edu2018L = educacaoSerieHistorica[0];
+    const edu2024L = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+    const eco2018L = indicadoresSocioeconomicos[0];
+    const eco2024L = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+    const fem2018L = feminicidioSerie[0];
+    const fem2024L = feminicidioSerie[feminicidioSerie.length - 1];
+    
+    let content = sectionTitleHTML('Indicadores-Chave 2018 → 2024');
+    content += '<div class="grid-2">';
+    content += statCardHTML('Homicídio negro', `${seg2024L.percentualVitimasNegras}%`, `2018: ${seg2018L.percentualVitimasNegras}%`, 'negative');
+    content += statCardHTML('Feminicídio negro', `${fem2024L.percentualNegras}%`, `2018: ${fem2018L.percentualNegras}%`, 'negative');
+    content += statCardHTML('Superior negro', `${edu2024L.superiorNegroPercent}%`, `2018: ${edu2018L.superiorNegroPercent}%`, 'positive');
+    content += statCardHTML('Renda negra', `R$ ${eco2024L.rendaMediaNegra}`, `2018: R$ ${eco2018L.rendaMediaNegra}`, 'positive');
+    content += '</div>';
+
+    content += sectionTitleHTML('Tabela Síntese Comparativa');
+    content += `<table>
+      <thead><tr><th>Indicador</th><th>2018</th><th>2024</th><th>Variação</th></tr></thead>
+      <tbody>
+        <tr><td>Vítimas negras homicídio (%)</td><td>${seg2018L.percentualVitimasNegras}%</td><td>${seg2024L.percentualVitimasNegras}%</td><td class="stat-change negative">+${(seg2024L.percentualVitimasNegras - seg2018L.percentualVitimasNegras).toFixed(1)}pp</td></tr>
+        <tr><td>Letalidade policial negra (%)</td><td>${seg2018L.letalidadePolicial}%</td><td>${seg2024L.letalidadePolicial}%</td><td class="stat-change negative">+${(seg2024L.letalidadePolicial - seg2018L.letalidadePolicial).toFixed(1)}pp</td></tr>
+        <tr><td>Feminicídio negro (%)</td><td>${fem2018L.percentualNegras}%</td><td>${fem2024L.percentualNegras}%</td><td class="stat-change negative">+${(fem2024L.percentualNegras - fem2018L.percentualNegras).toFixed(1)}pp</td></tr>
+        <tr><td>Superior completo negro (%)</td><td>${edu2018L.superiorNegroPercent}%</td><td>${edu2024L.superiorNegroPercent}%</td><td class="stat-change positive">+${(edu2024L.superiorNegroPercent - edu2018L.superiorNegroPercent).toFixed(1)}pp</td></tr>
+        <tr><td>Renda média negra (R$)</td><td>R$ ${eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaNegra}</td><td class="stat-change positive">+${((eco2024L.rendaMediaNegra / eco2018L.rendaMediaNegra - 1) * 100).toFixed(0)}%</td></tr>
+        <tr><td>Gap renda branca-negra (R$)</td><td>R$ ${eco2018L.rendaMediaBranca - eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaBranca - eco2024L.rendaMediaNegra}</td><td class="stat-change negative">Ampliou</td></tr>
+      </tbody>
+    </table>`;
+
+    generateSectionPDF({ titulo: 'Tabela Síntese Comparativa', subtitulo: 'Indicadores 2018 → 2024 — Fontes: FBSP, PNAD, DataSUS, SIDRA/IBGE', dataGeracao: now, conteudo: content });
+  };
+
+  const gerarPDFSinteseExecutiva = () => {
+    if (!sinteseExecutiva) return;
+    let content = cardHTML('Síntese Executiva', sinteseExecutiva.narrativa, { text: 'Consolidação', type: 'info' });
+
+    if (sinteseExecutiva.eixosMaisProblematicos.length > 0) {
+      content += sectionTitleHTML('Eixos Mais Críticos');
+      content += `<table><thead><tr><th>Eixo</th><th>Total Lacunas</th><th>% Não Cumprido</th></tr></thead><tbody>`;
+      sinteseExecutiva.eixosMaisProblematicos.forEach(e => {
+        content += `<tr><td>${e.eixo}</td><td>${e.total}</td><td class="stat-change negative">${Math.round(e.gravidade * 100)}%</td></tr>`;
+      });
+      content += '</tbody></table>';
+    }
+
+    generateSectionPDF({ titulo: 'Síntese Executiva', subtitulo: `${stats?.total || 0} lacunas ONU × ${respostas?.length || 0} respostas CERD III`, dataGeracao: now, conteudo: content });
+  };
 
   const conclusoesAgrupadas = {
     lacuna_persistente: conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente'),
@@ -139,10 +225,15 @@ export default function Conclusoes() {
           {/* SÍNTESE EXECUTIVA */}
           <Card className="mb-6 border-2 border-primary">
             <CardHeader className="bg-primary/5">
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="w-6 h-6 text-primary" />
-                Síntese Executiva: O que os dados revelam
-              </CardTitle>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <CardTitle className="flex items-center gap-2">
+                  <Lightbulb className="w-6 h-6 text-primary" />
+                  Síntese Executiva: O que os dados revelam
+                </CardTitle>
+                <Button variant="outline" size="sm" onClick={gerarPDFSinteseExecutiva} className="gap-1">
+                  <Printer className="w-3 h-3" /> PDF
+                </Button>
+              </div>
               <CardDescription>
                 Cruzamento de {stats?.total || 0} lacunas ONU + {respostas?.length || 0} respostas CERD III + dados FBSP/PNAD/DataSUS/SIOP 2018→2024
               </CardDescription>
@@ -242,13 +333,19 @@ export default function Conclusoes() {
 
             {/* ABA: TABELA SÍNTESE */}
             <TabsContent value="sintese">
+              <div className="flex justify-end mb-3">
+                <Button variant="outline" size="sm" onClick={gerarPDFSintese} className="gap-1">
+                  <Printer className="w-3 h-3" /> Gerar PDF
+                </Button>
+              </div>
               <TabelaSinteseComparativa />
             </TabsContent>
 
             {/* ABA: FIOS CONDUTORES */}
             <TabsContent value="fios">
               <div className="space-y-6">
-                <Card className="bg-primary/5 border-primary/20">
+                <div className="flex items-start justify-between gap-3">
+                  <Card className="bg-primary/5 border-primary/20 flex-1">
                   <CardContent className="pt-6">
                     <div className="flex items-start gap-3">
                       <Link2 className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
@@ -263,6 +360,10 @@ export default function Conclusoes() {
                     </div>
                   </CardContent>
                 </Card>
+                  <Button variant="outline" size="sm" onClick={gerarPDFFios} className="gap-1 flex-shrink-0">
+                    <Printer className="w-3 h-3" /> Gerar PDF
+                  </Button>
+                </div>
                 {fiosCondutores.map((fio) => (
                   <FioCondutorCard key={fio.id} fio={fio} />
                 ))}
@@ -272,14 +373,19 @@ export default function Conclusoes() {
             {/* ABA: CRUZAMENTOS */}
             <TabsContent value="cruzamentos">
               <div className="space-y-4">
-                <Card className="bg-muted/30">
-                  <CardContent className="pt-6">
-                    <p className="text-sm text-muted-foreground">
-                      Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III. 
-                      Identificam padrões, contradições e correlações na política racial brasileira.
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center justify-between">
+                  <Card className="bg-muted/30 flex-1">
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground">
+                        Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III. 
+                        Identificam padrões, contradições e correlações na política racial brasileira.
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Button variant="outline" size="sm" onClick={gerarPDFCruzamentos} className="gap-1 ml-3 flex-shrink-0">
+                    <Printer className="w-3 h-3" /> Gerar PDF
+                  </Button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {insightsCruzamento.map((insight) => (
                     <InsightCard key={insight.id} insight={insight} />
@@ -290,6 +396,11 @@ export default function Conclusoes() {
 
             {/* ABA: LACUNAS */}
             <TabsContent value="lacunas">
+              <div className="flex justify-end mb-3">
+                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('lacuna_persistente', 'Lacunas Persistentes')} className="gap-1">
+                  <Printer className="w-3 h-3" /> Gerar PDF
+                </Button>
+              </div>
               <div className="space-y-4">
                 {conclusoesAgrupadas.lacuna_persistente.length === 0 ? (
                   <EmptyState message="Nenhuma lacuna persistente identificada." />
@@ -303,6 +414,11 @@ export default function Conclusoes() {
 
             {/* ABA: AVANÇOS */}
             <TabsContent value="avancos">
+              <div className="flex justify-end mb-3">
+                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('avanco', 'Avanços Identificados')} className="gap-1">
+                  <Printer className="w-3 h-3" /> Gerar PDF
+                </Button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {conclusoesAgrupadas.avanco.length === 0 ? (
                   <EmptyState message="Nenhum avanço identificado." />
@@ -316,6 +432,11 @@ export default function Conclusoes() {
 
             {/* ABA: RETROCESSOS */}
             <TabsContent value="retrocessos">
+              <div className="flex justify-end mb-3">
+                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('retrocesso', 'Retrocessos Identificados')} className="gap-1">
+                  <Printer className="w-3 h-3" /> Gerar PDF
+                </Button>
+              </div>
               <div className="space-y-4">
                 {conclusoesAgrupadas.retrocesso.length === 0 ? (
                   <EmptyState message="Nenhum retrocesso identificado." />
