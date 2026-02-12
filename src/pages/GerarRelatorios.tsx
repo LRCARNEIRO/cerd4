@@ -10,6 +10,7 @@ import { ThematicReportGenerator } from '@/components/reports/ThematicReportGene
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
+import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
 import { useQueryClient } from '@tanstack/react-query';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
@@ -116,8 +117,11 @@ export default function GerarRelatorios() {
         </Card>
       </div>
 
-      <Tabs defaultValue="ia-generator" className="w-full">
+      <Tabs defaultValue="consolidado" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="consolidado" className="gap-1 bg-primary/10">
+            <FileText className="w-4 h-4" /> Consolidado (Escopo)
+          </TabsTrigger>
           <TabsTrigger value="ia-generator" className="gap-1">
             <Sparkles className="w-4 h-4" /> Relatórios com IA
           </TabsTrigger>
@@ -134,6 +138,11 @@ export default function GerarRelatorios() {
             <FileCheck className="w-4 h-4" /> Respostas CERD III ({respostasCerd?.length || 0})
           </TabsTrigger>
         </TabsList>
+
+        {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
+        <TabsContent value="consolidado">
+          <ConsolidatedScopeReport />
+        </TabsContent>
 
         {/* ABA: RELATÓRIOS COM IA */}
         <TabsContent value="ia-generator">
