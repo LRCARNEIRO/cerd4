@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Download, Database, DollarSign, Scale, BarChart3, Users, Shield, HeartPulse, BookOpen, Landmark, AlertTriangle } from 'lucide-react';
-import { useIndicadoresInterseccionais, useLacunasIdentificadas, useDadosOrcamentarios, useLacunasStats, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { Loader2, FileText, Download, Database, DollarSign, Scale, BarChart3, Users, Shield, HeartPulse, BookOpen, Landmark, AlertTriangle, Lightbulb } from 'lucide-react';
+import { useIndicadoresInterseccionais, useLacunasIdentificadas, useDadosOrcamentarios, useLacunasStats, useOrcamentoStats, useRespostasLacunasCerdIII } from '@/hooks/useLacunasData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
+import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
   dadosDemograficos,
   evolucaoComposicaoRacial,
@@ -22,6 +24,10 @@ import {
   lgbtqiaPorRaca,
   povosTradicionais,
   razaoRendaRacial,
+  violenciaInterseccional,
+  radarVulnerabilidades,
+  evolucaoDesigualdade,
+  classePorRaca,
 } from '@/components/estatisticas/StatisticsData';
 
 function generateConsolidatedHTML(data: {
@@ -31,9 +37,25 @@ function generateConsolidatedHTML(data: {
   orcStats: any;
   orcamentarios: any[];
   documentosNormativos: any[];
+  fiosCondutores: FioCondutor[];
+  conclusoesDinamicas: ConclusaoDinamica[];
+  insightsCruzamento: InsightCruzamento[];
+  sinteseExecutiva: any;
+  respostas: any[];
 }) {
-  const { indicadores, lacunas, lacunasStats, orcStats, orcamentarios, documentosNormativos } = data;
+  const { indicadores, lacunas, lacunasStats, orcStats, orcamentarios, documentosNormativos,
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas } = data;
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // Shorthand for comparisons
+  const seg2018 = segurancaPublica[0];
+  const seg2024 = segurancaPublica[segurancaPublica.length - 1];
+  const edu2018 = educacaoSerieHistorica[0];
+  const edu2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+  const eco2018 = indicadoresSocioeconomicos[0];
+  const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+  const fem2018 = feminicidioSerie[0];
+  const fem2024 = feminicidioSerie[feminicidioSerie.length - 1];
 
   const statusLabel = (s: string) => {
     const map: Record<string, string> = {
@@ -142,6 +164,19 @@ function generateConsolidatedHTML(data: {
       <li><a href="#norm">PARTE III — BASE NORMATIVA</a>
         <ol>
           <li><a href="#norm-docs">Documentos Normativos</a></li>
+        </ol>
+      </li>
+      <li><a href="#concl">PARTE IV — CONCLUSÕES ANALÍTICAS</a>
+        <ol>
+          <li><a href="#concl-sintese">Síntese Executiva</a></li>
+          <li><a href="#concl-infog">Infográficos Comparativos (2018→2024)</a></li>
+          <li><a href="#concl-tabsint">Tabela Síntese Comparativa</a></li>
+          <li><a href="#concl-fios">Fios Condutores</a></li>
+          <li><a href="#concl-cruz">Cruzamentos Analíticos</a></li>
+          <li><a href="#concl-vered">Conclusão-Síntese (Veredicto)</a></li>
+          <li><a href="#concl-lac">Lacunas Persistentes</a></li>
+          <li><a href="#concl-av">Avanços</a></li>
+          <li><a href="#concl-ret">Retrocessos</a></li>
         </ol>
       </li>
     </ol>
@@ -389,9 +424,231 @@ function generateConsolidatedHTML(data: {
   </table>
   ` : '<p>Nenhum documento normativo registrado no banco.</p>'}
 
+  <!-- ========================================== -->
+  <!-- PARTE IV — CONCLUSÕES ANALÍTICAS -->
+  <!-- ========================================== -->
+  <hr class="divider">
+  <h2 id="concl">PARTE IV — CONCLUSÕES ANALÍTICAS</h2>
+  <p class="source">Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × MUNIC/ESTADIC × COVID-19 (2018→2024)</p>
+
+  <!-- 4.1 SÍNTESE EXECUTIVA -->
+  <h3 id="concl-sintese">4.1 — Síntese Executiva</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="value">${dadosDemograficos.percentualNegro}%</div><div class="label">Pop. Negra</div></div>
+    <div class="kpi"><div class="value" style="color:red">${seg2024.percentualVitimasNegras}%</div><div class="label">Vítimas Negras Homicídio</div></div>
+    <div class="kpi"><div class="value" style="color:red">${fem2024.percentualNegras}%</div><div class="label">Feminicídio Negro</div></div>
+    <div class="kpi"><div class="value" style="color:green">${edu2024.superiorNegroPercent}%</div><div class="label">Superior Negro</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;">
+    <div style="padding:10px;background:#fee2e2;border:1px solid #fca5a5;border-radius:6px;">
+      <p style="font-size:10px;font-weight:600;color:#991b1b;margin-bottom:4px;">⚠️ PIORA RELATIVA (2018→2024)</p>
+      <ul style="font-size:9px;color:#7f1d1d;margin:0;padding-left:14px;">
+        <li>Homicídio: vítimas negras ${seg2018.percentualVitimasNegras}% → ${seg2024.percentualVitimasNegras}% (+${(seg2024.percentualVitimasNegras - seg2018.percentualVitimasNegras).toFixed(1)}pp)</li>
+        <li>Letalidade policial negra: ${seg2018.letalidadePolicial}% → ${seg2024.letalidadePolicial}% (+${(seg2024.letalidadePolicial - seg2018.letalidadePolicial).toFixed(1)}pp)</li>
+        <li>Feminicídio mulheres negras: ${fem2018.percentualNegras}% → ${fem2024.percentualNegras}% (+${(fem2024.percentualNegras - fem2018.percentualNegras).toFixed(1)}pp)</li>
+        <li>Risco homicídio negro: persistente em ${seg2024.razaoRisco}x maior</li>
+        <li>Gap absoluto renda: R$ ${eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ ${eco2024.rendaMediaBranca - eco2024.rendaMediaNegra} (ampliou)</li>
+      </ul>
+    </div>
+    <div style="padding:10px;background:#dcfce7;border:1px solid #86efac;border-radius:6px;">
+      <p style="font-size:10px;font-weight:600;color:#166534;margin-bottom:4px;">✓ AVANÇOS (2018→2024)</p>
+      <ul style="font-size:9px;color:#14532d;margin:0;padding-left:14px;">
+        <li>Superior completo negro: ${edu2018.superiorNegroPercent}% → ${edu2024.superiorNegroPercent}% (+${(edu2024.superiorNegroPercent - edu2018.superiorNegroPercent).toFixed(1)}pp)</li>
+        <li>Analfabetismo negro: ${edu2018.analfabetismoNegro}% → ${edu2024.analfabetismoNegro}% (${(edu2024.analfabetismoNegro - edu2018.analfabetismoNegro).toFixed(1)}pp)</li>
+        <li>Desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}% (${(eco2024.desempregoNegro - eco2018.desempregoNegro).toFixed(1)}pp)</li>
+        <li>Renda média negra: R$ ${eco2018.rendaMediaNegra} → R$ ${eco2024.rendaMediaNegra} (+${((eco2024.rendaMediaNegra / eco2018.rendaMediaNegra - 1) * 100).toFixed(0)}%)</li>
+        <li>Censo 2022: primeira contagem de quilombolas (${povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')})</li>
+        <li>Recriação do MIR e Lei 14.532/2023 (racismo = crime inafiançável)</li>
+      </ul>
+    </div>
+  </div>
+  ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos?.length > 0 ? `
+  <div style="padding:10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;margin:10px 0;">
+    <p style="font-size:10px;font-weight:600;color:#92400e;margin-bottom:4px;">⚡ EIXOS MAIS CRÍTICOS (lacunas ONU não cumpridas)</p>
+    <table>
+      <tr><th>Eixo</th><th>Total Lacunas</th><th>% Não Cumprido</th></tr>
+      ${sinteseExecutiva.eixosMaisProblematicos.map((e: any) => `<tr><td>${e.eixo}</td><td>${e.total}</td><td style="color:red;font-weight:600">${Math.round(e.gravidade * 100)}%</td></tr>`).join('')}
+    </table>
+  </div>` : ''}
+  ${sinteseExecutiva?.narrativa ? `<div class="note">${sinteseExecutiva.narrativa}</div>` : ''}
+
+  <!-- 4.2 INFOGRÁFICOS COMPARATIVOS -->
+  <h3 id="concl-infog">4.2 — Infográficos Comparativos (2018→2024)</h3>
+  <p class="source">Dados do Escopo do Projeto — FBSP, PNAD, DataSUS, SIDRA/IBGE. Cada tabela fundamenta um argumento para o CERD IV / Common Core.</p>
+
+  <h4>Violência Racial</h4>
+  <table>
+    <tr><th>Ano</th><th>Homic. Negro (p/100k)</th><th>Homic. Branco</th><th>% Vítimas Negras</th><th>Letalidade Pol. (%)</th><th>Razão Risco</th></tr>
+    ${segurancaPublica.map(r => `<tr><td>${r.ano}</td><td>${r.homicidioNegro}</td><td>${r.homicidioBranco}</td><td>${r.percentualVitimasNegras}%</td><td>${r.letalidadePolicial}%</td><td>${r.razaoRisco}x</td></tr>`).join('')}
+  </table>
+
+  <h4>Feminicídio</h4>
+  <table>
+    <tr><th>Ano</th><th>Total</th><th>% Mulheres Negras</th><th>Fonte</th></tr>
+    ${feminicidioSerie.map(r => `<tr><td>${r.ano}</td><td>${fmt(r.totalFeminicidios)}</td><td>${r.percentualNegras}%</td><td>${r.fonte}</td></tr>`).join('')}
+  </table>
+
+  <h4>Violência Interseccional (Raça × Gênero)</h4>
+  <table>
+    <tr><th>Tipo de Violência</th><th>Mulher Negra (%)</th><th>Mulher Branca (%)</th><th>Fonte</th></tr>
+    ${violenciaInterseccional.map(r => `<tr><td>${r.tipo}</td><td>${r.mulherNegra}%</td><td>${r.mulherBranca}%</td><td>${r.fonte}</td></tr>`).join('')}
+  </table>
+
+  <h4>Radar de Vulnerabilidades por Grupo</h4>
+  <table>
+    <tr><th>Eixo</th><th>Mulher Negra</th><th>Homem Negro</th><th>Mulher Branca</th><th>Homem Branco</th></tr>
+    ${radarVulnerabilidades.map(r => `<tr><td>${r.eixo}</td><td>${r.mulherNegra}</td><td>${r.homemNegro}</td><td>${r.mulherBranca}</td><td>${r.homemBranco}</td></tr>`).join('')}
+  </table>
+  <p class="source">Índice de vulnerabilidade: 0 = menor, 100 = maior. Fontes: PNAD 2024, FBSP 2025, DataSUS.</p>
+
+  <h4>Educação Comparativa</h4>
+  <table>
+    <tr><th>Ano</th><th>Sup. Negro (%)</th><th>Sup. Branco (%)</th><th>Analfab. Negro (%)</th><th>Analfab. Branco (%)</th></tr>
+    ${educacaoSerieHistorica.map(r => `<tr><td>${r.ano}</td><td>${r.superiorNegroPercent}%</td><td>${r.superiorBrancoPercent}%</td><td>${r.analfabetismoNegro}%</td><td>${r.analfabetismoBranco}%</td></tr>`).join('')}
+  </table>
+
+  <h4>Saúde Comparativa</h4>
+  <table>
+    <tr><th>Ano</th><th>Mort. Materna Negra</th><th>Mort. Materna Branca</th><th>Mort. Infantil Negra</th><th>Mort. Infantil Branca</th></tr>
+    ${saudeSerieHistorica.map(r => `<tr><td>${r.ano}</td><td>${r.mortalidadeMaternaNegra}</td><td>${r.mortalidadeMaternaBranca}</td><td>${r.mortalidadeInfantilNegra}</td><td>${r.mortalidadeInfantilBranca}</td></tr>`).join('')}
+  </table>
+
+  <h4>Renda e Desigualdade</h4>
+  <table>
+    <tr><th>Ano</th><th>Renda Negra (R$)</th><th>Renda Branca (R$)</th><th>Razão Renda</th><th>Razão Desemprego</th><th>Razão Homicídio</th></tr>
+    ${evolucaoDesigualdade.map(r => `<tr><td>${r.ano}</td><td>${indicadoresSocioeconomicos.find(i => i.ano === r.ano)?.rendaMediaNegra || '—'}</td><td>${indicadoresSocioeconomicos.find(i => i.ano === r.ano)?.rendaMediaBranca || '—'}</td><td>${r.razaoRenda}x</td><td>${r.razaoDesemprego}x</td><td>${r.razaoHomicidio}x</td></tr>`).join('')}
+  </table>
+
+  <h4>Classe Social por Raça</h4>
+  <table>
+    <tr><th>Faixa</th><th>Branca (%)</th><th>Negra (%)</th><th>Indígena (%)</th></tr>
+    ${classePorRaca.map(r => `<tr><td>${r.faixa}</td><td>${r.branca}%</td><td>${r.negra}%</td><td>${r.indigena}%</td></tr>`).join('')}
+  </table>
+  <p class="source">Fontes: PNAD Contínua 2024, Censo 2022, SIS/IBGE.</p>
+
+  <!-- 4.3 TABELA SÍNTESE COMPARATIVA -->
+  <h3 id="concl-tabsint">4.3 — Tabela Síntese Comparativa (2018→2024)</h3>
+  <table>
+    <tr><th>Indicador</th><th>2018</th><th>2024</th><th>Variação</th><th>Direção</th></tr>
+    <tr><td>Vítimas negras homicídio (%)</td><td>${seg2018.percentualVitimasNegras}%</td><td>${seg2024.percentualVitimasNegras}%</td><td>+${(seg2024.percentualVitimasNegras - seg2018.percentualVitimasNegras).toFixed(1)}pp</td><td><span class="badge badge-danger">Piora</span></td></tr>
+    <tr><td>Letalidade policial negra (%)</td><td>${seg2018.letalidadePolicial}%</td><td>${seg2024.letalidadePolicial}%</td><td>+${(seg2024.letalidadePolicial - seg2018.letalidadePolicial).toFixed(1)}pp</td><td><span class="badge badge-danger">Piora</span></td></tr>
+    <tr><td>Feminicídio negro (%)</td><td>${fem2018.percentualNegras}%</td><td>${fem2024.percentualNegras}%</td><td>+${(fem2024.percentualNegras - fem2018.percentualNegras).toFixed(1)}pp</td><td><span class="badge badge-danger">Piora</span></td></tr>
+    <tr><td>Superior completo negro (%)</td><td>${edu2018.superiorNegroPercent}%</td><td>${edu2024.superiorNegroPercent}%</td><td>+${(edu2024.superiorNegroPercent - edu2018.superiorNegroPercent).toFixed(1)}pp</td><td><span class="badge badge-success">Avanço</span></td></tr>
+    <tr><td>Analfabetismo negro (%)</td><td>${edu2018.analfabetismoNegro}%</td><td>${edu2024.analfabetismoNegro}%</td><td>${(edu2024.analfabetismoNegro - edu2018.analfabetismoNegro).toFixed(1)}pp</td><td><span class="badge badge-success">Avanço</span></td></tr>
+    <tr><td>Desemprego negro (%)</td><td>${eco2018.desempregoNegro}%</td><td>${eco2024.desempregoNegro}%</td><td>${(eco2024.desempregoNegro - eco2018.desempregoNegro).toFixed(1)}pp</td><td><span class="badge badge-success">Avanço</span></td></tr>
+    <tr><td>Renda média negra (R$)</td><td>R$ ${eco2018.rendaMediaNegra}</td><td>R$ ${eco2024.rendaMediaNegra}</td><td>+${((eco2024.rendaMediaNegra / eco2018.rendaMediaNegra - 1) * 100).toFixed(0)}%</td><td><span class="badge badge-success">Avanço</span></td></tr>
+    <tr><td>Gap renda branca-negra (R$)</td><td>R$ ${eco2018.rendaMediaBranca - eco2018.rendaMediaNegra}</td><td>R$ ${eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}</td><td>Ampliou</td><td><span class="badge badge-danger">Piora</span></td></tr>
+    <tr><td>Razão risco homicídio negro</td><td>${seg2018.razaoRisco}x</td><td>${seg2024.razaoRisco}x</td><td>Persistente</td><td><span class="badge badge-warning">Estagnação</span></td></tr>
+    <tr><td>Mort. materna negra (p/100k NV)</td><td>${saudeSerieHistorica[0]?.mortalidadeMaternaNegra}</td><td>${saudeSerieHistorica[saudeSerieHistorica.length-1]?.mortalidadeMaternaNegra}</td><td>—</td><td><span class="badge badge-info">Ver série</span></td></tr>
+  </table>
+  <p class="source">Fontes: FBSP 2025, PNAD 2024, DataSUS/SIM, SIDRA/IBGE.</p>
+
+  <!-- 4.4 FIOS CONDUTORES -->
+  <h3 id="concl-fios">4.4 — Fios Condutores (${fiosCondutores.length} argumentos transversais)</h3>
+  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Argumentos transversais gerados pelo cruzamento das bases do Escopo: dados estatísticos (FBSP, PNAD, DataSUS) × lacunas ONU × respostas CERD III × registros orçamentários.</p>
+  ${fiosCondutores.map(fio => {
+    const tipoLabel: Record<string, string> = { paradoxo: '⚖️ Paradoxo', correlacao: '🔗 Correlação', tendencia: '📈 Tendência', lacuna_critica: '⚠️ Lacuna Crítica', avanco: '✅ Avanço', retrocesso: '🔴 Retrocesso' };
+    const tipoBadge: Record<string, string> = { paradoxo: 'badge-info', correlacao: 'badge-info', tendencia: 'badge-success', lacuna_critica: 'badge-danger', avanco: 'badge-success', retrocesso: 'badge-danger' };
+    return `
+    <div class="section" style="border-left:3px solid ${fio.tipo === 'avanco' ? '#22c55e' : fio.tipo === 'retrocesso' || fio.tipo === 'lacuna_critica' ? '#ef4444' : '#3b82f6'};padding-left:12px;margin-bottom:14px;">
+      <p style="font-weight:600;font-size:12px;margin-bottom:4px;">${fio.titulo} <span class="badge ${tipoBadge[fio.tipo]}">${tipoLabel[fio.tipo]}</span> <span class="badge ${fio.relevancia === 'alta' ? 'badge-danger' : 'badge-neutral'}">${fio.relevancia}</span></p>
+      <p style="font-size:10px;color:#374151;margin-bottom:6px;">${fio.argumento}</p>
+      ${fio.comparativo2018 ? `<div class="note">📊 <strong>Comparativo 2018→2024:</strong> ${fio.comparativo2018}</div>` : ''}
+      ${fio.evidencias.length > 0 ? `<ul style="font-size:9px;color:#6b7280;margin:4px 0;">${fio.evidencias.slice(0, 6).map(ev => `<li>→ <strong>${ev.texto}</strong> (${ev.fonte})</li>`).join('')}</ul>` : ''}
+      <div style="margin-top:4px;">${fio.eixos.map(e => `<span class="badge badge-neutral">${e.replace(/_/g, ' ')}</span>`).join(' ')}</div>
+    </div>`;
+  }).join('')}
+
+  <!-- 4.5 CRUZAMENTOS ANALÍTICOS -->
+  <h3 id="concl-cruz">4.5 — Cruzamentos Analíticos (${insightsCruzamento.length} insights)</h3>
+  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores × respostas CERD III.</p>
+  ${insightsCruzamento.map(ins => {
+    const tipoBadge: Record<string, string> = { alerta: 'badge-danger', progresso: 'badge-success', 'contradição': 'badge-warning', 'correlação': 'badge-info' };
+    return `
+    <div class="section" style="border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:10px;">
+      <p style="font-weight:600;font-size:11px;margin-bottom:4px;">${ins.titulo} <span class="badge ${tipoBadge[ins.tipo] || 'badge-neutral'}">${ins.tipo}</span></p>
+      <p style="font-size:10px;color:#374151;margin-bottom:6px;">${ins.descricao}</p>
+      ${ins.dados.length > 0 ? `<ul style="font-size:9px;color:#6b7280;margin:4px 0;">${ins.dados.map(d => `<li>• ${d}</li>`).join('')}</ul>` : ''}
+    </div>`;
+  }).join('')}
+
+  <!-- 4.6 CONCLUSÃO-SÍNTESE (VEREDICTO) -->
+  <h3 id="concl-vered">4.6 — Conclusão-Síntese: O Estado Brasileiro Avançou nas Políticas Raciais (2018–2025)?</h3>
+  <div style="padding:12px;background:#fef3c7;border:2px solid #f59e0b;border-radius:8px;margin:12px 0;">
+    <p style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:8px;">⚖️ Veredicto: Avanço normativo-institucional real, porém insuficiente para reverter desigualdades estruturais</p>
+    <p style="font-size:10px;color:#78350f;">
+      O cruzamento exaustivo dos ${fiosCondutores.length} fios condutores revela um quadro de avanço parcial e assimétrico.
+      O Estado brasileiro avançou no plano normativo e institucional — recriação do MIR (2023), Lei 14.532/2023 (racismo crime inafiançável),
+      Censo 2022 com contagem inédita de quilombolas, execução orçamentária recorde.
+      Houve ganhos em educação (superior negro: ${edu2018.superiorNegroPercent}% → ${edu2024.superiorNegroPercent}%),
+      emprego (desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}%) e renda nominal.
+    </p>
+    <p style="font-size:10px;color:#78350f;margin-top:6px;">
+      Porém, os indicadores estruturais de violência e desigualdade pioraram ou estagnaram:
+      vítimas negras de homicídio: ${seg2018.percentualVitimasNegras}% → ${seg2024.percentualVitimasNegras}%,
+      feminicídio: ${fem2018.percentualNegras}% → ${fem2024.percentualNegras}%,
+      letalidade policial: ${seg2018.letalidadePolicial}% → ${seg2024.letalidadePolicial}%,
+      gap absoluto de renda ampliou. A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica.
+    </p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">
+    <div style="padding:8px;background:#dcfce7;border-radius:6px;">
+      <p style="font-size:10px;font-weight:700;color:#166534;">✓ ONDE AVANÇOU</p>
+      <ul style="font-size:9px;color:#14532d;margin:0;padding-left:12px;">
+        <li>Marco legal antirracista</li><li>Recriação do MIR</li><li>Educação superior negra</li><li>Execução orçamentária 2023-25</li><li>Censo quilombola inédito</li>
+      </ul>
+    </div>
+    <div style="padding:8px;background:#fee2e2;border-radius:6px;">
+      <p style="font-size:10px;font-weight:700;color:#991b1b;">✗ ONDE NÃO AVANÇOU</p>
+      <ul style="font-size:9px;color:#7f1d1d;margin:0;padding-left:12px;">
+        <li>Violência letal racial</li><li>Feminicídio negro</li><li>Letalidade policial</li><li>Gap absoluto de renda</li><li>Demarcação territorial</li>
+      </ul>
+    </div>
+    <div style="padding:8px;background:#fef3c7;border-radius:6px;">
+      <p style="font-size:10px;font-weight:700;color:#92400e;">⚠ PARADOXO CENTRAL</p>
+      <ul style="font-size:9px;color:#78350f;margin:0;padding-left:12px;">
+        <li>Leis avançam, implementação não</li><li>Orçamento cresce, resultados limitados</li><li>Federal avança, municipal estagna</li><li>Renda sobe, desigualdade persiste</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4.7 LACUNAS PERSISTENTES -->
+  ${(() => {
+    const lacunasPersistentes = conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente');
+    const avancos = conclusoesDinamicas.filter(c => c.tipo === 'avanco');
+    const retrocessos = conclusoesDinamicas.filter(c => c.tipo === 'retrocesso');
+
+    const renderConclusoes = (items: ConclusaoDinamica[], tipo: string) => items.map(c => {
+      const badge = tipo === 'avanco' ? 'badge-success' : tipo === 'retrocesso' ? 'badge-danger' : 'badge-warning';
+      return `<div class="section" style="border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:8px;">
+        <p style="font-weight:600;font-size:11px;margin-bottom:4px;">${c.titulo} <span class="badge ${badge}">${c.periodo}</span> ${c.relevancia_cerd_iv ? '<span class="badge badge-info">CERD IV</span>' : ''} ${c.relevancia_common_core ? '<span class="badge badge-info">Common Core</span>' : ''}</p>
+        <p style="font-size:10px;color:#374151;margin-bottom:4px;">${c.argumento_central}</p>
+        ${c.evidencias.length > 0 ? `<ul style="font-size:9px;color:#6b7280;margin:4px 0;">${c.evidencias.slice(0, 4).map(e => `<li>• ${e}</li>`).join('')}</ul>` : ''}
+        <div style="margin-top:4px;">${c.eixos.map(e => `<span class="badge badge-neutral">${e.replace(/_/g, ' ')}</span>`).join(' ')}</div>
+      </div>`;
+    }).join('');
+
+    return `
+    <h3 id="concl-lac">4.7 — Lacunas Persistentes (${lacunasPersistentes.length})</h3>
+    ${lacunasPersistentes.length > 0 ? renderConclusoes(lacunasPersistentes, 'lacuna_persistente') : '<p>Nenhuma lacuna persistente identificada.</p>'}
+
+    <h3 id="concl-av">4.8 — Avanços Identificados (${avancos.length})</h3>
+    ${avancos.length > 0 ? renderConclusoes(avancos, 'avanco') : '<p>Nenhum avanço identificado.</p>'}
+
+    <h3 id="concl-ret">4.9 — Retrocessos Identificados (${retrocessos.length})</h3>
+    ${retrocessos.length > 0 ? renderConclusoes(retrocessos, 'retrocesso') : '<p>Nenhum retrocesso identificado.</p>'}
+    `;
+  })()}
+
+  <p class="source" style="margin-top:16px;">
+    <strong>Fontes integradas:</strong> ${fiosCondutores.length} fios condutores analíticos, ${lacunasStats?.total || 0} lacunas ONU (CERD/C/BRA/CO/18-20),
+    ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores interseccionais,
+    ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
+  </p>
+
   <div style="margin-top:40px;padding:16px;background:#f8fafc;border-radius:8px;text-align:center;">
     <p style="font-size:10px;color:#94a3b8;">
-      Relatório Consolidado do Escopo do Projeto — Sistema CERD IV Brasil<br>
+      Relatório Consolidado do Escopo do Projeto + Conclusões Analíticas — Sistema CERD IV Brasil<br>
       CDG/UFF — Gerado automaticamente em ${now}
     </p>
   </div>
@@ -406,6 +663,11 @@ export function ConsolidatedScopeReport() {
   const { data: lacunasStats } = useLacunasStats();
   const { data: orcStats } = useOrcamentoStats();
   const { data: orcamentarios } = useDadosOrcamentarios();
+  const { data: respostas } = useRespostasLacunasCerdIII();
+
+  const {
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
+  } = useAnalyticalInsights();
 
   const { data: documentosNormativos } = useQuery({
     queryKey: ['documentos-normativos-report'],
@@ -429,6 +691,11 @@ export function ConsolidatedScopeReport() {
         orcStats,
         orcamentarios: orcamentarios || [],
         documentosNormativos: documentosNormativos || [],
+        fiosCondutores,
+        conclusoesDinamicas,
+        insightsCruzamento,
+        sinteseExecutiva,
+        respostas: respostas || [],
       });
 
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -452,15 +719,15 @@ export function ConsolidatedScopeReport() {
             <div>
               <h3 className="font-semibold mb-1">Relatório Consolidado do Escopo do Projeto</h3>
               <p className="text-sm text-muted-foreground">
-                Agrega <strong>toda a informação</strong> das três bases (Estatística, Orçamentária e Normativa) em um único
-                documento HTML estruturado para impressão ou exportação.
+                Agrega <strong>toda a informação</strong> das três bases (Estatística, Orçamentária e Normativa) + <strong>Conclusões Analíticas</strong> completas
+                (síntese executiva, infográficos, fios condutores, cruzamentos, veredicto) em um único documento HTML estruturado.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Base Estatística */}
         <Card>
           <CardHeader className="pb-3">
@@ -516,6 +783,24 @@ export function ConsolidatedScopeReport() {
             <div className="flex justify-between"><span>Jurisprudência</span><Badge variant="outline" className="text-xs">{documentosNormativos?.filter(d => d.categoria === 'jurisprudencia').length || 0}</Badge></div>
           </CardContent>
         </Card>
+
+        {/* Conclusões */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-chart-3" />
+              Conclusões Analíticas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-xs text-muted-foreground">
+            <div className="flex justify-between"><span>Síntese Executiva</span><Badge variant="outline" className="text-xs">2018→2024</Badge></div>
+            <div className="flex justify-between"><span>Infográficos</span><Badge variant="outline" className="text-xs">9 tabelas</Badge></div>
+            <div className="flex justify-between"><span>Fios Condutores</span><Badge variant="outline" className="text-xs">{fiosCondutores.length}</Badge></div>
+            <div className="flex justify-between"><span>Cruzamentos</span><Badge variant="outline" className="text-xs">{insightsCruzamento.length}</Badge></div>
+            <div className="flex justify-between"><span>Conclusões Dinâmicas</span><Badge variant="outline" className="text-xs">{conclusoesDinamicas.length}</Badge></div>
+            <div className="flex justify-between"><span>Veredicto</span><Badge variant="outline" className="text-xs">Integrado</Badge></div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -524,7 +809,7 @@ export function ConsolidatedScopeReport() {
             <div>
               <p className="text-sm font-medium">Total de dados agregados: <strong>{totalItems} registros</strong></p>
               <p className="text-xs text-muted-foreground">
-                O relatório inclui todas as tabelas, séries temporais, KPIs e metadados das três bases do Escopo do Projeto.
+                O relatório inclui todas as tabelas, séries temporais, KPIs das três bases do Escopo + Conclusões Analíticas completas.
               </p>
             </div>
             <Button size="lg" onClick={handleGenerate} disabled={isGenerating} className="gap-2">
@@ -536,7 +821,7 @@ export function ConsolidatedScopeReport() {
       </Card>
 
       <div className="p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-        <p><strong>Conteúdo incluído:</strong></p>
+        <p><strong>Conteúdo incluído (Partes I–IV):</strong></p>
         <ul className="list-disc list-inside mt-1 space-y-0.5">
           <li>Demografia: composição racial, evolução PNAD, quilombolas, indígenas</li>
           <li>Socioeconômico: renda por raça, desemprego, pobreza, Gini, rendimentos Censo</li>
@@ -549,6 +834,7 @@ export function ConsolidatedScopeReport() {
           <li>Indicadores do banco de dados com desagregações</li>
           <li>Orçamento: evolução federal 2018-2025, dados do BD</li>
           <li>Base normativa: todos os documentos com categorias e recomendações vinculadas</li>
+          <li><strong>Conclusões:</strong> Síntese executiva, infográficos comparativos, tabela síntese, fios condutores, cruzamentos, veredicto, lacunas/avanços/retrocessos</li>
         </ul>
       </div>
     </div>
