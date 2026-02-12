@@ -1,4 +1,5 @@
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional } from '@/hooks/useLacunasData';
+import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
   segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
   indicadoresSocioeconomicos, povosTradicionais
@@ -316,6 +317,7 @@ export function generateCerdIVHTML(
     <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com MIR e MRE</p>
     <p>Gerado automaticamente em ${new Date().toLocaleDateString('pt-BR')} — Dados de fontes oficiais</p>
   </div>
+  ${getExportToolbarHTML('CERD-IV-Relatorio-Periodico-Brasil')}
 </body>
 </html>`;
 }

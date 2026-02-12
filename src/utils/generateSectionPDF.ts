@@ -1,4 +1,5 @@
 // Utility to generate printable PDF from section data
+import { getExportToolbarHTML } from './reportExportToolbar';
 
 interface PDFSection {
   titulo: string;
@@ -65,7 +66,7 @@ export function generateSectionPDF(section: PDFSection) {
   <div class="footer">
     Sistema de Monitoramento do IV Relatório CERD do Brasil — Documento gerado automaticamente em ${section.dataGeracao}
   </div>
-  <script>window.onload = function() { window.print(); }</script>
+  ${getExportToolbarHTML(section.titulo.replace(/\s+/g, '-'))}
 </body>
 </html>`;
 

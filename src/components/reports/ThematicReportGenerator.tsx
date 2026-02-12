@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, BarChart3, Users, MapPin, BookOpen, Briefcase, Heart, Scale, Shield, Landmark, PieChart, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { injectExportToolbar } from '@/utils/reportExportToolbar';
 import { useLacunasStats, useIndicadoresInterseccionais, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
 
 const eixoOptions = [
@@ -79,8 +80,9 @@ export function ThematicReportGenerator() {
 
       if (error) throw error;
 
-      // Open HTML in new tab
-      const blob = new Blob([data], { type: 'text/html' });
+      // Open HTML in new tab with export toolbar
+      const htmlWithToolbar = injectExportToolbar(data, `Relatorio-Tematico-${eixo}-${grupo}`);
+      const blob = new Blob([htmlWithToolbar], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
 

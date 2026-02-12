@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, FileText, Download, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { injectExportToolbar } from '@/utils/reportExportToolbar';
 
 interface AIReportGeneratorProps {
   defaultType?: 'common-core' | 'cerd-iv' | 'tematico' | 'orcamentario';
@@ -98,7 +99,8 @@ export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGener
       }
 
       // Open in new window
-      const blob = new Blob([htmlContent], { type: 'text/html; charset=utf-8' });
+      const htmlWithToolbar = injectExportToolbar(htmlContent, `Relatorio-IA-${tipo}`);
+      const blob = new Blob([htmlWithToolbar], { type: 'text/html; charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
       

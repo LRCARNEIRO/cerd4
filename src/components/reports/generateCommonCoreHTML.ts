@@ -1,4 +1,5 @@
 import type { LacunaIdentificada, IndicadorInterseccional } from '@/hooks/useLacunasData';
+import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
   dadosDemograficos, indicadoresSocioeconomicos, educacaoSerieHistorica,
   saudeSerieHistorica, segurancaPublica, povosTradicionais
@@ -312,6 +313,7 @@ export function generateCommonCoreHTML(
     <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com MIR e MRE</p>
     <p>Gerado automaticamente em ${new Date().toLocaleDateString('pt-BR')} — Dados de fontes oficiais (IBGE, FBSP, DataSUS, SIOP)</p>
   </div>
+  ${getExportToolbarHTML('Common-Core-HRI-CORE-BRA-2026')}
 </body>
 </html>`;
 }

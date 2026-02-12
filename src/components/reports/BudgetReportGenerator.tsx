@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { injectExportToolbar } from '@/utils/reportExportToolbar';
 import { useOrcamentoStats } from '@/hooks/useLacunasData';
 
 export function BudgetReportGenerator() {
@@ -24,7 +25,8 @@ export function BudgetReportGenerator() {
 
       if (error) throw error;
 
-      const blob = new Blob([data], { type: 'text/html' });
+      const htmlWithToolbar = injectExportToolbar(data, 'Relatorio-Orcamentario-CERD-IV');
+      const blob = new Blob([htmlWithToolbar], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
 
