@@ -63,24 +63,27 @@ const gruposFocaisData = {
   },
   juventude_negra: {
     nome: 'Juventude Negra (15-29 anos)',
-    // Calculado: população preta + parda na faixa 15-29 anos
-    populacao: 25800000, // Estimativa baseada em proporções PNAD Contínua
-    fonte: 'IBGE - PNAD Contínua 2023 (Tabela 6403)',
-    tabela: 'Tabela 6403 - SIDRA',
-    link: 'https://sidra.ibge.gov.br/tabela/6403',
+    // NOTA METODOLÓGICA: Não existe tabela SIDRA com cruzamento direto "15-29 anos × pretos+pardos".
+    // Estimativa calculada: proporção negra (55,5%, Tab. 9605) × população 15-29 (PNAD Contínua Tab. 7113)
+    // ≈ 46,5 mi (15-29 total) × 0,555 ≈ 25,8 mi. Valor aproximado, não dado direto.
+    populacao: 25800000,
+    fonte: 'Estimativa: IBGE Censo 2022 (Tab. 9605) × PNAD Contínua (Tab. 7113)',
+    tabela: 'Cálculo: Tab. 9605 (cor/raça) × Tab. 7113 (idade)',
+    link: 'https://sidra.ibge.gov.br/tabela/7113',
+    linkCorRaca: 'https://sidra.ibge.gov.br/tabela/9605',
     ultimaAtualizacao: '2024-02-29',
     serieTemporal: [
-      { ano: 2018, valor: 26200000, fonte: 'PNAD Contínua' },
-      { ano: 2019, valor: 26100000, fonte: 'PNAD Contínua' },
-      { ano: 2020, valor: 25900000, fonte: 'PNAD Contínua' },
-      { ano: 2021, valor: 25800000, fonte: 'PNAD Contínua' },
-      { ano: 2022, valor: 25700000, fonte: 'PNAD Contínua' },
-      { ano: 2023, valor: 25800000, fonte: 'PNAD Contínua' },
+      { ano: 2018, valor: 26200000, fonte: 'Estimativa PNAD Contínua' },
+      { ano: 2019, valor: 26100000, fonte: 'Estimativa PNAD Contínua' },
+      { ano: 2020, valor: 25900000, fonte: 'Estimativa PNAD Contínua' },
+      { ano: 2021, valor: 25800000, fonte: 'Estimativa PNAD Contínua' },
+      { ano: 2022, valor: 25700000, fonte: 'Estimativa PNAD Contínua' },
+      { ano: 2023, valor: 25800000, fonte: 'Estimativa PNAD Contínua' },
     ],
     observacoesONU: ['32', '33', '34', '35', '36'],
     politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
     indicadores: ['Taxa de homicídios 12-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
-    notas: 'Grupo prioritário para políticas de segurança e empregabilidade. Letalidade 2,5x maior que jovens brancos.',
+    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,5x maior que jovens brancos.',
   },
   populacao_negra: {
     nome: 'População Negra (Preta + Parda)',
@@ -369,7 +372,7 @@ export default function GruposFocais() {
                 <p className="text-2xl font-bold">~{(gruposFocaisData.juventude_negra.populacao! / 1000000).toFixed(0)} mi</p>
                 <p className="text-xs text-muted-foreground mt-1">Grupo prioritário segurança</p>
               </div>
-              <Badge variant="outline" className="text-xs">PNAD 2023</Badge>
+              <Badge variant="outline" className="text-xs border-warning text-warning">Estimativa</Badge>
             </div>
             <FonteInfo 
               fonte={gruposFocaisData.juventude_negra.fonte}
