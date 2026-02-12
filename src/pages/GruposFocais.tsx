@@ -31,11 +31,11 @@ const gruposFocaisData = {
     // Fonte oficial: https://www.ibge.gov.br/brasil-indigena/
     populacao: 1694836,
     fonte: 'IBGE - Censo Demográfico 2022 (Pessoas Indígenas)',
-    // CORREÇÃO: Tabela 9674 é sobre INTERNET, não população indígena!
-    // Tabela correta: 9595 (Pessoas Indígenas) ou consulta especial Brasil Indígena
-    tabela: 'Tabela 9595 - SIDRA (Pessoas Indígenas)',
-    link: 'https://sidra.ibge.gov.br/tabela/9595',
-    linkEspecial: 'https://www.ibge.gov.br/brasil-indigena/',
+    // Tabela correta: 9514 (População residente por cor ou raça - conceito ampliado, inclui Pessoas Indígenas)
+    // Fonte primária para o total 1.694.836: IBGE Brasil Indígena (consolidação oficial)
+    tabela: 'IBGE Brasil Indígena / Tabela 9514 - SIDRA',
+    link: 'https://www.ibge.gov.br/brasil-indigena/',
+    linkSidra: 'https://sidra.ibge.gov.br/tabela/9514',
     ultimaAtualizacao: '2024-10-24',
     // Série temporal com dados anteriores (Cor ou Raça) e novo critério
     serieTemporal: [
@@ -129,7 +129,8 @@ const dadosTerritoriais = {
     familiasAtendidas: 155000,
     areaTotal: 1162002, // hectares titulados
     fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Dados Abertos',
-    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+    linkTitulos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
     linkFCP: 'https://www.gov.br/palmares/pt-br/acesso-a-informacao/dados-abertos',
     ultimaAtualizacao: '2025-11-01',
     notaFonte: 'INCRA: dados de titulação. FCP: certidões de autodefinição.',
@@ -151,9 +152,9 @@ const dadosTerritoriais = {
     etniasIdentificadas: 391,
     linguasVivas: 295,
     areaTotal: 117400000,
-    fonte: 'FUNAI - Coord. de Geoprocessamento (ago/2025)',
-    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    linkPainel: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas#painel',
+    fonte: 'FUNAI - Coordenação de Geoprocessamento (ago/2025)',
+    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
+    linkGeo: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     ultimaAtualizacao: '2025-08-20',
     notaFonte: 'Dados geoespaciais atualizados mensalmente. Etnias/línguas: IBGE Censo 2022.',
     // Detalhamento por fase do processo demarcatório (FUNAI)
@@ -191,8 +192,8 @@ const indicadoresVulnerabilidade = {
     valorBrancos: 25.9,
     razaoDesigualdade: 2.9,
     ano: 2022,
-    fonte: 'Fórum Brasileiro de Segurança Pública - Anuário 2023',
-    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    fonte: 'Fórum Brasileiro de Segurança Pública - 17º Anuário (2023, dados 2022)',
+    link: 'https://forumseguranca.org.br/wp-content/uploads/2023/07/anuario-2023.pdf',
     serieTemporal: [
       { ano: 2018, negros: 98.5, brancos: 34.0 },
       { ano: 2019, negros: 85.3, brancos: 30.2 },
@@ -206,8 +207,8 @@ const indicadoresVulnerabilidade = {
     totalMortes: 6429,
     percentualNegros: 83.1,
     ano: 2022,
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    fonte: 'Fórum Brasileiro de Segurança Pública - 17º Anuário (2023, dados 2022)',
+    link: 'https://forumseguranca.org.br/wp-content/uploads/2023/07/anuario-2023.pdf',
   },
   mortalidadeMaterna: {
     nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
@@ -215,8 +216,8 @@ const indicadoresVulnerabilidade = {
     valorBrancas: 47.8,
     razaoDesigualdade: 2.2,
     ano: 2022,
-    fonte: 'DataSUS/SIM/SINASC',
-    link: 'https://datasus.saude.gov.br/',
+    fonte: 'DataSUS - SIM (Óbitos Maternos) / SINASC (Nascidos Vivos)',
+    link: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
   },
 };
 

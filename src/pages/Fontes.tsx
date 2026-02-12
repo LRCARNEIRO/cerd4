@@ -12,9 +12,9 @@ const additionalSources = [
   {
     categoria: 'Segurança Pública',
     fontes: [
-      { nome: 'Fórum Brasileiro de Segurança Pública', url: 'https://forumseguranca.org.br/' },
+      { nome: 'Fórum Brasileiro de Segurança Pública - Anuários', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
       { nome: 'SINESP - Sistema Nacional de Estatísticas de Segurança Pública', url: 'https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/sinesp-1' },
-      { nome: 'Atlas da Violência (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia/' }
+      { nome: 'Atlas da Violência (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia/' }
     ]
   },
   {
@@ -29,8 +29,8 @@ const additionalSources = [
     categoria: 'Saúde',
     fontes: [
       { nome: 'DataSUS - TabNet', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-      { nome: 'SIM - Sistema de Informações sobre Mortalidade', url: 'https://datasus.saude.gov.br/' },
-      { nome: 'SINASC - Nascidos Vivos', url: 'https://datasus.saude.gov.br/' },
+      { nome: 'SIM - Óbitos por Causa e Raça/Cor', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10uf.def' },
+      { nome: 'SINASC - Nascidos Vivos por Raça/Cor', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
       { nome: 'SESAI - Saúde Indígena', url: 'https://www.gov.br/saude/pt-br/composicao/sesai' }
     ]
   },

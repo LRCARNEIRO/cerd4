@@ -247,8 +247,8 @@ export default function Index() {
         <QuickAccessCard
           title="RAIS/CAGED"
           description="Emprego formal por raça"
-          href="http://bi.mte.gov.br/bgcaged/caged_isper/index.php"
-          detail="BI do MTE — CAGED/RAIS"
+          href="https://bi.mte.gov.br/bgcaged/"
+          detail="BI do MTE — Painel CAGED/RAIS"
           external
         />
         <QuickAccessCard
