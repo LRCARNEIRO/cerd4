@@ -157,7 +157,7 @@ export function generateCerdIVHTML(
     <div class="highlight-box">
       <p><strong>População:</strong> ${povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')} (primeira contagem censitária, 2022)</p>
       <p><strong>Comunidades certificadas:</strong> ${povosTradicionais.quilombolas.comunidadesCertificadas.toLocaleString('pt-BR')}</p>
-      <p><strong>Comunidades tituladas:</strong> ${povosTradicionais.quilombolas.comunidadesTituladas} (${(povosTradicionais.quilombolas.comunidadesTituladas/povosTradicionais.quilombolas.comunidadesCertificadas*100).toFixed(1)}% do total)</p>
+      <p><strong>Territórios titulados:</strong> ${povosTradicionais.quilombolas.territoriosTitulados} (${povosTradicionais.quilombolas.titulosExpedidos} títulos expedidos para ${povosTradicionais.quilombolas.comunidadesAbrangidas} comunidades)</p>
     </div>
   `;
 

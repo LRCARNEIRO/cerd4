@@ -195,22 +195,22 @@ export function PovosTradicionaisTab() {
                 <p className="text-xl font-bold">{povosTradicionais.quilombolas.comunidadesCertificadas.toLocaleString('pt-BR')}</p>
               </div>
               <div className="p-3 bg-muted rounded-lg">
-                <p className="text-xs text-muted-foreground">Tituladas</p>
-                <p className="text-xl font-bold text-warning">{povosTradicionais.quilombolas.comunidadesTituladas}</p>
+                <p className="text-xs text-muted-foreground">Territórios Titulados</p>
+                <p className="text-xl font-bold text-warning">{povosTradicionais.quilombolas.territoriosTitulados}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Acesso à água</span>
-                <span className="font-semibold text-warning">{povosTradicionais.quilombolas.acessoAgua}%</span>
+                <span>Rede geral de água</span>
+                <span className="font-semibold text-warning">{povosTradicionais.quilombolas.acessoRedeAgua}%</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Saneamento básico</span>
-                <span className="font-semibold text-destructive">{povosTradicionais.quilombolas.acessoSaneamento}%</span>
+                <span>Esgotamento adequado</span>
+                <span className="font-semibold text-destructive">{povosTradicionais.quilombolas.esgotamentoAdequado}%</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Bolsa Família</span>
-                <span className="font-semibold">{povosTradicionais.quilombolas.bolsaFamilia}%</span>
+                <span>Coleta de lixo</span>
+                <span className="font-semibold">{povosTradicionais.quilombolas.coletaLixo}%</span>
               </div>
             </div>
           </CardContent>
