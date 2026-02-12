@@ -412,9 +412,21 @@ export function CovidRacialSection() {
             Fiocruz/EPSJV — Negros morrem mais por COVID-19 e recebem menos vacinas <ExternalLink className="w-3 h-3" />
           </a>
         </p>
-        <p className="ml-4">SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça/cor</p>
-        <p className="ml-4">PNAD COVID-19 (IBGE, 2020) — Impactos socioeconômicos</p>
-        <p className="ml-4">SI-PNI/DataSUS — Cobertura vacinal por raça/cor</p>
+        <p className="ml-4">
+          <a href="https://bigdata-covid19.icict.fiocruz.br/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+            SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça/cor <ExternalLink className="w-3 h-3" />
+          </a>
+        </p>
+        <p className="ml-4">
+          <a href="https://covid19.ibge.gov.br/pnad-covid/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+            PNAD COVID-19 (IBGE, 2020) — Impactos socioeconômicos <ExternalLink className="w-3 h-3" />
+          </a>
+        </p>
+        <p className="ml-4">
+          <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+            SI-PNI/DataSUS — Cobertura vacinal por raça/cor <ExternalLink className="w-3 h-3" />
+          </a>
+        </p>
       </div>
     </div>
   );

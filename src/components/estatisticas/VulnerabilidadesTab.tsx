@@ -4,7 +4,7 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { Layers, Filter, FileText } from 'lucide-react';
+import { Layers, Filter, FileText, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
   radarVulnerabilidades, 
@@ -49,10 +49,23 @@ export function VulnerabilidadesTab() {
                 </RadarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              <FileText className="w-3 h-3 inline mr-1" />
-              Fonte: Síntese de indicadores IBGE/IPEA/DataSUS 2024 | Elaboração própria
-            </p>
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                <strong>Fontes:</strong> Síntese de indicadores IBGE/IPEA/DataSUS 2024 | Elaboração própria
+              </p>
+              <div className="flex flex-wrap gap-3 text-xs">
+                <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/25844-desigualdades-sociais-por-cor-ou-raca.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> Desigualdades por Cor/Raça (IBGE)
+                </a>
+                <a href="https://www.ipea.gov.br/retrato/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> Retrato das Desigualdades (IPEA)
+                </a>
+                <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> TabNet/DataSUS
+                </a>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -93,10 +106,26 @@ export function VulnerabilidadesTab() {
                 <li>• <strong>Homicídio:</strong> 77% das vítimas são negras; risco 2,7x maior (19º Anuário FBSP 2025 / Atlas 2025)</li>
               </ul>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              <FileText className="w-3 h-3 inline mr-1" />
-              Fontes: PNAD Contínua/IBGE 2024, 19º Anuário FBSP 2025, Atlas da Violência 2025/IPEA
-            </p>
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                <strong>Fontes oficiais:</strong>
+              </p>
+              <div className="flex flex-wrap gap-3 text-xs">
+                <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
+                </a>
+                <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
+                </a>
+                <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
+                </a>
+                <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> Atlas da Violência 2025
+                </a>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -136,10 +165,23 @@ export function VulnerabilidadesTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-4">
-            <FileText className="w-3 h-3 inline mr-1" />
-            Fonte: PNAD Contínua/IBGE 2024 | Microanálise por raça/cor × sexo × faixa etária
-          </p>
+          <div className="mt-4 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <FileText className="w-3 h-3" />
+              <strong>Fonte:</strong> PNAD Contínua/IBGE 2024 — Microanálise por raça/cor × sexo × faixa etária
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs">
+              <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Rendimento
+              </a>
+              <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
+              </a>
+              <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 6403 — Características gerais
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

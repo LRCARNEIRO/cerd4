@@ -62,10 +62,15 @@ export function RacaGeneroTab() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              <FileText className="w-3 h-3 inline mr-1" />
-              Mulheres negras são 63,6% das vítimas de feminicídio (19º Anuário FBSP 2025, dados 2024). Em 2018: 61%.
-            </p>
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+              <p className="text-xs text-muted-foreground">
+                <FileText className="w-3 h-3 inline mr-1" />
+                Mulheres negras são 63,6% das vítimas de feminicídio (19º Anuário FBSP 2025, dados 2024). Em 2018: 61%.
+              </p>
+              <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
+              </a>
+            </div>
           </CardContent>
         </Card>
 
@@ -95,10 +100,15 @@ export function RacaGeneroTab() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              <FileText className="w-3 h-3 inline mr-1" />
-              Fonte: PNAD/IBGE 2018-2024 | Crescimento de 34% em famílias chefiadas por mulheres negras
-            </p>
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+              <p className="text-xs text-muted-foreground">
+                <FileText className="w-3 h-3 inline mr-1" />
+                Fonte: PNAD/IBGE 2018-2024 | Crescimento de 34% em famílias chefiadas por mulheres negras
+              </p>
+              <a href="https://sidra.ibge.gov.br/tabela/7106" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 7106 — Arranjos familiares
+              </a>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -134,6 +144,19 @@ export function RacaGeneroTab() {
               ))}
             </TableBody>
           </Table>
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <FileText className="w-3 h-3" /> <strong>Fontes:</strong>
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs">
+              <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> INEP — Censo Educação Superior 2023
+              </a>
+              <a href="https://sidra.ibge.gov.br/Tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 7267 — Educação por cor/raça
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -247,6 +270,33 @@ export function PovosTradicionaisTab() {
         </Card>
       </div>
 
+      {/* Fontes oficiais Povos Tradicionais */}
+      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs">
+          <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 9605 — Cor/raça
+          </a>
+          <a href="https://sidra.ibge.gov.br/Tabela/9578" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 9578 — Quilombolas
+          </a>
+          <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> IBGE — Indígenas
+          </a>
+          <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22327-quilombolas.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> IBGE — Quilombolas
+          </a>
+          <a href="https://www.gov.br/funai/pt-br" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> FUNAI
+          </a>
+          <a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> INCRA — Quilombolas
+          </a>
+        </div>
+      </div>
+
       <Card className="border-l-4 border-l-warning">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
@@ -345,6 +395,24 @@ export function LgbtqiaTab() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Fontes LGBTQIA+ */}
+      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs">
+          <a href="https://antrabrasil.org/assassinatos/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> ANTRA — Dossiê de Assassinatos Trans
+          </a>
+          <a href="https://www.gov.br/mdh/pt-br/ondh/painel-de-dados" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> Disque 100/ONDH — Violência LGBTfóbica
+          </a>
+          <a href="https://grupogaydabahia.com.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> GGB — Relatório Mortes LGBTI+
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
@@ -431,6 +499,24 @@ export function DeficienciaTab() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Fontes Deficiência */}
+      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs">
+          <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 9605 — Censo 2022
+          </a>
+          <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/40235-pesquisa-nacional-de-saude-pcd.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> PNS PcD 2019 (IBGE)
+          </a>
+          <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -526,6 +612,30 @@ export function JuventudeTab() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Fontes Juventude */}
+      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs">
+          <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> Atlas da Violência 2025 (IPEA)
+          </a>
+          <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
+          </a>
+          <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
+          </a>
+          <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SISDEPEN/SENAPPEN
+          </a>
+          <a href="https://www.fiocruz.br" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> Fiocruz — Informe Epidemiológico Juventude
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
@@ -610,6 +720,27 @@ export function ClasseSocialTab() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Fontes Classe Social */}
+      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+        <p className="text-xs text-muted-foreground flex items-center gap-1">
+          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs">
+          <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
+          </a>
+          <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> SIS/IBGE — Síntese de Indicadores Sociais
+          </a>
+          <a href="https://www.ipea.gov.br/retrato/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> IPEA — Retrato das Desigualdades
+          </a>
+          <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+            <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Mortalidade materna
+          </a>
+        </div>
       </div>
 
       <Card>
