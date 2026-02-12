@@ -457,7 +457,191 @@ function gerarFiosCondutores(
     });
   }
 
+  // =============================================
+  // FIOS EMERGENTES — gerados dinamicamente a partir dos dados
+  // Evita repetir argumentos já cobertos pelos 9 fios fixos acima
+  // =============================================
+  const fiosEmergentes = gerarFiosEmergentes(lacunas, stats, respostas, orcStats, indicadores, orcDados, fios);
+  fios.push(...fiosEmergentes);
+
   return fios;
+}
+
+// =============================================
+// GERAÇÃO DE FIOS EMERGENTES
+// =============================================
+
+function gerarFiosEmergentes(
+  lacunas: LacunaIdentificada[],
+  stats: any,
+  respostas: RespostaLacunaCerdIII[],
+  orcStats: any,
+  indicadores: IndicadorInterseccional[],
+  orcDados: DadoOrcamentario[],
+  fiosExistentes: FioCondutor[]
+): FioCondutor[] {
+  const novos: FioCondutor[] = [];
+  const eixosCobertos = new Set(fiosExistentes.flatMap(f => f.eixos));
+  const gruposCobertos = new Set(fiosExistentes.flatMap(f => f.grupos));
+
+  // EMERGENTE 1: Eixos temáticos com alta concentração de lacunas NÃO cobertos por fios existentes
+  const porEixo: Record<string, LacunaIdentificada[]> = {};
+  lacunas.forEach(l => {
+    if (!porEixo[l.eixo_tematico]) porEixo[l.eixo_tematico] = [];
+    porEixo[l.eixo_tematico].push(l);
+  });
+
+  Object.entries(porEixo).forEach(([eixo, lacunasEixo]) => {
+    if (eixosCobertos.has(eixo)) return; // já coberto por fio fixo
+    if (lacunasEixo.length < 2) return; // densidade mínima
+
+    const naoCumpridas = lacunasEixo.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso');
+    const cumpridas = lacunasEixo.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido');
+    const evidencias: EvidenciaDinamica[] = [];
+    lacunasEixo.forEach(l => {
+      l.evidencias_encontradas?.slice(0, 2).forEach(ev => {
+        evidencias.push({ texto: ev, fonte: `§${l.paragrafo}`, tipo: 'quantitativa' });
+      });
+    });
+
+    const tipo: FioCondutor['tipo'] = naoCumpridas.length > cumpridas.length ? 'lacuna_critica' : 'avanco';
+
+    novos.push({
+      id: `emergente-eixo-${eixo}`,
+      titulo: `${eixoLabels[eixo] || eixo}: ${tipo === 'avanco' ? 'Avanços Insuficientes' : 'Concentração de Lacunas'}`,
+      tipo,
+      argumento: `O eixo ${eixoLabels[eixo] || eixo} acumula ${lacunasEixo.length} observações da ONU, das quais ${naoCumpridas.length} não foram cumpridas. ${cumpridas.length > 0 ? `Houve ${cumpridas.length} avanço(s) parcial(is), mas` : 'A ausência de avanços indica que'} este eixo demanda atenção reforçada no IV Relatório, especialmente na articulação com os dados orçamentários e indicadores estatísticos disponíveis.`,
+      evidencias: evidencias.slice(0, 6),
+      eixos: [eixo],
+      grupos: [...new Set(lacunasEixo.map(l => l.grupo_focal))],
+      relevancia: naoCumpridas.length >= 3 ? 'alta' : 'media',
+    });
+  });
+
+  // EMERGENTE 2: Grupos focais com alta vulnerabilidade não cobertos como fio principal
+  const porGrupo: Record<string, LacunaIdentificada[]> = {};
+  lacunas.forEach(l => {
+    if (!porGrupo[l.grupo_focal]) porGrupo[l.grupo_focal] = [];
+    porGrupo[l.grupo_focal].push(l);
+  });
+
+  Object.entries(porGrupo).forEach(([grupo, lacunasGrupo]) => {
+    if (gruposCobertos.has(grupo)) return;
+    if (lacunasGrupo.length < 2) return;
+    if (grupo === 'geral') return;
+
+    const naoCumpridas = lacunasGrupo.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso');
+    const evidencias: EvidenciaDinamica[] = [];
+    lacunasGrupo.forEach(l => {
+      l.evidencias_encontradas?.slice(0, 2).forEach(ev => {
+        evidencias.push({ texto: ev, fonte: `§${l.paragrafo} - ${l.tema}`, tipo: 'quantitativa' });
+      });
+    });
+
+    // Cruzar com indicadores do grupo
+    const indicadoresGrupo = indicadores.filter(i =>
+      i.lacunas_relacionadas?.some(lr => lacunasGrupo.some(l => l.id === lr))
+    );
+
+    novos.push({
+      id: `emergente-grupo-${grupo}`,
+      titulo: `${grupoLabels[grupo] || grupo}: Vulnerabilidade Específica`,
+      tipo: 'correlacao',
+      argumento: `${grupoLabels[grupo] || grupo} acumula ${lacunasGrupo.length} observações do Comitê CERD, com ${naoCumpridas.length} não cumprida(s). ${indicadoresGrupo.length > 0 ? `${indicadoresGrupo.length} indicador(es) do banco sustentam a análise interseccional deste grupo.` : 'A escassez de indicadores específicos no banco evidencia a invisibilidade estatística deste grupo.'} A interlocução entre as recomendações ONU e os dados disponíveis revela lacunas que merecem fio condutor próprio no relatório.`,
+      evidencias: evidencias.slice(0, 6),
+      eixos: [...new Set(lacunasGrupo.map(l => l.eixo_tematico))],
+      grupos: [grupo],
+      relevancia: naoCumpridas.length >= 2 ? 'alta' : 'media',
+    });
+  });
+
+  // EMERGENTE 3: Cruzamento orçamento × eixo temático sem cobertura orçamentária
+  if (orcDados.length > 0) {
+    const eixosComOrcamento = new Set(orcDados.map(d => d.eixo_tematico).filter(Boolean));
+    const eixosSemOrcamento = Object.keys(porEixo).filter(
+      e => !eixosComOrcamento.has(e) && porEixo[e].length >= 2
+    );
+
+    if (eixosSemOrcamento.length > 0) {
+      novos.push({
+        id: 'emergente-eixos-sem-orcamento',
+        titulo: 'Eixos sem Cobertura Orçamentária Identificada',
+        tipo: 'lacuna_critica',
+        argumento: `${eixosSemOrcamento.length} eixo(s) temático(s) com recomendações do CERD não possuem registros orçamentários vinculados: ${eixosSemOrcamento.map(e => eixoLabels[e] || e).join(', ')}. Isso pode indicar ausência de programas específicos, dados orçamentários ainda não coletados, ou dispersão do financiamento em programas genéricos não rastreáveis por recorte racial.`,
+        evidencias: eixosSemOrcamento.map(e => ({
+          texto: `${eixoLabels[e]}: ${porEixo[e].length} lacunas ONU, 0 registros orçamentários`,
+          fonte: 'Cruzamento BD',
+          tipo: 'orcamentaria' as const,
+        })),
+        eixos: eixosSemOrcamento,
+        grupos: [],
+        relevancia: 'media',
+      });
+    }
+  }
+
+  // EMERGENTE 4: Padrões de documento_origem nos indicadores (ex: Durban, Follow-up)
+  const documentosOrigem: Record<string, IndicadorInterseccional[]> = {};
+  indicadores.forEach(ind => {
+    ind.documento_origem?.forEach(doc => {
+      if (!documentosOrigem[doc]) documentosOrigem[doc] = [];
+      documentosOrigem[doc].push(ind);
+    });
+  });
+
+  // Detectar documentos normativos com massa crítica de indicadores que não são eixo principal dos fios existentes
+  const titulosFiosExistentes = fiosExistentes.map(f => f.titulo.toLowerCase());
+  Object.entries(documentosOrigem).forEach(([doc, inds]) => {
+    if (inds.length < 3) return;
+    // Evitar duplicação: checar se o doc já é mencionado em títulos existentes
+    const docLower = doc.toLowerCase();
+    if (titulosFiosExistentes.some(t => t.includes(docLower) || docLower.includes(t.split(':')[0]))) return;
+
+    const categoriasCobertas = [...new Set(inds.map(i => i.categoria))];
+    const tendencias = inds.filter(i => i.tendencia === 'crescente').length;
+    const decrescentes = inds.filter(i => i.tendencia === 'decrescente').length;
+
+    novos.push({
+      id: `emergente-doc-${doc.replace(/\s+/g, '-').toLowerCase().substring(0, 30)}`,
+      titulo: `Marco Normativo "${doc}": Evidências Transversais`,
+      tipo: 'correlacao',
+      argumento: `O documento "${doc}" fundamenta ${inds.length} indicadores no banco, abrangendo ${categoriasCobertas.length} categoria(s): ${categoriasCobertas.map(c => eixoLabels[c] || c).join(', ')}. ${tendencias > 0 ? `${tendencias} indicador(es) mostram tendência crescente.` : ''} ${decrescentes > 0 ? `${decrescentes} indicador(es) mostram tendência decrescente, sinalizando áreas de atenção.` : ''} Este marco normativo pode constituir fio condutor próprio na argumentação do relatório, conectando obrigações internacionais a evidências quantitativas.`,
+      evidencias: inds.slice(0, 6).map(i => ({
+        texto: `${i.nome}: ${i.tendencia || 'sem tendência definida'}`,
+        fonte: i.fonte,
+        tipo: 'quantitativa' as const,
+      })),
+      eixos: categoriasCobertas,
+      grupos: [],
+      relevancia: inds.length >= 5 ? 'alta' : 'media',
+    });
+  });
+
+  // EMERGENTE 5: Execução orçamentária como evidência de fortalecimento (2023-2026)
+  if (orcDados.length > 0) {
+    const dados2023_26 = orcDados.filter(d => d.ano >= 2023);
+    const altaExecucao = dados2023_26.filter(d => (d.percentual_execucao || 0) >= 90);
+    if (altaExecucao.length >= 3 && !titulosFiosExistentes.some(t => t.includes('execução'))) {
+      const programas = [...new Set(altaExecucao.map(d => d.programa))];
+      novos.push({
+        id: 'emergente-execucao-recorde',
+        titulo: 'Execução Orçamentária Recorde: Evidência de Fortalecimento',
+        tipo: 'avanco',
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2026 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
+        evidencias: altaExecucao.slice(0, 6).map(d => ({
+          texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
+          fonte: d.fonte_dados,
+          tipo: 'orcamentaria' as const,
+        })),
+        eixos: [...new Set(altaExecucao.map(d => d.eixo_tematico).filter(Boolean) as string[])],
+        grupos: [...new Set(altaExecucao.map(d => d.grupo_focal).filter(Boolean) as string[])],
+        relevancia: 'alta',
+        comparativo2018: `Período 2019-2022 registrou execução abaixo de 50% em múltiplos programas, com desfinanciamento generalizado.`,
+      });
+    }
+  }
+
+  return novos;
 }
 
 // =============================================
