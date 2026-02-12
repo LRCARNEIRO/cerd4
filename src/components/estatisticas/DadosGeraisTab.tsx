@@ -422,6 +422,7 @@ function OrcamentoResumoSection() {
   const variacaoPositiva = activeStats.variacao > 0;
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
@@ -570,129 +571,120 @@ function OrcamentoResumoSection() {
           </a>
         </p>
 
-        {/* Adendo: Programas transversais com recorte racial */}
-        <Accordion type="single" collapsible className="mt-6">
-          <AccordionItem value="programas-transversais" className="border border-warning/30 rounded-lg bg-warning/5">
-            <AccordionTrigger className="px-4 py-3 hover:no-underline">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Info className="w-4 h-4 text-warning" />
-                <span>Nota Metodológica: Programas Transversais com Recorte Racial (não incluídos na análise)</span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <p className="text-sm text-muted-foreground mb-4">
-                Os programas abaixo <strong>não são programas específicos de igualdade racial</strong> — são programas 
-                governamentais de escopo amplo que possuem recorte racial estimado ou que beneficiam indiretamente 
-                populações racializadas. Seus valores orçamentários foram <strong>excluídos</strong> da análise principal 
-                para evitar distorção dos dados sobre o investimento efetivamente direcionado a políticas de igualdade racial.
-              </p>
-              
-              <div className="space-y-3">
-                {[
-                  {
-                    programa: 'Agendas Transversais PPA (todas — 5 agendas)',
-                    orgao: 'Governo Federal / MPO',
-                    dotacao: 'R$ 405,3 bilhões',
-                    pago: 'Não discriminado',
-                    ano: 2024,
-                    motivo: 'Orçamento global das 5 agendas transversais do PPA 2024-2027. Inclui Igualdade Racial como uma das agendas, mas o valor é compartilhado com Mulheres, Crianças, Juventude e Povos Indígenas.',
-                    fonte: 'Agência Brasil / MPO',
-                    url: 'https://agenciabrasil.ebc.com.br/economia/noticia/2024-02/painel-do-orcamento-mostrara-execucao-de-agendas-prioritarias-do-ppa',
-                  },
-                  {
-                    programa: 'Minha Casa Minha Vida — Faixa 1 (recorte racial)',
-                    orgao: 'Ministério das Cidades',
-                    dotacao: 'R$ 42,8 bilhões',
-                    pago: 'R$ 33,2 bilhões',
-                    ano: 2024,
-                    motivo: 'Programa habitacional universal. Embora a maioria dos beneficiários da Faixa 1 seja de população negra (~75%), o programa não tem componente institucional específico de igualdade racial.',
-                    fonte: 'SIOP / Portal da Transparência',
-                    url: 'https://portaldatransparencia.gov.br',
-                  },
-                  {
-                    programa: 'Fundo Especial de Financiamento de Campanha (FEFC) — Candidaturas Negras',
-                    orgao: 'TSE',
-                    dotacao: 'R$ 4,9 bilhões',
-                    pago: 'R$ 4,9 bilhões',
-                    ano: 2024,
-                    motivo: 'Fundo eleitoral geral. A cota para candidaturas negras é uma proporção do fundo, mas o valor total não é um programa de igualdade racial.',
-                    fonte: 'TSE',
-                    url: 'https://www.tse.jus.br',
-                  },
-                  {
-                    programa: 'Fundo Amazônia',
-                    orgao: 'BNDES',
-                    dotacao: 'R$ 3,4 bilhões',
-                    pago: 'R$ 1,9 bilhão',
-                    ano: 2024,
-                    motivo: 'Fundo ambiental que beneficia indiretamente comunidades indígenas e quilombolas, mas é voltado à conservação e ao desenvolvimento sustentável da Amazônia.',
-                    fonte: 'BNDES',
-                    url: 'https://www.fundoamazonia.gov.br',
-                  },
-                  {
-                    programa: 'Urbanização de Favelas e Assentamentos Precários',
-                    orgao: 'Ministério das Cidades',
-                    dotacao: 'R$ 3,2 bilhões',
-                    pago: 'R$ 1,6 bilhão',
-                    ano: 2024,
-                    motivo: 'Programa de infraestrutura urbana. A população beneficiária é majoritariamente negra, mas não há componente institucional de igualdade racial.',
-                    fonte: 'SIOP',
-                    url: 'https://portaldatransparencia.gov.br',
-                  },
-                  {
-                    programa: 'Proteção e Fiscalização de Terras Indígenas',
-                    orgao: 'IBAMA / ICMBio',
-                    dotacao: 'R$ 1,85 bilhão',
-                    pago: 'R$ 1,35 bilhão',
-                    ano: 2024,
-                    motivo: 'Orçamento global de fiscalização ambiental em terras indígenas. Inclui ações de proteção territorial, mas compõe o orçamento geral dos órgãos ambientais.',
-                    fonte: 'SIOP',
-                    url: 'https://portaldatransparencia.gov.br',
-                  },
-                  {
-                    programa: 'Operação Acolhida + Políticas Migratórias',
-                    orgao: 'MJ / MRE',
-                    dotacao: 'R$ 280 milhões',
-                    pago: 'R$ 200 milhões',
-                    ano: 2024,
-                    motivo: 'Programa de acolhimento de refugiados venezuelanos. Embora beneficie populações racializadas, é uma política migratória, não de igualdade racial.',
-                    fonte: 'SIOP',
-                    url: 'https://portaldatransparencia.gov.br',
-                  },
-                ].map((prog, idx) => (
-                  <div key={idx} className="p-3 rounded-lg border border-border bg-card">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <h5 className="text-sm font-semibold">{prog.programa}</h5>
-                      <Badge variant="outline" className="text-xs whitespace-nowrap">{prog.ano}</Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mb-2">
-                      <span><strong>Órgão:</strong> {prog.orgao}</span>
-                      <span><strong>Dotação:</strong> {prog.dotacao}</span>
-                      <span><strong>Pago:</strong> {prog.pago}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground flex items-start gap-1">
-                      <AlertTriangle className="w-3 h-3 text-warning flex-shrink-0 mt-0.5" />
-                      {prog.motivo}
-                    </p>
-                    <a href={prog.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-1">
-                      {prog.fonte} <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <p className="text-xs text-muted-foreground">
-                  <strong>Soma excluída:</strong> R$ 461,7 bilhões em dotação autorizada / R$ 43,2 bilhões em valores pagos. 
-                  Esses montantes representam orçamentos globais de programas transversais que beneficiam populações 
-                  racializadas de forma indireta. A análise principal foca exclusivamente nos programas com 
-                  <strong> componente institucional explícito de igualdade racial</strong> (MIR, FUNAI, INCRA, Palmares etc.).
-                </p>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
       </CardContent>
     </Card>
+
+    {/* INFO COMPLEMENTAR: Programas transversais com recorte racial */}
+    <Card className="border-2 border-warning/50 bg-warning/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-warning" />
+          Informação Complementar: Programas Transversais com Recorte Racial
+        </CardTitle>
+        <CardDescription>
+          <strong>Estes programas NÃO estão incluídos na análise orçamentária acima.</strong> São programas governamentais 
+          de escopo amplo que possuem recorte racial estimado ou que beneficiam indiretamente 
+          populações racializadas. Foram excluídos para evitar distorção dos dados sobre o investimento 
+          efetivamente direcionado a políticas de igualdade racial.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Programa</TableHead>
+              <TableHead>Órgão</TableHead>
+              <TableHead className="text-right">Dotação (2024)</TableHead>
+              <TableHead className="text-right">Pago</TableHead>
+              <TableHead>Motivo da Exclusão</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[
+              {
+                programa: 'Agendas Transversais PPA (5 agendas)',
+                orgao: 'Governo Federal / MPO',
+                dotacao: 'R$ 405,3 bi',
+                pago: '—',
+                motivo: 'Orçamento global compartilhado entre 5 agendas (Mulheres, Crianças, Juventude, Povos Indígenas, Igualdade Racial)',
+                url: 'https://agenciabrasil.ebc.com.br/economia/noticia/2024-02/painel-do-orcamento-mostrara-execucao-de-agendas-prioritarias-do-ppa',
+              },
+              {
+                programa: 'Minha Casa Minha Vida — Faixa 1',
+                orgao: 'Min. das Cidades',
+                dotacao: 'R$ 42,8 bi',
+                pago: 'R$ 33,2 bi',
+                motivo: 'Programa habitacional universal; ~75% dos beneficiários são negros, mas sem componente específico de igualdade racial',
+                url: 'https://portaldatransparencia.gov.br',
+              },
+              {
+                programa: 'FEFC — Candidaturas Negras',
+                orgao: 'TSE',
+                dotacao: 'R$ 4,9 bi',
+                pago: 'R$ 4,9 bi',
+                motivo: 'Fundo eleitoral geral; a cota racial é uma proporção, não a totalidade',
+                url: 'https://www.tse.jus.br',
+              },
+              {
+                programa: 'Fundo Amazônia',
+                orgao: 'BNDES',
+                dotacao: 'R$ 3,4 bi',
+                pago: 'R$ 1,9 bi',
+                motivo: 'Fundo ambiental; beneficia indiretamente indígenas e quilombolas',
+                url: 'https://www.fundoamazonia.gov.br',
+              },
+              {
+                programa: 'Urbanização de Favelas',
+                orgao: 'Min. das Cidades',
+                dotacao: 'R$ 3,2 bi',
+                pago: 'R$ 1,6 bi',
+                motivo: 'Infraestrutura urbana; população beneficiária majoritariamente negra, sem componente racial institucional',
+                url: 'https://portaldatransparencia.gov.br',
+              },
+              {
+                programa: 'Proteção de Terras Indígenas',
+                orgao: 'IBAMA / ICMBio',
+                dotacao: 'R$ 1,85 bi',
+                pago: 'R$ 1,35 bi',
+                motivo: 'Orçamento global de fiscalização ambiental em TIs, não programa de igualdade racial',
+                url: 'https://portaldatransparencia.gov.br',
+              },
+              {
+                programa: 'Operação Acolhida + Migratórias',
+                orgao: 'MJ / MRE',
+                dotacao: 'R$ 280 mi',
+                pago: 'R$ 200 mi',
+                motivo: 'Política migratória (venezuelanos), não de igualdade racial',
+                url: 'https://portaldatransparencia.gov.br',
+              },
+            ].map((prog, idx) => (
+              <TableRow key={idx}>
+                <TableCell className="font-medium text-sm">
+                  <a href={prog.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                    {prog.programa} <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                  </a>
+                </TableCell>
+                <TableCell className="text-sm">{prog.orgao}</TableCell>
+                <TableCell className="text-right text-sm font-mono">{prog.dotacao}</TableCell>
+                <TableCell className="text-right text-sm font-mono">{prog.pago}</TableCell>
+                <TableCell className="text-xs text-muted-foreground max-w-xs">{prog.motivo}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+          <p className="text-sm flex items-start gap-2">
+            <Info className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
+            <span>
+              <strong>Soma excluída:</strong> R$ 461,7 bilhões em dotação autorizada / R$ 43,2 bilhões em valores pagos. 
+              A análise orçamentária acima foca exclusivamente nos programas com 
+              <strong> componente institucional explícito de igualdade racial</strong> (MIR, FUNAI, INCRA, Fundação Palmares etc.).
+            </span>
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+    </>
   );
 }
