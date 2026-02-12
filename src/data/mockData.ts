@@ -474,7 +474,7 @@ export const focalGroups: FocalGroup[] = [
     nome: 'Juventude Negra (15-29 anos)',
     populacao: 25800000, // Estimativa PNAD Contínua 2023
     fontePopulacao: 'SIDRA/IBGE - PNAD Contínua 2023 - Tabela 6403 (cálculo proporcional)',
-    indicadoresEspecificos: ['Homicídios 15-29 anos', 'Desemprego juvenil', 'Evasão escolar'],
+    indicadoresEspecificos: ['Homicídios 12-29 anos', 'Desemprego juvenil', 'Evasão escolar'],
     politicasEspecificas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
     observacoesONU: ['32', '33', '34']
   },

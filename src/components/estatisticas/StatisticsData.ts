@@ -522,11 +522,11 @@ export const resumoExecutivo = {
     total: 203080756,
     parda: 92083286,
     branca: 88252121,
-    preta: 20665498,
-    negra: 112748784, // parda + preta
+    preta: 20656458,
+    negra: 112739744, // parda + preta (92.083.286 + 20.656.458)
     percentualNegro: 55.51,
     indigena: 1694836, // Tabela 9718 - Pessoas indígenas
-    amarela: 850136,
+    amarela: 850130,
     quilombola: 1330186 // Tabela 9578
   },
   desigualdadeRenda: {

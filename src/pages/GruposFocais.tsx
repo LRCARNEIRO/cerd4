@@ -79,23 +79,23 @@ const gruposFocaisData = {
     ],
     observacoesONU: ['32', '33', '34', '35', '36'],
     politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
-    indicadores: ['Taxa de homicídios 15-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
+    indicadores: ['Taxa de homicídios 12-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
     notas: 'Grupo prioritário para políticas de segurança e empregabilidade. Letalidade 2,5x maior que jovens brancos.',
   },
   populacao_negra: {
     nome: 'População Negra (Preta + Parda)',
-    populacao: 112758406,
+    populacao: 112739744,
     fonte: 'IBGE - Censo Demográfico 2022',
     tabela: 'Tabela 9605 - SIDRA',
     link: 'https://sidra.ibge.gov.br/tabela/9605',
     ultimaAtualizacao: '2022-12-22',
     serieTemporal: [
       { ano: 2010, valor: 97171614, fonte: 'Censo 2010' },
-      { ano: 2022, valor: 112758406, fonte: 'Censo 2022' },
+      { ano: 2022, valor: 112739744, fonte: 'Censo 2022' },
     ],
     detalhamento: {
       preta: 20656458,
-      parda: 92101948,
+      parda: 92083286,
     },
     observacoesONU: ['12', '14', '15', '17', '19', '23', '28', '32'],
     politicas: ['Estatuto da Igualdade Racial (Lei 12.288/2010)', 'Lei de Cotas (Lei 12.711/2012)', 'PNSIPN'],
@@ -134,13 +134,13 @@ const dadosTerritoriais = {
     ultimaAtualizacao: '2025-11-01',
     notaFonte: 'INCRA: dados de titulação. FCP: certidões de autodefinição.',
     serieHistorica: [
-      { ano: 2018, titulados: 155, certificacoesFCP: 3010, processosAbertos: 1690, areaHa: 980000 },
-      { ano: 2019, titulados: 159, certificacoesFCP: 3171, processosAbertos: 1720, areaHa: 995000 },
-      { ano: 2020, titulados: 161, certificacoesFCP: 3250, processosAbertos: 1738, areaHa: 1000000 },
-      { ano: 2021, titulados: 163, certificacoesFCP: 3310, processosAbertos: 1750, areaHa: 1010000 },
-      { ano: 2022, titulados: 167, certificacoesFCP: 3400, processosAbertos: 1760, areaHa: 1030000 },
-      { ano: 2023, titulados: 174, certificacoesFCP: 3480, processosAbertos: 1780, areaHa: 1060000 },
-      { ano: 2024, titulados: 180, certificacoesFCP: 3550, processosAbertos: 1790, areaHa: 1080000 },
+      { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
+      { ano: 2019, titulados: 159, certificacoesFCP: 2552, processosAbertos: 1720, areaHa: 995000 },
+      { ano: 2020, titulados: 161, certificacoesFCP: 2581, processosAbertos: 1738, areaHa: 1000000 },
+      { ano: 2021, titulados: 163, certificacoesFCP: 2610, processosAbertos: 1750, areaHa: 1010000 },
+      { ano: 2022, titulados: 167, certificacoesFCP: 2756, processosAbertos: 1760, areaHa: 1030000 },
+      { ano: 2023, titulados: 174, certificacoesFCP: 2867, processosAbertos: 1780, areaHa: 1060000 },
+      { ano: 2024, titulados: 180, certificacoesFCP: 3013, processosAbertos: 1790, areaHa: 1080000 },
       { ano: 2025, titulados: 245, certificacoesFCP: 3158, processosAbertos: 2014, areaHa: 1162002 },
     ],
   },
@@ -156,6 +156,19 @@ const dadosTerritoriais = {
     linkPainel: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas#painel',
     ultimaAtualizacao: '2025-08-20',
     notaFonte: 'Dados geoespaciais atualizados mensalmente. Etnias/línguas: IBGE Censo 2022.',
+    // Detalhamento por fase do processo demarcatório (FUNAI)
+    fasesPeriodo1: { // 2018-2022
+      emEstudo: 27, // 8 (2018) + 19 (2019-2022)
+      delimitada: 2, // 2 em 2018, 0 depois
+      declarada: 1, // TI Kaxuyana-Tunayana (PA) em 2018
+      homologada: 1, // TI Baía dos Guató (MT) em 2018
+    },
+    fasesPeriodo2: { // 2023-2025
+      emEstudo: 36,
+      delimitada: 9,
+      declarada: 21,
+      homologada: 20,
+    },
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
       { ano: 2019, homologadas: 488, total: 628, emEstudo: 140, areaMilHa: 116.0 },
@@ -440,28 +453,53 @@ export default function GruposFocais() {
                     <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="text-center">
                         <p className="text-muted-foreground">Titulados</p>
-                        <p className="font-medium">155 → 185</p>
-                        <Badge variant="outline" className="text-success border-success/30 text-xs">+19.4%</Badge>
+                        <p className="font-medium">155 → 245</p>
+                        <Badge variant="outline" className="text-success border-success/30 text-xs">+58.1%</Badge>
                       </div>
                       <div className="text-center">
                         <p className="text-muted-foreground">Certidões FCP</p>
-                        <p className="font-medium">3.010 → 3.596</p>
-                        <Badge variant="outline" className="text-success border-success/30 text-xs">+19.5%</Badge>
+                        <p className="font-medium">2.523 → 3.158</p>
+                        <Badge variant="outline" className="text-success border-success/30 text-xs">+25.2%</Badge>
                       </div>
                       <div className="text-center">
                         <p className="text-muted-foreground">Processos</p>
-                        <p className="font-medium">1.690 → 1.796</p>
-                        <Badge variant="outline" className="text-success border-success/30 text-xs">+6.3%</Badge>
+                        <p className="font-medium">1.690 → 2.014</p>
+                        <Badge variant="outline" className="text-success border-success/30 text-xs">+19.2%</Badge>
                       </div>
                       <div className="text-center">
                         <p className="text-muted-foreground">Área (ha)</p>
-                        <p className="font-medium">980k → 1.1mi</p>
-                        <Badge variant="outline" className="text-success border-success/30 text-xs">+12.2%</Badge>
+                        <p className="font-medium">980k → 1.16mi</p>
+                        <Badge variant="outline" className="text-success border-success/30 text-xs">+18.6%</Badge>
                       </div>
                     </div>
                     <div className="mt-3 p-2 bg-warning/10 rounded text-xs text-muted-foreground">
-                      <strong className="text-warning">Diagnóstico:</strong> Melhoria lenta mas consistente. Ritmo de titulação insuficiente:
-                      a 4,3 títulos/ano (média 2018-25), seriam necessários ~370 anos para concluir os 1.796 processos pendentes.
+                      <strong className="text-warning">Diagnóstico:</strong> Aceleração significativa a partir de 2023, com 65 novas titulações em 2025.
+                      Mesmo assim, com 2.014 processos pendentes, o ritmo precisa ser mantido para reduzir o déficit territorial.
+                    </div>
+                  </div>
+
+                  {/* Infraestrutura Quilombola vs Média Nacional (Censo 2022) */}
+                  <div className="mt-4 p-3 border border-destructive/30 bg-destructive/5 rounded-lg">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-destructive" /> Infraestrutura vs Média Nacional (Censo 2022)
+                    </p>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span>Rede geral de água</span>
+                        <span><strong className="text-destructive">33,6%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-49,3 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Esgotamento adequado</span>
+                        <span><strong className="text-destructive">25,1%</strong> vs 62,5% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-37,4 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Coleta de lixo</span>
+                        <span><strong className="text-warning">50,4%</strong> vs 82,5% <Badge variant="outline" className="text-warning border-warning/30 ml-1">-32,1 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Em territórios reconhecidos</span>
+                        <span><strong className="text-destructive">12,6%</strong> da população quilombola</span>
+                      </div>
                     </div>
                   </div>
 
@@ -514,6 +552,31 @@ export default function GruposFocais() {
                     </div>
                   </div>
 
+                  {/* Detalhamento por Fase FUNAI */}
+                  <div className="p-3 border border-border rounded-lg mb-4">
+                    <p className="text-sm font-semibold mb-2">Avanços por Fase do Processo Demarcatório (FUNAI)</p>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <p className="font-medium text-muted-foreground mb-1">2018-2022</p>
+                        <div className="space-y-1">
+                          <div className="flex justify-between"><span>Em Estudo</span><span className="font-medium">27 TIs</span></div>
+                          <div className="flex justify-between"><span>Delimitada</span><span className="font-medium">2 TIs</span></div>
+                          <div className="flex justify-between"><span>Declarada</span><span className="font-medium">1 TI</span></div>
+                          <div className="flex justify-between"><span>Homologada</span><span className="font-medium text-destructive">1 TI</span></div>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-medium text-muted-foreground mb-1">2023-2025</p>
+                        <div className="space-y-1">
+                          <div className="flex justify-between"><span>Em Estudo</span><span className="font-medium">36 TIs</span></div>
+                          <div className="flex justify-between"><span>Delimitada</span><span className="font-medium">9 TIs</span></div>
+                          <div className="flex justify-between"><span>Declarada</span><span className="font-medium">21 TIs</span></div>
+                          <div className="flex justify-between"><span>Homologada</span><span className="font-medium text-success">20 TIs</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Comparativo Histórico Indígenas */}
                   <div className="p-3 border border-border rounded-lg mb-4">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
@@ -542,8 +605,8 @@ export default function GruposFocais() {
                       </div>
                     </div>
                     <div className="mt-3 p-2 bg-warning/10 rounded text-xs text-muted-foreground">
-                      <strong className="text-warning">Diagnóstico:</strong> Avanço muito lento no período 2018-2022 (paralisação de demarcações).
-                      Retomada a partir de 2023 com 10 novas TIs em processo. Ritmo pré-2019 era superior (~15 homologações/ano).
+                      <strong className="text-warning">Diagnóstico:</strong> Paralisação quase total de demarcações em 2018-2022 (apenas 1 homologação).
+                      Retomada expressiva a partir de 2023 com 20 homologações e 21 declarações. Ritmo pré-2019 era de ~15 homologações/ano.
                     </div>
                   </div>
 

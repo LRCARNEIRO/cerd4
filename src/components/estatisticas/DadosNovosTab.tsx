@@ -315,7 +315,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     periodicidade: 'Contínua',
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 3.271 comunidades certificadas → 2024: 3.596 (+325). Apenas 138 territórios titulados (7%). 1.330.186 quilombolas (Censo 2022, 1ª contagem oficial).',
+    relevanciaRacial: '2018: 2.523 comunidades certificadas → 2025: 3.158 (+635). 245 territórios titulados (384 títulos). 1.330.186 quilombolas (Censo 2022, 1ª contagem oficial).',
     prioridade: 'alta',
     status: 'disponivel'
   },
