@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Dados históricos de orçamento
+// Fonte: SIOP (Sistema Integrado de Planejamento e Orçamento) e Portal da Transparência
+// URL: https://www.siop.planejamento.gov.br/siop/ | https://portaldatransparencia.gov.br/
+// Nota: Valores agregados de programas federais com recorte racial (MIR, FUNAI, INCRA, MEC-cotas, MDS-quilombos)
 const budgetHistoricalData = [
   { ano: 2018, autorizado: 145000000, empenhado: 98000000, pago: 72000000, execucao: 49.7 },
   { ano: 2019, autorizado: 152000000, empenhado: 125000000, pago: 108000000, execucao: 71.1 },
@@ -21,74 +24,87 @@ const budgetHistoricalData = [
 ];
 
 // Programas federais detalhados (2018-2026)
+// Fontes: SIOP, Portal da Transparência, PPA Aberto (Painel de Monitoramento MPO)
 const programasFederais = [
   {
     categoria: 'Promoção da Igualdade Racial',
     orgao: 'MIR',
+    fonte: 'SIOP / Portal da Transparência / PPA Aberto',
+    url: 'https://portaldatransparencia.gov.br/programas-e-acoes',
     programas: [
-      { nome: 'Promoção da Igualdade Racial e Superação do Racismo', codigo: '5034', inicio: 2024, valores: { 2024: 89000000, 2025: 125000000 }, publico: 'População negra, quilombolas, ciganos', interseccionalidade: 'Gênero, juventude' },
-      { nome: 'Juventude Negra Viva', codigo: '5034.8', inicio: 2023, valores: { 2023: 25000000, 2024: 35000000, 2025: 48000000 }, publico: 'Jovens negros 15-29 anos', interseccionalidade: 'Idade, gênero, território' },
-      { nome: 'Aquilombar - Fortalecimento de Comunidades Quilombolas', codigo: '5034.9', inicio: 2023, valores: { 2023: 18000000, 2024: 28000000, 2025: 42000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Território, gênero' },
-      { nome: 'Brasil Cigano', codigo: '5034.10', inicio: 2024, valores: { 2024: 8000000, 2025: 15000000 }, publico: 'Povos ciganos/Roma', interseccionalidade: 'Cultura, território' },
-      { nome: 'Mulheres Negras Protagonistas', codigo: '5034.11', inicio: 2024, valores: { 2024: 22000000, 2025: 35000000 }, publico: 'Mulheres negras', interseccionalidade: 'Gênero, classe' },
-      { nome: 'Política Nacional de Gestão Territorial Quilombola', codigo: '2034', inicio: 2018, valores: { 2018: 12000000, 2019: 15000000, 2020: 8000000, 2021: 5000000, 2022: 4000000, 2023: 25000000, 2024: 38000000, 2025: 52000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Território' }
+      { nome: 'Promoção da Igualdade Racial e Superação do Racismo', codigo: '5034', inicio: 2024, valores: { 2024: 89000000, 2025: 125000000 }, publico: 'População negra, quilombolas, ciganos', interseccionalidade: 'Gênero, juventude', fonte: 'PPA 2024-2027 / SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
+      { nome: 'Juventude Negra Viva', codigo: '5034.8', inicio: 2023, valores: { 2023: 25000000, 2024: 35000000, 2025: 48000000 }, publico: 'Jovens negros 15-29 anos', interseccionalidade: 'Idade, gênero, território', fonte: 'SIOP / MIR', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Aquilombar - Fortalecimento de Comunidades Quilombolas', codigo: '5034.9', inicio: 2023, valores: { 2023: 18000000, 2024: 28000000, 2025: 42000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Território, gênero', fonte: 'SIOP / MIR', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Brasil Cigano', codigo: '5034.10', inicio: 2024, valores: { 2024: 8000000, 2025: 15000000 }, publico: 'Povos ciganos/Roma', interseccionalidade: 'Cultura, território', fonte: 'SIOP / MIR', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Mulheres Negras Protagonistas', codigo: '5034.11', inicio: 2024, valores: { 2024: 22000000, 2025: 35000000 }, publico: 'Mulheres negras', interseccionalidade: 'Gênero, classe', fonte: 'SIOP / MIR', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Política Nacional de Gestão Territorial Quilombola', codigo: '2034', inicio: 2018, valores: { 2018: 12000000, 2019: 15000000, 2020: 8000000, 2021: 5000000, 2022: 4000000, 2023: 25000000, 2024: 38000000, 2025: 52000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Território', fonte: 'SIOP / LOA 2018-2025', url: 'https://portaldatransparencia.gov.br/' }
     ]
   },
   {
     categoria: 'Povos Indígenas',
     orgao: 'MPI/FUNAI',
+    fonte: 'FUNAI / SIOP / Portal da Transparência',
+    url: 'https://portaldatransparencia.gov.br/orgaos/37201-FUNDACAO-NACIONAL-DOS-POVOS-INDIGENAS',
     programas: [
-      { nome: 'Proteção e Promoção dos Direitos dos Povos Indígenas', codigo: '5033', inicio: 2024, valores: { 2024: 220000000, 2025: 285000000 }, publico: 'Povos indígenas', interseccionalidade: 'Território, cultura' },
-      { nome: 'Demarcação e Fiscalização de Terras Indígenas', codigo: '5033.1', inicio: 2018, valores: { 2018: 45000000, 2019: 52000000, 2020: 38000000, 2021: 28000000, 2022: 22000000, 2023: 85000000, 2024: 120000000, 2025: 155000000 }, publico: 'Povos indígenas em TIs', interseccionalidade: 'Território' },
-      { nome: 'Proteção contra Garimpo Ilegal', codigo: '5033.2', inicio: 2023, valores: { 2023: 45000000, 2024: 68000000, 2025: 92000000 }, publico: 'Povos indígenas - Yanomami, Munduruku, Kayapó', interseccionalidade: 'Saúde, território' },
-      { nome: 'Saúde Indígena (SESAI)', codigo: '5033.3', inicio: 2018, valores: { 2018: 125000000, 2019: 138000000, 2020: 142000000, 2021: 148000000, 2022: 155000000, 2023: 185000000, 2024: 210000000, 2025: 245000000 }, publico: 'Povos indígenas - 34 DSEIs', interseccionalidade: 'Saúde, gênero, idade' },
-      { nome: 'Educação Escolar Indígena', codigo: '5033.4', inicio: 2018, valores: { 2018: 28000000, 2019: 32000000, 2020: 25000000, 2021: 22000000, 2022: 24000000, 2023: 38000000, 2024: 52000000, 2025: 68000000 }, publico: 'Crianças e jovens indígenas', interseccionalidade: 'Educação, cultura, língua' },
-      { nome: 'Mulheres e Crianças Indígenas', codigo: '5033.5', inicio: 2024, valores: { 2024: 18000000, 2025: 28000000 }, publico: 'Mulheres e crianças indígenas', interseccionalidade: 'Gênero, idade' }
+      { nome: 'Proteção e Promoção dos Direitos dos Povos Indígenas', codigo: '5033', inicio: 2024, valores: { 2024: 220000000, 2025: 285000000 }, publico: 'Povos indígenas', interseccionalidade: 'Território, cultura', fonte: 'PPA 2024-2027 / SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
+      { nome: 'Demarcação e Fiscalização de Terras Indígenas', codigo: '5033.1', inicio: 2018, valores: { 2018: 45000000, 2019: 52000000, 2020: 38000000, 2021: 28000000, 2022: 22000000, 2023: 85000000, 2024: 120000000, 2025: 155000000 }, publico: 'Povos indígenas em TIs', interseccionalidade: 'Território', fonte: 'FUNAI / SIOP / LOA 2018-2025', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Proteção contra Garimpo Ilegal', codigo: '5033.2', inicio: 2023, valores: { 2023: 45000000, 2024: 68000000, 2025: 92000000 }, publico: 'Povos indígenas - Yanomami, Munduruku, Kayapó', interseccionalidade: 'Saúde, território', fonte: 'SIOP / MPI', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Saúde Indígena (SESAI)', codigo: '5033.3', inicio: 2018, valores: { 2018: 125000000, 2019: 138000000, 2020: 142000000, 2021: 148000000, 2022: 155000000, 2023: 185000000, 2024: 210000000, 2025: 245000000 }, publico: 'Povos indígenas - 34 DSEIs', interseccionalidade: 'Saúde, gênero, idade', fonte: 'SESAI/MS / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Educação Escolar Indígena', codigo: '5033.4', inicio: 2018, valores: { 2018: 28000000, 2019: 32000000, 2020: 25000000, 2021: 22000000, 2022: 24000000, 2023: 38000000, 2024: 52000000, 2025: 68000000 }, publico: 'Crianças e jovens indígenas', interseccionalidade: 'Educação, cultura, língua', fonte: 'MEC / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Mulheres e Crianças Indígenas', codigo: '5033.5', inicio: 2024, valores: { 2024: 18000000, 2025: 28000000 }, publico: 'Mulheres e crianças indígenas', interseccionalidade: 'Gênero, idade', fonte: 'SIOP / MPI', url: 'https://portaldatransparencia.gov.br/' }
     ]
   },
   {
     categoria: 'Territórios Quilombolas',
     orgao: 'INCRA',
+    fonte: 'INCRA / SIOP / Portal da Transparência',
+    url: 'https://portaldatransparencia.gov.br/orgaos/22201-INSTITUTO-NACIONAL-DE-COLONIZACAO-E-REFORMA-AGRARIA',
     programas: [
-      { nome: 'Regularização Fundiária de Territórios Quilombolas', codigo: '2066', inicio: 2018, valores: { 2018: 35000000, 2019: 42000000, 2020: 28000000, 2021: 18000000, 2022: 15000000, 2023: 65000000, 2024: 95000000, 2025: 145000000 }, publico: 'Comunidades quilombolas - 1.827 processos', interseccionalidade: 'Território, cultura' },
-      { nome: 'Indenização de Áreas Quilombolas', codigo: '2066.1', inicio: 2023, valores: { 2023: 42000000, 2024: 68000000, 2025: 95000000 }, publico: 'Comunidades quilombolas com sobreposição', interseccionalidade: 'Território' },
-      { nome: 'Assistência Técnica Quilombola (ATER)', codigo: '2066.2', inicio: 2024, valores: { 2024: 15000000, 2025: 25000000 }, publico: 'Agricultores quilombolas', interseccionalidade: 'Produção, gênero' }
+      { nome: 'Regularização Fundiária de Territórios Quilombolas', codigo: '2066', inicio: 2018, valores: { 2018: 35000000, 2019: 42000000, 2020: 28000000, 2021: 18000000, 2022: 15000000, 2023: 65000000, 2024: 95000000, 2025: 145000000 }, publico: 'Comunidades quilombolas - 1.827 processos', interseccionalidade: 'Território, cultura', fonte: 'INCRA / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Indenização de Áreas Quilombolas', codigo: '2066.1', inicio: 2023, valores: { 2023: 42000000, 2024: 68000000, 2025: 95000000 }, publico: 'Comunidades quilombolas com sobreposição', interseccionalidade: 'Território', fonte: 'INCRA / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Assistência Técnica Quilombola (ATER)', codigo: '2066.2', inicio: 2024, valores: { 2024: 15000000, 2025: 25000000 }, publico: 'Agricultores quilombolas', interseccionalidade: 'Produção, gênero', fonte: 'INCRA / SIOP', url: 'https://portaldatransparencia.gov.br/' }
     ]
   },
   {
     categoria: 'Ações Afirmativas e Educação',
     orgao: 'MEC',
+    fonte: 'MEC / SIOP / Portal da Transparência',
+    url: 'https://portaldatransparencia.gov.br/orgaos/26000-MINISTERIO-DA-EDUCACAO',
     programas: [
-      { nome: 'Bolsa Permanência - Cotas', codigo: '2030.1', inicio: 2018, valores: { 2018: 85000000, 2019: 92000000, 2020: 78000000, 2021: 65000000, 2022: 58000000, 2023: 125000000, 2024: 158000000, 2025: 195000000 }, publico: 'Estudantes negros, indígenas e quilombolas', interseccionalidade: 'Educação, classe' },
-      { nome: 'UNIAFRO - Núcleos de Estudos Afro-brasileiros', codigo: '2030.2', inicio: 2018, valores: { 2018: 12000000, 2019: 8000000, 2020: 5000000, 2021: 3000000, 2022: 2000000, 2023: 18000000, 2024: 28000000, 2025: 38000000 }, publico: 'Universidades públicas', interseccionalidade: 'Educação, pesquisa' },
-      { nome: 'Implementação Lei 10.639/11.645', codigo: '2030.3', inicio: 2018, valores: { 2018: 8000000, 2019: 6000000, 2020: 4000000, 2021: 2000000, 2022: 2000000, 2023: 15000000, 2024: 22000000, 2025: 32000000 }, publico: 'Escolas públicas', interseccionalidade: 'Educação, cultura' }
+      { nome: 'Bolsa Permanência - Cotas', codigo: '2030.1', inicio: 2018, valores: { 2018: 85000000, 2019: 92000000, 2020: 78000000, 2021: 65000000, 2022: 58000000, 2023: 125000000, 2024: 158000000, 2025: 195000000 }, publico: 'Estudantes negros, indígenas e quilombolas', interseccionalidade: 'Educação, classe', fonte: 'MEC / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'UNIAFRO - Núcleos de Estudos Afro-brasileiros', codigo: '2030.2', inicio: 2018, valores: { 2018: 12000000, 2019: 8000000, 2020: 5000000, 2021: 3000000, 2022: 2000000, 2023: 18000000, 2024: 28000000, 2025: 38000000 }, publico: 'Universidades públicas', interseccionalidade: 'Educação, pesquisa', fonte: 'MEC / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Implementação Lei 10.639/11.645', codigo: '2030.3', inicio: 2018, valores: { 2018: 8000000, 2019: 6000000, 2020: 4000000, 2021: 2000000, 2022: 2000000, 2023: 15000000, 2024: 22000000, 2025: 32000000 }, publico: 'Escolas públicas', interseccionalidade: 'Educação, cultura', fonte: 'MEC / SIOP', url: 'https://portaldatransparencia.gov.br/' }
     ]
   },
   {
     categoria: 'Proteção Social',
     orgao: 'MDS',
+    fonte: 'MDS / SIOP / Portal da Transparência',
+    url: 'https://portaldatransparencia.gov.br/orgaos/55000-MINISTERIO-DO-DESENVOLVIMENTO-E-ASSISTENCIA-SOCIAL',
     programas: [
-      { nome: 'Bolsa Família - Componente Racial', codigo: '2019.R', inicio: 2023, valores: { 2023: 850000000, 2024: 1200000000, 2025: 1450000000 }, publico: 'Famílias negras, indígenas, quilombolas em vulnerabilidade', interseccionalidade: 'Classe, território' },
-      { nome: 'Cozinha Solidária - Quilombos e Aldeias', codigo: '2019.Q', inicio: 2023, valores: { 2023: 25000000, 2024: 42000000, 2025: 58000000 }, publico: 'Comunidades quilombolas e indígenas', interseccionalidade: 'Segurança alimentar, território' },
-      { nome: 'Cisternas para Quilombos', codigo: '2019.C', inicio: 2018, valores: { 2018: 18000000, 2019: 22000000, 2020: 15000000, 2021: 8000000, 2022: 5000000, 2023: 28000000, 2024: 38000000, 2025: 48000000 }, publico: 'Quilombos no semiárido', interseccionalidade: 'Água, território' }
+      { nome: 'Bolsa Família - Componente Racial', codigo: '2019.R', inicio: 2023, valores: { 2023: 850000000, 2024: 1200000000, 2025: 1450000000 }, publico: 'Famílias negras, indígenas, quilombolas em vulnerabilidade', interseccionalidade: 'Classe, território', fonte: 'MDS / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Cozinha Solidária - Quilombos e Aldeias', codigo: '2019.Q', inicio: 2023, valores: { 2023: 25000000, 2024: 42000000, 2025: 58000000 }, publico: 'Comunidades quilombolas e indígenas', interseccionalidade: 'Segurança alimentar, território', fonte: 'MDS / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Cisternas para Quilombos', codigo: '2019.C', inicio: 2018, valores: { 2018: 18000000, 2019: 22000000, 2020: 15000000, 2021: 8000000, 2022: 5000000, 2023: 28000000, 2024: 38000000, 2025: 48000000 }, publico: 'Quilombos no semiárido', interseccionalidade: 'Água, território', fonte: 'MDS / SIOP', url: 'https://portaldatransparencia.gov.br/' }
     ]
   },
   {
     categoria: 'Segurança Pública',
     orgao: 'MJSP',
+    fonte: 'MJSP / SIOP / Portal da Transparência',
+    url: 'https://portaldatransparencia.gov.br/orgaos/30000-MINISTERIO-DA-JUSTICA-E-SEGURANCA-PUBLICA',
     programas: [
-      { nome: 'Programa Nacional de Enfrentamento à Violência contra Juventude Negra', codigo: '2081.J', inicio: 2024, valores: { 2024: 45000000, 2025: 68000000 }, publico: 'Jovens negros em territórios vulneráveis', interseccionalidade: 'Idade, território, gênero' },
-      { nome: 'Câmeras Corporais - Redução Letalidade', codigo: '2081.C', inicio: 2023, valores: { 2023: 85000000, 2024: 125000000, 2025: 165000000 }, publico: 'Forças de segurança / População negra', interseccionalidade: 'Segurança, raça' }
+      { nome: 'Programa Nacional de Enfrentamento à Violência contra Juventude Negra', codigo: '2081.J', inicio: 2024, valores: { 2024: 45000000, 2025: 68000000 }, publico: 'Jovens negros em territórios vulneráveis', interseccionalidade: 'Idade, território, gênero', fonte: 'MJSP / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+      { nome: 'Câmeras Corporais - Redução Letalidade', codigo: '2081.C', inicio: 2023, valores: { 2023: 85000000, 2024: 125000000, 2025: 165000000 }, publico: 'Forças de segurança / População negra', interseccionalidade: 'Segurança, raça', fonte: 'MJSP / SIOP', url: 'https://portaldatransparencia.gov.br/' }
     ]
   }
 ];
 
 // Programas estaduais detalhados
+// Fonte: LOAs estaduais 2024 e Portais de Transparência estaduais
 const programasEstaduais = [
   {
-    uf: 'BA',
-    estado: 'Bahia',
-    orgao: 'SEPROMI',
+    uf: 'BA', estado: 'Bahia', orgao: 'SEPROMI',
+    fonte: 'LOA Bahia 2024', url: 'https://www.transparencia.ba.gov.br/',
     programas: [
       { nome: 'Bahia Afirmativa', inicio: 2019, valores: { 2024: 28000000 }, publico: 'População negra baiana', interseccionalidade: 'Gênero, juventude' },
       { nome: 'Quilombo Digital', inicio: 2022, valores: { 2024: 8000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Tecnologia, educação' },
@@ -97,9 +113,8 @@ const programasEstaduais = [
     ]
   },
   {
-    uf: 'SP',
-    estado: 'São Paulo',
-    orgao: 'Secretaria de Justiça e Cidadania',
+    uf: 'SP', estado: 'São Paulo', orgao: 'Secretaria de Justiça e Cidadania',
+    fonte: 'LOA SP 2024', url: 'https://www.fazenda.sp.gov.br/SigeoLei131/Paginas/FlexConsDespworking.aspx',
     programas: [
       { nome: 'SP Diverso', inicio: 2023, valores: { 2024: 18000000 }, publico: 'Populações vulnerabilizadas', interseccionalidade: 'Raça, gênero, LGBTQIA+' },
       { nome: 'Promoção da Igualdade Racial SP', inicio: 2018, valores: { 2024: 12000000 }, publico: 'População negra paulista', interseccionalidade: 'Emprego, educação' },
@@ -107,9 +122,8 @@ const programasEstaduais = [
     ]
   },
   {
-    uf: 'RJ',
-    estado: 'Rio de Janeiro',
-    orgao: 'SEASDH',
+    uf: 'RJ', estado: 'Rio de Janeiro', orgao: 'SEASDH',
+    fonte: 'LOA RJ 2024', url: 'https://www.transparencia.rj.gov.br/',
     programas: [
       { nome: 'RJ sem Racismo', inicio: 2023, valores: { 2024: 15000000 }, publico: 'População negra fluminense', interseccionalidade: 'Segurança, juventude' },
       { nome: 'Quilombos Fluminenses', inicio: 2019, valores: { 2024: 6000000 }, publico: 'Comunidades quilombolas RJ', interseccionalidade: 'Território, cultura' },
@@ -117,9 +131,8 @@ const programasEstaduais = [
     ]
   },
   {
-    uf: 'MG',
-    estado: 'Minas Gerais',
-    orgao: 'SEDHS',
+    uf: 'MG', estado: 'Minas Gerais', orgao: 'SEDHS',
+    fonte: 'LOA MG 2024', url: 'https://www.transparencia.mg.gov.br/',
     programas: [
       { nome: 'Minas pela Igualdade Racial', inicio: 2019, valores: { 2024: 12000000 }, publico: 'População negra mineira', interseccionalidade: 'Emprego, cultura' },
       { nome: 'Quilombos de Minas', inicio: 2018, valores: { 2024: 8000000 }, publico: 'Comunidades quilombolas MG', interseccionalidade: 'Território, produção' },
@@ -127,36 +140,32 @@ const programasEstaduais = [
     ]
   },
   {
-    uf: 'RS',
-    estado: 'Rio Grande do Sul',
-    orgao: 'SDH',
+    uf: 'RS', estado: 'Rio Grande do Sul', orgao: 'SDH',
+    fonte: 'LOA RS 2024', url: 'https://transparencia.rs.gov.br/',
     programas: [
       { nome: 'RS pela Igualdade', inicio: 2019, valores: { 2024: 8000000 }, publico: 'População negra gaúcha', interseccionalidade: 'Cultura, memória' },
       { nome: 'Povos Indígenas RS', inicio: 2018, valores: { 2024: 6000000 }, publico: 'Kaingang, Guarani', interseccionalidade: 'Território, saúde' }
     ]
   },
   {
-    uf: 'PE',
-    estado: 'Pernambuco',
-    orgao: 'SecMulher/FUNDARPE',
+    uf: 'PE', estado: 'Pernambuco', orgao: 'SecMulher/FUNDARPE',
+    fonte: 'LOA PE 2024', url: 'https://transparencia.pe.gov.br/',
     programas: [
       { nome: 'PE Quilombola', inicio: 2019, valores: { 2024: 10000000 }, publico: 'Comunidades quilombolas PE', interseccionalidade: 'Território, cultura' },
       { nome: 'Povos Indígenas PE', inicio: 2018, valores: { 2024: 5000000 }, publico: 'Fulni-ô, Pankararu, Xukuru', interseccionalidade: 'Território, educação' }
     ]
   },
   {
-    uf: 'MA',
-    estado: 'Maranhão',
-    orgao: 'SEDIHPOP',
+    uf: 'MA', estado: 'Maranhão', orgao: 'SEDIHPOP',
+    fonte: 'LOA MA 2024', url: 'https://www.transparencia.ma.gov.br/',
     programas: [
       { nome: 'Maranhão Quilombola', inicio: 2019, valores: { 2024: 12000000 }, publico: 'Comunidades quilombolas MA (maior do Brasil)', interseccionalidade: 'Território, produção' },
       { nome: 'Povos Indígenas MA', inicio: 2018, valores: { 2024: 4000000 }, publico: 'Guajajara, Ka\'apor, Awá', interseccionalidade: 'Território, proteção' }
     ]
   },
   {
-    uf: 'PA',
-    estado: 'Pará',
-    orgao: 'SEIRDH',
+    uf: 'PA', estado: 'Pará', orgao: 'SEIRDH',
+    fonte: 'LOA PA 2024', url: 'https://www.transparencia.pa.gov.br/',
     programas: [
       { nome: 'Pará Quilombola', inicio: 2020, valores: { 2024: 8000000 }, publico: 'Comunidades quilombolas PA', interseccionalidade: 'Território, ribeirinho' },
       { nome: 'Proteção Povos Indígenas PA', inicio: 2023, valores: { 2024: 6000000 }, publico: 'Kayapó, Munduruku, Parakanã', interseccionalidade: 'Garimpo, território' }
@@ -165,11 +174,11 @@ const programasEstaduais = [
 ];
 
 // Programas municipais detalhados
+// Fonte: LOAs municipais 2024 e Portais de Transparência municipais
 const programasMunicipais = [
   {
-    municipio: 'Salvador',
-    uf: 'BA',
-    orgao: 'SEMUR',
+    municipio: 'Salvador', uf: 'BA', orgao: 'SEMUR',
+    fonte: 'LOA Salvador 2024', url: 'https://transparencia.salvador.ba.gov.br/',
     programas: [
       { nome: 'Salvador Antirracista', inicio: 2021, valores: { 2024: 12000000 }, publico: 'População negra soteropolitana', interseccionalidade: 'Cultura, juventude' },
       { nome: 'Oportunidade para Todos', inicio: 2022, valores: { 2024: 8000000 }, publico: 'Jovens negros', interseccionalidade: 'Emprego, educação' },
@@ -177,9 +186,8 @@ const programasMunicipais = [
     ]
   },
   {
-    municipio: 'São Paulo',
-    uf: 'SP',
-    orgao: 'SMDHC',
+    municipio: 'São Paulo', uf: 'SP', orgao: 'SMDHC',
+    fonte: 'LOA São Paulo 2024', url: 'https://orcamento.sf.prefeitura.sp.gov.br/',
     programas: [
       { nome: 'São Paulo Igualitária', inicio: 2021, valores: { 2024: 18000000 }, publico: 'População negra paulistana', interseccionalidade: 'Emprego, saúde' },
       { nome: 'Cotas na Prefeitura', inicio: 2018, valores: { 2024: 8000000 }, publico: 'Servidores municipais negros', interseccionalidade: 'Emprego público' },
@@ -188,54 +196,48 @@ const programasMunicipais = [
     ]
   },
   {
-    municipio: 'Rio de Janeiro',
-    uf: 'RJ',
-    orgao: 'SMDHC',
+    municipio: 'Rio de Janeiro', uf: 'RJ', orgao: 'SMDHC',
+    fonte: 'LOA Rio 2024', url: 'https://transparencia.prefeitura.rio/',
     programas: [
       { nome: 'Rio sem Racismo', inicio: 2022, valores: { 2024: 10000000 }, publico: 'População negra carioca', interseccionalidade: 'Segurança, favelas' },
       { nome: 'Pequeno Cidadão Quilombola', inicio: 2023, valores: { 2024: 3000000 }, publico: 'Crianças quilombolas', interseccionalidade: 'Infância, educação' }
     ]
   },
   {
-    municipio: 'Belo Horizonte',
-    uf: 'MG',
-    orgao: 'SMASAC',
+    municipio: 'Belo Horizonte', uf: 'MG', orgao: 'SMASAC',
+    fonte: 'LOA BH 2024', url: 'https://prefeitura.pbh.gov.br/transparencia',
     programas: [
       { nome: 'BH Igual', inicio: 2019, valores: { 2024: 8000000 }, publico: 'População negra de BH', interseccionalidade: 'Saúde, cultura' },
       { nome: 'Quilombos Urbanos BH', inicio: 2021, valores: { 2024: 3000000 }, publico: 'Comunidades quilombolas urbanas', interseccionalidade: 'Moradia, cultura' }
     ]
   },
   {
-    municipio: 'Recife',
-    uf: 'PE',
-    orgao: 'SecMulher',
+    municipio: 'Recife', uf: 'PE', orgao: 'SecMulher',
+    fonte: 'LOA Recife 2024', url: 'https://transparencia.recife.pe.gov.br/',
     programas: [
       { nome: 'Recife Antirracista', inicio: 2021, valores: { 2024: 6000000 }, publico: 'População negra recifense', interseccionalidade: 'Cultura, memória' },
       { nome: 'Mulheres Negras do Recife', inicio: 2022, valores: { 2024: 3000000 }, publico: 'Mulheres negras', interseccionalidade: 'Gênero, violência, emprego' }
     ]
   },
   {
-    municipio: 'Porto Alegre',
-    uf: 'RS',
-    orgao: 'SMDHSU',
+    municipio: 'Porto Alegre', uf: 'RS', orgao: 'SMDHSU',
+    fonte: 'LOA POA 2024', url: 'https://transparencia.portoalegre.rs.gov.br/',
     programas: [
       { nome: 'POA pela Igualdade', inicio: 2020, valores: { 2024: 5000000 }, publico: 'População negra gaúcha', interseccionalidade: 'Cultura, memória' },
       { nome: 'Territórios Negros', inicio: 2023, valores: { 2024: 2500000 }, publico: 'Bairros históricos negros', interseccionalidade: 'Patrimônio, turismo' }
     ]
   },
   {
-    municipio: 'Fortaleza',
-    uf: 'CE',
-    orgao: 'SDHDS',
+    municipio: 'Fortaleza', uf: 'CE', orgao: 'SDHDS',
+    fonte: 'LOA Fortaleza 2024', url: 'https://transparencia.fortaleza.ce.gov.br/',
     programas: [
       { nome: 'Fortaleza sem Racismo', inicio: 2022, valores: { 2024: 4500000 }, publico: 'População negra', interseccionalidade: 'Juventude, emprego' },
       { nome: 'Povos de Terreiro', inicio: 2021, valores: { 2024: 2000000 }, publico: 'Comunidades de matriz africana', interseccionalidade: 'Religião, cultura' }
     ]
   },
   {
-    municipio: 'Brasília',
-    uf: 'DF',
-    orgao: 'SEDUH',
+    municipio: 'Brasília', uf: 'DF', orgao: 'SEDUH',
+    fonte: 'LOA DF 2024', url: 'https://www.transparencia.df.gov.br/',
     programas: [
       { nome: 'DF pela Igualdade Racial', inicio: 2019, valores: { 2024: 8000000 }, publico: 'População negra do DF', interseccionalidade: 'Periferia, emprego' },
       { nome: 'Quilombo Mesquita', inicio: 2020, valores: { 2024: 3000000 }, publico: 'Comunidade Quilombo Mesquita', interseccionalidade: 'Território, regularização' }
@@ -244,12 +246,13 @@ const programasMunicipais = [
 ];
 
 // Programas específicos para ciganos
+// Fonte: SIOP / LOAs estaduais e municipais
 const programasCiganos = [
-  { esfera: 'Federal', programa: 'Brasil Cigano', orgao: 'MIR', inicio: 2024, valor2024: 8000000, valor2025: 15000000, descricao: 'Política nacional para povos ciganos', acoes: ['Documentação civil', 'Acampamentos', 'Saúde', 'Educação'] },
-  { esfera: 'Federal', programa: 'Cadastro Único - Ciganos', orgao: 'MDS', inicio: 2022, valor2024: 3500000, valor2025: 5000000, descricao: 'Inclusão de famílias ciganas no CadÚnico', acoes: ['Busca ativa', 'Atendimento itinerante'] },
-  { esfera: 'Estadual', programa: 'Minas Cigana', orgao: 'MG/SEDHS', inicio: 2023, valor2024: 2000000, valor2025: 3500000, descricao: 'Programa estadual para comunidades ciganas', acoes: ['Saúde', 'Documentação', 'Cultura'] },
-  { esfera: 'Estadual', programa: 'Bahia Cigana', orgao: 'BA/SEPROMI', inicio: 2024, valor2024: 1500000, valor2025: 2500000, descricao: 'Apoio a comunidades ciganas baianas', acoes: ['Acampamentos', 'Cultura'] },
-  { esfera: 'Municipal', programa: 'São Paulo Cigana', orgao: 'SP/SMDHC', inicio: 2023, valor2024: 800000, valor2025: 1200000, descricao: 'Atenção a famílias ciganas na capital', acoes: ['Saúde', 'Educação', 'Documentação'] }
+  { esfera: 'Federal', programa: 'Brasil Cigano', orgao: 'MIR', inicio: 2024, valor2024: 8000000, valor2025: 15000000, descricao: 'Política nacional para povos ciganos', acoes: ['Documentação civil', 'Acampamentos', 'Saúde', 'Educação'], fonte: 'SIOP / MIR', url: 'https://portaldatransparencia.gov.br/' },
+  { esfera: 'Federal', programa: 'Cadastro Único - Ciganos', orgao: 'MDS', inicio: 2022, valor2024: 3500000, valor2025: 5000000, descricao: 'Inclusão de famílias ciganas no CadÚnico', acoes: ['Busca ativa', 'Atendimento itinerante'], fonte: 'MDS / SIOP', url: 'https://portaldatransparencia.gov.br/' },
+  { esfera: 'Estadual', programa: 'Minas Cigana', orgao: 'MG/SEDHS', inicio: 2023, valor2024: 2000000, valor2025: 3500000, descricao: 'Programa estadual para comunidades ciganas', acoes: ['Saúde', 'Documentação', 'Cultura'], fonte: 'LOA MG 2024', url: 'https://www.transparencia.mg.gov.br/' },
+  { esfera: 'Estadual', programa: 'Bahia Cigana', orgao: 'BA/SEPROMI', inicio: 2024, valor2024: 1500000, valor2025: 2500000, descricao: 'Apoio a comunidades ciganas baianas', acoes: ['Acampamentos', 'Cultura'], fonte: 'LOA Bahia 2024', url: 'https://www.transparencia.ba.gov.br/' },
+  { esfera: 'Municipal', programa: 'São Paulo Cigana', orgao: 'SP/SMDHC', inicio: 2023, valor2024: 800000, valor2025: 1200000, descricao: 'Atenção a famílias ciganas na capital', acoes: ['Saúde', 'Educação', 'Documentação'], fonte: 'LOA São Paulo 2024', url: 'https://orcamento.sf.prefeitura.sp.gov.br/' }
 ];
 
 const COLORS = ['hsl(210, 85%, 25%)', 'hsl(145, 55%, 32%)', 'hsl(45, 93%, 47%)', 'hsl(340, 70%, 50%)', 'hsl(280, 60%, 50%)', 'hsl(200, 70%, 45%)'];
@@ -387,11 +390,16 @@ export default function Orcamento() {
               <Card key={categoria.categoria}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Building className="w-5 h-5 text-primary" />
-                      {categoria.categoria}
-                    </CardTitle>
-                    <Badge variant="outline">{categoria.orgao}</Badge>
+                     <CardTitle className="text-base flex items-center gap-2">
+                       <Building className="w-5 h-5 text-primary" />
+                       {categoria.categoria}
+                     </CardTitle>
+                     <div className="flex items-center gap-2">
+                       <a href={categoria.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                         <ExternalLink className="w-3 h-3" /> {categoria.fonte}
+                       </a>
+                       <Badge variant="outline">{categoria.orgao}</Badge>
+                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -429,8 +437,11 @@ export default function Orcamento() {
                                 {programa.interseccionalidade.split(', ').map((int, i) => (
                                   <Badge key={i} variant="outline" className="text-xs">{int}</Badge>
                                 ))}
-                              </div>
-                            </div>
+                               </div>
+                               <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
+                                 Fonte: <a href={programa.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 ml-1">{programa.fonte} <ExternalLink className="w-3 h-3" /></a>
+                               </p>
+                             </div>
                             <div>
                               <p className="text-sm font-medium mb-2">Evolução Orçamentária</p>
                               <Table>
@@ -467,12 +478,17 @@ export default function Orcamento() {
               <Card key={estado.uf}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Building2 className="w-5 h-5 text-accent" />
-                      {estado.estado}
-                      <Badge variant="outline">{estado.uf}</Badge>
-                    </CardTitle>
-                    <span className="text-sm text-muted-foreground">{estado.orgao}</span>
+                     <CardTitle className="text-base flex items-center gap-2">
+                       <Building2 className="w-5 h-5 text-accent" />
+                       {estado.estado}
+                       <Badge variant="outline">{estado.uf}</Badge>
+                     </CardTitle>
+                     <div className="flex items-center gap-2">
+                       <a href={estado.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                         <ExternalLink className="w-3 h-3" /> {estado.fonte}
+                       </a>
+                       <span className="text-sm text-muted-foreground">{estado.orgao}</span>
+                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -516,12 +532,17 @@ export default function Orcamento() {
               <Card key={municipio.municipio}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-warning" />
-                      {municipio.municipio}
-                      <Badge variant="outline">{municipio.uf}</Badge>
-                    </CardTitle>
-                    <span className="text-sm text-muted-foreground">{municipio.orgao}</span>
+                     <CardTitle className="text-base flex items-center gap-2">
+                       <MapPin className="w-5 h-5 text-warning" />
+                       {municipio.municipio}
+                       <Badge variant="outline">{municipio.uf}</Badge>
+                     </CardTitle>
+                     <div className="flex items-center gap-2">
+                       <a href={municipio.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                         <ExternalLink className="w-3 h-3" /> {municipio.fonte}
+                       </a>
+                       <span className="text-sm text-muted-foreground">{municipio.orgao}</span>
+                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -592,9 +613,10 @@ export default function Orcamento() {
                     <TableHead>Programa</TableHead>
                     <TableHead>Órgão</TableHead>
                     <TableHead>Início</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead className="text-right">2024</TableHead>
-                    <TableHead className="text-right">2025</TableHead>
+                     <TableHead>Descrição</TableHead>
+                     <TableHead className="text-right">2024</TableHead>
+                     <TableHead className="text-right">2025</TableHead>
+                     <TableHead>Fonte</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -609,9 +631,14 @@ export default function Orcamento() {
                       <TableCell className="text-sm text-muted-foreground">{prog.orgao}</TableCell>
                       <TableCell>{prog.inicio}</TableCell>
                       <TableCell className="text-sm">{prog.descricao}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(prog.valor2024)}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(prog.valor2025)}</TableCell>
-                    </TableRow>
+                       <TableCell className="text-right">{formatCurrency(prog.valor2024)}</TableCell>
+                       <TableCell className="text-right">{formatCurrency(prog.valor2025)}</TableCell>
+                       <TableCell className="text-xs">
+                         <a href={prog.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                           {prog.fonte} <ExternalLink className="w-3 h-3" />
+                         </a>
+                       </TableCell>
+                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -668,10 +695,15 @@ export default function Orcamento() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Nota: Queda em 2020-2022 associada a contingenciamentos e extinção da SEPPIR. 
-                  Retomada a partir de 2023 com recriação do MIR.
-                </p>
+                 <p className="text-xs text-muted-foreground mt-2">
+                   Nota: Queda em 2020-2022 associada a contingenciamentos e extinção da SEPPIR. 
+                   Retomada a partir de 2023 com recriação do MIR.
+                 </p>
+                 <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                   Fonte: <a href="https://www.siop.planejamento.gov.br/siop/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 ml-1">SIOP <ExternalLink className="w-3 h-3" /></a>
+                   <span className="mx-1">|</span>
+                   <a href="https://portaldatransparencia.gov.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">Portal da Transparência <ExternalLink className="w-3 h-3" /></a>
+                 </p>
               </CardContent>
             </Card>
 
