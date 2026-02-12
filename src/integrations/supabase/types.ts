@@ -177,6 +177,68 @@ export type Database = {
         }
         Relationships: []
       }
+      documentos_normativos: {
+        Row: {
+          categoria: string
+          created_at: string
+          id: string
+          metas_impactadas: string[] | null
+          recomendacoes_impactadas: string[] | null
+          resumo_impacto: Json | null
+          secoes_impactadas: string[] | null
+          snapshot_id: string | null
+          status: string
+          tamanho: string | null
+          tipo_arquivo: string | null
+          titulo: string
+          total_itens_extraidos: number | null
+          updated_at: string
+          url_origem: string | null
+        }
+        Insert: {
+          categoria?: string
+          created_at?: string
+          id?: string
+          metas_impactadas?: string[] | null
+          recomendacoes_impactadas?: string[] | null
+          resumo_impacto?: Json | null
+          secoes_impactadas?: string[] | null
+          snapshot_id?: string | null
+          status?: string
+          tamanho?: string | null
+          tipo_arquivo?: string | null
+          titulo: string
+          total_itens_extraidos?: number | null
+          updated_at?: string
+          url_origem?: string | null
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          id?: string
+          metas_impactadas?: string[] | null
+          recomendacoes_impactadas?: string[] | null
+          resumo_impacto?: Json | null
+          secoes_impactadas?: string[] | null
+          snapshot_id?: string | null
+          status?: string
+          tamanho?: string | null
+          tipo_arquivo?: string | null
+          titulo?: string
+          total_itens_extraidos?: number | null
+          updated_at?: string
+          url_origem?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_normativos_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "data_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       indicadores_interseccionais: {
         Row: {
           analise_interseccional: string | null
