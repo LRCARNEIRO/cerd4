@@ -344,7 +344,7 @@ export function SerieTemporalGrupos() {
             <p className="font-medium">Quilombolas — Série Temporal Limitada</p>
             <p className="text-sm text-muted-foreground">
               Primeira contagem oficial apenas no Censo 2022 (1.330.186). Sem dados anteriores para comparação direta. 
-              Indicadores indiretos: 185 territórios titulados (de 1.796 em processo ≈ 10%); acesso a água 45,2%; saneamento 28,5%.
+              Indicadores indiretos: 245 territórios titulados (de 2.014 em processo ≈ 12%); rede de água 33,6%; esgotamento adequado 25,1%.
             </p>
             <Badge variant="outline" className="mt-2 text-xs border-warning text-warning">Dados Parciais</Badge>
           </div>
