@@ -135,7 +135,6 @@ export function NormativaUpload() {
     if (!urlInput.trim()) return;
     setIsProcessing(true);
     setUploadProgress(10);
-    setFileName(urlInput.trim());
 
     try {
       const progressInterval = setInterval(() => {
@@ -149,6 +148,9 @@ export function NormativaUpload() {
       setUploadProgress(100);
 
       if (error) throw error;
+
+      // Use AI-extracted title instead of raw URL
+      setFileName(data?.titulo_pagina || urlInput.trim());
 
       if (data?.proposedChanges?.length > 0) {
         setProposedChanges(enrichWithImpact(data.proposedChanges));
