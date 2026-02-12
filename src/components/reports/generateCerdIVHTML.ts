@@ -278,6 +278,29 @@ export function generateCerdIVHTML(
       e novos marcos legais. Porém, ${naoCumpridas + retrocessos} de ${total} recomendações permanecem não cumpridas ou 
       em retrocesso, evidenciando que a desigualdade racial estrutural persiste apesar dos esforços normativos.</p>
     </div>
+
+    <div class="gap">
+      <h4>⚠️ Nota Metodológica: Programas Transversais com Recorte Racial</h4>
+      <p>Os dados orçamentários deste relatório referem-se <strong>exclusivamente a programas com componente institucional 
+      explícito de igualdade racial</strong> (MIR, FUNAI, INCRA, Fundação Palmares etc.). Foram excluídos 7 programas 
+      governamentais de escopo amplo que beneficiam indiretamente populações racializadas, mas que não são políticas 
+      específicas de igualdade racial:</p>
+      <table>
+        <thead><tr><th>Programa</th><th>Órgão</th><th>Dotação (2024)</th><th>Motivo da Exclusão</th></tr></thead>
+        <tbody>
+          <tr><td>Agendas Transversais PPA (5 agendas)</td><td>Governo Federal / MPO</td><td>R$ 405,3 bi</td><td>Orçamento global compartilhado entre 5 agendas</td></tr>
+          <tr><td>Minha Casa Minha Vida — Faixa 1</td><td>Min. das Cidades</td><td>R$ 42,8 bi</td><td>Programa habitacional universal (~75% beneficiários negros)</td></tr>
+          <tr><td>FEFC — Candidaturas Negras</td><td>TSE</td><td>R$ 4,9 bi</td><td>Fundo eleitoral geral; cota racial é proporção</td></tr>
+          <tr><td>Fundo Amazônia</td><td>BNDES</td><td>R$ 3,4 bi</td><td>Fundo ambiental; benefício indireto a indígenas e quilombolas</td></tr>
+          <tr><td>Urbanização de Favelas</td><td>Min. das Cidades</td><td>R$ 3,2 bi</td><td>Infraestrutura urbana sem componente racial institucional</td></tr>
+          <tr><td>Proteção de Terras Indígenas</td><td>IBAMA/ICMBio</td><td>R$ 1,85 bi</td><td>Orçamento global de fiscalização ambiental</td></tr>
+          <tr><td>Operação Acolhida</td><td>MJ/MRE</td><td>R$ 280 mi</td><td>Política migratória, não de igualdade racial</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Total excluído:</strong> R$ 461,7 bilhões em dotação autorizada / R$ 43,2 bilhões em valores pagos. 
+      Esses montantes distorceriam a análise do investimento efetivamente direcionado a políticas de igualdade racial.</p>
+    </div>
+
     <h3>Compromissos Prioritários</h3>
     <ul>
       <li>Fortalecer a implementação efetiva da legislação antirracista</li>
