@@ -14,6 +14,8 @@ interface IndicadorTemporal {
   unidade: string;
   fonte: string;
   interpretacao: 'menor_melhor' | 'maior_melhor';
+  estimativa?: boolean;
+  metodologia?: string;
 }
 
 function calcTendencia(dados: { ano: number; valor: number }[], interpretacao: 'menor_melhor' | 'maior_melhor'): 'melhoria' | 'piora' | 'estavel' {
@@ -118,12 +120,14 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
 
   const juventudeNegra: IndicadorTemporal[] = [
     {
-      nome: 'Taxa de homicídio jovem negro',
+      nome: 'Taxa de homicídio jovem negro (⚠ estimativa)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro * 1.8 })), // proxy: taxa geral × fator idade
+      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro * 1.8 })),
       unidade: 'por 100 mil',
-      fonte: 'Atlas da Violência',
+      fonte: 'Atlas da Violência / FBSP',
       interpretacao: 'menor_melhor',
+      estimativa: true,
+      metodologia: 'Taxa geral de homicídio negro × fator 1,8 (proxy etário). O Anuário FBSP não publica série completa 15-29 × raça.',
     },
     {
       nome: 'Risco relativo de homicídio (razão)',
@@ -134,12 +138,14 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       interpretacao: 'menor_melhor',
     },
     {
-      nome: 'Desemprego negro (%)',
+      nome: 'Desemprego jovem negro (⚠ estimativa)',
       grupo: 'juventude_negra',
-      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro * 1.5 })), // proxy jovem
+      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro * 1.5 })),
       unidade: '%',
       fonte: 'PNAD Contínua',
       interpretacao: 'menor_melhor',
+      estimativa: true,
+      metodologia: 'Desemprego negro geral × fator 1,5 (proxy etário). PNAD Contínua Tab. 6381 não cruza idade × raça diretamente.',
     },
   ];
 
@@ -172,12 +178,14 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
 
   const indigenas: IndicadorTemporal[] = [
     {
-      nome: 'Mortalidade infantil indígena',
+      nome: 'Mortalidade infantil indígena (⚠ estimativa)',
       grupo: 'indigenas',
-      dados: saudeSerieHistorica.map(s => ({ ano: s.ano, valor: s.mortalidadeInfantilNegra * 2.5 })), // proxy
+      dados: saudeSerieHistorica.map(s => ({ ano: s.ano, valor: s.mortalidadeInfantilNegra * 2.5 })),
       unidade: 'por mil NV',
       fonte: 'SESAI/DataSUS',
       interpretacao: 'menor_melhor',
+      estimativa: true,
+      metodologia: 'Mortalidade infantil negra × fator 2,5 (proxy). SESAI/DataSUS não publica série completa acessível via SIDRA para mortalidade infantil indígena.',
     },
   ];
 
@@ -223,10 +231,16 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
             const primeiro = ind.dados[0];
             const ultimo = ind.dados[ind.dados.length - 1];
             return (
-              <div key={idx} className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0">
+              <div key={idx} className={cn(
+                "flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0",
+                ind.estimativa && "bg-warning/5 px-2 py-1 rounded"
+              )}>
                 <div className="flex-1">
                   <p className="font-medium">{ind.nome}</p>
                   <p className="text-xs text-muted-foreground">{ind.fonte}</p>
+                  {ind.estimativa && ind.metodologia && (
+                    <p className="text-[10px] text-warning mt-0.5 leading-tight">⚠ {ind.metodologia}</p>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right text-xs">

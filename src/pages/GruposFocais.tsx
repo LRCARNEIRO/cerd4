@@ -107,16 +107,20 @@ const gruposFocaisData = {
   },
   mulheres_negras: {
     nome: 'Mulheres Negras',
-    populacao: 59000000, // Estimativa baseada em proporção 52% mulheres na pop negra
-    fonte: 'IBGE - Censo Demográfico 2022 + cálculo proporcional',
-    tabela: 'Tabela 9605 - SIDRA (cruzamento sexo × cor)',
+    // NOTA METODOLÓGICA: Não existe tabela SIDRA com total direto "mulheres pretas + pardas".
+    // Estimativa: proporção feminina (~52,2%, Censo 2022 Tab. 9514) × pop. negra (112.739.744, Tab. 9605)
+    // ≈ 112,7 mi × 0,522 ≈ 58,8 mi. Arredondado para 59 mi.
+    populacao: 59000000,
+    fonte: 'Estimativa: IBGE Censo 2022 (Tab. 9605 × Tab. 9514)',
+    tabela: 'Cálculo: Tab. 9605 (cor/raça) × Tab. 9514 (sexo)',
     link: 'https://sidra.ibge.gov.br/tabela/9605',
+    linkSexo: 'https://sidra.ibge.gov.br/tabela/9514',
     ultimaAtualizacao: '2022-12-22',
     serieTemporal: [],
     observacoesONU: ['15', '17', '23', '28'],
     politicas: ['PNAISM', 'Lei Maria da Penha', 'Programa Mulher Viver sem Violência'],
     indicadores: ['Mortalidade materna', 'Violência doméstica', 'Chefia de família', 'Renda média'],
-    notas: 'Interseccionalidade gênero × raça. Maior vulnerabilidade em múltiplos indicadores.',
+    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto sexo × cor como total agregado. Valor calculado: proporção feminina (~52,2%) × pop. negra (112,7 mi). Interseccionalidade gênero × raça. Maior vulnerabilidade em múltiplos indicadores.',
   },
 };
 
