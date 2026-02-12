@@ -41,8 +41,8 @@ export function DadosGeraisTab() {
             <p className="text-xs text-muted-foreground">População Total (Censo 2022)</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoTotal)}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                SIDRA/IBGE Tabela 9605 (22/12/2023) <ExternalLink className="w-3 h-3" />
+              <a href="https://sidra.ibge.gov.br/Tabela/9514" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA/IBGE Tabela 9514 (Pop. Total) / 9605 (Cor/Raça) <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>

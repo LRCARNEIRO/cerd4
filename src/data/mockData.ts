@@ -259,7 +259,7 @@ export const dataSources: DataSource[] = [
     urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/censo-demografico/demografico-2022/universo-caracteristicas-da-populacao-e-dos-domicilios',
     tipoAcesso: 'sidra',
     descricao: 'Dados agregados do Universo do Censo 2022 (não microdados)',
-    indicadoresDisponiveis: ['População por cor/raça (Tab. 9605)', 'Pessoas Indígenas (Tab. 9674)', 'Quilombolas (Tab. 9578)'],
+    indicadoresDisponiveis: ['População por cor/raça (Tab. 9605)', 'Pessoas Indígenas (Tab. 9514/Brasil Indígena)', 'Quilombolas (Tab. 9578)'],
     desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Município'],
     periodicidade: 'Decenal',
     ultimaAtualizacao: '2023-12-01'
@@ -453,7 +453,7 @@ export const focalGroups: FocalGroup[] = [
     nome: 'Povos Indígenas',
     // DADO CORRETO: IBGE Brasil Indígena - 1.694.836 Pessoas Indígenas (metodologia ampliada)
     // NÃO usar Tabela 9674 (que é sobre internet)!
-    // Fonte correta: https://www.ibge.gov.br/brasil-indigena/ e Tabela 9595
+    // Fonte correta: https://www.ibge.gov.br/brasil-indigena/ e Tabela 9514
     populacao: 1694836,
     fontePopulacao: 'IBGE - Censo 2022 - Pessoas Indígenas (ibge.gov.br/brasil-indigena)',
     indicadoresEspecificos: ['Terras demarcadas', 'Saúde indígena', 'Educação bilíngue'],
