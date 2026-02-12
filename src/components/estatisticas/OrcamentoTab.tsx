@@ -257,11 +257,13 @@ export function OrcamentoTab() {
             <TableHeader>
               <TableRow>
                 <TableHead>Programa</TableHead>
+                <TableHead>Esfera</TableHead>
                 <TableHead>Ano</TableHead>
                 <TableHead className="text-right">Dotação Autorizada</TableHead>
                 <TableHead className="text-right">Empenhado</TableHead>
                 <TableHead className="text-right">Pago</TableHead>
                 <TableHead className="text-right">Execução (%)</TableHead>
+                <TableHead>Fonte</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -269,6 +271,11 @@ export function OrcamentoTab() {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium text-sm max-w-[200px] truncate">
                     {item.programa}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="text-xs">
+                      {item.esfera === 'federal' ? 'Fed' : item.esfera === 'estadual' ? 'Est' : 'Mun'}
+                    </Badge>
                   </TableCell>
                   <TableCell>{item.ano}</TableCell>
                   <TableCell className="text-right text-sm">
@@ -294,6 +301,22 @@ export function OrcamentoTab() {
                       </Badge>
                     ) : '-'}
                   </TableCell>
+                  <TableCell className="text-xs max-w-[120px]">
+                    {item.url_fonte ? (
+                      <a 
+                        href={item.url_fonte} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-primary hover:underline flex items-center gap-1"
+                        title={item.fonte_dados}
+                      >
+                        {item.fonte_dados.length > 18 ? item.fonte_dados.slice(0, 18) + '…' : item.fonte_dados}
+                        <ExternalLink className="w-3 h-3 shrink-0" />
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">{item.fonte_dados}</span>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -303,17 +326,30 @@ export function OrcamentoTab() {
               Exibindo 20 de {dadosOrcamentarios.length} registros.
             </p>
           )}
-          <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            Fontes: 
-            <a href={fonteDados.stn.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1 mx-1">
-              {fonteDados.stn.nome} <ExternalLink className="w-3 h-3" />
-            </a>
-            |
-            <a href={fonteDados.sof.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1 mx-1">
-              {fonteDados.sof.nome} <ExternalLink className="w-3 h-3" />
-            </a>
-          </p>
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs font-medium mb-2">Fontes primárias:</p>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+              <a href={fonteDados.siop.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                {fonteDados.siop.nome} <ExternalLink className="w-3 h-3" />
+              </a>
+              <span>|</span>
+              <a href={fonteDados.portalTransparencia.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                {fonteDados.portalTransparencia.nome} <ExternalLink className="w-3 h-3" />
+              </a>
+              <span>|</span>
+              <a href={fonteDados.ppaAberto.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                {fonteDados.ppaAberto.nome} <ExternalLink className="w-3 h-3" />
+              </a>
+              <span>|</span>
+              <a href={fonteDados.stn.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                {fonteDados.stn.nome} <ExternalLink className="w-3 h-3" />
+              </a>
+              <span>|</span>
+              <a href={fonteDados.sof.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                {fonteDados.sof.nome} <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
