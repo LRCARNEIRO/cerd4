@@ -496,7 +496,44 @@ export const fonteDados = {
   inep: { nome: 'INEP/Censo da Educação', url: 'https://www.gov.br/inep' },
   stn: { nome: 'STN/SICONFI', url: 'https://siconfi.tesouro.gov.br' },
   sof: { nome: 'SOF/SIGA Brasil', url: 'https://www12.senado.leg.br/orcamento/sigabrasil' },
-  fiocruz: { nome: 'Fiocruz', url: 'https://www.fiocruz.br' }
+  fiocruz: { nome: 'Fiocruz', url: 'https://www.fiocruz.br' },
+  // Fontes orçamentárias federais
+  siop: { 
+    nome: 'SIOP - Sistema Integrado de Planejamento e Orçamento', 
+    url: 'https://www.siop.planejamento.gov.br/siop/',
+    descricao: 'Plataforma oficial de gestão orçamentária do Governo Federal'
+  },
+  portalTransparencia: { 
+    nome: 'Portal da Transparência', 
+    url: 'https://portaldatransparencia.gov.br/',
+    descricao: 'Execução orçamentária por programa, ação e órgão'
+  },
+  ppaAberto: { 
+    nome: 'Painel PPA Aberto / MPO', 
+    url: 'https://www.gov.br/planejamento/pt-br/assuntos/plano-plurianual-ppa/monitoramento-e-avaliacao/ppa-aberto',
+    descricao: 'Monitoramento das metas e entregas do PPA 2024-2027'
+  },
+  // Fontes subnacionais (portais de transparência estaduais e municipais)
+  transparenciaEstadual: {
+    BA: { nome: 'Transparência Bahia', url: 'https://www.transparencia.ba.gov.br/' },
+    SP: { nome: 'Transparência SP - SigeoLei131', url: 'https://www.fazenda.sp.gov.br/SigeoLei131/Paginas/FlexConsDespworking.aspx' },
+    RJ: { nome: 'Transparência RJ', url: 'https://www.transparencia.rj.gov.br/' },
+    MG: { nome: 'Transparência MG', url: 'https://www.transparencia.mg.gov.br/' },
+    MA: { nome: 'Transparência MA', url: 'https://www.transparencia.ma.gov.br/' },
+    PA: { nome: 'Transparência PA', url: 'https://www.transparencia.pa.gov.br/' },
+    PE: { nome: 'Transparência PE', url: 'https://transparencia.pe.gov.br/' },
+    RS: { nome: 'Transparência RS', url: 'https://transparencia.rs.gov.br/' },
+  },
+  transparenciaMunicipal: {
+    BH: { nome: 'Transparência BH', url: 'https://prefeitura.pbh.gov.br/transparencia' },
+    SP: { nome: 'Transparência São Paulo (capital)', url: 'https://orcamento.sf.prefeitura.sp.gov.br/' },
+    RJ: { nome: 'Transparência Rio', url: 'https://transparencia.prefeitura.rio/' },
+    Salvador: { nome: 'Transparência Salvador', url: 'https://transparencia.salvador.ba.gov.br/' },
+    Recife: { nome: 'Transparência Recife', url: 'https://transparencia.recife.pe.gov.br/' },
+    Fortaleza: { nome: 'Transparência Fortaleza', url: 'https://transparencia.fortaleza.ce.gov.br/' },
+    POA: { nome: 'Transparência Porto Alegre', url: 'https://transparencia.portoalegre.rs.gov.br/' },
+    DF: { nome: 'Transparência DF', url: 'https://www.transparencia.df.gov.br/' },
+  },
 };
 
 // =============================================
