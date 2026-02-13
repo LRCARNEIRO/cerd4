@@ -30,9 +30,9 @@ const programasFederais = [
     categoria: 'Promoção da Igualdade Racial',
     orgao: 'MIR',
     fonte: 'SIOP / Portal da Transparência / PPA Aberto',
-    url: 'https://portaldatransparencia.gov.br/orgaos/92000-MINISTERIO-DA-IGUALDADE-RACIAL',
+    url: 'https://portaldatransparencia.gov.br/orgaos-superiores/67000-ministerio-da-igualdade-racial',
     programas: [
-      { nome: 'Promoção da Igualdade Racial e Superação do Racismo', codigo: '5034', inicio: 2024, valores: { 2024: 89000000, 2025: 125000000 }, publico: 'População negra, quilombolas, ciganos', interseccionalidade: 'Gênero, juventude', fonte: 'PPA 2024-2027 – Programa 5034', url: 'https://portaldatransparencia.gov.br/programas-e-acoes/programa/5034?ano=2025' },
+      { nome: 'Promoção da Igualdade Racial e Superação do Racismo', codigo: '5034', inicio: 2024, valores: { 2024: 89000000, 2025: 125000000 }, publico: 'População negra, quilombolas, ciganos', interseccionalidade: 'Gênero, juventude', fonte: 'PPA 2024-2027 – Programa 5034', url: 'https://portaldatransparencia.gov.br/despesas/programa-e-acao?de=01/01/2024&ate=31/12/2025&programa=5034' },
       { nome: 'Juventude Negra Viva', codigo: '5034.8', inicio: 2023, valores: { 2023: 25000000, 2024: 35000000, 2025: 48000000 }, publico: 'Jovens negros 15-29 anos', interseccionalidade: 'Idade, gênero, território', fonte: 'SIOP – Ação 21CS/MIR', url: 'https://portaldatransparencia.gov.br/despesas/consulta?de=01%2F01%2F2025&ate=31%2F12%2F2025&orgaos=OR92000&funcoes=14' },
       { nome: 'Aquilombar - Fortalecimento de Comunidades Quilombolas', codigo: '5034.9', inicio: 2023, valores: { 2023: 18000000, 2024: 28000000, 2025: 42000000 }, publico: 'Comunidades quilombolas', interseccionalidade: 'Território, gênero', fonte: 'SIOP – Ação 21CT/MIR', url: 'https://portaldatransparencia.gov.br/despesas/consulta?de=01%2F01%2F2025&ate=31%2F12%2F2025&orgaos=OR92000&funcoes=14' },
       { nome: 'Brasil Cigano', codigo: '5034.10', inicio: 2024, valores: { 2024: 8000000, 2025: 15000000 }, publico: 'Povos ciganos/Roma', interseccionalidade: 'Cultura, território', fonte: 'SIOP – Ação 21CU/MIR', url: 'https://portaldatransparencia.gov.br/despesas/consulta?de=01%2F01%2F2025&ate=31%2F12%2F2025&orgaos=OR92000' },
