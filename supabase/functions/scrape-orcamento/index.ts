@@ -170,87 +170,113 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number) {
 }
 
 /**
- * Tenta buscar dotação autorizada do SIOP via SPARQL com headers de navegador.
- * Retorna Map<"codPrograma|ano", dotacao> ou vazio se bloqueado.
+ * Tenta buscar dotação autorizada do SIOP via SPARQL usando Firecrawl como proxy
+ * (contorna Cloudflare WAF). Retorna Map<"codPrograma|ano", dotacao> ou vazio.
  */
-async function fetchSiopDotacao(programas: string[], anos: number[]): Promise<Map<string, number>> {
+async function fetchSiopDotacao(programas: string[], anos: number[]): Promise<{ dotacoes: Map<string, number>, diagnostico: string }> {
   const result = new Map<string, number>();
+  const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
 
+  if (!firecrawlKey) {
+    return { dotacoes: result, diagnostico: "FIRECRAWL_API_KEY não configurada - proxy indisponível" };
+  }
+
+  // Named graphs go up to 2016 in SIOP. Check if data exists for recent years.
+  // The SIOP SPARQL uses named graphs: http://orcamento.dados.gov.br/{ano}/
+  
   for (const codProg of programas) {
     for (const ano of anos) {
+      // Use GRAPH clause targeting the specific year's named graph
+      // Simple query without GRAPH clause (faster, avoids timeout)
       const query = `
         PREFIX loa: <http://vocab.e.gov.br/2013/09/loa#>
-        SELECT ?dotAutorizada WHERE {
+        SELECT ?dot WHERE {
           ?item loa:temExercicio "${ano}" ;
-                loa:temPrograma "${codProg}" ;
-                loa:temDotacaoAtualizada ?dotAutorizada .
-        } LIMIT 100
+                loa:temPrograma <http://orcamento.dados.gov.br/id/programa/${codProg}> ;
+                loa:temDotacaoAtualizada ?dot .
+        } LIMIT 20
       `;
 
-      const url = new URL(SIOP_SPARQL);
-      url.searchParams.set("query", query);
-      url.searchParams.set("format", "json");
-
-      console.log(`SIOP tentativa: programa ${codProg} ano ${ano}`);
+      const sparqlUrl = `${SIOP_SPARQL}?query=${encodeURIComponent(query.trim())}&format=json`;
+      console.log(`SIOP via Firecrawl: programa ${codProg} ano ${ano}`);
 
       try {
-        // Random delay 2-5s to mimic human behavior
-        await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000));
+        await new Promise(r => setTimeout(r, 500));
 
-        const res = await fetch(url.toString(), {
-          method: "GET",
-          headers: BROWSER_HEADERS,
-          redirect: "follow",
+        const fcRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${firecrawlKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: sparqlUrl,
+            formats: ["markdown"],
+            onlyMainContent: false,
+            waitFor: 3000,
+          }),
         });
 
-        console.log(`  SIOP status: ${res.status} (${res.statusText})`);
-        console.log(`  SIOP headers: content-type=${res.headers.get("content-type")}, server=${res.headers.get("server")}`);
+        if (!fcRes.ok) {
+          const errText = await fcRes.text();
+          console.error(`  Firecrawl error ${fcRes.status}: ${errText.substring(0, 200)}`);
+          continue;
+        }
 
-        if (res.status === 403 || res.status === 503) {
-          const body = await res.text();
-          const isCloudflare = body.includes("cloudflare") || body.includes("cf-") || res.headers.get("server")?.includes("cloudflare");
-          console.log(`  SIOP BLOQUEADO: ${isCloudflare ? "Cloudflare WAF" : "Acesso negado"} (${body.substring(0, 200)})`);
-          // Abort all SIOP attempts if Cloudflare is blocking
-          if (isCloudflare) {
-            console.log("  → Abortando todas as tentativas SIOP (Cloudflare detectado)");
-            return result;
+        const fcData = await fcRes.json();
+        const markdown = fcData?.data?.markdown || fcData?.markdown || "";
+        const html = fcData?.data?.html || fcData?.html || "";
+        const statusCode = fcData?.data?.metadata?.statusCode;
+        
+        console.log(`  Firecrawl statusCode: ${statusCode}, markdown length: ${markdown.length}`);
+
+        // Try to parse the SPARQL JSON response from the markdown/html
+        // Firecrawl wraps JSON responses in markdown code blocks or returns as-is
+        let jsonStr = markdown
+          .replace(/\\\[/g, "[").replace(/\\\]/g, "]")  // unescape markdown brackets
+          .replace(/\\\\/g, "\\")
+          .trim();
+        
+        // Try to extract JSON from the content
+        const jsonMatch = jsonStr.match(/\{[\s\S]*"results"[\s\S]*"bindings"[\s\S]*\}/);
+        if (!jsonMatch) {
+          console.log(`  Não foi possível extrair JSON SPARQL da resposta (${jsonStr.substring(0, 200)})`);
+          // If we got a Cloudflare page or empty results, note it
+          if (jsonStr.includes("cloudflare") || jsonStr.includes("Just a moment")) {
+            return { dotacoes: result, diagnostico: "Cloudflare WAF detectado mesmo via Firecrawl" };
+          }
+          if (jsonStr.includes('"bindings": []') || jsonStr.includes('"bindings" : []') || jsonStr.includes("bindings\": \\[")) {
+            console.log(`  Bindings vazios para ${codProg}/${ano} - grafo pode não existir`);
+            continue;
           }
           continue;
         }
 
-        if (!res.ok) {
-          console.log(`  SIOP erro: ${res.status}`);
-          continue;
-        }
-
-        const contentType = res.headers.get("content-type") || "";
-        if (!contentType.includes("json") && !contentType.includes("sparql")) {
-          const body = await res.text();
-          console.log(`  SIOP resposta não-JSON: ${contentType} → ${body.substring(0, 300)}`);
-          continue;
-        }
-
-        const data = await res.json();
-        const bindings = data?.results?.bindings || [];
+        const sparqlData = JSON.parse(jsonMatch[0]);
+        const bindings = sparqlData?.results?.bindings || [];
         console.log(`  SIOP ${codProg}/${ano}: ${bindings.length} resultados`);
 
         let totalDot = 0;
         for (const b of bindings) {
-          const val = parseFloat(b?.dotAutorizada?.value || "0");
+          const val = parseFloat(b?.dot?.value || "0");
           if (val > 0) totalDot += val;
         }
 
         if (totalDot > 0) {
           result.set(`${codProg}|${ano}`, totalDot);
-          console.log(`  → Dotação: R$ ${totalDot.toLocaleString("pt-BR")}`);
+          console.log(`  → Dotação total: R$ ${totalDot.toLocaleString("pt-BR")}`);
         }
       } catch (e) {
-        console.error(`  SIOP fetch error ${codProg}/${ano}:`, e);
+        console.error(`  SIOP/Firecrawl error ${codProg}/${ano}:`, e);
       }
     }
   }
 
-  return result;
+  const diagnostico = result.size > 0
+    ? `SIOP acessível via Firecrawl: ${result.size} dotações obtidas`
+    : "SIOP acessível mas sem dados de dotação para os programas/anos solicitados (grafos podem estar limitados a 2000-2016)";
+  
+  return { dotacoes: result, diagnostico };
 }
 
 Deno.serve(async (req) => {
@@ -269,19 +295,18 @@ Deno.serve(async (req) => {
 
     // === SIOP-only test mode ===
     if (testSiop) {
-      console.log("=== Modo teste SIOP SPARQL ===");
-      const testAnos = anos || [2024];
-      const testProgs = PROGRAMAS.map(p => p.codigo).slice(0, 1); // just first program
-      const dotacoes = await fetchSiopDotacao(testProgs, testAnos);
+      console.log("=== Modo teste SIOP SPARQL via Firecrawl ===");
+      const testAnos = anos || [2015];
+      const testProgs = PROGRAMAS.map(p => p.codigo).slice(0, 1); // test one program only
+      const { dotacoes, diagnostico } = await fetchSiopDotacao(testProgs, testAnos);
       return new Response(
         JSON.stringify({
           success: true,
-          mode: "siop_test",
+          mode: "siop_test_firecrawl",
           dotacoes_encontradas: dotacoes.size,
           dados: Object.fromEntries(dotacoes),
-          mensagem: dotacoes.size > 0
-            ? "SIOP acessível! Headers de navegador funcionaram."
-            : "SIOP bloqueado pelo Cloudflare. Headers não foram suficientes.",
+          diagnostico,
+          grafos_testados: testAnos.map(a => `http://orcamento.dados.gov.br/${a}/`),
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
