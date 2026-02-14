@@ -33,7 +33,18 @@ export function ProgramCard({ programa, registros }: ProgramCardProps) {
 
   const code = extractCode(programa);
   const name = extractName(programa);
-  const sorted = [...registros].sort((a, b) => a.ano - b.ano);
+  const orgao = registros[0]?.orgao;
+
+  // Deduplicate by year: keep the record with most data per year
+  const byYear = new Map<number, DadoOrcamentario>();
+  for (const r of registros) {
+    const existing = byYear.get(r.ano);
+    if (!existing || (r.pago && (!existing.pago || r.pago > existing.pago))) {
+      byYear.set(r.ano, r);
+    }
+  }
+  const sorted = Array.from(byYear.values()).sort((a, b) => a.ano - b.ano);
+
   const firstYear = sorted[0]?.ano;
   const latestRecord = sorted[sorted.length - 1];
   const latestValue = latestRecord?.pago || latestRecord?.dotacao_autorizada || 0;
@@ -48,7 +59,7 @@ export function ProgramCard({ programa, registros }: ProgramCardProps) {
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-sm">{name}</span>
+            <span className="font-semibold text-sm">{name}</span>
             {code && (
               <Badge variant="secondary" className="text-xs font-mono">
                 {code}
@@ -56,6 +67,15 @@ export function ProgramCard({ programa, registros }: ProgramCardProps) {
             )}
           </div>
           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+            {orgao && (
+              <>
+                <span className="flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  {orgao}
+                </span>
+                <span>•</span>
+              </>
+            )}
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               Início: {firstYear}
