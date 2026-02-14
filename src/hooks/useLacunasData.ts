@@ -254,28 +254,32 @@ export function useDadosOrcamentarios(filters?: {
   return useQuery({
     queryKey: ['dados-orcamentarios', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('dados_orcamentarios')
-        .select('*')
-        .order('programa')
-        .order('ano');
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
 
-      if (filters?.programa) {
-        query = query.eq('programa', filters.programa);
-      }
-      if (filters?.grupo_focal) {
-        query = query.eq('grupo_focal', filters.grupo_focal);
-      }
-      if (filters?.eixo_tematico) {
-        query = query.eq('eixo_tematico', filters.eixo_tematico);
-      }
-      if (filters?.ano) {
-        query = query.eq('ano', filters.ano);
+      while (true) {
+        let query = supabase
+          .from('dados_orcamentarios')
+          .select('*')
+          .order('programa')
+          .order('ano')
+          .range(page * pageSize, (page + 1) * pageSize - 1);
+
+        if (filters?.programa) query = query.eq('programa', filters.programa);
+        if (filters?.grupo_focal) query = query.eq('grupo_focal', filters.grupo_focal);
+        if (filters?.eixo_tematico) query = query.eq('eixo_tematico', filters.eixo_tematico);
+        if (filters?.ano) query = query.eq('ano', filters.ano);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData = allData.concat(data);
+        if (data.length < pageSize) break;
+        page++;
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as DadoOrcamentario[];
+      return allData as DadoOrcamentario[];
     },
   });
 }
@@ -285,13 +289,25 @@ export function useOrcamentoStats() {
   return useQuery({
     queryKey: ['orcamento-stats'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('dados_orcamentarios')
-        .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao');
+      // Fetch in pages to overcome 1000-row limit
+      let allRegistros: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
+      
+      while (true) {
+        const { data, error } = await supabase
+          .from('dados_orcamentarios')
+          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao')
+          .range(page * pageSize, (page + 1) * pageSize - 1);
 
-      if (error) throw error;
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allRegistros = allRegistros.concat(data);
+        if (data.length < pageSize) break;
+        page++;
+      }
 
-      const registros = data || [];
+      const registros = allRegistros;
       
       // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
