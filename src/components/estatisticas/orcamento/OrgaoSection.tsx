@@ -67,6 +67,12 @@ const orgaoMeta: Record<string, { nome: string; fontes: { nome: string; url: str
       { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS30000' },
     ],
   },
+  MDHC: {
+    nome: 'Ministério dos Direitos Humanos e Cidadania',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS44000' },
+    ],
+  },
 };
 
 interface OrgaoSectionProps {
