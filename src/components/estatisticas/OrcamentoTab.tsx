@@ -3,213 +3,206 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, TrendingUp, TrendingDown, Building, Building2, MapPin } from 'lucide-react';
+import { Building, Building2, MapPin, Users, TreePine, Tent } from 'lucide-react';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { OrgaoSection } from './orcamento/OrgaoSection';
+import { ProgramCard } from './orcamento/ProgramCard';
 import { EmptyEsferaCard } from './orcamento/EmptyEsferaCard';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+
+/** Classify a record into thematic categories based on orgao + program name */
+function classifyRecord(r: DadoOrcamentario): string[] {
+  const cats: string[] = [];
+  const prog = r.programa.toLowerCase();
+  const orgao = r.orgao.toUpperCase();
+
+  // Indígena
+  if (['FUNAI', 'SESAI', 'MPI'].includes(orgao) ||
+      prog.includes('indigen') || prog.includes('indígen') ||
+      prog.includes('2065')) {
+    cats.push('indigena');
+  }
+
+  // Quilombola
+  if (prog.includes('quilomb') || prog.includes('20g7') || prog.includes('0859')) {
+    cats.push('quilombola');
+  }
+
+  // Ciganos/Romani
+  if (prog.includes('cigano') || prog.includes('romani') || prog.includes('povo cigano')) {
+    cats.push('ciganos');
+  }
+
+  // If no thematic match, it's general federal
+  if (cats.length === 0) cats.push('federal_geral');
+
+  return cats;
+}
+
+/** Group records: orgao → programa → records[] */
+function groupByOrgaoPrograma(records: DadoOrcamentario[]): Map<string, Map<string, DadoOrcamentario[]>> {
+  const result = new Map<string, Map<string, DadoOrcamentario[]>>();
+  for (const item of records) {
+    if (!result.has(item.orgao)) result.set(item.orgao, new Map());
+    const orgaoMap = result.get(item.orgao)!;
+    if (!orgaoMap.has(item.programa)) orgaoMap.set(item.programa, []);
+    orgaoMap.get(item.programa)!.push(item);
+  }
+  return result;
+}
+
+function countPrograms(grouped: Map<string, Map<string, DadoOrcamentario[]>>): number {
+  let count = 0;
+  grouped.forEach(orgao => { count += orgao.size; });
+  return count;
+}
+
+function sumPago(records: DadoOrcamentario[]): number {
+  return records.reduce((acc, r) => acc + (r.pago || 0), 0);
+}
 
 const formatCompact = (value: number) => {
   if (value >= 1_000_000_000) return `R$ ${(value / 1_000_000_000).toFixed(1)} bi`;
   if (value >= 1_000_000) return `R$ ${(value / 1_000_000).toFixed(0)} mi`;
+  if (value === 0) return 'R$ 0';
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 };
+
+interface TabConfig {
+  value: string;
+  label: string;
+  icon: React.ReactNode;
+  emptyDesc: string;
+}
+
+const TABS: TabConfig[] = [
+  { value: 'federal', label: 'Programas Federais', icon: <Building className="w-4 h-4" />, emptyDesc: 'Nenhum dado federal encontrado.' },
+  { value: 'indigena', label: 'Povos Indígenas', icon: <TreePine className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em povos indígenas encontrado.' },
+  { value: 'quilombola', label: 'Quilombolas', icon: <Users className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em quilombolas encontrado.' },
+  { value: 'ciganos', label: 'Ciganos', icon: <Tent className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em povos ciganos encontrado.' },
+  { value: 'estadual', label: 'Estaduais', icon: <Building2 className="w-4 h-4" />, emptyDesc: 'Dados estaduais ainda não coletados. Utilize SICONFI/RREO dos portais de transparência estaduais.' },
+  { value: 'municipal', label: 'Municipais', icon: <MapPin className="w-4 h-4" />, emptyDesc: 'Dados municipais ainda não coletados. Utilize portais de transparência municipais.' },
+];
 
 export function OrcamentoTab() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
 
-  // Group data by esfera → orgao → programa
-  const grouped = useMemo(() => {
-    if (!dadosOrcamentarios) return { federal: new Map(), estadual: new Map(), municipal: new Map() };
+  const categorized = useMemo(() => {
+    if (!dadosOrcamentarios) return {
+      federal: [] as DadoOrcamentario[],
+      indigena: [] as DadoOrcamentario[],
+      quilombola: [] as DadoOrcamentario[],
+      ciganos: [] as DadoOrcamentario[],
+      estadual: [] as DadoOrcamentario[],
+      municipal: [] as DadoOrcamentario[],
+    };
 
-    const result = {
-      federal: new Map<string, Map<string, DadoOrcamentario[]>>(),
-      estadual: new Map<string, Map<string, DadoOrcamentario[]>>(),
-      municipal: new Map<string, Map<string, DadoOrcamentario[]>>(),
+    const buckets: Record<string, DadoOrcamentario[]> = {
+      federal: [], indigena: [], quilombola: [], ciganos: [], estadual: [], municipal: [],
     };
 
     for (const item of dadosOrcamentarios) {
-      const esfera = item.esfera as keyof typeof result;
-      if (!result[esfera]) continue;
+      // Esfera-based routing
+      if (item.esfera === 'estadual') { buckets.estadual.push(item); continue; }
+      if (item.esfera === 'municipal') { buckets.municipal.push(item); continue; }
 
-      if (!result[esfera].has(item.orgao)) {
-        result[esfera].set(item.orgao, new Map());
+      // Federal: all go to federal tab + thematic tabs
+      buckets.federal.push(item);
+
+      const cats = classifyRecord(item);
+      for (const cat of cats) {
+        if (cat !== 'federal_geral' && buckets[cat]) {
+          buckets[cat].push(item);
+        }
       }
-      const orgaoMap = result[esfera].get(item.orgao)!;
-      if (!orgaoMap.has(item.programa)) {
-        orgaoMap.set(item.programa, []);
-      }
-      orgaoMap.get(item.programa)!.push(item);
     }
 
-    return result;
+    return buckets;
   }, [dadosOrcamentarios]);
+
+  const grouped = useMemo(() => {
+    const result: Record<string, Map<string, Map<string, DadoOrcamentario[]>>> = {};
+    for (const [key, records] of Object.entries(categorized)) {
+      result[key] = groupByOrgaoPrograma(records);
+    }
+    return result;
+  }, [categorized]);
 
   const isLoading = orcLoading || statsLoading;
 
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24" />)}
         </div>
         <Skeleton className="h-80" />
       </div>
     );
   }
 
-  const federalCount = grouped.federal.size;
-  const estadualCount = grouped.estadual.size;
-  const municipalCount = grouped.municipal.size;
-  const variacaoPositiva = stats && stats.variacao > 0;
-
-  // Count programs per esfera
-  const countPrograms = (esferaMap: Map<string, Map<string, DadoOrcamentario[]>>) => {
-    let count = 0;
-    esferaMap.forEach(orgao => { count += orgao.size; });
-    return count;
-  };
-
   return (
     <div className="space-y-6">
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-primary">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Building className="w-4 h-4 text-primary" />
-              <p className="text-xs text-muted-foreground">Federal ({federalCount} órgãos)</p>
-            </div>
-            <p className="text-xl font-bold">{countPrograms(grouped.federal)} programas</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-success">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Building2 className="w-4 h-4 text-success" />
-              <p className="text-xs text-muted-foreground">Estadual</p>
-            </div>
-            <p className="text-xl font-bold">{estadualCount > 0 ? `${countPrograms(grouped.estadual)} programas` : 'Sem dados'}</p>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-chart-1">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <MapPin className="w-4 h-4 text-chart-1" />
-              <p className="text-xs text-muted-foreground">Municipal</p>
-            </div>
-            <p className="text-xl font-bold">{municipalCount > 0 ? `${countPrograms(grouped.municipal)} programas` : 'Sem dados'}</p>
-          </CardContent>
-        </Card>
-        <Card className={`border-l-4 ${variacaoPositiva ? 'border-l-success' : 'border-l-destructive'}`}>
-          <CardContent className="pt-4 flex items-center gap-2">
-            {variacaoPositiva ? (
-              <TrendingUp className="w-5 h-5 text-success" />
-            ) : (
-              <TrendingDown className="w-5 h-5 text-destructive" />
-            )}
-            <div>
-              <p className="text-xs text-muted-foreground">Variação 2018-22 vs 2023-26</p>
-              <p className={`text-xl font-bold ${variacaoPositiva ? 'text-success' : 'text-destructive'}`}>
-                {variacaoPositiva ? '+' : ''}{stats?.variacao.toFixed(1)}%
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Federal', value: formatCompact(sumPago(categorized.federal)), count: categorized.federal.length, color: 'border-l-primary' },
+          { label: 'Povos Indígenas', value: formatCompact(sumPago(categorized.indigena)), count: categorized.indigena.length, color: 'border-l-chart-2' },
+          { label: 'Quilombolas', value: formatCompact(sumPago(categorized.quilombola)), count: categorized.quilombola.length, color: 'border-l-chart-3' },
+          { label: 'Variação 2018-22 vs 23-26', value: `${stats && stats.variacao > 0 ? '+' : ''}${stats?.variacao.toFixed(1)}%`, count: null, color: stats && stats.variacao > 0 ? 'border-l-success' : 'border-l-destructive' },
+        ].map((card, i) => (
+          <Card key={i} className={`border-l-4 ${card.color}`}>
+            <CardContent className="pt-4">
+              <p className="text-xs text-muted-foreground">{card.label}</p>
+              <p className="text-xl font-bold">{card.value}</p>
+              {card.count !== null && (
+                <p className="text-xs text-muted-foreground">{card.count} registros</p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="federal" className="w-full">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
-          <TabsTrigger value="federal">
-            Programas Federais
-            {federalCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{countPrograms(grouped.federal)}</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="estadual">
-            Programas Estaduais
-            {estadualCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{countPrograms(grouped.estadual)}</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="municipal">
-            Programas Municipais
-            {municipalCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{countPrograms(grouped.municipal)}</Badge>}
-          </TabsTrigger>
+          {TABS.map(tab => {
+            const records = categorized[tab.value] || [];
+            const progCount = countPrograms(grouped[tab.value] || new Map());
+            return (
+              <TabsTrigger key={tab.value} value={tab.value} className="gap-1.5">
+                {tab.icon}
+                {tab.label}
+                {progCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 text-xs">{progCount}</Badge>
+                )}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
-        <TabsContent value="federal">
-          {grouped.federal.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.federal.entries()).map(([orgao, programas]) => (
-                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
-              ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard
-              esfera="federais"
-              descricao="Nenhum dado federal verificado encontrado no banco. Insira dados usando a edge function de ingestão ou manualmente."
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value="estadual">
-          {grouped.estadual.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.estadual.entries())
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([estado, programas]) => (
-                  <div key={estado} className="space-y-3">
-                    <h3 className="font-semibold text-sm flex items-center gap-2 px-1">
-                      <MapPin className="w-4 h-4 text-success" />
-                      {estado}
-                    </h3>
-                    <div className="space-y-2">
-                      {Array.from(programas.entries()).map(([prog, registros]) => (
-                        <Card key={prog} className="p-4">
-                          <p className="text-sm font-medium">{prog}</p>
-                          <p className="text-xs text-muted-foreground">{registros.length} registros</p>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard
-              esfera="estaduais"
-              descricao="Dados estaduais ainda não foram coletados de forma verificável. Utilize as fontes SICONFI/RREO dos portais de transparência estaduais para inserir dados auditáveis por estado."
-            />
-          )}
-        </TabsContent>
-
-        <TabsContent value="municipal">
-          {grouped.municipal.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.municipal.entries())
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([cidade, programas]) => (
-                  <div key={cidade} className="space-y-3">
-                    <h3 className="font-semibold text-sm flex items-center gap-2 px-1">
-                      <MapPin className="w-4 h-4 text-chart-1" />
-                      {cidade}
-                    </h3>
-                    <div className="space-y-2">
-                      {Array.from(programas.entries()).map(([prog, registros]) => (
-                        <Card key={prog} className="p-4">
-                          <p className="text-sm font-medium">{prog}</p>
-                          <p className="text-xs text-muted-foreground">{registros.length} registros</p>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard
-              esfera="municipais"
-              descricao="Dados municipais ainda não foram coletados de forma verificável. Utilize os portais de transparência municipais para inserir dados auditáveis por cidade."
-            />
-          )}
-        </TabsContent>
+        {TABS.map(tab => {
+          const tabGrouped = grouped[tab.value] || new Map();
+          return (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tabGrouped.size > 0 ? (
+                <div className="space-y-8">
+                  {Array.from(tabGrouped.entries())
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .map(([orgao, programas]) => (
+                      <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
+                    ))}
+                </div>
+              ) : (
+                <EmptyEsferaCard
+                  esfera={tab.label.toLowerCase()}
+                  descricao={tab.emptyDesc}
+                />
+              )}
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );
