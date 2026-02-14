@@ -62,7 +62,10 @@ const corsHeaders = {
 // ===== CAMADA 1: Programas temáticos do PPA =====
 const PROGRAMAS_TEMATICOS = [
   { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MIR", desde: 2020 },
+  { codigo: "5802", nome: "Direitos dos Povos Quilombolas e Ciganos", orgao: "MIR", desde: 2024 },
   { codigo: "5803", nome: "Juventude Negra Viva", orgao: "MIR", desde: 2024 },
+  { codigo: "5804", nome: "Igualdade Étnico-Racial e Superação do Racismo", orgao: "MIR", desde: 2024 },
+  { codigo: "5113", nome: "Educação Básica com Recorte Racial", orgao: "MEC", desde: 2024 },
   { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
   { codigo: "2034", nome: "Promoção da Igualdade Racial e Superação do Racismo (PPA 2016-2019)", orgao: "SEPPIR", desde: 2016 },
@@ -110,6 +113,31 @@ const ACAO_ORGAO_MAP: Record<string, string> = {
   "215O": "FUNAI", "215Q": "FUNAI", "8635": "FUNAI", "15Q1": "INCRA",
   "214V": "FUNAI", "20G7": "INCRA", "0859": "INCRA", "21CS": "MIR",
 };
+
+// Ações da SESAI — classificadas como "Saúde Indígena" (informativo, não soma no total racial)
+const ACOES_SESAI = ["20YP", "7684"];
+
+function classificarGrupoFocal(item: any, orgao: string): string | null {
+  const codAcao = item.codigoAcao || "";
+  const texto = [item.programa, item.nomePrograma, item.acao, item.nomeAcao].filter(Boolean).join(" ").toLowerCase();
+
+  // SESAI = Saúde Indígena (segregado)
+  if (ACOES_SESAI.includes(codAcao) || orgao === "SESAI") return "saude_indigena";
+  if (orgao === "FUNAI" || orgao === "MPI" || texto.includes("indígen") || texto.includes("indigen")) return "indigenas";
+  if (codAcao === "20G7" || codAcao === "0859" || texto.includes("quilombol")) return "quilombolas";
+  if (texto.includes("cigan") || texto.includes("romani")) return "ciganos";
+  if (texto.includes("juventude negra")) return "juventude_negra";
+  if (orgao === "MIR" || orgao === "SEPPIR" || texto.includes("racial") || texto.includes("racismo") || texto.includes("negro") || texto.includes("afro")) return "negros";
+  return null;
+}
+
+function classificarEixoTematico(grupo: string | null): string | null {
+  if (!grupo) return null;
+  if (grupo === "saude_indigena") return "saude";
+  if (grupo === "indigenas") return "terra_territorio";
+  if (grupo === "quilombolas") return "terra_territorio";
+  return "politicas_institucionais";
+}
 
 const API_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
 
@@ -166,6 +194,8 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   if (!dotacaoInicial && !dotacaoAutorizada && !empenhado && !liquidado && !pago) return null;
 
   const orgao = resolveOrgao(item, fallbackOrgao);
+  const grupoFocal = classificarGrupoFocal(item, orgao);
+  const eixoTematico = classificarEixoTematico(grupoFocal);
   const dotacaoRef = dotacaoAutorizada || dotacaoInicial;
   const percentual = dotacaoRef && pago ? Math.round((pago / dotacaoRef) * 10000) / 100 : null;
 
@@ -182,9 +212,9 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
     percentual_execucao: percentual,
     fonte_dados: `API Portal da Transparência (${camada})`,
     url_fonte: `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=${codProg}`,
-    observacoes: `Camada: ${camada}`,
-    eixo_tematico: null,
-    grupo_focal: null,
+    observacoes: grupoFocal === "saude_indigena" ? `Camada: ${camada} | SEGREGADO: Saúde Indígena (não computar no total racial)` : `Camada: ${camada}`,
+    eixo_tematico: eixoTematico,
+    grupo_focal: grupoFocal,
   };
 }
 
