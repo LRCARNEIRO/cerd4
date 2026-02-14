@@ -18,6 +18,11 @@ const PROGRAMAS = [
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
 ];
 
+/**
+ * Órgãos finalísticos: buscar TODAS as despesas dessas unidades orçamentárias.
+ * Usamos o código do órgão superior para capturar tudo sob a hierarquia.
+ */
+
 // Mapeamento de códigos de órgão superior para siglas
 const SIGLA_MAP: Record<string, string> = {
   "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
@@ -84,8 +89,27 @@ async function fetchPaginated(
   return all;
 }
 
+// Map specific budget actions to their executing organ
+const ACAO_ORGAO_MAP: Record<string, string> = {
+  "20YP": "SESAI",  // Saúde Indígena
+  "7684": "SESAI",  // Saneamento em Aldeias
+  "20UF": "FUNAI",  // Regularização Fundiária Indígena
+  "2384": "FUNAI",  // Direitos Sociais e Culturais
+  "215O": "FUNAI",  // Gestão Ambiental e Etnodesenvolvimento
+  "215Q": "FUNAI",  // Povos de Recente Contato
+  "8635": "FUNAI",  // Preservação Cultural
+  "15Q1": "INCRA",  // Aquisição Imóvel Rural / Reserva Indígena
+  "214V": "FUNAI",  // Fiscalização Territórios
+  "20G7": "INCRA",  // Reforma Agrária / Quilombolas
+  "0859": "INCRA",  // Indenização Quilombolas
+};
+
 function resolveOrgao(item: any, fallbackOrgao: string): string {
-  // Try to get organ from API response fields
+  // First: check action code for specific organ mapping
+  const codAcao = item.codigoAcao || "";
+  if (codAcao && ACAO_ORGAO_MAP[codAcao]) return ACAO_ORGAO_MAP[codAcao];
+  
+  // Then: try organ code from API response
   const codOrgSup = item.codigoOrgaoSuperior || item.codigoOrgao || "";
   if (codOrgSup && SIGLA_MAP[codOrgSup]) return SIGLA_MAP[codOrgSup];
   return fallbackOrgao;
@@ -201,6 +225,7 @@ Deno.serve(async (req) => {
         await new Promise((r) => setTimeout(r, 500));
       }
     }
+
 
     // Deduplicate by orgao+programa+ano (keep highest pago)
     const deduped = new Map<string, any>();
