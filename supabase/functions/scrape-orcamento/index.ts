@@ -27,6 +27,23 @@ const SIGLA_MAP: Record<string, string> = {
 };
 
 const API_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
+const SIOP_SPARQL = "https://www1.siop.planejamento.gov.br/sparql";
+
+const BROWSER_HEADERS: Record<string, string> = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Accept": "application/sparql-results+json, application/json, text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Referer": "https://www1.siop.planejamento.gov.br/",
+  "Origin": "https://www1.siop.planejamento.gov.br",
+  "Connection": "keep-alive",
+  "Sec-Fetch-Dest": "empty",
+  "Sec-Fetch-Mode": "cors",
+  "Sec-Fetch-Site": "same-origin",
+  "DNT": "1",
+  "Cache-Control": "no-cache",
+  "Pragma": "no-cache",
+};
 
 // Parse Brazilian-formatted numbers: "15.106.612,40" → 15106612.40
 function parseBRL(val: any): number | null {
@@ -152,6 +169,90 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number) {
   };
 }
 
+/**
+ * Tenta buscar dotação autorizada do SIOP via SPARQL com headers de navegador.
+ * Retorna Map<"codPrograma|ano", dotacao> ou vazio se bloqueado.
+ */
+async function fetchSiopDotacao(programas: string[], anos: number[]): Promise<Map<string, number>> {
+  const result = new Map<string, number>();
+
+  for (const codProg of programas) {
+    for (const ano of anos) {
+      const query = `
+        PREFIX loa: <http://vocab.e.gov.br/2013/09/loa#>
+        SELECT ?dotAutorizada WHERE {
+          ?item loa:temExercicio "${ano}" ;
+                loa:temPrograma "${codProg}" ;
+                loa:temDotacaoAtualizada ?dotAutorizada .
+        } LIMIT 100
+      `;
+
+      const url = new URL(SIOP_SPARQL);
+      url.searchParams.set("query", query);
+      url.searchParams.set("format", "json");
+
+      console.log(`SIOP tentativa: programa ${codProg} ano ${ano}`);
+
+      try {
+        // Random delay 2-5s to mimic human behavior
+        await new Promise(r => setTimeout(r, 2000 + Math.random() * 3000));
+
+        const res = await fetch(url.toString(), {
+          method: "GET",
+          headers: BROWSER_HEADERS,
+          redirect: "follow",
+        });
+
+        console.log(`  SIOP status: ${res.status} (${res.statusText})`);
+        console.log(`  SIOP headers: content-type=${res.headers.get("content-type")}, server=${res.headers.get("server")}`);
+
+        if (res.status === 403 || res.status === 503) {
+          const body = await res.text();
+          const isCloudflare = body.includes("cloudflare") || body.includes("cf-") || res.headers.get("server")?.includes("cloudflare");
+          console.log(`  SIOP BLOQUEADO: ${isCloudflare ? "Cloudflare WAF" : "Acesso negado"} (${body.substring(0, 200)})`);
+          // Abort all SIOP attempts if Cloudflare is blocking
+          if (isCloudflare) {
+            console.log("  → Abortando todas as tentativas SIOP (Cloudflare detectado)");
+            return result;
+          }
+          continue;
+        }
+
+        if (!res.ok) {
+          console.log(`  SIOP erro: ${res.status}`);
+          continue;
+        }
+
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("json") && !contentType.includes("sparql")) {
+          const body = await res.text();
+          console.log(`  SIOP resposta não-JSON: ${contentType} → ${body.substring(0, 300)}`);
+          continue;
+        }
+
+        const data = await res.json();
+        const bindings = data?.results?.bindings || [];
+        console.log(`  SIOP ${codProg}/${ano}: ${bindings.length} resultados`);
+
+        let totalDot = 0;
+        for (const b of bindings) {
+          const val = parseFloat(b?.dotAutorizada?.value || "0");
+          if (val > 0) totalDot += val;
+        }
+
+        if (totalDot > 0) {
+          result.set(`${codProg}|${ano}`, totalDot);
+          console.log(`  → Dotação: R$ ${totalDot.toLocaleString("pt-BR")}`);
+        }
+      } catch (e) {
+        console.error(`  SIOP fetch error ${codProg}/${ano}:`, e);
+      }
+    }
+  }
+
+  return result;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -159,10 +260,32 @@ Deno.serve(async (req) => {
 
   try {
     let anos: number[] | undefined;
+    let testSiop = false;
     try {
       const body = await req.json();
       anos = body.anos;
+      testSiop = body.testSiop === true;
     } catch { /* defaults */ }
+
+    // === SIOP-only test mode ===
+    if (testSiop) {
+      console.log("=== Modo teste SIOP SPARQL ===");
+      const testAnos = anos || [2024];
+      const testProgs = PROGRAMAS.map(p => p.codigo).slice(0, 1); // just first program
+      const dotacoes = await fetchSiopDotacao(testProgs, testAnos);
+      return new Response(
+        JSON.stringify({
+          success: true,
+          mode: "siop_test",
+          dotacoes_encontradas: dotacoes.size,
+          dados: Object.fromEntries(dotacoes),
+          mensagem: dotacoes.size > 0
+            ? "SIOP acessível! Headers de navegador funcionaram."
+            : "SIOP bloqueado pelo Cloudflare. Headers não foram suficientes.",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const apiKey = Deno.env.get("PORTAL_TRANSPARENCIA_API_KEY");
     if (!apiKey) {
