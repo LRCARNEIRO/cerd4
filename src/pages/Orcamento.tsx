@@ -13,6 +13,7 @@ import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 import { BudgetIngestionPanel } from '@/components/dashboard/BudgetIngestionPanel';
+import { SiopCsvUpload } from '@/components/dashboard/SiopCsvUpload';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 // Estrutura de fontes para referência
@@ -284,7 +285,10 @@ export default function Orcamento() {
                 não são permitidos. Cada registro deve conter o deep link direto para a fonte primária.
               </p>
             </div>
-            <BudgetIngestionPanel />
+            <div className="flex gap-2">
+              <SiopCsvUpload />
+              <BudgetIngestionPanel />
+            </div>
           </div>
         </CardContent>
       </Card>
