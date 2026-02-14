@@ -27,9 +27,8 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=2065`,
-    url_dotacao: (ano: number) =>
-      `https://portaldatransparencia.gov.br/despesas/consulta?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&orgaos=OR27000`,
-    instrucoes: 'Dois passos: (1) No link "Execução" obtenha Empenhado, Liquidado e Pago por ação. (2) No link "Dotação" obtenha Dotação Inicial e Autorizada na consulta detalhada por órgão.',
+    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
+    instrucoes: 'Link "Execução": Empenhado, Liquidado e Pago por ação. Para Dotação: baixe o CSV anual na página de download de dados e filtre pelo programa/ação desejado.',
   },
   {
     id: 'sesai',
@@ -44,9 +43,8 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20YP`,
-    url_dotacao: (ano: number) =>
-      `https://portaldatransparencia.gov.br/despesas/consulta?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&orgaos=OR36000`,
-    instrucoes: 'Dois passos: (1) Link "Execução" para Empenhado/Liquidado/Pago. (2) Link "Dotação" para valores de dotação. Dados segregados como Saúde Indígena.',
+    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
+    instrucoes: 'Link "Execução": Empenhado/Liquidado/Pago. Para Dotação: baixe CSV anual e filtre pela ação 20YP/7684. Dados segregados como Saúde Indígena.',
   },
   {
     id: 'quilombolas',
@@ -61,9 +59,8 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20G7`,
-    url_dotacao: (ano: number) =>
-      `https://portaldatransparencia.gov.br/despesas/consulta?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&orgaos=OR22000`,
-    instrucoes: 'Dois passos: (1) Link "Execução" para Empenhado/Liquidado/Pago das ações 20G7 e 0859. (2) Link "Dotação" para valores de dotação do INCRA.',
+    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
+    instrucoes: 'Link "Execução": Empenhado/Liquidado/Pago das ações 20G7 e 0859. Para Dotação: baixe CSV anual e filtre por ação.',
   },
 ];
 
@@ -261,34 +258,34 @@ export function ManualGapFiller() {
                         <div className="text-xs">
                           <p className="font-medium mb-1">Passo a passo:</p>
                           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                             <li>No link <strong>"Execução"</strong>: obtenha Empenhado, Liquidado e Pago por ação</li>
-                             <li>No link <strong>"Dotação"</strong>: obtenha Dotação Inicial e Autorizada na consulta por órgão</li>
-                             <li>Preencha o CSV template com todos os valores encontrados</li>
+                             <li>Nos links por ano: obtenha <strong>Empenhado, Liquidado e Pago</strong> por ação</li>
+                             <li>Para <strong>Dotação</strong> (opcional): baixe o CSV anual no link "CSV Dotação" e filtre por código de ação</li>
+                             <li>Preencha o CSV template com os valores encontrados</li>
                            </ol>
                         </div>
 
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1 items-center">
                           {lac.anos_faltantes.map(ano => (
-                            <div key={ano} className="flex items-center gap-0.5">
-                              <a
-                                href={lac.url_portal(ano)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline bg-primary/5 px-2 py-1 rounded-l"
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                                {ano} Execução
-                              </a>
-                              <a
-                                href={lac.url_dotacao(ano)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs text-warning hover:underline bg-warning/5 px-2 py-1 rounded-r"
-                              >
-                                Dotação
-                              </a>
-                            </div>
+                            <a
+                              key={ano}
+                              href={lac.url_portal(ano)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline bg-primary/5 px-2 py-1 rounded"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              {ano}
+                            </a>
                           ))}
+                          <a
+                            href={lac.url_dotacao}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-warning hover:underline bg-warning/5 px-2 py-1 rounded"
+                          >
+                            <Download className="w-3 h-3" />
+                            CSV Dotação
+                          </a>
                         </div>
                       </CardContent>
                     </Card>
@@ -299,8 +296,8 @@ export function ManualGapFiller() {
                     <CardContent className="pt-4 space-y-3">
                       <p className="text-sm font-medium">Template CSV</p>
                       <p className="text-xs text-muted-foreground">
-                        Use o template abaixo como base. Dados de execução (Empenhado, Liquidado, Pago) vêm do endpoint
-                        "Programa e Ação". Dados de dotação vêm da "Consulta de Despesas" por órgão.
+                        Use o template abaixo. Empenhado, Liquidado e Pago são obrigatórios (do Portal, endpoint por ação).
+                        Dotação Inicial e Autorizada são opcionais — se disponíveis, extraia dos CSVs de dados abertos.
                         Separador: ponto-e-vírgula (;). Valores em reais sem separador de milhar.
                       </p>
                       <pre className="text-[10px] bg-muted p-3 rounded-lg overflow-x-auto whitespace-pre">
