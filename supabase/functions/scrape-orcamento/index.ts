@@ -18,11 +18,6 @@ const PROGRAMAS = [
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
 ];
 
-/**
- * Órgãos finalísticos: buscar TODAS as despesas dessas unidades orçamentárias.
- * Usamos o código do órgão superior para capturar tudo sob a hierarquia.
- */
-
 // Mapeamento de códigos de órgão superior para siglas
 const SIGLA_MAP: Record<string, string> = {
   "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
@@ -129,7 +124,9 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number) {
   const empenhado = parseBRL(item.empenhado || item.valorEmpenhado);
   const liquidado = parseBRL(item.liquidado || item.valorLiquidado);
   const pago = parseBRL(item.pago || item.valorPago);
-  const dotacao = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada);
+  // Note: API por-funcional-programatica does NOT return dotação
+  // dotação would require SIOP integration
+  const dotacao = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada || item.dotacaoInicial || item.valorDotacaoInicial);
 
   // Skip records with zero financial data
   if (!dotacao && !empenhado && !liquidado && !pago) return null;
