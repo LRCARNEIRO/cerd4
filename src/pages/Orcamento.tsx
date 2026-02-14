@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
+import { BudgetIngestionPanel } from '@/components/dashboard/BudgetIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 // Estrutura de fontes para referência
@@ -127,12 +128,12 @@ export default function Orcamento() {
       title="Orçamento"
       subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018-2026)"
     >
-      {/* Alerta de integridade */}
+      {/* Alerta + Ingestão */}
       <Card className="mb-6 border-l-4 border-l-warning">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-6 h-6 text-warning shrink-0 mt-0.5" />
-            <div>
+            <div className="flex-1">
               <h3 className="font-semibold text-foreground mb-1">Política de Dados: Apenas Dados Oficiais Verificados</h3>
               <p className="text-sm text-muted-foreground">
                 Esta seção exibe <strong>exclusivamente</strong> dados inseridos no banco após verificação
@@ -140,6 +141,7 @@ export default function Orcamento() {
                 não são permitidos. Cada registro deve conter o deep link direto para a fonte primária.
               </p>
             </div>
+            <BudgetIngestionPanel />
           </div>
         </CardContent>
       </Card>
