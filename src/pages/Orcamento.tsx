@@ -1,65 +1,44 @@
+import { useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, Upload } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
+import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
+import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
+import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
-// Estrutura de programas/órgãos SEM valores monetários
-// Os valores devem ser inseridos manualmente no banco após verificação nas fontes oficiais
+// Estrutura de fontes para referência
 const estruturaFederal = [
-  {
-    categoria: 'Promoção da Igualdade Racial',
-    orgao: 'MIR',
-    fontes: [
-      { nome: 'Portal da Transparência – Órgão Superior MIR', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS67000' },
-      { nome: 'PPA Aberto – Agenda Igualdade Racial', url: 'https://www.gov.br/planejamento/pt-br/assuntos/plano-plurianual' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  },
-  {
-    categoria: 'Povos Indígenas',
-    orgao: 'MPI/FUNAI',
-    fontes: [
-      { nome: 'Portal da Transparência – FUNAI', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  },
-  {
-    categoria: 'Territórios Quilombolas',
-    orgao: 'INCRA',
-    fontes: [
-      { nome: 'Portal da Transparência – INCRA', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS49000' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  },
-  {
-    categoria: 'Ações Afirmativas e Educação',
-    orgao: 'MEC',
-    fontes: [
-      { nome: 'Portal da Transparência – MEC', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS26000&funcoes=12' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  },
-  {
-    categoria: 'Proteção Social',
-    orgao: 'MDS',
-    fontes: [
-      { nome: 'Portal da Transparência – MDS', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS55000' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  },
-  {
-    categoria: 'Segurança Pública',
-    orgao: 'MJSP',
-    fontes: [
-      { nome: 'Portal da Transparência – MJSP', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS30000&funcoes=06' },
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
-    ]
-  }
+  { categoria: 'Promoção da Igualdade Racial', orgao: 'MIR', fontes: [
+    { nome: 'Portal da Transparência – Órgão Superior MIR', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS67000' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]},
+  { categoria: 'Povos Indígenas', orgao: 'MPI/FUNAI', fontes: [
+    { nome: 'Portal da Transparência – FUNAI', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]},
+  { categoria: 'Territórios Quilombolas', orgao: 'INCRA', fontes: [
+    { nome: 'Portal da Transparência – INCRA', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS49000' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]},
+  { categoria: 'Ações Afirmativas e Educação', orgao: 'MEC', fontes: [
+    { nome: 'Portal da Transparência – MEC', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS26000&funcoes=12' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]},
+  { categoria: 'Proteção Social', orgao: 'MDS', fontes: [
+    { nome: 'Portal da Transparência – MDS', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS55000' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]},
+  { categoria: 'Segurança Pública', orgao: 'MJSP', fontes: [
+    { nome: 'Portal da Transparência – MJSP', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS30000&funcoes=06' },
+    { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' }
+  ]}
 ];
 
 const estruturaEstadual = [
@@ -84,71 +63,64 @@ const estruturaMunicipal = [
   { municipio: 'Brasília', uf: 'DF', orgao: 'SEDUH', url: 'https://www.transparencia.df.gov.br/' }
 ];
 
-function EmptyDataCard() {
-  return (
-    <Card className="border-dashed border-2 border-warning/50">
-      <CardContent className="pt-6">
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <AlertTriangle className="w-12 h-12 text-warning mb-4" />
-          <h3 className="font-semibold text-foreground mb-2">Dados Pendentes de Inserção</h3>
-          <p className="text-sm text-muted-foreground max-w-lg">
-            Os valores orçamentários foram removidos por não serem auditáveis. 
-            Insira dados verificados manualmente no banco de dados, consultando as fontes oficiais 
-            indicadas abaixo (SIOP, Portal da Transparência, LOAs estaduais/municipais).
-          </p>
-          <p className="text-xs text-muted-foreground mt-3">
-            <strong>Período de cobertura:</strong> 2018-2026 | <strong>Esferas:</strong> Federal, Estadual e Municipal
-          </p>
-          <div className="flex items-center gap-2 mt-4">
-            <Database className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">
-              Tabela: <code className="bg-muted px-1 py-0.5 rounded">dados_orcamentarios</code>
-            </span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      notation: 'compact',
-      maximumFractionDigits: 1
-    }).format(value);
-  };
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 1 }).format(value);
 
-  const formatCurrencyFull = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
+  const formatCurrencyFull = (value: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Evolução por ano (do banco)
-  const evolucaoPorAno = stats?.porAno 
-    ? Object.entries(stats.porAno)
-        .map(([ano, pago]) => ({ ano: Number(ano), pago: pago as number }))
-        .sort((a, b) => a.ano - b.ano) 
+  // Group data by esfera → orgao → programa
+  const grouped = useMemo(() => {
+    if (!dadosOrcamentarios) return { federal: new Map<string, Map<string, DadoOrcamentario[]>>(), estadual: new Map<string, Map<string, DadoOrcamentario[]>>(), municipal: new Map<string, Map<string, DadoOrcamentario[]>>() };
+
+    const result = {
+      federal: new Map<string, Map<string, DadoOrcamentario[]>>(),
+      estadual: new Map<string, Map<string, DadoOrcamentario[]>>(),
+      municipal: new Map<string, Map<string, DadoOrcamentario[]>>(),
+    };
+
+    for (const item of dadosOrcamentarios) {
+      const esfera = item.esfera as keyof typeof result;
+      if (!result[esfera]) continue;
+
+      if (!result[esfera].has(item.orgao)) {
+        result[esfera].set(item.orgao, new Map());
+      }
+      const orgaoMap = result[esfera].get(item.orgao)!;
+      if (!orgaoMap.has(item.programa)) {
+        orgaoMap.set(item.programa, []);
+      }
+      orgaoMap.get(item.programa)!.push(item);
+    }
+
+    return result;
+  }, [dadosOrcamentarios]);
+
+  const countPrograms = (esferaMap: Map<string, Map<string, DadoOrcamentario[]>>) => {
+    let count = 0;
+    esferaMap.forEach(orgao => { count += orgao.size; });
+    return count;
+  };
+
+  // Chart data
+  const evolucaoPorAno = stats?.porAno
+    ? Object.entries(stats.porAno).map(([ano, pago]) => ({ ano: Number(ano), pago: pago as number })).sort((a, b) => a.ano - b.ano)
     : [];
 
-  // Por programa (do banco)
-  const porPrograma = stats?.porPrograma 
-    ? Object.entries(stats.porPrograma)
-        .map(([programa, pago]) => ({ programa, pago: pago as number }))
-        .sort((a, b) => b.pago - a.pago)
-        .slice(0, 10) 
+  const porPrograma = stats?.porPrograma
+    ? Object.entries(stats.porPrograma).map(([programa, pago]) => ({ programa, pago: pago as number })).sort((a, b) => b.pago - a.pago).slice(0, 10)
     : [];
+
+  const federalCount = countPrograms(grouped.federal);
+  const estadualCount = countPrograms(grouped.estadual);
+  const municipalCount = countPrograms(grouped.municipal);
 
   return (
     <DashboardLayout
@@ -163,8 +135,8 @@ export default function Orcamento() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Política de Dados: Apenas Dados Oficiais Verificados</h3>
               <p className="text-sm text-muted-foreground">
-                Esta seção exibe <strong>exclusivamente</strong> dados inseridos no banco após verificação 
-                nas fontes oficiais (SIOP, Portal da Transparência, LOAs). Dados estimados ou não auditáveis 
+                Esta seção exibe <strong>exclusivamente</strong> dados inseridos no banco após verificação
+                nas fontes oficiais (SIOP, Portal da Transparência, LOAs). Dados estimados ou não auditáveis
                 não são permitidos. Cada registro deve conter o deep link direto para a fonte primária.
               </p>
             </div>
@@ -172,7 +144,7 @@ export default function Orcamento() {
         </CardContent>
       </Card>
 
-      {/* Key Metrics do banco */}
+      {/* Key Metrics */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
@@ -188,7 +160,7 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">2018-2022</p>
                   <p className="text-xl font-bold">{formatCurrency(stats?.totalPeriodo1 || 0)}</p>
-                   <p className="text-xs text-muted-foreground">Dotação / Pago</p>
+                  <p className="text-xs text-muted-foreground">Dotação / Pago</p>
                 </div>
               </div>
             </CardContent>
@@ -231,241 +203,206 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">Registros</p>
                   <p className="text-xl font-bold">{stats?.totalRegistros || 0}</p>
-                  <p className="text-xs text-muted-foreground">{Object.keys(stats?.porPrograma || {}).length} programas</p>
+                  <p className="text-xs text-muted-foreground">{federalCount + estadualCount + municipalCount} programas</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {['Federal', 'Estadual', 'Municipal', 'Total'].map(label => (
-            <Card key={label} className="border-dashed">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-muted rounded-lg">
-                    <DollarSign className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{label}</p>
-                    <p className="text-xl font-bold text-muted-foreground">—</p>
-                    <p className="text-xs text-muted-foreground">Sem dados verificados</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      ) : null}
 
-      <Tabs defaultValue="dados" className="w-full">
+      <Tabs defaultValue="programas-federais" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="dados">Dados do Banco</TabsTrigger>
-          <TabsTrigger value="fontes-federais">Fontes Federais</TabsTrigger>
-          <TabsTrigger value="fontes-estaduais">Fontes Estaduais</TabsTrigger>
-          <TabsTrigger value="fontes-municipais">Fontes Municipais</TabsTrigger>
+          <TabsTrigger value="programas-federais">
+            <Building className="w-4 h-4 mr-1" />
+            Programas Federais
+            {federalCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{federalCount}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="programas-estaduais">
+            <Building2 className="w-4 h-4 mr-1" />
+            Programas Estaduais
+            {estadualCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{estadualCount}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="programas-municipais">
+            <MapPin className="w-4 h-4 mr-1" />
+            Programas Municipais
+            {municipalCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{municipalCount}</Badge>}
+          </TabsTrigger>
+          <TabsTrigger value="visao-geral">
+            <Database className="w-4 h-4 mr-1" />
+            Visão Geral
+          </TabsTrigger>
+          <TabsTrigger value="fontes">
+            <ExternalLink className="w-4 h-4 mr-1" />
+            Fontes
+          </TabsTrigger>
         </TabsList>
 
-        {/* Dados do Banco */}
-        <TabsContent value="dados">
+        {/* PROGRAMAS FEDERAIS */}
+        <TabsContent value="programas-federais">
           {isLoading ? (
-            <Skeleton className="h-96" />
-          ) : hasData ? (
-            <div className="space-y-6">
-              {/* Gráficos do banco */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {evolucaoPorAno.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">Evolução Orçamentária por Ano</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="h-72">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={evolucaoPorAno}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                            <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
-                            <Tooltip
-                              formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
-                              contentStyle={{
-                                backgroundColor: 'hsl(var(--card))',
-                                border: '1px solid hsl(var(--border))',
-                                borderRadius: '8px'
-                              }}
-                            />
-                            <Line type="monotone" dataKey="pago" name="Pago" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))' }} />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {porPrograma.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-base">Top 10 Programas por Execução</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="h-72">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={porPrograma} layout="vertical">
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                            <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
-                            <YAxis dataKey="programa" type="category" tick={{ fontSize: 9 }} width={130} />
-                            <Tooltip
-                              formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
-                              contentStyle={{
-                                backgroundColor: 'hsl(var(--card))',
-                                border: '1px solid hsl(var(--border))',
-                                borderRadius: '8px'
-                              }}
-                            />
-                            <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-
-              {/* Tabela detalhada */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Database className="w-5 h-5 text-primary" />
-                    Detalhamento — Dados Verificados
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Programa</TableHead>
-                        <TableHead>Órgão</TableHead>
-                        <TableHead>Esfera</TableHead>
-                        <TableHead>Ano</TableHead>
-                        <TableHead className="text-right">Dotação</TableHead>
-                        <TableHead className="text-right">Empenhado</TableHead>
-                        <TableHead className="text-right">Pago</TableHead>
-                        <TableHead className="text-right">Exec. (%)</TableHead>
-                        <TableHead>Fonte</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dadosOrcamentarios?.slice(0, 30).map(item => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium text-sm max-w-[180px] truncate">{item.programa}</TableCell>
-                          <TableCell className="text-sm">{item.orgao}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {item.esfera === 'federal' ? 'Fed' : item.esfera === 'estadual' ? 'Est' : 'Mun'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{item.ano}</TableCell>
-                          <TableCell className="text-right text-sm">
-                            {item.dotacao_autorizada ? formatCurrency(item.dotacao_autorizada) : '—'}
-                          </TableCell>
-                          <TableCell className="text-right text-sm">
-                            {item.empenhado ? formatCurrency(item.empenhado) : '—'}
-                          </TableCell>
-                          <TableCell className="text-right text-sm font-medium">
-                            {item.pago ? formatCurrency(item.pago) : '—'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {item.percentual_execucao ? (
-                              <Badge
-                                variant="outline"
-                                className={
-                                  item.percentual_execucao >= 80 ? 'border-success text-success' :
-                                  item.percentual_execucao >= 50 ? 'border-warning text-warning' :
-                                  'border-destructive text-destructive'
-                                }
-                              >
-                                {item.percentual_execucao.toFixed(0)}%
-                              </Badge>
-                            ) : '—'}
-                          </TableCell>
-                          <TableCell className="text-xs max-w-[120px]">
-                            {item.url_fonte ? (
-                              <a
-                                href={item.url_fonte}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline flex items-center gap-1"
-                                title={item.fonte_dados}
-                              >
-                                {item.fonte_dados.length > 18 ? item.fonte_dados.slice(0, 18) + '…' : item.fonte_dados}
-                                <ExternalLink className="w-3 h-3 shrink-0" />
-                              </a>
-                            ) : (
-                              <span className="text-muted-foreground">{item.fonte_dados}</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  {dadosOrcamentarios && dadosOrcamentarios.length > 30 && (
-                    <p className="text-xs text-muted-foreground mt-4 text-center">
-                      Exibindo 30 de {dadosOrcamentarios.length} registros.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
+          ) : grouped.federal.size > 0 ? (
+            <div className="space-y-8">
+              {Array.from(grouped.federal.entries()).map(([orgao, programas]) => (
+                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
+              ))}
             </div>
           ) : (
-            <EmptyDataCard />
+            <EmptyEsferaCard
+              esfera="federais"
+              descricao="Nenhum dado federal verificado encontrado no banco. Insira dados usando a edge function de ingestão ou manualmente."
+            />
           )}
         </TabsContent>
 
-        {/* Fontes Federais */}
-        <TabsContent value="fontes-federais">
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Consulte as fontes oficiais abaixo para levantar e inserir dados verificados no banco. 
-              Cada link abre o Portal da Transparência ou SIOP com os filtros pré-selecionados para o período 2018-2026.
-            </p>
-            {estruturaFederal.map((cat) => (
-              <Card key={cat.categoria}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Building className="w-5 h-5 text-primary" />
-                      {cat.categoria}
-                    </CardTitle>
-                    <Badge variant="outline">{cat.orgao}</Badge>
+        {/* PROGRAMAS ESTADUAIS */}
+        <TabsContent value="programas-estaduais">
+          {isLoading ? (
+            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
+          ) : grouped.estadual.size > 0 ? (
+            <div className="space-y-8">
+              {Array.from(grouped.estadual.entries())
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([estado, programas]) => (
+                  <div key={estado} className="space-y-3">
+                    <div className="flex items-center gap-2 px-1">
+                      <MapPin className="w-5 h-5 text-success" />
+                      <h3 className="font-semibold text-sm">{estado}</h3>
+                      <Badge variant="outline" className="text-xs">{programas.size} programas</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      {Array.from(programas.entries()).map(([prog, registros]) => (
+                        <ProgramCard key={prog} programa={prog} registros={registros} />
+                      ))}
+                    </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-3">
-                    {cat.fontes.map((fonte, idx) => (
-                      <a
-                        key={idx}
-                        href={fonte.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        {fonte.nome}
-                      </a>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                ))}
+            </div>
+          ) : (
+            <EmptyEsferaCard
+              esfera="estaduais"
+              descricao="Dados estaduais ainda não foram coletados de forma verificável. Utilize as fontes SICONFI/RREO dos portais de transparência estaduais."
+            />
+          )}
         </TabsContent>
 
-        {/* Fontes Estaduais */}
-        <TabsContent value="fontes-estaduais">
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Portais de transparência estaduais para levantamento de dados de programas de igualdade racial.
-            </p>
+        {/* PROGRAMAS MUNICIPAIS */}
+        <TabsContent value="programas-municipais">
+          {isLoading ? (
+            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
+          ) : grouped.municipal.size > 0 ? (
+            <div className="space-y-8">
+              {Array.from(grouped.municipal.entries())
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([cidade, programas]) => (
+                  <div key={cidade} className="space-y-3">
+                    <div className="flex items-center gap-2 px-1">
+                      <MapPin className="w-5 h-5 text-chart-1" />
+                      <h3 className="font-semibold text-sm">{cidade}</h3>
+                      <Badge variant="outline" className="text-xs">{programas.size} programas</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      {Array.from(programas.entries()).map(([prog, registros]) => (
+                        <ProgramCard key={prog} programa={prog} registros={registros} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <EmptyEsferaCard
+              esfera="municipais"
+              descricao="Dados municipais ainda não foram coletados de forma verificável. Utilize os portais de transparência municipais."
+            />
+          )}
+        </TabsContent>
+
+        {/* VISÃO GERAL - Charts */}
+        <TabsContent value="visao-geral">
+          {isLoading ? (
+            <Skeleton className="h-96" />
+          ) : hasData ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {evolucaoPorAno.length > 0 && (
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="h-72">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={evolucaoPorAno}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                          <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
+                          <Tooltip
+                            formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
+                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                          />
+                          <Line type="monotone" dataKey="pago" name="Pago" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))' }} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {porPrograma.length > 0 && (
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="h-72">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={porPrograma} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
+                          <YAxis dataKey="programa" type="category" tick={{ fontSize: 9 }} width={130} />
+                          <Tooltip
+                            formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
+                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                          />
+                          <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : (
+            <EmptyEsferaCard esfera="gerais" descricao="Nenhum dado orçamentário verificado encontrado no banco." />
+          )}
+        </TabsContent>
+
+        {/* FONTES */}
+        <TabsContent value="fontes">
+          <div className="space-y-6">
+            <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
+            <div className="space-y-4">
+              {estruturaFederal.map((cat) => (
+                <Card key={cat.categoria}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Building className="w-5 h-5 text-primary" />
+                        {cat.categoria}
+                      </CardTitle>
+                      <Badge variant="outline">{cat.orgao}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-3">
+                      {cat.fontes.map((fonte, idx) => (
+                        <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
+                          <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
+                        </a>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <h3 className="font-semibold text-sm flex items-center gap-2 mt-8"><Building2 className="w-4 h-4 text-success" /> Fontes Estaduais</h3>
             <Card>
               <CardContent className="pt-6">
                 <Table>
@@ -474,7 +411,7 @@ export default function Orcamento() {
                       <TableHead>UF</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Órgão Responsável</TableHead>
-                      <TableHead>Portal de Transparência</TableHead>
+                      <TableHead>Portal</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -494,15 +431,8 @@ export default function Orcamento() {
                 </Table>
               </CardContent>
             </Card>
-          </div>
-        </TabsContent>
 
-        {/* Fontes Municipais */}
-        <TabsContent value="fontes-municipais">
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Portais de transparência municipais para levantamento de dados de programas de igualdade racial.
-            </p>
+            <h3 className="font-semibold text-sm flex items-center gap-2 mt-8"><MapPin className="w-4 h-4 text-chart-1" /> Fontes Municipais</h3>
             <Card>
               <CardContent className="pt-6">
                 <Table>
@@ -511,7 +441,7 @@ export default function Orcamento() {
                       <TableHead>Município</TableHead>
                       <TableHead>UF</TableHead>
                       <TableHead>Órgão Responsável</TableHead>
-                      <TableHead>Portal de Transparência</TableHead>
+                      <TableHead>Portal</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
