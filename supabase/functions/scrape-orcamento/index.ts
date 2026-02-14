@@ -134,9 +134,24 @@ async function fetchFederalViaFirecrawl(
             messages: [
               {
                 role: "system",
-                content: `Você é um especialista em orçamento público brasileiro. Extraia dados de execução orçamentária do conteúdo fornecido.
+                content: `Você é um especialista em orçamento público brasileiro e políticas de igualdade racial. Extraia APENAS programas e ações relacionados a políticas raciais do conteúdo fornecido.
 
-Retorne APENAS um JSON array com objetos no formato:
+FILTRO OBRIGATÓRIO – Inclua SOMENTE programas/ações que tratem de:
+- Igualdade racial, combate ao racismo, promoção racial
+- Povos indígenas, demarcação de terras indígenas, FUNAI
+- Comunidades quilombolas, titulação de territórios quilombolas
+- Comunidades tradicionais (ciganos, terreiros, matriz africana)
+- Saúde indígena (SESAI), saúde da população negra
+- Juventude negra, mulheres negras, violência racial
+- Educação étnico-racial, cotas raciais, ações afirmativas
+- Cultura afro-brasileira, patrimônio cultural negro/indígena
+- Reforma agrária para quilombolas e indígenas (INCRA)
+- Segurança alimentar de povos tradicionais
+- Direitos humanos com recorte racial
+
+EXCLUA programas genéricos/transversais (Bolsa Família, Minha Casa Minha Vida, Fundo Eleitoral, agricultura familiar genérica, etc.) que não tenham recorte racial explícito.
+
+Retorne APENAS um JSON array:
 [
   {
     "codigo_programa": "5034",
@@ -151,9 +166,9 @@ Retorne APENAS um JSON array com objetos no formato:
 ]
 
 REGRAS:
-- Extraia TODOS os programas e ações listados
 - Valores monetários em reais (número puro, sem formatação)
-- Se não encontrar dados estruturados, retorne []
+- Busque dotacao_autorizada nos campos "Dotação Atualizada", "Crédito Autorizado" ou "LOA + Créditos"
+- Se não encontrar dados de políticas raciais, retorne []
 - Retorne APENAS o JSON, sem markdown ou explicações`
               },
               {
@@ -281,7 +296,7 @@ REGRAS:
             messages: [
               {
                 role: "system",
-                content: `Extraia dados orçamentários do conteúdo. Retorne APENAS JSON array: [{"codigo_programa":"","nome_programa":"","codigo_acao":"","nome_acao":"","dotacao_autorizada":0,"empenhado":0,"liquidado":0,"pago":0}]. Sem markdown.`
+                content: `Extraia APENAS programas/ações de políticas raciais (igualdade racial, povos indígenas, quilombolas, saúde indígena, comunidades tradicionais, juventude negra, ações afirmativas, cultura afro-brasileira). EXCLUA programas genéricos sem recorte racial. Retorne APENAS JSON array: [{"codigo_programa":"","nome_programa":"","codigo_acao":"","nome_acao":"","dotacao_autorizada":0,"empenhado":0,"liquidado":0,"pago":0}]. Sem markdown.`
               },
               {
                 role: "user",
@@ -441,6 +456,7 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const anosRange = anos || [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+    console.log(`Foco: programas de políticas raciais | Anos: ${anosRange.join(", ")}`);
     const resultados: DadoOrcamentario[] = [];
     const erros: string[] = [];
     let federalInserted = 0;
