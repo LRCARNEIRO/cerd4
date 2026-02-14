@@ -13,32 +13,58 @@ const orgaoMeta: Record<string, { nome: string; fontes: { nome: string; url: str
       { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2023&ate=31%2F12%2F2026&orgaos=OS67000' },
     ],
   },
+  MPI: {
+    nome: 'Ministério dos Povos Indígenas',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2023&ate=31%2F12%2F2026&orgaos=OS92000' },
+    ],
+  },
+  FUNAI: {
+    nome: 'Fundação Nacional dos Povos Indígenas',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=UO37201' },
+    ],
+  },
+  INCRA: {
+    nome: 'Instituto Nacional de Colonização e Reforma Agrária',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=UO22201' },
+    ],
+  },
+  SESAI: {
+    nome: 'Secretaria Especial de Saúde Indígena',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=UO36901' },
+    ],
+  },
   'MPI/FUNAI': {
     nome: 'Ministério dos Povos Indígenas / FUNAI',
     fontes: [
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
-      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
     ],
   },
   MEC: {
     nome: 'Ministério da Educação',
     fontes: [
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
-      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS26000' },
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS26000' },
+    ],
+  },
+  MS: {
+    nome: 'Ministério da Saúde',
+    fontes: [
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS36000' },
     ],
   },
   MDS: {
     nome: 'Ministério do Desenvolvimento e Assistência Social',
     fontes: [
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
-      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS55000' },
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS55000' },
     ],
   },
   MJSP: {
     nome: 'Ministério da Justiça e Segurança Pública',
     fontes: [
-      { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
-      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS30000' },
+      { nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS30000' },
     ],
   },
 };
