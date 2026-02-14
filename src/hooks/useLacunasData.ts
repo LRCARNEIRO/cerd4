@@ -293,27 +293,31 @@ export function useOrcamentoStats() {
 
       const registros = data || [];
       
+      // Use pago when available, fallback to dotacao_autorizada
+      const valorEfetivo = (r: typeof registros[0]) => 
+        Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+
       const periodo1 = registros.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const periodo2 = registros.filter(r => r.ano >= 2023 && r.ano <= 2026);
 
-      const totalPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
-      const totalPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+      const totalPeriodo1 = periodo1.reduce((acc, r) => acc + valorEfetivo(r), 0);
+      const totalPeriodo2 = periodo2.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
       const porAno: Record<number, number> = {};
       registros.forEach(r => {
-        porAno[r.ano] = (porAno[r.ano] || 0) + (Number(r.pago) || 0);
+        porAno[r.ano] = (porAno[r.ano] || 0) + valorEfetivo(r);
       });
 
       const porPrograma: Record<string, number> = {};
       registros.forEach(r => {
-        porPrograma[r.programa] = (porPrograma[r.programa] || 0) + (Number(r.pago) || 0);
+        porPrograma[r.programa] = (porPrograma[r.programa] || 0) + valorEfetivo(r);
       });
 
       // Por esfera
       const porEsfera: Record<string, { total: number; programas: number }> = {};
       registros.forEach(r => {
         if (!porEsfera[r.esfera]) porEsfera[r.esfera] = { total: 0, programas: 0 };
-        porEsfera[r.esfera].total += Number(r.pago) || 0;
+        porEsfera[r.esfera].total += valorEfetivo(r);
         porEsfera[r.esfera].programas++;
       });
 

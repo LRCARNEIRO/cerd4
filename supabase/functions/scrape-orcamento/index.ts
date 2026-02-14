@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // Órgãos federais relevantes para política racial
 const ORGAOS_FEDERAIS = [
-  { codigo: "92000", nome: "Ministério da Igualdade Racial", sigla: "MIR" },
+  { codigo: "67000", nome: "Ministério da Igualdade Racial", sigla: "MIR", usarOrgaoSuperior: true },
   { codigo: "37201", nome: "FUNAI", sigla: "FUNAI" },
   { codigo: "22201", nome: "INCRA", sigla: "INCRA" },
   { codigo: "36901", nome: "SESAI/Ministério da Saúde", sigla: "SESAI" },
@@ -69,38 +69,78 @@ async function fetchDespesasPorOrgao(
   apiKey: string,
   codigoOrgao: string,
   ano: number,
-  funcao?: string
+  usarOrgaoSuperior: boolean = false
 ): Promise<any[]> {
-  const params = new URLSearchParams({
-    ano: ano.toString(),
-    codigoOrgao: codigoOrgao,
-    pagina: "1",
-  });
-  if (funcao) params.set("codigoFuncao", funcao);
-
-  const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?${params}`;
-  console.log(`Fetching: ${url}`);
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        "chave-api-dados": apiKey,
-        Accept: "application/json",
-      },
+  const allResults: any[] = [];
+  
+  // Try with codigoOrgao/codigoOrgaoSuperior + codigoFuncao as additional required filter
+  for (const funcao of FUNCOES_RACIAIS) {
+    const params = new URLSearchParams({
+      ano: ano.toString(),
+      pagina: "1",
+      codigoFuncao: funcao,
     });
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error(`Error ${response.status} for orgao ${codigoOrgao} ano ${ano}: ${text}`);
-      return [];
+    if (usarOrgaoSuperior) {
+      params.set("codigoOrgaoSuperior", codigoOrgao);
+    } else {
+      params.set("codigoOrgao", codigoOrgao);
     }
 
-    const data = await response.json();
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error(`Fetch error for orgao ${codigoOrgao} ano ${ano}:`, error);
-    return [];
+    const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?${params}`;
+    console.log(`Fetching: ${url}`);
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "chave-api-dados": apiKey,
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error(`Error ${response.status} for orgao ${codigoOrgao} ano ${ano}: ${text}`);
+        continue;
+      }
+
+      const data = await response.json();
+      console.log(`Orgao ${codigoOrgao} funcao ${funcao} ano ${ano}: ${Array.isArray(data) ? data.length : 0} resultados`);
+      if (Array.isArray(data)) allResults.push(...data);
+    } catch (error) {
+      console.error(`Fetch error for orgao ${codigoOrgao} ano ${ano}:`, error);
+    }
   }
+
+  // Also try without function filter but with orgaoSuperior for MIR
+  if (usarOrgaoSuperior) {
+    const params = new URLSearchParams({
+      ano: ano.toString(),
+      pagina: "1",
+      codigoOrgaoSuperior: codigoOrgao,
+    });
+
+    const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?${params}`;
+    console.log(`Fetching (orgaoSuperior): ${url}`);
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "chave-api-dados": apiKey,
+          Accept: "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`OrgaoSuperior ${codigoOrgao} ano ${ano}: ${Array.isArray(data) ? data.length : 0} resultados`);
+        if (Array.isArray(data)) allResults.push(...data);
+      }
+    } catch (error) {
+      console.error(`Fetch error orgaoSuperior:`, error);
+    }
+  }
+
+  return allResults;
 }
 
 async function fetchDespesasFuncionalProgramatica(
@@ -111,6 +151,7 @@ async function fetchDespesasFuncionalProgramatica(
   const params = new URLSearchParams({
     ano: ano.toString(),
     codigoOrgao: codigoOrgao,
+    codigoFuncao: "14",
     pagina: "1",
   });
 
@@ -290,7 +331,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { fonte, anos, esfera } = await req.json();
+    let fonte: string | undefined;
+    let anos: number[] | undefined;
+    let esfera: string | undefined;
+    
+    try {
+      const body = await req.json();
+      fonte = body.fonte;
+      anos = body.anos;
+      esfera = body.esfera;
+    } catch {
+      // No body or invalid JSON - use defaults
+    }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -309,7 +361,7 @@ Deno.serve(async (req) => {
         for (const orgao of ORGAOS_FEDERAIS) {
           for (const ano of anosRange) {
             // Buscar por órgão
-            const dadosOrgao = await fetchDespesasPorOrgao(apiKey, orgao.codigo, ano);
+            const dadosOrgao = await fetchDespesasPorOrgao(apiKey, orgao.codigo, ano, (orgao as any).usarOrgaoSuperior || false);
             const processados = processPortalTransparenciaData(dadosOrgao, orgao, ano);
             resultados.push(...processados);
 
