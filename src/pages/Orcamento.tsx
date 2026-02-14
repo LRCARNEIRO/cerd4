@@ -184,14 +184,15 @@ export default function Orcamento() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-accent/10 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-accent" />
+                <div className={`p-2 rounded-lg ${stats && stats.variacao > 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
+                  <TrendingUp className={`w-5 h-5 ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Variação</p>
                   <p className={`text-xl font-bold ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`}>
                     {stats && stats.variacao > 0 ? '+' : ''}{stats?.variacao.toFixed(1)}%
                   </p>
+                  <p className="text-xs text-muted-foreground">Série incompleta — dados parciais</p>
                 </div>
               </div>
             </CardContent>
