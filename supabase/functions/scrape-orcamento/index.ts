@@ -160,90 +160,187 @@ function processSiopData(
 }
 
 // ====== Portal da Transparência API (Federal fallback) ======
+// Strategy: 1) List programs for the year, 2) Query per-program using funcional-programatica
 async function fetchPortalTransparencia(
   orgao: { codigo: string; nome: string; sigla: string },
   ano: number,
   apiKey: string
 ): Promise<DadoOrcamentario[]> {
   const results: DadoOrcamentario[] = [];
-  let pagina = 1;
-  const maxPages = 5;
 
-  while (pagina <= maxPages) {
-    const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?ano=${ano}&orgaoSuperior=${orgao.codigo}&pagina=${pagina}`;
-    console.log(`Portal Transparência URL: ${url}`);
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-          "chave-api-dados": apiKey,
-        },
-      });
+  // Step 1: Use /despesas/por-orgao to get sub-organ level data (this endpoint works)
+  // But aggregate by querying funcional-programatica with specific filters
+  // Since funcional-programatica doesn't accept orgao filter, we use por-orgao
+  // and also query the programs list endpoint
 
-      console.log(`Portal Transparência response status: ${response.status}`);
-      const rawText = await response.text();
-      console.log(`Portal Transparência raw response (first 500): ${rawText.substring(0, 500)}`);
-
-      if (!response.ok) {
-        console.error(`Portal Transparência ${orgao.sigla} ${ano} p${pagina}: ${response.status} - ${rawText.substring(0, 200)}`);
-        break;
+  // First, let's get the list of programs for this year
+  const programasUrl = `${PORTAL_TRANSPARENCIA_BASE}/despesas/funcional-programatica/programas?ano=${ano}`;
+  console.log(`Portal Transparência listando programas: ${programasUrl}`);
+  
+  let programas: Array<{ codigo: string; descricao: string }> = [];
+  try {
+    const progResp = await fetch(programasUrl, {
+      headers: { Accept: "application/json", "chave-api-dados": apiKey },
+    });
+    console.log(`Programas response status: ${progResp.status}`);
+    if (progResp.ok) {
+      const progData = await progResp.json();
+      if (Array.isArray(progData)) {
+        programas = progData.map((p: any) => ({
+          codigo: p.codigo || p.codigoPrograma || String(p.id || ""),
+          descricao: p.descricao || p.descricaoPrograma || p.nome || "",
+        }));
+        console.log(`Encontrados ${programas.length} programas para ${ano}. Exemplos: ${JSON.stringify(programas.slice(0, 3))}`);
       }
+    }
+  } catch (e) {
+    console.error(`Erro listando programas:`, e);
+  }
 
-      let data: any[];
-      try {
-        data = JSON.parse(rawText);
-      } catch {
-        console.error(`Portal Transparência ${orgao.sigla}: invalid JSON`);
-        break;
-      }
+  // Step 2: For each program, query funcional-programatica with programa filter
+  if (programas.length > 0) {
+    // Filter to relevant programs (those likely related to racial equality)
+    // We'll query ALL and filter by orgao after getting the data
+    for (const prog of programas) {
+      const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-funcional-programatica?ano=${ano}&programa=${prog.codigo}&pagina=1`;
+      console.log(`Querying funcional-programatica for programa ${prog.codigo}: ${url}`);
       
-      if (!Array.isArray(data) || data.length === 0) {
-        console.log(`Portal Transparência ${orgao.sigla} ${ano}: empty or not array`);
+      try {
+        const response = await fetch(url, {
+          headers: { Accept: "application/json", "chave-api-dados": apiKey },
+        });
+
+        if (!response.ok) {
+          if (response.status !== 400) {
+            console.error(`Programa ${prog.codigo} error: ${response.status}`);
+          }
+          continue;
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) continue;
+
+        // Filter results for our target orgao
+        const relevantItems = data.filter((item: any) => {
+          const itemOrgao = item.orgaoSuperior?.codigo || item.codigoOrgaoSuperior || item.orgao?.codigo || "";
+          return String(itemOrgao) === orgao.codigo;
+        });
+
+        if (relevantItems.length === 0) continue;
+
+        console.log(`Programa ${prog.codigo} – ${prog.descricao}: ${relevantItems.length} items for ${orgao.sigla}`);
+
+        for (const item of relevantItems) {
+          const parseBRL = (v: any): number | null => {
+            if (v == null || v === "") return null;
+            if (typeof v === "number") return v;
+            const cleaned = String(v).replace(/\./g, "").replace(",", ".");
+            const num = Number(cleaned);
+            return isNaN(num) ? null : num;
+          };
+
+          const dotacao = parseBRL(item.dotacaoInicial) || parseBRL(item.valorLeiMaisCreditos);
+          const empenhado = parseBRL(item.despesaEmpenhada) || parseBRL(item.empenhado) || parseBRL(item.valorEmpenhado);
+          const liquidado = parseBRL(item.despesaLiquidada) || parseBRL(item.liquidado);
+          const pago = parseBRL(item.despesaPaga) || parseBRL(item.pago) || parseBRL(item.valorPago);
+
+          if (!dotacao && !empenhado && !pago) continue;
+
+          const dotacaoFinal = dotacao || empenhado;
+          const percentual = dotacaoFinal && pago ? Math.round((pago / dotacaoFinal) * 10000) / 100 : null;
+
+          const codAcao = item.acao?.codigo || "";
+          const nomeAcao = item.acao?.descricao || "";
+          let programaLabel = `${prog.codigo} – ${prog.descricao}`;
+          if (codAcao && nomeAcao) {
+            programaLabel += ` / ${codAcao} – ${nomeAcao}`;
+          }
+
+          const deepLink = `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F${ano}&ate=31%2F12%2F${ano}&orgaos=OS${orgao.codigo}&programa=${prog.codigo}`;
+
+          results.push({
+            programa: programaLabel.length > 250 ? programaLabel.substring(0, 250) : programaLabel,
+            orgao: orgao.sigla,
+            esfera: "federal",
+            ano,
+            dotacao_autorizada: dotacaoFinal,
+            empenhado,
+            liquidado,
+            pago,
+            percentual_execucao: percentual,
+            fonte_dados: `Portal da Transparência – ${orgao.sigla}`,
+            url_fonte: deepLink,
+            observacoes: null,
+            eixo_tematico: null,
+            grupo_focal: null,
+          });
+        }
+
+        await new Promise((r) => setTimeout(r, 300));
+      } catch (error) {
+        console.error(`Error querying programa ${prog.codigo}:`, error);
+      }
+    }
+  }
+
+  // Fallback: if no program-level data, use por-orgao but label correctly
+  if (results.length === 0) {
+    console.log(`No program-level data for ${orgao.sigla} ${ano}, falling back to por-orgao`);
+    let pagina = 1;
+    while (pagina <= 5) {
+      const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?ano=${ano}&orgaoSuperior=${orgao.codigo}&pagina=${pagina}`;
+      try {
+        const response = await fetch(url, {
+          headers: { Accept: "application/json", "chave-api-dados": apiKey },
+        });
+        if (!response.ok) break;
+        const data = await response.json();
+        if (!Array.isArray(data) || data.length === 0) break;
+
+        for (const item of data) {
+          const parseBRL = (v: any): number | null => {
+            if (v == null || v === "") return null;
+            if (typeof v === "number") return v;
+            const cleaned = String(v).replace(/\./g, "").replace(",", ".");
+            const num = Number(cleaned);
+            return isNaN(num) ? null : num;
+          };
+
+          const nomeUO = item.orgao || item.descricao || "";
+          const codUO = item.codigoOrgao || "";
+          const empenhado = parseBRL(item.empenhado);
+          const liquidado = parseBRL(item.liquidado);
+          const pago = parseBRL(item.pago);
+
+          if (!empenhado && !pago) continue;
+
+          const deepLink = `https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F${ano}&ate=31%2F12%2F${ano}&orgaos=OS${orgao.codigo}`;
+
+          results.push({
+            programa: `[UO] ${nomeUO} (${codUO})`,
+            orgao: orgao.sigla,
+            esfera: "federal",
+            ano,
+            dotacao_autorizada: empenhado,
+            empenhado,
+            liquidado,
+            pago,
+            percentual_execucao: empenhado && pago ? Math.round((pago / empenhado) * 10000) / 100 : null,
+            fonte_dados: `Portal da Transparência – ${orgao.sigla}`,
+            url_fonte: deepLink,
+            observacoes: `Unidade Orçamentária (programa não disponível via API)`,
+            eixo_tematico: null,
+            grupo_focal: null,
+          });
+        }
+
+        if (data.length < 15) break;
+        pagina++;
+        await new Promise((r) => setTimeout(r, 500));
+      } catch (error) {
+        console.error(`Fallback por-orgao error ${orgao.sigla} ${ano}:`, error);
         break;
       }
-
-      console.log(`Portal Transparência ${orgao.sigla} ${ano}: ${data.length} items, first keys: ${Object.keys(data[0]).join(', ')}`);
-
-      for (const item of data) {
-        const programa = `${item.orgao || ""} (${item.codigoOrgao || ""})`;
-        // Parse Brazilian number format: "762.455.916,88" -> 762455916.88
-        const parseBRL = (v: string | number | null | undefined): number | null => {
-          if (v == null || v === "") return null;
-          if (typeof v === "number") return v;
-          const cleaned = v.replace(/\./g, "").replace(",", ".");
-          const num = Number(cleaned);
-          return isNaN(num) ? null : num;
-        };
-        const empenhado = parseBRL(item.empenhado);
-        const liquidado = parseBRL(item.liquidado);
-        const pago = parseBRL(item.pago);
-
-        if (!empenhado && !pago) continue;
-
-        results.push({
-          programa: programa.length > 250 ? programa.substring(0, 250) : programa,
-          orgao: orgao.sigla,
-          esfera: "federal",
-          ano,
-          dotacao_autorizada: empenhado, // despesas/por-orgao doesn't return dotação, use empenhado as proxy
-          empenhado,
-          liquidado,
-          pago,
-          percentual_execucao: empenhado && pago ? Math.round((pago / empenhado) * 10000) / 100 : null,
-          fonte_dados: `Portal da Transparência – ${orgao.sigla}`,
-          url_fonte: `https://portaldatransparencia.gov.br/despesas/orgao?ordenarPor=orgaoSuperior&direcao=asc&de=${ano}0101&ate=${ano}1231&orgao=${orgao.codigo}`,
-          observacoes: `Órgão vinculado: ${item.orgao}`,
-          eixo_tematico: null,
-          grupo_focal: null,
-        });
-      }
-
-      if (data.length < 15) break; // Less than page size means last page
-      pagina++;
-      await new Promise((r) => setTimeout(r, 500));
-    } catch (error) {
-      console.error(`Portal Transparência fetch error ${orgao.sigla} ${ano}:`, error);
-      break;
     }
   }
 
