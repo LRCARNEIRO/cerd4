@@ -6,185 +6,116 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Órgãos superiores dedicados a políticas raciais/indígenas
-const ORGAOS_SUPERIORES = [
-  { codigo: "67000", sigla: "MIR", nome: "Ministério da Igualdade Racial", desde: 2023, dedicado: true },
-  { codigo: "92000", sigla: "MPI", nome: "Ministério dos Povos Indígenas", desde: 2023, dedicado: true },
+/**
+ * Programas temáticos federais de política racial/indígena.
+ * Estratégia: buscar por código de programa na API do Portal da Transparência.
+ * Cada programa é mapeado ao órgão responsável principal.
+ */
+const PROGRAMAS = [
+  { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MIR", desde: 2020 },
+  { codigo: "5803", nome: "Juventude Negra Viva", orgao: "MIR", desde: 2024 },
+  { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
+  { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
 ];
 
-// Unidades orçamentárias específicas (existem desde antes de 2023)
-const UOS_ESPECIFICAS = [
-  { codigo: "37201", sigla: "FUNAI", nome: "Fundação Nacional dos Povos Indígenas", dedicado: true },
-  { codigo: "22201", sigla: "INCRA", nome: "Instituto Nacional de Colonização e Reforma Agrária", dedicado: true },
-  { codigo: "36901", sigla: "SESAI", nome: "Secretaria Especial de Saúde Indígena", dedicado: true },
-];
-
-// Programas temáticos de política racial em ministérios genéricos
-// Estes são buscados diretamente pelo código do programa
-const PROGRAMAS_TEMATICOS = [
-  { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", desde: 2020 },
-  { codigo: "5803", nome: "Juventude Negra Viva", desde: 2024 },
-  { codigo: "0156", nome: "Promoção e Defesa dos Direitos dos Povos Indígenas", desde: 2004 },
-  { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", desde: 2012 },
-  { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", desde: 2004 }, // interseccionalidade
-];
+// Mapeamento de códigos de órgão superior para siglas
+const SIGLA_MAP: Record<string, string> = {
+  "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
+  "55000": "MDS", "30000": "MJSP", "44000": "MDHC", "47000": "MDHC",
+  "37000": "FUNAI/MJ", "22000": "INCRA", "36901": "SESAI",
+  "20000": "Presidência", "52000": "MDIC", "54000": "MTE",
+};
 
 const API_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
 
-async function fetchApi(
+// Parse Brazilian-formatted numbers: "15.106.612,40" → 15106612.40
+function parseBRL(val: any): number | null {
+  if (val === null || val === undefined) return null;
+  if (typeof val === "number") return val || null;
+  const s = String(val).trim();
+  if (!s || s === "0" || s === "0,00") return null;
+  const num = Number(s.replace(/\./g, "").replace(",", "."));
+  return isNaN(num) || num === 0 ? null : num;
+}
+
+async function fetchPaginated(
   endpoint: string,
   params: Record<string, string>,
-  apiKey: string
+  apiKey: string,
 ): Promise<any[]> {
-  const allResults: any[] = [];
-  let pagina = 1;
-  const maxPages = 100;
+  const all: any[] = [];
+  let page = 1;
 
-  while (pagina <= maxPages) {
+  while (page <= 50) {
     const url = new URL(`${API_BASE}/${endpoint}`);
-    for (const [k, v] of Object.entries(params)) {
-      url.searchParams.set(k, v);
-    }
-    url.searchParams.set("pagina", String(pagina));
-    
-    const fullUrl = url.toString();
-    if (pagina === 1) console.log(`  URL: ${fullUrl}`);
+    for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+    url.searchParams.set("pagina", String(page));
+
+    if (page === 1) console.log(`  → ${url}`);
 
     try {
-      const response = await fetch(fullUrl, {
-        headers: {
-          "chave-api-dados": apiKey,
-          "Accept": "application/json",
-        },
+      const res = await fetch(url.toString(), {
+        headers: { "chave-api-dados": apiKey, Accept: "application/json" },
       });
 
-      if (response.status === 429) {
-        console.log(`Rate limited on page ${pagina}, waiting 30s...`);
-        await new Promise(r => setTimeout(r, 30000));
+      if (res.status === 429) {
+        console.log(`  Rate limited p${page}, waiting 30s...`);
+        await new Promise((r) => setTimeout(r, 30000));
         continue;
       }
-
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error(`API error ${response.status}: ${errText}`);
+      if (!res.ok) {
+        const err = await res.text();
+        console.error(`  API ${res.status}: ${err.substring(0, 200)}`);
         break;
       }
 
-      const data = await response.json();
+      const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) break;
 
-      allResults.push(...data);
-      console.log(`  Page ${pagina}: ${data.length} records (total: ${allResults.length})`);
-
+      all.push(...data);
       if (data.length < 15) break;
-      pagina++;
-      
-      await new Promise(r => setTimeout(r, 250));
-    } catch (error) {
-      console.error(`Fetch error page ${pagina}:`, error);
+      page++;
+      await new Promise((r) => setTimeout(r, 300));
+    } catch (e) {
+      console.error(`  Fetch error p${page}:`, e);
       break;
     }
   }
-
-  return allResults;
+  return all;
 }
 
-// Fetch expenses by organ using despesas/por-orgao endpoint
-async function fetchByOrgao(
-  ano: number,
-  codigoOrgao: string,
-  isUO: boolean,
-  apiKey: string
-): Promise<any[]> {
-  // Try despesas/por-orgao first (accepts codigoOrgao directly)
-  const params: Record<string, string> = {
-    ano: String(ano),
-    codigoOrgao: codigoOrgao,
-  };
-
-  let results = await fetchApi("despesas/por-orgao", params, apiKey);
-  
-  // If empty, try funcional-programatica with orgaoSuperior
-  if (results.length === 0) {
-    const params2: Record<string, string> = {
-      ano: String(ano),
-      orgaoSuperior: codigoOrgao,
-    };
-    results = await fetchApi("despesas/por-funcional-programatica", params2, apiKey);
-  }
-
-  // If still empty and it's a UO, try with codigoUnidadeGestora
-  if (results.length === 0 && isUO) {
-    const params3: Record<string, string> = {
-      ano: String(ano),
-      unidadeGestora: codigoOrgao,
-    };
-    results = await fetchApi("despesas/por-funcional-programatica", params3, apiKey);
-  }
-
-  return results;
+function resolveOrgao(item: any, fallbackOrgao: string): string {
+  // Try to get organ from API response fields
+  const codOrgSup = item.codigoOrgaoSuperior || item.codigoOrgao || "";
+  if (codOrgSup && SIGLA_MAP[codOrgSup]) return SIGLA_MAP[codOrgSup];
+  return fallbackOrgao;
 }
 
-// Fetch by program code
-async function fetchByPrograma(
-  ano: number,
-  codigoPrograma: string,
-  apiKey: string
-): Promise<any[]> {
-  // Try funcional-programatica with programa filter
-  let results = await fetchApi("despesas/por-funcional-programatica", {
-    ano: String(ano),
-    programa: codigoPrograma,
-  }, apiKey);
-
-  // Fallback: try codigoPrograma parameter
-  if (results.length === 0) {
-    results = await fetchApi("despesas/por-funcional-programatica", {
-      ano: String(ano),
-      codigoPrograma: codigoPrograma,
-    }, apiKey);
-  }
-
-  return results;
-}
-
-function buildRecord(
-  item: any,
-  orgaoSigla: string,
-  ano: number,
-  codigoOrgaoUrl: string,
-  isUO: boolean
-) {
-  // The API uses various field name patterns - try all known variants
-  const codProg = item.codigoPrograma || item.codigo || item.programa?.codigo || "";
-  const nomeProg = item.nomePrograma || item.programa?.descricao || item.descricao || item.nome || "";
-  const codAcao = item.codigoAcao || item.acao?.codigo || "";
-  const nomeAcao = item.nomeAcao || item.acao?.descricao || "";
+function buildRecord(item: any, fallbackOrgao: string, ano: number) {
+  const codProg = item.codigoPrograma || "";
+  const nomeProg = item.programa || item.nomePrograma || "";
+  const codAcao = item.codigoAcao || "";
+  const nomeAcao = item.acao || item.nomeAcao || "";
 
   if (!codProg && !nomeProg) return null;
 
-  let programaLabel = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
-  if (codAcao) {
-    programaLabel += ` / ${codAcao}${nomeAcao ? ` – ${nomeAcao}` : ""}`;
-  }
+  let programa = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
+  if (codAcao) programa += ` / ${codAcao} – ${nomeAcao}`;
 
-  // Try all known field name patterns for financial values
-  const dotacao = Number(item.dotacaoAtualizada || item.valorDotacaoAtualizada || item.dotacaoInicial || item.valorOrcadoAtualizado) || null;
-  const empenhado = Number(item.valorEmpenhado || item.empenhado || item.despesaEmpenhada) || null;
-  const liquidado = Number(item.valorLiquidado || item.liquidado || item.despesaLiquidada) || null;
-  const pago = Number(item.valorPago || item.pago || item.despesaPaga || item.valorPagoFinanceiro) || null;
+  const empenhado = parseBRL(item.empenhado || item.valorEmpenhado);
+  const liquidado = parseBRL(item.liquidado || item.valorLiquidado);
+  const pago = parseBRL(item.pago || item.valorPago);
+  const dotacao = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada);
 
-  // Skip if no financial data at all
+  // Skip records with zero financial data
   if (!dotacao && !empenhado && !liquidado && !pago) return null;
 
+  const orgao = resolveOrgao(item, fallbackOrgao);
   const percentual = dotacao && pago ? Math.round((pago / dotacao) * 10000) / 100 : null;
 
-  const tipoFiltro = isUO ? "UO" : "OS";
-  const portalUrl = `https://portaldatransparencia.gov.br/despesas/programa-e-acao?de=01/01/${ano}&ate=31/12/${ano}&orgaos=${tipoFiltro}${codigoOrgaoUrl}`;
-
   return {
-    programa: programaLabel.substring(0, 250),
-    orgao: orgaoSigla,
+    programa: programa.substring(0, 250),
+    orgao,
     esfera: "federal",
     ano,
     dotacao_autorizada: dotacao,
@@ -192,23 +123,12 @@ function buildRecord(
     liquidado,
     pago,
     percentual_execucao: percentual,
-    fonte_dados: `API Portal da Transparência – ${orgaoSigla}`,
-    url_fonte: portalUrl,
+    fonte_dados: `API Portal da Transparência`,
+    url_fonte: `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=${codProg}`,
     observacoes: null,
     eixo_tematico: null,
     grupo_focal: null,
   };
-}
-
-// Filter out administrative/generic programs for dedicated organs
-function isAdministrativo(codProg: string, nomeProg: string): boolean {
-  const adminCodes = ["0032", "0089", "0901", "0909"];
-  if (adminCodes.includes(codProg)) return true;
-  const lowerNome = (nomeProg || "").toLowerCase();
-  return lowerNome.includes("gestao e manutencao") || 
-         lowerNome.includes("reserva de contingencia") ||
-         lowerNome.includes("encargos financeiros") ||
-         lowerNome.includes("operacoes especiais");
 }
 
 Deno.serve(async (req) => {
@@ -218,177 +138,114 @@ Deno.serve(async (req) => {
 
   try {
     let anos: number[] | undefined;
-    let esfera: string | undefined;
-
     try {
       const body = await req.json();
       anos = body.anos;
-      esfera = body.esfera;
-    } catch {
-      // defaults
-    }
+    } catch { /* defaults */ }
 
     const apiKey = Deno.env.get("PORTAL_TRANSPARENCIA_API_KEY");
     if (!apiKey) {
       return new Response(
         JSON.stringify({ success: false, error: "PORTAL_TRANSPARENCIA_API_KEY não configurada" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
-    const anosRange = anos || [2023, 2024, 2025];
+    const anosRange = anos || [2020, 2021, 2022, 2023, 2024, 2025];
     const erros: string[] = [];
     let totalInserted = 0;
     const registros: any[] = [];
 
-    const doFederal = !esfera || esfera === "federal";
+    console.log(`=== Ingestão Federal: anos ${anosRange.join(", ")} ===`);
+    console.log(`=== Programas: ${PROGRAMAS.map((p) => p.codigo).join(", ")} ===`);
 
-    if (doFederal) {
-      console.log(`=== API REST: Federal ${anosRange.join(", ")} ===`);
+    for (const prog of PROGRAMAS) {
+      for (const ano of anosRange) {
+        if (ano < prog.desde) continue;
 
-      // 1. Órgãos superiores dedicados (MIR, MPI)
-      for (const orgao of ORGAOS_SUPERIORES) {
-        for (const ano of anosRange) {
-          if (ano < orgao.desde) continue;
-          console.log(`Fetching ${orgao.sigla} ${ano}...`);
-          
-          try {
-            const dados = await fetchByOrgao(ano, orgao.codigo, false, apiKey);
-            console.log(`  ${orgao.sigla} ${ano}: ${dados.length} raw records`);
+        console.log(`\nBuscando ${prog.codigo} (${prog.nome}) ${ano}...`);
 
-            for (const item of dados) {
-              const codProg = item.codigoPrograma || "";
-              const nomeProg = item.nomePrograma || "";
-              
-              // For dedicated organs, skip only administrative programs
-              if (isAdministrativo(codProg, nomeProg)) continue;
+        try {
+          const dados = await fetchPaginated(
+            "despesas/por-funcional-programatica",
+            { ano: String(ano), programa: prog.codigo },
+            apiKey,
+          );
+          console.log(`  → ${dados.length} registros brutos`);
 
-              const record = buildRecord(item, orgao.sigla, ano, orgao.codigo, false);
-              if (record) registros.push(record);
-            }
-          } catch (error) {
-            erros.push(`${orgao.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`);
+          if (dados.length > 0) {
+            console.log(`  KEYS: ${Object.keys(dados[0]).join(", ")}`);
+            console.log(`  SAMPLE: ${JSON.stringify(dados[0]).substring(0, 500)}`);
           }
 
-          await new Promise(r => setTimeout(r, 500));
-        }
-      }
-
-      // 2. Unidades orçamentárias específicas (FUNAI, INCRA, SESAI)
-      for (const uo of UOS_ESPECIFICAS) {
-        for (const ano of anosRange) {
-          console.log(`Fetching UO ${uo.sigla} ${ano}...`);
-
-          try {
-            const dados = await fetchByOrgao(ano, uo.codigo, true, apiKey);
-            console.log(`  ${uo.sigla} ${ano}: ${dados.length} raw records`);
-
-            for (const item of dados) {
-              const codProg = item.codigoPrograma || "";
-              const nomeProg = item.nomePrograma || "";
-              if (isAdministrativo(codProg, nomeProg)) continue;
-
-              const record = buildRecord(item, uo.sigla, ano, uo.codigo, true);
-              if (record) registros.push(record);
+          let added = 0;
+          for (const item of dados) {
+            const record = buildRecord(item, prog.orgao, ano);
+            if (record) {
+              registros.push(record);
+              added++;
             }
-          } catch (error) {
-            erros.push(`${uo.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`);
           }
-
-          await new Promise(r => setTimeout(r, 500));
+          console.log(`  → ${added} registros com dados financeiros`);
+        } catch (error) {
+          const msg = `${prog.codigo} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
+          erros.push(msg);
+          console.error(msg);
         }
-      }
 
-      // 3. Programas temáticos (buscados em todos os órgãos)
-      for (const prog of PROGRAMAS_TEMATICOS) {
-        for (const ano of anosRange) {
-          if (ano < prog.desde) continue;
-          console.log(`Fetching programa ${prog.codigo} (${prog.nome}) ${ano}...`);
-
-          try {
-            const dados = await fetchByPrograma(ano, prog.codigo, apiKey);
-            console.log(`  Programa ${prog.codigo} ${ano}: ${dados.length} raw records`);
-
-            for (const item of dados) {
-              // Determine the orgao sigla from the response
-              const orgaoNome = item.nomeOrgaoSuperior || item.nomeUnidadeOrcamentaria || "";
-              const codOrgSup = item.codigoOrgaoSuperior || "";
-              let sigla = codOrgSup;
-              
-              // Map known organ codes to siglas
-              const siglaMap: Record<string, string> = {
-                "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
-                "55000": "MDS", "30000": "MJSP", "44000": "MDHC",
-                "47000": "MDHC", "37000": "FUNAI", "22000": "INCRA",
-              };
-              sigla = siglaMap[codOrgSup] || codOrgSup;
-
-              // Skip if already captured by dedicated organ queries
-              const alreadyCaptured = [...ORGAOS_SUPERIORES, ...UOS_ESPECIFICAS].some(
-                o => o.sigla === sigla
-              );
-              if (alreadyCaptured) continue;
-
-              const record = buildRecord(item, sigla, ano, codOrgSup, false);
-              if (record) registros.push(record);
-            }
-          } catch (error) {
-            erros.push(`Prog ${prog.codigo} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`);
-          }
-
-          await new Promise(r => setTimeout(r, 500));
-        }
-      }
-
-      // Deduplicate by orgao+programa+ano (keep record with highest pago)
-      const deduped = new Map<string, any>();
-      for (const r of registros) {
-        const key = `${r.orgao}|${r.programa}|${r.ano}`;
-        const existing = deduped.get(key);
-        if (!existing || (r.pago && (!existing.pago || r.pago > existing.pago))) {
-          deduped.set(key, r);
-        }
-      }
-
-      console.log(`Deduped: ${registros.length} → ${deduped.size} records`);
-
-      // Batch insert
-      const batch = Array.from(deduped.values());
-      const BATCH_SIZE = 50;
-      for (let i = 0; i < batch.length; i += BATCH_SIZE) {
-        const chunk = batch.slice(i, i + BATCH_SIZE);
-        const { error: insErr } = await supabase.from("dados_orcamentarios").insert(chunk);
-        if (insErr) {
-          erros.push(`Batch insert error: ${insErr.message}`);
-        } else {
-          totalInserted += chunk.length;
-        }
+        await new Promise((r) => setTimeout(r, 500));
       }
     }
 
-    console.log(`=== Concluído: ${totalInserted} registros inseridos, ${erros.length} erros ===`);
+    // Deduplicate by orgao+programa+ano (keep highest pago)
+    const deduped = new Map<string, any>();
+    for (const r of registros) {
+      const key = `${r.orgao}|${r.programa}|${r.ano}`;
+      const existing = deduped.get(key);
+      if (!existing || (r.pago && (!existing.pago || r.pago > existing.pago))) {
+        deduped.set(key, r);
+      }
+    }
+    console.log(`\nDeduplicação: ${registros.length} → ${deduped.size} registros`);
+
+    // Batch insert
+    const batch = Array.from(deduped.values());
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < batch.length; i += BATCH_SIZE) {
+      const chunk = batch.slice(i, i + BATCH_SIZE);
+      const { error: insErr } = await supabase.from("dados_orcamentarios").insert(chunk);
+      if (insErr) {
+        erros.push(`Insert batch ${i}: ${insErr.message}`);
+        console.error(`Insert error batch ${i}:`, insErr.message);
+      } else {
+        totalInserted += chunk.length;
+      }
+    }
+
+    console.log(`\n=== Concluído: ${totalInserted} inseridos, ${erros.length} erros ===`);
 
     return new Response(
       JSON.stringify({
         success: true,
         total_inseridos: totalInserted,
+        total_brutos: registros.length,
+        deduplicados: deduped.size,
         anos: anosRange,
+        programas: PROGRAMAS.map((p) => p.codigo),
         erros: erros.slice(0, 20),
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
-    console.error("Fatal error:", error);
+    console.error("Fatal:", error);
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Erro desconhecido",
-      }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ success: false, error: error instanceof Error ? error.message : "Erro desconhecido" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
