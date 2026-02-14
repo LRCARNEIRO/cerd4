@@ -315,6 +315,7 @@ Deno.serve(async (req) => {
             );
             brutos += dados.length;
 
+
             for (const item of dados) {
               if (!isRelevant(item)) continue;
               const record = buildRecord(item, prog.orgao, ano, "Programa Temático PPA");
