@@ -7,9 +7,12 @@ const corsHeaders = {
 };
 
 // Órgãos federais relevantes para política racial
-const ORGAOS_FEDERAIS = [
+const ORGAOS_DEDICADOS = [
   { codigo: "67000", nome: "Ministério da Igualdade Racial", sigla: "MIR", desde: 2023 },
   { codigo: "92000", nome: "Ministério dos Povos Indígenas", sigla: "MPI", desde: 2023 },
+];
+
+const ORGAOS_GENERICOS = [
   { codigo: "26000", nome: "Ministério da Educação", sigla: "MEC", desde: 2001 },
   { codigo: "36000", nome: "Ministério da Saúde", sigla: "MS", desde: 2001 },
   { codigo: "55000", nome: "Ministério do Desenvolvimento Social", sigla: "MDS", desde: 2001 },
@@ -67,7 +70,7 @@ interface DadoOrcamentario {
 async function fetchFederalViaFirecrawl(
   anosRange: number[],
   erros: string[],
-  supabase: any // Insert progressively to avoid timeout
+  supabase: any
 ): Promise<number> {
   const firecrawlApiKey = Deno.env.get("FIRECRAWL_API_KEY");
   const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
@@ -76,19 +79,54 @@ async function fetchFederalViaFirecrawl(
   if (!lovableApiKey) { erros.push("LOVABLE_API_KEY não configurada"); return 0; }
 
   let totalInserted = 0;
-  
-  // Process limited orgaos to stay within edge function timeout (~60s)
-  const orgaosToProcess = anosRange.length <= 2 ? ORGAOS_FEDERAIS : ORGAOS_FEDERAIS.slice(0, 2);
+
+  // Dedicated organs: ALL their programs are racial policy (include everything)
+  // Generic organs: only include programs with explicit racial focus
+  const allOrgaos = [
+    ...ORGAOS_DEDICADOS.map(o => ({ ...o, dedicado: true })),
+    ...ORGAOS_GENERICOS.map(o => ({ ...o, dedicado: false })),
+  ];
+
+  // For large year ranges, only process dedicated + UOs to avoid timeout
+  const orgaosToProcess = anosRange.length <= 2 ? allOrgaos : allOrgaos.filter(o => o.dedicado);
+
+  // AI prompt for dedicated organs (include ALL programs)
+  const promptDedicado = `Você é um especialista em orçamento público brasileiro. Extraia TODOS os programas e ações do conteúdo fornecido (este órgão é integralmente dedicado a políticas raciais/indígenas).
+
+Retorne APENAS um JSON array:
+[{"codigo_programa":"","nome_programa":"","codigo_acao":"","nome_acao":"","dotacao_autorizada":0,"empenhado":0,"liquidado":0,"pago":0}]
+
+REGRAS:
+- Extraia TODOS os programas e ações listados
+- Valores monetários em reais (número puro, sem formatação)
+- Busque dotacao_autorizada nos campos "Dotação Atualizada", "Crédito Autorizado" ou "LOA + Créditos"
+- Se não encontrar dados, retorne []
+- Retorne APENAS o JSON, sem markdown ou explicações`;
+
+  // AI prompt for generic organs (strict racial filter)
+  const promptGenerico = `Você é um especialista em orçamento público brasileiro e políticas de igualdade racial. Extraia APENAS programas e ações com recorte racial explícito.
+
+INCLUA SOMENTE programas/ações que tratem de:
+- Igualdade racial, combate ao racismo, promoção racial
+- Povos indígenas, quilombolas, comunidades tradicionais
+- Saúde indígena, saúde da população negra
+- Juventude negra, mulheres negras, violência racial
+- Educação étnico-racial, cotas raciais, ações afirmativas
+- Cultura afro-brasileira, patrimônio cultural negro/indígena
+
+EXCLUA programas genéricos (Bolsa Família, Minha Casa Minha Vida, agricultura familiar genérica, etc.).
+
+Retorne APENAS JSON array:
+[{"codigo_programa":"","nome_programa":"","codigo_acao":"","nome_acao":"","dotacao_autorizada":0,"empenhado":0,"liquidado":0,"pago":0}]
+Sem markdown.`;
 
   for (const orgao of orgaosToProcess) {
     for (const ano of anosRange) {
       if (orgao.desde && ano < orgao.desde) continue;
 
       try {
-        // Scrape the Portal da Transparência page for this org + year (programa e ação view)
         const portalUrl = `https://portaldatransparencia.gov.br/despesas/programa-e-acao?de=01%2F01%2F${ano}&ate=31%2F12%2F${ano}&orgaos=OS${orgao.codigo}`;
-        
-        console.log(`Firecrawl scraping: ${orgao.sigla} ${ano} → ${portalUrl}`);
+        console.log(`Firecrawl scraping: ${orgao.sigla} ${ano} [${orgao.dedicado ? 'DEDICADO' : 'GENÉRICO'}]`);
 
         const scrapeResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
           method: "POST",
@@ -98,31 +136,28 @@ async function fetchFederalViaFirecrawl(
           },
           body: JSON.stringify({
             url: portalUrl,
-          formats: ["markdown"],
+            formats: ["markdown"],
             waitFor: 3000,
             onlyMainContent: true,
           }),
         });
 
         if (!scrapeResponse.ok) {
-          const errText = await scrapeResponse.text();
-          console.error(`Firecrawl error ${orgao.sigla} ${ano}: ${scrapeResponse.status} ${errText.substring(0, 200)}`);
           erros.push(`Firecrawl ${orgao.sigla} ${ano}: HTTP ${scrapeResponse.status}`);
           continue;
         }
 
         const scrapeData = await scrapeResponse.json();
         const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || "";
-
         if (!markdown || markdown.length < 100) {
-          console.log(`Firecrawl ${orgao.sigla} ${ano}: conteúdo vazio ou curto (${markdown.length} chars)`);
-          erros.push(`${orgao.sigla} ${ano}: página sem dados de programas`);
+          erros.push(`${orgao.sigla} ${ano}: página sem dados`);
           continue;
         }
 
-        console.log(`Firecrawl ${orgao.sigla} ${ano}: ${markdown.length} chars de markdown`);
+        console.log(`Firecrawl ${orgao.sigla} ${ano}: ${markdown.length} chars`);
 
-        // Use AI to extract structured budget data from the markdown
+        const systemPrompt = orgao.dedicado ? promptDedicado : promptGenerico;
+
         const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -132,49 +167,8 @@ async function fetchFederalViaFirecrawl(
           body: JSON.stringify({
             model: "google/gemini-2.5-flash",
             messages: [
-              {
-                role: "system",
-                content: `Você é um especialista em orçamento público brasileiro e políticas de igualdade racial. Extraia APENAS programas e ações relacionados a políticas raciais do conteúdo fornecido.
-
-FILTRO OBRIGATÓRIO – Inclua SOMENTE programas/ações que tratem de:
-- Igualdade racial, combate ao racismo, promoção racial
-- Povos indígenas, demarcação de terras indígenas, FUNAI
-- Comunidades quilombolas, titulação de territórios quilombolas
-- Comunidades tradicionais (ciganos, terreiros, matriz africana)
-- Saúde indígena (SESAI), saúde da população negra
-- Juventude negra, mulheres negras, violência racial
-- Educação étnico-racial, cotas raciais, ações afirmativas
-- Cultura afro-brasileira, patrimônio cultural negro/indígena
-- Reforma agrária para quilombolas e indígenas (INCRA)
-- Segurança alimentar de povos tradicionais
-- Direitos humanos com recorte racial
-
-EXCLUA programas genéricos/transversais (Bolsa Família, Minha Casa Minha Vida, Fundo Eleitoral, agricultura familiar genérica, etc.) que não tenham recorte racial explícito.
-
-Retorne APENAS um JSON array:
-[
-  {
-    "codigo_programa": "5034",
-    "nome_programa": "Promoção da Igualdade Racial e Superação do Racismo",
-    "codigo_acao": "20ZF",
-    "nome_acao": "Descrição da ação",
-    "dotacao_autorizada": 123456789.00,
-    "empenhado": 100000000.00,
-    "liquidado": 90000000.00,
-    "pago": 85000000.00
-  }
-]
-
-REGRAS:
-- Valores monetários em reais (número puro, sem formatação)
-- Busque dotacao_autorizada nos campos "Dotação Atualizada", "Crédito Autorizado" ou "LOA + Créditos"
-- Se não encontrar dados de políticas raciais, retorne []
-- Retorne APENAS o JSON, sem markdown ou explicações`
-              },
-              {
-                role: "user",
-                content: `Extraia os dados orçamentários de programas e ações do ${orgao.nome} (${orgao.sigla}) para o ano ${ano} do seguinte conteúdo:\n\n${markdown.substring(0, 60000)}`
-              }
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Extraia dados orçamentários de ${orgao.nome} (${orgao.sigla}) ano ${ano}:\n\n${markdown.substring(0, 60000)}` }
             ],
             temperature: 0.1,
             max_tokens: 16000,
@@ -182,8 +176,7 @@ REGRAS:
         });
 
         if (!aiResponse.ok) {
-          console.error(`AI error for ${orgao.sigla} ${ano}: ${aiResponse.status}`);
-          erros.push(`AI extraction ${orgao.sigla} ${ano}: HTTP ${aiResponse.status}`);
+          erros.push(`AI ${orgao.sigla} ${ano}: HTTP ${aiResponse.status}`);
           continue;
         }
 
@@ -192,11 +185,9 @@ REGRAS:
 
         let programs: any[];
         try {
-          let clean = aiContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-          const match = clean.match(/\[[\s\S]*\]/);
-          programs = match ? JSON.parse(match[0]) : [];
+          const clean = aiContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+          programs = JSON.parse(clean.match(/\[[\s\S]*\]/)?.[0] || "[]");
         } catch {
-          console.error(`JSON parse error for ${orgao.sigla} ${ano}`);
           programs = [];
         }
 
@@ -205,28 +196,24 @@ REGRAS:
         for (const prog of programs) {
           const codProg = prog.codigo_programa || "";
           const nomeProg = prog.nome_programa || "";
-          const codAcao = prog.codigo_acao || "";
-          const nomeAcao = prog.nome_acao || "";
-
           if (!codProg && !nomeProg) continue;
 
           let programaLabel = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
-          if (codAcao && nomeAcao) {
-            programaLabel += ` / ${codAcao} – ${nomeAcao}`;
-          } else if (codAcao) {
-            programaLabel += ` / ${codAcao}`;
+          if (prog.codigo_acao && prog.nome_acao) {
+            programaLabel += ` / ${prog.codigo_acao} – ${prog.nome_acao}`;
+          } else if (prog.codigo_acao) {
+            programaLabel += ` / ${prog.codigo_acao}`;
           }
 
           const dotacao = Number(prog.dotacao_autorizada) || null;
           const empenhado = Number(prog.empenhado) || null;
           const liquidado = Number(prog.liquidado) || null;
           const pago = Number(prog.pago) || null;
-
           if (!dotacao && !empenhado && !pago) continue;
 
           const percentual = dotacao && pago ? Math.round((pago / dotacao) * 10000) / 100 : null;
 
-          const row: DadoOrcamentario = {
+          const { error: insErr } = await supabase.from("dados_orcamentarios").insert({
             programa: programaLabel.substring(0, 250),
             orgao: orgao.sigla,
             esfera: "federal",
@@ -241,29 +228,24 @@ REGRAS:
             observacoes: null,
             eixo_tematico: null,
             grupo_focal: null,
-          };
-          const { error: insErr } = await supabase.from("dados_orcamentarios").insert(row);
-          if (insErr) { erros.push(`Insert ${orgao.sigla}: ${insErr.message}`); }
-          else { totalInserted++; }
+          });
+          if (insErr) erros.push(`Insert ${orgao.sigla}: ${insErr.message}`);
+          else totalInserted++;
         }
 
-        // Rate limit
         await new Promise((r) => setTimeout(r, 1000));
       } catch (error) {
-        const msg = `Erro Firecrawl ${orgao.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
-        console.error(msg);
-        erros.push(msg);
+        erros.push(`Erro ${orgao.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`);
       }
     }
   }
 
-  // UOs específicas (FUNAI, INCRA, SESAI)
+  // UOs específicas (FUNAI, INCRA, SESAI) — ALL programs are relevant
   for (const uo of UOS_ESPECIFICAS) {
     for (const ano of anosRange) {
       try {
         const portalUrl = `https://portaldatransparencia.gov.br/despesas/programa-e-acao?de=01%2F01%2F${ano}&ate=31%2F12%2F${ano}&orgaos=UO${uo.codigo}`;
-        
-        console.log(`Firecrawl scraping UO: ${uo.sigla} ${ano}`);
+        console.log(`Firecrawl UO: ${uo.sigla} ${ano} [DEDICADO]`);
 
         const scrapeResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
           method: "POST",
@@ -271,16 +253,10 @@ REGRAS:
             Authorization: `Bearer ${firecrawlApiKey}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            url: portalUrl,
-            formats: ["markdown"],
-            waitFor: 5000,
-            onlyMainContent: true,
-          }),
+          body: JSON.stringify({ url: portalUrl, formats: ["markdown"], waitFor: 5000, onlyMainContent: true }),
         });
 
         if (!scrapeResponse.ok) continue;
-
         const scrapeData = await scrapeResponse.json();
         const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || "";
         if (!markdown || markdown.length < 100) continue;
@@ -288,20 +264,14 @@ REGRAS:
         const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+            Authorization: `Bearer ${lovableApiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             model: "google/gemini-2.5-flash",
             messages: [
-              {
-                role: "system",
-                content: `Extraia APENAS programas/ações de políticas raciais (igualdade racial, povos indígenas, quilombolas, saúde indígena, comunidades tradicionais, juventude negra, ações afirmativas, cultura afro-brasileira). EXCLUA programas genéricos sem recorte racial. Retorne APENAS JSON array: [{"codigo_programa":"","nome_programa":"","codigo_acao":"","nome_acao":"","dotacao_autorizada":0,"empenhado":0,"liquidado":0,"pago":0}]. Sem markdown.`
-              },
-              {
-                role: "user",
-                content: `Extraia programas/ações de ${uo.nome} (${uo.sigla}) ano ${ano}:\n\n${markdown.substring(0, 60000)}`
-              }
+              { role: "system", content: promptDedicado },
+              { role: "user", content: `Extraia dados de ${uo.nome} (${uo.sigla}) ano ${ano}:\n\n${markdown.substring(0, 60000)}` }
             ],
             temperature: 0.1,
             max_tokens: 16000,
@@ -309,14 +279,15 @@ REGRAS:
         });
 
         if (!aiResponse.ok) continue;
-
         const aiResult = await aiResponse.json();
         const aiContent = aiResult.choices?.[0]?.message?.content || "[]";
         let programs: any[];
         try {
-          let clean = aiContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+          const clean = aiContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
           programs = JSON.parse(clean.match(/\[[\s\S]*\]/)?.[0] || "[]");
         } catch { programs = []; }
+
+        console.log(`AI UO extracted ${programs.length} programs for ${uo.sigla} ${ano}`);
 
         for (const prog of programs) {
           const codProg = prog.codigo_programa || "";
@@ -331,7 +302,7 @@ REGRAS:
           const pago = Number(prog.pago) || null;
           if (!dotacao && !empenhado && !pago) continue;
 
-          const row: DadoOrcamentario = {
+          const { error: insErr } = await supabase.from("dados_orcamentarios").insert({
             programa: label.substring(0, 250),
             orgao: uo.sigla,
             esfera: "federal",
@@ -346,8 +317,7 @@ REGRAS:
             observacoes: null,
             eixo_tematico: null,
             grupo_focal: null,
-          };
-          const { error: insErr } = await supabase.from("dados_orcamentarios").insert(row);
+          });
           if (!insErr) totalInserted++;
         }
 
@@ -462,12 +432,14 @@ Deno.serve(async (req) => {
     let federalInserted = 0;
 
     // ====== FEDERAL (Firecrawl + AI extraction — inserts progressively) ======
-    if (!fonte || fonte === "firecrawl" || fonte === "siop" || fonte === "portal" || esfera === "federal") {
+    const doFederal = esfera === "federal" || (!esfera && (!fonte || fonte === "firecrawl" || fonte === "siop" || fonte === "portal"));
+    if (doFederal) {
       federalInserted = await fetchFederalViaFirecrawl(anosRange, erros, supabase);
     }
 
     // ====== ESTADUAL (SICONFI) ======
-    if (!fonte || fonte === "siconfi" || esfera === "estadual") {
+    const doEstadual = esfera === "estadual" || (!esfera && (!fonte || fonte === "siconfi"));
+    if (doEstadual) {
       for (const estado of ESTADOS_SICONFI) {
         for (const ano of anosRange) {
           const dadosRREO = await fetchSiconfiRREO(estado.cod, ano, 6);
@@ -483,7 +455,8 @@ Deno.serve(async (req) => {
     }
 
     // ====== MUNICIPAL (SICONFI) ======
-    if (!fonte || fonte === "siconfi" || esfera === "municipal") {
+    const doMunicipal = esfera === "municipal" || (!esfera && (!fonte || fonte === "siconfi"));
+    if (doMunicipal) {
       for (const municipio of MUNICIPIOS_SICONFI) {
         for (const ano of anosRange) {
           const dadosRREO = await fetchSiconfiRREO(municipio.cod, ano, 6);
