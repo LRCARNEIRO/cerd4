@@ -193,7 +193,7 @@ export function ManualGapFiller() {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warning" />
@@ -204,7 +204,7 @@ export function ManualGapFiller() {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 pr-2">
+          <div>
             <div className="space-y-4 pb-4">
 
               {/* Step 1: Guide */}
@@ -416,7 +416,7 @@ export function ManualGapFiller() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
     </>
