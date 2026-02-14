@@ -49,7 +49,8 @@ const corsHeaders = {
  * CAMPOS COLETADOS:
  *   - programa (código + nome)
  *   - ação (código + nome)
- *   - dotação atualizada (dotacao_autorizada)
+ *   - dotação inicial (dotacao_inicial — PLOA/LOA quando disponível)
+ *   - dotação atualizada (dotacao_autorizada — LOA + créditos adicionais)
  *   - empenhado
  *   - liquidado
  *   - pago
@@ -156,22 +157,25 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   let programa = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
   if (codAcao) programa += ` / ${codAcao} – ${nomeAcao}`;
 
-  const dotacao = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada || item.dotacaoInicial || item.valorDotacaoInicial);
+  const dotacaoInicial = parseBRL(item.dotacaoInicial || item.valorDotacaoInicial);
+  const dotacaoAutorizada = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada);
   const empenhado = parseBRL(item.empenhado || item.valorEmpenhado);
   const liquidado = parseBRL(item.liquidado || item.valorLiquidado);
   const pago = parseBRL(item.pago || item.valorPago);
 
-  if (!dotacao && !empenhado && !liquidado && !pago) return null;
+  if (!dotacaoInicial && !dotacaoAutorizada && !empenhado && !liquidado && !pago) return null;
 
   const orgao = resolveOrgao(item, fallbackOrgao);
-  const percentual = dotacao && pago ? Math.round((pago / dotacao) * 10000) / 100 : null;
+  const dotacaoRef = dotacaoAutorizada || dotacaoInicial;
+  const percentual = dotacaoRef && pago ? Math.round((pago / dotacaoRef) * 10000) / 100 : null;
 
   return {
     programa: programa.substring(0, 250),
     orgao,
     esfera: "federal",
     ano,
-    dotacao_autorizada: dotacao,
+    dotacao_inicial: dotacaoInicial,
+    dotacao_autorizada: dotacaoAutorizada,
     empenhado,
     liquidado,
     pago,
