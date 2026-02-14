@@ -188,7 +188,7 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">2018-2022</p>
                   <p className="text-xl font-bold">{formatCurrency(stats?.totalPeriodo1 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Total Pago</p>
+                   <p className="text-xs text-muted-foreground">Dotação / Pago</p>
                 </div>
               </div>
             </CardContent>
@@ -202,7 +202,7 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">2023-2026</p>
                   <p className="text-xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Total Pago</p>
+                  <p className="text-xs text-muted-foreground">Dotação / Pago</p>
                 </div>
               </div>
             </CardContent>
