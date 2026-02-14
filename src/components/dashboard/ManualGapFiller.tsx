@@ -27,8 +27,7 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=2065`,
-    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
-    instrucoes: 'Link "Execução": Empenhado, Liquidado e Pago por ação. Para Dotação: baixe o CSV anual na página de download de dados e filtre pelo programa/ação desejado.',
+    instrucoes: 'No Portal, filtrar pelo Programa 2065. Anotar Empenhado, Liquidado e Pago por ação. A Dotação será preenchida automaticamente pela ingestão de dados abertos (CSV/ZIP).',
   },
   {
     id: 'sesai',
@@ -43,8 +42,7 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20YP`,
-    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
-    instrucoes: 'Link "Execução": Empenhado/Liquidado/Pago. Para Dotação: baixe CSV anual e filtre pela ação 20YP/7684. Dados segregados como Saúde Indígena.',
+    instrucoes: 'Buscar ações 20YP e 7684 no Portal. Anotar Empenhado, Liquidado e Pago. Dotação preenchida automaticamente. Dados segregados como Saúde Indígena.',
   },
   {
     id: 'quilombolas',
@@ -59,15 +57,14 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20G7`,
-    url_dotacao: `https://portaldatransparencia.gov.br/download-de-dados/despesas`,
-    instrucoes: 'Link "Execução": Empenhado/Liquidado/Pago das ações 20G7 e 0859. Para Dotação: baixe CSV anual e filtre por ação.',
+    instrucoes: 'Buscar ações 20G7 e 0859 do INCRA no Portal. Anotar Empenhado, Liquidado e Pago. Dotação preenchida automaticamente.',
   },
 ];
 
-const CSV_TEMPLATE = `ano;orgao;programa;acao;dotacao_inicial;dotacao_autorizada;empenhado;liquidado;pago
-2020;FUNAI;2065 – Proteção dos Povos Indígenas;20UF – Promoção dos Direitos;0;0;0;0;0
-2020;SESAI;2065 – Proteção dos Povos Indígenas;20YP – Atenção à Saúde;0;0;0;0;0
-2020;INCRA;0153 – Promoção e Defesa dos Direitos;20G7 – Regularização Quilombola;0;0;0;0;0`;
+const CSV_TEMPLATE = `ano;orgao;programa;acao;empenhado;liquidado;pago
+2020;FUNAI;2065 – Proteção dos Povos Indígenas;20UF – Promoção dos Direitos;0;0;0
+2020;SESAI;2065 – Proteção dos Povos Indígenas;20YP – Atenção à Saúde;0;0;0
+2020;INCRA;0153 – Promoção e Defesa dos Direitos;20G7 – Regularização Quilombola;0;0;0`;
 
 interface PreviewRow {
   ano: number;
@@ -258,13 +255,17 @@ export function ManualGapFiller() {
                         <div className="text-xs">
                           <p className="font-medium mb-1">Passo a passo:</p>
                           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                             <li>Nos links por ano: obtenha <strong>Empenhado, Liquidado e Pago</strong> por ação</li>
-                             <li>Para <strong>Dotação</strong> (opcional): baixe o CSV anual no link "CSV Dotação" e filtre por código de ação</li>
+                             <li>Acesse o link do ano desejado abaixo</li>
+                             <li>Localize as ações listadas acima na tabela de resultados</li>
+                             <li>Anote: <strong>Empenhado, Liquidado e Pago</strong></li>
                              <li>Preencha o CSV template com os valores encontrados</li>
                            </ol>
-                        </div>
+                           <p className="text-muted-foreground mt-1 italic">
+                             💡 Dotação Inicial/Autorizada será preenchida automaticamente pela ingestão de dados abertos (CSV/ZIP).
+                           </p>
+                         </div>
 
-                        <div className="flex flex-wrap gap-1 items-center">
+                        <div className="flex flex-wrap gap-1">
                           {lac.anos_faltantes.map(ano => (
                             <a
                               key={ano}
@@ -277,15 +278,6 @@ export function ManualGapFiller() {
                               {ano}
                             </a>
                           ))}
-                          <a
-                            href={lac.url_dotacao}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-warning hover:underline bg-warning/5 px-2 py-1 rounded"
-                          >
-                            <Download className="w-3 h-3" />
-                            CSV Dotação
-                          </a>
                         </div>
                       </CardContent>
                     </Card>
@@ -296,8 +288,8 @@ export function ManualGapFiller() {
                     <CardContent className="pt-4 space-y-3">
                       <p className="text-sm font-medium">Template CSV</p>
                       <p className="text-xs text-muted-foreground">
-                        Use o template abaixo. Empenhado, Liquidado e Pago são obrigatórios (do Portal, endpoint por ação).
-                        Dotação Inicial e Autorizada são opcionais — se disponíveis, extraia dos CSVs de dados abertos.
+                        Use o template abaixo. Preencha apenas <strong>Empenhado, Liquidado e Pago</strong> do Portal da Transparência.
+                        A Dotação Inicial/Autorizada será complementada automaticamente pela ingestão dos dados abertos (CSV/ZIP).
                         Separador: ponto-e-vírgula (;). Valores em reais sem separador de milhar.
                       </p>
                       <pre className="text-[10px] bg-muted p-3 rounded-lg overflow-x-auto whitespace-pre">
@@ -366,8 +358,8 @@ export function ManualGapFiller() {
                          <TableHead className="text-xs">Ano</TableHead>
                           <TableHead className="text-xs">Órgão</TableHead>
                           <TableHead className="text-xs">Programa/Ação</TableHead>
-                          <TableHead className="text-xs text-right">Dot. Inicial</TableHead>
-                          <TableHead className="text-xs text-right">Dot. Autorizada</TableHead>
+                          <TableHead className="text-xs text-right">Empenhado</TableHead>
+                          <TableHead className="text-xs text-right">Liquidado</TableHead>
                           <TableHead className="text-xs text-right">Pago</TableHead>
                          </TableRow>
                        </TableHeader>
@@ -379,8 +371,8 @@ export function ManualGapFiller() {
                             <TableCell className="text-xs max-w-[200px] truncate">
                               {row.programa} / {row.acao}
                             </TableCell>
-                            <TableCell className="text-xs text-right">{formatCurrency(row.dotacao_inicial)}</TableCell>
-                             <TableCell className="text-xs text-right">{formatCurrency(row.dotacao_autorizada)}</TableCell>
+                            <TableCell className="text-xs text-right">{formatCurrency(row.empenhado)}</TableCell>
+                             <TableCell className="text-xs text-right">{formatCurrency(row.liquidado)}</TableCell>
                              <TableCell className="text-xs text-right">{formatCurrency(row.pago)}</TableCell>
                           </TableRow>
                         ))}
