@@ -8,12 +8,12 @@ const corsHeaders = {
 
 // Órgãos federais relevantes para política racial (códigos SIOP)
 const ORGAOS_FEDERAIS = [
-  { codigo: "67000", nome: "Ministério da Igualdade Racial", sigla: "MIR" },
-  { codigo: "37000", nome: "Ministério dos Povos Indígenas", sigla: "MPI" },
-  { codigo: "26000", nome: "Ministério da Educação", sigla: "MEC" },
-  { codigo: "36000", nome: "Ministério da Saúde", sigla: "MS" },
-  { codigo: "55000", nome: "Ministério do Desenvolvimento Social", sigla: "MDS" },
-  { codigo: "30000", nome: "Ministério da Justiça e Segurança Pública", sigla: "MJSP" },
+  { codigo: "67000", nome: "Ministério da Igualdade Racial", sigla: "MIR", desde: 2023 },
+  { codigo: "92000", nome: "Ministério dos Povos Indígenas", sigla: "MPI", desde: 2023 },
+  { codigo: "26000", nome: "Ministério da Educação", sigla: "MEC", desde: 2001 },
+  { codigo: "36000", nome: "Ministério da Saúde", sigla: "MS", desde: 2001 },
+  { codigo: "55000", nome: "Ministério do Desenvolvimento Social", sigla: "MDS", desde: 2001 },
+  { codigo: "30000", nome: "Ministério da Justiça e Segurança Pública", sigla: "MJSP", desde: 2001 },
 ];
 
 // Unidades Orçamentárias específicas (dentro de órgãos maiores)
@@ -47,11 +47,9 @@ const MUNICIPIOS_SICONFI = [
   { cod: 5300108, nome: "Brasília", uf: "DF" },
 ];
 
-// Try multiple SPARQL endpoints - the main one is often Cloudflare-protected
-const SIOP_SPARQL_ENDPOINTS = [
-  "http://www1.siop.planejamento.gov.br/sparql/",   // HTTP might bypass CF
-  "https://www1.siop.planejamento.gov.br/sparql/",  // HTTPS primary
-];
+// SIOP SPARQL endpoint - use GET with URL params (like orcamentoBR R package)
+const SIOP_SPARQL_BASE = "https://www1.siop.planejamento.gov.br/sparql/";
+const PORTAL_TRANSPARENCIA_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
 const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
 
 interface DadoOrcamentario {
@@ -74,120 +72,44 @@ interface DadoOrcamentario {
 // ====== SIOP SPARQL (Federal) ======
 
 function buildSparqlQueryByOrgao(ano: number, codigoOrgao: string): string {
-  return `SELECT ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao
-    (sum(?val2) as ?loa) (sum(?val3) as ?lei_mais_credito)
-    (sum(?val4) as ?empenhado) (sum(?val5) as ?liquidado) (sum(?val6) as ?pago)
-  WHERE {
-    GRAPH <http://orcamento.dados.gov.br/${ano}/> {
-      ?i loa:temExercicio ?exercicio .
-      ?UO loa:temOrgao ?orgao .
-      ?orgao loa:codigo ?codOrgao .
-      ?orgao rdfs:label ?descOrgao .
-      ?i loa:temUnidadeOrcamentaria ?UO .
-      ?i loa:temPrograma ?programa .
-      ?programa loa:codigo ?codPrograma .
-      ?programa rdfs:label ?descPrograma .
-      ?i loa:temAcao ?acao .
-      ?acao loa:codigo ?codAcao .
-      ?acao rdfs:label ?descAcao .
-      ?orgao loa:codigo "${codigoOrgao}" .
-      ?i loa:valorDotacaoInicial ?val2 .
-      ?i loa:valorLeiMaisCredito ?val3 .
-      ?i loa:valorEmpenhado ?val4 .
-      ?i loa:valorLiquidado ?val5 .
-      ?i loa:valorPago ?val6 .
-    }
-  } GROUP BY ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao
-    ORDER BY ?codPrograma ?codAcao`;
+  // Based on orcamentoBR R package (.constroiSIOPqueryDetalheAnual)
+  return `SELECT ?codExercicio ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao (sum(?val2) as ?loa) (sum(?val3) as ?lei_mais_credito) (sum(?val4) as ?empenhado) (sum(?val5) as ?liquidado) (sum(?val6) as ?pago) WHERE { GRAPH <http://orcamento.dados.gov.br/${ano}/> { ?i loa:temExercicio ?exercicio . ?exercicio loa:identificador ?codExercicio . ?UO loa:temOrgao ?orgao . ?orgao loa:codigo ?codOrgao . ?orgao rdfs:label ?descOrgao . ?i loa:temUnidadeOrcamentaria ?UO . ?i loa:temPrograma ?programa . ?programa loa:codigo ?codPrograma . ?programa rdfs:label ?descPrograma . ?i loa:temAcao ?acao . ?acao loa:codigo ?codAcao . ?acao rdfs:label ?descAcao . ?orgao loa:codigo "${codigoOrgao}" . ?i loa:valorDotacaoInicial ?val2 . ?i loa:valorLeiMaisCredito ?val3 . ?i loa:valorEmpenhado ?val4 . ?i loa:valorLiquidado ?val5 . ?i loa:valorPago ?val6 . } } GROUP BY ?codExercicio ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao ORDER BY ?codPrograma ?codAcao`;
 }
 
 function buildSparqlQueryByUO(ano: number, codigoUO: string): string {
-  return `SELECT ?codUO ?descUO ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao
-    (sum(?val2) as ?loa) (sum(?val3) as ?lei_mais_credito)
-    (sum(?val4) as ?empenhado) (sum(?val5) as ?liquidado) (sum(?val6) as ?pago)
-  WHERE {
-    GRAPH <http://orcamento.dados.gov.br/${ano}/> {
-      ?i loa:temExercicio ?exercicio .
-      ?UO loa:temOrgao ?orgao .
-      ?orgao loa:codigo ?codOrgao .
-      ?orgao rdfs:label ?descOrgao .
-      ?i loa:temUnidadeOrcamentaria ?UO .
-      ?UO loa:codigo ?codUO .
-      ?UO rdfs:label ?descUO .
-      ?i loa:temPrograma ?programa .
-      ?programa loa:codigo ?codPrograma .
-      ?programa rdfs:label ?descPrograma .
-      ?i loa:temAcao ?acao .
-      ?acao loa:codigo ?codAcao .
-      ?acao rdfs:label ?descAcao .
-      ?UO loa:codigo "${codigoUO}" .
-      ?i loa:valorDotacaoInicial ?val2 .
-      ?i loa:valorLeiMaisCredito ?val3 .
-      ?i loa:valorEmpenhado ?val4 .
-      ?i loa:valorLiquidado ?val5 .
-      ?i loa:valorPago ?val6 .
-    }
-  } GROUP BY ?codUO ?descUO ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao
-    ORDER BY ?codPrograma ?codAcao`;
+  return `SELECT ?codExercicio ?codUO ?descUO ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao (sum(?val2) as ?loa) (sum(?val3) as ?lei_mais_credito) (sum(?val4) as ?empenhado) (sum(?val5) as ?liquidado) (sum(?val6) as ?pago) WHERE { GRAPH <http://orcamento.dados.gov.br/${ano}/> { ?i loa:temExercicio ?exercicio . ?exercicio loa:identificador ?codExercicio . ?UO loa:temOrgao ?orgao . ?orgao loa:codigo ?codOrgao . ?orgao rdfs:label ?descOrgao . ?i loa:temUnidadeOrcamentaria ?UO . ?UO loa:codigo ?codUO . ?UO rdfs:label ?descUO . ?i loa:temPrograma ?programa . ?programa loa:codigo ?codPrograma . ?programa rdfs:label ?descPrograma . ?i loa:temAcao ?acao . ?acao loa:codigo ?codAcao . ?acao rdfs:label ?descAcao . ?UO loa:codigo "${codigoUO}" . ?i loa:valorDotacaoInicial ?val2 . ?i loa:valorLeiMaisCredito ?val3 . ?i loa:valorEmpenhado ?val4 . ?i loa:valorLiquidado ?val5 . ?i loa:valorPago ?val6 . } } GROUP BY ?codExercicio ?codUO ?descUO ?codOrgao ?descOrgao ?codPrograma ?descPrograma ?codAcao ?descAcao ORDER BY ?codPrograma ?codAcao`;
 }
 
 async function executeSparqlQuery(query: string): Promise<any[]> {
   console.log(`SPARQL query (${query.length} chars)`);
 
-  const body = new URLSearchParams({
-    "default-graph-uri": "",
-    query: query,
-    format: "application/sparql-results+json",
-  });
+  // Use GET with URL params like the orcamentoBR R package
+  const cleanQuery = query.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+  const encodedQuery = encodeURIComponent(cleanQuery);
+  const url = `${SIOP_SPARQL_BASE}?default-graph-uri=&query=${encodedQuery}&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on`;
 
-  // Try each endpoint until one works
-  for (const endpoint of SIOP_SPARQL_ENDPOINTS) {
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/sparql-results+json",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        },
-        body: body.toString(),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        console.error(`SPARQL ${endpoint} error ${response.status}: ${text.substring(0, 200)}`);
-        continue;
-      }
-
-      const data = await response.json();
-      const bindings = data?.results?.bindings || [];
-      console.log(`SPARQL success from ${endpoint}: ${bindings.length} bindings`);
-      return bindings;
-    } catch (error) {
-      console.error(`SPARQL ${endpoint} fetch error:`, error);
-    }
-  }
-
-  // If all SPARQL endpoints fail, try GET with query params as fallback
   try {
-    const getUrl = `${SIOP_SPARQL_ENDPOINTS[1]}?${body.toString()}`;
-    const response = await fetch(getUrl, {
+    const response = await fetch(url, {
+      method: "GET",
       headers: {
         Accept: "application/sparql-results+json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       },
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data?.results?.bindings || [];
+    if (!response.ok) {
+      const text = await response.text();
+      console.error(`SPARQL error ${response.status}: ${text.substring(0, 300)}`);
+      return [];
     }
-  } catch {
-    // All attempts failed
-  }
 
-  console.error("All SPARQL endpoints failed");
-  return [];
+    const data = await response.json();
+    const bindings = data?.results?.bindings || [];
+    console.log(`SPARQL success: ${bindings.length} bindings`);
+    return bindings;
+  } catch (error) {
+    console.error(`SPARQL fetch error:`, error);
+    return [];
+  }
 }
 
 function processSiopData(
@@ -237,42 +159,146 @@ function processSiopData(
   return results;
 }
 
-async function fetchSiopFederal(
+// ====== Portal da Transparência API (Federal fallback) ======
+async function fetchPortalTransparencia(
+  orgao: { codigo: string; nome: string; sigla: string },
+  ano: number,
+  apiKey: string
+): Promise<DadoOrcamentario[]> {
+  const results: DadoOrcamentario[] = [];
+  let pagina = 1;
+  const maxPages = 5;
+
+  while (pagina <= maxPages) {
+    const url = `${PORTAL_TRANSPARENCIA_BASE}/despesas/por-orgao?ano=${ano}&orgaoSuperior=${orgao.codigo}&pagina=${pagina}`;
+    console.log(`Portal Transparência URL: ${url}`);
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Accept: "application/json",
+          "chave-api-dados": apiKey,
+        },
+      });
+
+      console.log(`Portal Transparência response status: ${response.status}`);
+      const rawText = await response.text();
+      console.log(`Portal Transparência raw response (first 500): ${rawText.substring(0, 500)}`);
+
+      if (!response.ok) {
+        console.error(`Portal Transparência ${orgao.sigla} ${ano} p${pagina}: ${response.status} - ${rawText.substring(0, 200)}`);
+        break;
+      }
+
+      let data: any[];
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        console.error(`Portal Transparência ${orgao.sigla}: invalid JSON`);
+        break;
+      }
+      
+      if (!Array.isArray(data) || data.length === 0) {
+        console.log(`Portal Transparência ${orgao.sigla} ${ano}: empty or not array`);
+        break;
+      }
+
+      console.log(`Portal Transparência ${orgao.sigla} ${ano}: ${data.length} items, first keys: ${Object.keys(data[0]).join(', ')}`);
+
+      for (const item of data) {
+        const programa = `${item.orgao || ""} (${item.codigoOrgao || ""})`;
+        // Parse Brazilian number format: "762.455.916,88" -> 762455916.88
+        const parseBRL = (v: string | number | null | undefined): number | null => {
+          if (v == null || v === "") return null;
+          if (typeof v === "number") return v;
+          const cleaned = v.replace(/\./g, "").replace(",", ".");
+          const num = Number(cleaned);
+          return isNaN(num) ? null : num;
+        };
+        const empenhado = parseBRL(item.empenhado);
+        const liquidado = parseBRL(item.liquidado);
+        const pago = parseBRL(item.pago);
+
+        if (!empenhado && !pago) continue;
+
+        results.push({
+          programa: programa.length > 250 ? programa.substring(0, 250) : programa,
+          orgao: orgao.sigla,
+          esfera: "federal",
+          ano,
+          dotacao_autorizada: empenhado, // despesas/por-orgao doesn't return dotação, use empenhado as proxy
+          empenhado,
+          liquidado,
+          pago,
+          percentual_execucao: empenhado && pago ? Math.round((pago / empenhado) * 10000) / 100 : null,
+          fonte_dados: `Portal da Transparência – ${orgao.sigla}`,
+          url_fonte: `https://portaldatransparencia.gov.br/despesas/orgao?ordenarPor=orgaoSuperior&direcao=asc&de=${ano}0101&ate=${ano}1231&orgao=${orgao.codigo}`,
+          observacoes: `Órgão vinculado: ${item.orgao}`,
+          eixo_tematico: null,
+          grupo_focal: null,
+        });
+      }
+
+      if (data.length < 15) break; // Less than page size means last page
+      pagina++;
+      await new Promise((r) => setTimeout(r, 500));
+    } catch (error) {
+      console.error(`Portal Transparência fetch error ${orgao.sigla} ${ano}:`, error);
+      break;
+    }
+  }
+
+  return results;
+}
+
+async function fetchFederalData(
   anosRange: number[],
   erros: string[]
 ): Promise<DadoOrcamentario[]> {
   const resultados: DadoOrcamentario[] = [];
+  const apiKey = Deno.env.get("PORTAL_TRANSPARENCIA_API_KEY") || "";
 
-  // Buscar por órgão superior
+  // Try SPARQL first, fall back to Portal da Transparência
   for (const orgao of ORGAOS_FEDERAIS) {
     for (const ano of anosRange) {
+      if (orgao.desde && ano < orgao.desde) continue;
       try {
+        // Try SPARQL first
         const query = buildSparqlQueryByOrgao(ano, orgao.codigo);
         const bindings = await executeSparqlQuery(query);
-        console.log(`SIOP ${orgao.sigla} ${ano}: ${bindings.length} registros`);
 
-        const processados = processSiopData(bindings, orgao, ano);
-        resultados.push(...processados);
+        if (bindings.length > 0) {
+          console.log(`SIOP SPARQL ${orgao.sigla} ${ano}: ${bindings.length} registros`);
+          const processados = processSiopData(bindings, orgao, ano);
+          resultados.push(...processados);
+        } else if (apiKey) {
+          // Fallback to Portal da Transparência
+          console.log(`SPARQL failed for ${orgao.sigla} ${ano}, trying Portal da Transparência...`);
+          const dados = await fetchPortalTransparencia(orgao, ano, apiKey);
+          console.log(`Portal Transparência ${orgao.sigla} ${ano}: ${dados.length} registros`);
+          resultados.push(...dados);
+        } else {
+          erros.push(`Sem dados para ${orgao.sigla} ${ano}: SPARQL bloqueado e sem API key do Portal da Transparência`);
+        }
       } catch (error) {
-        const msg = `Erro SIOP ${orgao.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
+        const msg = `Erro federal ${orgao.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
         console.error(msg);
         erros.push(msg);
       }
-      // Gentil com o endpoint
       await new Promise((r) => setTimeout(r, 400));
     }
   }
 
-  // Buscar por UO específica (FUNAI, INCRA, SESAI)
+  // UOs específicas (FUNAI, INCRA, SESAI) - only via SPARQL for now
   for (const uo of UOS_ESPECIFICAS) {
     for (const ano of anosRange) {
       try {
         const query = buildSparqlQueryByUO(ano, uo.codigo);
         const bindings = await executeSparqlQuery(query);
-        console.log(`SIOP UO ${uo.sigla} ${ano}: ${bindings.length} registros`);
-
-        const processados = processSiopData(bindings, uo, ano);
-        resultados.push(...processados);
+        if (bindings.length > 0) {
+          console.log(`SIOP UO ${uo.sigla} ${ano}: ${bindings.length} registros`);
+          const processados = processSiopData(bindings, uo, ano);
+          resultados.push(...processados);
+        }
       } catch (error) {
         const msg = `Erro SIOP UO ${uo.sigla} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
         console.error(msg);
@@ -408,9 +434,9 @@ Deno.serve(async (req) => {
     const resultados: DadoOrcamentario[] = [];
     const erros: string[] = [];
 
-    // ====== FEDERAL (SIOP SPARQL) ======
-    if (!fonte || fonte === "siop" || esfera === "federal") {
-      const dadosFederais = await fetchSiopFederal(anosRange, erros);
+    // ====== FEDERAL (SPARQL + Portal da Transparência fallback) ======
+    if (!fonte || fonte === "siop" || fonte === "portal" || esfera === "federal") {
+      const dadosFederais = await fetchFederalData(anosRange, erros);
       resultados.push(...dadosFederais);
     }
 
