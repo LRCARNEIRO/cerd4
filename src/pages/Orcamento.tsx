@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Users, Tent } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
@@ -64,9 +65,141 @@ const estruturaMunicipal = [
   { municipio: 'Brasília', uf: 'DF', orgao: 'SEDUH', url: 'https://www.transparencia.df.gov.br/' }
 ];
 
+type ThematicFilter = 'racial' | 'indigena' | 'quilombola' | 'ciganos';
+
+const THEMATIC_FILTERS: { key: ThematicFilter; label: string }[] = [
+  { key: 'racial', label: 'Política Racial' },
+  { key: 'indigena', label: 'Povos Indígenas' },
+  { key: 'quilombola', label: 'Quilombolas' },
+  { key: 'ciganos', label: 'Ciganos' },
+];
+
+/** Classify a record into a thematic category */
+function classifyThematic(r: DadoOrcamentario): ThematicFilter {
+  const prog = r.programa.toLowerCase();
+  const orgao = r.orgao.toUpperCase();
+
+  if (['FUNAI', 'SESAI', 'MPI'].includes(orgao) ||
+      prog.includes('indigen') || prog.includes('indígen') || prog.includes('2065')) {
+    return 'indigena';
+  }
+  if (prog.includes('quilomb') || prog.includes('20g7') || prog.includes('0859')) {
+    return 'quilombola';
+  }
+  if (prog.includes('cigano') || prog.includes('romani') || prog.includes('povo cigano')) {
+    return 'ciganos';
+  }
+  return 'racial';
+}
+
+function groupByOrgaoPrograma(records: DadoOrcamentario[]): Map<string, Map<string, DadoOrcamentario[]>> {
+  const result = new Map<string, Map<string, DadoOrcamentario[]>>();
+  for (const item of records) {
+    if (!result.has(item.orgao)) result.set(item.orgao, new Map());
+    const orgaoMap = result.get(item.orgao)!;
+    if (!orgaoMap.has(item.programa)) orgaoMap.set(item.programa, []);
+    orgaoMap.get(item.programa)!.push(item);
+  }
+  return result;
+}
+
+function countPrograms(grouped: Map<string, Map<string, DadoOrcamentario[]>>): number {
+  let count = 0;
+  grouped.forEach(orgao => { count += orgao.size; });
+  return count;
+}
+
+/** Filter bar component used inside each esfera tab */
+function ThematicFilterBar({
+  filters,
+  counts,
+  onToggle,
+}: {
+  filters: Record<ThematicFilter, boolean>;
+  counts: Record<ThematicFilter, number>;
+  onToggle: (key: ThematicFilter) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-4 mb-4 p-3 bg-muted/50 rounded-lg border">
+      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Filtros temáticos:</span>
+      {THEMATIC_FILTERS.map(f => (
+        <label key={f.key} className="flex items-center gap-2 cursor-pointer text-sm">
+          <Checkbox
+            checked={filters[f.key]}
+            onCheckedChange={() => onToggle(f.key)}
+          />
+          {f.label}
+          <Badge variant="secondary" className="text-xs">{counts[f.key]}</Badge>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+/** Renders grouped data as OrgaoSections or sub-grouped cards */
+function EsferaContent({
+  records,
+  isLoading,
+  emptyMessage,
+  useOrgaoSection = true,
+}: {
+  records: DadoOrcamentario[];
+  isLoading: boolean;
+  emptyMessage: string;
+  useOrgaoSection?: boolean;
+}) {
+  if (isLoading) {
+    return <div className="space-y-4">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32" />)}</div>;
+  }
+
+  const grouped = groupByOrgaoPrograma(records);
+
+  if (grouped.size === 0) {
+    return <EmptyEsferaCard esfera="" descricao={emptyMessage} />;
+  }
+
+  if (useOrgaoSection) {
+    return (
+      <div className="space-y-8">
+        {Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
+          <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      {Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([entity, programas]) => (
+        <div key={entity} className="space-y-3">
+          <div className="flex items-center gap-2 px-1">
+            <MapPin className="w-5 h-5 text-muted-foreground" />
+            <h3 className="font-semibold text-sm">{entity}</h3>
+            <Badge variant="outline" className="text-xs">{programas.size} programas</Badge>
+          </div>
+          <div className="space-y-2">
+            {Array.from(programas.entries()).map(([prog, registros]) => (
+              <ProgramCard key={prog} programa={prog} registros={registros} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
+
+  // Thematic filters per esfera
+  const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
+  const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
+  const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
+
+  const toggleFilter = (setter: React.Dispatch<React.SetStateAction<Record<ThematicFilter, boolean>>>) => (key: ThematicFilter) => {
+    setter(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 1 }).format(value);
@@ -77,61 +210,52 @@ export default function Orcamento() {
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Classify federal records into thematic categories
-  const classifyFederal = (r: DadoOrcamentario): string => {
-    const prog = r.programa.toLowerCase();
-    const orgao = r.orgao.toUpperCase();
+  // Classify all records by esfera + thematic
+  const classified = useMemo(() => {
+    const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> = {
+      federal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
+      estadual: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
+      municipal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
+    };
 
-    // Indígena: FUNAI, SESAI, MPI or program 2065
-    if (['FUNAI', 'SESAI', 'MPI'].includes(orgao) ||
-        prog.includes('indigen') || prog.includes('indígen') || prog.includes('2065')) {
-      return 'indigena';
-    }
-
-    // Quilombola
-    if (prog.includes('quilomb') || prog.includes('20g7') || prog.includes('0859')) {
-      return 'quilombola';
-    }
-
-    // Ciganos/Romani
-    if (prog.includes('cigano') || prog.includes('romani') || prog.includes('povo cigano')) {
-      return 'ciganos';
-    }
-
-    // Default: racial (MIR, MDHC, etc.)
-    return 'racial';
-  };
-
-  const addToGrouped = (map: Map<string, Map<string, DadoOrcamentario[]>>, item: DadoOrcamentario) => {
-    if (!map.has(item.orgao)) map.set(item.orgao, new Map());
-    const orgaoMap = map.get(item.orgao)!;
-    if (!orgaoMap.has(item.programa)) orgaoMap.set(item.programa, []);
-    orgaoMap.get(item.programa)!.push(item);
-  };
-
-  // Group data into thematic buckets
-  const grouped = useMemo(() => {
-    const empty = () => new Map<string, Map<string, DadoOrcamentario[]>>();
-    if (!dadosOrcamentarios) return { racial: empty(), indigena: empty(), quilombola: empty(), ciganos: empty(), estadual: empty(), municipal: empty() };
-
-    const result = { racial: empty(), indigena: empty(), quilombola: empty(), ciganos: empty(), estadual: empty(), municipal: empty() };
+    if (!dadosOrcamentarios) return result;
 
     for (const item of dadosOrcamentarios) {
-      if (item.esfera === 'estadual') { addToGrouped(result.estadual, item); continue; }
-      if (item.esfera === 'municipal') { addToGrouped(result.municipal, item); continue; }
+      let esfera: 'federal' | 'estadual' | 'municipal' = 'federal';
+      if (item.esfera === 'estadual') esfera = 'estadual';
+      else if (item.esfera === 'municipal') esfera = 'municipal';
 
-      const cat = classifyFederal(item);
-      addToGrouped(result[cat as keyof typeof result], item);
+      result[esfera].all.push(item);
+      const theme = classifyThematic(item);
+      result[esfera].byTheme[theme].push(item);
     }
 
     return result;
   }, [dadosOrcamentarios]);
 
-  const countPrograms = (esferaMap: Map<string, Map<string, DadoOrcamentario[]>>) => {
-    let count = 0;
-    esferaMap.forEach(orgao => { count += orgao.size; });
-    return count;
+  // Apply filters to get visible records per esfera
+  const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>) => {
+    const data = classified[esfera];
+    const result: DadoOrcamentario[] = [];
+    for (const key of THEMATIC_FILTERS.map(f => f.key)) {
+      if (filters[key]) result.push(...data.byTheme[key]);
+    }
+    return result;
   };
+
+  const getThemeCounts = (esfera: 'federal' | 'estadual' | 'municipal') => {
+    const data = classified[esfera];
+    return {
+      racial: data.byTheme.racial.length,
+      indigena: data.byTheme.indigena.length,
+      quilombola: data.byTheme.quilombola.length,
+      ciganos: data.byTheme.ciganos.length,
+    };
+  };
+
+  const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters), [classified, federalFilters]);
+  const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
+  const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
 
   // Chart data
   const evolucaoPorAno = stats?.porAno
@@ -141,14 +265,6 @@ export default function Orcamento() {
   const porPrograma = stats?.porPrograma
     ? Object.entries(stats.porPrograma).map(([programa, pago]) => ({ programa, pago: pago as number })).sort((a, b) => b.pago - a.pago).slice(0, 10)
     : [];
-
-  const racialCount = countPrograms(grouped.racial);
-  const indigenaCount = countPrograms(grouped.indigena);
-  const quilombolaCount = countPrograms(grouped.quilombola);
-  const ciganosCount = countPrograms(grouped.ciganos);
-  const estadualCount = countPrograms(grouped.estadual);
-  const municipalCount = countPrograms(grouped.municipal);
-  const totalCount = racialCount + indigenaCount + quilombolaCount + ciganosCount + estadualCount + municipalCount;
 
   return (
     <DashboardLayout
@@ -233,7 +349,9 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">Registros</p>
                   <p className="text-xl font-bold">{stats?.totalRegistros || 0}</p>
-                  <p className="text-xs text-muted-foreground">{totalCount} programas</p>
+                  <p className="text-xs text-muted-foreground">
+                    {classified.federal.all.length} federal · {classified.estadual.all.length} estadual · {classified.municipal.all.length} municipal
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -241,37 +359,22 @@ export default function Orcamento() {
         </div>
       ) : null}
 
-      <Tabs defaultValue="politica-racial" className="w-full">
+      <Tabs defaultValue="federal" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="politica-racial">
+          <TabsTrigger value="federal">
             <Building className="w-4 h-4 mr-1" />
-            Política Racial
-            {racialCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{racialCount}</Badge>}
+            Federal
+            {classified.federal.all.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.federal.all.length}</Badge>}
           </TabsTrigger>
-          <TabsTrigger value="povos-indigenas">
-            <TreePine className="w-4 h-4 mr-1" />
-            Povos Indígenas
-            {indigenaCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{indigenaCount}</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="quilombolas">
-            <Users className="w-4 h-4 mr-1" />
-            Quilombolas
-            {quilombolaCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{quilombolaCount}</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="ciganos">
-            <Tent className="w-4 h-4 mr-1" />
-            Ciganos
-            {ciganosCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{ciganosCount}</Badge>}
-          </TabsTrigger>
-          <TabsTrigger value="programas-estaduais">
+          <TabsTrigger value="estadual">
             <Building2 className="w-4 h-4 mr-1" />
-            Estaduais
-            {estadualCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{estadualCount}</Badge>}
+            Estadual
+            {classified.estadual.all.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.estadual.all.length}</Badge>}
           </TabsTrigger>
-          <TabsTrigger value="programas-municipais">
+          <TabsTrigger value="municipal">
             <MapPin className="w-4 h-4 mr-1" />
-            Municipais
-            {municipalCount > 0 && <Badge variant="secondary" className="ml-1 text-xs">{municipalCount}</Badge>}
+            Municipal
+            {classified.municipal.all.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.municipal.all.length}</Badge>}
           </TabsTrigger>
           <TabsTrigger value="visao-geral">
             <Database className="w-4 h-4 mr-1" />
@@ -283,126 +386,22 @@ export default function Orcamento() {
           </TabsTrigger>
         </TabsList>
 
-        {/* POLÍTICA RACIAL (MIR, MDHC) */}
-        <TabsContent value="politica-racial">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.racial.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.racial.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
-                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
-              ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard esfera="política racial" descricao="Nenhum programa de política racial (MIR, MDHC, SEPPIR) encontrado no banco." />
-          )}
+        {/* FEDERAL */}
+        <TabsContent value="federal">
+          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts('federal')} onToggle={toggleFilter(setFederalFilters)} />
+          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection />
         </TabsContent>
 
-        {/* POVOS INDÍGENAS (FUNAI, SESAI, MPI) */}
-        <TabsContent value="povos-indigenas">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.indigena.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.indigena.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
-                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
-              ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard esfera="povos indígenas" descricao="Nenhum programa indígena (FUNAI, SESAI, MPI) encontrado no banco." />
-          )}
+        {/* ESTADUAL */}
+        <TabsContent value="estadual">
+          <ThematicFilterBar filters={estadualFilters} counts={getThemeCounts('estadual')} onToggle={toggleFilter(setEstadualFilters)} />
+          <EsferaContent records={estadualRecords} isLoading={isLoading} emptyMessage="Dados estaduais ainda não coletados. Utilize SICONFI/RREO dos portais de transparência estaduais." useOrgaoSection={false} />
         </TabsContent>
 
-        {/* QUILOMBOLAS (INCRA) */}
-        <TabsContent value="quilombolas">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.quilombola.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.quilombola.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
-                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
-              ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard esfera="quilombolas" descricao="Nenhum programa quilombola (INCRA, ação 20G7/0859) encontrado no banco." />
-          )}
-        </TabsContent>
-
-        {/* CIGANOS */}
-        <TabsContent value="ciganos">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.ciganos.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.ciganos.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
-                <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
-              ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard esfera="ciganos" descricao="Nenhum programa com foco em povos ciganos encontrado no banco." />
-          )}
-        </TabsContent>
-
-        {/* PROGRAMAS ESTADUAIS */}
-        <TabsContent value="programas-estaduais">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.estadual.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.estadual.entries())
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([estado, programas]) => (
-                  <div key={estado} className="space-y-3">
-                    <div className="flex items-center gap-2 px-1">
-                      <MapPin className="w-5 h-5 text-success" />
-                      <h3 className="font-semibold text-sm">{estado}</h3>
-                      <Badge variant="outline" className="text-xs">{programas.size} programas</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      {Array.from(programas.entries()).map(([prog, registros]) => (
-                        <ProgramCard key={prog} programa={prog} registros={registros} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard
-              esfera="estaduais"
-              descricao="Dados estaduais ainda não foram coletados de forma verificável. Utilize as fontes SICONFI/RREO dos portais de transparência estaduais."
-            />
-          )}
-        </TabsContent>
-
-        {/* PROGRAMAS MUNICIPAIS */}
-        <TabsContent value="programas-municipais">
-          {isLoading ? (
-            <div className="space-y-4">{[1,2,3].map(i => <Skeleton key={i} className="h-32" />)}</div>
-          ) : grouped.municipal.size > 0 ? (
-            <div className="space-y-8">
-              {Array.from(grouped.municipal.entries())
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([cidade, programas]) => (
-                  <div key={cidade} className="space-y-3">
-                    <div className="flex items-center gap-2 px-1">
-                      <MapPin className="w-5 h-5 text-chart-1" />
-                      <h3 className="font-semibold text-sm">{cidade}</h3>
-                      <Badge variant="outline" className="text-xs">{programas.size} programas</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      {Array.from(programas.entries()).map(([prog, registros]) => (
-                        <ProgramCard key={prog} programa={prog} registros={registros} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <EmptyEsferaCard
-              esfera="municipais"
-              descricao="Dados municipais ainda não foram coletados de forma verificável. Utilize os portais de transparência municipais."
-            />
-          )}
+        {/* MUNICIPAL */}
+        <TabsContent value="municipal">
+          <ThematicFilterBar filters={municipalFilters} counts={getThemeCounts('municipal')} onToggle={toggleFilter(setMunicipalFilters)} />
+          <EsferaContent records={municipalRecords} isLoading={isLoading} emptyMessage="Dados municipais ainda não coletados. Utilize portais de transparência municipais." useOrgaoSection={false} />
         </TabsContent>
 
         {/* VISÃO GERAL - Charts */}
