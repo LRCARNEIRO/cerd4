@@ -54,53 +54,54 @@ interface ParsedRow {
 }
 
 /**
- * Normalise a Portal da Transparência header name so we can match it
- * regardless of accents, casing or minor wording variations.
+ * Normalise a string for header matching: lowercase, remove accents and non-alphanumeric.
  */
 const norm = (s: string) =>
   s
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '');
+    .replace(/[_\s]+/g, ' ')
+    .trim();
 
-/** Map of normalised Portal CSV header → semantic key */
-const COLUMN_MAP: Record<string, string> = {
-  // Ano
-  anodoexercicio: 'ano',
-  anoexercicio: 'ano',
-  ano: 'ano',
-
-  // Programa
-  nomeprograma: 'programa',
-  codigoprogramanomeprograma: 'programa',
-  programa: 'programa',
-  codigoprograma: 'cod_programa',
-
-  // Ação
-  nomeacao: 'acao',
-  codigoacaonomeacao: 'acao',
-  acao: 'acao',
-  codigoacao: 'cod_acao',
-
-  // Órgão
-  nomeorgaoentidadevinculada: 'orgao_nome',
-  nomeorgao: 'orgao_nome',
-  orgao: 'orgao_nome',
-  nomeorgaosuperior: 'orgao_superior',
-  codigoorgaoentidadevinculada: 'cod_orgao',
-
-  // Financeiro
-  despesasempenhadas: 'empenhado',
-  empenhado: 'empenhado',
-  valorempenhado: 'empenhado',
-  despesasliquidadas: 'liquidado',
-  liquidado: 'liquidado',
-  valorliquidado: 'liquidado',
-  despesaspagas: 'pago',
-  pago: 'pago',
-  valorpago: 'pago',
+/** Aliases for each semantic column. Order matters (first match wins). */
+const COLUMN_ALIASES: Record<string, string[]> = {
+  ano: ['ano do exercicio', 'ano exercicio', 'ano'],
+  programa: ['nome programa', 'codigo programa nome programa', 'programa orçamentário', 'programa'],
+  cod_programa: ['codigo programa'],
+  acao: ['nome acao', 'codigo acao nome acao', 'acao governamental', 'acao'],
+  cod_acao: ['codigo acao', 'cod acao'],
+  orgao_nome: ['nome orgao entidade vinculada', 'nome orgao', 'orgao entidade vinculada', 'orgao'],
+  orgao_superior: ['nome orgao superior'],
+  cod_orgao: ['codigo orgao entidade vinculada', 'codigo orgao'],
+  empenhado: ['despesas empenhadas', 'empenhado', 'valor empenhado', 'empenhadas'],
+  liquidado: ['despesas liquidadas', 'liquidado', 'valor liquidado', 'liquidadas'],
+  pago: ['despesas pagas', 'pago', 'valor pago', 'pagas'],
 };
+
+/**
+ * Multi-tier column finder: exact → startsWith → contains.
+ */
+function findColumnIndex(normalizedHeaders: string[], aliases: string[]): number {
+  const normalizedAliases = aliases.map(norm);
+
+  // Priority 1: exact
+  for (const alias of normalizedAliases) {
+    const idx = normalizedHeaders.indexOf(alias);
+    if (idx !== -1) return idx;
+  }
+  // Priority 2: starts with
+  for (const alias of normalizedAliases) {
+    const idx = normalizedHeaders.findIndex(h => h.startsWith(alias));
+    if (idx !== -1) return idx;
+  }
+  // Priority 3: contains
+  for (const alias of normalizedAliases) {
+    const idx = normalizedHeaders.findIndex(h => h.includes(alias));
+    if (idx !== -1) return idx;
+  }
+  return -1;
+}
 
 const parseBRL = (val: string): number | null => {
   if (!val || val.trim() === '' || val.trim() === '0') return null;
@@ -152,21 +153,27 @@ export function ManualGapFiller() {
     // Detect separator
     const sep = lines[0].includes(';') ? ';' : lines[0].includes('\t') ? '\t' : ',';
 
-    // Build column index from header
+    // Build column index from header using multi-tier matching
     const rawHeaders = lines[0].split(sep).map(h => h.replace(/^"|"$/g, '').trim());
+    const normalizedHeaders = rawHeaders.map(norm);
+
     const colIndex: Record<string, number> = {};
-    rawHeaders.forEach((h, i) => {
-      const key = COLUMN_MAP[norm(h)];
-      if (key && !(key in colIndex)) colIndex[key] = i;
-    });
+    for (const [key, aliases] of Object.entries(COLUMN_ALIASES)) {
+      const idx = findColumnIndex(normalizedHeaders, aliases);
+      if (idx !== -1) colIndex[key] = idx;
+    }
+
+    console.log('[ManualGapFiller] Headers detectados:', rawHeaders);
+    console.log('[ManualGapFiller] Colunas mapeadas:', colIndex);
 
     // Check minimum required columns
     const hasEmpenhado = 'empenhado' in colIndex;
     const hasPago = 'pago' in colIndex;
-    if (!hasEmpenhado && !hasPago) {
+    const hasLiquidado = 'liquidado' in colIndex;
+    if (!hasEmpenhado && !hasPago && !hasLiquidado) {
       toast.error('CSV não contém colunas de valores financeiros reconhecíveis (Empenhado/Liquidado/Pago)', {
-        description: `Colunas encontradas: ${rawHeaders.slice(0, 8).join(', ')}...`,
-        duration: 8000,
+        description: `Colunas encontradas: ${rawHeaders.join(', ')}`,
+        duration: 10000,
       });
       return;
     }
