@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.scrape-orcamento]
 verify_jwt = false
+
+[functions.ingest-federal-orcamento]
+verify_jwt = false
