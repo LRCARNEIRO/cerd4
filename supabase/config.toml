@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.ingest-federal-orcamento]
 verify_jwt = false
+
+[functions.ingest-siop-sparql]
+verify_jwt = false

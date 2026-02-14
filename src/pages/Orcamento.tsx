@@ -15,6 +15,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 
 import { SiopCsvUpload } from '@/components/dashboard/SiopCsvUpload';
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
+import { SiopSparqlPanel } from '@/components/dashboard/SiopSparqlPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 // Estrutura de fontes para referência
@@ -289,6 +290,7 @@ export default function Orcamento() {
             <div className="flex gap-2">
               <SiopCsvUpload />
               <FederalIngestionPanel />
+              <SiopSparqlPanel />
             </div>
           </div>
         </CardContent>
