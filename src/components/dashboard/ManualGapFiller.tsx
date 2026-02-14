@@ -27,7 +27,7 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=2065`,
-    instrucoes: 'Filtrar Programa 2065 no Portal da Transparência. Anotar valores por ação (20UF, 2384, 215O, 215Q, 214V).',
+    instrucoes: 'Filtrar por ação no Portal da Transparência. O portal exibe apenas Empenhado, Liquidado, Pago e Restos a Pagar (não há Dotação Inicial nesse endpoint).',
   },
   {
     id: 'sesai',
@@ -42,7 +42,7 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20YP`,
-    instrucoes: 'Buscar ações 20YP e 7684 no Portal. Dados segregados como Saúde Indígena (não somam no total racial).',
+    instrucoes: 'Buscar ações 20YP e 7684 no Portal. Apenas Empenhado, Liquidado e Pago disponíveis. Dados segregados como Saúde Indígena (não somam no total racial).',
   },
   {
     id: 'quilombolas',
@@ -57,14 +57,14 @@ const LACUNAS = [
     ],
     url_portal: (ano: number) =>
       `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&acao=20G7`,
-    instrucoes: 'Buscar ações 20G7 e 0859 do INCRA no Portal da Transparência.',
+    instrucoes: 'Buscar ações 20G7 e 0859 do INCRA no Portal. Apenas Empenhado, Liquidado e Pago disponíveis nesse endpoint.',
   },
 ];
 
-const CSV_TEMPLATE = `ano;orgao;programa;acao;dotacao_inicial;dotacao_autorizada;empenhado;liquidado;pago
-2020;FUNAI;2065 – Proteção dos Povos Indígenas;20UF – Promoção dos Direitos;0;0;0;0;0
-2020;SESAI;2065 – Proteção dos Povos Indígenas;20YP – Atenção à Saúde;0;0;0;0;0
-2020;INCRA;0153 – Promoção e Defesa dos Direitos;20G7 – Regularização Quilombola;0;0;0;0;0`;
+const CSV_TEMPLATE = `ano;orgao;programa;acao;empenhado;liquidado;pago
+2020;FUNAI;2065 – Proteção dos Povos Indígenas;20UF – Promoção dos Direitos;0;0;0
+2020;SESAI;2065 – Proteção dos Povos Indígenas;20YP – Atenção à Saúde;0;0;0
+2020;INCRA;0153 – Promoção e Defesa dos Direitos;20G7 – Regularização Quilombola;0;0;0`;
 
 interface PreviewRow {
   ano: number;
@@ -255,10 +255,10 @@ export function ManualGapFiller() {
                         <div className="text-xs">
                           <p className="font-medium mb-1">Passo a passo:</p>
                           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                            <li>Acesse o link abaixo para cada ano faltante</li>
-                            <li>Localize as ações listadas acima na tabela de resultados</li>
-                            <li>Anote: <strong>Dotação Inicial, Dotação Atualizada, Empenhado, Liquidado, Pago</strong></li>
-                            <li>Preencha o CSV template com os valores encontrados</li>
+                             <li>Acesse o link abaixo para cada ano faltante</li>
+                             <li>Localize as ações listadas acima na tabela de resultados</li>
+                             <li>Anote: <strong>Empenhado, Liquidado, Pago</strong> (Dotação não está disponível nesse endpoint)</li>
+                             <li>Preencha o CSV template com os valores encontrados</li>
                           </ol>
                         </div>
 
@@ -285,8 +285,8 @@ export function ManualGapFiller() {
                     <CardContent className="pt-4 space-y-3">
                       <p className="text-sm font-medium">Template CSV</p>
                       <p className="text-xs text-muted-foreground">
-                        Use o template abaixo como base. Preencha os valores reais obtidos no Portal da Transparência.
-                        Separador: ponto-e-vírgula (;). Valores em reais sem separador de milhar.
+                        Use o template abaixo como base. O Portal da Transparência (endpoint por ação) fornece apenas
+                        Empenhado, Liquidado e Pago. Separador: ponto-e-vírgula (;). Valores em reais sem separador de milhar.
                       </p>
                       <pre className="text-[10px] bg-muted p-3 rounded-lg overflow-x-auto whitespace-pre">
                         {CSV_TEMPLATE}
@@ -351,14 +351,14 @@ export function ManualGapFiller() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="text-xs">Ano</TableHead>
+                         <TableHead className="text-xs">Ano</TableHead>
                           <TableHead className="text-xs">Órgão</TableHead>
                           <TableHead className="text-xs">Programa/Ação</TableHead>
-                          <TableHead className="text-xs text-right">Dot. Inicial</TableHead>
-                          <TableHead className="text-xs text-right">Dot. Autorizada</TableHead>
+                          <TableHead className="text-xs text-right">Empenhado</TableHead>
+                          <TableHead className="text-xs text-right">Liquidado</TableHead>
                           <TableHead className="text-xs text-right">Pago</TableHead>
-                        </TableRow>
-                      </TableHeader>
+                         </TableRow>
+                       </TableHeader>
                       <TableBody>
                         {preview.map((row, i) => (
                           <TableRow key={i}>
@@ -367,9 +367,9 @@ export function ManualGapFiller() {
                             <TableCell className="text-xs max-w-[200px] truncate">
                               {row.programa} / {row.acao}
                             </TableCell>
-                            <TableCell className="text-xs text-right">{formatCurrency(row.dotacao_inicial)}</TableCell>
-                            <TableCell className="text-xs text-right">{formatCurrency(row.dotacao_autorizada)}</TableCell>
-                            <TableCell className="text-xs text-right">{formatCurrency(row.pago)}</TableCell>
+                            <TableCell className="text-xs text-right">{formatCurrency(row.empenhado)}</TableCell>
+                             <TableCell className="text-xs text-right">{formatCurrency(row.liquidado)}</TableCell>
+                             <TableCell className="text-xs text-right">{formatCurrency(row.pago)}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
