@@ -416,12 +416,21 @@ export default function Orcamento() {
   const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
   const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
 
+  /** Check if a record is a non-racial 5034 MDHC action (should be excluded from calc) */
+  const is5034NonRacial = (r: DadoOrcamentario): boolean => {
+    if (!r.programa.toLowerCase().includes('5034')) return false;
+    const orgUpper = (r.orgao || '').toUpperCase();
+    if (orgUpper === 'MIR' || orgUpper === 'SEPPIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) return false;
+    const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
+    return !['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+  };
+
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
     const compute = (records: DadoOrcamentario[], excludeSesaiAnd5034: boolean) => {
       const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
       const clean = excludeSesaiAnd5034
-        ? records.filter(r => classifyThematic(r) !== 'sesai' && !(r.ano === 2020 && r.programa.toLowerCase().includes('5034')))
+        ? records.filter(r => classifyThematic(r) !== 'sesai' && !is5034NonRacial(r))
         : records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
@@ -445,25 +454,25 @@ export default function Orcamento() {
     };
   }, [classified, includeExcludedInCalc]);
 
-  // Dynamic stats based on toggle — when includeExcludedInCalc is true, add SESAI + 5034/2020 to totals
+  // Dynamic stats based on toggle — when includeExcludedInCalc is true, add SESAI + non-racial 5034 to totals
   const dynamicStats = useMemo(() => {
     if (!stats) return null;
     if (!includeExcludedInCalc) {
-      // Default: use the hook stats which already exclude SESAI + 5034/2020
+      // Default: use the hook stats which already exclude SESAI + non-racial 5034
       return {
         totalPeriodo1: stats.totalPeriodo1,
         totalPeriodo2: stats.totalPeriodo2,
         variacao: stats.variacao,
         totalRegistros: stats.totalRegistros,
-        label: 'Exclui SESAI e 5034/2020',
+        label: 'Exclui SESAI e 5034 não-racial',
       };
     }
-    // Include excluded: add SESAI + 5034/2020 totals back in
+    // Include excluded: add SESAI + non-racial 5034 totals back in
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
     const allExcluded = dadosOrcamentarios?.filter(r => {
       const theme = classifyThematic(r);
       if (theme === 'sesai') return true;
-      if (r.ano === 2020 && r.programa.toLowerCase().includes('5034')) return true;
+      if (is5034NonRacial(r)) return true;
       return false;
     }) || [];
     const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
@@ -671,7 +680,7 @@ export default function Orcamento() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {evolucaoPorAno.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI e 5034/2020)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI e 5034 não-racial)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -692,7 +701,7 @@ export default function Orcamento() {
               )}
               {porPrograma.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI e 5034/2020)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI e 5034 não-racial)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -834,7 +843,7 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-destructive">{formatCurrency(stats?.totalPeriodo1 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034/2020)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034 não-racial MDHC)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
                     <li><strong>2018–2019:</strong> Base modesta de R$ 93–123 mi sob SEPPIR/MMFDH (segmentando SESAI)</li>
                     <li><strong>2020:</strong> Programa 5034 <strong>excluído do cálculo</strong> — era guarda-chuva do MDHC (R$ 578 mi pagos incluíam políticas de mulheres, idosos, etc.)</li>
@@ -846,7 +855,7 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034/2020)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034 não-racial MDHC)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
                     <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
                     <li><strong>2024–2025:</strong> Novos programas PPA (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial)</li>
@@ -877,7 +886,7 @@ export default function Orcamento() {
             {/* Evolução por ano */}
             {evolucaoPorAno.length > 0 && (
               <Card>
-                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Exclui SESAI e Prog. 5034/2020)</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Exclui SESAI e Prog. 5034 não-racial)</CardTitle></CardHeader>
                 <CardContent>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
@@ -1013,7 +1022,7 @@ export default function Orcamento() {
                 {/* 5. Padrão Nuançado da Série */}
                 <section className="space-y-2">
                   <h4 className="font-semibold text-foreground text-base">5. Padrão Nuançado da Série 2018–2025</h4>
-                  <p>Após as exclusões de SESAI e Programa 5034/2020, a série revela um padrão mais nuançado:</p>
+                  <p>Após as exclusões de SESAI e ações não-raciais do Programa 5034/MDHC, a série revela um padrão mais nuançado:</p>
                   <Table>
                     <TableHeader>
                       <TableRow>
