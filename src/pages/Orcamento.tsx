@@ -14,10 +14,7 @@ import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 
-import { SiopCsvUpload } from '@/components/dashboard/SiopCsvUpload';
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
-import { SiopSparqlPanel } from '@/components/dashboard/SiopSparqlPanel';
-import { ManualGapFiller } from '@/components/dashboard/ManualGapFiller';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
@@ -380,11 +377,8 @@ export default function Orcamento() {
               </p>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <ManualGapFiller />
-              <SiopCsvUpload />
               <FederalIngestionPanel />
               <EstadualIngestionPanel />
-              <SiopSparqlPanel />
             </div>
           </div>
         </CardContent>
