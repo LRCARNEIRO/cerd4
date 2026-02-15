@@ -134,14 +134,18 @@ export function OrcamentoTab() {
         continue;
       }
 
-      // SEPPIR always included (real pre-2023 organ). MIR bypass only for ano >= 2023.
+      // SEPPIR always included. MIR bypass only for ano >= 2023.
       const orgaoUpper = (item.orgao || '').toUpperCase();
       const isSeppir = orgaoUpper === 'SEPPIR';
-      const isMirPost2023 = (orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) && item.ano >= 2023;
+      const isMirLike = orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/');
+      const isMirPost2023 = isMirLike && item.ano >= 2023;
 
       // Program 5034: exclude non-racial actions unless from SEPPIR or MIR post-2023
       if (item.programa.toLowerCase().includes('5034') && !isSeppir && !isMirPost2023) {
-        const texto = [item.programa, item.descritivo, item.publico_alvo, item.observacoes].filter(Boolean).join(' ').toLowerCase();
+        // Pre-2023 "MIR": publico_alvo unreliable (ingestion error) — check only programa+descritivo
+        const isMirPre2023 = isMirLike && item.ano < 2023;
+        const campos = isMirPre2023 ? [item.programa, item.descritivo] : [item.programa, item.descritivo, item.publico_alvo, item.observacoes];
+        const texto = campos.filter(Boolean).join(' ').toLowerCase();
         const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
         if (!hasRacialKw) continue;
       }

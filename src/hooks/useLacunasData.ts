@@ -298,7 +298,8 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
 
 /** Check if a 5034 record is a non-racial action. 
  *  SEPPIR is always included (existed pre-2023). 
- *  MIR bypass only for ano >= 2023 (created in 2023; pre-2023 "MIR" labels are retroactive API reclassifications of MDHC). */
+ *  MIR bypass only for ano >= 2023 (created in 2023; pre-2023 "MIR" labels are retroactive API reclassifications of MDHC).
+ *  For pre-2023 "MIR", publico_alvo is unreliable (ingestion set "População negra" for all actions) — check only programa+descritivo. */
 function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
   if (!r.programa.toLowerCase().includes('5034')) return false;
   const orgaoUpper = (r.orgao || '').toUpperCase();
@@ -306,9 +307,17 @@ function is5034Distortion(r: { ano: number; programa: string; orgao?: string; de
   if (orgaoUpper === 'SEPPIR') return false;
   // MIR only bypasses for 2023+ (when it actually existed)
   if ((orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) && r.ano >= 2023) return false;
-  // All others (including pre-2023 "MIR" = retroactive MDHC): exclude unless racial keywords present
-  const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
-  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+
+  const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
+
+  // Pre-2023 "MIR" = retroactive MDHC: publico_alvo was erroneously set to "População negra" by ingestion
+  // Only check programa + descritivo for these records
+  const isMirPre2023 = (orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) && r.ano < 2023;
+  const campos = isMirPre2023
+    ? [r.programa, r.descritivo]
+    : [r.programa, r.descritivo, r.publico_alvo, r.observacoes];
+  const texto = campos.filter(Boolean).join(' ').toLowerCase();
+  const hasRacialKw = racialKws.some(kw => texto.includes(kw));
   return !hasRacialKw;
 }
 
@@ -337,7 +346,8 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
-      // Exclude SESAI + non-racial 5034 MDHC actions from comparative calculations
+      // Exclude SESAI + non-racial 5034 actions from comparative calculations
+      // MIR bypass only for ano >= 2023 (pre-2023 "MIR" = retroactive MDHC reclassification)
       const registrosLimpos = registros.filter(r => !isSesaiRecord(r) && !is5034Distortion(r));
       
       // Use pago when available, fallback to dotacao_autorizada
