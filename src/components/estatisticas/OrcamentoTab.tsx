@@ -97,6 +97,7 @@ const TABS: TabConfig[] = [
   { value: 'indigena', label: 'Povos Indígenas', icon: <TreePine className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em povos indígenas encontrado.' },
   { value: 'quilombola', label: 'Quilombolas', icon: <Users className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em quilombolas encontrado.' },
   { value: 'ciganos', label: 'Ciganos', icon: <Tent className="w-4 h-4" />, emptyDesc: 'Nenhum programa com foco em povos ciganos encontrado.' },
+  { value: 'sesai', label: 'SESAI (Saúde Indígena)', icon: <AlertTriangle className="w-4 h-4" />, emptyDesc: 'Nenhum dado SESAI encontrado.' },
   { value: 'estadual', label: 'Estaduais', icon: <Building2 className="w-4 h-4" />, emptyDesc: 'Dados estaduais ainda não coletados. Utilize SICONFI/RREO dos portais de transparência estaduais.' },
   { value: 'municipal', label: 'Municipais', icon: <MapPin className="w-4 h-4" />, emptyDesc: 'Dados municipais ainda não coletados. Utilize portais de transparência municipais.' },
 ];
@@ -170,16 +171,15 @@ export function OrcamentoTab() {
   return (
     <div className="space-y-6">
       {/* Summary cards — nuanced with dotação vs pago */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
           { label: 'Política Racial (Federal)', sub: 'Exclui SESAI', dotacao: sumDotacao(categorized.federal), pago: sumPago(categorized.federal), count: categorized.federal.length, color: 'border-l-primary' },
           { label: 'Povos Indígenas', sub: 'FUNAI / MPI', dotacao: sumDotacao(categorized.indigena), pago: sumPago(categorized.indigena), count: categorized.indigena.length, color: 'border-l-chart-2' },
           { label: 'Quilombolas', sub: 'INCRA / Ações 20G7', dotacao: sumDotacao(categorized.quilombola), pago: sumPago(categorized.quilombola), count: categorized.quilombola.length, color: 'border-l-chart-3' },
           { label: 'Ciganos', sub: 'Povo Cigano / Romani', dotacao: sumDotacao(categorized.ciganos), pago: sumPago(categorized.ciganos), count: categorized.ciganos.length, color: 'border-l-chart-4' },
-          { label: 'SESAI', sub: 'Saúde Indígena (informativo)', dotacao: sumDotacao(categorized.sesai), pago: sumPago(categorized.sesai), count: categorized.sesai.length, color: 'border-l-muted-foreground', muted: true },
           { label: 'Variação 2018-22 vs 23-26', sub: 'Dotação comparada', dotacao: null, pago: null, count: null, variacao: stats?.variacao, color: stats && stats.variacao > 0 ? 'border-l-success' : 'border-l-destructive' },
         ].map((card, i) => (
-          <Card key={i} className={`border-l-4 ${card.color} ${card.muted ? 'opacity-75' : ''}`}>
+          <Card key={i} className={`border-l-4 ${card.color}`}>
             <CardContent className="pt-3 pb-3 px-4">
               <p className="text-[11px] font-medium text-foreground leading-tight">{card.label}</p>
               <p className="text-[10px] text-muted-foreground">{card.sub}</p>
