@@ -238,7 +238,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [showExcluded, setShowExcluded] = useState(true);
+  const [includeExcludedInCalc, setIncludeExcludedInCalc] = useState(false);
 
   const toggleFilter = (setter: React.Dispatch<React.SetStateAction<Record<ThematicFilter, boolean>>>) => (key: ThematicFilter) => {
     setter(prev => ({ ...prev, [key]: !prev[key] }));
@@ -288,23 +288,17 @@ export default function Orcamento() {
     return result;
   }, [dadosOrcamentarios]);
 
-  // Apply filters to get visible records per esfera
-  const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>, includeExcluded = true) => {
+  // Apply filters to get visible records per esfera — federal always includes all records
+  const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>) => {
     const data = classified[esfera];
-    let result: DadoOrcamentario[] = [];
+    const result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
       if (filters[key]) result.push(...data.byTheme[key]);
     }
-    // For federal: add SESAI records when showing excluded, or remove 5034/2020 when hiding
+    // For federal: always include SESAI records (visually marked as excluded)
     if (esfera === 'federal') {
-      if (includeExcluded) {
-        // Add SESAI records (they're in .all but not in byTheme)
-        const sesaiInFederal = data.all.filter(r => classifyThematic(r) === 'sesai');
-        result.push(...sesaiInFederal);
-      } else {
-        // Remove 5034/2020 distortion records from thematic results
-        result = result.filter(r => !(r.ano === 2020 && r.programa.toLowerCase().includes('5034')));
-      }
+      const sesaiInFederal = data.all.filter(r => classifyThematic(r) === 'sesai');
+      result.push(...sesaiInFederal);
     }
     return result;
   };
@@ -319,9 +313,43 @@ export default function Orcamento() {
     };
   };
 
-  const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters, showExcluded), [classified, federalFilters, showExcluded]);
+  const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters), [classified, federalFilters]);
   const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
   const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
+
+  // Dynamic stats based on toggle — when includeExcludedInCalc is true, add SESAI + 5034/2020 to totals
+  const dynamicStats = useMemo(() => {
+    if (!stats) return null;
+    if (!includeExcludedInCalc) {
+      // Default: use the hook stats which already exclude SESAI + 5034/2020
+      return {
+        totalPeriodo1: stats.totalPeriodo1,
+        totalPeriodo2: stats.totalPeriodo2,
+        variacao: stats.variacao,
+        totalRegistros: stats.totalRegistros,
+        label: 'Exclui SESAI e 5034/2020',
+      };
+    }
+    // Include excluded: add SESAI + 5034/2020 totals back in
+    const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+    const allExcluded = dadosOrcamentarios?.filter(r => {
+      const theme = classifyThematic(r);
+      if (theme === 'sesai') return true;
+      if (r.ano === 2020 && r.programa.toLowerCase().includes('5034')) return true;
+      return false;
+    }) || [];
+    const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
+    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2026).reduce((s, r) => s + valorEfetivo(r), 0);
+    const t1 = stats.totalPeriodo1 + excl1;
+    const t2 = stats.totalPeriodo2 + excl2;
+    return {
+      totalPeriodo1: t1,
+      totalPeriodo2: t2,
+      variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
+      totalRegistros: stats.totalRegistros + allExcluded.length,
+      label: 'Inclui todos os registros',
+    };
+  }, [stats, includeExcludedInCalc, dadosOrcamentarios]);
 
   // Chart data
   const evolucaoPorAno = stats?.porAno
@@ -375,8 +403,8 @@ export default function Orcamento() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">2018-2022</p>
-                  <p className="text-xl font-bold">{formatCurrency(stats?.totalPeriodo1 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Exclui SESAI e 5034/2020</p>
+                  <p className="text-xl font-bold">{formatCurrency(dynamicStats?.totalPeriodo1 || 0)}</p>
+                  <p className="text-xs text-muted-foreground">{dynamicStats?.label}</p>
                 </div>
               </div>
             </CardContent>
@@ -389,8 +417,8 @@ export default function Orcamento() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">2023-2026</p>
-                  <p className="text-xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Exclui SESAI e 5034/2020</p>
+                  <p className="text-xl font-bold text-success">{formatCurrency(dynamicStats?.totalPeriodo2 || 0)}</p>
+                  <p className="text-xs text-muted-foreground">{dynamicStats?.label}</p>
                 </div>
               </div>
             </CardContent>
@@ -398,15 +426,15 @@ export default function Orcamento() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${stats && stats.variacao > 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
-                  <TrendingUp className={`w-5 h-5 ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
+                <div className={`p-2 rounded-lg ${dynamicStats && dynamicStats.variacao > 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
+                  <TrendingUp className={`w-5 h-5 ${dynamicStats && dynamicStats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Variação</p>
-                  <p className={`text-xl font-bold ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`}>
-                    {stats && stats.variacao > 0 ? '+' : ''}{stats?.variacao.toFixed(1)}%
+                  <p className={`text-xl font-bold ${dynamicStats && dynamicStats.variacao > 0 ? 'text-success' : 'text-destructive'}`}>
+                    {dynamicStats && dynamicStats.variacao > 0 ? '+' : ''}{dynamicStats?.variacao.toFixed(1)}%
                   </p>
-                  <p className="text-xs text-muted-foreground">Série incompleta — dados parciais</p>
+                  <p className="text-xs text-muted-foreground">{dynamicStats?.label}</p>
                 </div>
               </div>
             </CardContent>
@@ -419,7 +447,7 @@ export default function Orcamento() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Registros</p>
-                  <p className="text-xl font-bold">{stats?.totalRegistros || 0}</p>
+                  <p className="text-xl font-bold">{dynamicStats?.totalRegistros || 0}</p>
                   <p className="text-xs text-muted-foreground">
                     {classified.federal.all.length} federal · {classified.estadual.all.length} estadual · {classified.municipal.all.length} municipal
                   </p>
@@ -471,17 +499,17 @@ export default function Orcamento() {
           <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
             <div className="flex items-center gap-2">
               <EyeOff className="w-4 h-4 flex-shrink-0" />
-              <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência, mas <strong>não entram</strong> nos totais, gráficos ou variação percentual.</span>
+              <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência. O toggle ao lado controla se entram nos totais e variação percentual.</span>
             </div>
             <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium shrink-0">
               <Checkbox
-                checked={showExcluded}
-                onCheckedChange={(checked) => setShowExcluded(!!checked)}
+                checked={includeExcludedInCalc}
+                onCheckedChange={(checked) => setIncludeExcludedInCalc(!!checked)}
               />
-              Exibir excluídos
+              Incluir excluídos no cálculo
             </label>
           </div>
-          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions={showExcluded} />
+          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions />
         </TabsContent>
 
         {/* ESTADUAL */}
