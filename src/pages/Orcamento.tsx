@@ -1059,6 +1059,23 @@ export default function Orcamento() {
                       <li><strong>Municipal (2018–2025):</strong> Todas as <strong>27 capitais brasileiras</strong> via RREO/DCA do SICONFI, com os mesmos filtros e campos do estadual.</li>
                     </ul>
                     <p className="text-xs">Todos os registros incluem: órgão responsável, descritivo da conta, público-alvo, razão de seleção (critério de inclusão), fonte de dados e link direto para o SICONFI.</p>
+                    
+                    <div className="mt-3 space-y-2">
+                      <h5 className="font-semibold text-foreground text-sm">Palavras-chave raciais/étnicas utilizadas no filtro subnacional:</h5>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          "racial", "racismo", "igualdade racial", "igualdade étnica",
+                          "quilombol", "indígen", "indigena", "cigan", "romani",
+                          "terreiro", "matriz africana", "afro",
+                          "direitos humanos", "cidadania", "promoção da igualdade",
+                          "capoeira", "cultura negra", "negro", "candomblé", "umbanda",
+                          "povos tradicionais", "comunidades tradicionais",
+                        ].map(kw => (
+                          <code key={kw} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">Além das palavras-chave, são capturadas contas RREO/DCA cujas descrições incluem: <code className="bg-muted px-1 rounded">direitos da cidadania</code>, <code className="bg-muted px-1 rounded">direitos individuais coletivos</code>, <code className="bg-muted px-1 rounded">assistência aos indígenas</code>, <code className="bg-muted px-1 rounded">assistência comunitária</code>. Registros são incluídos quando coincidem com pelo menos um critério, e a razão de seleção é registrada no campo <em>razao_selecao</em> de cada ficha.</p>
+                    </div>
                   </div>
                 </section>
 
