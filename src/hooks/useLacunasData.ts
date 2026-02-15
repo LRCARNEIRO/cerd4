@@ -296,9 +296,9 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
     prog.includes('20yp') || prog.includes('7684');
 }
 
-/** Check if a 5034/2020 record is a non-racial MDHC distortion. MIR records are NEVER excluded. */
-function is5034Distortion2020(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
-  if (r.ano !== 2020 || !r.programa.toLowerCase().includes('5034')) return false;
+/** Check if a 5034 record is a non-racial MDHC action. MIR/SEPPIR records are NEVER excluded. */
+function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
+  if (!r.programa.toLowerCase().includes('5034')) return false;
   // MIR/SEPPIR programs are always included
   if (r.orgao === 'MIR' || r.orgao === 'SEPPIR') return false;
   // MDHC: exclude unless racial keywords present
@@ -332,8 +332,8 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
-      // Exclude SESAI + 2020 Program 5034 distortion from all comparative calculations
-      const registrosLimpos = registros.filter(r => !isSesaiRecord(r) && !is5034Distortion2020(r));
+      // Exclude SESAI + non-racial 5034 MDHC actions from comparative calculations
+      const registrosLimpos = registros.filter(r => !isSesaiRecord(r) && !is5034Distortion(r));
       
       // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
@@ -367,8 +367,8 @@ export function useOrcamentoStats() {
       const sesaiRegistros = registros.filter(r => isSesaiRecord(r));
       const sesaiTotal = sesaiRegistros.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
-      // 5034-2020 stats (informativo)
-      const distorcao5034 = registros.filter(r => is5034Distortion2020(r));
+      // 5034 non-racial MDHC stats (informativo)
+      const distorcao5034 = registros.filter(r => is5034Distortion(r));
       const distorcao5034Total = distorcao5034.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
       return {
