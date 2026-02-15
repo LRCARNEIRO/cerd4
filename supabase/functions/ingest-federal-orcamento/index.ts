@@ -174,6 +174,53 @@ function isRelevant(item: any): boolean {
   return KEYWORDS_RELEVANCIA.some(kw => text.includes(kw));
 }
 
+function resolveDescritivo(item: any): string | null {
+  const nomeAcao = item.acao || item.nomeAcao || "";
+  const nomeProg = item.programa || item.nomePrograma || "";
+  // Prefer action name as it's more specific
+  return nomeAcao || nomeProg || null;
+}
+
+function resolvePublicoAlvo(grupoFocal: string | null, item: any): string | null {
+  const text = [item.programa, item.nomePrograma, item.acao, item.nomeAcao].filter(Boolean).join(" ").toLowerCase();
+  if (grupoFocal === "saude_indigena") return "Povos indígenas (saúde)";
+  if (grupoFocal === "indigenas") return "Povos indígenas";
+  if (grupoFocal === "quilombolas") return "Comunidades quilombolas";
+  if (grupoFocal === "ciganos") return "Povos ciganos/romani";
+  if (grupoFocal === "juventude_negra") return "Juventude negra";
+  if (grupoFocal === "negros") return "População negra";
+  if (text.includes("criança") || text.includes("adolescente")) return "Crianças e adolescentes";
+  if (text.includes("mulher")) return "Mulheres";
+  return "População em situação de vulnerabilidade racial/étnica";
+}
+
+function resolveRazaoSelecao(item: any, camada: string, orgao: string): string {
+  const codProg = item.codigoPrograma || "";
+  const codAcao = item.codigoAcao || "";
+  const subfuncao = item.codigoSubfuncao || item.subfuncao || "";
+  const parts: string[] = [];
+
+  // Identify the layer
+  if (camada.includes("Programa Temático")) {
+    const prog = PROGRAMAS_TEMATICOS.find(p => p.codigo === codProg);
+    parts.push(`Camada PPA: Programa ${codProg}${prog ? ` (${prog.nome})` : ""}`);
+  } else if (camada.includes("Subfunção")) {
+    parts.push(`Subfunção 422 (Direitos Individuais, Coletivos e Difusos)`);
+  } else if (camada.includes("Órgão")) {
+    parts.push(`Órgão com mandato direto: ${orgao}`);
+  }
+
+  // Keywords that matched
+  const text = [item.programa, item.nomePrograma, item.acao, item.nomeAcao].filter(Boolean).join(" ").toLowerCase();
+  const matched = KEYWORDS_RELEVANCIA.filter(kw => text.includes(kw));
+  if (matched.length > 0) parts.push(`Palavras-chave: ${matched.slice(0, 3).join(", ")}`);
+
+  // Action-specific mapping
+  if (codAcao && ACAO_ORGAO_MAP[codAcao]) parts.push(`Ação finalística ${codAcao} → ${ACAO_ORGAO_MAP[codAcao]}`);
+
+  return parts.join(" | ") || `Camada: ${camada}`;
+}
+
 function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: string) {
   const codProg = item.codigoPrograma || "";
   const nomeProg = item.programa || item.nomePrograma || "";
@@ -215,6 +262,9 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
     observacoes: grupoFocal === "saude_indigena" ? `Camada: ${camada} | SEGREGADO: Saúde Indígena (não computar no total racial)` : `Camada: ${camada}`,
     eixo_tematico: eixoTematico,
     grupo_focal: grupoFocal,
+    descritivo: resolveDescritivo(item),
+    publico_alvo: resolvePublicoAlvo(grupoFocal, item),
+    razao_selecao: resolveRazaoSelecao(item, camada, orgao),
   };
 }
 

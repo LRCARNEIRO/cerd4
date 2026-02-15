@@ -82,6 +82,7 @@ export type Database = {
         Row: {
           ano: number
           created_at: string
+          descritivo: string | null
           dotacao_autorizada: number | null
           dotacao_inicial: number | null
           eixo_tematico: string | null
@@ -96,12 +97,15 @@ export type Database = {
           pago: number | null
           percentual_execucao: number | null
           programa: string
+          publico_alvo: string | null
+          razao_selecao: string | null
           updated_at: string
           url_fonte: string | null
         }
         Insert: {
           ano: number
           created_at?: string
+          descritivo?: string | null
           dotacao_autorizada?: number | null
           dotacao_inicial?: number | null
           eixo_tematico?: string | null
@@ -116,12 +120,15 @@ export type Database = {
           pago?: number | null
           percentual_execucao?: number | null
           programa: string
+          publico_alvo?: string | null
+          razao_selecao?: string | null
           updated_at?: string
           url_fonte?: string | null
         }
         Update: {
           ano?: number
           created_at?: string
+          descritivo?: string | null
           dotacao_autorizada?: number | null
           dotacao_inicial?: number | null
           eixo_tematico?: string | null
@@ -136,6 +143,8 @@ export type Database = {
           pago?: number | null
           percentual_execucao?: number | null
           programa?: string
+          publico_alvo?: string | null
+          razao_selecao?: string | null
           updated_at?: string
           url_fonte?: string | null
         }

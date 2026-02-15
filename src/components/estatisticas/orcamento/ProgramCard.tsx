@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users, EyeOff } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users, EyeOff, Target, Info } from 'lucide-react';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 interface ProgramCardProps {
@@ -36,6 +36,9 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const code = extractCode(programa);
   const name = extractName(programa);
   const orgao = registros[0]?.orgao;
+  const descritivo = registros[0]?.descritivo;
+  const publicoAlvo = registros[0]?.publico_alvo;
+  const razaoSelecao = registros[0]?.razao_selecao;
 
   // Deduplicate by year: keep the record with most data per year
   const byYear = new Map<number, DadoOrcamentario>();
@@ -100,6 +103,38 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
 
       {expanded && (
         <CardContent className="pt-0 border-t">
+          {/* Metadados descritivos */}
+          {(descritivo || publicoAlvo || razaoSelecao) && (
+            <div className="mt-3 mb-4 space-y-2 bg-muted/40 rounded-md p-3 text-xs">
+              {descritivo && (
+                <div className="flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold text-foreground">Descritivo: </span>
+                    <span className="text-muted-foreground">{descritivo}</span>
+                  </div>
+                </div>
+              )}
+              {publicoAlvo && (
+                <div className="flex items-start gap-2">
+                  <Target className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold text-foreground">Público-alvo: </span>
+                    <span className="text-muted-foreground">{publicoAlvo}</span>
+                  </div>
+                </div>
+              )}
+              {razaoSelecao && (
+                <div className="flex items-start gap-2">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 mt-0.5 flex-shrink-0 border-primary/50 text-primary">
+                    Critério
+                  </Badge>
+                  <span className="text-muted-foreground">{razaoSelecao}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Evolução ano a ano */}
           <div className="overflow-x-auto mt-4">
             <Table>
