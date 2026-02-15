@@ -1065,7 +1065,7 @@ export default function Orcamento() {
                       <div className="flex flex-wrap gap-1.5">
                         {[
                           "racial", "racismo", "igualdade racial", "igualdade étnica",
-                          "quilombol", "indígen", "indigena", "cigan", "romani",
+                          "quilombola", "indígena", "cigano", "romani",
                           "terreiro", "matriz africana", "afro",
                           "direitos humanos", "cidadania", "promoção da igualdade",
                           "capoeira", "cultura negra", "negro", "candomblé", "umbanda",
