@@ -238,6 +238,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
+  const [showExcluded, setShowExcluded] = useState(true);
 
   const toggleFilter = (setter: React.Dispatch<React.SetStateAction<Record<ThematicFilter, boolean>>>) => (key: ThematicFilter) => {
     setter(prev => ({ ...prev, [key]: !prev[key] }));
@@ -288,11 +289,19 @@ export default function Orcamento() {
   }, [dadosOrcamentarios]);
 
   // Apply filters to get visible records per esfera
-  const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>) => {
+  const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>, includeExcluded = true) => {
     const data = classified[esfera];
     const result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
       if (filters[key]) result.push(...data.byTheme[key]);
+    }
+    // For federal, add SESAI/excluded records from all if toggled on
+    if (esfera === 'federal' && includeExcluded) {
+      const sesaiInFederal = data.all.filter(r => {
+        const theme = classifyThematic(r);
+        return theme === 'sesai';
+      });
+      result.push(...sesaiInFederal);
     }
     return result;
   };
@@ -307,7 +316,7 @@ export default function Orcamento() {
     };
   };
 
-  const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters), [classified, federalFilters]);
+  const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters, showExcluded), [classified, federalFilters, showExcluded]);
   const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
   const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
 
@@ -435,11 +444,6 @@ export default function Orcamento() {
             Municipal
             {classified.municipal.all.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.municipal.all.length}</Badge>}
           </TabsTrigger>
-          <TabsTrigger value="sesai">
-            <TreePine className="w-4 h-4 mr-1" />
-            SESAI (Saúde Indígena)
-            {classified.sesai.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.sesai.length}</Badge>}
-          </TabsTrigger>
           <TabsTrigger value="visao-geral">
             <Database className="w-4 h-4 mr-1" />
             Visão Geral
@@ -461,11 +465,20 @@ export default function Orcamento() {
         {/* FEDERAL */}
         <TabsContent value="federal">
           <ThematicFilterBar filters={federalFilters} counts={getThemeCounts('federal')} onToggle={toggleFilter(setFederalFilters)} />
-          <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground">
-            <EyeOff className="w-4 h-4 flex-shrink-0" />
-            <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência, mas <strong>não entram</strong> nos totais, gráficos ou variação percentual.</span>
+          <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
+            <div className="flex items-center gap-2">
+              <EyeOff className="w-4 h-4 flex-shrink-0" />
+              <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência, mas <strong>não entram</strong> nos totais, gráficos ou variação percentual.</span>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium shrink-0">
+              <Checkbox
+                checked={showExcluded}
+                onCheckedChange={(checked) => setShowExcluded(!!checked)}
+              />
+              Exibir excluídos
+            </label>
           </div>
-          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions />
+          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions={showExcluded} />
         </TabsContent>
 
         {/* ESTADUAL */}
@@ -478,26 +491,6 @@ export default function Orcamento() {
         <TabsContent value="municipal">
           <ThematicFilterBar filters={municipalFilters} counts={getThemeCounts('municipal')} onToggle={toggleFilter(setMunicipalFilters)} />
           <EsferaContent records={municipalRecords} isLoading={isLoading} emptyMessage="Dados municipais ainda não coletados. Utilize portais de transparência municipais." useOrgaoSection={false} />
-        </TabsContent>
-
-        {/* SESAI */}
-        <TabsContent value="sesai">
-          <Card className="mb-4 border-l-4 border-l-chart-2">
-            <CardContent className="pt-4 pb-3">
-              <div className="flex items-start gap-2">
-                <Info className="w-5 h-5 text-chart-2 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-sm">Dados Informativos — Segregados do Total de Política Racial</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Os gastos da SESAI (Saúde Indígena — Ações 20YP e 7684) são mantidos nesta aba apenas para fins informativos.
-                    Estes valores são <strong>excluídos</strong> dos cards de resumo, dos gráficos comparativos e de todos os cálculos de variação
-                    para não mascarar o desmonte histórico da política racial observado no período 2018-2022.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <EsferaContent records={classified.sesai} isLoading={isLoading} emptyMessage="Nenhum dado SESAI (Saúde Indígena) encontrado na base." useOrgaoSection />
         </TabsContent>
 
         {/* VISÃO GERAL - Charts */}
