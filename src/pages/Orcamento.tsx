@@ -18,6 +18,7 @@ import { SiopCsvUpload } from '@/components/dashboard/SiopCsvUpload';
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { SiopSparqlPanel } from '@/components/dashboard/SiopSparqlPanel';
 import { ManualGapFiller } from '@/components/dashboard/ManualGapFiller';
+import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 // Estrutura de fontes para referência
@@ -382,6 +383,7 @@ export default function Orcamento() {
               <ManualGapFiller />
               <SiopCsvUpload />
               <FederalIngestionPanel />
+              <EstadualIngestionPanel />
               <SiopSparqlPanel />
             </div>
           </div>
