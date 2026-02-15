@@ -14,62 +14,24 @@ const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
  * ================================================================
  * 
  * FONTE: API SICONFI (Tesouro Nacional) — RREO e DCA municipais
- * COBERTURA: TODAS as 27 capitais brasileiras (26 estados + DF)
+ * COBERTURA: TODOS os 5.570 municípios brasileiros (por UF)
  * 
- * ESTRATÉGIA DE FILTRO:
- *   1. Função 14 (Direitos da Cidadania)
- *   2. Subfunção 422 (Direitos Individuais, Coletivos e Difusos)
- *   3. Subfunção 423 (Assistência aos Indígenas)
- *   4. Palavras-chave raciais/étnicas na descrição da conta
+ * ESTRATÉGIA:
+ *   1. Recebe uma lista de UFs (ex: ["BA","SP","RJ"])
+ *   2. Para cada UF, busca todos os municípios via endpoint /entes
+ *   3. Para cada município, consulta RREO (Anexo 02) e fallback DCA
+ *   4. Filtra por Função 14, Subfunções 422/423 e palavras-chave
  * 
- * CAMPOS COLETADOS (mesmos do Federal/Estadual):
+ * CAMPOS COLETADOS (paridade com Federal/Estadual):
  *   programa, orgao, descritivo, publico_alvo, razao_selecao,
  *   dotacao_inicial, dotacao_autorizada, empenhado, liquidado, pago,
  *   percentual_execucao, fonte_dados, url_fonte
  * ================================================================
  */
 
-/**
- * TODAS as 27 capitais brasileiras.
- * Código IBGE (id_ente) — fonte: https://www.ibge.gov.br/explica/codigos-dos-municipios.php
- */
-const MUNICIPIOS = [
-  // NORTE
-  { ibge: 1100205, nome: "Porto Velho", uf: "RO", orgao: "SMDH" },
-  { ibge: 1200401, nome: "Rio Branco", uf: "AC", orgao: "SMDH" },
-  { ibge: 1302603, nome: "Manaus", uf: "AM", orgao: "SEMDIH" },
-  { ibge: 1400100, nome: "Boa Vista", uf: "RR", orgao: "SMDH" },
-  { ibge: 1501402, nome: "Belém", uf: "PA", orgao: "CONEN" },
-  { ibge: 1600303, nome: "Macapá", uf: "AP", orgao: "SMDH" },
-  { ibge: 1721000, nome: "Palmas", uf: "TO", orgao: "SMDH" },
-
-  // NORDESTE
-  { ibge: 2111300, nome: "São Luís", uf: "MA", orgao: "SEIR" },
-  { ibge: 2211001, nome: "Teresina", uf: "PI", orgao: "SEMCASPI" },
-  { ibge: 2304400, nome: "Fortaleza", uf: "CE", orgao: "Coord. Igualdade Racial" },
-  { ibge: 2408102, nome: "Natal", uf: "RN", orgao: "SEMJIDH" },
-  { ibge: 2507507, nome: "João Pessoa", uf: "PB", orgao: "Coord. Igualdade Racial" },
-  { ibge: 2611606, nome: "Recife", uf: "PE", orgao: "Ger. Igualdade Racial" },
-  { ibge: 2704302, nome: "Maceió", uf: "AL", orgao: "SMDH" },
-  { ibge: 2800308, nome: "Aracaju", uf: "SE", orgao: "SMDH" },
-  { ibge: 2927408, nome: "Salvador", uf: "BA", orgao: "SEMUR" },
-
-  // CENTRO-OESTE
-  { ibge: 5002704, nome: "Campo Grande", uf: "MS", orgao: "SMDH" },
-  { ibge: 5103403, nome: "Cuiabá", uf: "MT", orgao: "SMDH" },
-  { ibge: 5208707, nome: "Goiânia", uf: "GO", orgao: "SMDH" },
-  { ibge: 5300108, nome: "Brasília", uf: "DF", orgao: "Sec. Justiça e Cidadania" },
-
-  // SUDESTE
-  { ibge: 3106200, nome: "Belo Horizonte", uf: "MG", orgao: "SMADC" },
-  { ibge: 3205309, nome: "Vitória", uf: "ES", orgao: "SMDH" },
-  { ibge: 3304557, nome: "Rio de Janeiro", uf: "RJ", orgao: "SMDHC" },
-  { ibge: 3550308, nome: "São Paulo", uf: "SP", orgao: "SMDHC" },
-
-  // SUL
-  { ibge: 4106902, nome: "Curitiba", uf: "PR", orgao: "FCC/SMDH" },
-  { ibge: 4205407, nome: "Florianópolis", uf: "SC", orgao: "SMDH" },
-  { ibge: 4314902, nome: "Porto Alegre", uf: "RS", orgao: "SMDH" },
+const UFS_TODAS = [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
+  "MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ];
 
 const KEYWORDS = [
@@ -117,52 +79,78 @@ function parseBRL(val: any): number | null {
   return isNaN(num) || num === 0 ? null : num;
 }
 
-async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
-  const url = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
-  console.log(`  RREO: ${url}`);
+// ── Fetch municipality list from SICONFI entes endpoint ──
 
+interface Ente {
+  cod_ibge: number;
+  ente: string;
+  uf: string;
+  esfera: string;
+}
+
+async function fetchMunicipiosByUF(uf: string): Promise<Ente[]> {
+  const url = `${SICONFI_BASE}/entes?esfera=M&uf=${uf}`;
+  console.log(`  Buscando municípios de ${uf}: ${url}`);
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });
     if (!res.ok) {
-      console.log(`  RREO período 6 falhou (${res.status}), tentando período 5...`);
+      console.error(`  Entes ${uf} falhou: ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    const items = data?.items || data || [];
+    console.log(`  ${uf}: ${items.length} municípios encontrados`);
+    return items.map((item: any) => ({
+      cod_ibge: item.cod_ibge,
+      ente: item.ente || item.nome || `Município ${item.cod_ibge}`,
+      uf: uf,
+      esfera: "M",
+    }));
+  } catch (e) {
+    console.error(`  Erro fetch entes ${uf}:`, e);
+    return [];
+  }
+}
+
+// ── Fetch RREO/DCA data ──
+
+async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
+  const url = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) {
+      // Try period 5
       const url5 = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
       const res5 = await fetch(url5, { headers: { Accept: "application/json" } });
-      if (!res5.ok) {
-        console.error(`  RREO falhou para ambos períodos: ${res5.status}`);
-        return [];
-      }
+      if (!res5.ok) return [];
       const data5 = await res5.json();
       return data5?.items || data5 || [];
     }
     const data = await res.json();
     return data?.items || data || [];
-  } catch (e) {
-    console.error(`  Erro fetch RREO:`, e);
+  } catch {
     return [];
   }
 }
 
 async function fetchDCA(ibge: number, ano: number): Promise<any[]> {
   const url = `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-D&id_ente=${ibge}`;
-  console.log(`  DCA: ${url}`);
-
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) {
-      console.error(`  DCA falhou: ${res.status}`);
-      return [];
-    }
+    if (!res.ok) return [];
     const data = await res.json();
     return data?.items || data || [];
-  } catch (e) {
-    console.error(`  Erro fetch DCA:`, e);
+  } catch {
     return [];
   }
 }
 
+// ── Process and filter data ──
+
 function processData(
   items: any[],
-  municipio: typeof MUNICIPIOS[0],
+  municipioNome: string,
+  municipioUF: string,
   ano: number,
   source: "RREO" | "DCA"
 ): any[] {
@@ -181,7 +169,7 @@ function processData(
     const isIntra = codConta.toLowerCase().includes("intra");
     const suffix = isIntra ? " (Intra-Orçamentária)" : "";
     const programaName = `${conta}${suffix}`;
-    const key = `${municipio.nome}|${conta}${suffix}|${ano}`;
+    const key = `${municipioNome}|${conta}${suffix}|${ano}`;
 
     if (!seen.has(key)) {
       seen.add(key);
@@ -195,15 +183,15 @@ function processData(
 
       const razaoParts: string[] = [];
       const matchedConta = CONTA_ALVO.find(a => contaLower.includes(a));
-      if (matchedConta) razaoParts.push(`Conta RREO/DCA: "${matchedConta}"`);
+      if (matchedConta) razaoParts.push(`Conta ${source}: "${matchedConta}"`);
       const kwMatched = KEYWORDS.filter(kw => contaLower.includes(kw));
       if (kwMatched.length > 0) razaoParts.push(`Palavras-chave: ${kwMatched.slice(0, 3).join(", ")}`);
       razaoParts.push(`Subfunção/Função alvo no SICONFI municipal`);
 
       registros.push({
         _key: key,
-        programa: `${municipio.nome}/${municipio.uf} – ${programaName}`.substring(0, 250),
-        orgao: municipio.orgao,
+        programa: `${municipioNome}/${municipioUF} – ${programaName}`.substring(0, 250),
+        orgao: `Prefeitura de ${municipioNome}/${municipioUF}`,
         esfera: "municipal",
         ano,
         dotacao_inicial: null as number | null,
@@ -212,9 +200,9 @@ function processData(
         liquidado: null as number | null,
         pago: null as number | null,
         percentual_execucao: null as number | null,
-        fonte_dados: `SICONFI ${source} – ${municipio.nome}/${municipio.uf}`,
+        fonte_dados: `SICONFI ${source} – ${municipioNome}/${municipioUF}`,
         url_fonte: `https://siconfi.tesouro.gov.br/siconfi/pages/defcon/consultar_rreo.jsf`,
-        observacoes: `${municipio.nome}/${municipio.uf} – ${conta}`,
+        observacoes: `${municipioNome}/${municipioUF} – ${conta}`,
         eixo_tematico: null,
         grupo_focal: null,
         descritivo: conta,
@@ -250,6 +238,8 @@ function processData(
     });
 }
 
+// ── Main handler ──
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -257,10 +247,13 @@ Deno.serve(async (req) => {
 
   try {
     let anos: number[] = [2022, 2023, 2024];
+    let ufs: string[] | undefined;
     let municipios_ibge: number[] | undefined;
+
     try {
       const body = await req.json();
       if (body.anos) anos = body.anos;
+      if (body.ufs) ufs = body.ufs;
       if (body.municipios) municipios_ibge = body.municipios;
     } catch { /* defaults */ }
 
@@ -269,54 +262,90 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const municipiosAlvo = municipios_ibge
-      ? MUNICIPIOS.filter(m => municipios_ibge!.includes(m.ibge))
-      : MUNICIPIOS;
-
     const erros: string[] = [];
     let totalInserted = 0;
     const allRegistros: any[] = [];
+    const startTime = Date.now();
+    const MAX_RUNTIME_MS = 270_000; // 4.5 minutes safety margin
 
-    console.log(`=== Ingestão Municipal SICONFI — ${municipiosAlvo.length} capitais ===`);
-    console.log(`Municípios: ${municipiosAlvo.map(m => m.nome).join(", ")}`);
+    // ── Build municipality list ──
+    interface MunicipioInfo { ibge: number; nome: string; uf: string; }
+    const municipiosList: MunicipioInfo[] = [];
+
+    if (municipios_ibge && municipios_ibge.length > 0) {
+      // Specific IBGE codes provided (legacy mode / capitals)
+      for (const ibge of municipios_ibge) {
+        municipiosList.push({ ibge, nome: `Município ${ibge}`, uf: "??" });
+      }
+    } else {
+      // Fetch all municipalities for the requested UFs
+      const targetUFs = ufs || UFS_TODAS;
+      console.log(`=== Buscando municípios para ${targetUFs.length} UFs ===`);
+
+      for (const uf of targetUFs) {
+        const entes = await fetchMunicipiosByUF(uf);
+        for (const ente of entes) {
+          municipiosList.push({
+            ibge: ente.cod_ibge,
+            nome: ente.ente,
+            uf: uf,
+          });
+        }
+        // Rate limit entes queries
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+
+    console.log(`=== Ingestão Municipal SICONFI — ${municipiosList.length} municípios ===`);
     console.log(`Anos: ${anos.join(", ")}`);
 
-    for (const municipio of municipiosAlvo) {
-      for (const ano of anos) {
-        console.log(`\n--- ${municipio.nome}/${municipio.uf} (${municipio.ibge}) ${ano} ---`);
+    let processedCount = 0;
+    let skippedByTimeout = 0;
 
+    for (const municipio of municipiosList) {
+      // Check timeout
+      if (Date.now() - startTime > MAX_RUNTIME_MS) {
+        skippedByTimeout = municipiosList.length - processedCount;
+        console.log(`⚠️ Timeout approaching — ${skippedByTimeout} municípios restantes`);
+        break;
+      }
+
+      for (const ano of anos) {
         try {
           let items = await fetchRREO(municipio.ibge, ano);
           let source: "RREO" | "DCA" = "RREO";
 
           if (!items || items.length === 0) {
-            console.log(`  RREO vazio, tentando DCA...`);
             items = await fetchDCA(municipio.ibge, ano);
             source = "DCA";
           }
 
-          console.log(`  ${source}: ${items.length} itens brutos`);
-
           if (items.length > 0) {
-            console.log(`  SAMPLE: ${JSON.stringify(items[0]).substring(0, 300)}`);
+            const registros = processData(items, municipio.nome, municipio.uf, ano, source);
+            if (registros.length > 0) {
+              console.log(`  ✓ ${municipio.nome}/${municipio.uf} ${ano}: ${registros.length} registros`);
+              allRegistros.push(...registros);
+            }
           }
-
-          const registros = processData(items, municipio, ano, source);
-          console.log(`  → ${registros.length} registros relevantes`);
-
-          allRegistros.push(...registros);
         } catch (error) {
           const msg = `${municipio.nome} ${ano}: ${error instanceof Error ? error.message : "Unknown"}`;
           erros.push(msg);
-          console.error(msg);
         }
 
         // Rate limiting — be polite with SICONFI
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 400));
+      }
+
+      processedCount++;
+
+      // Log progress every 50 municipalities
+      if (processedCount % 50 === 0) {
+        const elapsed = Math.round((Date.now() - startTime) / 1000);
+        console.log(`  [${processedCount}/${municipiosList.length}] ${elapsed}s elapsed, ${allRegistros.length} registros`);
       }
     }
 
-    // Deduplicate
+    // ── Deduplicate ──
     const deduped = new Map<string, any>();
     for (const r of allRegistros) {
       const key = `${r.orgao}|${r.programa}|${r.ano}`;
@@ -327,7 +356,7 @@ Deno.serve(async (req) => {
     }
     console.log(`\nDeduplicação: ${allRegistros.length} → ${deduped.size} registros`);
 
-    // Batch insert
+    // ── Batch insert ──
     const batch = Array.from(deduped.values());
     const BATCH_SIZE = 50;
     for (let i = 0; i < batch.length; i += BATCH_SIZE) {
@@ -341,7 +370,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log(`\n=== Concluído: ${totalInserted} inseridos, ${erros.length} erros ===`);
+    const elapsedTotal = Math.round((Date.now() - startTime) / 1000);
+    console.log(`\n=== Concluído em ${elapsedTotal}s: ${totalInserted} inseridos, ${erros.length} erros ===`);
 
     return new Response(
       JSON.stringify({
@@ -349,9 +379,11 @@ Deno.serve(async (req) => {
         total_inseridos: totalInserted,
         total_brutos: allRegistros.length,
         deduplicados: deduped.size,
-        municipios: municipiosAlvo.map(m => `${m.nome}/${m.uf}`),
-        total_capitais: municipiosAlvo.length,
+        municipios_processados: processedCount,
+        municipios_total: municipiosList.length,
+        municipios_restantes: skippedByTimeout,
         anos,
+        tempo_segundos: elapsedTotal,
         erros: erros.slice(0, 20),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
