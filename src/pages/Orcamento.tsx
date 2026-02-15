@@ -16,6 +16,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
+import { MunicipalIngestionPanel } from '@/components/dashboard/MunicipalIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 // Estrutura de fontes para referência
@@ -483,6 +484,7 @@ export default function Orcamento() {
             <div className="flex gap-2 flex-wrap">
               <FederalIngestionPanel />
               <EstadualIngestionPanel />
+              <MunicipalIngestionPanel />
             </div>
           </div>
         </CardContent>
