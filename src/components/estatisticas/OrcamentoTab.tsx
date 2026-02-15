@@ -138,7 +138,7 @@ export function OrcamentoTab() {
       // MIR programs are ALWAYS included (no filtering)
       if (item.ano === 2020 && item.programa.toLowerCase().includes('5034') && item.orgao !== 'MIR' && item.orgao !== 'SEPPIR') {
         const texto = [item.programa, item.descritivo, item.publico_alvo, item.observacoes].filter(Boolean).join(' ').toLowerCase();
-        const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+        const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombo', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
         if (!hasRacialKw) continue; // skip non-racial MDHC actions
       }
 
