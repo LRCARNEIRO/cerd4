@@ -240,6 +240,9 @@ export interface DadoOrcamentario {
   fonte_dados: string;
   url_fonte: string | null;
   observacoes: string | null;
+  descritivo: string | null;
+  publico_alvo: string | null;
+  razao_selecao: string | null;
   created_at: string;
   updated_at: string;
 }
