@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.import-gap-data]
 verify_jwt = false
+
+[functions.ingest-estadual-siconfi]
+verify_jwt = false
