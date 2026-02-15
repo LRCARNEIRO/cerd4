@@ -16,9 +16,17 @@ function classifyRecord(r: DadoOrcamentario): string[] {
   const cats: string[] = [];
   const prog = r.programa.toLowerCase();
   const orgao = r.orgao.toUpperCase();
+  const obs = (r.observacoes || '').toLowerCase();
 
-  // Indígena
-  if (['FUNAI', 'SESAI', 'MPI'].includes(orgao) ||
+  // SESAI — segregated from indigenous total
+  if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
+      prog.includes('20yp') || prog.includes('7684')) {
+    cats.push('sesai');
+    return cats; // SESAI is always separate
+  }
+
+  // Indígena (excluding SESAI)
+  if (['FUNAI', 'MPI'].includes(orgao) ||
       prog.includes('indigen') || prog.includes('indígen') ||
       prog.includes('2065')) {
     cats.push('indigena');
@@ -58,8 +66,16 @@ function countPrograms(grouped: Map<string, Map<string, DadoOrcamentario[]>>): n
   return count;
 }
 
+function sumField(records: DadoOrcamentario[], field: 'pago' | 'dotacao_autorizada' | 'empenhado'): number {
+  return records.reduce((acc, r) => acc + ((r as any)[field] || 0), 0);
+}
+
 function sumPago(records: DadoOrcamentario[]): number {
-  return records.reduce((acc, r) => acc + (r.pago || 0), 0);
+  return sumField(records, 'pago');
+}
+
+function sumDotacao(records: DadoOrcamentario[]): number {
+  return sumField(records, 'dotacao_autorizada');
 }
 
 const formatCompact = (value: number) => {
@@ -95,12 +111,13 @@ export function OrcamentoTab() {
       indigena: [] as DadoOrcamentario[],
       quilombola: [] as DadoOrcamentario[],
       ciganos: [] as DadoOrcamentario[],
+      sesai: [] as DadoOrcamentario[],
       estadual: [] as DadoOrcamentario[],
       municipal: [] as DadoOrcamentario[],
     };
 
     const buckets: Record<string, DadoOrcamentario[]> = {
-      federal: [], indigena: [], quilombola: [], ciganos: [], estadual: [], municipal: [],
+      federal: [], indigena: [], quilombola: [], ciganos: [], sesai: [], estadual: [], municipal: [],
     };
 
     for (const item of dadosOrcamentarios) {
@@ -108,10 +125,17 @@ export function OrcamentoTab() {
       if (item.esfera === 'estadual') { buckets.estadual.push(item); continue; }
       if (item.esfera === 'municipal') { buckets.municipal.push(item); continue; }
 
-      // Federal: all go to federal tab + thematic tabs
+      const cats = classifyRecord(item);
+
+      // SESAI goes only to sesai bucket, NOT to federal total
+      if (cats.includes('sesai')) {
+        buckets.sesai.push(item);
+        continue;
+      }
+
+      // Federal: all non-SESAI go to federal tab + thematic tabs
       buckets.federal.push(item);
 
-      const cats = classifyRecord(item);
       for (const cat of cats) {
         if (cat !== 'federal_geral' && buckets[cat]) {
           buckets[cat].push(item);
@@ -145,20 +169,36 @@ export function OrcamentoTab() {
 
   return (
     <div className="space-y-6">
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Summary cards — nuanced with dotação vs pago */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: 'Total Federal', value: formatCompact(sumPago(categorized.federal)), count: categorized.federal.length, color: 'border-l-primary' },
-          { label: 'Povos Indígenas', value: formatCompact(sumPago(categorized.indigena)), count: categorized.indigena.length, color: 'border-l-chart-2' },
-          { label: 'Quilombolas', value: formatCompact(sumPago(categorized.quilombola)), count: categorized.quilombola.length, color: 'border-l-chart-3' },
-          { label: 'Variação 2018-22 vs 23-26', value: `${stats && stats.variacao > 0 ? '+' : ''}${stats?.variacao.toFixed(1)}%`, count: null, color: stats && stats.variacao > 0 ? 'border-l-success' : 'border-l-destructive' },
+          { label: 'Política Racial (Federal)', sub: 'Exclui SESAI', dotacao: sumDotacao(categorized.federal), pago: sumPago(categorized.federal), count: categorized.federal.length, color: 'border-l-primary' },
+          { label: 'Povos Indígenas', sub: 'FUNAI / MPI', dotacao: sumDotacao(categorized.indigena), pago: sumPago(categorized.indigena), count: categorized.indigena.length, color: 'border-l-chart-2' },
+          { label: 'Quilombolas', sub: 'INCRA / Ações 20G7', dotacao: sumDotacao(categorized.quilombola), pago: sumPago(categorized.quilombola), count: categorized.quilombola.length, color: 'border-l-chart-3' },
+          { label: 'Ciganos', sub: 'Povo Cigano / Romani', dotacao: sumDotacao(categorized.ciganos), pago: sumPago(categorized.ciganos), count: categorized.ciganos.length, color: 'border-l-chart-4' },
+          { label: 'SESAI', sub: 'Saúde Indígena (informativo)', dotacao: sumDotacao(categorized.sesai), pago: sumPago(categorized.sesai), count: categorized.sesai.length, color: 'border-l-muted-foreground', muted: true },
+          { label: 'Variação 2018-22 vs 23-26', sub: 'Dotação comparada', dotacao: null, pago: null, count: null, variacao: stats?.variacao, color: stats && stats.variacao > 0 ? 'border-l-success' : 'border-l-destructive' },
         ].map((card, i) => (
-          <Card key={i} className={`border-l-4 ${card.color}`}>
-            <CardContent className="pt-4">
-              <p className="text-xs text-muted-foreground">{card.label}</p>
-              <p className="text-xl font-bold">{card.value}</p>
-              {card.count !== null && (
-                <p className="text-xs text-muted-foreground">{card.count} registros</p>
+          <Card key={i} className={`border-l-4 ${card.color} ${card.muted ? 'opacity-75' : ''}`}>
+            <CardContent className="pt-3 pb-3 px-4">
+              <p className="text-[11px] font-medium text-foreground leading-tight">{card.label}</p>
+              <p className="text-[10px] text-muted-foreground">{card.sub}</p>
+              {card.variacao !== undefined ? (
+                <>
+                  <p className="text-lg font-bold mt-1">{card.variacao && card.variacao > 0 ? '+' : ''}{card.variacao?.toFixed(1)}%</p>
+                </>
+              ) : (
+                <div className="mt-1.5 space-y-0.5">
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[10px] text-muted-foreground">Dotação</span>
+                    <span className="text-xs font-semibold">{formatCompact(card.dotacao || 0)}</span>
+                  </div>
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[10px] text-muted-foreground">Pago</span>
+                    <span className="text-xs font-bold text-primary">{formatCompact(card.pago || 0)}</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">{card.count} registros</p>
+                </div>
               )}
             </CardContent>
           </Card>
