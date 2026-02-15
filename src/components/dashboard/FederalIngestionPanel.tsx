@@ -55,6 +55,7 @@ export function FederalIngestionPanel() {
     setError(null);
 
     try {
+      // Etapa 1: Ingestão de execução via API
       const { data, error: fnErr } = await supabase.functions.invoke('ingest-federal-orcamento', {
         body: { anos: selectedAnos, camadas: selectedCamadas },
       });
@@ -63,7 +64,23 @@ export function FederalIngestionPanel() {
 
       if (data?.success) {
         setResult(data);
-        toast({ title: `${data.total_inseridos} registros inseridos com sucesso` });
+        toast({ title: `${data.total_inseridos} registros inseridos. Complementando dotação LOA...` });
+
+        // Etapa 2: Complementar dotação inicial via CSV/LOA (automático)
+        try {
+          const { data: dotData, error: dotErr } = await supabase.functions.invoke('ingest-dotacao-loa', {
+            body: { anos: selectedAnos },
+          });
+          if (!dotErr && dotData?.success) {
+            const totalUpdated = Object.values(dotData.resultados || {}).reduce(
+              (sum: number, r: any) => sum + (r.atualizados || 0), 0
+            );
+            toast({ title: `Dotação LOA: ${totalUpdated} registros atualizados com dotação inicial` });
+          }
+        } catch (dotE) {
+          console.warn('Dotação LOA complementar falhou:', dotE);
+        }
+
         queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
         queryClient.invalidateQueries({ queryKey: ['orcamento-stats'] });
       } else {
