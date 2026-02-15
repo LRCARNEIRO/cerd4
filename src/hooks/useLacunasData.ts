@@ -284,6 +284,15 @@ export function useDadosOrcamentarios(filters?: {
   });
 }
 
+/** Check if a record is SESAI (Saúde Indígena) — must be excluded from racial policy totals */
+function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: string | null }): boolean {
+  const orgao = r.orgao.toUpperCase();
+  const prog = r.programa.toLowerCase();
+  const obs = ((r as any).observacoes || '').toLowerCase();
+  return orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
+    prog.includes('20yp') || prog.includes('7684');
+}
+
 // Hook para estatísticas orçamentárias com dados por esfera
 export function useOrcamentoStats() {
   return useQuery({
@@ -297,7 +306,7 @@ export function useOrcamentoStats() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao')
+          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao, observacoes')
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) throw error;
@@ -309,33 +318,40 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
+      // Exclude SESAI from all comparative calculations
+      const registrosSemSesai = registros.filter(r => !isSesaiRecord(r));
+      
       // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
         Number(r.pago) || Number(r.dotacao_autorizada) || 0;
 
-      const periodo1 = registros.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const periodo2 = registros.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const periodo1 = registrosSemSesai.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const periodo2 = registrosSemSesai.filter(r => r.ano >= 2023 && r.ano <= 2026);
 
       const totalPeriodo1 = periodo1.reduce((acc, r) => acc + valorEfetivo(r), 0);
       const totalPeriodo2 = periodo2.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
       const porAno: Record<number, number> = {};
-      registros.forEach(r => {
+      registrosSemSesai.forEach(r => {
         porAno[r.ano] = (porAno[r.ano] || 0) + valorEfetivo(r);
       });
 
       const porPrograma: Record<string, number> = {};
-      registros.forEach(r => {
+      registrosSemSesai.forEach(r => {
         porPrograma[r.programa] = (porPrograma[r.programa] || 0) + valorEfetivo(r);
       });
 
       // Por esfera
       const porEsfera: Record<string, { total: number; programas: number }> = {};
-      registros.forEach(r => {
+      registrosSemSesai.forEach(r => {
         if (!porEsfera[r.esfera]) porEsfera[r.esfera] = { total: 0, programas: 0 };
         porEsfera[r.esfera].total += valorEfetivo(r);
         porEsfera[r.esfera].programas++;
       });
+
+      // SESAI stats (informativo)
+      const sesaiRegistros = registros.filter(r => isSesaiRecord(r));
+      const sesaiTotal = sesaiRegistros.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
       return {
         totalPeriodo1,
@@ -344,7 +360,9 @@ export function useOrcamentoStats() {
         porAno,
         porPrograma,
         porEsfera,
-        totalRegistros: registros.length,
+        totalRegistros: registrosSemSesai.length,
+        sesaiTotal,
+        sesaiRegistros: sesaiRegistros.length,
       };
     },
   });
