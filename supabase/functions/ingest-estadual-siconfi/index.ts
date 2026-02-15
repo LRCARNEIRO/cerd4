@@ -13,14 +13,33 @@ const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
  * Código IBGE do ente (id_ente) é o código do estado.
  */
 const ESTADOS = [
+  { ibge: 12, uf: "AC", nome: "Acre", orgao: "Gov. Estadual" },
+  { ibge: 27, uf: "AL", nome: "Alagoas", orgao: "Gov. Estadual" },
+  { ibge: 16, uf: "AP", nome: "Amapá", orgao: "Gov. Estadual" },
+  { ibge: 13, uf: "AM", nome: "Amazonas", orgao: "Gov. Estadual" },
   { ibge: 29, uf: "BA", nome: "Bahia", orgao: "SEPROMI" },
-  { ibge: 35, uf: "SP", nome: "São Paulo", orgao: "Sec. Justiça e Cidadania" },
-  { ibge: 33, uf: "RJ", nome: "Rio de Janeiro", orgao: "SEASDH" },
-  { ibge: 31, uf: "MG", nome: "Minas Gerais", orgao: "SEDHS" },
-  { ibge: 43, uf: "RS", nome: "Rio Grande do Sul", orgao: "SDH" },
-  { ibge: 26, uf: "PE", nome: "Pernambuco", orgao: "SecMulher/FUNDARPE" },
+  { ibge: 23, uf: "CE", nome: "Ceará", orgao: "Gov. Estadual" },
+  { ibge: 53, uf: "DF", nome: "Distrito Federal", orgao: "Sec. Justiça e Cidadania" },
+  { ibge: 32, uf: "ES", nome: "Espírito Santo", orgao: "Gov. Estadual" },
+  { ibge: 52, uf: "GO", nome: "Goiás", orgao: "Gov. Estadual" },
   { ibge: 21, uf: "MA", nome: "Maranhão", orgao: "SEDIHPOP" },
+  { ibge: 51, uf: "MT", nome: "Mato Grosso", orgao: "Gov. Estadual" },
+  { ibge: 50, uf: "MS", nome: "Mato Grosso do Sul", orgao: "Gov. Estadual" },
+  { ibge: 31, uf: "MG", nome: "Minas Gerais", orgao: "SEDHS" },
   { ibge: 15, uf: "PA", nome: "Pará", orgao: "SEIRDH" },
+  { ibge: 25, uf: "PB", nome: "Paraíba", orgao: "Gov. Estadual" },
+  { ibge: 41, uf: "PR", nome: "Paraná", orgao: "Gov. Estadual" },
+  { ibge: 26, uf: "PE", nome: "Pernambuco", orgao: "SecMulher/FUNDARPE" },
+  { ibge: 22, uf: "PI", nome: "Piauí", orgao: "Gov. Estadual" },
+  { ibge: 33, uf: "RJ", nome: "Rio de Janeiro", orgao: "SEASDH" },
+  { ibge: 24, uf: "RN", nome: "Rio Grande do Norte", orgao: "Gov. Estadual" },
+  { ibge: 43, uf: "RS", nome: "Rio Grande do Sul", orgao: "SDH" },
+  { ibge: 11, uf: "RO", nome: "Rondônia", orgao: "Gov. Estadual" },
+  { ibge: 14, uf: "RR", nome: "Roraima", orgao: "Gov. Estadual" },
+  { ibge: 42, uf: "SC", nome: "Santa Catarina", orgao: "Gov. Estadual" },
+  { ibge: 35, uf: "SP", nome: "São Paulo", orgao: "Sec. Justiça e Cidadania" },
+  { ibge: 28, uf: "SE", nome: "Sergipe", orgao: "Gov. Estadual" },
+  { ibge: 17, uf: "TO", nome: "Tocantins", orgao: "Gov. Estadual" },
 ];
 
 /**
