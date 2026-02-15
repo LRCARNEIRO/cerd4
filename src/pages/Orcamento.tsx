@@ -1,10 +1,14 @@
 import { useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -307,12 +311,25 @@ function EsferaSummaryCards({
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
+  const queryClient = useQueryClient();
 
   // Thematic filters per esfera
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [includeExcludedInCalc, setIncludeExcludedInCalc] = useState(false);
+
+  const handleResetEsfera = async (esfera: string, label: string) => {
+    if (!confirm(`Apagar todos os dados orçamentários da esfera "${label}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      const { error } = await supabase.from('dados_orcamentarios').delete().eq('esfera', esfera);
+      if (error) throw error;
+      toast.success(`Dados ${label} apagados com sucesso.`);
+      queryClient.invalidateQueries();
+    } catch {
+      toast.error(`Erro ao apagar dados ${label}.`);
+    }
+  };
 
   const toggleFilter = (setter: React.Dispatch<React.SetStateAction<Record<ThematicFilter, boolean>>>) => (key: ThematicFilter) => {
     setter(prev => ({ ...prev, [key]: !prev[key] }));
@@ -481,10 +498,19 @@ export default function Orcamento() {
                 não são permitidos. Cada registro deve conter o deep link direto para a fonte primária.
               </p>
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap items-center">
               <FederalIngestionPanel />
+              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('federal', 'Federal')}>
+                <Trash2 className="w-3.5 h-3.5" /> Reset Federal
+              </Button>
               <EstadualIngestionPanel />
+              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('estadual', 'Estadual')}>
+                <Trash2 className="w-3.5 h-3.5" /> Reset Estadual
+              </Button>
               <MunicipalIngestionPanel />
+              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('municipal', 'Municipal')}>
+                <Trash2 className="w-3.5 h-3.5" /> Reset Municipal
+              </Button>
             </div>
           </div>
         </CardContent>
