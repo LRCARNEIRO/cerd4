@@ -330,7 +330,7 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">2018-2022</p>
                   <p className="text-xl font-bold">{formatCurrency(stats?.totalPeriodo1 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Valor executado (Pago)</p>
+                  <p className="text-xs text-muted-foreground">Exclui SESAI e 5034/2020</p>
                 </div>
               </div>
             </CardContent>
@@ -344,7 +344,7 @@ export default function Orcamento() {
                 <div>
                   <p className="text-sm text-muted-foreground">2023-2026</p>
                   <p className="text-xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</p>
-                  <p className="text-xs text-muted-foreground">Valor executado (Pago)</p>
+                  <p className="text-xs text-muted-foreground">Exclui SESAI e 5034/2020</p>
                 </div>
               </div>
             </CardContent>
@@ -470,7 +470,7 @@ export default function Orcamento() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {evolucaoPorAno.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI e 5034/2020)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -491,7 +491,7 @@ export default function Orcamento() {
               )}
               {porPrograma.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI e 5034/2020)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -611,12 +611,19 @@ export default function Orcamento() {
         {/* RESUMO COMPARATIVO */}
         <TabsContent value="resumo">
           <div className="space-y-6">
-            <Card className="border-l-4 border-l-primary">
+            <Card className="border-l-4 border-l-warning">
               <CardContent className="pt-4 pb-3">
-                <p className="text-xs text-muted-foreground">
-                  <strong>Nota:</strong> Todos os valores e gráficos nesta seção <strong>excluem SESAI</strong> (Saúde Indígena),
-                  conforme metodologia de segregação adotada para preservar a integridade da análise de política racial.
-                </p>
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Exclusões Aplicadas aos Cálculos Comparativos</h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Todos os valores nesta seção <strong>excluem</strong>: (1) <strong>SESAI</strong> (Saúde Indígena — distorce totais por volume);
+                      (2) <strong>Programa 5034 de 2020</strong> (guarda-chuva do MDHC — incluía políticas de mulheres, idosos, etc., nem tudo racial;
+                      Dotação R$ 215 mi / Pago R$ 578 mi). Ambos são mantidos em abas dedicadas para consulta informativa.
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -626,10 +633,10 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-destructive">{formatCurrency(stats?.totalPeriodo1 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034/2020)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
-                    <li><strong>2018–2019:</strong> Base modesta de R$ 93–123 mi sob SEPPIR/MMFDH</li>
-                    <li><strong>2020:</strong> Distorção técnica — Programa 5034 guarda-chuva do MDHC (R$ 578 mi pagos incluem políticas de mulheres, idosos, etc.)</li>
+                    <li><strong>2018–2019:</strong> Base modesta de R$ 93–123 mi sob SEPPIR/MMFDH (segmentando SESAI)</li>
+                    <li><strong>2020:</strong> Programa 5034 <strong>excluído do cálculo</strong> — era guarda-chuva do MDHC (R$ 578 mi pagos incluíam políticas de mulheres, idosos, etc.)</li>
                     <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional confirmado</li>
                   </ul>
                 </CardContent>
@@ -638,7 +645,7 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034/2020)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
                     <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
                     <li><strong>2024–2025:</strong> Novos programas PPA (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial)</li>
@@ -669,7 +676,7 @@ export default function Orcamento() {
             {/* Evolução por ano */}
             {evolucaoPorAno.length > 0 && (
               <Card>
-                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Exclui SESAI)</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Exclui SESAI e Prog. 5034/2020)</CardTitle></CardHeader>
                 <CardContent>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
@@ -786,9 +793,74 @@ export default function Orcamento() {
                   <p><strong>Justificativa:</strong> O elevado orçamento de saúde indígena (que chega a bilhões) mascara as variações reais da política racial finalística, impedindo a identificação precisa do desmonte institucional de 2021-2022.</p>
                 </section>
 
-                {/* 5. Exclusões */}
+                {/* 4b. Exclusão do Programa 5034 (2020) */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">5. Exclusões Deliberadas</h4>
+                  <h4 className="font-semibold text-foreground text-base">4b. Exclusão do Programa 5034 — Ano 2020</h4>
+                  <p>O Programa 5034 ("Proteção à Vida, Fortalecimento da Família, Promoção e Defesa dos Direitos Humanos") em 2020 funcionava como <strong>guarda-chuva do MDHC</strong>, agregando:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Políticas de igualdade racial</li>
+                    <li>Políticas para mulheres, idosos, pessoas com deficiência</li>
+                    <li>Proteção social genérica</li>
+                  </ul>
+                  <p className="mt-2"><strong>Dados brutos de 2020:</strong> Dotação de R$ 215 mi, mas Pago de R$ 578 mi — valor que <strong>não é exclusivamente racial</strong>.</p>
+                  <p><strong>Decisão metodológica:</strong> O Programa 5034 de 2020 é <strong>excluído de todos os cálculos comparativos</strong> (totais, variação percentual, gráficos), assim como a SESAI. Os registros permanecem acessíveis na aba Federal para consulta individualizada.</p>
+                  <div className="bg-destructive/10 rounded-lg p-3 mt-2">
+                    <p className="text-xs text-destructive font-medium">⚠ Sem esta exclusão, o total 2018-2022 seria artificialmente inflado por R$ 578 mi de gastos multi-temáticos, mascarando o desmonte real da política racial finalística.</p>
+                  </div>
+                </section>
+
+                {/* 5. Padrão Nuançado da Série */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">5. Padrão Nuançado da Série 2018–2025</h4>
+                  <p>Após as exclusões de SESAI e Programa 5034/2020, a série revela um padrão mais nuançado:</p>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Período</TableHead>
+                        <TableHead>Dotação (R$)</TableHead>
+                        <TableHead>Contexto</TableHead>
+                        <TableHead>Interpretação</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">2018–2019</TableCell>
+                        <TableCell>R$ 93–123 mi</TableCell>
+                        <TableCell>SEPPIR/MMFDH, SESAI segregada</TableCell>
+                        <TableCell><Badge variant="outline">Política modesta</Badge></TableCell>
+                      </TableRow>
+                      <TableRow className="bg-destructive/5">
+                        <TableCell className="font-medium">2020</TableCell>
+                        <TableCell className="line-through text-muted-foreground">R$ 215 mi / R$ 578 mi pago</TableCell>
+                        <TableCell>Prog. 5034 guarda-chuva MDHC</TableCell>
+                        <TableCell><Badge variant="destructive">Excluído — distorção</Badge></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">2021–2022</TableCell>
+                        <TableCell>R$ 161–173 mi</TableCell>
+                        <TableCell>Desmonte institucional</TableCell>
+                        <TableCell><Badge variant="destructive">Queda real confirmada</Badge></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">2023</TableCell>
+                        <TableCell>R$ 457 mi</TableCell>
+                        <TableCell>Criação do MIR</TableCell>
+                        <TableCell><Badge className="bg-success text-success-foreground">Reconstrução</Badge></TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">2024–2025</TableCell>
+                        <TableCell>R$ 132–157 mi</TableCell>
+                        <TableCell>Novos programas: 5802, 5803, 5804</TableCell>
+                        <TableCell><Badge variant="outline">Focalização com execução recorde (~99%)</Badge></TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                  <p className="text-xs italic mt-2">A aparente redução de dotação em 2024-2025 reflete a transição para programas focalizados (quilombolas, juventude negra, igualdade étnico-racial), com execução orçamentária recorde que demonstra eficiência institucional superior ao período anterior.</p>
+                </section>
+
+                {/* 6. Exclusões Deliberadas */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">6. Exclusões Deliberadas</h4>
                   <ul className="list-disc pl-5 space-y-1">
                     <li><strong>Programas transversais de grande escala:</strong> Minha Casa Minha Vida, Fundo Eleitoral, Bolsa Família — inflam artificialmente os dados</li>
                     <li><strong>Programa 5113 (Educação Superior):</strong> Genérico, inclui toda a educação superior sem focalização racial suficiente (R$ 14 bi)</li>
@@ -797,9 +869,9 @@ export default function Orcamento() {
                   </ul>
                 </section>
 
-                {/* 6. Cálculo de Execução */}
+                {/* 7. Cálculo de Execução */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">6. Cálculo de Execução Orçamentária</h4>
+                  <h4 className="font-semibold text-foreground text-base">7. Cálculo de Execução Orçamentária</h4>
                   <p>O sistema mapeia cinco métricas financeiras essenciais:</p>
                   <ol className="list-decimal pl-5 space-y-1">
                     <li><strong>Dotação Inicial (PLOA/LOA)</strong> — Valor previsto na Lei Orçamentária Anual</li>
@@ -811,22 +883,22 @@ export default function Orcamento() {
                   <p className="mt-2">O percentual de execução prioriza a <strong>Dotação Autorizada</strong> como denominador, recorrendo à Dotação Inicial apenas em caso de ausência do valor atualizado.</p>
                 </section>
 
-                {/* 7. Limitações */}
+                {/* 8. Limitações */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base text-destructive">7. Limitações Conhecidas</h4>
+                  <h4 className="font-semibold text-foreground text-base text-destructive">8. Limitações Conhecidas</h4>
                   <ul className="list-disc pl-5 space-y-1.5">
                     <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida via CSV do Portal da Transparência.</li>
                     <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023.</li>
-                    <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019 nos endpoints consultados.</li>
-                    <li><strong>Programa 5034 (2020):</strong> Inflaciona o total por ser guarda-chuva multi-temático do MDHC — valores devem ser interpretados com cautela.</li>
+                    <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019 nos endpoints consultados. Segregada em aba dedicada.</li>
+                    <li><strong>Programa 5034 (2020):</strong> <strong>Excluído dos cálculos comparativos</strong> — guarda-chuva multi-temático do MDHC que inflaciona artificialmente o total 2018-2022.</li>
                     <li><strong>Esferas estadual e municipal:</strong> Dados ainda não coletados sistematicamente. Estratégia planejada via API SICONFI (Tesouro Nacional).</li>
                     <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta, não alterações reais de dotação.</li>
                   </ul>
                 </section>
 
-                {/* 8. Identificação de Órgãos */}
+                {/* 9. Identificação de Órgãos */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">8. Identificação de Órgãos Federais</h4>
+                  <h4 className="font-semibold text-foreground text-base">9. Identificação de Órgãos Federais</h4>
                   <Table>
                     <TableHeader>
                       <TableRow>

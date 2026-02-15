@@ -134,7 +134,11 @@ export function OrcamentoTab() {
         continue;
       }
 
-      // Federal: all non-SESAI go to federal tab + thematic tabs
+      // Exclude Program 5034 from 2020 (MDHC catch-all umbrella distortion)
+      const is5034_2020 = item.ano === 2020 && item.programa.toLowerCase().includes('5034');
+      if (is5034_2020) continue; // Skip entirely from cards/totals
+
+      // Federal: all non-SESAI, non-5034/2020 go to federal tab + thematic tabs
       buckets.federal.push(item);
 
       for (const cat of cats) {

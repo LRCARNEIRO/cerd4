@@ -293,6 +293,11 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
     prog.includes('20yp') || prog.includes('7684');
 }
 
+/** Check if a record is the 2020 Program 5034 distortion (MDHC catch-all umbrella) */
+function is5034Distortion2020(r: { ano: number; programa: string }): boolean {
+  return r.ano === 2020 && r.programa.toLowerCase().includes('5034');
+}
+
 // Hook para estatísticas orçamentárias com dados por esfera
 export function useOrcamentoStats() {
   return useQuery({
@@ -318,32 +323,32 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
-      // Exclude SESAI from all comparative calculations
-      const registrosSemSesai = registros.filter(r => !isSesaiRecord(r));
+      // Exclude SESAI + 2020 Program 5034 distortion from all comparative calculations
+      const registrosLimpos = registros.filter(r => !isSesaiRecord(r) && !is5034Distortion2020(r));
       
       // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
         Number(r.pago) || Number(r.dotacao_autorizada) || 0;
 
-      const periodo1 = registrosSemSesai.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const periodo2 = registrosSemSesai.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const periodo1 = registrosLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const periodo2 = registrosLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
 
       const totalPeriodo1 = periodo1.reduce((acc, r) => acc + valorEfetivo(r), 0);
       const totalPeriodo2 = periodo2.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
       const porAno: Record<number, number> = {};
-      registrosSemSesai.forEach(r => {
+      registrosLimpos.forEach(r => {
         porAno[r.ano] = (porAno[r.ano] || 0) + valorEfetivo(r);
       });
 
       const porPrograma: Record<string, number> = {};
-      registrosSemSesai.forEach(r => {
+      registrosLimpos.forEach(r => {
         porPrograma[r.programa] = (porPrograma[r.programa] || 0) + valorEfetivo(r);
       });
 
       // Por esfera
       const porEsfera: Record<string, { total: number; programas: number }> = {};
-      registrosSemSesai.forEach(r => {
+      registrosLimpos.forEach(r => {
         if (!porEsfera[r.esfera]) porEsfera[r.esfera] = { total: 0, programas: 0 };
         porEsfera[r.esfera].total += valorEfetivo(r);
         porEsfera[r.esfera].programas++;
@@ -353,6 +358,10 @@ export function useOrcamentoStats() {
       const sesaiRegistros = registros.filter(r => isSesaiRecord(r));
       const sesaiTotal = sesaiRegistros.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
+      // 5034-2020 stats (informativo)
+      const distorcao5034 = registros.filter(r => is5034Distortion2020(r));
+      const distorcao5034Total = distorcao5034.reduce((acc, r) => acc + valorEfetivo(r), 0);
+
       return {
         totalPeriodo1,
         totalPeriodo2,
@@ -360,9 +369,11 @@ export function useOrcamentoStats() {
         porAno,
         porPrograma,
         porEsfera,
-        totalRegistros: registrosSemSesai.length,
+        totalRegistros: registrosLimpos.length,
         sesaiTotal,
         sesaiRegistros: sesaiRegistros.length,
+        distorcao5034Total,
+        distorcao5034Registros: distorcao5034.length,
       };
     },
   });
