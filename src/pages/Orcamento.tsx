@@ -322,9 +322,11 @@ export default function Orcamento() {
   const handleResetEsfera = async (esfera: string, label: string) => {
     if (!confirm(`Apagar todos os dados orçamentários da esfera "${label}"? Esta ação não pode ser desfeita.`)) return;
     try {
-      const { error } = await supabase.from('dados_orcamentarios').delete().eq('esfera', esfera);
+      const { data, error } = await supabase.functions.invoke('reset-orcamento', {
+        body: { esfera },
+      });
       if (error) throw error;
-      toast.success(`Dados ${label} apagados com sucesso.`);
+      toast.success(data?.message || `Dados ${label} apagados com sucesso.`);
       queryClient.invalidateQueries();
     } catch {
       toast.error(`Erro ao apagar dados ${label}.`);
