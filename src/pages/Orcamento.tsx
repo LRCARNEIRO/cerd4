@@ -177,21 +177,27 @@ function ThematicFilterBar({
 
 /** Check if records are excluded from calculations */
 function getRecordExclusion(registros: DadoOrcamentario[]): { excluded: boolean; reason?: string } | null {
-  // Check SESAI
   const orgao = registros[0]?.orgao?.toUpperCase() || '';
   const prog = registros[0]?.programa?.toLowerCase() || '';
   const obs = ((registros[0] as any)?.observacoes || '').toLowerCase();
   
+  // Check SESAI
   if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
       prog.includes('20yp') || prog.includes('7684')) {
     return { excluded: true, reason: 'SESAI segregada — excluída dos cálculos de política racial' };
   }
 
-  // Check 5034 — the program itself is a catch-all umbrella (especially 2020)
+  // MIR/SEPPIR programs are NEVER excluded
+  if (orgao === 'MIR' || orgao === 'SEPPIR' || orgao.includes('IGUALDADE RACIAL') || orgao.includes('MIR/')) {
+    return null;
+  }
+
+  // Check 5034 from MDHC — exclude unless racial keywords present
   if (prog.includes('5034')) {
-    const has2020 = registros.some(r => r.ano === 2020);
-    if (has2020) {
-      return { excluded: true, reason: 'Prog. 5034/2020 — guarda-chuva MDHC, inclui políticas de mulheres, idosos, etc.' };
+    const texto = registros.map(r => [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ')).join(' ').toLowerCase();
+    const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+    if (!hasRacialKw) {
+      return { excluded: true, reason: 'Prog. 5034/MDHC — ação sem palavras-chave raciais/étnicas' };
     }
   }
 

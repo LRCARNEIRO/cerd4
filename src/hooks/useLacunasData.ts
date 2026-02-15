@@ -300,10 +300,11 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
 function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
   if (!r.programa.toLowerCase().includes('5034')) return false;
   // MIR/SEPPIR programs are always included
-  if (r.orgao === 'MIR' || r.orgao === 'SEPPIR') return false;
+  const orgaoUpper = (r.orgao || '').toUpperCase();
+  if (orgaoUpper === 'MIR' || orgaoUpper === 'SEPPIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) return false;
   // MDHC: exclude unless racial keywords present
   const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
-  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombo', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
   return !hasRacialKw;
 }
 
