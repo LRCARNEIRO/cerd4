@@ -77,7 +77,7 @@ export function FederalIngestionPanel() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (v) { setResult(null); setError(null); } }}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Download className="w-4 h-4" />
