@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -78,12 +79,19 @@ const THEMATIC_FILTERS: { key: ThematicFilter; label: string }[] = [
   { key: 'ciganos', label: 'Ciganos' },
 ];
 
-/** Classify a record into a thematic category */
-function classifyThematic(r: DadoOrcamentario): ThematicFilter {
+/** Classify a record into a thematic category — SESAI is separate */
+function classifyThematic(r: DadoOrcamentario): ThematicFilter | 'sesai' {
   const prog = r.programa.toLowerCase();
   const orgao = r.orgao.toUpperCase();
+  const obs = ((r as any).observacoes || '').toLowerCase();
 
-  if (['FUNAI', 'SESAI', 'MPI'].includes(orgao) ||
+  // SESAI always separate
+  if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
+      prog.includes('20yp') || prog.includes('7684')) {
+    return 'sesai';
+  }
+
+  if (['FUNAI', 'MPI'].includes(orgao) ||
       prog.includes('indigen') || prog.includes('indígen') || prog.includes('2065')) {
     return 'indigena';
   }
@@ -214,23 +222,31 @@ export default function Orcamento() {
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Classify all records by esfera + thematic
+  // Classify all records by esfera + thematic (SESAI segregated)
   const classified = useMemo(() => {
-    const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> = {
+    const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> & { sesai: DadoOrcamentario[] } = {
       federal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
       estadual: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
       municipal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
+      sesai: [],
     };
 
     if (!dadosOrcamentarios) return result;
 
     for (const item of dadosOrcamentarios) {
+      const theme = classifyThematic(item);
+      
+      // SESAI goes to its own bucket, excluded from all esferas
+      if (theme === 'sesai') {
+        result.sesai.push(item);
+        continue;
+      }
+
       let esfera: 'federal' | 'estadual' | 'municipal' = 'federal';
       if (item.esfera === 'estadual') esfera = 'estadual';
       else if (item.esfera === 'municipal') esfera = 'municipal';
 
       result[esfera].all.push(item);
-      const theme = classifyThematic(item);
       result[esfera].byTheme[theme].push(item);
     }
 
@@ -385,6 +401,11 @@ export default function Orcamento() {
             Municipal
             {classified.municipal.all.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.municipal.all.length}</Badge>}
           </TabsTrigger>
+          <TabsTrigger value="sesai">
+            <TreePine className="w-4 h-4 mr-1" />
+            SESAI (Saúde Indígena)
+            {classified.sesai.length > 0 && <Badge variant="secondary" className="ml-1 text-xs">{classified.sesai.length}</Badge>}
+          </TabsTrigger>
           <TabsTrigger value="visao-geral">
             <Database className="w-4 h-4 mr-1" />
             Visão Geral
@@ -392,6 +413,14 @@ export default function Orcamento() {
           <TabsTrigger value="fontes">
             <ExternalLink className="w-4 h-4 mr-1" />
             Fontes
+          </TabsTrigger>
+          <TabsTrigger value="resumo">
+            <PieChart className="w-4 h-4 mr-1" />
+            Resumo Comparativo
+          </TabsTrigger>
+          <TabsTrigger value="metodologia">
+            <BookOpen className="w-4 h-4 mr-1" />
+            Metodologia
           </TabsTrigger>
         </TabsList>
 
@@ -413,6 +442,26 @@ export default function Orcamento() {
           <EsferaContent records={municipalRecords} isLoading={isLoading} emptyMessage="Dados municipais ainda não coletados. Utilize portais de transparência municipais." useOrgaoSection={false} />
         </TabsContent>
 
+        {/* SESAI */}
+        <TabsContent value="sesai">
+          <Card className="mb-4 border-l-4 border-l-chart-2">
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-start gap-2">
+                <Info className="w-5 h-5 text-chart-2 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm">Dados Informativos — Segregados do Total de Política Racial</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Os gastos da SESAI (Saúde Indígena — Ações 20YP e 7684) são mantidos nesta aba apenas para fins informativos.
+                    Estes valores são <strong>excluídos</strong> dos cards de resumo, dos gráficos comparativos e de todos os cálculos de variação
+                    para não mascarar o desmonte histórico da política racial observado no período 2018-2022.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <EsferaContent records={classified.sesai} isLoading={isLoading} emptyMessage="Nenhum dado SESAI (Saúde Indígena) encontrado na base." useOrgaoSection />
+        </TabsContent>
+
         {/* VISÃO GERAL - Charts */}
         <TabsContent value="visao-geral">
           {isLoading ? (
@@ -421,7 +470,7 @@ export default function Orcamento() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {evolucaoPorAno.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -442,7 +491,7 @@ export default function Orcamento() {
               )}
               {porPrograma.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -554,6 +603,267 @@ export default function Orcamento() {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* RESUMO COMPARATIVO */}
+        <TabsContent value="resumo">
+          <div className="space-y-6">
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="pt-4 pb-3">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Nota:</strong> Todos os valores e gráficos nesta seção <strong>excluem SESAI</strong> (Saúde Indígena),
+                  conforme metodologia de segregação adotada para preservar a integridade da análise de política racial.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Infográfico comparativo */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="text-3xl font-bold text-destructive">{formatCurrency(stats?.totalPeriodo1 || 0)}</div>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI)</p>
+                  <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
+                    <li><strong>2018–2019:</strong> Base modesta de R$ 93–123 mi sob SEPPIR/MMFDH</li>
+                    <li><strong>2020:</strong> Distorção técnica — Programa 5034 guarda-chuva do MDHC (R$ 578 mi pagos incluem políticas de mulheres, idosos, etc.)</li>
+                    <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional confirmado</li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="text-3xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</div>
+                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI)</p>
+                  <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
+                    <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
+                    <li><strong>2024–2025:</strong> Novos programas PPA (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial)</li>
+                    <li><strong>Execução recorde:</strong> MIR com ~99% de execução em 2024/2025</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Variação */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-lg ${stats && stats.variacao > 0 ? 'bg-success/10' : 'bg-destructive/10'}`}>
+                    <TrendingUp className={`w-8 h-8 ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Variação 2018-22 → 2023-26</p>
+                    <p className={`text-3xl font-bold ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`}>
+                      {stats && stats.variacao > 0 ? '+' : ''}{stats?.variacao.toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Série incompleta — dados parciais. Variações extremas podem refletir hiatos na coleta.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Evolução por ano */}
+            {evolucaoPorAno.length > 0 && (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Exclui SESAI)</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={evolucaoPorAno}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
+                        <Tooltip
+                          formatter={(value: number) => [formatCurrencyFull(value), 'Executado']}
+                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                        />
+                        <Bar dataKey="pago" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* METODOLOGIA */}
+        <TabsContent value="metodologia">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  Metodologia de Levantamento Orçamentário
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 text-sm text-muted-foreground">
+                {/* 1. Estratégia de Coleta */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">1. Estratégia Híbrida de Coleta de Dados</h4>
+                  <p>A base orçamentária federal (2018–2025) utiliza uma estratégia híbrida de coleta:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li><strong>API REST do Portal da Transparência (CGU):</strong> Fornece dados de execução orçamentária — valor empenhado, liquidado e pago — com granularidade por ação, programa e órgão.</li>
+                    <li><strong>Arquivos ZIP/CSV do portal de dados abertos (LOA):</strong> Complementam a base com dados de dotação (inicial e autorizada), processados pela Edge Function <code>ingest-dotacao-loa</code>.</li>
+                    <li><strong>Upload manual via CSV:</strong> Permite preenchimento de lacunas identificadas na API, com rastreabilidade total (fonte, URL, observações).</li>
+                  </ul>
+                  <p className="text-xs italic">Esta abordagem substitui a dependência do SIOP SPARQL, que se mostrou tecnicamente inviável devido a bloqueios de segurança (Cloudflare 403) e defasagem de dados.</p>
+                </section>
+
+                {/* 2. Camadas de Filtragem */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">2. Metodologia de Filtragem em Três Camadas</h4>
+                  <p>A ingestão de dados utiliza filtragem em três camadas auditáveis:</p>
+                  
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <div>
+                      <h5 className="font-semibold text-foreground">Camada 1 — Programas PPA</h5>
+                      <p>Códigos incluídos: <code>5034</code> (Igualdade Racial), <code>5802</code> (Quilombolas e Ciganos), <code>5803</code> (Juventude Negra), <code>5804</code> (Igualdade Étnico-Racial), <code>2065</code> (Povos Indígenas), <code>0153</code> e <code>2034</code>.</p>
+                      <p className="text-destructive font-medium mt-1">Exclusão explícita: Programa <code>5113</code> (Educação Superior com recorte racial) — genérico, distorce totais (R$ 14 bi).</p>
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">Camada 2 — Subfunção 422</h5>
+                      <p>Captura ações da Subfunção 422 (Direitos Individuais e Coletivos) validadas por palavras-chave: <code>racial</code>, <code>quilombol</code>, <code>cigan</code>, <code>terreiro</code>, <code>SESAI</code>.</p>
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-foreground">Camada 3 — Órgãos Específicos</h5>
+                      <p>Ingestão direta dos Ministérios: MIR (código 67000) e MPI (código 92000). Para o período 2018–2022, os dados vêm das instituições predecessoras (SEPPIR, FUNAI vinculada ao MJ, INCRA).</p>
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3. Classificação Temática */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">3. Classificação Temática Dinâmica</h4>
+                  <p>Os registros são classificados em quatro categorias temáticas com base no mapeamento de órgãos, códigos de ação e palavras-chave:</p>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Critérios de Identificação</TableHead>
+                        <TableHead>Observações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">Política Racial</TableCell>
+                        <TableCell>MIR, MDHC, SEPPIR; Programas 5034, 5804</TableCell>
+                        <TableCell>Exclui SESAI e programas transversais</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Povos Indígenas</TableCell>
+                        <TableCell>FUNAI, MPI; Programa 2065</TableCell>
+                        <TableCell>Lacuna: dados 2020–2023 ausentes na API</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Quilombolas</TableCell>
+                        <TableCell>INCRA; Ações 20G7, 0859; Programa 5802</TableCell>
+                        <TableCell>Lacuna: dados 2020–2023 ausentes</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">Ciganos/Romani</TableCell>
+                        <TableCell>Palavras-chave: cigano, romani</TableCell>
+                        <TableCell>Dados escassos em toda a série</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </section>
+
+                {/* 4. Segregação SESAI */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">4. Segregação Mandatória da SESAI</h4>
+                  <p>Os gastos da SESAI (Saúde Indígena — Ações 20YP e 7684) são <strong>obrigatoriamente segregados</strong> de todos os cálculos:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Excluídos dos cards de resumo (Política Racial, Povos Indígenas, Quilombolas, Ciganos)</li>
+                    <li>Excluídos dos gráficos de evolução temporal e comparativos</li>
+                    <li>Excluídos do cálculo de variação percentual 2018-22 vs 2023-26</li>
+                    <li>Mantidos em aba dedicada apenas para fins informativos</li>
+                  </ul>
+                  <p><strong>Justificativa:</strong> O elevado orçamento de saúde indígena (que chega a bilhões) mascara as variações reais da política racial finalística, impedindo a identificação precisa do desmonte institucional de 2021-2022.</p>
+                </section>
+
+                {/* 5. Exclusões */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">5. Exclusões Deliberadas</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li><strong>Programas transversais de grande escala:</strong> Minha Casa Minha Vida, Fundo Eleitoral, Bolsa Família — inflam artificialmente os dados</li>
+                    <li><strong>Programa 5113 (Educação Superior):</strong> Genérico, inclui toda a educação superior sem focalização racial suficiente (R$ 14 bi)</li>
+                    <li><strong>Unidades Orçamentárias administrativas:</strong> ANVISA, Polícia Federal e similares — representam estruturas burocráticas, não políticas temáticas</li>
+                    <li><strong>Metadados técnicos de planilhas:</strong> Códigos de colunas e identificadores internos são sistematicamente removidos</li>
+                  </ul>
+                </section>
+
+                {/* 6. Cálculo de Execução */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">6. Cálculo de Execução Orçamentária</h4>
+                  <p>O sistema mapeia cinco métricas financeiras essenciais:</p>
+                  <ol className="list-decimal pl-5 space-y-1">
+                    <li><strong>Dotação Inicial (PLOA/LOA)</strong> — Valor previsto na Lei Orçamentária Anual</li>
+                    <li><strong>Dotação Autorizada</strong> — Valor após créditos adicionais (suplementares, especiais, extraordinários)</li>
+                    <li><strong>Valor Empenhado</strong> — Compromisso de gasto autorizado</li>
+                    <li><strong>Valor Liquidado</strong> — Confirmação de entrega/serviço</li>
+                    <li><strong>Valor Pago</strong> — Desembolso efetivo do Tesouro</li>
+                  </ol>
+                  <p className="mt-2">O percentual de execução prioriza a <strong>Dotação Autorizada</strong> como denominador, recorrendo à Dotação Inicial apenas em caso de ausência do valor atualizado.</p>
+                </section>
+
+                {/* 7. Limitações */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base text-destructive">7. Limitações Conhecidas</h4>
+                  <ul className="list-disc pl-5 space-y-1.5">
+                    <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida via CSV do Portal da Transparência.</li>
+                    <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023.</li>
+                    <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019 nos endpoints consultados.</li>
+                    <li><strong>Programa 5034 (2020):</strong> Inflaciona o total por ser guarda-chuva multi-temático do MDHC — valores devem ser interpretados com cautela.</li>
+                    <li><strong>Esferas estadual e municipal:</strong> Dados ainda não coletados sistematicamente. Estratégia planejada via API SICONFI (Tesouro Nacional).</li>
+                    <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta, não alterações reais de dotação.</li>
+                  </ul>
+                </section>
+
+                {/* 8. Identificação de Órgãos */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">8. Identificação de Órgãos Federais</h4>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Órgão</TableHead>
+                        <TableHead>Código</TableHead>
+                        <TableHead>Período</TableHead>
+                        <TableHead>Predecessores</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="font-medium">MIR (Igualdade Racial)</TableCell>
+                        <TableCell><code>OS67000</code></TableCell>
+                        <TableCell>2023–presente</TableCell>
+                        <TableCell>SEPPIR, MMFDH</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">MPI (Povos Indígenas)</TableCell>
+                        <TableCell><code>92000</code></TableCell>
+                        <TableCell>2023–presente</TableCell>
+                        <TableCell>FUNAI (vinculada ao MJ)</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">FUNAI</TableCell>
+                        <TableCell><code>OS52000</code></TableCell>
+                        <TableCell>2018–2022</TableCell>
+                        <TableCell>—</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="font-medium">INCRA</TableCell>
+                        <TableCell><code>OS49000</code></TableCell>
+                        <TableCell>2018–presente</TableCell>
+                        <TableCell>—</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </section>
               </CardContent>
             </Card>
           </div>
