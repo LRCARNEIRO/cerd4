@@ -228,6 +228,57 @@ function EsferaContent({
   );
 }
 
+/** Summary cards for a given esfera */
+function EsferaSummaryCards({
+  stats,
+  esferaLabel,
+  formatCurrency,
+}: {
+  stats: { totalPeriodo1: number; totalPeriodo2: number; variacao: number; totalRegistros: number; totalProgramas: number; anosCobertura: number[] };
+  esferaLabel: string;
+  formatCurrency: (v: number) => string;
+}) {
+  if (stats.totalRegistros === 0) return null;
+  const anosRange = stats.anosCobertura.length > 0
+    ? `${stats.anosCobertura[0]}–${stats.anosCobertura[stats.anosCobertura.length - 1]}`
+    : '—';
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      <Card className="border-l-4 border-l-primary/60">
+        <CardContent className="pt-4 pb-3">
+          <p className="text-xs text-muted-foreground mb-1">2018–2022</p>
+          <p className="text-lg font-bold">{formatCurrency(stats.totalPeriodo1)}</p>
+          <p className="text-[10px] text-muted-foreground">{esferaLabel}</p>
+        </CardContent>
+      </Card>
+      <Card className="border-l-4 border-l-success/60">
+        <CardContent className="pt-4 pb-3">
+          <p className="text-xs text-muted-foreground mb-1">2023–2026</p>
+          <p className="text-lg font-bold text-success">{formatCurrency(stats.totalPeriodo2)}</p>
+          <p className="text-[10px] text-muted-foreground">{esferaLabel}</p>
+        </CardContent>
+      </Card>
+      <Card className="border-l-4" style={{ borderLeftColor: stats.variacao >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+        <CardContent className="pt-4 pb-3">
+          <p className="text-xs text-muted-foreground mb-1">Variação</p>
+          <p className={`text-lg font-bold ${stats.variacao >= 0 ? 'text-success' : 'text-destructive'}`}>
+            {stats.variacao >= 0 ? '+' : ''}{stats.variacao.toFixed(1)}%
+          </p>
+          <p className="text-[10px] text-muted-foreground">Entre períodos</p>
+        </CardContent>
+      </Card>
+      <Card className="border-l-4 border-l-muted-foreground/30">
+        <CardContent className="pt-4 pb-3">
+          <p className="text-xs text-muted-foreground mb-1">Cobertura</p>
+          <p className="text-lg font-bold">{stats.totalProgramas} <span className="text-sm font-normal text-muted-foreground">programas</span></p>
+          <p className="text-[10px] text-muted-foreground">{stats.totalRegistros} registros · {anosRange}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
@@ -314,6 +365,35 @@ export default function Orcamento() {
   const federalRecords = useMemo(() => getFilteredRecords('federal', federalFilters), [classified, federalFilters]);
   const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
   const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
+
+  /** Compute per-esfera summary stats */
+  const esferaStats = useMemo(() => {
+    const compute = (records: DadoOrcamentario[], excludeSesaiAnd5034: boolean) => {
+      const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+      const clean = excludeSesaiAnd5034
+        ? records.filter(r => classifyThematic(r) !== 'sesai' && !(r.ano === 2020 && r.programa.toLowerCase().includes('5034')))
+        : records;
+      const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const t1 = p1.reduce((s, r) => s + valorEfetivo(r), 0);
+      const t2 = p2.reduce((s, r) => s + valorEfetivo(r), 0);
+      const anos = new Set(clean.map(r => r.ano));
+      const programas = new Set(clean.map(r => r.programa));
+      return {
+        totalPeriodo1: t1,
+        totalPeriodo2: t2,
+        variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
+        totalRegistros: clean.length,
+        totalProgramas: programas.size,
+        anosCobertura: Array.from(anos).sort(),
+      };
+    };
+    return {
+      federal: compute(classified.federal.all, !includeExcludedInCalc),
+      estadual: compute(classified.estadual.all, false),
+      municipal: compute(classified.municipal.all, false),
+    };
+  }, [classified, includeExcludedInCalc]);
 
   // Dynamic stats based on toggle — when includeExcludedInCalc is true, add SESAI + 5034/2020 to totals
   const dynamicStats = useMemo(() => {
@@ -491,6 +571,7 @@ export default function Orcamento() {
 
         {/* FEDERAL */}
         <TabsContent value="federal">
+          <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
           <ThematicFilterBar filters={federalFilters} counts={getThemeCounts('federal')} onToggle={toggleFilter(setFederalFilters)} />
           <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
             <div className="flex items-center gap-2">
@@ -510,12 +591,14 @@ export default function Orcamento() {
 
         {/* ESTADUAL */}
         <TabsContent value="estadual">
+          <EsferaSummaryCards stats={esferaStats.estadual} esferaLabel="Estadual" formatCurrency={formatCurrency} />
           <ThematicFilterBar filters={estadualFilters} counts={getThemeCounts('estadual')} onToggle={toggleFilter(setEstadualFilters)} />
           <EsferaContent records={estadualRecords} isLoading={isLoading} emptyMessage="Dados estaduais ainda não coletados. Utilize SICONFI/RREO dos portais de transparência estaduais." useOrgaoSection={false} />
         </TabsContent>
 
         {/* MUNICIPAL */}
         <TabsContent value="municipal">
+          <EsferaSummaryCards stats={esferaStats.municipal} esferaLabel="Municipal" formatCurrency={formatCurrency} />
           <ThematicFilterBar filters={municipalFilters} counts={getThemeCounts('municipal')} onToggle={toggleFilter(setMunicipalFilters)} />
           <EsferaContent records={municipalRecords} isLoading={isLoading} emptyMessage="Dados municipais ainda não coletados. Utilize portais de transparência municipais." useOrgaoSection={false} />
         </TabsContent>
