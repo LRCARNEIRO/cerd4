@@ -291,17 +291,20 @@ export default function Orcamento() {
   // Apply filters to get visible records per esfera
   const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>, includeExcluded = true) => {
     const data = classified[esfera];
-    const result: DadoOrcamentario[] = [];
+    let result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
       if (filters[key]) result.push(...data.byTheme[key]);
     }
-    // For federal, add SESAI/excluded records from all if toggled on
-    if (esfera === 'federal' && includeExcluded) {
-      const sesaiInFederal = data.all.filter(r => {
-        const theme = classifyThematic(r);
-        return theme === 'sesai';
-      });
-      result.push(...sesaiInFederal);
+    // For federal: add SESAI records when showing excluded, or remove 5034/2020 when hiding
+    if (esfera === 'federal') {
+      if (includeExcluded) {
+        // Add SESAI records (they're in .all but not in byTheme)
+        const sesaiInFederal = data.all.filter(r => classifyThematic(r) === 'sesai');
+        result.push(...sesaiInFederal);
+      } else {
+        // Remove 5034/2020 distortion records from thematic results
+        result = result.filter(r => !(r.ano === 2020 && r.programa.toLowerCase().includes('5034')));
+      }
     }
     return result;
   };
