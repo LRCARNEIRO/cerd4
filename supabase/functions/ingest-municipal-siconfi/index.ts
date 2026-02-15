@@ -14,9 +14,7 @@ const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
  * ================================================================
  * 
  * FONTE: API SICONFI (Tesouro Nacional) — RREO e DCA municipais
- * 
- * MUNICÍPIOS-ALVO: Capitais e cidades com expressiva população negra,
- * indígena ou quilombola e estruturas de promoção da igualdade racial.
+ * COBERTURA: TODAS as 27 capitais brasileiras (26 estados + DF)
  * 
  * ESTRATÉGIA DE FILTRO:
  *   1. Função 14 (Direitos da Cidadania)
@@ -32,37 +30,48 @@ const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
  */
 
 /**
- * Municípios prioritários para análise de política racial.
- * Código IBGE do ente (id_ente) é o código IBGE do município.
- * Fonte: https://www.ibge.gov.br/explica/codigos-dos-municipios.php
+ * TODAS as 27 capitais brasileiras.
+ * Código IBGE (id_ente) — fonte: https://www.ibge.gov.br/explica/codigos-dos-municipios.php
  */
 const MUNICIPIOS = [
-  // Capitais com maior pop. negra / estruturas de igualdade racial
-  { ibge: 2927408, nome: "Salvador", uf: "BA", orgao: "SEMUR" },
-  { ibge: 3550308, nome: "São Paulo", uf: "SP", orgao: "SMDHC" },
-  { ibge: 3304557, nome: "Rio de Janeiro", uf: "RJ", orgao: "SMDHC" },
-  { ibge: 2304400, nome: "Fortaleza", uf: "CE", orgao: "Coord. Igualdade Racial" },
-  { ibge: 2611606, nome: "Recife", uf: "PE", orgao: "Ger. Igualdade Racial" },
-  { ibge: 2507507, nome: "João Pessoa", uf: "PB", orgao: "Coord. Igualdade Racial" },
-  { ibge: 2111300, nome: "São Luís", uf: "MA", orgao: "SEIR" },
+  // NORTE
+  { ibge: 1100205, nome: "Porto Velho", uf: "RO", orgao: "SMDH" },
+  { ibge: 1200401, nome: "Rio Branco", uf: "AC", orgao: "SMDH" },
   { ibge: 1302603, nome: "Manaus", uf: "AM", orgao: "SEMDIH" },
+  { ibge: 1400100, nome: "Boa Vista", uf: "RR", orgao: "SMDH" },
   { ibge: 1501402, nome: "Belém", uf: "PA", orgao: "CONEN" },
-  { ibge: 3106200, nome: "Belo Horizonte", uf: "MG", orgao: "SMADC" },
-  { ibge: 5300108, nome: "Brasília", uf: "DF", orgao: "Sec. Justiça e Cidadania" },
-  { ibge: 4106902, nome: "Curitiba", uf: "PR", orgao: "FCC/SMDH" },
-  { ibge: 4314902, nome: "Porto Alegre", uf: "RS", orgao: "SMDH" },
-  { ibge: 5208707, nome: "Goiânia", uf: "GO", orgao: "SMDH" },
+  { ibge: 1600303, nome: "Macapá", uf: "AP", orgao: "SMDH" },
   { ibge: 1721000, nome: "Palmas", uf: "TO", orgao: "SMDH" },
-  { ibge: 2800308, nome: "Aracaju", uf: "SE", orgao: "SMDH" },
-  { ibge: 2408102, nome: "Natal", uf: "RN", orgao: "SEMJIDH" },
-  { ibge: 2704302, nome: "Maceió", uf: "AL", orgao: "SMDH" },
+
+  // NORDESTE
+  { ibge: 2111300, nome: "São Luís", uf: "MA", orgao: "SEIR" },
   { ibge: 2211001, nome: "Teresina", uf: "PI", orgao: "SEMCASPI" },
+  { ibge: 2304400, nome: "Fortaleza", uf: "CE", orgao: "Coord. Igualdade Racial" },
+  { ibge: 2408102, nome: "Natal", uf: "RN", orgao: "SEMJIDH" },
+  { ibge: 2507507, nome: "João Pessoa", uf: "PB", orgao: "Coord. Igualdade Racial" },
+  { ibge: 2611606, nome: "Recife", uf: "PE", orgao: "Ger. Igualdade Racial" },
+  { ibge: 2704302, nome: "Maceió", uf: "AL", orgao: "SMDH" },
+  { ibge: 2800308, nome: "Aracaju", uf: "SE", orgao: "SMDH" },
+  { ibge: 2927408, nome: "Salvador", uf: "BA", orgao: "SEMUR" },
+
+  // CENTRO-OESTE
+  { ibge: 5002704, nome: "Campo Grande", uf: "MS", orgao: "SMDH" },
   { ibge: 5103403, nome: "Cuiabá", uf: "MT", orgao: "SMDH" },
+  { ibge: 5208707, nome: "Goiânia", uf: "GO", orgao: "SMDH" },
+  { ibge: 5300108, nome: "Brasília", uf: "DF", orgao: "Sec. Justiça e Cidadania" },
+
+  // SUDESTE
+  { ibge: 3106200, nome: "Belo Horizonte", uf: "MG", orgao: "SMADC" },
+  { ibge: 3205309, nome: "Vitória", uf: "ES", orgao: "SMDH" },
+  { ibge: 3304557, nome: "Rio de Janeiro", uf: "RJ", orgao: "SMDHC" },
+  { ibge: 3550308, nome: "São Paulo", uf: "SP", orgao: "SMDHC" },
+
+  // SUL
+  { ibge: 4106902, nome: "Curitiba", uf: "PR", orgao: "FCC/SMDH" },
+  { ibge: 4205407, nome: "Florianópolis", uf: "SC", orgao: "SMDH" },
+  { ibge: 4314902, nome: "Porto Alegre", uf: "RS", orgao: "SMDH" },
 ];
 
-/**
- * Palavras-chave para filtrar programas/contas relevantes.
- */
 const KEYWORDS = [
   "racial", "racismo", "igualdade racial", "igualdade étnica",
   "quilombol", "indígen", "indigena", "cigan", "romani",
@@ -72,15 +81,12 @@ const KEYWORDS = [
   "povos tradicionais", "comunidades tradicionais",
 ];
 
-/**
- * Contas RREO/DCA alvo (função/subfunção textual).
- */
 const CONTA_ALVO = [
-  "direitos da cidadania",           // Função 14
-  "direitos individuais coletivos",  // Subfunção 422
-  "direitos individuais, coletivos", // Variant
-  "assistência aos indígenas",       // Subfunção 423
-  "assistência comunitária",         // Subfunção 244
+  "direitos da cidadania",
+  "direitos individuais coletivos",
+  "direitos individuais, coletivos",
+  "assistência aos indígenas",
+  "assistência comunitária",
 ];
 
 function matchesKeyword(text: string): boolean {
@@ -111,9 +117,6 @@ function parseBRL(val: any): number | null {
   return isNaN(num) || num === 0 ? null : num;
 }
 
-/**
- * Busca dados RREO (Anexo 02) para um município e ano.
- */
 async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
   const url = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
   console.log(`  RREO: ${url}`);
@@ -121,7 +124,6 @@ async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });
     if (!res.ok) {
-      // Fallback to period 5
       console.log(`  RREO período 6 falhou (${res.status}), tentando período 5...`);
       const url5 = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
       const res5 = await fetch(url5, { headers: { Accept: "application/json" } });
@@ -140,9 +142,6 @@ async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
   }
 }
 
-/**
- * Busca dados DCA (Anexo I-D) como fallback.
- */
 async function fetchDCA(ibge: number, ano: number): Promise<any[]> {
   const url = `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-D&id_ente=${ibge}`;
   console.log(`  DCA: ${url}`);
@@ -161,9 +160,6 @@ async function fetchDCA(ibge: number, ano: number): Promise<any[]> {
   }
 }
 
-/**
- * Filtra e transforma dados RREO/DCA municipais em registros orçamentários.
- */
 function processData(
   items: any[],
   municipio: typeof MUNICIPIOS[0],
@@ -190,7 +186,6 @@ function processData(
     if (!seen.has(key)) {
       seen.add(key);
 
-      // Derive publico_alvo
       const contaLower = conta.toLowerCase();
       let publicoAlvo = "População em situação de vulnerabilidade racial/étnica";
       if (contaLower.includes("indígen") || contaLower.includes("indigena")) publicoAlvo = "Povos indígenas";
@@ -198,7 +193,6 @@ function processData(
       else if (contaLower.includes("cigan") || contaLower.includes("romani")) publicoAlvo = "Povos ciganos/romani";
       else if (contaLower.includes("negro") || contaLower.includes("racial")) publicoAlvo = "População negra";
 
-      // Build razao_selecao
       const razaoParts: string[] = [];
       const matchedConta = CONTA_ALVO.find(a => contaLower.includes(a));
       if (matchedConta) razaoParts.push(`Conta RREO/DCA: "${matchedConta}"`);
@@ -229,7 +223,6 @@ function processData(
       });
     }
 
-    // Map column to financial field
     const rec = registros.find(r => r._key === key);
     if (!rec || !valor) continue;
 
@@ -246,7 +239,6 @@ function processData(
     }
   }
 
-  // Clean up and compute percentual
   return registros
     .filter(r => r.dotacao_autorizada || r.empenhado || r.liquidado || r.pago)
     .map(r => {
@@ -285,7 +277,7 @@ Deno.serve(async (req) => {
     let totalInserted = 0;
     const allRegistros: any[] = [];
 
-    console.log(`=== Ingestão Municipal SICONFI ===`);
+    console.log(`=== Ingestão Municipal SICONFI — ${municipiosAlvo.length} capitais ===`);
     console.log(`Municípios: ${municipiosAlvo.map(m => m.nome).join(", ")}`);
     console.log(`Anos: ${anos.join(", ")}`);
 
@@ -294,7 +286,6 @@ Deno.serve(async (req) => {
         console.log(`\n--- ${municipio.nome}/${municipio.uf} (${municipio.ibge}) ${ano} ---`);
 
         try {
-          // Try RREO first, DCA as fallback
           let items = await fetchRREO(municipio.ibge, ano);
           let source: "RREO" | "DCA" = "RREO";
 
@@ -320,12 +311,12 @@ Deno.serve(async (req) => {
           console.error(msg);
         }
 
-        // Rate limiting
+        // Rate limiting — be polite with SICONFI
         await new Promise(r => setTimeout(r, 600));
       }
     }
 
-    // Deduplicate by programa+ano+orgao
+    // Deduplicate
     const deduped = new Map<string, any>();
     for (const r of allRegistros) {
       const key = `${r.orgao}|${r.programa}|${r.ano}`;
@@ -359,6 +350,7 @@ Deno.serve(async (req) => {
         total_brutos: allRegistros.length,
         deduplicados: deduped.size,
         municipios: municipiosAlvo.map(m => `${m.nome}/${m.uf}`),
+        total_capitais: municipiosAlvo.length,
         anos,
         erros: erros.slice(0, 20),
       }),
