@@ -187,9 +187,14 @@ function getRecordExclusion(registros: DadoOrcamentario[]): { excluded: boolean;
     return { excluded: true, reason: 'SESAI segregada — excluída dos cálculos de política racial' };
   }
 
-  // MIR/SEPPIR programs are NEVER excluded
-  if (orgao === 'MIR' || orgao === 'SEPPIR' || orgao.includes('IGUALDADE RACIAL') || orgao.includes('MIR/')) {
-    return null;
+  // SEPPIR always included (real pre-2023 organ)
+  if (orgao === 'SEPPIR') return null;
+
+  // MIR bypass only for 2023+ (pre-2023 "MIR" is retroactive API reclassification of MDHC)
+  if (orgao === 'MIR' || orgao.includes('IGUALDADE RACIAL') || orgao.includes('MIR/')) {
+    const allPre2023 = registros.every(r => r.ano < 2023);
+    if (!allPre2023) return null;
+    // Pre-2023 "MIR" falls through to 5034 keyword check below
   }
 
   // Check 5034 from MDHC — exclude unless racial keywords present
@@ -416,11 +421,13 @@ export default function Orcamento() {
   const estadualRecords = useMemo(() => getFilteredRecords('estadual', estadualFilters), [classified, estadualFilters]);
   const municipalRecords = useMemo(() => getFilteredRecords('municipal', municipalFilters), [classified, municipalFilters]);
 
-  /** Check if a record is a non-racial 5034 MDHC action (should be excluded from calc) */
+  /** Check if a record is a non-racial 5034 action (should be excluded from calc).
+   *  SEPPIR always included. MIR bypass only for ano >= 2023 (pre-2023 "MIR" = retroactive MDHC). */
   const is5034NonRacial = (r: DadoOrcamentario): boolean => {
     if (!r.programa.toLowerCase().includes('5034')) return false;
     const orgUpper = (r.orgao || '').toUpperCase();
-    if (orgUpper === 'MIR' || orgUpper === 'SEPPIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) return false;
+    if (orgUpper === 'SEPPIR') return false;
+    if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) && r.ano >= 2023) return false;
     const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
     return !['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
   };
