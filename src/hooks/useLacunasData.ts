@@ -296,13 +296,17 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
     prog.includes('20yp') || prog.includes('7684');
 }
 
-/** Check if a 5034 record is a non-racial MDHC action. MIR/SEPPIR records are NEVER excluded. */
+/** Check if a 5034 record is a non-racial action. 
+ *  SEPPIR is always included (existed pre-2023). 
+ *  MIR bypass only for ano >= 2023 (created in 2023; pre-2023 "MIR" labels are retroactive API reclassifications of MDHC). */
 function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
   if (!r.programa.toLowerCase().includes('5034')) return false;
-  // MIR/SEPPIR programs are always included
   const orgaoUpper = (r.orgao || '').toUpperCase();
-  if (orgaoUpper === 'MIR' || orgaoUpper === 'SEPPIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) return false;
-  // MDHC: exclude unless racial keywords present
+  // SEPPIR always included (real pre-2023 organ)
+  if (orgaoUpper === 'SEPPIR') return false;
+  // MIR only bypasses for 2023+ (when it actually existed)
+  if ((orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) && r.ano >= 2023) return false;
+  // All others (including pre-2023 "MIR" = retroactive MDHC): exclude unless racial keywords present
   const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
   const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
   return !hasRacialKw;
