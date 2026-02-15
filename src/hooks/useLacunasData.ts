@@ -296,9 +296,13 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
     prog.includes('20yp') || prog.includes('7684');
 }
 
-/** Check if a record is the 2020 Program 5034 distortion (MDHC catch-all umbrella) */
-function is5034Distortion2020(r: { ano: number; programa: string }): boolean {
-  return r.ano === 2020 && r.programa.toLowerCase().includes('5034');
+/** Check if a 5034/2020 record is a non-racial distortion (exclude only non-MIR, non-racial-keyword actions) */
+function is5034Distortion2020(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
+  if (r.ano !== 2020 || !r.programa.toLowerCase().includes('5034')) return false;
+  const texto = [r.programa, r.orgao, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
+  const isMIR = r.orgao === 'MIR' || r.orgao === 'SEPPIR';
+  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+  return !isMIR && !hasRacialKw; // only exclude if NOT MIR and NO racial keywords
 }
 
 // Hook para estatísticas orçamentárias com dados por esfera
@@ -314,7 +318,7 @@ export function useOrcamentoStats() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao, observacoes')
+          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo')
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) throw error;

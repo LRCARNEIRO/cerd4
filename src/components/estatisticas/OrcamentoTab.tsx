@@ -134,9 +134,13 @@ export function OrcamentoTab() {
         continue;
       }
 
-      // Exclude Program 5034 from 2020 (MDHC catch-all umbrella distortion)
-      const is5034_2020 = item.ano === 2020 && item.programa.toLowerCase().includes('5034');
-      if (is5034_2020) continue; // Skip entirely from cards/totals
+      // Program 5034/2020: include only actions from MIR or with racial keywords
+      if (item.ano === 2020 && item.programa.toLowerCase().includes('5034')) {
+        const texto = [item.programa, item.orgao, item.descritivo, item.publico_alvo, item.observacoes].filter(Boolean).join(' ').toLowerCase();
+        const isMIR = item.orgao === 'MIR' || item.orgao === 'SEPPIR';
+        const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+        if (!isMIR && !hasRacialKw) continue; // skip non-racial actions
+      }
 
       // Federal: all non-SESAI, non-5034/2020 go to federal tab + thematic tabs
       buckets.federal.push(item);
@@ -241,7 +245,7 @@ export function OrcamentoTab() {
                   <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida manualmente via CSV do Portal da Transparência.</li>
                   <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023 nos endpoints consultados.</li>
                   <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019. Dados segregados do total de política racial (informativo).</li>
-                  <li><strong>Programa 5034 (2020):</strong> Inflaciona o total por ser guarda-chuva multi-temático; valores devem ser interpretados com cautela.</li>
+                  <li><strong>Programa 5034 (2020):</strong> Incluídas apenas ações do MIR ou com palavras-chave raciais; demais ações do guarda-chuva MDHC são excluídas.</li>
                   <li><strong>Programa 5113 (Educação Superior):</strong> Explicitamente excluído por ser genérico e distorcer totais (R$ 14 bi).</li>
                 </ul>
                 <p className="text-[10px] text-muted-foreground italic mt-2">
