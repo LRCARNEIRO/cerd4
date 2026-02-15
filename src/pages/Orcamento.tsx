@@ -58,14 +58,38 @@ const estruturaEstadual = [
 ];
 
 const estruturaMunicipal = [
+  // NORTE
+  { municipio: 'Porto Velho', uf: 'RO', orgao: 'SMDH', url: 'https://transparencia.portovelho.ro.gov.br/' },
+  { municipio: 'Rio Branco', uf: 'AC', orgao: 'SMDH', url: 'https://transparencia.riobranco.ac.gov.br/' },
+  { municipio: 'Manaus', uf: 'AM', orgao: 'SEMDIH', url: 'https://transparencia.manaus.am.gov.br/' },
+  { municipio: 'Boa Vista', uf: 'RR', orgao: 'SMDH', url: 'https://transparencia.boavista.rr.gov.br/' },
+  { municipio: 'Belém', uf: 'PA', orgao: 'CONEN', url: 'https://transparencia.belem.pa.gov.br/' },
+  { municipio: 'Macapá', uf: 'AP', orgao: 'SMDH', url: 'https://transparencia.macapa.ap.gov.br/' },
+  { municipio: 'Palmas', uf: 'TO', orgao: 'SMDH', url: 'https://transparencia.palmas.to.gov.br/' },
+  // NORDESTE
+  { municipio: 'São Luís', uf: 'MA', orgao: 'SEIR', url: 'https://transparencia.saoluis.ma.gov.br/' },
+  { municipio: 'Teresina', uf: 'PI', orgao: 'SEMCASPI', url: 'https://transparencia.teresina.pi.gov.br/' },
+  { municipio: 'Fortaleza', uf: 'CE', orgao: 'Coord. Igualdade Racial', url: 'https://transparencia.fortaleza.ce.gov.br/' },
+  { municipio: 'Natal', uf: 'RN', orgao: 'SEMJIDH', url: 'https://transparencia.natal.rn.gov.br/' },
+  { municipio: 'João Pessoa', uf: 'PB', orgao: 'Coord. Igualdade Racial', url: 'https://transparencia.joaopessoa.pb.gov.br/' },
+  { municipio: 'Recife', uf: 'PE', orgao: 'Ger. Igualdade Racial', url: 'https://transparencia.recife.pe.gov.br/' },
+  { municipio: 'Maceió', uf: 'AL', orgao: 'SMDH', url: 'https://transparencia.maceio.al.gov.br/' },
+  { municipio: 'Aracaju', uf: 'SE', orgao: 'SMDH', url: 'https://transparencia.aracaju.se.gov.br/' },
   { municipio: 'Salvador', uf: 'BA', orgao: 'SEMUR', url: 'https://transparencia.salvador.ba.gov.br/' },
-  { municipio: 'São Paulo', uf: 'SP', orgao: 'SMDHC', url: 'https://orcamento.sf.prefeitura.sp.gov.br/' },
+  // CENTRO-OESTE
+  { municipio: 'Campo Grande', uf: 'MS', orgao: 'SMDH', url: 'https://transparencia.campogrande.ms.gov.br/' },
+  { municipio: 'Cuiabá', uf: 'MT', orgao: 'SMDH', url: 'https://transparencia.cuiaba.mt.gov.br/' },
+  { municipio: 'Goiânia', uf: 'GO', orgao: 'SMDH', url: 'https://transparencia.goiania.go.gov.br/' },
+  { municipio: 'Brasília', uf: 'DF', orgao: 'Sec. Justiça e Cidadania', url: 'https://www.transparencia.df.gov.br/' },
+  // SUDESTE
+  { municipio: 'Belo Horizonte', uf: 'MG', orgao: 'SMADC', url: 'https://prefeitura.pbh.gov.br/transparencia' },
+  { municipio: 'Vitória', uf: 'ES', orgao: 'SMDH', url: 'https://transparencia.vitoria.es.gov.br/' },
   { municipio: 'Rio de Janeiro', uf: 'RJ', orgao: 'SMDHC', url: 'https://transparencia.prefeitura.rio/' },
-  { municipio: 'Belo Horizonte', uf: 'MG', orgao: 'SMASAC', url: 'https://prefeitura.pbh.gov.br/transparencia' },
-  { municipio: 'Recife', uf: 'PE', orgao: 'SecMulher', url: 'https://transparencia.recife.pe.gov.br/' },
-  { municipio: 'Porto Alegre', uf: 'RS', orgao: 'SMDHSU', url: 'https://transparencia.portoalegre.rs.gov.br/' },
-  { municipio: 'Fortaleza', uf: 'CE', orgao: 'SDHDS', url: 'https://transparencia.fortaleza.ce.gov.br/' },
-  { municipio: 'Brasília', uf: 'DF', orgao: 'SEDUH', url: 'https://www.transparencia.df.gov.br/' }
+  { municipio: 'São Paulo', uf: 'SP', orgao: 'SMDHC', url: 'https://orcamento.sf.prefeitura.sp.gov.br/' },
+  // SUL
+  { municipio: 'Curitiba', uf: 'PR', orgao: 'FCC/SMDH', url: 'https://transparencia.curitiba.pr.gov.br/' },
+  { municipio: 'Florianópolis', uf: 'SC', orgao: 'SMDH', url: 'https://transparencia.florianopolis.sc.gov.br/' },
+  { municipio: 'Porto Alegre', uf: 'RS', orgao: 'SMDH', url: 'https://transparencia.portoalegre.rs.gov.br/' },
 ];
 
 type ThematicFilter = 'racial' | 'indigena' | 'quilombola' | 'ciganos';
@@ -1024,22 +1048,36 @@ export default function Orcamento() {
                   <p className="mt-2">O percentual de execução prioriza a <strong>Dotação Autorizada</strong> como denominador, recorrendo à Dotação Inicial apenas em caso de ausência do valor atualizado.</p>
                 </section>
 
-                {/* 8. Limitações */}
+                {/* 8. Cobertura Subnacional */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base text-destructive">8. Limitações Conhecidas</h4>
+                  <h4 className="font-semibold text-foreground text-base">8. Cobertura Subnacional (Estadual e Municipal)</h4>
+                  <div className="bg-primary/10 rounded-lg p-4 space-y-3 border border-primary/30">
+                    <p className="font-medium text-foreground">A base orçamentária abrange <strong>três esferas federativas</strong> com coleta automatizada via API SICONFI (Tesouro Nacional):</p>
+                    <ul className="list-disc pl-5 space-y-1.5">
+                      <li><strong>Federal (2018–2025):</strong> API do Portal da Transparência + CSV LOA, com as 3 camadas de filtragem (Programas PPA, Subfunção 422, Órgãos).</li>
+                      <li><strong>Estadual (2018–2025):</strong> Todas as <strong>27 UFs</strong> via RREO/DCA do SICONFI, filtradas por Função 14 e Subfunção 422 com palavras-chave raciais.</li>
+                      <li><strong>Municipal (2018–2025):</strong> Todas as <strong>27 capitais brasileiras</strong> via RREO/DCA do SICONFI, com os mesmos filtros e campos do estadual.</li>
+                    </ul>
+                    <p className="text-xs">Todos os registros incluem: órgão responsável, descritivo da conta, público-alvo, razão de seleção (critério de inclusão), fonte de dados e link direto para o SICONFI.</p>
+                  </div>
+                </section>
+
+                {/* 9. Limitações */}
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base text-destructive">9. Limitações Conhecidas</h4>
                   <ul className="list-disc pl-5 space-y-1.5">
                     <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida via CSV do Portal da Transparência.</li>
                     <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023.</li>
                     <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019 nos endpoints consultados. Segregada em aba dedicada.</li>
                     <li><strong>Programa 5034 (2020):</strong> <strong>Excluído dos cálculos comparativos</strong> — guarda-chuva multi-temático do MDHC que inflaciona artificialmente o total 2018-2022.</li>
-                    <li><strong>Esferas estadual e municipal:</strong> Dados ainda não coletados sistematicamente. Estratégia planejada via API SICONFI (Tesouro Nacional).</li>
+                    <li><strong>Esferas estadual e municipal (SICONFI):</strong> Os dados RREO/DCA refletem <strong>função/subfunção</strong> (agregados), não programas específicos do PPA local. A granularidade é menor que a federal.</li>
                     <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta, não alterações reais de dotação.</li>
                   </ul>
                 </section>
 
                 {/* 9. Identificação de Órgãos */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">9. Identificação de Órgãos Federais</h4>
+                  <h4 className="font-semibold text-foreground text-base">10. Identificação de Órgãos Federais</h4>
                   <Table>
                     <TableHeader>
                       <TableRow>
