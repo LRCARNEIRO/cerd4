@@ -296,13 +296,15 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
     prog.includes('20yp') || prog.includes('7684');
 }
 
-/** Check if a 5034/2020 record is a non-racial distortion (exclude only non-MIR, non-racial-keyword actions) */
+/** Check if a 5034/2020 record is a non-racial MDHC distortion. MIR records are NEVER excluded. */
 function is5034Distortion2020(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
   if (r.ano !== 2020 || !r.programa.toLowerCase().includes('5034')) return false;
-  const texto = [r.programa, r.orgao, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
-  const isMIR = r.orgao === 'MIR' || r.orgao === 'SEPPIR';
+  // MIR/SEPPIR programs are always included
+  if (r.orgao === 'MIR' || r.orgao === 'SEPPIR') return false;
+  // MDHC: exclude unless racial keywords present
+  const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
   const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
-  return !isMIR && !hasRacialKw; // only exclude if NOT MIR and NO racial keywords
+  return !hasRacialKw;
 }
 
 // Hook para estatísticas orçamentárias com dados por esfera

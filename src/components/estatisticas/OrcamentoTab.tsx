@@ -134,12 +134,12 @@ export function OrcamentoTab() {
         continue;
       }
 
-      // Program 5034/2020: include only actions from MIR or with racial keywords
-      if (item.ano === 2020 && item.programa.toLowerCase().includes('5034')) {
-        const texto = [item.programa, item.orgao, item.descritivo, item.publico_alvo, item.observacoes].filter(Boolean).join(' ').toLowerCase();
-        const isMIR = item.orgao === 'MIR' || item.orgao === 'SEPPIR';
+      // Program 5034/2020 from MDHC: exclude unless action has racial keywords
+      // MIR programs are ALWAYS included (no filtering)
+      if (item.ano === 2020 && item.programa.toLowerCase().includes('5034') && item.orgao !== 'MIR' && item.orgao !== 'SEPPIR') {
+        const texto = [item.programa, item.descritivo, item.publico_alvo, item.observacoes].filter(Boolean).join(' ').toLowerCase();
         const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
-        if (!isMIR && !hasRacialKw) continue; // skip non-racial actions
+        if (!hasRacialKw) continue; // skip non-racial MDHC actions
       }
 
       // Federal: all non-SESAI, non-5034/2020 go to federal tab + thematic tabs
