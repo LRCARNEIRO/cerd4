@@ -78,9 +78,10 @@ const orgaoMeta: Record<string, { nome: string; fontes: { nome: string; url: str
 interface OrgaoSectionProps {
   orgao: string;
   programas: Map<string, DadoOrcamentario[]>;
+  getExclusion?: (registros: DadoOrcamentario[]) => { excluded: boolean; reason?: string } | null;
 }
 
-export function OrgaoSection({ orgao, programas }: OrgaoSectionProps) {
+export function OrgaoSection({ orgao, programas, getExclusion }: OrgaoSectionProps) {
   const meta = orgaoMeta[orgao];
 
   return (
@@ -107,9 +108,18 @@ export function OrgaoSection({ orgao, programas }: OrgaoSectionProps) {
       </div>
 
       <div className="space-y-2">
-        {Array.from(programas.entries()).map(([prog, registros]) => (
-          <ProgramCard key={prog} programa={prog} registros={registros} />
-        ))}
+        {Array.from(programas.entries()).map(([prog, registros]) => {
+          const excl = getExclusion?.(registros);
+          return (
+            <ProgramCard
+              key={prog}
+              programa={prog}
+              registros={registros}
+              excluded={excl?.excluded}
+              exclusionReason={excl?.reason}
+            />
+          );
+        })}
       </div>
     </div>
   );

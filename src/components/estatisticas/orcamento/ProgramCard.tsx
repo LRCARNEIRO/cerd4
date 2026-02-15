@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users } from 'lucide-react';
+import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users, EyeOff } from 'lucide-react';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 interface ProgramCardProps {
   programa: string;
   registros: DadoOrcamentario[];
+  excluded?: boolean;
+  exclusionReason?: string;
 }
 
 function extractCode(programa: string): string | null {
@@ -28,7 +30,7 @@ const formatCompact = (value: number) => {
   return formatCurrency(value);
 };
 
-export function ProgramCard({ programa, registros }: ProgramCardProps) {
+export function ProgramCard({ programa, registros, excluded = false, exclusionReason }: ProgramCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const code = extractCode(programa);
@@ -52,20 +54,29 @@ export function ProgramCard({ programa, registros }: ProgramCardProps) {
   const urlFonte = registros[0]?.url_fonte;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className={`overflow-hidden ${excluded ? 'opacity-60 border-dashed border-muted-foreground/30' : ''}`}>
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full text-left p-4 hover:bg-muted/30 transition-colors flex items-center justify-between gap-4"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-sm">{name}</span>
+            {excluded && <EyeOff className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />}
+            <span className={`font-semibold text-sm ${excluded ? 'text-muted-foreground' : ''}`}>{name}</span>
             {code && (
               <Badge variant="secondary" className="text-xs font-mono">
                 {code}
               </Badge>
             )}
+            {excluded && (
+              <Badge variant="outline" className="text-xs border-warning text-warning">
+                Excluído do cálculo
+              </Badge>
+            )}
           </div>
+          {excluded && exclusionReason && (
+            <p className="text-[10px] text-warning mt-0.5">{exclusionReason}</p>
+          )}
           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
             {orgao && (
               <>
