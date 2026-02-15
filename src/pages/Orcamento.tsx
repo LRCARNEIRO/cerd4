@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -148,17 +148,42 @@ function ThematicFilterBar({
   );
 }
 
+/** Check if records are excluded from calculations */
+function getRecordExclusion(registros: DadoOrcamentario[]): { excluded: boolean; reason?: string } | null {
+  // Check SESAI
+  const orgao = registros[0]?.orgao?.toUpperCase() || '';
+  const prog = registros[0]?.programa?.toLowerCase() || '';
+  const obs = ((registros[0] as any)?.observacoes || '').toLowerCase();
+  
+  if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
+      prog.includes('20yp') || prog.includes('7684')) {
+    return { excluded: true, reason: 'SESAI segregada — excluída dos cálculos de política racial' };
+  }
+
+  // Check 5034 — the program itself is a catch-all umbrella (especially 2020)
+  if (prog.includes('5034')) {
+    const has2020 = registros.some(r => r.ano === 2020);
+    if (has2020) {
+      return { excluded: true, reason: 'Prog. 5034/2020 — guarda-chuva MDHC, inclui políticas de mulheres, idosos, etc.' };
+    }
+  }
+
+  return null;
+}
+
 /** Renders grouped data as OrgaoSections or sub-grouped cards */
 function EsferaContent({
   records,
   isLoading,
   emptyMessage,
   useOrgaoSection = true,
+  showExclusions = false,
 }: {
   records: DadoOrcamentario[];
   isLoading: boolean;
   emptyMessage: string;
   useOrgaoSection?: boolean;
+  showExclusions?: boolean;
 }) {
   if (isLoading) {
     return <div className="space-y-4">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32" />)}</div>;
@@ -174,7 +199,12 @@ function EsferaContent({
     return (
       <div className="space-y-8">
         {Array.from(grouped.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([orgao, programas]) => (
-          <OrgaoSection key={orgao} orgao={orgao} programas={programas} />
+          <OrgaoSection
+            key={orgao}
+            orgao={orgao}
+            programas={programas}
+            getExclusion={showExclusions ? getRecordExclusion : undefined}
+          />
         ))}
       </div>
     );
@@ -236,9 +266,13 @@ export default function Orcamento() {
     for (const item of dadosOrcamentarios) {
       const theme = classifyThematic(item);
       
-      // SESAI goes to its own bucket, excluded from all esferas
+      // SESAI goes to its dedicated tab
       if (theme === 'sesai') {
         result.sesai.push(item);
+        // Also include in federal.all for display (will be visually marked as excluded)
+        if (item.esfera !== 'estadual' && item.esfera !== 'municipal') {
+          result.federal.all.push(item);
+        }
         continue;
       }
 
@@ -427,7 +461,11 @@ export default function Orcamento() {
         {/* FEDERAL */}
         <TabsContent value="federal">
           <ThematicFilterBar filters={federalFilters} counts={getThemeCounts('federal')} onToggle={toggleFilter(setFederalFilters)} />
-          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection />
+          <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground">
+            <EyeOff className="w-4 h-4 flex-shrink-0" />
+            <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência, mas <strong>não entram</strong> nos totais, gráficos ou variação percentual.</span>
+          </div>
+          <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions />
         </TabsContent>
 
         {/* ESTADUAL */}
