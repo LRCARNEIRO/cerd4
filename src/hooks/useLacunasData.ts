@@ -303,7 +303,7 @@ function is5034Distortion2020(r: { ano: number; programa: string; orgao?: string
   if (r.orgao === 'MIR' || r.orgao === 'SEPPIR') return false;
   // MDHC: exclude unless racial keywords present
   const texto = [r.programa, r.descritivo, r.publico_alvo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
-  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
+  const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilombo', 'quilombol', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
   return !hasRacialKw;
 }
 
