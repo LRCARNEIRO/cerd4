@@ -102,8 +102,15 @@ export function BudgetIngestionPanel() {
       ));
 
       try {
-        const { data, error } = await supabase.functions.invoke('scrape-orcamento', {
-          body: { esfera: batch.esfera, anos: batch.anos },
+        // Route to the correct edge function per esfera
+        const fnName = batch.esfera === 'federal'
+          ? 'ingest-federal-orcamento'
+          : batch.esfera === 'estadual'
+            ? 'ingest-estadual-siconfi'
+            : 'ingest-municipal-siconfi';
+
+        const { data, error } = await supabase.functions.invoke(fnName, {
+          body: { anos: batch.anos },
         });
 
         if (error) throw error;

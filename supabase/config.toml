@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.ingest-estadual-siconfi]
 verify_jwt = false
+
+[functions.ingest-municipal-siconfi]
+verify_jwt = false
