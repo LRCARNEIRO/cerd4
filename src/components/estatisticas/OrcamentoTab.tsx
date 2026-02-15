@@ -3,7 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Building, Building2, MapPin, Users, TreePine, Tent } from 'lucide-react';
+import { Building, Building2, MapPin, Users, TreePine, Tent, AlertTriangle, Info } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { OrgaoSection } from './orcamento/OrgaoSection';
 import { ProgramCard } from './orcamento/ProgramCard';
@@ -163,6 +164,50 @@ export function OrcamentoTab() {
           </Card>
         ))}
       </div>
+
+      {/* Nota Metodológica */}
+      <Collapsible>
+        <Card className="border-l-4 border-l-warning">
+          <CardContent className="pt-4 pb-3">
+            <CollapsibleTrigger className="flex items-start gap-2 w-full text-left">
+              <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm text-foreground">Nota Metodológica — Série Orçamentária</h4>
+                <p className="text-xs text-muted-foreground mt-1">Clique para expandir limitações e contexto interpretativo dos dados.</p>
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 ml-7 space-y-3">
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> Padrão da Série (2018–2025)
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li><strong>2018–2019:</strong> Base de R$ 93–123 mi (excluindo SESAI) — política racial modesta sob SEPPIR/MMFDH.</li>
+                  <li><strong>2020:</strong> Dotação de R$ 215 mi, mas pago de R$ 578 mi — o programa 5034 era guarda-chuva do MDHC (incluía políticas de mulheres, idosos, etc., nem tudo racial).</li>
+                  <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional.</li>
+                  <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial.</li>
+                  <li><strong>2024–2025:</strong> Dotação de R$ 132–157 mi, mas com novos programas focalizados (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial) e execução recorde (~99%).</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-destructive flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5" /> Limitações Identificadas
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida manualmente via CSV do Portal da Transparência.</li>
+                  <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023 nos endpoints consultados.</li>
+                  <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019. Dados segregados do total de política racial (informativo).</li>
+                  <li><strong>Programa 5034 (2020):</strong> Inflaciona o total por ser guarda-chuva multi-temático; valores devem ser interpretados com cautela.</li>
+                  <li><strong>Programa 5113 (Educação Superior):</strong> Explicitamente excluído por ser genérico e distorcer totais (R$ 14 bi).</li>
+                </ul>
+                <p className="text-[10px] text-muted-foreground italic mt-2">
+                  Série incompleta — dados parciais. Variações percentuais extremas podem refletir hiatos na coleta e não alterações reais de dotação.
+                </p>
+              </div>
+            </CollapsibleContent>
+          </CardContent>
+        </Card>
+      </Collapsible>
 
       {/* Tabs */}
       <Tabs defaultValue="federal" className="w-full">
