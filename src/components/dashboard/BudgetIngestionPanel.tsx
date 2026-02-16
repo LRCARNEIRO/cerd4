@@ -118,17 +118,30 @@ export function BudgetIngestionPanel() {
         const inserted = data?.total_inseridos || 0;
         totalInserted += inserted;
 
-        // Para federal, complementar com dotação LOA (síncrono — espera conclusão real)
+        // Para federal, complementar com dotação LOA — um ano por vez com delay
         if (batch.esfera === 'federal') {
-          for (const ano of batch.anos) {
+          for (let a = 0; a < batch.anos.length; a++) {
+            const ano = batch.anos[a];
+            // Delay de 8s entre chamadas para evitar WORKER_LIMIT
+            if (a > 0) await new Promise(r => setTimeout(r, 8000));
             try {
               const { data: dotData, error: dotErr } = await supabase.functions.invoke('ingest-dotacao-loa', {
-                body: { anos: [ano] },
+                body: { ano },
               });
               if (dotErr) throw dotErr;
               console.log(`Dotação LOA ${ano}: ${dotData?.total_atualizados || 0} atualizados`);
             } catch (dotErr) {
               console.warn(`Dotação LOA ${ano}:`, dotErr);
+              // Retry once after 10s
+              await new Promise(r => setTimeout(r, 10000));
+              try {
+                const { data: dotData2 } = await supabase.functions.invoke('ingest-dotacao-loa', {
+                  body: { ano },
+                });
+                console.log(`Dotação LOA ${ano} (retry): ${dotData2?.total_atualizados || 0} atualizados`);
+              } catch (retryErr) {
+                console.warn(`Dotação LOA ${ano} retry falhou:`, retryErr);
+              }
             }
           }
         }
