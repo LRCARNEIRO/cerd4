@@ -184,7 +184,7 @@ function getRecordExclusion(registros: DadoOrcamentario[]): { excluded: boolean;
   // Check SESAI
   if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
       prog.includes('20yp') || prog.includes('7684')) {
-    return { excluded: true, reason: 'SESAI segregada — excluída dos cálculos de política racial' };
+    return null; // SESAI agora INCLUÍDA nos cálculos de política racial
   }
 
   // SEPPIR always included (real pre-2023 organ)
@@ -362,7 +362,7 @@ export default function Orcamento() {
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Classify all records by esfera + thematic (SESAI segregated)
+  // Classify all records by esfera + thematic (SESAI included in federal totals + separate tab)
   const classified = useMemo(() => {
     const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> & { sesai: DadoOrcamentario[] } = {
       federal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
@@ -376,12 +376,12 @@ export default function Orcamento() {
     for (const item of dadosOrcamentarios) {
       const theme = classifyThematic(item);
       
-      // SESAI goes to its dedicated tab
+      // SESAI goes to its dedicated tab AND to federal (included in calculations)
       if (theme === 'sesai') {
         result.sesai.push(item);
-        // Also include in federal.all for display (will be visually marked as excluded)
         if (item.esfera !== 'estadual' && item.esfera !== 'municipal') {
           result.federal.all.push(item);
+          result.federal.byTheme.indigena.push(item); // SESAI = saúde indígena
         }
         continue;
       }
@@ -397,17 +397,12 @@ export default function Orcamento() {
     return result;
   }, [dadosOrcamentarios]);
 
-  // Apply filters to get visible records per esfera — federal always includes all records
+  // Apply filters to get visible records per esfera
   const getFilteredRecords = (esfera: 'federal' | 'estadual' | 'municipal', filters: Record<ThematicFilter, boolean>) => {
     const data = classified[esfera];
     const result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
       if (filters[key]) result.push(...data.byTheme[key]);
-    }
-    // For federal: always include SESAI records (visually marked as excluded)
-    if (esfera === 'federal') {
-      const sesaiInFederal = data.all.filter(r => classifyThematic(r) === 'sesai');
-      result.push(...sesaiInFederal);
     }
     return result;
   };
@@ -443,10 +438,10 @@ export default function Orcamento() {
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
-    const compute = (records: DadoOrcamentario[], excludeSesaiAnd5034: boolean) => {
+    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean) => {
       const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
-      const clean = excludeSesaiAnd5034
-        ? records.filter(r => classifyThematic(r) !== 'sesai' && !is5034NonRacial(r))
+      const clean = exclude5034Only
+        ? records.filter(r => !is5034NonRacial(r))
         : records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
@@ -470,27 +465,22 @@ export default function Orcamento() {
     };
   }, [classified, includeExcludedInCalc]);
 
-  // Dynamic stats based on toggle — when includeExcludedInCalc is true, add SESAI + non-racial 5034 to totals
+  // Dynamic stats based on toggle — when includeExcludedInCalc is true, add non-racial 5034 to totals
+  // SESAI is ALWAYS included in totals now
   const dynamicStats = useMemo(() => {
     if (!stats) return null;
     if (!includeExcludedInCalc) {
-      // Default: use the hook stats which already exclude SESAI + non-racial 5034
       return {
         totalPeriodo1: stats.totalPeriodo1,
         totalPeriodo2: stats.totalPeriodo2,
         variacao: stats.variacao,
         totalRegistros: stats.totalRegistros,
-        label: 'Exclui SESAI e 5034 não-racial',
+        label: 'Inclui SESAI · Exclui 5034 não-racial',
       };
     }
-    // Include excluded: add SESAI + non-racial 5034 totals back in
+    // Include excluded: add non-racial 5034 totals back in
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
-    const allExcluded = dadosOrcamentarios?.filter(r => {
-      const theme = classifyThematic(r);
-      if (theme === 'sesai') return true;
-      if (is5034NonRacial(r)) return true;
-      return false;
-    }) || [];
+    const allExcluded = dadosOrcamentarios?.filter(r => is5034NonRacial(r)) || [];
     const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
     const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2026).reduce((s, r) => s + valorEfetivo(r), 0);
     const t1 = stats.totalPeriodo1 + excl1;
@@ -661,14 +651,14 @@ export default function Orcamento() {
           <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
             <div className="flex items-center gap-2">
               <EyeOff className="w-4 h-4 flex-shrink-0" />
-              <span>Programas com <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge> são exibidos para transparência. O toggle ao lado controla se entram nos totais e variação percentual.</span>
+              <span>Ações 5034/MDHC sem palavras-chave raciais são marcadas como <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge>. O toggle ao lado controla se entram nos totais. SESAI está sempre incluída.</span>
             </div>
             <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium shrink-0">
               <Checkbox
                 checked={includeExcludedInCalc}
                 onCheckedChange={(checked) => setIncludeExcludedInCalc(!!checked)}
               />
-              Incluir excluídos no cálculo
+              Incluir 5034 não-racial no cálculo
             </label>
           </div>
           <EsferaContent records={federalRecords} isLoading={isLoading} emptyMessage="Nenhum programa federal encontrado com os filtros selecionados." useOrgaoSection showExclusions />
@@ -696,7 +686,7 @@ export default function Orcamento() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {evolucaoPorAno.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Exclui SESAI e 5034 não-racial)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Orçamentária por Ano (Inclui SESAI · Exclui 5034 não-racial)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -717,7 +707,7 @@ export default function Orcamento() {
               )}
               {porPrograma.length > 0 && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Exclui SESAI e 5034 não-racial)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Inclui SESAI · Exclui 5034 não-racial)</CardTitle></CardHeader>
                   <CardContent>
                     <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
@@ -859,9 +849,9 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-destructive">{formatCurrency(stats?.totalPeriodo1 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034 não-racial MDHC)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (inclui SESAI · exclui Prog. 5034 não-racial MDHC)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
-                    <li><strong>2018–2019:</strong> Base modesta de R$ 93–123 mi sob SEPPIR/MMFDH (segmentando SESAI)</li>
+                    <li><strong>2018–2019:</strong> Base sob SEPPIR/MMFDH + SESAI (~R$ 1,3-1,5 bi/ano)</li>
                     <li><strong>2020:</strong> Programa 5034 <strong>excluído do cálculo</strong> — era guarda-chuva do MDHC (R$ 578 mi pagos incluíam políticas de mulheres, idosos, etc.)</li>
                     <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional confirmado</li>
                   </ul>
@@ -871,7 +861,7 @@ export default function Orcamento() {
                 <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-3xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total (exclui SESAI e Prog. 5034 não-racial MDHC)</p>
+                  <p className="text-xs text-muted-foreground">Valor executado total (inclui SESAI · exclui Prog. 5034 não-racial MDHC)</p>
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
                     <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
                     <li><strong>2024–2025:</strong> Novos programas PPA (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial)</li>
@@ -1008,15 +998,15 @@ export default function Orcamento() {
 
                 {/* 4. Segregação SESAI */}
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">4. Segregação Mandatória da SESAI</h4>
-                  <p>Os gastos da SESAI (Saúde Indígena — Ações 20YP e 7684) são <strong>obrigatoriamente segregados</strong> de todos os cálculos:</p>
+                  <h4 className="font-semibold text-foreground text-base">4. Integração da SESAI nos Totais</h4>
+                  <p>Os gastos da SESAI (Saúde Indígena — Ações 20YP e 7684) são <strong>incluídos integralmente</strong> nos cálculos de política racial federal:</p>
                   <ul className="list-disc pl-5 space-y-1">
-                    <li>Excluídos dos cards de resumo (Política Racial, Povos Indígenas, Quilombolas, Ciganos)</li>
-                    <li>Excluídos dos gráficos de evolução temporal e comparativos</li>
-                    <li>Excluídos do cálculo de variação percentual 2018-22 vs 2023-26</li>
-                    <li>Mantidos em aba dedicada apenas para fins informativos</li>
+                    <li>Computados nos cards de resumo (Política Racial Federal) e nos totais por período</li>
+                    <li>Incluídos nos gráficos de evolução temporal e comparativos</li>
+                    <li>Incluídos no cálculo de variação percentual 2018-22 vs 2023-26</li>
+                    <li>Também exibidos em aba dedicada (SESAI) para análise detalhada</li>
                   </ul>
-                  <p><strong>Justificativa:</strong> O elevado orçamento de saúde indígena (que chega a bilhões) mascara as variações reais da política racial finalística, impedindo a identificação precisa do desmonte institucional de 2021-2022.</p>
+                  <p><strong>Justificativa:</strong> A saúde indígena é componente fundamental da política racial federal. Sua inclusão reflete a execução completa do eixo indígena, com a aba separada permitindo análise granular.</p>
                 </section>
 
                 {/* 4b. Exclusão do Programa 5034 (2020) */}
@@ -1029,7 +1019,7 @@ export default function Orcamento() {
                     <li>Proteção social genérica</li>
                   </ul>
                   <p className="mt-2"><strong>Dados brutos de 2020:</strong> Dotação de R$ 215 mi, mas Pago de R$ 578 mi — valor que <strong>não é exclusivamente racial</strong>.</p>
-                  <p><strong>Decisão metodológica:</strong> O Programa 5034 de 2020 é <strong>excluído de todos os cálculos comparativos</strong> (totais, variação percentual, gráficos), assim como a SESAI. Os registros permanecem acessíveis na aba Federal para consulta individualizada.</p>
+                  <p><strong>Decisão metodológica:</strong> O Programa 5034 de 2020 é <strong>excluído de todos os cálculos comparativos</strong> (totais, variação percentual, gráficos). Os registros permanecem acessíveis na aba Federal para consulta individualizada.</p>
                   <div className="bg-destructive/10 rounded-lg p-3 mt-2">
                     <p className="text-xs text-destructive font-medium">⚠ Sem esta exclusão, o total 2018-2022 seria artificialmente inflado por R$ 578 mi de gastos multi-temáticos, mascarando o desmonte real da política racial finalística.</p>
                   </div>
@@ -1038,7 +1028,7 @@ export default function Orcamento() {
                 {/* 5. Padrão Nuançado da Série */}
                 <section className="space-y-2">
                   <h4 className="font-semibold text-foreground text-base">5. Padrão Nuançado da Série 2018–2025</h4>
-                  <p>Após as exclusões de SESAI e ações não-raciais do Programa 5034/MDHC, a série revela um padrão mais nuançado:</p>
+                  <p>Após a exclusão de ações não-raciais do Programa 5034/MDHC, a série revela um padrão mais nuançado (SESAI incluída):</p>
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1146,7 +1136,7 @@ export default function Orcamento() {
                   <ul className="list-disc pl-5 space-y-1.5">
                     <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida via CSV do Portal da Transparência.</li>
                     <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023.</li>
-                    <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019 nos endpoints consultados. Segregada em aba dedicada.</li>
+                    <li><strong>SESAI (Saúde Indígena):</strong> Dados de 2018–2025 capturados via Camada 4 (ações 20YP/7684). Incluída nos totais federais e exibida também em aba dedicada.</li>
                     <li><strong>Programa 5034 (2020):</strong> <strong>Excluído dos cálculos comparativos</strong> — guarda-chuva multi-temático do MDHC que inflaciona artificialmente o total 2018-2022.</li>
                     <li><strong>Esferas estadual e municipal (SICONFI):</strong> Os dados RREO/DCA refletem <strong>função/subfunção</strong> (agregados), não programas específicos do PPA local. A granularidade é menor que a federal.</li>
                     <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta, não alterações reais de dotação.</li>
