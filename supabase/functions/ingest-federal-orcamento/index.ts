@@ -417,6 +417,15 @@ Deno.serve(async (req) => {
               apiKey,
             );
             brutos += dados.length;
+
+            // DEBUG: log raw field names from first item of programa 5034 / 2023
+            if (dados.length > 0 && prog.codigo === "5034" && ano === 2023) {
+              console.log(`  DEBUG raw keys: ${Object.keys(dados[0]).join(", ")}`);
+              const soRec = dados.find((d: any) => String(d.codigoAcao || d.acao || "").includes("00SO"));
+              if (soRec) console.log(`  DEBUG 00SO raw: ${JSON.stringify(soRec)}`);
+              else console.log(`  DEBUG 00SO not found in ${dados.length} rows. Sample codAcao: ${dados.slice(0,3).map((d:any) => d.codigoAcao || d.acao).join(", ")}`);
+            }
+
             const aggregated = aggregateApiRows(dados);
 
             for (const item of aggregated) {
