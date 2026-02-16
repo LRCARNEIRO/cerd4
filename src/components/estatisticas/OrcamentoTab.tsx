@@ -28,7 +28,7 @@ function classifyRecord(r: DadoOrcamentario): string[] {
   // Indígena (excluding SESAI)
   if (['FUNAI', 'MPI'].includes(orgao) ||
       prog.includes('indigen') || prog.includes('indígen') ||
-      prog.includes('2065')) {
+      prog.includes('2065') || prog.includes('0617') || prog.includes('5136')) {
     cats.push('indigena');
   }
 
@@ -235,31 +235,67 @@ export function OrcamentoTab() {
             <CollapsibleContent className="mt-3 ml-7 space-y-3">
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> Estratégia de Coleta — 4 Camadas Independentes
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li><strong>Camada 1 — Programas Temáticos do PPA:</strong> Consulta direta por código de programa finalístico: 2034 (SEPPIR, PPA 2016-2019), 5034 (MDHC/MIR, desde 2020), 0617 (Povos Indígenas PPA 2020-2023), 2065 (Povos Indígenas PPA 2012-2019), 5136 (Povos Indígenas PPA 2024+), 5802/5803/5804 (MIR, desde 2024), 0153 (Criança/Adolescente).</li>
+                  <li><strong>Camada 2 — Subfunção 422:</strong> Direitos Individuais, Coletivos e Difusos. Captura ações não vinculadas aos programas acima, validadas por palavras-chave raciais/étnicas.</li>
+                  <li><strong>Camada 3 — Órgãos com Mandato Direto:</strong> MIR (67000) e MPI (92000). Captura toda despesa desses órgãos, deduplicada contra camadas anteriores.</li>
+                  <li><strong>Camada 4 — Ações Específicas SESAI:</strong> Consulta direta por código de ação (20YP e 7684). Necessária porque a SESAI migrou do programa indígena (2065/0617) para o programa de saúde (5022) no PPA 2020-2023, ficando fora das Camadas 1-3.</li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> Transição de Códigos de Programa — PPA a PPA
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li><strong>Povos Indígenas:</strong> 2065 (PPA 2012-2019) → 0617 (PPA 2020-2023) → 5136 (PPA 2024-2027). Auditoria confirmou que o programa 2065 não retorna dados após 2019 na API; o código 0617 foi identificado como substituto exato.</li>
+                  <li><strong>SESAI (Saúde Indígena):</strong> Ações 20YP/7684 estavam sob programa 2065 em 2018-2019. No PPA 2020-2023 migraram para programa 5022 (Saúde). A Camada 4 resolve isso buscando diretamente por código de ação.</li>
+                  <li><strong>Política Racial:</strong> 2034 (SEPPIR, PPA 2016-2019) → 5034 (MDHC guarda-chuva, PPA 2020-2023) → 5804 (MIR, PPA 2024+). O 5034 exige filtragem por palavras-chave raciais para excluir ações genéricas do MDHC.</li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
                   <Info className="w-3.5 h-3.5" /> Padrão da Série (2018–2025)
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-                  <li><strong>2018–2019:</strong> Base de R$ 93–123 mi (excluindo SESAI) — política racial modesta sob SEPPIR/MMFDH.</li>
-                  <li><strong>2020:</strong> Dotação de R$ 215 mi, mas pago de R$ 578 mi — o programa 5034 era guarda-chuva do MDHC (incluía políticas de mulheres, idosos, etc., nem tudo racial).</li>
-                  <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional.</li>
-                  <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial.</li>
-                  <li><strong>2024–2025:</strong> Dotação de R$ 132–157 mi, mas com novos programas focalizados (5802 Quilombolas, 5803 Juventude Negra, 5804 Igualdade Étnico-Racial) e execução recorde (~99%).</li>
+                  <li><strong>2018–2019:</strong> Base de R$ 93–123 mi (excluindo SESAI) — política racial modesta sob SEPPIR/MMFDH. SESAI: ~R$ 1,37–1,47 bi (20YP) + R$ 23–29 mi (7684). FUNAI: 5 ações, ~R$ 30–38 mi.</li>
+                  <li><strong>2020–2023:</strong> Programa 5034 era guarda-chuva do MDHC; apenas ações com palavras-chave raciais incluídas. FUNAI/MPI: capturados via programa 0617. SESAI: capturada via Camada 4 (ação 20YP/7684 → programa 5022).</li>
+                  <li><strong>2021–2022:</strong> Queda real de dotação para R$ 161–173 mi — desmonte institucional da pauta racial.</li>
+                  <li><strong>2023:</strong> Salto para R$ 457 mi — criação do MIR e reconstrução da pauta racial.</li>
+                  <li><strong>2024–2025:</strong> Novos programas focalizados: 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra), 5804 (Igualdade Étnico-Racial). FUNAI/MPI: programa 5136.</li>
                 </ul>
               </div>
+
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-destructive flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Limitações Identificadas
+                  <AlertTriangle className="w-3.5 h-3.5" /> Tratamento de Distorções
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-                  <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida manualmente via CSV do Portal da Transparência.</li>
-                  <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023 nos endpoints consultados.</li>
-                  <li><strong>SESAI (Saúde Indígena):</strong> Aparece somente em 2018–2019. Dados segregados do total de política racial (informativo).</li>
-                  <li><strong>Programa 5034 (2020):</strong> Incluídas apenas ações do MIR ou com palavras-chave raciais; demais ações do guarda-chuva MDHC são excluídas.</li>
-                  <li><strong>Programa 5113 (Educação Superior):</strong> Explicitamente excluído por ser genérico e distorcer totais (R$ 14 bi).</li>
+                  <li><strong>Bypass Temporal MIR pré-2023:</strong> A API retroativamente rotula registros do MDHC como MIR (órgão 67000). Para anos &lt; 2023, ações genéricas do MDHC (0E85, 14XS, 00SN, 21AR, 21AS, 21AT, 21AU) são excluídas; demais ações exigem palavras-chave raciais nos campos programa/ação.</li>
+                  <li><strong>SESAI Segregada:</strong> Dados de saúde indígena (~R$ 1,3–1,5 bi/ano) exibidos em aba separada e NÃO computados no total de política racial.</li>
+                  <li><strong>Programa 5113 (Educação Superior):</strong> Excluído por ser genérico (R$ 14 bi).</li>
+                  <li><strong>Programas Transversais:</strong> Bolsa Família (2068), MCMV (2049), SUS (2012), SUAS (2015) e Fundo Eleitoral (6012) excluídos como falsos positivos.</li>
                 </ul>
-                <p className="text-[10px] text-muted-foreground italic mt-2">
-                  Série incompleta — dados parciais. Variações percentuais extremas podem refletir hiatos na coleta e não alterações reais de dotação.
-                </p>
               </div>
+
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> Dotação LOA — Complementação via Dados Abertos
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li>A API REST do Portal da Transparência não fornece valores de <strong>Dotação Inicial (LOA)</strong>.</li>
+                  <li>Os valores são obtidos dos arquivos ZIP/CSV do Portal de Dados Abertos, processados pela função <em>ingest-dotacao-loa</em>.</li>
+                  <li>Matching entre execução (API) e dotação (CSV) por chave composta <strong>Código Programa | Código Ação</strong>.</li>
+                  <li>Proporção de dotação distribuída entre ações com base no peso relativo do valor pago.</li>
+                </ul>
+              </div>
+
+              <p className="text-[10px] text-muted-foreground italic mt-2">
+                Fonte: API Portal da Transparência + Dados Abertos (CSV/ZIP). Filtro: racial, racismo, indígena, quilombola, cigano, romani, afro, palmares, terreiro, matriz africana. Deduplicação cross-layer por chave orgao|programa|ano.
+              </p>
             </CollapsibleContent>
           </CardContent>
         </Card>
