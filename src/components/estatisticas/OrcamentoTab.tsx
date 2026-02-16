@@ -22,7 +22,8 @@ function classifyRecord(r: DadoOrcamentario): string[] {
   if (orgao === 'SESAI' || obs.includes('saúde indígena') || obs.includes('sesai') ||
       prog.includes('20yp') || prog.includes('7684')) {
     cats.push('sesai');
-    return cats; // SESAI is always separate
+    cats.push('federal_geral'); // SESAI compõe o somatório federal
+    return cats;
   }
 
   // Indígena (excluding SESAI)
