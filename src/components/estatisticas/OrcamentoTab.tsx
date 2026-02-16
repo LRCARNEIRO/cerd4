@@ -128,9 +128,10 @@ export function OrcamentoTab() {
 
       const cats = classifyRecord(item);
 
-      // SESAI goes only to sesai bucket, NOT to federal total
+      // SESAI goes to sesai bucket AND to federal total (included in calculations)
       if (cats.includes('sesai')) {
         buckets.sesai.push(item);
+        buckets.federal.push(item);
         continue;
       }
 
@@ -189,7 +190,7 @@ export function OrcamentoTab() {
       {/* Summary cards — nuanced with dotação vs pago */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
-          { label: 'Política Racial (Federal)', sub: 'Exclui SESAI', dotacao: sumDotacao(categorized.federal), pago: sumPago(categorized.federal), count: categorized.federal.length, color: 'border-l-primary' },
+          { label: 'Política Racial (Federal)', sub: 'Inclui SESAI', dotacao: sumDotacao(categorized.federal), pago: sumPago(categorized.federal), count: categorized.federal.length, color: 'border-l-primary' },
           { label: 'Povos Indígenas', sub: 'FUNAI / MPI', dotacao: sumDotacao(categorized.indigena), pago: sumPago(categorized.indigena), count: categorized.indigena.length, color: 'border-l-chart-2' },
           { label: 'Quilombolas', sub: 'INCRA / Ações 20G7', dotacao: sumDotacao(categorized.quilombola), pago: sumPago(categorized.quilombola), count: categorized.quilombola.length, color: 'border-l-chart-3' },
           { label: 'Ciganos', sub: 'Povo Cigano / Romani', dotacao: sumDotacao(categorized.ciganos), pago: sumPago(categorized.ciganos), count: categorized.ciganos.length, color: 'border-l-chart-4' },
@@ -275,7 +276,7 @@ export function OrcamentoTab() {
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
                   <li><strong>Bypass Temporal MIR pré-2023:</strong> A API retroativamente rotula registros do MDHC como MIR (órgão 67000). Para anos &lt; 2023, ações genéricas do MDHC (0E85, 14XS, 00SN, 21AR, 21AS, 21AT, 21AU) são excluídas; demais ações exigem palavras-chave raciais nos campos programa/ação.</li>
-                  <li><strong>SESAI Segregada:</strong> Dados de saúde indígena (~R$ 1,3–1,5 bi/ano) exibidos em aba separada e NÃO computados no total de política racial.</li>
+                  <li><strong>SESAI Incluída no Cálculo:</strong> Com a correção da cobertura 2020-2023 (Camada 4), os dados de saúde indígena (~R$ 1,3–1,5 bi/ano) são computados nos totais de política racial federal e exibidos também em aba separada para análise detalhada.</li>
                   <li><strong>Programa 5113 (Educação Superior):</strong> Excluído por ser genérico (R$ 14 bi).</li>
                   <li><strong>Programas Transversais:</strong> Bolsa Família (2068), MCMV (2049), SUS (2012), SUAS (2015) e Fundo Eleitoral (6012) excluídos como falsos positivos.</li>
                 </ul>
