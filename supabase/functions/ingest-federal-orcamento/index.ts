@@ -418,20 +418,6 @@ Deno.serve(async (req) => {
             );
             brutos += dados.length;
 
-            // DEBUG: log raw API fields for programa 5034
-            if (dados.length > 0 && prog.codigo === "5034") {
-              console.log(`  DEBUG ${ano} raw keys: ${Object.keys(dados[0]).join(", ")}`);
-              // Log ALL 00SO records before aggregation
-              const soRecords = dados.filter((d: any) => String(d.codigoAcao || "").includes("00SO"));
-              if (soRecords.length > 0) {
-                for (const sr of soRecords) {
-                  console.log(`  DEBUG 00SO localizador: empenhado=${sr.empenhado} liquidado=${sr.liquidado} pago=${sr.pago}`);
-                }
-              } else {
-                console.log(`  DEBUG 00SO not found in ${dados.length} rows`);
-              }
-            }
-
             const aggregated = aggregateApiRows(dados);
 
             for (const item of aggregated) {
@@ -536,6 +522,93 @@ Deno.serve(async (req) => {
       logCamadas["orgaos"] = { brutos, relevantes };
       console.log(`  Camada 3 totais: ${brutos} brutos → ${relevantes} relevantes`);
     }
+
+    // ===== COMPLEMENTAÇÃO: Movimentação Líquida (liquidado/pago reais) =====
+    // O endpoint por-funcional-programatica frequentemente retorna liquidado=0 e pago=0
+    // mesmo quando há execução real. O endpoint movimentacao-liquida traz os valores corretos.
+    console.log(`\n--- COMPLEMENTAÇÃO: Movimentação Líquida ---`);
+    
+    const progCodesUsed = new Set<string>();
+    for (const record of registrosMap.values()) {
+      const codMatch = record.programa.match(/^(\d{4})\s*[–-]/);
+      if (codMatch) progCodesUsed.add(codMatch[1]);
+    }
+    
+    let movLiquidaComplementados = 0;
+    for (const progCode of progCodesUsed) {
+      for (const ano of anos) {
+        try {
+          const movData = await fetchPaginated(
+            "despesas/por-funcional-programatica/movimentacao-liquida",
+            { ano: String(ano), programa: progCode },
+            apiKey,
+          );
+          
+          if (movData.length === 0) continue;
+          
+          console.log(`  MovLiquida ${progCode}/${ano}: ${movData.length} registros brutos`);
+          // Log unique action codes
+          const acoes = new Set(movData.map((d: any) => d.codigoAcao || "?"));
+          console.log(`  MovLiquida ações: ${Array.from(acoes).join(", ")}`);
+          
+          // Aggregate by programa+acao (sum across grupo/elemento/modalidade)
+          const movAgg = new Map<string, { empenhado: number; liquidado: number; pago: number }>();
+          for (const item of movData) {
+            const codAcao = item.codigoAcao || "";
+            const key = `${progCode}|${codAcao}`;
+            const existing = movAgg.get(key) || { empenhado: 0, liquidado: 0, pago: 0 };
+            existing.empenhado += parseBRL(item.empenhado) || 0;
+            existing.liquidado += parseBRL(item.liquidado) || 0;
+            existing.pago += parseBRL(item.pago) || 0;
+            movAgg.set(key, existing);
+          }
+          // Log aggregated 00SO
+          const so = movAgg.get(`${progCode}|00SO`);
+          if (so) console.log(`  MovLiquida 00SO agg: emp=${so.empenhado} liq=${so.liquidado} pago=${so.pago}`);
+          
+          // Update registrosMap entries
+          for (const [regKey, record] of registrosMap.entries()) {
+            const progMatch = record.programa.match(/^(\d{4})\s*[–-]/);
+            const acaoMatch = record.programa.match(/\/\s*(\w{4})\s*[–-]/);
+            if (!progMatch || progMatch[1] !== progCode) continue;
+            if (record.ano !== ano) continue;
+            
+            const codAcao = acaoMatch ? acaoMatch[1] : "";
+            const movKey = `${progCode}|${codAcao}`;
+            const movValues = movAgg.get(movKey);
+            if (!movValues) {
+              if (record.programa.includes("00SO")) {
+                console.log(`  DEBUG 00SO match attempt: codAcao="${codAcao}" movKey="${movKey}" keys=${Array.from(movAgg.keys()).filter(k => k.includes("00")).join(",")}`);
+              }
+              continue;
+            }
+            
+            let updated = false;
+            const currentLiq = Number(record.liquidado) || 0;
+            const currentPago = Number(record.pago) || 0;
+            const currentEmp = Number(record.empenhado) || 0;
+            
+            if (movValues.liquidado > currentLiq) { record.liquidado = movValues.liquidado; updated = true; }
+            if (movValues.pago > currentPago) { record.pago = movValues.pago; updated = true; }
+            if (movValues.empenhado > currentEmp) { record.empenhado = movValues.empenhado; updated = true; }
+            
+            if (updated) {
+              const dotRef = record.dotacao_autorizada || record.dotacao_inicial;
+              record.percentual_execucao = dotRef && record.pago 
+                ? Math.round((record.pago / dotRef) * 10000) / 100 
+                : null;
+              registrosMap.set(regKey, record);
+              movLiquidaComplementados++;
+              console.log(`  Complementado: ${record.programa.substring(0, 60)} ${ano} → liq=${record.liquidado} pago=${record.pago}`);
+            }
+          }
+        } catch (e) {
+          console.warn(`  MovLiquida ${progCode}/${ano}: ${e instanceof Error ? e.message : "?"}`);
+        }
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+    console.log(`  Movimentação líquida: ${movLiquidaComplementados} registros complementados`);
 
     // ===== INSERÇÃO NO BANCO =====
     const batch = Array.from(registrosMap.values());
