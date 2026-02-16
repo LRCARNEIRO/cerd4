@@ -231,17 +231,11 @@ function resolveDescritivo(item: any): string | null {
   return nomeAcao || nomeProg || null;
 }
 
-function resolvePublicoAlvo(grupoFocal: string | null, item: any): string | null {
-  const text = [item.programa, item.nomePrograma, item.acao, item.nomeAcao].filter(Boolean).join(" ").toLowerCase();
-  if (grupoFocal === "saude_indigena") return "Povos indígenas (saúde)";
-  if (grupoFocal === "indigenas") return "Povos indígenas";
-  if (grupoFocal === "quilombolas") return "Comunidades quilombolas";
-  if (grupoFocal === "ciganos") return "Povos ciganos/romani";
-  if (grupoFocal === "juventude_negra") return "Juventude negra";
-  if (grupoFocal === "negros") return "População negra";
-  if (text.includes("criança") || text.includes("adolescente")) return "Crianças e adolescentes";
-  if (text.includes("mulher")) return "Mulheres";
-  return "População em situação de vulnerabilidade racial/étnica";
+/** publico_alvo is NOT available from the API — set to null.
+ *  The PPA defines público-alvo at program level only (generic), not per action.
+ *  All filtering must use real API fields: programa, ação (descritivo), orgão. */
+function resolvePublicoAlvo(_grupoFocal: string | null, _item: any): null {
+  return null;
 }
 
 function resolveRazaoSelecao(item: any, camada: string, orgao: string): string {

@@ -299,8 +299,9 @@ function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: strin
 /** Check if a 5034 record is a non-racial action. 
  *  SEPPIR is always included (existed pre-2023). 
  *  MIR bypass only for ano >= 2023 (created in 2023; pre-2023 "MIR" labels are retroactive API reclassifications of MDHC).
- *  For pre-2023 "MIR", publico_alvo is unreliable (ingestion set "População negra" for all actions) — check only programa+descritivo. */
-function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string; publico_alvo?: string; observacoes?: string }): boolean {
+ *  IMPORTANT: publico_alvo is NEVER used for filtering — it's a fabricated field, not from the API.
+ *  Only real API fields are used: programa and descritivo (nome da ação). */
+function is5034Distortion(r: { ano: number; programa: string; orgao?: string; descritivo?: string }): boolean {
   if (!r.programa.toLowerCase().includes('5034')) return false;
   const orgaoUpper = (r.orgao || '').toUpperCase();
   // SEPPIR always included (real pre-2023 organ)
@@ -310,13 +311,8 @@ function is5034Distortion(r: { ano: number; programa: string; orgao?: string; de
 
   const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
 
-  // Pre-2023 "MIR" = retroactive MDHC: publico_alvo was erroneously set to "População negra" by ingestion
-  // Only check programa + descritivo for these records
-  const isMirPre2023 = (orgaoUpper === 'MIR' || orgaoUpper.includes('IGUALDADE RACIAL') || orgaoUpper.includes('MIR/')) && r.ano < 2023;
-  const campos = isMirPre2023
-    ? [r.programa, r.descritivo]
-    : [r.programa, r.descritivo, r.publico_alvo, r.observacoes];
-  const texto = campos.filter(Boolean).join(' ').toLowerCase();
+  // Only check real API fields: programa (código + nome) and descritivo (nome da ação)
+  const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
   const hasRacialKw = racialKws.some(kw => texto.includes(kw));
   return !hasRacialKw;
 }

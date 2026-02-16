@@ -143,11 +143,9 @@ export function OrcamentoTab() {
       const isMirPost2023 = isMirLike && item.ano >= 2023;
 
       // Program 5034: exclude non-racial actions unless from SEPPIR or MIR post-2023
+      // IMPORTANT: Only check real API fields (programa, descritivo) — publico_alvo is fabricated
       if (item.programa.toLowerCase().includes('5034') && !isSeppir && !isMirPost2023) {
-        // Pre-2023 "MIR": publico_alvo unreliable (ingestion error) — check only programa+descritivo
-        const isMirPre2023 = isMirLike && item.ano < 2023;
-        const campos = isMirPre2023 ? [item.programa, item.descritivo] : [item.programa, item.descritivo, item.publico_alvo, item.observacoes];
-        const texto = campos.filter(Boolean).join(' ').toLowerCase();
+        const texto = [item.programa, item.descritivo].filter(Boolean).join(' ').toLowerCase();
         const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
         if (!hasRacialKw) continue;
       }

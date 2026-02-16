@@ -197,13 +197,11 @@ function getRecordExclusion(registros: DadoOrcamentario[]): { excluded: boolean;
     // Pre-2023 "MIR" falls through to 5034 keyword check below
   }
 
-  // Check 5034 — exclude unless racial keywords present in programa+descritivo
-  // For pre-2023 "MIR", publico_alvo is unreliable (ingestion set "População negra" for all)
+  // Check 5034 — exclude unless racial keywords present in programa+descritivo (real API fields only)
+  // publico_alvo is NEVER used — it's fabricated by ingestion, not from the API
   if (prog.includes('5034')) {
-    const isMirPre2023 = (orgao === 'MIR' || orgao.includes('IGUALDADE RACIAL') || orgao.includes('MIR/')) && registros.every(r => r.ano < 2023);
     const texto = registros.map(r => {
-      const campos = isMirPre2023 ? [r.programa, r.descritivo] : [r.programa, r.descritivo, r.publico_alvo, r.observacoes];
-      return campos.filter(Boolean).join(' ');
+      return [r.programa, r.descritivo].filter(Boolean).join(' ');
     }).join(' ').toLowerCase();
     const hasRacialKw = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'].some(kw => texto.includes(kw));
     if (!hasRacialKw) {
@@ -423,16 +421,14 @@ export default function Orcamento() {
 
   /** Check if a record is a non-racial 5034 action (should be excluded from calc).
    *  SEPPIR always included. MIR bypass only for ano >= 2023 (pre-2023 "MIR" = retroactive MDHC).
-   *  For pre-2023 "MIR", publico_alvo is unreliable — check only programa+descritivo. */
+   *  Only checks real API fields: programa + descritivo. publico_alvo is fabricated and NEVER used. */
   const is5034NonRacial = (r: DadoOrcamentario): boolean => {
     if (!r.programa.toLowerCase().includes('5034')) return false;
     const orgUpper = (r.orgao || '').toUpperCase();
     if (orgUpper === 'SEPPIR') return false;
     if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) && r.ano >= 2023) return false;
     const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
-    const isMirPre2023 = (orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) && r.ano < 2023;
-    const campos = isMirPre2023 ? [r.programa, r.descritivo] : [r.programa, r.descritivo, r.publico_alvo, r.observacoes];
-    const texto = campos.filter(Boolean).join(' ').toLowerCase();
+    const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
     return !racialKws.some(kw => texto.includes(kw));
   };
 
