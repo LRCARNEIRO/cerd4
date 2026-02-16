@@ -287,7 +287,7 @@ export function useDadosOrcamentarios(filters?: {
   });
 }
 
-/** Check if a record is SESAI (Saúde Indígena) — must be excluded from racial policy totals */
+/** Check if a record is SESAI (Saúde Indígena) — used for informational stats only (SESAI IS INCLUDED in totals) */
 function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: string | null }): boolean {
   const orgao = r.orgao.toUpperCase();
   const prog = r.programa.toLowerCase();
