@@ -118,32 +118,29 @@ export function BudgetIngestionPanel() {
         const inserted = data?.total_inseridos || 0;
         totalInserted += inserted;
 
-        // Para federal, complementar com dotação LOA — um ano por vez com delay
+        // Para federal, complementar com dotação LOA — chamadas paralelas por ano
         if (batch.esfera === 'federal') {
-          for (let a = 0; a < batch.anos.length; a++) {
-            const ano = batch.anos[a];
-            // Delay de 8s entre chamadas para evitar WORKER_LIMIT
-            if (a > 0) await new Promise(r => setTimeout(r, 8000));
-            try {
-              const { data: dotData, error: dotErr } = await supabase.functions.invoke('ingest-dotacao-loa', {
-                body: { ano },
-              });
-              if (dotErr) throw dotErr;
-              console.log(`Dotação LOA ${ano}: ${dotData?.total_atualizados || 0} atualizados`);
-            } catch (dotErr) {
-              console.warn(`Dotação LOA ${ano}:`, dotErr);
-              // Retry once after 10s
-              await new Promise(r => setTimeout(r, 10000));
+          console.log(`Iniciando complementação de dotação LOA para ${batch.anos.length} anos...`);
+          const dotPromises = batch.anos.map(async (ano) => {
+            const invoke = async (attempt: number): Promise<void> => {
               try {
-                const { data: dotData2 } = await supabase.functions.invoke('ingest-dotacao-loa', {
+                const { data: dotData, error: dotErr } = await supabase.functions.invoke('ingest-dotacao-loa', {
                   body: { ano },
                 });
-                console.log(`Dotação LOA ${ano} (retry): ${dotData2?.total_atualizados || 0} atualizados`);
-              } catch (retryErr) {
-                console.warn(`Dotação LOA ${ano} retry falhou:`, retryErr);
+                if (dotErr) throw dotErr;
+                console.log(`Dotação LOA ${ano}: ${dotData?.total_atualizados || 0} atualizados`);
+              } catch (err) {
+                if (attempt < 2) {
+                  console.warn(`Dotação LOA ${ano} tentativa ${attempt + 1} falhou, retentando em 5s...`);
+                  await new Promise(r => setTimeout(r, 5000));
+                  return invoke(attempt + 1);
+                }
+                console.warn(`Dotação LOA ${ano} falhou após ${attempt + 1} tentativas:`, err);
               }
-            }
-          }
+            };
+            return invoke(0);
+          });
+          await Promise.all(dotPromises);
         }
 
         setJobs(prev => prev.map(j =>
