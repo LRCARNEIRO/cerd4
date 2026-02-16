@@ -61,7 +61,9 @@ const corsHeaders = {
 
 // ===== CAMADA 1: Programas temáticos do PPA =====
 const PROGRAMAS_TEMATICOS = [
-  { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MIR", desde: 2020 },
+  // 5034 existia desde 2020 como guarda-chuva MDHC. Orgao fallback = "MDHC" para evitar
+  // que a API retroativamente rotule como MIR. O buildRecord aplica bypass temporal.
+  { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MDHC", desde: 2020 },
   { codigo: "5802", nome: "Direitos dos Povos Quilombolas e Ciganos", orgao: "MIR", desde: 2024 },
   { codigo: "5803", nome: "Juventude Negra Viva", orgao: "MIR", desde: 2024 },
   { codigo: "5804", nome: "Igualdade Étnico-Racial e Superação do Racismo", orgao: "MIR", desde: 2024 },
@@ -270,6 +272,10 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
       console.log(`  BYPASS: excluindo ${codAcao} (${nomeAcao.substring(0, 40)}) ${ano} — sem keyword racial`);
       return null;
     }
+    // Ação passou no filtro racial mas o MIR não existia → reclassificar como MDHC
+    // (preserva a ação para análise histórica, mas com orgao correto)
+    console.log(`  BYPASS: reclassificando ${codAcao} ${ano} de MIR → MDHC (MIR não existia)`);
+    // Override orgao below when building record
   }
 
   let programa = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
@@ -282,14 +288,18 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   const pago = parseBRL(item.pago || item.valorPago);
 
   if (!dotacaoInicial && !dotacaoAutorizada && !empenhado && !liquidado && !pago) return null;
-  const grupoFocal = classificarGrupoFocal(item, orgao);
+
+  // Corrigir orgao: MIR pré-2023 → MDHC (MIR só foi criado em jan/2023)
+  const orgaoFinal = (orgao === "MIR" && ano < 2023) ? "MDHC" : orgao;
+
+  const grupoFocal = classificarGrupoFocal(item, orgaoFinal);
   const eixoTematico = classificarEixoTematico(grupoFocal);
   const dotacaoRef = dotacaoAutorizada || dotacaoInicial;
   const percentual = dotacaoRef && pago ? Math.round((pago / dotacaoRef) * 10000) / 100 : null;
 
   return {
     programa: programa.substring(0, 250),
-    orgao,
+    orgao: orgaoFinal,
     esfera: "federal",
     ano,
     dotacao_inicial: dotacaoInicial,
