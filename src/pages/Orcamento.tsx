@@ -1332,14 +1332,27 @@ export default function Orcamento() {
                 {/* 9. Limitações */}
                 <section className="space-y-2">
                   <h4 className="font-semibold text-foreground text-base text-destructive">9. Limitações Conhecidas</h4>
-                  <ul className="list-disc pl-5 space-y-1.5">
-                    <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Faltam dados de execução para 2020–2023 na API consultada. Lacuna sendo preenchida via CSV do Portal da Transparência.</li>
-                    <li><strong>Quilombolas (INCRA):</strong> Dados de ações 20G7/0859 ausentes para 2020–2023.</li>
-                    <li><strong>SESAI (Saúde Indígena):</strong> Dados de 2018–2025 capturados via Camada 4 (ações 20YP/7684). Incluída nos totais federais e exibida também em aba dedicada.</li>
-                    <li><strong>Programa 5034 (2020):</strong> <strong>Excluído dos cálculos comparativos</strong> — guarda-chuva multi-temático do MDHC que inflaciona artificialmente o total 2018-2022.</li>
-                    <li><strong>Esferas estadual e municipal (SICONFI):</strong> Os dados RREO/DCA refletem <strong>função/subfunção</strong> (agregados), não programas específicos do PPA local. A granularidade é menor que a federal.</li>
-                    <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta, não alterações reais de dotação.</li>
-                  </ul>
+                  <p className="text-sm text-muted-foreground italic">Atualizado em fev/2026 com base na auditoria da base de dados.</p>
+                  
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">✅ Limitações Superadas</p>
+                      <ul className="list-disc pl-5 space-y-1.5 text-sm">
+                        <li><strong>Povos Indígenas (FUNAI/MPI):</strong> <span className="line-through text-muted-foreground">Faltavam dados de execução para 2020–2023.</span> <strong className="text-green-700 dark:text-green-400">Resolvido</strong> — FUNAI possui registros de execução (pago + liquidado) para todos os anos de 2018 a 2023; MPI cobre 2020–2025 com dados completos incluindo o salto de R$ 1,4 bi em 2025.</li>
+                        <li><strong>SESAI (Saúde Indígena):</strong> <span className="line-through text-muted-foreground">Dados parciais ou ausentes.</span> <strong className="text-green-700 dark:text-green-400">Resolvido</strong> — Cobertura completa 2018–2025 via Camada 4 (ações 20YP e 7684). Série contínua com dados de execução para todos os anos. Incluída integralmente nos totais federais.</li>
+                      </ul>
+                    </div>
+
+                    <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
+                      <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Limitações Persistentes</p>
+                      <ul className="list-disc pl-5 space-y-1.5 text-sm">
+                        <li><strong>Quilombolas (INCRA):</strong> Ações específicas 20G7 (Regularização de Territórios Quilombolas) e 0859 (Indenização de Benfeitorias) <strong>não foram localizadas</strong> na base. Possíveis causas: encerramento das ações, reclassificação sob outro código no PPA 2024-2027, ou ausência nos endpoints consultados. Impacto: o investimento federal específico em regularização fundiária quilombola pode estar subrepresentado.</li>
+                        <li><strong>Programa 5034 (2020–2023):</strong> Registros existem na base ({`${16 + 10 + 9 + 10}`} registros), mas são <strong>filtrados dos cálculos comparativos</strong> pela função <code>is5034Distortion()</code>. Motivo: o 5034 foi um guarda-chuva multi-temático do MDHC que englobava ações genéricas de direitos humanos (0083, 00SN, 00SO, 0E85, 14XS, 21AR–21AU) sem caráter racial. Apenas ações com palavras-chave raciais explícitas no campo <code>descritivo</code> são preservadas.</li>
+                        <li><strong>Esferas estadual e municipal (SICONFI):</strong> Ainda sem registros na base. Os dados RREO/DCA do Tesouro Nacional refletem <strong>função/subfunção</strong> (agregados contábeis), não programas específicos do PPA local. A granularidade é estruturalmente inferior à federal, dificultando a identificação de políticas raciais específicas.</li>
+                        <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta ou na disponibilidade de dados nos endpoints da API, não necessariamente alterações reais de dotação ou execução.</li>
+                      </ul>
+                    </div>
+                  </div>
                 </section>
 
                 {/* 9. Identificação de Órgãos */}
