@@ -228,25 +228,32 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Use waitUntil to run heavy work in background (150s limit instead of 2s CPU)
-    const promise = (async () => {
-      for (const ano of anos) {
-        try {
-          const result = await processYear(supabase, ano);
-          console.log(`  ${ano}: ${result.ok ? "OK" : "ERRO"} - ${result.msg}`);
-        } catch (e) {
-          console.error(`  ${ano}: Fatal -`, e);
-        }
-      }
-      console.log(`\n=== DOTAÇÃO LOA CONCLUÍDA ===`);
-    })();
+    // Processamento SÍNCRONO — garante que a dotação seja preenchida antes de retornar
+    const results: Record<string, string> = {};
+    let totalUpdated = 0;
 
-    // @ts-ignore - EdgeRuntime.waitUntil is available in Supabase Edge Functions
-    EdgeRuntime.waitUntil(promise);
+    for (const ano of anos) {
+      try {
+        const result = await processYear(supabase, ano);
+        results[String(ano)] = `${result.ok ? "OK" : "ERRO"} - ${result.msg}`;
+        if (result.ok) {
+          const match = result.msg.match(/(\d+)/);
+          if (match) totalUpdated += parseInt(match[1], 10);
+        }
+        console.log(`  ${ano}: ${result.ok ? "OK" : "ERRO"} - ${result.msg}`);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "?";
+        results[String(ano)] = `FATAL - ${msg}`;
+        console.error(`  ${ano}: Fatal -`, e);
+      }
+    }
+    console.log(`\n=== DOTAÇÃO LOA CONCLUÍDA: ${totalUpdated} total ===`);
 
     return new Response(JSON.stringify({
       success: true,
-      message: `Processamento de dotação LOA iniciado em background para anos: ${anos.join(", ")}. Verifique os logs para acompanhar o progresso.`,
+      total_atualizados: totalUpdated,
+      detalhes: results,
+      message: `Dotação LOA processada: ${totalUpdated} registros atualizados para anos ${anos.join(", ")}.`,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -118,15 +118,15 @@ export function BudgetIngestionPanel() {
         const inserted = data?.total_inseridos || 0;
         totalInserted += inserted;
 
-        // For federal, also run dotação LOA one year at a time to avoid CPU timeout
+        // Para federal, complementar com dotação LOA (síncrono — espera conclusão real)
         if (batch.esfera === 'federal') {
           for (const ano of batch.anos) {
             try {
-              await supabase.functions.invoke('ingest-dotacao-loa', {
+              const { data: dotData, error: dotErr } = await supabase.functions.invoke('ingest-dotacao-loa', {
                 body: { anos: [ano] },
               });
-              // Wait for background processing to complete
-              await new Promise(r => setTimeout(r, 8000));
+              if (dotErr) throw dotErr;
+              console.log(`Dotação LOA ${ano}: ${dotData?.total_atualizados || 0} atualizados`);
             } catch (dotErr) {
               console.warn(`Dotação LOA ${ano}:`, dotErr);
             }
