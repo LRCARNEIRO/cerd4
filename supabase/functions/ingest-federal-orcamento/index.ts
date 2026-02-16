@@ -268,6 +268,21 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   };
 }
 
+/** Merge financial fields from a new record into an existing one, keeping the MAX of each */
+function mergeFinancials(existing: any, incoming: any): any {
+  const merged = { ...existing };
+  const fields = ["dotacao_inicial", "dotacao_autorizada", "empenhado", "liquidado", "pago"] as const;
+  for (const f of fields) {
+    const eVal = Number(existing[f]) || 0;
+    const iVal = Number(incoming[f]) || 0;
+    merged[f] = Math.max(eVal, iVal) || null;
+  }
+  // Recalculate percentual_execucao
+  const dotRef = merged.dotacao_autorizada || merged.dotacao_inicial;
+  merged.percentual_execucao = dotRef && merged.pago ? Math.round((merged.pago / dotRef) * 10000) / 100 : null;
+  return merged;
+}
+
 async function fetchPaginated(
   endpoint: string,
   params: Record<string, string>,
@@ -372,9 +387,11 @@ Deno.serve(async (req) => {
               if (record) {
                 const key = `${record.orgao}|${record.programa}|${record.ano}`;
                 const existing = registrosMap.get(key);
-                if (!existing || (record.pago && (!existing.pago || record.pago > existing.pago))) {
+                if (!existing) {
                   registrosMap.set(key, record);
                   relevantes++;
+                } else {
+                  registrosMap.set(key, mergeFinancials(existing, record));
                 }
               }
             }
@@ -408,9 +425,12 @@ Deno.serve(async (req) => {
             const record = buildRecord(item, "MDHC", ano, "Subfunção 422");
             if (record) {
               const key = `${record.orgao}|${record.programa}|${record.ano}`;
-              if (!registrosMap.has(key)) {
+              const existing = registrosMap.get(key);
+              if (!existing) {
                 registrosMap.set(key, record);
                 relevantes++;
+              } else {
+                registrosMap.set(key, mergeFinancials(existing, record));
               }
             }
           }
@@ -443,9 +463,12 @@ Deno.serve(async (req) => {
               const record = buildRecord(item, org.sigla, ano, `Órgão ${org.sigla}`);
               if (record) {
                 const key = `${record.orgao}|${record.programa}|${record.ano}`;
-                if (!registrosMap.has(key)) {
+                const existing = registrosMap.get(key);
+                if (!existing) {
                   registrosMap.set(key, record);
                   relevantes++;
+                } else {
+                  registrosMap.set(key, mergeFinancials(existing, record));
                 }
               }
             }
