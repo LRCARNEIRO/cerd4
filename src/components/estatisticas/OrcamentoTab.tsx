@@ -232,10 +232,11 @@ export function OrcamentoTab() {
                 <p className="text-xs text-muted-foreground mt-1">Clique para expandir limitações e contexto interpretativo dos dados.</p>
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 ml-7 space-y-3">
+            <CollapsibleContent className="mt-3 ml-7 space-y-4">
+              {/* 1. Estratégia de Coleta */}
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5" /> Estratégia de Coleta — 4 Camadas Independentes
+                  <Info className="w-3.5 h-3.5" /> 1. Estratégia de Coleta — 4 Camadas Independentes
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
                   <li><strong>Camada 1 — Programas Temáticos do PPA:</strong> Consulta direta por código de programa finalístico: 2034 (SEPPIR, PPA 2016-2019), 5034 (MDHC/MIR, desde 2020), 0617 (Povos Indígenas PPA 2020-2023), 2065 (Povos Indígenas PPA 2012-2019), 5136 (Povos Indígenas PPA 2024+), 5802/5803/5804 (MIR, desde 2024), 0153 (Criança/Adolescente).</li>
@@ -245,45 +246,123 @@ export function OrcamentoTab() {
                 </ul>
               </div>
 
+              {/* 2. Critério de Classificação */}
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5" /> Transição de Códigos de Programa — PPA a PPA
+                  <Info className="w-3.5 h-3.5" /> 2. Critério de Classificação e Inclusão
                 </h5>
-                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-                  <li><strong>Povos Indígenas:</strong> 2065 (PPA 2012-2019) → 0617 (PPA 2020-2023) → 5136 (PPA 2024-2027). Auditoria confirmou que o programa 2065 não retorna dados após 2019 na API; o código 0617 foi identificado como substituto exato.</li>
-                  <li><strong>SESAI (Saúde Indígena):</strong> Ações 20YP/7684 estavam sob programa 2065 em 2018-2019. No PPA 2020-2023 migraram para programa 5022 (Saúde). A Camada 4 resolve isso buscando diretamente por código de ação.</li>
-                  <li><strong>Política Racial:</strong> 2034 (SEPPIR, PPA 2016-2019) → 5034 (MDHC guarda-chuva, PPA 2020-2023) → 5804 (MIR, PPA 2024+). O 5034 exige filtragem por palavras-chave raciais para excluir ações genéricas do MDHC.</li>
+                <p className="text-xs text-muted-foreground">
+                  A classificação temática (Política Racial, Indígena, Quilombola, Cigano) utiliza <strong>exclusivamente campos reais</strong> retornados pela API oficial do Portal da Transparência: <code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code>. Campos como <code className="bg-muted px-1 rounded">publico_alvo</code>, <code className="bg-muted px-1 rounded">observacoes</code> e <code className="bg-muted px-1 rounded">razao_selecao</code> <strong>não são utilizados</strong> na lógica de filtragem, pois são metadados internos do sistema que não existem na API oficial.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <strong>Palavras-chave de inclusão:</strong> racial, racismo, negro/a, afro, quilomb*, indigen*, indígen*, cigan*, romani, terreiro, matriz africana, igualdade racial, palmares, capoeira, candomblé, umbanda.
+                </p>
+              </div>
+
+              {/* 3. Exclusões Explícitas */}
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-destructive flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5" /> 3. Exclusões Explícitas do Cálculo
+                </h5>
+                <p className="text-xs text-muted-foreground mb-1">
+                  Os seguintes programas e ações foram excluídos por serem transversais, genéricos ou falsos positivos — ou seja, não configuram investimento finalístico em política racial/étnica:
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1.5 list-none pl-0">
+                  <li className="border border-border rounded p-2">
+                    <strong className="text-destructive">Programas Transversais (grande escala):</strong>
+                    <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                      <li><strong>2068</strong> — Bolsa Família / Transferência de Renda</li>
+                      <li><strong>2049</strong> — Minha Casa, Minha Vida (Habitação)</li>
+                      <li><strong>2012/5022</strong> — SUS / Saúde (exceto ações SESAI específicas)</li>
+                      <li><strong>2015</strong> — SUAS / Assistência Social</li>
+                      <li><strong>5113</strong> — Educação Superior (~R$ 14 bi; genérico)</li>
+                      <li><strong>6012</strong> — Fundo Eleitoral</li>
+                    </ul>
+                    <p className="text-[10px] mt-1 italic">Razão: embora possam beneficiar populações racializadas, são políticas universalistas sem focalização racial explícita. Incluí-los inflaria artificialmente os totais.</p>
+                  </li>
+                  <li className="border border-border rounded p-2">
+                    <strong className="text-destructive">Ações Genéricas do MDHC (Programa 5034, pré-2023):</strong>
+                    <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                      <li><strong>0E85</strong> — Subsídios a operações em fundos de saúde (genérica)</li>
+                      <li><strong>14XS</strong> — Gestão administrativa (overhead)</li>
+                      <li><strong>00SN</strong> — Casas da Mulher Brasileira (política de gênero, não racial)</li>
+                      <li><strong>00SO</strong> — Unidades de Atendimento Socioeducativo (genérica; incluída erroneamente por campo fabricado <code className="bg-muted px-1 rounded">publico_alvo</code> — corrigida)</li>
+                      <li><strong>21AR, 21AS, 21AT, 21AU</strong> — Ações administrativas e de gestão do MDHC</li>
+                    </ul>
+                    <p className="text-[10px] mt-1 italic">Razão: o programa 5034 era guarda-chuva do MDHC até 2022. Apenas ações com palavras-chave raciais explícitas nos campos <code className="bg-muted px-1 rounded">programa</code> ou <code className="bg-muted px-1 rounded">descritivo</code> são incluídas (ex: ação 6440 — regularização de quilombos).</p>
+                  </li>
+                  <li className="border border-border rounded p-2">
+                    <strong className="text-destructive">Bypass Temporal — MIR pré-2023:</strong>
+                    <p className="text-[10px] mt-1">A API do Portal da Transparência retroativamente rotula registros do MDHC (2020-2022) como órgão MIR (código 67000), embora o MIR só tenha sido criado em janeiro de 2023. Para evitar a inclusão de ações genéricas do MDHC, registros rotulados como MIR com <code className="bg-muted px-1 rounded">ano &lt; 2023</code> passam por filtragem adicional: apenas são mantidos se os campos <code className="bg-muted px-1 rounded">programa</code> ou <code className="bg-muted px-1 rounded">descritivo</code> contiverem palavras-chave raciais.</p>
+                  </li>
                 </ul>
               </div>
 
+              {/* 4. SESAI */}
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5" /> Padrão da Série (2018–2025)
+                  <AlertTriangle className="w-3.5 h-3.5 text-warning" /> 4. SESAI — Saúde Indígena: Detalhamento Técnico
+                </h5>
+                <p className="text-xs text-muted-foreground">
+                  A Secretaria Especial de Saúde Indígena (SESAI) representa o maior volume financeiro individual da política indígena (~R$ 1,3–1,5 bi/ano). Sua captura exigiu ajustes técnicos significativos devido a mudanças de codificação entre PPAs:
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4">
+                  <li>
+                    <strong>PPA 2016-2019 (Programa 2065):</strong> As ações 20YP (Atenção à Saúde Indígena) e 7684 (Saneamento em Aldeias) estavam vinculadas ao programa temático de Povos Indígenas. Captura automática pela Camada 1.
+                  </li>
+                  <li>
+                    <strong>PPA 2020-2023 (Migração para Programa 5022):</strong> A SESAI foi reclassificada para o programa genérico de Saúde (5022), <strong>saindo da órbita dos programas indígenas</strong> (0617). Isso gerava uma lacuna: as Camadas 1-3 não capturavam mais esses dados. A <strong>Camada 4</strong> foi criada especificamente para resolver isso, buscando diretamente pelos códigos de ação 20YP e 7684 independentemente do programa-pai.
+                  </li>
+                  <li>
+                    <strong>PPA 2024-2027:</strong> Estrutura mantida sob programa de saúde. A Camada 4 continua necessária.
+                  </li>
+                  <li>
+                    <strong>Ações capturadas:</strong>
+                    <ul className="list-none pl-2 mt-1 space-y-0.5">
+                      <li>• <strong>20YP</strong> — Atenção à Saúde dos Povos Indígenas (~R$ 1,37–1,47 bi/ano pago)</li>
+                      <li>• <strong>7684</strong> — Saneamento Básico em Aldeias Indígenas para Prevenção e Controle de Agravos (~R$ 23–29 mi/ano pago)</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>Tratamento no cálculo:</strong> Os registros SESAI são alocados simultaneamente na aba <em>"SESAI (Saúde Indígena)"</em> para análise detalhada <strong>e</strong> nos totais de <em>"Política Racial (Federal)"</em>, garantindo que o investimento em saúde indígena componha o somatório consolidado da política racial federal.
+                  </li>
+                  <li>
+                    <strong>Identificação:</strong> Um registro é classificado como SESAI se o campo <code className="bg-muted px-1 rounded">orgao</code> = "SESAI", ou se o campo <code className="bg-muted px-1 rounded">observacoes</code> contém "saúde indígena" / "sesai", ou se o programa contém os códigos "20yp" / "7684".
+                  </li>
+                </ul>
+              </div>
+
+              {/* 5. Transição de Códigos */}
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> 5. Transição de Códigos de Programa — PPA a PPA
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-                  <li><strong>2018–2019:</strong> Base de R$ 93–123 mi (excluindo SESAI) — política racial modesta sob SEPPIR/MMFDH. SESAI: ~R$ 1,37–1,47 bi (20YP) + R$ 23–29 mi (7684). FUNAI: 5 ações, ~R$ 30–38 mi.</li>
-                  <li><strong>2020–2023:</strong> Programa 5034 era guarda-chuva do MDHC; apenas ações com palavras-chave raciais incluídas. FUNAI/MPI: capturados via programa 0617. SESAI: capturada via Camada 4 (ação 20YP/7684 → programa 5022).</li>
+                  <li><strong>Povos Indígenas:</strong> 2065 (PPA 2012-2019) → 0617 (PPA 2020-2023) → 5136 (PPA 2024-2027).</li>
+                  <li><strong>SESAI:</strong> 2065 (2018-2019) → 5022 (2020-2023, via Camada 4) → 5022 (2024+, via Camada 4).</li>
+                  <li><strong>Política Racial:</strong> 2034 (SEPPIR, PPA 2016-2019) → 5034 (MDHC guarda-chuva, PPA 2020-2023) → 5804 (MIR, PPA 2024+).</li>
+                  <li><strong>Quilombolas:</strong> Ação 20G7/0859 (transversal a PPAs) + Programa 5802 (PPA 2024+).</li>
+                </ul>
+              </div>
+
+              {/* 6. Padrão da Série */}
+              <div className="space-y-2">
+                <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" /> 6. Padrão da Série (2018–2025)
+                </h5>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li><strong>2018–2019:</strong> Base modesta sob SEPPIR/MMFDH (~R$ 93–123 mi excluindo SESAI). SESAI: ~R$ 1,37–1,47 bi (20YP) + R$ 23–29 mi (7684). FUNAI: 5 ações, ~R$ 30–38 mi.</li>
+                  <li><strong>2020–2023:</strong> Programa 5034 como guarda-chuva do MDHC; apenas ações com palavras-chave raciais incluídas. FUNAI/MPI: via programa 0617. SESAI: via Camada 4.</li>
                   <li><strong>2021–2022:</strong> Queda real de dotação para R$ 161–173 mi — desmonte institucional da pauta racial.</li>
                   <li><strong>2023:</strong> Salto para R$ 457 mi — criação do MIR e reconstrução da pauta racial.</li>
                   <li><strong>2024–2025:</strong> Novos programas focalizados: 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra), 5804 (Igualdade Étnico-Racial). FUNAI/MPI: programa 5136.</li>
                 </ul>
               </div>
 
-              <div className="space-y-2">
-                <h5 className="text-xs font-semibold text-destructive flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Tratamento de Distorções
-                </h5>
-                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-                  <li><strong>Bypass Temporal MIR pré-2023:</strong> A API retroativamente rotula registros do MDHC como MIR (órgão 67000). Para anos &lt; 2023, ações genéricas do MDHC (0E85, 14XS, 00SN, 21AR, 21AS, 21AT, 21AU) são excluídas; demais ações exigem palavras-chave raciais nos campos programa/ação.</li>
-                  <li><strong>SESAI Incluída no Cálculo:</strong> Com a correção da cobertura 2020-2023 (Camada 4), os dados de saúde indígena (~R$ 1,3–1,5 bi/ano) são computados nos totais de política racial federal e exibidos também em aba separada para análise detalhada.</li>
-                  <li><strong>Programa 5113 (Educação Superior):</strong> Excluído por ser genérico (R$ 14 bi).</li>
-                  <li><strong>Programas Transversais:</strong> Bolsa Família (2068), MCMV (2049), SUS (2012), SUAS (2015) e Fundo Eleitoral (6012) excluídos como falsos positivos.</li>
-                </ul>
-              </div>
-
+              {/* 7. Dotação LOA */}
               <div className="space-y-2">
                 <h5 className="text-xs font-semibold text-foreground flex items-center gap-1">
-                  <Info className="w-3.5 h-3.5" /> Dotação LOA — Complementação via Dados Abertos
+                  <Info className="w-3.5 h-3.5" /> 7. Dotação LOA — Complementação via Dados Abertos
                 </h5>
                 <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
                   <li>A API REST do Portal da Transparência não fornece valores de <strong>Dotação Inicial (LOA)</strong>.</li>
@@ -293,8 +372,8 @@ export function OrcamentoTab() {
                 </ul>
               </div>
 
-              <p className="text-[10px] text-muted-foreground italic mt-2">
-                Fonte: API Portal da Transparência + Dados Abertos (CSV/ZIP). Filtro: racial, racismo, indígena, quilombola, cigano, romani, afro, palmares, terreiro, matriz africana. Deduplicação cross-layer por chave orgao|programa|ano.
+              <p className="text-[10px] text-muted-foreground italic mt-2 border-t border-border pt-2">
+                <strong>Fonte:</strong> API Portal da Transparência + Dados Abertos (CSV/ZIP). <strong>Filtro de inclusão:</strong> racial, racismo, negro/a, afro, quilomb*, indigen*, cigan*, romani, terreiro, matriz africana, palmares, capoeira, candomblé, umbanda. <strong>Deduplicação:</strong> cross-layer por chave orgao|programa|ano. <strong>Campos de classificação:</strong> exclusivamente <code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code> (campos reais da API).
               </p>
             </CollapsibleContent>
           </CardContent>
