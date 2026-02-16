@@ -67,9 +67,11 @@ const PROGRAMAS_TEMATICOS = [
   { codigo: "5802", nome: "Direitos dos Povos Quilombolas e Ciganos", orgao: "MIR", desde: 2024 },
   { codigo: "5803", nome: "Juventude Negra Viva", orgao: "MIR", desde: 2024 },
   { codigo: "5804", nome: "Igualdade Étnico-Racial e Superação do Racismo", orgao: "MIR", desde: 2024 },
-  // 5136: Programa de Povos Indígenas no PPA 2024-2027 (substitui 2065 a partir de 2024)
+  // 5136: Programa de Povos Indígenas no PPA 2024-2027 (substitui 0617 a partir de 2024)
   { codigo: "5136", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2024 },
-  // 2065: Programa histórico de Povos Indígenas (PPA 2012-2023)
+  // 0617: Programa de Povos Indígenas no PPA 2020-2023 (substitui 2065)
+  { codigo: "0617", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2020 },
+  // 2065: Programa histórico de Povos Indígenas (PPA 2012-2019)
   { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
   { codigo: "2034", nome: "Promoção da Igualdade Racial e Superação do Racismo (PPA 2016-2019)", orgao: "SEPPIR", desde: 2016 },
@@ -82,6 +84,14 @@ const SUBFUNCAO_DIREITOS = "422";
 const ORGAOS_MANDATO = [
   { codigo: "67000", sigla: "MIR" },
   { codigo: "92000", sigla: "MPI" },
+];
+
+// ===== CAMADA 4: Ações específicas de saúde indígena (SESAI) =====
+// SESAI é órgão do MS (36000) e em PPA 2020-2023 suas ações migraram do programa 2065
+// para programas de saúde. Consultar por ação diretamente garante cobertura.
+const ACOES_ESPECIFICAS_INDIGENAS = [
+  { codigo: "20YP", nome: "Promoção, Proteção e Recuperação da Saúde Indígena", orgao: "SESAI" },
+  { codigo: "7684", nome: "Saneamento Básico em Aldeias Indígenas", orgao: "SESAI" },
 ];
 
 // ===== Filtro de relevância pós-coleta =====
@@ -576,6 +586,46 @@ Deno.serve(async (req) => {
       console.log(`  Camada 3 totais: ${brutos} brutos → ${relevantes} relevantes`);
     }
 
+    // ===== CAMADA 4: Ações Específicas SESAI =====
+    if (camadas.includes("acoes_sesai") || camadas.includes("programas")) {
+      console.log(`\n--- CAMADA 4: Ações Específicas SESAI (20YP, 7684) ---`);
+      let brutos = 0, relevantes = 0;
+
+      for (const acao of ACOES_ESPECIFICAS_INDIGENAS) {
+        for (const ano of anos) {
+          console.log(`  Ação ${acao.codigo} (${acao.nome}) ${ano}...`);
+          try {
+            const dados = await fetchPaginated(
+              "despesas/por-funcional-programatica",
+              { ano: String(ano), acao: acao.codigo },
+              apiKey,
+            );
+            brutos += dados.length;
+            const aggregated = aggregateApiRows(dados);
+
+            for (const item of aggregated) {
+              const record = buildRecord(item, acao.orgao, ano, `Ação SESAI ${acao.codigo}`);
+              if (record) {
+                const key = `${record.orgao}|${record.programa}|${record.ano}`;
+                const existing = registrosMap.get(key);
+                if (!existing) {
+                  registrosMap.set(key, record);
+                  relevantes++;
+                } else {
+                  registrosMap.set(key, mergeFinancials(existing, record));
+                }
+              }
+            }
+          } catch (e) {
+            erros.push(`Camada4 ${acao.codigo}/${ano}: ${e instanceof Error ? e.message : "?"}`);
+          }
+          await new Promise(r => setTimeout(r, 500));
+        }
+      }
+      logCamadas["acoes_sesai"] = { brutos, relevantes };
+      console.log(`  Camada 4 totais: ${brutos} brutos → ${relevantes} relevantes`);
+    }
+
     // ===== COMPLEMENTAÇÃO: Movimentação Líquida (liquidado/pago reais) =====
     // O endpoint por-funcional-programatica frequentemente retorna liquidado=0 e pago=0
     // mesmo quando há execução real. O endpoint movimentacao-liquida traz os valores corretos.
@@ -690,10 +740,11 @@ Deno.serve(async (req) => {
       detalhes_camadas: logCamadas,
       erros: erros.slice(0, 20),
       metodologia: {
-        descricao: "Ingestão multi-camada com 3 filtros independentes deduplicados",
+        descricao: "Ingestão multi-camada com 4 filtros independentes deduplicados",
         camada_1: "Programas temáticos PPA: " + PROGRAMAS_TEMATICOS.map(p => p.codigo).join(", "),
         camada_2: "Subfunção 422 (Direitos Individuais, Coletivos e Difusos)",
         camada_3: "Órgãos MIR (67000) e MPI (92000)",
+        camada_4: "Ações específicas SESAI (20YP, 7684)",
         filtro_relevancia: "Palavras-chave: " + KEYWORDS_RELEVANCIA.slice(0, 10).join(", ") + "...",
         exclusoes: "Programas transversais excluídos: " + PROGRAMAS_EXCLUIDOS.join(", "),
         fonte: "API Portal da Transparência (api.portaldatransparencia.gov.br)",
