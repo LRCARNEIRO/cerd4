@@ -117,6 +117,26 @@ const ACAO_ORGAO_MAP: Record<string, string> = {
 // Ações da SESAI — classificadas como "Saúde Indígena" (informativo, não soma no total racial)
 const ACOES_SESAI = ["20YP", "7684"];
 
+// Ações genéricas do MDHC pré-2023 que a API retroativamente rotula como MIR
+// Estas NÃO são políticas raciais e devem ser excluídas
+const ACOES_GENERICAS_MDHC = [
+  "0E85", // Tecnologia Assistiva (PcD)
+  "14XS", // Casa da Mulher Brasileira
+  "00SN", // Casa da Mulher / Centros de Referência
+  "21AR", // Promoção e Defesa de Direitos Humanos (genérico)
+  "21AS", // Fortalecimento da Família
+  "21AT", // Conselhos e Comissões de Direitos Humanos
+  "21AU", // SINDH - Sistema Nacional de Direitos Humanos
+];
+
+// Palavras-chave raciais/étnicas para bypass temporal MIR pré-2023
+const KEYWORDS_RACIAIS_BYPASS = [
+  "racial", "racismo", "negro", "negra", "quilombol", "cigan", "romani",
+  "afro", "palmares", "étnic", "etnic", "igualdade racial", "capoeira",
+  "terreiro", "matriz africana", "candomblé", "umbanda", "juventude negra",
+  "discriminaç", "preconceito racial",
+];
+
 function classificarGrupoFocal(item: any, orgao: string): string | null {
   const codAcao = item.codigoAcao || "";
   const texto = [item.programa, item.nomePrograma, item.acao, item.nomeAcao].filter(Boolean).join(" ").toLowerCase();
@@ -229,6 +249,29 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
 
   if (!codProg && !nomeProg) return null;
 
+  const orgao = resolveOrgao(item, fallbackOrgao);
+
+  // ===== BYPASS TEMPORAL MIR PRÉ-2023 =====
+  // A API retroativamente rotula registros do antigo MDHC como MIR (órgão 67000).
+  // Para anos < 2023 (quando o MIR ainda não existia), só incluir se:
+  // 1. A ação NÃO é genérica do MDHC, E
+  // 2. O programa/ação contém palavras-chave raciais/étnicas
+  // Exceção: SEPPIR é sempre incluída
+  if (orgao === "MIR" && ano < 2023) {
+    // Ações genéricas do MDHC → excluir sempre
+    if (ACOES_GENERICAS_MDHC.includes(codAcao)) {
+      console.log(`  BYPASS: excluindo ${codAcao} (${nomeAcao.substring(0, 40)}) ${ano} — ação genérica MDHC`);
+      return null;
+    }
+    // Para demais ações, exigir palavras-chave raciais no programa/ação (NÃO em publico_alvo/observacoes)
+    const textoFiltro = [nomeProg, nomeAcao, codProg, codAcao].filter(Boolean).join(" ").toLowerCase();
+    const temKeywordRacial = KEYWORDS_RACIAIS_BYPASS.some(kw => textoFiltro.includes(kw));
+    if (!temKeywordRacial) {
+      console.log(`  BYPASS: excluindo ${codAcao} (${nomeAcao.substring(0, 40)}) ${ano} — sem keyword racial`);
+      return null;
+    }
+  }
+
   let programa = codProg ? `${codProg} – ${nomeProg}` : nomeProg;
   if (codAcao) programa += ` / ${codAcao} – ${nomeAcao}`;
 
@@ -239,8 +282,6 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   const pago = parseBRL(item.pago || item.valorPago);
 
   if (!dotacaoInicial && !dotacaoAutorizada && !empenhado && !liquidado && !pago) return null;
-
-  const orgao = resolveOrgao(item, fallbackOrgao);
   const grupoFocal = classificarGrupoFocal(item, orgao);
   const eixoTematico = classificarEixoTematico(grupoFocal);
   const dotacaoRef = dotacaoAutorizada || dotacaoInicial;
