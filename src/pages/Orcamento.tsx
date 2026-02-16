@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -857,16 +857,105 @@ export default function Orcamento() {
               </CardContent>
             </Card>
 
-            {/* Infográfico comparativo */}
+            {/* Infográfico comparativo — Dotação vs Liquidado vs Pago */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* DOTAÇÃO AUTORIZADA */}
+              <Card className="border-t-4 border-t-chart-1">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Dotação Autorizada</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
+                      <p className="text-lg font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
+                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p>
+                    </div>
+                  </div>
+                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                    {(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
+                  </div>
+                  <p className="text-[10px] text-muted-foreground text-center">Planejamento orçamentário (LOA + créditos)</p>
+                </CardContent>
+              </Card>
+
+              {/* LIQUIDADO */}
+              <Card className="border-t-4 border-t-chart-2">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
+                      <p className="text-lg font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
+                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p>
+                    </div>
+                  </div>
+                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                    {(stats?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
+                  </div>
+                  <p className="text-[10px] text-muted-foreground text-center">Execução efetiva (despesa verificada)</p>
+                </CardContent>
+              </Card>
+
+              {/* PAGO */}
+              <Card className="border-t-4 border-t-chart-3">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Pago</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
+                      <p className="text-lg font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
+                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p>
+                    </div>
+                  </div>
+                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                    {(stats?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
+                  </div>
+                  <p className="text-[10px] text-muted-foreground text-center">Desembolso financeiro efetivo</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Cards detalhados por período */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl font-bold text-destructive">{formatCurrency(stats?.totalPeriodo1 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total · Inclui SESAI · Exclui ações 5034 sem palavras-chave raciais</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-muted/50 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Dotação</p>
+                      <p className="text-sm font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Liquidado</p>
+                      <p className="text-sm font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Pago</p>
+                      <p className="text-sm font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p>
+                    </div>
+                  </div>
+                  {(stats?.dotacaoPeriodo1 || 0) > 0 && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Taxa de execução (Liq/Dot): <strong>{((stats?.liquidadoPeriodo1 || 0) / (stats?.dotacaoPeriodo1 || 1) * 100).toFixed(1)}%</strong> · (Pago/Dot): <strong>{((stats?.pagoPeriodo1 || 0) / (stats?.dotacaoPeriodo1 || 1) * 100).toFixed(1)}%</strong>
+                    </p>
+                  )}
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
-                    <li><strong>2018–2019:</strong> Base modesta sob SEPPIR/MMFDH (~R$ 93–123 mi excl. SESAI). SESAI: ~R$ 1,37–1,47 bi (ação 20YP) + R$ 23–29 mi (ação 7684). FUNAI: 5 ações, ~R$ 30–38 mi</li>
-                    <li><strong>2020:</strong> Programa 5034 era guarda-chuva do MDHC — apenas ações com palavras-chave raciais incluídas (ex: 6440/Quilombos). Ações genéricas (00SN, 00SO, 0E85, etc.) excluídas</li>
+                    <li><strong>2018–2019:</strong> Base modesta sob SEPPIR/MMFDH. SESAI: ~R$ 1,37–1,47 bi (ação 20YP) + R$ 23–29 mi (ação 7684). FUNAI: 5 ações, ~R$ 30–38 mi</li>
+                    <li><strong>2020:</strong> Programa 5034 como guarda-chuva MDHC — apenas ações com palavras-chave raciais incluídas</li>
                     <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional confirmado</li>
                   </ul>
                 </CardContent>
@@ -874,12 +963,29 @@ export default function Orcamento() {
               <Card>
                 <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="text-3xl font-bold text-success">{formatCurrency(stats?.totalPeriodo2 || 0)}</div>
-                  <p className="text-xs text-muted-foreground">Valor executado total · Inclui SESAI · Programas focalizados do MIR</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-success/5 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Dotação</p>
+                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p>
+                    </div>
+                    <div className="bg-success/5 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Liquidado</p>
+                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p>
+                    </div>
+                    <div className="bg-success/5 rounded p-2 text-center">
+                      <p className="text-[10px] text-muted-foreground">Pago</p>
+                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p>
+                    </div>
+                  </div>
+                  {(stats?.dotacaoPeriodo2 || 0) > 0 && (
+                    <p className="text-xs text-muted-foreground text-center">
+                      Taxa de execução (Liq/Dot): <strong className="text-success">{((stats?.liquidadoPeriodo2 || 0) / (stats?.dotacaoPeriodo2 || 1) * 100).toFixed(1)}%</strong> · (Pago/Dot): <strong className="text-success">{((stats?.pagoPeriodo2 || 0) / (stats?.dotacaoPeriodo2 || 1) * 100).toFixed(1)}%</strong>
+                    </p>
+                  )}
                   <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
                     <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
-                    <li><strong>2024–2025:</strong> Novos programas PPA focalizados: 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra Viva), 5804 (Igualdade Étnico-Racial). FUNAI/MPI: programa 5136</li>
-                    <li><strong>Execução recorde:</strong> MIR com ~99% de execução em 2024/2025 — evidência central de fortalecimento institucional</li>
+                    <li><strong>2024–2025:</strong> Novos programas PPA: 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra Viva), 5804 (Igualdade Étnico-Racial)</li>
+                    <li><strong>Execução recorde:</strong> MIR com ~99% de execução em 2024/2025 — evidência central de fortalecimento</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -901,18 +1007,18 @@ export default function Orcamento() {
                     </div>
                     <div className="bg-muted/50 rounded p-2">
                       <p className="font-semibold text-foreground text-[11px]">PPA 2020-2023 (Migração → Prog. 5022)</p>
-                      <p className="text-[10px]">SESAI reclassificada para programa de Saúde, saindo dos programas indígenas (0617). <strong>Camada 4</strong> criada para buscar diretamente por código de ação.</p>
+                      <p className="text-[10px]">SESAI reclassificada para programa de Saúde. <strong>Camada 4</strong> criada para buscar por código de ação.</p>
                     </div>
                     <div className="bg-muted/50 rounded p-2">
                       <p className="font-semibold text-foreground text-[11px]">PPA 2024-2027 (Prog. 5022 mantido)</p>
-                      <p className="text-[10px]">Estrutura mantida sob programa de saúde. Camada 4 continua necessária para captura.</p>
+                      <p className="text-[10px]">Estrutura mantida sob programa de saúde. Camada 4 continua necessária.</p>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Variação */}
+            {/* Variação consolidada */}
             <Card>
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
@@ -920,34 +1026,54 @@ export default function Orcamento() {
                     <TrendingUp className={`w-8 h-8 ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Variação 2018-22 → 2023-26</p>
-                    <p className={`text-3xl font-bold ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`}>
-                      {stats && stats.variacao > 0 ? '+' : ''}{stats?.variacao.toFixed(1)}%
-                    </p>
+                    <p className="text-sm text-muted-foreground">Variação Consolidada 2018-22 → 2023-26</p>
+                    <div className="flex items-center gap-6 flex-wrap">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Dotação</p>
+                        <p className={`text-xl font-bold ${(stats?.variacaoDotacao || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.variacaoDotacao || 0) > 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Liquidado</p>
+                        <p className={`text-xl font-bold ${(stats?.variacaoLiquidado || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.variacaoLiquidado || 0) > 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Pago</p>
+                        <p className={`text-xl font-bold ${(stats?.variacaoPago || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.variacaoPago || 0) > 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Inclui SESAI nos dois períodos · Exclui ações 5034/MDHC sem palavras-chave raciais · Série parcial (dados podem estar incompletos para alguns anos)
+                      Inclui SESAI nos dois períodos · Exclui ações 5034/MDHC sem palavras-chave raciais
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Evolução por ano */}
-            {evolucaoPorAno.length > 0 && (
+            {/* Evolução por ano — Dotação vs Liquidado vs Pago */}
+            {stats?.porAnoDetalhado && Object.keys(stats.porAnoDetalhado).length > 0 && (
               <Card>
-                <CardHeader><CardTitle className="text-base">Evolução Anual — Valor Executado (Inclui SESAI · Exclui 5034 não-racial)</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-base">Evolução Anual — Dotação × Liquidado × Pago</CardTitle></CardHeader>
                 <CardContent>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={evolucaoPorAno}>
+                      <BarChart data={Object.entries(stats.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                         <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
                         <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
                         <Tooltip
-                          formatter={(value: number) => [formatCurrencyFull(value), 'Executado']}
+                          formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']}
                           contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                         />
-                        <Bar dataKey="pago" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                        <Legend verticalAlign="top" height={36} />
+                        <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>

@@ -330,7 +330,7 @@ export function useOrcamentoStats() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('ano, pago, empenhado, dotacao_autorizada, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo')
+          .select('ano, pago, empenhado, liquidado, dotacao_autorizada, dotacao_inicial, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo')
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) throw error;
@@ -342,12 +342,8 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
-      // Exclude only non-racial 5034 actions from comparative calculations
-      // SESAI (Saúde Indígena) is now INCLUDED in totals after data coverage fix for 2020-2023
-      // MIR bypass only for ano >= 2023 (pre-2023 "MIR" = retroactive MDHC reclassification)
       const registrosLimpos = registros.filter(r => !is5034Distortion(r));
       
-      // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
         Number(r.pago) || Number(r.dotacao_autorizada) || 0;
 
@@ -357,9 +353,27 @@ export function useOrcamentoStats() {
       const totalPeriodo1 = periodo1.reduce((acc, r) => acc + valorEfetivo(r), 0);
       const totalPeriodo2 = periodo2.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
+      // Liquidado por período
+      const liquidadoPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.liquidado) || 0), 0);
+      const liquidadoPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.liquidado) || 0), 0);
+
+      // Dotação autorizada por período
+      const dotacaoPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.dotacao_autorizada) || 0), 0);
+      const dotacaoPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.dotacao_autorizada) || 0), 0);
+
+      // Pago por período (sem fallback)
+      const pagoPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+      const pagoPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+
+      // Por ano com métricas detalhadas
       const porAno: Record<number, number> = {};
+      const porAnoDetalhado: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
       registrosLimpos.forEach(r => {
         porAno[r.ano] = (porAno[r.ano] || 0) + valorEfetivo(r);
+        if (!porAnoDetalhado[r.ano]) porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
       });
 
       const porPrograma: Record<string, number> = {};
@@ -367,7 +381,6 @@ export function useOrcamentoStats() {
         porPrograma[r.programa] = (porPrograma[r.programa] || 0) + valorEfetivo(r);
       });
 
-      // Por esfera
       const porEsfera: Record<string, { total: number; programas: number }> = {};
       registrosLimpos.forEach(r => {
         if (!porEsfera[r.esfera]) porEsfera[r.esfera] = { total: 0, programas: 0 };
@@ -375,11 +388,9 @@ export function useOrcamentoStats() {
         porEsfera[r.esfera].programas++;
       });
 
-      // SESAI stats (informativo)
       const sesaiRegistros = registros.filter(r => isSesaiRecord(r));
       const sesaiTotal = sesaiRegistros.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
-      // 5034 non-racial MDHC stats (informativo)
       const distorcao5034 = registros.filter(r => is5034Distortion(r));
       const distorcao5034Total = distorcao5034.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
@@ -387,7 +398,17 @@ export function useOrcamentoStats() {
         totalPeriodo1,
         totalPeriodo2,
         variacao: totalPeriodo1 > 0 ? ((totalPeriodo2 - totalPeriodo1) / totalPeriodo1 * 100) : 0,
+        liquidadoPeriodo1,
+        liquidadoPeriodo2,
+        variacaoLiquidado: liquidadoPeriodo1 > 0 ? ((liquidadoPeriodo2 - liquidadoPeriodo1) / liquidadoPeriodo1 * 100) : 0,
+        dotacaoPeriodo1,
+        dotacaoPeriodo2,
+        variacaoDotacao: dotacaoPeriodo1 > 0 ? ((dotacaoPeriodo2 - dotacaoPeriodo1) / dotacaoPeriodo1 * 100) : 0,
+        pagoPeriodo1,
+        pagoPeriodo2,
+        variacaoPago: pagoPeriodo1 > 0 ? ((pagoPeriodo2 - pagoPeriodo1) / pagoPeriodo1 * 100) : 0,
         porAno,
+        porAnoDetalhado,
         porPrograma,
         porEsfera,
         totalRegistros: registrosLimpos.length,
