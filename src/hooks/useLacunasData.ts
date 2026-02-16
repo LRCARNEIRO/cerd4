@@ -346,9 +346,10 @@ export function useOrcamentoStats() {
 
       const registros = allRegistros;
       
-      // Exclude SESAI + non-racial 5034 actions from comparative calculations
+      // Exclude only non-racial 5034 actions from comparative calculations
+      // SESAI (Saúde Indígena) is now INCLUDED in totals after data coverage fix for 2020-2023
       // MIR bypass only for ano >= 2023 (pre-2023 "MIR" = retroactive MDHC reclassification)
-      const registrosLimpos = registros.filter(r => !isSesaiRecord(r) && !is5034Distortion(r));
+      const registrosLimpos = registros.filter(r => !is5034Distortion(r));
       
       // Use pago when available, fallback to dotacao_autorizada
       const valorEfetivo = (r: typeof registros[0]) => 
