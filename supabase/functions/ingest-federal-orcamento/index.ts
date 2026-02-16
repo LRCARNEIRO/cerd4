@@ -17,45 +17,61 @@ const corsHeaders = {
  * FONTE: API do Portal da Transparência (api.portaldatransparencia.gov.br)
  * ENDPOINT: despesas/por-funcional-programatica
  * 
- * ESTRATÉGIA DE FILTRO (3 camadas independentes, depois deduplicadas):
+ * ESTRATÉGIA DE FILTRO (4 camadas independentes, depois deduplicadas):
  * 
  * CAMADA 1 — PROGRAMAS TEMÁTICOS DO PPA
- *   Códigos de programa finalísticos de política racial/indígena:
- *   - 5034: Igualdade Racial e Superação do Racismo (MIR, desde 2020)
- *   - 5803: Juventude Negra Viva (MIR, desde 2024)
- *   - 2065: Proteção e Promoção dos Direitos dos Povos Indígenas (MPI, desde 2012)
- *   - 0153: Promoção e Defesa dos Direitos da Criança e do Adolescente (MDHC, desde 2004)
- *   - 2034: Promoção da Igualdade Racial e Superação do Racismo (SEPPIR, PPA 2016-2019)
+ *   Códigos de programa finalísticos, com transição entre PPAs:
+ *   - Política Racial: 2034 (SEPPIR, PPA 2016-2019) → 5034 (MDHC guarda-chuva, PPA 2020-2023)
+ *     → 5804 (MIR, PPA 2024+). O 5034 exige filtragem por palavras-chave raciais para
+ *     excluir ações genéricas do MDHC.
+ *   - Povos Indígenas: 2065 (PPA 2012-2019) → 0617 (PPA 2020-2023) → 5136 (PPA 2024-2027).
+ *     Auditoria confirmou que 2065 não retorna dados após 2019; 0617 é o substituto exato.
+ *   - Novos programas MIR (PPA 2024+): 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra).
+ *   - 0153: Criança e Adolescente (MDHC, desde 2004).
  * 
  * CAMADA 2 — SUBFUNÇÃO 422 (Direitos Individuais, Coletivos e Difusos)
- *   A subfunção 422 da classificação funcional-programática concentra ações de
- *   promoção de direitos de minorias. Filtrar por essa subfunção captura ações
- *   que não pertencem aos programas temáticos listados acima mas são relevantes.
+ *   Captura ações não vinculadas aos programas acima, validadas por palavras-chave
+ *   raciais/étnicas.
  * 
- * CAMADA 3 — ÓRGÃOS ESPECÍFICOS
- *   Consultar despesas dos órgãos superiores com mandato direto:
- *   - 67000: Ministério da Igualdade Racial (MIR)
- *   - 92000: Ministério dos Povos Indígenas (MPI)
+ * CAMADA 3 — ÓRGÃOS COM MANDATO DIRETO
+ *   Despesas dos órgãos superiores:
+ *   - 67000: Ministério da Igualdade Racial (MIR, criado em jan/2023)
+ *   - 92000: Ministério dos Povos Indígenas (MPI, criado em jan/2023)
+ *   Captura toda despesa desses órgãos, deduplicada contra camadas anteriores.
  * 
- * FILTRO DE RELEVÂNCIA (pós-coleta):
- *   Palavras-chave para validar relevância: racial, racismo, indígen, quilombol,
- *   cigan, romani, afro, palmares, igualdade racial, FUNAI, SESAI, etnia, étnic,
- *   povos tradicionais, comunidades tradicionais, terreiro, matriz africana
+ * CAMADA 4 — AÇÕES ESPECÍFICAS SESAI (Saúde Indígena)
+ *   Consulta direta por código de ação: 20YP (Saúde Indígena) e 7684 (Saneamento em Aldeias).
+ *   Necessária porque a SESAI migrou do programa indígena (2065) para o programa de
+ *   saúde (5022) no PPA 2020-2023, ficando fora das Camadas 1-3. Os dados SESAI são
+ *   incluídos nos totais de política racial federal.
  * 
- * EXCLUSÕES EXPLÍCITAS:
- *   Programas transversais (Bolsa Família, MCMV, etc.) são excluídos mesmo que
- *   contenham subfunção 422 ou palavras-chave parciais.
+ * TRANSIÇÃO DE CÓDIGOS — PPA A PPA:
+ *   - Povos Indígenas: 2065 (PPA 2012-2019) → 0617 (PPA 2020-2023) → 5136 (PPA 2024-2027)
+ *   - SESAI: Ações 20YP/7684 sob programa 2065 (2018-2019) → programa 5022 (2020-2023)
+ *     → programa 5136 (2024+). Camada 4 resolve capturando por código de ação.
+ *   - Política Racial: 2034 (SEPPIR) → 5034 (MDHC) → 5804 (MIR)
+ * 
+ * PADRÃO DA SÉRIE (2018-2025):
+ *   2018-2019: Base modesta sob SEPPIR/MMFDH. SESAI: ~R$ 1,37-1,47 bi. FUNAI: ~R$ 30-38 mi.
+ *   2020-2023: Programa 0617 (Povos Indígenas). SESAI via Camada 4 (programa 5022).
+ *   2021-2022: Queda real de dotação — desmonte institucional da pauta racial.
+ *   2023: Salto com criação do MIR e reconstrução da pauta racial.
+ *   2024-2025: Novos programas focalizados: 5802, 5803, 5804, 5136.
+ * 
+ * TRATAMENTO DE DISTORÇÕES:
+ *   - Bypass Temporal MIR pré-2023: API retroativamente rotula MDHC como MIR (67000).
+ *     Para anos < 2023, ações genéricas do MDHC são excluídas; demais exigem keywords raciais.
+ *   - Programa 5034: Guarda-chuva MDHC, filtrado por palavras-chave raciais.
+ *   - Programas Transversais: Bolsa Família, MCMV, SUS, SUAS, Fundo Eleitoral excluídos.
+ *   - Programa 5113 (Educação Superior): Excluído por ser genérico (R$ 14 bi).
+ * 
+ * COMPLEMENTAÇÃO DE DOTAÇÃO (via Edge Function ingest-dotacao-loa):
+ *   A API REST não fornece Dotação Inicial (LOA). Os valores são obtidos dos arquivos
+ *   ZIP/CSV do Portal de Dados Abertos, matching por chave composta Código Programa | Código Ação.
  * 
  * CAMPOS COLETADOS:
- *   - programa (código + nome)
- *   - ação (código + nome)
- *   - dotação inicial (dotacao_inicial — PLOA/LOA quando disponível)
- *   - dotação atualizada (dotacao_autorizada — LOA + créditos adicionais)
- *   - empenhado
- *   - liquidado
- *   - pago
- *   - percentual de execução (pago/dotação)
- *   - órgão (resolvido por mapeamento)
+ *   programa (código + nome), ação (código + nome), dotação inicial/autorizada,
+ *   empenhado, liquidado, pago, percentual de execução, órgão (resolvido por mapeamento).
  * ================================================================
  */
 
@@ -128,7 +144,7 @@ const ACAO_ORGAO_MAP: Record<string, string> = {
   "214V": "FUNAI", "20G7": "INCRA", "0859": "INCRA", "21CS": "MIR",
 };
 
-// Ações da SESAI — classificadas como "Saúde Indígena" (informativo, não soma no total racial)
+// Ações da SESAI — classificadas como "Saúde Indígena" (incluídas nos totais federais)
 const ACOES_SESAI = ["20YP", "7684"];
 
 // Ações genéricas do MDHC pré-2023 que a API retroativamente rotula como MIR
@@ -322,7 +338,7 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
     percentual_execucao: percentual,
     fonte_dados: `API Portal da Transparência (${camada})`,
     url_fonte: `https://portaldatransparencia.gov.br/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01/01/${ano}&ate=31/12/${ano}&programa=${codProg}`,
-    observacoes: grupoFocal === "saude_indigena" ? `Camada: ${camada} | SEGREGADO: Saúde Indígena (não computar no total racial)` : `Camada: ${camada}`,
+    observacoes: grupoFocal === "saude_indigena" ? `Camada: ${camada} | Saúde Indígena (SESAI)` : `Camada: ${camada}`,
     eixo_tematico: eixoTematico,
     grupo_focal: grupoFocal,
     descritivo: resolveDescritivo(item),
