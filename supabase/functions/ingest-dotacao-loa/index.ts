@@ -220,40 +220,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    let anos: number[] = [2024];
-    try { const b = await req.json(); if (b.anos) anos = b.anos; } catch {}
+    let ano = 2024;
+    try { const b = await req.json(); if (b.anos?.[0]) ano = b.anos[0]; if (b.ano) ano = b.ano; } catch {}
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    // Processamento SÍNCRONO — garante que a dotação seja preenchida antes de retornar
-    const results: Record<string, string> = {};
-    let totalUpdated = 0;
+    // Processamento de UM ÚNICO ANO por chamada (evita CPU timeout)
+    const result = await processYear(supabase, ano);
+    console.log(`  ${ano}: ${result.ok ? "OK" : "ERRO"} - ${result.msg}`);
 
-    for (const ano of anos) {
-      try {
-        const result = await processYear(supabase, ano);
-        results[String(ano)] = `${result.ok ? "OK" : "ERRO"} - ${result.msg}`;
-        if (result.ok) {
-          const match = result.msg.match(/(\d+)/);
-          if (match) totalUpdated += parseInt(match[1], 10);
-        }
-        console.log(`  ${ano}: ${result.ok ? "OK" : "ERRO"} - ${result.msg}`);
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "?";
-        results[String(ano)] = `FATAL - ${msg}`;
-        console.error(`  ${ano}: Fatal -`, e);
-      }
-    }
-    console.log(`\n=== DOTAÇÃO LOA CONCLUÍDA: ${totalUpdated} total ===`);
+    const totalUpdated = result.ok ? parseInt(result.msg.match(/(\d+)/)?.[1] || "0", 10) : 0;
 
     return new Response(JSON.stringify({
-      success: true,
+      success: result.ok,
       total_atualizados: totalUpdated,
-      detalhes: results,
-      message: `Dotação LOA processada: ${totalUpdated} registros atualizados para anos ${anos.join(", ")}.`,
+      ano,
+      message: `Dotação LOA ${ano}: ${result.msg}`,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
