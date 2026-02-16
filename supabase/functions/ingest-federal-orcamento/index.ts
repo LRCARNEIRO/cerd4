@@ -67,7 +67,9 @@ const PROGRAMAS_TEMATICOS = [
   { codigo: "5802", nome: "Direitos dos Povos Quilombolas e Ciganos", orgao: "MIR", desde: 2024 },
   { codigo: "5803", nome: "Juventude Negra Viva", orgao: "MIR", desde: 2024 },
   { codigo: "5804", nome: "Igualdade Étnico-Racial e Superação do Racismo", orgao: "MIR", desde: 2024 },
-  // 5113 REMOVIDO: é "Educação Superior" genérica (R$ 14 bi), NÃO é programa de política racial
+  // 5136: Programa de Povos Indígenas no PPA 2024-2027 (substitui 2065 a partir de 2024)
+  { codigo: "5136", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2024 },
+  // 2065: Programa histórico de Povos Indígenas (PPA 2012-2023)
   { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
   { codigo: "2034", nome: "Promoção da Igualdade Racial e Superação do Racismo (PPA 2016-2019)", orgao: "SEPPIR", desde: 2016 },
