@@ -268,7 +268,45 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   };
 }
 
-/** Merge financial fields from a new record into an existing one, keeping the MAX of each */
+/** Pre-aggregate API rows by programa+ação within a single fetch.
+ *  The API returns one row per localizador; we SUM execution fields and MAX dotação. */
+function aggregateApiRows(items: any[]): any[] {
+  const map = new Map<string, any>();
+  for (const item of items) {
+    const codProg = item.codigoPrograma || "";
+    const codAcao = item.codigoAcao || "";
+    const key = `${codProg}|${codAcao}`;
+    const existing = map.get(key);
+    if (!existing) {
+      map.set(key, { ...item });
+    } else {
+      // SUM execution fields across localizadores
+      for (const [rawField, parsedField] of [
+        ["empenhado", "valorEmpenhado"], ["liquidado", "valorLiquidado"], ["pago", "valorPago"],
+      ]) {
+        const eVal = parseBRL(existing[rawField] || existing[parsedField]) || 0;
+        const iVal = parseBRL(item[rawField] || item[parsedField]) || 0;
+        const sum = eVal + iVal;
+        existing[rawField] = sum > 0 ? sum : null;
+        existing[parsedField] = sum > 0 ? sum : null;
+      }
+      // MAX dotação fields (same value repeated per localizador)
+      for (const [rawField, parsedField] of [
+        ["dotacaoInicial", "valorDotacaoInicial"], ["dotacaoAtualizada", "valorDotacaoAtualizada"],
+      ]) {
+        const eVal = parseBRL(existing[rawField] || existing[parsedField]) || 0;
+        const iVal = parseBRL(item[rawField] || item[parsedField]) || 0;
+        const max = Math.max(eVal, iVal);
+        existing[rawField] = max > 0 ? max : null;
+        existing[parsedField] = max > 0 ? max : null;
+      }
+      map.set(key, existing);
+    }
+  }
+  return Array.from(map.values());
+}
+
+/** Cross-layer merge: MAX for all fields (same data seen from different query angles) */
 function mergeFinancials(existing: any, incoming: any): any {
   const merged = { ...existing };
   const fields = ["dotacao_inicial", "dotacao_autorizada", "empenhado", "liquidado", "pago"] as const;
@@ -379,9 +417,9 @@ Deno.serve(async (req) => {
               apiKey,
             );
             brutos += dados.length;
+            const aggregated = aggregateApiRows(dados);
 
-
-            for (const item of dados) {
+            for (const item of aggregated) {
               if (!isRelevant(item)) continue;
               const record = buildRecord(item, prog.orgao, ano, "Programa Temático PPA");
               if (record) {
@@ -419,8 +457,9 @@ Deno.serve(async (req) => {
             apiKey,
           );
           brutos += dados.length;
+          const aggregated = aggregateApiRows(dados);
 
-          for (const item of dados) {
+          for (const item of aggregated) {
             if (!isRelevant(item)) continue;
             const record = buildRecord(item, "MDHC", ano, "Subfunção 422");
             if (record) {
@@ -458,8 +497,9 @@ Deno.serve(async (req) => {
               apiKey,
             );
             brutos += dados.length;
+            const aggregated = aggregateApiRows(dados);
 
-            for (const item of dados) {
+            for (const item of aggregated) {
               const record = buildRecord(item, org.sigla, ano, `Órgão ${org.sigla}`);
               if (record) {
                 const key = `${record.orgao}|${record.programa}|${record.ano}`;
