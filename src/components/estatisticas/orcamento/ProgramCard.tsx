@@ -37,6 +37,7 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const name = extractName(programa);
   const orgao = registros[0]?.orgao;
   const descritivo = registros[0]?.descritivo;
+  const razaoSelecao = registros[0]?.razao_selecao;
 
   // Deduplicate by year: keep the record with most data per year
   const byYear = new Map<number, DadoOrcamentario>();
@@ -102,15 +103,25 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
       {expanded && (
         <CardContent className="pt-0 border-t">
           {/* Metadados descritivos */}
-          {descritivo && (
+          {(descritivo || razaoSelecao) && (
             <div className="mt-3 mb-4 space-y-2 bg-muted/40 rounded-md p-3 text-xs">
-              <div className="flex items-start gap-2">
-                <Info className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
-                <div>
-                  <span className="font-semibold text-foreground">Descritivo: </span>
-                  <span className="text-muted-foreground">{descritivo}</span>
+              {descritivo && (
+                <div className="flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold text-foreground">Descritivo: </span>
+                    <span className="text-muted-foreground">{descritivo}</span>
+                  </div>
                 </div>
-              </div>
+              )}
+              {razaoSelecao && (
+                <div className="flex items-start gap-2">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 mt-0.5 flex-shrink-0 border-primary/50 text-primary">
+                    Critério
+                  </Badge>
+                  <span className="text-muted-foreground">{razaoSelecao}</span>
+                </div>
+              )}
             </div>
           )}
 
