@@ -156,14 +156,28 @@ function processRREOData(
   // coluna: "DOTAÇÃO INICIAL", "DOTAÇÃO ATUALIZADA (a)", "DESPESAS EMPENHADAS", "DESPESAS LIQUIDADAS", "DESPESAS PAGAS"
   // rotulo: section label e.g. "Total das Despesas Exceto Intra-Orçamentárias"
 
-  // Relevant conta text patterns for racial equality policy
-  const CONTA_ALVO = [
-    "assistência aos indígenas",       // Subfunção 423
+  // Contas que SEMPRE são relevantes no RREO Anexo 02 estadual
+  // Estas são as subfunções/funções mais específicas de política racial/étnica
+  const CONTA_DIRETA = [
+    "assistência aos indígenas",           // Subfunção 423
+    "assistência aos índios",              // Variação da Subfunção 423
+    "direitos da cidadania",               // Função 14
+    "direitos individuais",                // Subfunção 422 (Direitos Individuais, Coletivos e Difusos)
   ];
 
-  const isRelevantConta = (conta: string): boolean => {
-    const lower = conta.toLowerCase();
-    return CONTA_ALVO.some(a => lower.includes(a)) || matchesKeyword(lower);
+  const isRelevantItem = (conta: string, rotulo: string, codConta: string): boolean => {
+    const lConta = conta.toLowerCase();
+    const lRotulo = rotulo.toLowerCase();
+    const lCod = codConta.toLowerCase();
+    const combined = `${lConta} ${lRotulo} ${lCod}`;
+
+    // 1. Conta direta: sempre relevante (funções/subfunções de política racial)
+    if (CONTA_DIRETA.some(a => lConta.includes(a))) return true;
+
+    // 2. Keyword match em qualquer campo (conta + rótulo + cod_conta)
+    if (matchesKeyword(combined)) return true;
+
+    return false;
   };
 
   // Filter metadata/junk rows  
@@ -184,7 +198,7 @@ function processRREOData(
     const valor = parseBRL(item.valor || item.vl_conta || item.valor_conta);
 
     if (!conta || isJunk(conta)) continue;
-    if (!isRelevantConta(conta)) continue;
+    if (!isRelevantItem(conta, rotulo, codConta)) continue;
 
     // Build readable program name  
     const isIntra = codConta.toLowerCase().includes("intra");
@@ -198,9 +212,10 @@ function processRREOData(
       // Build razao_selecao: audit trail explaining WHY this record was selected
       const contaLower = conta.toLowerCase();
       const razaoParts: string[] = [];
-      const matched = CONTA_ALVO.find(a => contaLower.includes(a));
-      if (matched) razaoParts.push(`Conta RREO/DCA: "${matched}"`);
-      const kwMatched = KEYWORDS.filter(kw => contaLower.includes(kw));
+      const matchedDireta = CONTA_DIRETA.find(a => contaLower.includes(a));
+      if (matchedDireta) razaoParts.push(`Conta RREO/DCA: "${matchedDireta}"`);
+      const combined = `${contaLower} ${rotulo.toLowerCase()} ${codConta.toLowerCase()}`;
+      const kwMatched = KEYWORDS.filter(kw => combined.includes(kw));
       if (kwMatched.length > 0) razaoParts.push(`Palavras-chave: ${kwMatched.slice(0, 3).join(", ")}`);
       razaoParts.push(`Subfunção/Função alvo no SICONFI`);
 
