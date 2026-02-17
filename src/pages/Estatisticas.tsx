@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
-  FileText, DollarSign, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
+  FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
   Landmark, HeartPulse
 } from 'lucide-react';
 
@@ -22,7 +22,7 @@ import {
 } from '@/components/estatisticas/InterseccionalTabs';
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
-import { OrcamentoTab } from '@/components/estatisticas/OrcamentoTab';
+
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
@@ -81,9 +81,6 @@ export default function Estatisticas() {
           </TabsTrigger>
           <TabsTrigger value="lacunas-cerd" className="gap-1">
             <FileText className="w-4 h-4" /> Lacunas CERD
-          </TabsTrigger>
-          <TabsTrigger value="orcamento" className="gap-1">
-            <DollarSign className="w-4 h-4" /> Orçamento
           </TabsTrigger>
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Indicadores (BD)
@@ -147,10 +144,6 @@ export default function Estatisticas() {
           <LacunasCerdTab />
         </TabsContent>
 
-        {/* Orçamento */}
-        <TabsContent value="orcamento">
-          <OrcamentoTab />
-        </TabsContent>
 
         {/* Indicadores do banco de dados */}
         <TabsContent value="indicadores-db">
