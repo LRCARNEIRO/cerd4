@@ -695,6 +695,110 @@ export default function Orcamento() {
           {isLoading ? (
             <Skeleton className="h-96" />
           ) : hasData ? (
+            <div className="space-y-6">
+            {/* Infográfico: Programas e Ações por Grupo Focal */}
+            {(() => {
+              const allFederal = classified.federal.all.filter(r => !is5034NonRacial(r));
+              const groups: { key: string; label: string; icon: React.ReactNode; color: string }[] = [
+                { key: 'racial', label: 'Negros / Racial', icon: <Users className="w-4 h-4" />, color: 'hsl(var(--primary))' },
+                { key: 'indigena', label: 'Indígenas', icon: <TreePine className="w-4 h-4" />, color: 'hsl(var(--success))' },
+                { key: 'quilombola', label: 'Quilombolas', icon: <MapPin className="w-4 h-4" />, color: 'hsl(var(--chart-3))' },
+                { key: 'ciganos', label: 'Ciganos', icon: <Tent className="w-4 h-4" />, color: 'hsl(var(--chart-4))' },
+                { key: 'sesai', label: 'SESAI', icon: <Building className="w-4 h-4" />, color: 'hsl(var(--chart-5))' },
+              ];
+              const periodLabels = ['2018–2022', '2023–2025', 'Total'];
+              const getGroupRecords = (key: string) => {
+                if (key === 'sesai') return classified.sesai;
+                return classified.federal.byTheme[key as ThematicFilter] || [];
+              };
+
+              const rows = groups.map(g => {
+                const recs = getGroupRecords(g.key).filter(r => !is5034NonRacial(r));
+                const p1 = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+                const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+                const progTotal = new Set(recs.map(r => r.programa)).size;
+                const progP1 = new Set(p1.map(r => r.programa)).size;
+                const progP2 = new Set(p2.map(r => r.programa)).size;
+                const acoesTotal = recs.length;
+                const acoesP1 = p1.length;
+                const acoesP2 = p2.length;
+                return { ...g, progP1, progP2, progTotal, acoesP1, acoesP2, acoesTotal };
+              });
+
+              const totalPrograms = new Set(allFederal.map(r => r.programa)).size;
+              const totalActions = allFederal.length;
+
+              return (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Info className="w-4 h-4 text-primary" />
+                      Panorama: Programas e Ações por Grupo Focal e Período
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Quantidade de programas distintos e registros de ações orçamentárias classificados por grupo focal — esfera federal
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    {/* Summary badges */}
+                    <div className="flex flex-wrap gap-3 mb-4">
+                      <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">
+                        {totalPrograms} programas distintos
+                      </Badge>
+                      <Badge className="text-sm px-3 py-1 bg-muted text-foreground border-border">
+                        {totalActions} ações/registros totais
+                      </Badge>
+                    </div>
+
+                    {/* Table */}
+                    <div className="overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[160px]">Grupo Focal</TableHead>
+                            <TableHead colSpan={3} className="text-center border-l">Programas</TableHead>
+                            <TableHead colSpan={3} className="text-center border-l">Ações / Registros</TableHead>
+                          </TableRow>
+                          <TableRow>
+                            <TableHead />
+                            {periodLabels.map(p => <TableHead key={`p-${p}`} className="text-center text-xs border-l">{p}</TableHead>)}
+                            {periodLabels.map(p => <TableHead key={`a-${p}`} className="text-center text-xs border-l">{p}</TableHead>)}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {rows.map(row => (
+                            <TableRow key={row.key}>
+                              <TableCell className="font-medium">
+                                <div className="flex items-center gap-2">
+                                  <span style={{ color: row.color }}>{row.icon}</span>
+                                  <span className="text-sm">{row.label}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center font-mono text-sm border-l">{row.progP1}</TableCell>
+                              <TableCell className="text-center font-mono text-sm border-l">{row.progP2}</TableCell>
+                              <TableCell className="text-center font-mono text-sm font-bold border-l">{row.progTotal}</TableCell>
+                              <TableCell className="text-center font-mono text-sm border-l">{row.acoesP1}</TableCell>
+                              <TableCell className="text-center font-mono text-sm border-l">{row.acoesP2}</TableCell>
+                              <TableCell className="text-center font-mono text-sm font-bold border-l">{row.acoesTotal}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    <AuditFooter
+                      fontes={[
+                        { nome: 'Portal da Transparência — Despesas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+                        { nome: 'SIOP — Execução Orçamentária', url: 'https://www.siop.planejamento.gov.br/siop/' },
+                      ]}
+                      documentos={['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157-162']}
+                      compact
+                    />
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {evolucaoPorAno.length > 0 && (
                 <Card>
@@ -761,6 +865,7 @@ export default function Orcamento() {
                   </CardContent>
                 </Card>
               )}
+            </div>
             </div>
           ) : (
             <EmptyEsferaCard esfera="gerais" descricao="Nenhum dado orçamentário verificado encontrado no banco." />
