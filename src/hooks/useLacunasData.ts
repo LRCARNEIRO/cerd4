@@ -394,6 +394,37 @@ export function useOrcamentoStats() {
       const distorcao5034 = registros.filter(r => is5034Distortion(r));
       const distorcao5034Total = distorcao5034.reduce((acc, r) => acc + valorEfetivo(r), 0);
 
+      // === SEM SESAI: perspectiva de políticas raciais stricto sensu ===
+      const semSesaiLimpos = registrosLimpos.filter(r => !isSesaiRecord(r));
+      const semSesaiP1 = semSesaiLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const semSesaiP2 = semSesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
+
+      const semSesai = {
+        dotacaoP1: semSesaiP1.reduce((acc, r) => acc + (Number(r.dotacao_autorizada) || 0), 0),
+        dotacaoP2: semSesaiP2.reduce((acc, r) => acc + (Number(r.dotacao_autorizada) || 0), 0),
+        liquidadoP1: semSesaiP1.reduce((acc, r) => acc + (Number(r.liquidado) || 0), 0),
+        liquidadoP2: semSesaiP2.reduce((acc, r) => acc + (Number(r.liquidado) || 0), 0),
+        pagoP1: semSesaiP1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0),
+        pagoP2: semSesaiP2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0),
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+      };
+      semSesaiLimpos.forEach(r => {
+        if (!semSesai.porAnoDetalhado[r.ano]) semSesai.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        semSesai.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        semSesai.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        semSesai.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+      const semSesaiVariacaoDotacao = semSesai.dotacaoP1 > 0 ? ((semSesai.dotacaoP2 - semSesai.dotacaoP1) / semSesai.dotacaoP1 * 100) : 0;
+      const semSesaiVariacaoLiq = semSesai.liquidadoP1 > 0 ? ((semSesai.liquidadoP2 - semSesai.liquidadoP1) / semSesai.liquidadoP1 * 100) : 0;
+      const semSesaiVariacaoPago = semSesai.pagoP1 > 0 ? ((semSesai.pagoP2 - semSesai.pagoP1) / semSesai.pagoP1 * 100) : 0;
+
+      // === SESAI isolada por período ===
+      const sesaiLimpos = registrosLimpos.filter(r => isSesaiRecord(r));
+      const sesaiP1 = sesaiLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const sesaiP2 = sesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const sesaiPagoP1 = sesaiP1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+      const sesaiPagoP2 = sesaiP2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
+
       return {
         totalPeriodo1,
         totalPeriodo2,
@@ -414,8 +445,16 @@ export function useOrcamentoStats() {
         totalRegistros: registrosLimpos.length,
         sesaiTotal,
         sesaiRegistros: sesaiRegistros.length,
+        sesaiPagoP1,
+        sesaiPagoP2,
         distorcao5034Total,
         distorcao5034Registros: distorcao5034.length,
+        semSesai: {
+          ...semSesai,
+          variacaoDotacao: semSesaiVariacaoDotacao,
+          variacaoLiquidado: semSesaiVariacaoLiq,
+          variacaoPago: semSesaiVariacaoPago,
+        },
       };
     },
   });

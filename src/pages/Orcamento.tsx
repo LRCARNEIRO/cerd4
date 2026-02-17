@@ -823,195 +823,231 @@ export default function Orcamento() {
         {/* RESUMO COMPARATIVO */}
         <TabsContent value="resumo">
           <div className="space-y-6">
-            {/* Nota Explicativa Atualizada */}
+            {/* Nota Explicativa */}
             <Card className="border-l-4 border-l-warning">
               <CardContent className="pt-4 pb-3">
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">Nota Explicativa — Critérios do Cálculo Comparativo</h4>
+                    <h4 className="font-semibold text-sm">Nota Explicativa — Critérios e Dupla Perspectiva</h4>
                     <p className="text-xs text-muted-foreground">
-                      Os valores desta seção utilizam <strong>exclusivamente campos reais da API</strong> do Portal da Transparência (<code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code>) para classificação. Campos internos como <code className="bg-muted px-1 rounded">publico_alvo</code> e <code className="bg-muted px-1 rounded">observacoes</code> são ignorados por serem metadados fabricados pelo sistema de ingestão.
+                      Os valores utilizam <strong>exclusivamente campos reais da API</strong> (<code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code>). Campos internos (<code className="bg-muted px-1 rounded">publico_alvo</code>, <code className="bg-muted px-1 rounded">observacoes</code>) são ignorados.
                     </p>
-                    <div className="mt-2 space-y-1.5">
-                      <p className="text-xs font-semibold text-foreground">✅ Incluído no cálculo:</p>
-                      <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
-                        <li><strong>SESAI (Saúde Indígena):</strong> Ações 20YP e 7684 (~R$ 1,3–1,5 bi/ano) — componente fundamental da política indígena, incluída nos totais federais</li>
-                        <li><strong>FUNAI / MPI:</strong> Programas 2065 → 0617 → 5136 (transição entre PPAs)</li>
-                        <li><strong>MIR (desde 2023):</strong> Programas 5802, 5803, 5804</li>
-                        <li><strong>SEPPIR (2018-2019):</strong> Programa 2034 (predecessor do MIR)</li>
-                        <li><strong>Ações 5034 com palavras-chave raciais:</strong> Ex: ação 6440 (regularização de quilombos)</li>
-                      </ul>
-                    </div>
-                    <div className="mt-2 space-y-1.5">
-                      <p className="text-xs font-semibold text-destructive">❌ Excluído do cálculo:</p>
-                      <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
-                        <li><strong>Ações genéricas do Programa 5034/MDHC:</strong> 0E85, 14XS, 00SN (Casas da Mulher), 00SO (Socioeducativo), 21AR/21AS/21AT/21AU — sem palavras-chave raciais nos campos reais da API</li>
-                        <li><strong>Programas transversais:</strong> Bolsa Família (2068), MCMV (2049), SUS (2012/5022 exceto SESAI), SUAS (2015), Fundo Eleitoral (6012)</li>
-                        <li><strong>Programa 5113:</strong> Educação Superior (~R$ 14 bi, genérico)</li>
-                        <li><strong>MIR retroativo pré-2023:</strong> A API rotula registros do MDHC (2020-2022) como MIR (órgão 67000). Ações genéricas são excluídas; apenas mantidas se contêm palavras-chave raciais</li>
-                      </ul>
+                    <p className="text-xs text-muted-foreground">
+                      <strong>⚠️ Assimetria temporal:</strong> O Período 1 abrange <strong>5 anos</strong> (2018–2022) e o Período 2 apenas <strong>3 anos</strong> (2023–2025, sem dados de 2026). As variações percentuais comparam totais acumulados, não médias anuais.
+                    </p>
+                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-foreground">✅ Incluído:</p>
+                        <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
+                          <li><strong>SESAI:</strong> Ações 20YP e 7684 (~R$ 1,3–2,7 bi/ano)</li>
+                          <li><strong>FUNAI / MPI:</strong> Programas 2065 → 0617 → 5136</li>
+                          <li><strong>MIR (2023+):</strong> Programas 5802, 5803, 5804</li>
+                          <li><strong>SEPPIR (2018-2019):</strong> Programa 2034</li>
+                        </ul>
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-semibold text-destructive">❌ Excluído:</p>
+                        <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
+                          <li><strong>5034/MDHC genérico:</strong> Ações sem palavras-chave raciais</li>
+                          <li><strong>Transversais:</strong> Bolsa Família, MCMV, SUS, SUAS</li>
+                          <li><strong>MIR retroativo pré-2023:</strong> Reclassificações da API filtradas</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Infográfico comparativo — Dotação vs Liquidado vs Pago */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* DOTAÇÃO AUTORIZADA */}
-              <Card className="border-t-4 border-t-chart-1">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">Dotação Autorizada</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
-                      <p className="text-lg font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p>
+            {/* ===== PERSPECTIVA 1: TOTAL (COM SESAI) ===== */}
+            <div>
+              <h3 className="text-base font-bold mb-3 flex items-center gap-2">
+                <Building className="w-5 h-5 text-chart-1" />
+                Perspectiva 1 — Investimento Federal Total (com SESAI)
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Inclui a Saúde Indígena (SESAI), que representa <strong>~90% do total em 2018–2022</strong> e <strong>~60-85% em 2023–2025</strong>. A SESAI cresceu de forma contínua e independente da política racial, mascarando o desmonte institucional de 2019–2022.
+              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <Card className="border-t-4 border-t-chart-1">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Dotação Autorizada</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022 (5 anos)</p><p className="text-lg font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025 (3 anos)</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p></div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
-                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
                     </div>
-                  </div>
-                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                    {(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
-                  </div>
-                  <p className="text-[10px] text-muted-foreground text-center">Planejamento orçamentário (LOA + créditos)</p>
-                </CardContent>
-              </Card>
-
-              {/* LIQUIDADO */}
-              <Card className="border-t-4 border-t-chart-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
-                      <p className="text-lg font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-chart-2">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p></div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
-                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
                     </div>
-                  </div>
-                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                    {(stats?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
-                  </div>
-                  <p className="text-[10px] text-muted-foreground text-center">Execução efetiva (despesa verificada)</p>
-                </CardContent>
-              </Card>
-
-              {/* PAGO */}
-              <Card className="border-t-4 border-t-chart-3">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">Pago</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">2018–2022</p>
-                      <p className="text-lg font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-chart-3">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p></div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] text-muted-foreground">2023–2026</p>
-                      <p className="text-lg font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
                     </div>
-                  </div>
-                  <div className={`text-center py-1.5 rounded text-sm font-bold ${(stats?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                    {(stats?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
-                  </div>
-                  <p className="text-[10px] text-muted-foreground text-center">Desembolso financeiro efetivo</p>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
-            {/* Cards detalhados por período */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader><CardTitle className="text-base">Período 2018–2022 (Retrocesso/Desmonte)</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-muted/50 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Dotação</p>
-                      <p className="text-sm font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p>
+            {/* ===== PERSPECTIVA 2: SEM SESAI ===== */}
+            <div>
+              <h3 className="text-base font-bold mb-3 flex items-center gap-2">
+                <Users className="w-5 h-5 text-chart-4" />
+                Perspectiva 2 — Políticas Raciais <em>stricto sensu</em> (sem SESAI)
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Exclui a SESAI para isolar o investimento específico em igualdade racial, povos indígenas (FUNAI/MPI) e quilombolas. <strong>Esta é a perspectiva que revela o real desmonte (2019–2022) e a reconstrução (2023+).</strong>
+              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <Card className="border-t-4 border-t-chart-4">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Dotação (sem SESAI)</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.dotacaoP1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.dotacaoP2 || 0)}</p></div>
                     </div>
-                    <div className="bg-muted/50 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Liquidado</p>
-                      <p className="text-sm font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.semSesai?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoDotacao || 0).toFixed(1)}%
                     </div>
-                    <div className="bg-muted/50 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Pago</p>
-                      <p className="text-sm font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-chart-5">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado (sem SESAI)</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.liquidadoP1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.liquidadoP2 || 0)}</p></div>
                     </div>
-                  </div>
-                  {(stats?.dotacaoPeriodo1 || 0) > 0 && (
-                    <p className="text-xs text-muted-foreground text-center">
-                      Taxa de execução (Liq/Dot): <strong>{((stats?.liquidadoPeriodo1 || 0) / (stats?.dotacaoPeriodo1 || 1) * 100).toFixed(1)}%</strong> · (Pago/Dot): <strong>{((stats?.pagoPeriodo1 || 0) / (stats?.dotacaoPeriodo1 || 1) * 100).toFixed(1)}%</strong>
-                    </p>
-                  )}
-                  <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
-                    <li><strong>2018–2019:</strong> Base modesta sob SEPPIR/MMFDH. SESAI: ~R$ 1,37–1,47 bi (ação 20YP) + R$ 23–29 mi (ação 7684). FUNAI: 5 ações, ~R$ 30–38 mi</li>
-                    <li><strong>2020:</strong> Programa 5034 como guarda-chuva MDHC — apenas ações com palavras-chave raciais incluídas</li>
-                    <li><strong>2021–2022:</strong> Queda real para R$ 161–173 mi de dotação — desmonte institucional confirmado</li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader><CardTitle className="text-base">Período 2023–2026 (Reconstrução)</CardTitle></CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-success/5 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Dotação</p>
-                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.semSesai?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoLiquidado || 0).toFixed(1)}%
                     </div>
-                    <div className="bg-success/5 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Liquidado</p>
-                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-t-4 border-t-primary">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago (sem SESAI)</CardTitle></CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.pagoP1 || 0)}</p></div>
+                      <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.pagoP2 || 0)}</p></div>
                     </div>
-                    <div className="bg-success/5 rounded p-2 text-center">
-                      <p className="text-[10px] text-muted-foreground">Pago</p>
-                      <p className="text-sm font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p>
+                    <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                      {(stats?.semSesai?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoPago || 0).toFixed(1)}%
                     </div>
-                  </div>
-                  {(stats?.dotacaoPeriodo2 || 0) > 0 && (
-                    <p className="text-xs text-muted-foreground text-center">
-                      Taxa de execução (Liq/Dot): <strong className="text-success">{((stats?.liquidadoPeriodo2 || 0) / (stats?.dotacaoPeriodo2 || 1) * 100).toFixed(1)}%</strong> · (Pago/Dot): <strong className="text-success">{((stats?.pagoPeriodo2 || 0) / (stats?.dotacaoPeriodo2 || 1) * 100).toFixed(1)}%</strong>
-                    </p>
-                  )}
-                  <ul className="text-xs text-muted-foreground space-y-1.5 list-disc pl-4 mt-3">
-                    <li><strong>2023:</strong> Salto para R$ 457 mi de dotação — criação do MIR e reconstrução da pauta racial</li>
-                    <li><strong>2024–2025:</strong> Novos programas PPA: 5802 (Quilombolas/Ciganos), 5803 (Juventude Negra Viva), 5804 (Igualdade Étnico-Racial)</li>
-                    <li><strong>Execução recorde:</strong> MIR com ~99% de execução em 2024/2025 — evidência central de fortalecimento</li>
-                  </ul>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
-            {/* SESAI — Detalhamento no Comparativo */}
+            {/* ===== TABELA ANO A ANO ===== */}
+            {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Pago, R$)</CardTitle></CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">Ano</TableHead>
+                        <TableHead className="text-right">Total (com SESAI)</TableHead>
+                        <TableHead className="text-right">SESAI</TableHead>
+                        <TableHead className="text-right">Sem SESAI</TableHead>
+                        <TableHead className="text-right">% SESAI</TableHead>
+                        <TableHead>Interpretação</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
+                        const total = stats.porAnoDetalhado[ano]?.pago || 0;
+                        const semSesaiVal = stats.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                        const sesaiVal = total - semSesaiVal;
+                        const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
+                        const interpretacoes: Record<number, string> = {
+                          2018: 'Base: SEPPIR ativa + FUNAI com 5 ações. SESAI domina.',
+                          2019: 'Queda real sem SESAI: extinção da SEPPIR, MDHC assume.',
+                          2020: 'Programa 5034 genérico (filtrado). MPI aparece. SESAI estável.',
+                          2021: 'Vale do desmonte: apenas FUNAI + MPI residual.',
+                          2022: 'Ponto mais baixo relativo. SESAI cresce independentemente.',
+                          2023: 'Reconstrução: criação do MIR. Salto de +70% sem SESAI.',
+                          2024: 'Expansão: MPI R$ 307 mi + MIR execução recorde (~99%).',
+                          2025: 'Explosão: MPI R$ 1,4 bi + MIR R$ 103 mi. Recorde histórico.',
+                        };
+                        return (
+                          <TableRow key={ano} className={ano === 2023 ? 'border-t-2 border-t-chart-2' : ''}>
+                            <TableCell className="font-bold">{ano}</TableCell>
+                            <TableCell className="text-right font-mono text-xs">{formatCurrencyFull(total)}</TableCell>
+                            <TableCell className="text-right font-mono text-xs text-muted-foreground">{formatCurrencyFull(sesaiVal)}</TableCell>
+                            <TableCell className="text-right font-mono text-xs font-semibold">{formatCurrencyFull(semSesaiVal)}</TableCell>
+                            <TableCell className="text-right text-xs">{pctSesai.toFixed(0)}%</TableCell>
+                            <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacoes[ano]}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* ===== CONCLUSÃO INTERPRETATIVA ===== */}
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="pt-4 pb-3">
+                <h4 className="font-semibold text-sm mb-3">📊 Conclusão Interpretativa</h4>
+                <div className="text-xs text-muted-foreground space-y-3">
+                  <div>
+                    <p className="font-semibold text-foreground mb-1">A divisão em dois períodos é válida?</p>
+                    <p><strong>Sim, mas com ressalvas fundamentais.</strong> A fronteira 2022→2023 marca a criação do MIR e o reinício da política racial institucional. Porém, a análise ano a ano revela nuances que o comparativo binário oculta:</p>
+                  </div>
+                  <ul className="list-disc pl-4 space-y-1.5">
+                    <li><strong>2018–2019 (Base modesta):</strong> A SEPPIR operou com R$ 5–20 mi/ano de execução real. Não é um "período de ouro" — é o ponto de partida frágil.</li>
+                    <li><strong>2020 (Ano atípico):</strong> O programa 5034 gerou distorção estatística. MPI aparece como novo órgão. Dados filtrados para evitar inflação artificial.</li>
+                    <li><strong>2021–2022 (Vale do desmonte):</strong> O investimento racial (sem SESAI) caiu para R$ 60–63 mi. A SESAI cresceu independentemente, mascarando a queda.</li>
+                    <li><strong>2023 (Reconstrução):</strong> Criação do MIR. Sem SESAI, o pago subiu para ~R$ 107 mi (+70% sobre 2022).</li>
+                    <li><strong>2024–2025 (Salto histórico):</strong> O MPI explodiu para R$ 307 mi (2024) e R$ 1,4 bi (2025). O MIR atingiu ~99% de execução. <strong>Pela primeira vez, as políticas raciais sem SESAI superam R$ 1 bilhão.</strong></li>
+                  </ul>
+                  <div className="bg-muted/50 rounded p-3 mt-3">
+                    <p className="font-semibold text-foreground mb-1">🔑 Achado Central</p>
+                    <p>A SESAI representou <strong>~95% do total em 2018–2019</strong> e <strong>~56% em 2025</strong>. A queda percentual da SESAI não indica redução, mas sim o <em>crescimento exponencial das demais políticas</em> — evidência robusta de reconstrução institucional. O desmonte de 2019–2022 só é visível ao isolar a SESAI, o que torna a dupla perspectiva analiticamente indispensável.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* SESAI — Detalhamento */}
             <Card className="border-l-4 border-l-chart-2">
               <CardContent className="pt-4 pb-3">
                 <h4 className="font-semibold text-sm flex items-center gap-2 mb-2">
                   <TreePine className="w-4 h-4 text-chart-2" />
-                  SESAI (Saúde Indígena) no Cálculo Comparativo
+                  SESAI (Saúde Indígena) — Papel no Cálculo
                 </h4>
                 <div className="text-xs text-muted-foreground space-y-2">
-                  <p>A SESAI é <strong>incluída integralmente</strong> nos totais federais. Suas ações (20YP e 7684) representam o maior investimento individual na política indígena (~R$ 1,3–1,5 bi/ano).</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
+                  <p>A SESAI é <strong>incluída integralmente</strong> nos totais federais (Perspectiva 1), mas apresentada separadamente (Perspectiva 2) para revelar a dinâmica real das políticas raciais.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                     <div className="bg-muted/50 rounded p-2">
-                      <p className="font-semibold text-foreground text-[11px]">PPA 2016-2019 (Prog. 2065)</p>
-                      <p className="text-[10px]">Ações 20YP/7684 sob programa de Povos Indígenas. Captura automática pela Camada 1.</p>
+                      <p className="font-semibold text-foreground text-[11px]">P1 (2018–2022): ~R$ {formatCurrency(stats?.sesaiPagoP1 || 0)}</p>
+                      <p className="text-[10px]">Crescimento orgânico de R$ 1,40 bi → R$ 1,54 bi. Independente de decisões de política racial.</p>
                     </div>
                     <div className="bg-muted/50 rounded p-2">
-                      <p className="font-semibold text-foreground text-[11px]">PPA 2020-2023 (Migração → Prog. 5022)</p>
-                      <p className="text-[10px]">SESAI reclassificada para programa de Saúde. <strong>Camada 4</strong> criada para buscar por código de ação.</p>
-                    </div>
-                    <div className="bg-muted/50 rounded p-2">
-                      <p className="font-semibold text-foreground text-[11px]">PPA 2024-2027 (Prog. 5022 mantido)</p>
-                      <p className="text-[10px]">Estrutura mantida sob programa de saúde. Camada 4 continua necessária.</p>
+                      <p className="font-semibold text-foreground text-[11px]">P2 (2023–2025): ~R$ {formatCurrency(stats?.sesaiPagoP2 || 0)}</p>
+                      <p className="text-[10px]">Salto para R$ 1,96–2,71 bi. Crescimento acelerado, mas estruturalmente separado da pauta racial.</p>
                     </div>
                   </div>
                 </div>
@@ -1026,59 +1062,83 @@ export default function Orcamento() {
                     <TrendingUp className={`w-8 h-8 ${stats && stats.variacao > 0 ? 'text-success' : 'text-destructive'}`} />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Variação Consolidada 2018-22 → 2023-26</p>
-                    <div className="flex items-center gap-6 flex-wrap">
+                    <p className="text-sm font-bold text-foreground">Variação Consolidada 2018-22 → 2023-25</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                       <div>
-                        <p className="text-[10px] text-muted-foreground">Dotação</p>
-                        <p className={`text-xl font-bold ${(stats?.variacaoDotacao || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
-                          {(stats?.variacaoDotacao || 0) > 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Liquidado</p>
-                        <p className={`text-xl font-bold ${(stats?.variacaoLiquidado || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
-                          {(stats?.variacaoLiquidado || 0) > 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Pago</p>
+                        <p className="text-[10px] text-muted-foreground">Pago (com SESAI)</p>
                         <p className={`text-xl font-bold ${(stats?.variacaoPago || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
                           {(stats?.variacaoPago || 0) > 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
                         </p>
                       </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground font-semibold">Pago (sem SESAI)</p>
+                        <p className={`text-xl font-bold ${(stats?.semSesai?.variacaoPago || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.semSesai?.variacaoPago || 0) > 0 ? '+' : ''}{(stats?.semSesai?.variacaoPago || 0).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Liquidado (sem SESAI)</p>
+                        <p className={`text-xl font-bold ${(stats?.semSesai?.variacaoLiquidado || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.semSesai?.variacaoLiquidado || 0) > 0 ? '+' : ''}{(stats?.semSesai?.variacaoLiquidado || 0).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Dotação (sem SESAI)</p>
+                        <p className={`text-xl font-bold ${(stats?.semSesai?.variacaoDotacao || 0) > 0 ? 'text-success' : 'text-destructive'}`}>
+                          {(stats?.semSesai?.variacaoDotacao || 0) > 0 ? '+' : ''}{(stats?.semSesai?.variacaoDotacao || 0).toFixed(1)}%
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Inclui SESAI nos dois períodos · Exclui ações 5034/MDHC sem palavras-chave raciais
+                    <p className="text-xs text-muted-foreground mt-2">
+                      ⚠️ P1 = 5 anos · P2 = 3 anos. Variação de totais acumulados, não de médias anuais.
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Evolução por ano — Dotação vs Liquidado vs Pago */}
-            {stats?.porAnoDetalhado && Object.keys(stats.porAnoDetalhado).length > 0 && (
-              <Card>
-                <CardHeader><CardTitle className="text-base">Evolução Anual — Dotação × Liquidado × Pago</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={Object.entries(stats.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
-                        <Tooltip
-                          formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']}
-                          contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                        />
-                        <Legend verticalAlign="top" height={36} />
-                        <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Evolução por ano — Gráfico duplo */}
+            {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-sm">Evolução Anual — Total (com SESAI)</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={Object.entries(stats.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+                          <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                          <Tooltip formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                          <Legend verticalAlign="top" height={30} />
+                          <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
+                          <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-2))" radius={[3, 3, 0, 0]} />
+                          <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[3, 3, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader><CardTitle className="text-sm">Evolução Anual — Sem SESAI</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={Object.entries(stats.semSesai.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+                          <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                          <Tooltip formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                          <Legend verticalAlign="top" height={30} />
+                          <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-4))" radius={[3, 3, 0, 0]} />
+                          <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-5))" radius={[3, 3, 0, 0]} />
+                          <Bar dataKey="pago" name="Pago" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </div>
         </TabsContent>
