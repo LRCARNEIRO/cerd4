@@ -1753,7 +1753,7 @@ export default function Orcamento() {
                           <code key={kw} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground">Além das palavras-chave, são capturadas contas RREO/DCA cujas descrições incluem: <code className="bg-muted px-1 rounded">direitos da cidadania</code>, <code className="bg-muted px-1 rounded">direitos individuais coletivos</code>, <code className="bg-muted px-1 rounded">assistência aos indígenas</code>, <code className="bg-muted px-1 rounded">assistência comunitária</code>. Registros são incluídos quando coincidem com pelo menos um critério, e a razão de seleção é registrada no campo <em>razao_selecao</em> de cada ficha.</p>
+                      <p className="text-xs text-muted-foreground">Além das palavras-chave, são capturadas contas RREO/DCA cujas descrições incluem: <code className="bg-muted px-1 rounded">assistência aos indígenas</code>. Registros são incluídos quando coincidem com pelo menos um critério, e a razão de seleção é registrada no campo <em>razao_selecao</em> de cada ficha.</p>
                     </div>
                   </div>
                 </section>
