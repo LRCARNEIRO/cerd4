@@ -279,7 +279,7 @@ function EsferaSummaryCards({
   esferaLabel,
   formatCurrency,
 }: {
-  stats: { totalPeriodo1: number; totalPeriodo2: number; variacao: number; totalRegistros: number; totalProgramas: number; anosCobertura: number[] };
+  stats: { totalPeriodo1: number; totalPeriodo2: number; variacao: number; totalRegistros: number; totalProgramas: number; anosCobertura: number[]; metricaLabel?: string };
   esferaLabel: string;
   formatCurrency: (v: number) => string;
 }) {
@@ -287,6 +287,7 @@ function EsferaSummaryCards({
   const anosRange = stats.anosCobertura.length > 0
     ? `${stats.anosCobertura[0]}–${stats.anosCobertura[stats.anosCobertura.length - 1]}`
     : '—';
+  const metrica = stats.metricaLabel || 'Pago/Dotação Autorizada';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
@@ -294,14 +295,14 @@ function EsferaSummaryCards({
         <CardContent className="pt-4 pb-3">
           <p className="text-xs text-muted-foreground mb-1">2018–2022</p>
           <p className="text-lg font-bold">{formatCurrency(stats.totalPeriodo1)}</p>
-          <p className="text-[10px] text-muted-foreground">{esferaLabel}</p>
+          <p className="text-[10px] text-muted-foreground">{esferaLabel} · {metrica}</p>
         </CardContent>
       </Card>
       <Card className="border-l-4 border-l-success/60">
         <CardContent className="pt-4 pb-3">
           <p className="text-xs text-muted-foreground mb-1">2023–2026</p>
           <p className="text-lg font-bold text-success">{formatCurrency(stats.totalPeriodo2)}</p>
-          <p className="text-[10px] text-muted-foreground">{esferaLabel}</p>
+          <p className="text-[10px] text-muted-foreground">{esferaLabel} · {metrica}</p>
         </CardContent>
       </Card>
       <Card className="border-l-4" style={{ borderLeftColor: stats.variacao >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
@@ -436,8 +437,10 @@ export default function Orcamento() {
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
-    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean) => {
-      const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean, useDotacaoInicial = false) => {
+      const valorEfetivo = useDotacaoInicial
+        ? (r: DadoOrcamentario) => Number(r.dotacao_inicial) || Number(r.dotacao_autorizada) || Number(r.pago) || 0
+        : (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
       const clean = exclude5034Only
         ? records.filter(r => !is5034NonRacial(r))
         : records;
@@ -454,12 +457,13 @@ export default function Orcamento() {
         totalRegistros: clean.length,
         totalProgramas: programas.size,
         anosCobertura: Array.from(anos).sort(),
+        metricaLabel: useDotacaoInicial ? 'Dotação Inicial' : 'Pago/Dotação Autorizada',
       };
     };
     return {
-      federal: compute(classified.federal.all, !includeExcludedInCalc),
-      estadual: compute(classified.estadual.all, false),
-      municipal: compute(classified.municipal.all, false),
+      federal: compute(classified.federal.all, !includeExcludedInCalc, false),
+      estadual: compute(classified.estadual.all, false, true),
+      municipal: compute(classified.municipal.all, false, true),
     };
   }, [classified, includeExcludedInCalc]);
 
