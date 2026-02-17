@@ -40,12 +40,12 @@ const ESTADOS = [
   { uf: 'TO', nome: 'Tocantins' },
 ];
 
-const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
+const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
 export function EstadualIngestionPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedUFs, setSelectedUFs] = useState<string[]>(['BA', 'SP', 'RJ']);
-  const [selectedAnos, setSelectedAnos] = useState<number[]>([2022, 2023, 2024]);
+  const [selectedAnos, setSelectedAnos] = useState<number[]>([2022, 2023, 2024, 2025]);
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<any>(null);
   const queryClient = useQueryClient();
