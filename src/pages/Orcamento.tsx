@@ -729,24 +729,35 @@ export default function Orcamento() {
                 <Card>
                   <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução (Inclui SESAI · Exclui 5034 não-racial)</CardTitle></CardHeader>
                   <CardContent>
-                    <div className="h-72">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={porPrograma} layout="vertical">
-                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                          <XAxis type="number" tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
-                          <YAxis dataKey="programa" type="category" tick={{ fontSize: 9 }} width={130} />
-                          <Tooltip
-                            formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
-                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                          />
-                        <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <AuditFooter
-                    fontes={[{ nome: 'Portal da Transparência — Programas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]}
-                    compact
-                  />
+                    <div className="space-y-2">
+                      {porPrograma.map((item: { programa: string; pago: number }, idx: number) => {
+                        const maxVal = porPrograma[0]?.pago || 1;
+                        const pct = (item.pago / maxVal) * 100;
+                        return (
+                          <div key={idx} className="group relative">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-mono text-muted-foreground w-5 text-right shrink-0">{idx + 1}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                                  <p className="text-xs font-medium truncate" title={item.programa}>{item.programa}</p>
+                                  <span className="text-xs font-bold text-foreground shrink-0">{formatCurrency(item.pago)}</span>
+                                </div>
+                                <div className="w-full bg-muted rounded-full h-2.5">
+                                  <div
+                                    className="h-2.5 rounded-full transition-all"
+                                    style={{ width: `${pct}%`, backgroundColor: 'hsl(var(--chart-2))' }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <AuditFooter
+                      fontes={[{ nome: 'Portal da Transparência — Programas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]}
+                      compact
+                    />
                   </CardContent>
                 </Card>
               )}
