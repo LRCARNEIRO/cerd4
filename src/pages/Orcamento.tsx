@@ -1734,25 +1734,35 @@ export default function Orcamento() {
                     <p className="font-medium text-foreground">A base orçamentária abrange <strong>três esferas federativas</strong> com coleta automatizada, cobrindo a <strong>totalidade do território nacional</strong>:</p>
                     <ul className="list-disc pl-5 space-y-1.5">
                       <li><strong>Federal (2018–2025):</strong> API do Portal da Transparência + CSV LOA, com as 3 camadas de filtragem (Programas PPA, Subfunção 422, Órgãos).</li>
-                      <li><strong>Estadual (2018–2025):</strong> Todas as <strong>27 UFs</strong> via RREO/DCA do SICONFI, filtradas por palavras-chave raciais/étnicas e contas de assistência aos indígenas.</li>
+                      <li><strong>Estadual (2018–2025):</strong> Todas as <strong>27 UFs</strong> via RREO/DCA do SICONFI, filtradas por Função 14, Subfunção 422, palavras-chave raciais/étnicas e contas de assistência aos indígenas.</li>
                       <li><strong>Municipal (2018–2025):</strong> Todos os <strong>5.570 municípios brasileiros</strong> via RREO/DCA do SICONFI, com os mesmos filtros e campos do estadual. A lista de municípios é obtida dinamicamente do endpoint <code className="bg-muted px-1 rounded">/entes</code> do SICONFI, garantindo cobertura total e atualizada.</li>
                     </ul>
-                    <p className="text-xs">Todos os registros incluem: órgão responsável, descritivo da conta, razão de seleção (critério de inclusão), fonte de dados e link direto para o SICONFI. A ingestão municipal é orquestrada por UF (1 chamada por estado), permitindo processamento incremental e controle de progresso.</p>
+                    <p className="text-xs">Todos os registros incluem: órgão responsável, descritivo da conta, público-alvo, razão de seleção (critério de inclusão), fonte de dados e link direto para o SICONFI. A ingestão municipal é orquestrada por UF (1 chamada por estado), permitindo processamento incremental e controle de progresso.</p>
                     
                     <div className="mt-3 space-y-2">
-                      <h5 className="font-semibold text-foreground text-sm">Palavras-chave raciais/étnicas (radicais) — unificadas nas 3 esferas:</h5>
+                      <h5 className="font-semibold text-foreground text-sm">Palavras-chave raciais/étnicas utilizadas no filtro subnacional:</h5>
                       <div className="flex flex-wrap gap-1.5">
                         {[
-                          "racial", "racismo", "igualdade racial",
-                          "indígen", "indigen", "quilombol", "cigan", "romani",
-                          "terreiro", "matriz africana", "afro", "palmares",
-                          "funai", "sesai", "etnia", "étnic",
-                          "negro", "negra", "capoeira",
+                          "racial", "racismo", "igualdade racial", "igualdade étnica",
+                          "quilombola", "indígena", "cigano", "romani",
+                          "terreiro", "matriz africana", "afro",
+                          "promoção da igualdade",
+                          "capoeira", "cultura negra", "negro", "candomblé", "umbanda",
+                          "povos tradicionais", "comunidades tradicionais",
                         ].map(kw => (
                           <code key={kw} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground">São utilizados <strong>radicais</strong> (ex: <code className="bg-muted px-1 rounded">indígen</code> captura "indígena", "indígenas", "indigenista"; <code className="bg-muted px-1 rounded">quilombol</code> captura "quilombola", "quilombolas", "quilombos"). Além das palavras-chave, contas RREO/DCA com a descrição <code className="bg-muted px-1 rounded">assistência aos indígenas</code> são incluídas automaticamente. A razão de seleção é registrada no campo <em>razao_selecao</em> de cada ficha para auditoria.</p>
+                      <p className="text-xs text-muted-foreground mt-2 font-semibold">Radicais adicionais utilizados na filtragem (capturam variações):</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          "indígen / indigen", "quilombol", "cigan", "étnic / etnia",
+                          "palmares", "funai", "sesai",
+                        ].map(kw => (
+                          <code key={kw} className="bg-primary/10 border border-primary/30 px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">Os radicais capturam todas as variações morfológicas (ex: <code className="bg-muted px-1 rounded">indígen</code> → "indígena", "indígenas", "indigenista"; <code className="bg-muted px-1 rounded">quilombol</code> → "quilombola", "quilombolas", "quilombos"). Além das palavras-chave, contas RREO/DCA cujas descrições incluem <code className="bg-muted px-1 rounded">assistência aos indígenas</code> são capturadas automaticamente. A razão de seleção é registrada no campo <em>razao_selecao</em> de cada ficha para auditoria.</p>
                     </div>
                   </div>
                 </section>
