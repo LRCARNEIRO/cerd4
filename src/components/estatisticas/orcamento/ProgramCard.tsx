@@ -51,7 +51,11 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
 
   const firstYear = sorted[0]?.ano;
   const latestRecord = sorted[sorted.length - 1];
-  const latestValue = latestRecord?.pago || latestRecord?.dotacao_autorizada || 0;
+  const isEstadual = registros[0]?.esfera === 'estadual' || registros[0]?.esfera === 'municipal';
+  const latestValue = isEstadual
+    ? (latestRecord?.dotacao_inicial || latestRecord?.dotacao_autorizada || latestRecord?.pago || 0)
+    : (latestRecord?.pago || latestRecord?.dotacao_autorizada || 0);
+  const latestLabel = isEstadual ? 'Dot. Inicial' : 'Pago';
   const fonte = registros[0]?.fonte_dados;
   const urlFonte = registros[0]?.url_fonte;
 
@@ -94,7 +98,7 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
               Início: {firstYear}
             </span>
             <span>•</span>
-            <span>{latestRecord?.ano}: {formatCompact(latestValue)}</span>
+            <span>{latestRecord?.ano}: {formatCompact(latestValue)} <span className="text-[10px]">({latestLabel})</span></span>
           </div>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />}
@@ -131,6 +135,7 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-xs">Ano</TableHead>
+                  {isEstadual && <TableHead className="text-xs text-right">Dotação Inicial</TableHead>}
                   <TableHead className="text-xs text-right">Dotação Autorizada</TableHead>
                   <TableHead className="text-xs text-right">Empenhado</TableHead>
                   <TableHead className="text-xs text-right">Liquidado</TableHead>
@@ -142,6 +147,11 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
                 {sorted.map(r => (
                   <TableRow key={r.ano}>
                     <TableCell className="text-xs font-medium">{r.ano}</TableCell>
+                    {isEstadual && (
+                      <TableCell className="text-xs text-right font-medium">
+                        {r.dotacao_inicial ? formatCompact(r.dotacao_inicial) : '—'}
+                      </TableCell>
+                    )}
                     <TableCell className="text-xs text-right">
                       {r.dotacao_autorizada ? formatCompact(r.dotacao_autorizada) : '—'}
                     </TableCell>
