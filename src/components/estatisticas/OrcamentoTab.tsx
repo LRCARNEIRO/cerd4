@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Building, Building2, MapPin, Users, TreePine, Tent, AlertTriangle, Info } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { AuditFooter } from '@/components/ui/audit-footer';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { OrgaoSection } from './orcamento/OrgaoSection';
 import { ProgramCard } from './orcamento/ProgramCard';
@@ -220,6 +221,16 @@ export function OrcamentoTab() {
           </Card>
         ))}
       </div>
+
+      {/* Audit footer for summary cards */}
+      <AuditFooter
+        fontes={[
+          { nome: 'Portal da Transparência — Execução Federal', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+          { nome: 'SIOP', url: 'https://www.siop.planejamento.gov.br/siop/' },
+        ]}
+        documentos={['CERD/C/BRA/CO/18-20 §14']}
+        compact
+      />
 
       {/* Nota Metodológica */}
       <Collapsible>
