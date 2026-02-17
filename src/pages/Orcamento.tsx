@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
+import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -859,6 +860,16 @@ export default function Orcamento() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* ===== INFOGRÁFICO: EFEITO MASCARAMENTO SESAI ===== */}
+            {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              <SesaiMaskingInfographic
+                porAnoDetalhado={stats.porAnoDetalhado}
+                semSesaiPorAnoDetalhado={stats.semSesai.porAnoDetalhado}
+                formatCurrency={formatCurrency}
+                formatCurrencyFull={formatCurrencyFull}
+              />
+            )}
 
             {/* ===== PERSPECTIVA 1: TOTAL (COM SESAI) ===== */}
             <div>
