@@ -43,21 +43,25 @@ const ESTADOS = [
 ];
 
 /**
- * Subfunções e funções relevantes para política racial/indígena.
- * Subfunção 422: Direitos Individuais, Coletivos e Difusos
- * Função 14: Direitos da Cidadania
- * Subfunção 846: Outros Encargos Especiais (quilombolas/indígenas)
- */
-const SUBFUNCOES_ALVO = ["422"];
-const FUNCOES_ALVO = ["14"];
-
-/**
- * Palavras-chave para filtrar programas relevantes na DCA/RREO.
+ * Palavras-chave e radicais para filtrar programas relevantes na DCA/RREO.
+ * Alinhados com a Metodologia de Levantamento Orçamentário (seção 8).
+ * 
+ * Nota: Função 14 (Direitos da Cidadania) e Subfunção 422 (Direitos Individuais,
+ * Coletivos e Difusos) NÃO são usadas como filtros independentes porque seus
+ * descritivos são genéricos demais e gerariam falsos positivos massivos.
+ * A seleção é feita exclusivamente por palavras-chave raciais/étnicas e
+ * contas específicas (assistência aos indígenas).
  */
 const KEYWORDS = [
-  "racial", "racismo", "indígen", "indigen", "quilombol", "cigan", "romani",
-  "afro", "palmares", "igualdade racial", "funai", "sesai", "etnia", "étnic",
+  // Radicais (capturam variações morfológicas)
+  "indígen", "indigen", "quilombol", "cigan", "étnic", "etnia",
+  // Termos completos
+  "racial", "racismo", "igualdade racial", "igualdade étnica",
+  "romani", "afro", "palmares", "funai", "sesai",
   "terreiro", "matriz africana", "negro", "negra", "capoeira",
+  "candomblé", "umbanda", "cultura negra",
+  "povos tradicionais", "comunidades tradicionais",
+  "promoção da igualdade",
 ];
 
 function matchesKeyword(text: string): boolean {
