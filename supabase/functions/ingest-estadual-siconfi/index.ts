@@ -196,6 +196,15 @@ function processRREOData(
     if (!seen.has(key)) {
       seen.add(key);
 
+      // Build razao_selecao: audit trail explaining WHY this record was selected
+      const contaLower = conta.toLowerCase();
+      const razaoParts: string[] = [];
+      const matched = CONTA_ALVO.find(a => contaLower.includes(a));
+      if (matched) razaoParts.push(`Conta RREO/DCA: "${matched}"`);
+      const kwMatched = KEYWORDS.filter(kw => contaLower.includes(kw));
+      if (kwMatched.length > 0) razaoParts.push(`Palavras-chave: ${kwMatched.slice(0, 3).join(", ")}`);
+      razaoParts.push(`Subfunção/Função alvo no SICONFI`);
+
       registros.push({
         _key: key,
         programa: `${estado.uf} – ${programaName}`.substring(0, 250),
@@ -215,7 +224,7 @@ function processRREOData(
         grupo_focal: null,
         descritivo: conta,
         publico_alvo: null,
-        razao_selecao: null,
+        razao_selecao: razaoParts.join(" | "),
       });
     }
 
