@@ -18,6 +18,7 @@ import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
+import { AuditFooter } from '@/components/ui/audit-footer';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -606,6 +607,20 @@ export default function Orcamento() {
         </div>
       ) : null}
 
+      {/* Audit footer for top-level summary cards */}
+      {hasData && !isLoading && (
+        <div className="mb-4 -mt-4 px-1">
+          <AuditFooter
+            fontes={[
+              { nome: 'Portal da Transparência — Execução Federal', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+              { nome: 'SIOP — Dotação Orçamentária', url: 'https://www.siop.planejamento.gov.br/siop/' },
+            ]}
+            documentos={['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157-162']}
+            compact
+          />
+        </div>
+      )}
+
       <Tabs defaultValue="federal" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="federal">
@@ -699,6 +714,14 @@ export default function Orcamento() {
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
+                    <AuditFooter
+                      fontes={[
+                        { nome: 'Portal da Transparência — Despesas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+                        { nome: 'Dados Abertos — LOA', url: 'https://dados.gov.br/dados/conjuntos-dados/orcamento-despesa' },
+                      ]}
+                      documentos={['CERD/C/BRA/CO/18-20 §14']}
+                      compact
+                    />
                   </CardContent>
                 </Card>
               )}
@@ -716,10 +739,14 @@ export default function Orcamento() {
                             formatter={(value: number) => [formatCurrencyFull(value), 'Pago']}
                             contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
                           />
-                          <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
+                        <Bar dataKey="pago" fill="hsl(var(--chart-2))" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <AuditFooter
+                    fontes={[{ nome: 'Portal da Transparência — Programas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]}
+                    compact
+                  />
                   </CardContent>
                 </Card>
               )}
@@ -918,6 +945,13 @@ export default function Orcamento() {
                   </CardContent>
                 </Card>
               </div>
+              <AuditFooter
+                fontes={[
+                  { nome: 'Portal da Transparência — Despesas Federais', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+                  { nome: 'Dados Abertos — LOA (dotação)', url: 'https://dados.gov.br/dados/conjuntos-dados/orcamento-despesa' },
+                ]}
+                documentos={['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157']}
+              />
             </div>
 
             {/* ===== PERSPECTIVA 2: SEM SESAI ===== */}
@@ -967,6 +1001,13 @@ export default function Orcamento() {
                   </CardContent>
                 </Card>
               </div>
+              <AuditFooter
+                fontes={[
+                  { nome: 'Portal Transparência — MIR (OS67000)', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS67000' },
+                  { nome: 'Portal Transparência — FUNAI (OS52000)', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
+                ]}
+                documentos={['Cálculo: Total − SESAI (20YP+7684)']}
+              />
             </div>
 
             {/* ===== TABELA ANO A ANO ===== */}
@@ -1014,6 +1055,13 @@ export default function Orcamento() {
                       })}
                     </TableBody>
                   </Table>
+                  <AuditFooter
+                    fontes={[
+                      { nome: 'Portal da Transparência — Execução por Ano', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+                      { nome: 'SESAI — Ações 20YP/7684', url: 'https://portaldatransparencia.gov.br/despesas/consulta?de=01%2F01%2F2018&ate=31%2F12%2F2026&paginacaoSimples=true' },
+                    ]}
+                    documentos={['CERD/C/BRA/CO/18-20', 'Plano de Durban §157-162']}
+                  />
                 </CardContent>
               </Card>
             )}
@@ -1104,6 +1152,11 @@ export default function Orcamento() {
                       ⚠️ P1 = 5 anos · P2 = 3 anos. Variação de totais acumulados, não de médias anuais.
                     </p>
                   </div>
+                  <AuditFooter
+                    fontes={[{ nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]}
+                    documentos={['CERD/C/BRA/CO/18-20 §14']}
+                    compact
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -1128,6 +1181,7 @@ export default function Orcamento() {
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
+                    <AuditFooter fontes={[{ nome: 'Portal da Transparência', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]} compact />
                   </CardContent>
                 </Card>
                 <Card>
@@ -1147,6 +1201,7 @@ export default function Orcamento() {
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
+                    <AuditFooter fontes={[{ nome: 'Portal da Transparência — Sem SESAI', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]} documentos={['Cálculo: Total − SESAI']} compact />
                   </CardContent>
                 </Card>
               </div>

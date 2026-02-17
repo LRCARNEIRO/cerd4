@@ -5,6 +5,15 @@ import {
   LineChart, Line, ComposedChart, Area,
 } from 'recharts';
 import { Eye, EyeOff, TrendingUp, AlertTriangle, ArrowRight } from 'lucide-react';
+import { AuditFooter } from '@/components/ui/audit-footer';
+
+const FONTES_ORCAMENTARIAS = [
+  { nome: 'Portal da Transparência — Despesas', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+  { nome: 'SIOP — Execução Orçamentária', url: 'https://www.siop.planejamento.gov.br/siop/' },
+  { nome: 'Dados Abertos — LOA (dotação)', url: 'https://dados.gov.br/dados/conjuntos-dados/orcamento-despesa' },
+];
+
+const DOCS_REF = ['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157-162'];
 
 interface SesaiMaskingProps {
   porAnoDetalhado: Record<number, { pago: number; liquidado: number; dotacao: number }>;
@@ -14,7 +23,6 @@ interface SesaiMaskingProps {
 }
 
 export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalhado, formatCurrency, formatCurrencyFull }: SesaiMaskingProps) {
-  // Build year-by-year data with SESAI vs Non-SESAI breakdown
   const anos = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
   const stackedData = anos.map(ano => {
@@ -25,7 +33,6 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
     return { ano, sesai, semSesai, total, pctSesai };
   });
 
-  // Período summaries
   const p1SemSesai = stackedData.filter(d => d.ano >= 2018 && d.ano <= 2022).reduce((s, d) => s + d.semSesai, 0);
   const p2SemSesai = stackedData.filter(d => d.ano >= 2023 && d.ano <= 2025).reduce((s, d) => s + d.semSesai, 0);
   const varSemSesai = p1SemSesai > 0 ? ((p2SemSesai - p1SemSesai) / p1SemSesai * 100) : 0;
@@ -34,7 +41,6 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
   const p2Total = stackedData.filter(d => d.ano >= 2023 && d.ano <= 2025).reduce((s, d) => s + d.total, 0);
   const varTotal = p1Total > 0 ? ((p2Total - p1Total) / p1Total * 100) : 0;
 
-  // Min/max for non-SESAI
   const minSemSesai = Math.min(...stackedData.map(d => d.semSesai));
   const maxSemSesai = Math.max(...stackedData.map(d => d.semSesai));
   const minAno = stackedData.find(d => d.semSesai === minSemSesai)?.ano || 0;
@@ -60,7 +66,6 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                 das demais políticas raciais entre 2019 e 2022.
               </p>
 
-              {/* Visual comparison arrows */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div className="p-4 rounded-xl border bg-card space-y-2">
                   <div className="flex items-center gap-2">
@@ -102,12 +107,17 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                   as políticas não-saúde para dar visibilidade ao desmonte que seria invisível na lente total.
                 </p>
               </div>
+
+              <AuditFooter
+                fontes={FONTES_ORCAMENTARIAS}
+                documentos={DOCS_REF}
+              />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* === GRÁFICO 1: Barras Empilhadas — Composição do Orçamento === */}
+      {/* === GRÁFICO 1: Barras Empilhadas === */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
@@ -153,7 +163,6 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
             </ResponsiveContainer>
           </div>
 
-          {/* Annotations below chart */}
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50 text-[10px] text-muted-foreground">
             <div className="flex items-center gap-6">
               <span>2018–2022: SESAI = <strong className="text-foreground">{stackedData.slice(0, 5).reduce((s, d) => s + d.pctSesai, 0) / 5 > 0 ? (stackedData.slice(0, 5).reduce((s, d) => s + d.pctSesai, 0) / 5).toFixed(0) : '—'}% médio</strong></span>
@@ -164,10 +173,18 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
               Queda da participação = crescimento das demais
             </Badge>
           </div>
+
+          <AuditFooter
+            fontes={[
+              { nome: 'Portal da Transparência — Ações 20YP e 7684 (SESAI)', url: 'https://portaldatransparencia.gov.br/despesas/consulta?de=01%2F01%2F2018&ate=31%2F12%2F2026&paginacaoSimples=true' },
+              { nome: 'Portal da Transparência — MIR/MPI/FUNAI', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS67000' },
+            ]}
+            documentos={['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157']}
+          />
         </CardContent>
       </Card>
 
-      {/* === GRÁFICO 2: Linha da Proporção SESAI vs Não-SESAI === */}
+      {/* === GRÁFICO 2 + 3: Linha da Proporção + Evolução Sem SESAI === */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
@@ -180,37 +197,13 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                 <ComposedChart data={stackedData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-                  <YAxis
-                    tick={{ fontSize: 10 }}
-                    domain={[0, 100]}
-                    tickFormatter={(v) => `${v}%`}
-                  />
+                  <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
                     formatter={(value: number) => [`${value.toFixed(1)}%`, '% SESAI']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="pctSesai"
-                    name="% SESAI"
-                    fill="hsl(var(--chart-2))"
-                    fillOpacity={0.15}
-                    stroke="hsl(var(--chart-2))"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="pctSesai"
-                    name="% SESAI"
-                    stroke="hsl(var(--chart-2))"
-                    strokeWidth={2.5}
-                    dot={{ fill: 'hsl(var(--chart-2))', r: 5 }}
-                  />
+                  <Area type="monotone" dataKey="pctSesai" name="% SESAI" fill="hsl(var(--chart-2))" fillOpacity={0.15} stroke="hsl(var(--chart-2))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="pctSesai" name="% SESAI" stroke="hsl(var(--chart-2))" strokeWidth={2.5} dot={{ fill: 'hsl(var(--chart-2))', r: 5 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -223,10 +216,14 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                 {stackedData[stackedData.length - 1]?.pctSesai.toFixed(0)}% ({stackedData[stackedData.length - 1]?.ano})
               </Badge>
             </div>
+            <AuditFooter
+              fontes={[{ nome: 'Portal da Transparência — Execução', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' }]}
+              documentos={['Cálculo: SESAI ÷ Total Federal']}
+              compact
+            />
           </CardContent>
         </Card>
 
-        {/* === GRÁFICO 3: Evolução Isolada Sem SESAI (Efeito Desmonte) === */}
         <Card className="border-l-4 border-l-chart-4">
           <CardHeader>
             <CardTitle className="text-sm">Políticas Não-Saúde: Desmonte → Reconstrução (Pago, R$)</CardTitle>
@@ -241,30 +238,10 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCurrency(v)} />
                   <Tooltip
                     formatter={(value: number) => [formatCurrencyFull(value), 'Não-Saúde (Pago)']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="semSesai"
-                    name="Sem SESAI"
-                    fill="hsl(var(--chart-4))"
-                    fillOpacity={0.2}
-                    stroke="hsl(var(--chart-4))"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="semSesai"
-                    name="Sem SESAI"
-                    stroke="hsl(var(--chart-4))"
-                    strokeWidth={2.5}
-                    dot={{ fill: 'hsl(var(--chart-4))', r: 5 }}
-                  />
+                  <Area type="monotone" dataKey="semSesai" name="Sem SESAI" fill="hsl(var(--chart-4))" fillOpacity={0.2} stroke="hsl(var(--chart-4))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="semSesai" name="Sem SESAI" stroke="hsl(var(--chart-4))" strokeWidth={2.5} dot={{ fill: 'hsl(var(--chart-4))', r: 5 }} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -287,6 +264,14 @@ export function SesaiMaskingInfographic({ porAnoDetalhado, semSesaiPorAnoDetalha
                 <p className="text-[10px] text-muted-foreground">{formatCurrency(maxSemSesai)}</p>
               </div>
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'Portal Transparência — MIR (OS67000)', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS67000' },
+                { nome: 'Portal Transparência — FUNAI (OS52000)', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026&orgaos=OS52000' },
+              ]}
+              documentos={['Cálculo: Total − SESAI (20YP+7684)']}
+              compact
+            />
           </CardContent>
         </Card>
       </div>
