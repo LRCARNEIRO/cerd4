@@ -196,22 +196,6 @@ function processRREOData(
     if (!seen.has(key)) {
       seen.add(key);
 
-      // Derive publico_alvo and razao_selecao from conta text
-      const contaLower = conta.toLowerCase();
-      let publicoAlvo = "População em situação de vulnerabilidade racial/étnica";
-      if (contaLower.includes("indígen") || contaLower.includes("indigena")) publicoAlvo = "Povos indígenas";
-      else if (contaLower.includes("quilombol")) publicoAlvo = "Comunidades quilombolas";
-      else if (contaLower.includes("cigan") || contaLower.includes("romani")) publicoAlvo = "Povos ciganos/romani";
-
-      const razaoParts: string[] = [];
-      if (CONTA_ALVO.some(a => contaLower.includes(a))) {
-        const matched = CONTA_ALVO.find(a => contaLower.includes(a));
-        razaoParts.push(`Conta RREO/DCA: "${matched}"`);
-      }
-      const kwMatched = KEYWORDS.filter(kw => contaLower.includes(kw));
-      if (kwMatched.length > 0) razaoParts.push(`Palavras-chave: ${kwMatched.slice(0, 3).join(", ")}`);
-      razaoParts.push(`Subfunção/Função alvo no SICONFI`);
-
       registros.push({
         _key: key,
         programa: `${estado.uf} – ${programaName}`.substring(0, 250),
@@ -226,12 +210,12 @@ function processRREOData(
         percentual_execucao: null as number | null,
         fonte_dados: `SICONFI ${source} – ${estado.nome}`,
         url_fonte: `https://siconfi.tesouro.gov.br/siconfi/pages/defcon/consultar_rreo.jsf`,
-        observacoes: `${estado.uf} – ${conta}`,
+        observacoes: null,
         eixo_tematico: null,
         grupo_focal: null,
         descritivo: conta,
-        publico_alvo: publicoAlvo,
-        razao_selecao: razaoParts.join(" | "),
+        publico_alvo: null,
+        razao_selecao: null,
       });
     }
 
