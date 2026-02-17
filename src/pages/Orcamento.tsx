@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -1020,6 +1020,193 @@ export default function Orcamento() {
                 documentos={['Cálculo: Total − SESAI (20YP+7684)']}
               />
             </div>
+
+            {/* ===== RESUMO INFORMATIVO: PROGRAMAS E AÇÕES POR GRUPO FOCAL ===== */}
+            {dadosOrcamentarios && dadosOrcamentarios.length > 0 && (() => {
+              // Classify into focal groups using classifyThematic
+              type FocalKey = 'racial' | 'indigena' | 'quilombola' | 'ciganos' | 'sesai';
+              const focalLabels: Record<FocalKey, string> = {
+                racial: 'Política Racial (Negros)',
+                indigena: 'Povos Indígenas (FUNAI/MPI)',
+                quilombola: 'Quilombolas',
+                ciganos: 'Ciganos/Romani',
+                sesai: 'SESAI (Saúde Indígena)',
+              };
+
+              const cleanRecords = dadosOrcamentarios.filter(r => !is5034NonRacial(r));
+              const anos = Array.from(new Set(cleanRecords.map(r => r.ano))).sort();
+
+              // Build stats per focal group per year
+              const focalData: Record<FocalKey, Record<number, { programas: Set<string>; acoes: number; dotacao: number; liquidado: number }>> = {
+                racial: {}, indigena: {}, quilombola: {}, ciganos: {}, sesai: {},
+              };
+
+              for (const r of cleanRecords) {
+                const theme = classifyThematic(r) as FocalKey;
+                if (!focalData[theme]) continue;
+                if (!focalData[theme][r.ano]) {
+                  focalData[theme][r.ano] = { programas: new Set(), acoes: 0, dotacao: 0, liquidado: 0 };
+                }
+                const entry = focalData[theme][r.ano];
+                entry.programas.add(r.programa);
+                entry.acoes += 1;
+                entry.dotacao += Number(r.dotacao_autorizada) || 0;
+                entry.liquidado += Number(r.liquidado) || 0;
+              }
+
+              // Period totals
+              const periodTotals = (focal: FocalKey, startYear: number, endYear: number) => {
+                const yearEntries = Object.entries(focalData[focal]).filter(([y]) => Number(y) >= startYear && Number(y) <= endYear);
+                const allProgs = new Set<string>();
+                let acoes = 0, dotacao = 0, liquidado = 0;
+                for (const [, v] of yearEntries) {
+                  v.programas.forEach(p => allProgs.add(p));
+                  acoes += v.acoes;
+                  dotacao += v.dotacao;
+                  liquidado += v.liquidado;
+                }
+                return { programas: allProgs.size, acoes, dotacao, liquidado };
+              };
+
+              const focalKeys: FocalKey[] = ['racial', 'indigena', 'quilombola', 'ciganos', 'sesai'];
+
+              return (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      Resumo por Grupo Focal — Programas, Ações e Execução
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Quantidade de programas e ações orçamentárias por grupo focal, com valores de dotação autorizada vs. liquidado (R$).
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Totais por período */}
+                    <div>
+                      <h4 className="text-sm font-semibold mb-3">Totais por Período</h4>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Grupo Focal</TableHead>
+                            <TableHead className="text-center" colSpan={4}>2018–2022</TableHead>
+                            <TableHead className="text-center" colSpan={4}>2023–2025</TableHead>
+                          </TableRow>
+                          <TableRow>
+                            <TableHead></TableHead>
+                            <TableHead className="text-right text-[10px]">Prog.</TableHead>
+                            <TableHead className="text-right text-[10px]">Ações</TableHead>
+                            <TableHead className="text-right text-[10px]">Dotação</TableHead>
+                            <TableHead className="text-right text-[10px]">Liquidado</TableHead>
+                            <TableHead className="text-right text-[10px]">Prog.</TableHead>
+                            <TableHead className="text-right text-[10px]">Ações</TableHead>
+                            <TableHead className="text-right text-[10px]">Dotação</TableHead>
+                            <TableHead className="text-right text-[10px]">Liquidado</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {focalKeys.map(key => {
+                            const p1 = periodTotals(key, 2018, 2022);
+                            const p2 = periodTotals(key, 2023, 2026);
+                            if (p1.acoes === 0 && p2.acoes === 0) return null;
+                            return (
+                              <TableRow key={key}>
+                                <TableCell className="font-medium text-xs">{focalLabels[key]}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{p1.programas}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{p1.acoes}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(p1.dotacao)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(p1.liquidado)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{p2.programas}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{p2.acoes}</TableCell>
+                                <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(p2.dotacao)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(p2.liquidado)}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                          {/* Total row */}
+                          {(() => {
+                            const allP1 = focalKeys.reduce((acc, k) => {
+                              const t = periodTotals(k, 2018, 2022);
+                              return { programas: acc.programas + t.programas, acoes: acc.acoes + t.acoes, dotacao: acc.dotacao + t.dotacao, liquidado: acc.liquidado + t.liquidado };
+                            }, { programas: 0, acoes: 0, dotacao: 0, liquidado: 0 });
+                            const allP2 = focalKeys.reduce((acc, k) => {
+                              const t = periodTotals(k, 2023, 2026);
+                              return { programas: acc.programas + t.programas, acoes: acc.acoes + t.acoes, dotacao: acc.dotacao + t.dotacao, liquidado: acc.liquidado + t.liquidado };
+                            }, { programas: 0, acoes: 0, dotacao: 0, liquidado: 0 });
+                            return (
+                              <TableRow className="border-t-2 font-bold">
+                                <TableCell className="text-xs">TOTAL</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{allP1.programas}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{allP1.acoes}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(allP1.dotacao)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrency(allP1.liquidado)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{allP2.programas}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{allP2.acoes}</TableCell>
+                                <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(allP2.dotacao)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(allP2.liquidado)}</TableCell>
+                              </TableRow>
+                            );
+                          })()}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Ano a ano por grupo focal */}
+                    <div>
+                      <h4 className="text-sm font-semibold mb-3">Detalhamento Ano a Ano</h4>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">Ano</TableHead>
+                            {focalKeys.filter(k => {
+                              return Object.keys(focalData[k]).length > 0;
+                            }).map(key => (
+                              <TableHead key={key} className="text-center text-[10px]" colSpan={2}>{focalLabels[key].split('(')[0].trim()}</TableHead>
+                            ))}
+                          </TableRow>
+                          <TableRow>
+                            <TableHead></TableHead>
+                            {focalKeys.filter(k => Object.keys(focalData[k]).length > 0).map(key => (
+                              <React.Fragment key={key}>
+                                <TableHead className="text-right text-[9px] text-muted-foreground">Dotação</TableHead>
+                                <TableHead className="text-right text-[9px] text-muted-foreground">Liquidado</TableHead>
+                              </React.Fragment>
+                            ))}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {anos.map(ano => {
+                            const activeFocals = focalKeys.filter(k => Object.keys(focalData[k]).length > 0);
+                            return (
+                              <TableRow key={ano} className={ano === 2023 ? 'border-t-2 border-t-chart-2' : ''}>
+                                <TableCell className="font-bold text-xs">{ano}</TableCell>
+                                {activeFocals.map(key => {
+                                  const d = focalData[key][ano];
+                                  return (
+                                    <React.Fragment key={key}>
+                                      <TableCell className="text-right font-mono text-[10px]">{d ? formatCurrency(d.dotacao) : '—'}</TableCell>
+                                      <TableCell className="text-right font-mono text-[10px]">{d ? formatCurrency(d.liquidado) : '—'}</TableCell>
+                                    </React.Fragment>
+                                  );
+                                })}
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    <AuditFooter
+                      fontes={[
+                        { nome: 'Portal da Transparência — Execução Federal', url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2018&ate=31%2F12%2F2026' },
+                        { nome: 'SIOP — Dotação Orçamentária', url: 'https://www.siop.planejamento.gov.br/siop/' },
+                      ]}
+                      documentos={['CERD/C/BRA/CO/18-20 §14', 'Plano de Durban §157-162']}
+                    />
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {/* ===== TABELA ANO A ANO ===== */}
             {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
