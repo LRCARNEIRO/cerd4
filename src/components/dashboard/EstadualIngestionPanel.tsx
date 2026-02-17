@@ -108,7 +108,7 @@ export function EstadualIngestionPanel() {
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
               Busca dados do RREO (Relatório Resumido da Execução Orçamentária) via API SICONFI do Tesouro Nacional.
-              Filtra por Subfunção 422 (Direitos Individuais e Coletivos) e Função 14 (Direitos da Cidadania).
+              Filtra por palavras-chave de política racial/étnica e contas de assistência aos indígenas.
             </p>
 
             {/* Estados */}

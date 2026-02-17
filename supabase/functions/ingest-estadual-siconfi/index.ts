@@ -154,11 +154,7 @@ function processRREOData(
 
   // Relevant conta text patterns for racial equality policy
   const CONTA_ALVO = [
-    "direitos da cidadania",           // Função 14
-    "direitos individuais coletivos",  // Subfunção 422
-    "direitos individuais, coletivos", // Variant
     "assistência aos indígenas",       // Subfunção 423
-    "assistência comunitária",         // Subfunção 244 (some racial programs)
   ];
 
   const isRelevantConta = (conta: string): boolean => {

@@ -35,20 +35,15 @@ const UFS_TODAS = [
 ];
 
 const KEYWORDS = [
-  "racial", "racismo", "igualdade racial", "igualdade étnica",
-  "quilombol", "indígen", "indigena", "cigan", "romani",
-  "terreiro", "matriz africana", "afro",
-  "direitos humanos", "cidadania", "promoção da igualdade",
-  "capoeira", "cultura negra", "negro", "candomblé", "umbanda",
-  "povos tradicionais", "comunidades tradicionais",
+  "racial", "racismo", "igualdade racial",
+  "quilombol", "indígen", "indigen", "cigan", "romani",
+  "terreiro", "matriz africana", "afro", "palmares",
+  "funai", "sesai", "etnia", "étnic",
+  "negro", "negra", "capoeira",
 ];
 
 const CONTA_ALVO = [
-  "direitos da cidadania",
-  "direitos individuais coletivos",
-  "direitos individuais, coletivos",
   "assistência aos indígenas",
-  "assistência comunitária",
 ];
 
 function matchesKeyword(text: string): boolean {
