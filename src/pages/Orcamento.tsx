@@ -1733,9 +1733,9 @@ export default function Orcamento() {
                   <div className="bg-primary/10 rounded-lg p-4 space-y-3 border border-primary/30">
                     <p className="font-medium text-foreground">A base orçamentária abrange <strong>três esferas federativas</strong> com coleta automatizada, cobrindo a <strong>totalidade do território nacional</strong>:</p>
                     <ul className="list-disc pl-5 space-y-1.5">
-                      <li><strong>Federal (2018–2025):</strong> API do Portal da Transparência + CSV LOA, com as 3 camadas de filtragem (Programas PPA, Subfunção 422, Órgãos).</li>
-                      <li><strong>Estadual (2018–2025):</strong> Todas as <strong>27 UFs</strong> via RREO/DCA do SICONFI, filtradas por Função 14, Subfunção 422, palavras-chave raciais/étnicas e contas de assistência aos indígenas.</li>
-                      <li><strong>Municipal (2018–2025):</strong> Todos os <strong>5.570 municípios brasileiros</strong> via RREO/DCA do SICONFI, com os mesmos filtros e campos do estadual. A lista de municípios é obtida dinamicamente do endpoint <code className="bg-muted px-1 rounded">/entes</code> do SICONFI, garantindo cobertura total e atualizada.</li>
+                      <li><strong>Federal (2018–2025):</strong> API do Portal da Transparência + CSV LOA, com as 4 camadas de filtragem (Programas PPA, Subfunção 422, Órgãos, Ações SESAI).</li>
+                      <li><strong>Estadual (2018–2025):</strong> Todas as <strong>27 UFs</strong> via RREO/DCA do SICONFI, filtradas exclusivamente por <strong>palavras-chave raciais/étnicas</strong> e contas específicas (<code className="bg-muted px-1 rounded">assistência aos indígenas</code>). <span className="text-xs italic">Nota: Função 14 e Subfunção 422 são referências estruturais da classificação orçamentária, mas não são usadas como filtros independentes na ingestão estadual/municipal — seus descritivos genéricos ("Direitos da Cidadania", "Direitos Individuais, Coletivos e Difusos") gerariam falsos positivos.</span></li>
+                      <li><strong>Municipal (2018–2025):</strong> Todos os <strong>5.570 municípios brasileiros</strong> via RREO/DCA do SICONFI, com os mesmos critérios de filtragem do estadual (palavras-chave + contas específicas). A lista de municípios é obtida dinamicamente do endpoint <code className="bg-muted px-1 rounded">/entes</code> do SICONFI, garantindo cobertura total e atualizada.</li>
                     </ul>
                     <p className="text-xs">Todos os registros incluem: órgão responsável, descritivo da conta, público-alvo, razão de seleção (critério de inclusão), fonte de dados e link direto para o SICONFI. A ingestão municipal é orquestrada por UF (1 chamada por estado), permitindo processamento incremental e controle de progresso.</p>
                     
@@ -1746,8 +1746,8 @@ export default function Orcamento() {
                           "racial", "racismo", "igualdade racial", "igualdade étnica",
                           "quilombola", "indígena", "cigano", "romani",
                           "terreiro", "matriz africana", "afro",
-                          "promoção da igualdade",
-                          "capoeira", "cultura negra", "negro", "candomblé", "umbanda",
+                          "promoção da igualdade", "cultura negra",
+                          "capoeira", "negro", "negra", "candomblé", "umbanda",
                           "povos tradicionais", "comunidades tradicionais",
                         ].map(kw => (
                           <code key={kw} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
