@@ -55,10 +55,9 @@ const FUNCOES_ALVO = ["14"];
  * Palavras-chave para filtrar programas relevantes na DCA/RREO.
  */
 const KEYWORDS = [
-  "racial", "racismo", "igualdade racial", "igualdade étnica",
-  "quilombol", "indígen", "indigena", "cigan", "romani",
-  "terreiro", "matriz africana", "afro",
-  "direitos humanos", "cidadania", "promoção da igualdade",
+  "racial", "racismo", "indígen", "indigen", "quilombol", "cigan", "romani",
+  "afro", "palmares", "igualdade racial", "funai", "sesai", "etnia", "étnic",
+  "terreiro", "matriz africana", "negro", "negra", "capoeira",
 ];
 
 function matchesKeyword(text: string): boolean {
