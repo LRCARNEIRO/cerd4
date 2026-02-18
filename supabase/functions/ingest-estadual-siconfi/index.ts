@@ -9,266 +9,407 @@ const corsHeaders = {
 const SICONFI_BASE = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
 
 /**
- * Estados prioritários para análise de política racial.
- * Código IBGE do ente (id_ente) é o código do estado.
+ * 27 UFs com código IBGE (id_ente) para o SICONFI.
  */
 const ESTADOS = [
-  { ibge: 12, uf: "AC", nome: "Acre", orgao: "Gov. Estadual" },
-  { ibge: 27, uf: "AL", nome: "Alagoas", orgao: "Gov. Estadual" },
-  { ibge: 16, uf: "AP", nome: "Amapá", orgao: "Gov. Estadual" },
-  { ibge: 13, uf: "AM", nome: "Amazonas", orgao: "Gov. Estadual" },
-  { ibge: 29, uf: "BA", nome: "Bahia", orgao: "SEPROMI" },
-  { ibge: 23, uf: "CE", nome: "Ceará", orgao: "Gov. Estadual" },
-  { ibge: 53, uf: "DF", nome: "Distrito Federal", orgao: "Sec. Justiça e Cidadania" },
-  { ibge: 32, uf: "ES", nome: "Espírito Santo", orgao: "Gov. Estadual" },
-  { ibge: 52, uf: "GO", nome: "Goiás", orgao: "Gov. Estadual" },
-  { ibge: 21, uf: "MA", nome: "Maranhão", orgao: "SEDIHPOP" },
-  { ibge: 51, uf: "MT", nome: "Mato Grosso", orgao: "Gov. Estadual" },
-  { ibge: 50, uf: "MS", nome: "Mato Grosso do Sul", orgao: "Gov. Estadual" },
-  { ibge: 31, uf: "MG", nome: "Minas Gerais", orgao: "SEDHS" },
-  { ibge: 15, uf: "PA", nome: "Pará", orgao: "SEIRDH" },
-  { ibge: 25, uf: "PB", nome: "Paraíba", orgao: "Gov. Estadual" },
-  { ibge: 41, uf: "PR", nome: "Paraná", orgao: "Gov. Estadual" },
-  { ibge: 26, uf: "PE", nome: "Pernambuco", orgao: "SecMulher/FUNDARPE" },
-  { ibge: 22, uf: "PI", nome: "Piauí", orgao: "Gov. Estadual" },
-  { ibge: 33, uf: "RJ", nome: "Rio de Janeiro", orgao: "SEASDH" },
-  { ibge: 24, uf: "RN", nome: "Rio Grande do Norte", orgao: "Gov. Estadual" },
-  { ibge: 43, uf: "RS", nome: "Rio Grande do Sul", orgao: "SDH" },
-  { ibge: 11, uf: "RO", nome: "Rondônia", orgao: "Gov. Estadual" },
-  { ibge: 14, uf: "RR", nome: "Roraima", orgao: "Gov. Estadual" },
-  { ibge: 42, uf: "SC", nome: "Santa Catarina", orgao: "Gov. Estadual" },
-  { ibge: 35, uf: "SP", nome: "São Paulo", orgao: "Sec. Justiça e Cidadania" },
-  { ibge: 28, uf: "SE", nome: "Sergipe", orgao: "Gov. Estadual" },
-  { ibge: 17, uf: "TO", nome: "Tocantins", orgao: "Gov. Estadual" },
+  { ibge: 12, uf: "AC", nome: "Acre" },
+  { ibge: 27, uf: "AL", nome: "Alagoas" },
+  { ibge: 16, uf: "AP", nome: "Amapá" },
+  { ibge: 13, uf: "AM", nome: "Amazonas" },
+  { ibge: 29, uf: "BA", nome: "Bahia" },
+  { ibge: 23, uf: "CE", nome: "Ceará" },
+  { ibge: 53, uf: "DF", nome: "Distrito Federal" },
+  { ibge: 32, uf: "ES", nome: "Espírito Santo" },
+  { ibge: 52, uf: "GO", nome: "Goiás" },
+  { ibge: 21, uf: "MA", nome: "Maranhão" },
+  { ibge: 51, uf: "MT", nome: "Mato Grosso" },
+  { ibge: 50, uf: "MS", nome: "Mato Grosso do Sul" },
+  { ibge: 31, uf: "MG", nome: "Minas Gerais" },
+  { ibge: 15, uf: "PA", nome: "Pará" },
+  { ibge: 25, uf: "PB", nome: "Paraíba" },
+  { ibge: 41, uf: "PR", nome: "Paraná" },
+  { ibge: 26, uf: "PE", nome: "Pernambuco" },
+  { ibge: 22, uf: "PI", nome: "Piauí" },
+  { ibge: 33, uf: "RJ", nome: "Rio de Janeiro" },
+  { ibge: 24, uf: "RN", nome: "Rio Grande do Norte" },
+  { ibge: 43, uf: "RS", nome: "Rio Grande do Sul" },
+  { ibge: 11, uf: "RO", nome: "Rondônia" },
+  { ibge: 14, uf: "RR", nome: "Roraima" },
+  { ibge: 42, uf: "SC", nome: "Santa Catarina" },
+  { ibge: 35, uf: "SP", nome: "São Paulo" },
+  { ibge: 28, uf: "SE", nome: "Sergipe" },
+  { ibge: 17, uf: "TO", nome: "Tocantins" },
 ];
 
 /**
- * Palavras-chave e radicais para filtrar programas relevantes na DCA/RREO.
- * Alinhados com a Metodologia de Levantamento Orçamentário (seção 8).
- * 
- * Nota: Função 14 (Direitos da Cidadania) e Subfunção 422 (Direitos Individuais,
- * Coletivos e Difusos) NÃO são usadas como filtros independentes porque seus
- * descritivos são genéricos demais e gerariam falsos positivos massivos.
- * A seleção é feita exclusivamente por palavras-chave raciais/étnicas e
- * contas específicas (assistência aos indígenas).
+ * Termos raciais/étnicos para busca em TODOS os campos de texto.
+ * Baseado no script de referência — cobertura ampla para capturar
+ * ações "escondidas" em secretarias de infraestrutura ou agricultura.
  */
-const KEYWORDS = [
+const TERMOS_RACIAIS = [
   // Radicais (capturam variações morfológicas)
-  "indígen", "indigen", "quilombol", "cigan", "étnic", "etnia",
-  // Termos completos
-  "racial", "racismo", "igualdade racial", "igualdade étnica",
-  "romani", "afro", "palmares", "funai", "sesai",
-  "terreiro", "matriz africana", "negro", "negra", "capoeira",
-  "candomblé", "umbanda", "cultura negra",
+  "quilombola", "quilombo",
+  "indigen", "indígen",
+  "cigano", "cigana",
+  "afrodescendente", "afro",
+  "remanescente",
+  // Termos compostos e específicos
   "povos tradicionais", "comunidades tradicionais",
-  "promoção da igualdade",
+  "povos da floresta",
+  "igualdade racial",
+  "étnico", "etnico", "etnia",
+  "racial", "racismo",
+  "etnodesenvolvimento",
+  "terreiro", "matriz africana",
+  "negro", "negra",
+  "palmares", "funai", "sesai", "funpen",
+  "capoeira", "candomblé", "umbanda",
+  "romani",
+  // Assistência específica (subfunção 423)
+  "assistência aos indígenas",
+  "assistência aos índios",
+  "assistência indígena",
 ];
 
-function matchesKeyword(text: string): boolean {
+function matchesRacial(text: string): boolean {
   const lower = text.toLowerCase();
-  return KEYWORDS.some(kw => lower.includes(kw));
+  return TERMOS_RACIAIS.some((t) => lower.includes(t));
 }
 
-function parseBRL(val: any): number | null {
+/**
+ * Verifica se qualquer valor string de um item JSON contém termo racial.
+ * Equivale ao df[cols_texto].apply(lambda x: x.str.contains(...)).any(axis=1)
+ */
+function itemMatchesRacial(item: Record<string, unknown>): boolean {
+  for (const val of Object.values(item)) {
+    if (typeof val === "string" && val.length > 2 && matchesRacial(val)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function parseBRL(val: unknown): number | null {
   if (val === null || val === undefined) return null;
   if (typeof val === "number") return val === 0 ? null : val;
-  const s = String(val).trim();
-  if (!s || s === "0" || s === "0,00") return null;
-  const num = Number(s.replace(/\./g, "").replace(",", "."));
+  const s = String(val).trim().replace(/\s/g, "");
+  if (!s || s === "0" || s === "0,00" || s === "0.00") return null;
+  // Handle both BRL (1.234,56) and plain (1234.56) formats
+  let num: number;
+  if (s.includes(",")) {
+    num = Number(s.replace(/\./g, "").replace(",", "."));
+  } else {
+    num = Number(s);
+  }
   return isNaN(num) || num === 0 ? null : num;
 }
 
 /**
- * Busca dados do RREO (Anexo 02 - Despesas por Função/Subfunção)
- * ou DCA (Declaração de Contas Anuais) para um estado e ano.
+ * Extrai o nome da conta/ação mais descritivo disponível no item.
+ * DCA-Anexo I-E costuma ter 'ds_conta' mais granular que 'conta'.
  */
-async function fetchRREO(ibge: number, ano: number): Promise<any[]> {
-  // RREO Anexo 02: Despesas por Função/Subfunção
-  // nr_periodo=6 = último bimestre (consolidado anual)
-  const url = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
-  console.log(`  RREO: ${url}`);
-
-  try {
-    const res = await fetch(url, {
-      headers: { Accept: "application/json" },
-    });
-
-    if (!res.ok) {
-      // Try period 5 (penultimate bimester) as fallback
-      console.log(`  RREO período 6 falhou (${res.status}), tentando período 5...`);
-      const url5 = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=5&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
-      const res5 = await fetch(url5, { headers: { Accept: "application/json" } });
-      if (!res5.ok) {
-        console.error(`  RREO falhou para ambos períodos: ${res5.status}`);
-        return [];
-      }
-      const data5 = await res5.json();
-      return data5?.items || data5 || [];
-    }
-
-    const data = await res.json();
-    return data?.items || data || [];
-  } catch (e) {
-    console.error(`  Erro fetch RREO:`, e);
-    return [];
-  }
+function extractConta(item: Record<string, unknown>): string {
+  return (
+    String(item.ds_conta || item.conta || item.no_conta || item.descricao || "")
+      .trim()
+      .replace(/\s+/g, " ")
+  );
 }
 
 /**
- * Busca dados da DCA (Declaração de Contas Anuais) como fallback.
- * Anexo I-D: Demonstrativo da Despesa por Função/Subfunção.
+ * Mapeia os campos financeiros dos itens da API para campos padronizados.
+ * A API SICONFI muda nomes de campos entre DCA e RREO.
+ * 
+ * DCA campos comuns: v_coluna_dotacao_inicial, v_coluna_despesas_liquidadas,
+ *                    valor_dotacao_inicial, valor_liquidado
+ * RREO campos comuns: valor (com discriminação pela coluna 'coluna')
  */
-async function fetchDCA(ibge: number, ano: number): Promise<any[]> {
-  const url = `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-D&id_ente=${ibge}`;
-  console.log(`  DCA: ${url}`);
+function extractFinancials(item: Record<string, unknown>): {
+  dotacao_inicial: number | null;
+  dotacao_autorizada: number | null;
+  empenhado: number | null;
+  liquidado: number | null;
+  pago: number | null;
+  coluna: string;
+} {
+  // DCA: campos diretos
+  const dot_inicial = parseBRL(
+    item.v_coluna_dotacao_inicial ??
+    item.valor_dotacao_inicial ??
+    item.vl_dotacao_inicial ??
+    null
+  );
+  const liquidado_dca = parseBRL(
+    item.v_coluna_despesas_liquidadas ??
+    item.valor_liquidado ??
+    item.vl_liquidado ??
+    null
+  );
+  const dot_autori = parseBRL(
+    item.v_coluna_dotacao_atualizada ??
+    item.valor_dotacao_atualizada ??
+    item.vl_dotacao_atualizada ??
+    null
+  );
+  const empenhado_dca = parseBRL(
+    item.v_coluna_despesas_empenhadas ??
+    item.valor_empenhado ??
+    item.vl_empenhado ??
+    null
+  );
+  const pago_dca = parseBRL(
+    item.v_coluna_despesas_pagas ??
+    item.valor_pago ??
+    item.vl_pago ??
+    null
+  );
 
-  try {
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) {
-      console.error(`  DCA falhou: ${res.status}`);
-      return [];
-    }
-    const data = await res.json();
-    return data?.items || data || [];
-  } catch (e) {
-    console.error(`  Erro fetch DCA:`, e);
-    return [];
-  }
+  const coluna = String(item.coluna || item.no_coluna || "").toLowerCase();
+
+  return {
+    dotacao_inicial: dot_inicial,
+    dotacao_autorizada: dot_autori,
+    empenhado: empenhado_dca,
+    liquidado: liquidado_dca,
+    pago: pago_dca,
+    coluna,
+  };
 }
 
 /**
- * Filtra e transforma dados RREO/DCA em registros orçamentários.
- * Campos RREO típicos: cod_conta, conta, valor, coluna
- * A coluna cod_conta contém a subfunção (ex: "14.422.xxxx.xxxx")
+ * Busca DCA-Anexo I-E (histórico consolidado, mais granular que RREO para programas).
+ * Usado para 2018-2024 conforme metodologia do script de referência.
  */
-function processRREOData(
-  items: any[],
-  estado: typeof ESTADOS[0],
-  ano: number,
-  source: "RREO" | "DCA"
-): any[] {
-  const registros: any[] = [];
-  const seen = new Set<string>();
-
-  // RREO Anexo 02 structure from SICONFI API:
-  // cod_conta: "RREO2TotalDespesas" (same for all expenditure rows) or "RREO2TotalDespesasIntra" (intra-budget)
-  // conta: the actual function/subfunção text, e.g. "Direitos da Cidadania", "Direitos Individuais Coletivos e Difusos"
-  // coluna: "DOTAÇÃO INICIAL", "DOTAÇÃO ATUALIZADA (a)", "DESPESAS EMPENHADAS", "DESPESAS LIQUIDADAS", "DESPESAS PAGAS"
-  // rotulo: section label e.g. "Total das Despesas Exceto Intra-Orçamentárias"
-
-  // Contas que SEMPRE são relevantes no RREO Anexo 02 estadual
-  // Estas são as subfunções/funções mais específicas de política racial/étnica
-  const CONTA_DIRETA = [
-    "assistência aos indígenas",           // Subfunção 423
-    "assistência aos índios",              // Variação da Subfunção 423
-    "direitos da cidadania",               // Função 14
-    "direitos individuais",                // Subfunção 422 (Direitos Individuais, Coletivos e Difusos)
+async function fetchDCA_IE(ibge: number, ano: number): Promise<unknown[]> {
+  // Tenta Anexo I-E primeiro (Despesas por Função/Subfunção/Programa/Ação)
+  const urls = [
+    `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-E&id_ente=${ibge}`,
+    `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-D&id_ente=${ibge}`,
+    `${SICONFI_BASE}/dca?an_exercicio=${ano}&no_anexo=DCA-Anexo+I-F&id_ente=${ibge}`,
   ];
 
-  const isRelevantItem = (conta: string, rotulo: string, codConta: string): boolean => {
-    const lConta = conta.toLowerCase();
-    const lRotulo = rotulo.toLowerCase();
-    const lCod = codConta.toLowerCase();
-    const combined = `${lConta} ${lRotulo} ${lCod}`;
-
-    // 1. Conta direta: sempre relevante (funções/subfunções de política racial)
-    if (CONTA_DIRETA.some(a => lConta.includes(a))) return true;
-
-    // 2. Keyword match em qualquer campo (conta + rótulo + cod_conta)
-    if (matchesKeyword(combined)) return true;
-
-    return false;
-  };
-
-  // Filter metadata/junk rows  
-  const isJunk = (v: string) => {
-    const lower = v.toLowerCase();
-    return lower.includes("<ec") || lower.includes("<mr") ||
-      lower.includes("saldo") || lower.includes("crédito") ||
-      lower.startsWith("despesas (") || // top-level aggregate rows
-      lower.startsWith("receita") ||
-      lower.length < 3;
-  };
-
-  for (const item of items) {
-    const codConta = String(item.cod_conta || item.cd_conta || "").trim();
-    const conta = String(item.conta || item.ds_conta || "").trim();
-    const coluna = String(item.coluna || "").trim().toLowerCase();
-    const rotulo = String(item.rotulo || "").trim();
-    const valor = parseBRL(item.valor || item.vl_conta || item.valor_conta);
-
-    if (!conta || isJunk(conta)) continue;
-    if (!isRelevantItem(conta, rotulo, codConta)) continue;
-
-    // Build readable program name  
-    const isIntra = codConta.toLowerCase().includes("intra");
-    const suffix = isIntra ? " (Intra-Orçamentária)" : "";
-    const programaName = `${conta}${suffix}`;
-    const key = `${estado.uf}|${conta}${suffix}|${ano}`;
-
-    if (!seen.has(key)) {
-      seen.add(key);
-
-      // Build razao_selecao: audit trail explaining WHY this record was selected
-      const contaLower = conta.toLowerCase();
-      const razaoParts: string[] = [];
-      const matchedDireta = CONTA_DIRETA.find(a => contaLower.includes(a));
-      if (matchedDireta) razaoParts.push(`Conta RREO/DCA: "${matchedDireta}"`);
-      const combined = `${contaLower} ${rotulo.toLowerCase()} ${codConta.toLowerCase()}`;
-      const kwMatched = KEYWORDS.filter(kw => combined.includes(kw));
-      if (kwMatched.length > 0) razaoParts.push(`Palavras-chave: ${kwMatched.slice(0, 3).join(", ")}`);
-      razaoParts.push(`Subfunção/Função alvo no SICONFI`);
-
-      registros.push({
-        _key: key,
-        programa: `${estado.uf} – ${programaName}`.substring(0, 250),
-        orgao: estado.orgao,
-        esfera: "estadual",
-        ano,
-        dotacao_inicial: null as number | null,
-        dotacao_autorizada: null as number | null,
-        empenhado: null as number | null,
-        liquidado: null as number | null,
-        pago: null as number | null,
-        percentual_execucao: null as number | null,
-        fonte_dados: `SICONFI ${source} – ${estado.nome}`,
-        url_fonte: `https://siconfi.tesouro.gov.br/siconfi/pages/defcon/consultar_rreo.jsf`,
-        observacoes: null,
-        eixo_tematico: null,
-        grupo_focal: null,
-        descritivo: conta,
-        publico_alvo: null,
-        razao_selecao: razaoParts.join(" | "),
-      });
+  for (const url of urls) {
+    const anexo = url.match(/no_anexo=([^&]+)/)?.[1] ?? "";
+    console.log(`  DCA ${decodeURIComponent(anexo)}: ${url}`);
+    try {
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      if (res.ok) {
+        const data = await res.json();
+        const items = data?.items || data || [];
+        if (Array.isArray(items) && items.length > 0) {
+          console.log(`  → ${items.length} itens brutos (${decodeURIComponent(anexo)})`);
+          return items;
+        }
+      }
+    } catch (e) {
+      console.error(`  Erro DCA ${decodeURIComponent(anexo)}:`, e);
     }
+  }
+  return [];
+}
 
-    // Map column to financial field
-    const rec = registros.find(r => r._key === key);
-    if (!rec || !valor) continue;
+/**
+ * Busca RREO-Anexo 02 (último ou penúltimo bimestre).
+ * Usado para 2025 conforme metodologia do script de referência.
+ */
+async function fetchRREO(ibge: number, ano: number): Promise<unknown[]> {
+  for (const periodo of [6, 5, 4]) {
+    const url = `${SICONFI_BASE}/rreo?an_exercicio=${ano}&nr_periodo=${periodo}&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo+02&id_ente=${ibge}`;
+    console.log(`  RREO P${periodo}: ${url}`);
+    try {
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      if (res.ok) {
+        const data = await res.json();
+        const items = data?.items || data || [];
+        if (Array.isArray(items) && items.length > 0) {
+          console.log(`  → ${items.length} itens brutos (RREO P${periodo})`);
+          return items;
+        }
+      }
+    } catch (e) {
+      console.error(`  Erro RREO P${periodo}:`, e);
+    }
+  }
+  return [];
+}
 
-    if (coluna.includes("dotação inicial") || coluna.includes("dotacao inicial")) {
-      rec.dotacao_inicial = (rec.dotacao_inicial || 0) + valor;
-    } else if (coluna.includes("dotação") || coluna.includes("atualizada") || coluna.includes("crédito")) {
-      rec.dotacao_autorizada = (rec.dotacao_autorizada || 0) + valor;
-    } else if (coluna.includes("empenhad")) {
-      rec.empenhado = (rec.empenhado || 0) + valor;
-    } else if (coluna.includes("liquidad")) {
-      rec.liquidado = (rec.liquidado || 0) + valor;
-    } else if (coluna.includes("pag")) {
-      rec.pago = (rec.pago || 0) + valor;
+/**
+ * Processa os itens brutos da API, filtrando por termos raciais em TODOS os campos.
+ * Equivale à lógica do script Python: df[cols_texto].apply(str.contains(...)).any(axis=1)
+ */
+function processItems(
+  items: unknown[],
+  estado: typeof ESTADOS[0],
+  ano: number,
+  source: "DCA" | "RREO"
+): Record<string, unknown>[] {
+  const registros: Record<string, unknown>[] = [];
+  const seen = new Set<string>();
+
+  // RREO: items têm campo 'coluna' com o tipo de valor
+  // DCA: items têm campos diretos de valor por coluna
+  // Precisamos agregar por conta quando é RREO (múltiplas linhas por conta)
+  const rreoAgg = new Map<string, Record<string, number | null>>();
+
+  for (const rawItem of items) {
+    const item = rawItem as Record<string, unknown>;
+
+    // Verifica se qualquer campo string contém termo racial
+    if (!itemMatchesRacial(item)) continue;
+
+    const conta = extractConta(item);
+    if (!conta || conta.length < 3) continue;
+
+    // Filtrar lixo de metadados de planilha
+    const lower = conta.toLowerCase();
+    if (
+      lower.includes("<ec") || lower.includes("<mr") ||
+      lower.includes("total das despesas") ||
+      lower.startsWith("despesas (intra") ||
+      lower.startsWith("receita")
+    ) continue;
+
+    const key = `${estado.uf}|${conta}|${ano}`;
+    const { dotacao_inicial, dotacao_autorizada, empenhado, liquidado, pago, coluna } =
+      extractFinancials(item);
+
+    if (source === "RREO") {
+      // RREO: agregar por conta pois cada linha é uma coluna diferente
+      if (!rreoAgg.has(key)) {
+        rreoAgg.set(key, {
+          dotacao_inicial: null,
+          dotacao_autorizada: null,
+          empenhado: null,
+          liquidado: null,
+          pago: null,
+        });
+      }
+      const agg = rreoAgg.get(key)!;
+
+      // Mapeia pelo nome da coluna
+      const valor = parseBRL(item.valor ?? item.vl_conta ?? item.valor_conta ?? null);
+      if (valor) {
+        if (coluna.includes("dotação inicial") || coluna.includes("dotacao inicial")) {
+          agg.dotacao_inicial = (agg.dotacao_inicial ?? 0) + valor;
+        } else if (coluna.includes("dotação") || coluna.includes("atualizada")) {
+          agg.dotacao_autorizada = (agg.dotacao_autorizada ?? 0) + valor;
+        } else if (coluna.includes("empenhad")) {
+          agg.empenhado = (agg.empenhado ?? 0) + valor;
+        } else if (coluna.includes("liquidad")) {
+          agg.liquidado = (agg.liquidado ?? 0) + valor;
+        } else if (coluna.includes("pag")) {
+          agg.pago = (agg.pago ?? 0) + valor;
+        }
+      }
+
+      // Registrar metadata na primeira vez que vemos a conta
+      if (!seen.has(key)) {
+        seen.add(key);
+        registros.push(buildRecord(key, conta, item, estado, ano, source, agg));
+      } else {
+        // Atualizar o registro existente com os valores acumulados
+        const existing = registros.find((r) => r._key === key);
+        if (existing) {
+          existing.dotacao_inicial = agg.dotacao_inicial;
+          existing.dotacao_autorizada = agg.dotacao_autorizada;
+          existing.empenhado = agg.empenhado;
+          existing.liquidado = agg.liquidado;
+          existing.pago = agg.pago;
+        }
+      }
+    } else {
+      // DCA: campos de valor diretos por item
+      if (!seen.has(key)) {
+        seen.add(key);
+        registros.push(
+          buildRecord(key, conta, item, estado, ano, source, {
+            dotacao_inicial,
+            dotacao_autorizada,
+            empenhado,
+            liquidado,
+            pago,
+          })
+        );
+      } else {
+        // Somar se houver múltiplas linhas com mesma conta (improvável na DCA, mas defensivo)
+        const existing = registros.find((r) => r._key === key);
+        if (existing) {
+          if (dotacao_inicial) existing.dotacao_inicial = ((existing.dotacao_inicial as number) ?? 0) + dotacao_inicial;
+          if (dotacao_autorizada) existing.dotacao_autorizada = ((existing.dotacao_autorizada as number) ?? 0) + dotacao_autorizada;
+          if (empenhado) existing.empenhado = ((existing.empenhado as number) ?? 0) + empenhado;
+          if (liquidado) existing.liquidado = ((existing.liquidado as number) ?? 0) + liquidado;
+          if (pago) existing.pago = ((existing.pago as number) ?? 0) + pago;
+        }
+      }
     }
   }
 
-  // Clean up and compute percentual
+  // Filtrar registros sem nenhum valor financeiro e calcular execução
   return registros
-    .filter(r => r.dotacao_autorizada || r.empenhado || r.liquidado || r.pago)
-    .map(r => {
-      const { _key, _codConta, _conta, ...clean } = r;
-      if (clean.dotacao_autorizada && clean.pago) {
-        clean.percentual_execucao = Math.round((clean.pago / clean.dotacao_autorizada) * 10000) / 100;
+    .filter((r) =>
+      r.dotacao_inicial || r.dotacao_autorizada || r.empenhado || r.liquidado || r.pago
+    )
+    .map((r) => {
+      const { _key, ...clean } = r;
+      // Calcular percentual de execução (liquidado / dotacao_inicial × 100)
+      const dot = (clean.dotacao_inicial as number) || (clean.dotacao_autorizada as number);
+      const liq = clean.liquidado as number;
+      if (dot && liq) {
+        clean.percentual_execucao = Math.round((liq / dot) * 10000) / 100;
       }
       return clean;
     });
+}
+
+function buildRecord(
+  key: string,
+  conta: string,
+  item: Record<string, unknown>,
+  estado: typeof ESTADOS[0],
+  ano: number,
+  source: "DCA" | "RREO",
+  financials: Record<string, number | null>
+): Record<string, unknown> {
+  // Identifica quais termos raciais geraram o match
+  const allText = Object.values(item)
+    .filter((v) => typeof v === "string")
+    .join(" ")
+    .toLowerCase();
+  const matched = TERMOS_RACIAIS.filter((t) => allText.includes(t)).slice(0, 4);
+  const razaoParts = [`${source} SICONFI`];
+  if (matched.length > 0) razaoParts.push(`Termos: ${matched.join(", ")}`);
+
+  // Campos extra disponíveis na DCA (ação, subfunção, órgão)
+  const acao = String(item.co_acao || item.cd_acao || item.no_acao || "").trim();
+  const subfuncao = String(item.no_subfuncao || item.ds_subfuncao || item.subfuncao || "").trim();
+  const orgao = String(item.no_orgao || item.ds_orgao || item.orgao_executor || "").trim();
+
+  // Nome do programa: tenta ser específico. Se tiver ação, usa ela.
+  const programaNome = acao && acao.length > 3
+    ? `${estado.uf} – ${conta} / ${acao}`.substring(0, 250)
+    : `${estado.uf} – ${conta}`.substring(0, 250);
+
+  return {
+    _key: key,
+    programa: programaNome,
+    orgao: orgao || `Gov. Estadual (${estado.uf})`,
+    esfera: "estadual",
+    ano,
+    dotacao_inicial: financials.dotacao_inicial ?? null,
+    dotacao_autorizada: financials.dotacao_autorizada ?? null,
+    empenhado: financials.empenhado ?? null,
+    liquidado: financials.liquidado ?? null,
+    pago: financials.pago ?? null,
+    percentual_execucao: null,
+    fonte_dados: `SICONFI ${source} – ${estado.nome}`,
+    url_fonte: `https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_rreo/consulta_rreo.jsf`,
+    descritivo: subfuncao ? `${conta} | ${subfuncao}` : conta,
+    observacoes: null,
+    eixo_tematico: null,
+    grupo_focal: null,
+    publico_alvo: null,
+    razao_selecao: razaoParts.join(" | "),
+  };
 }
 
 Deno.serve(async (req) => {
@@ -291,40 +432,68 @@ Deno.serve(async (req) => {
     );
 
     const estadosAlvo = ufs
-      ? ESTADOS.filter(e => ufs!.includes(e.uf))
+      ? ESTADOS.filter((e) => ufs!.includes(e.uf))
       : ESTADOS;
 
     const erros: string[] = [];
     let totalInserted = 0;
-    const allRegistros: any[] = [];
+    const allRegistros: Record<string, unknown>[] = [];
 
-    console.log(`=== Ingestão Estadual SICONFI ===`);
-    console.log(`Estados: ${estadosAlvo.map(e => e.uf).join(", ")}`);
+    console.log(`=== Ingestão Estadual SICONFI (DCA I-E + RREO) ===`);
+    console.log(`Estratégia: DCA-Anexo I-E para 2018-2024 | RREO-Anexo 02 para 2025`);
+    console.log(`Estados: ${estadosAlvo.map((e) => e.uf).join(", ")}`);
     console.log(`Anos: ${anos.join(", ")}`);
+    console.log(`Termos raciais: ${TERMOS_RACIAIS.length} termos`);
 
     for (const estado of estadosAlvo) {
       for (const ano of anos) {
         console.log(`\n--- ${estado.nome} (${estado.uf}) ${ano} ---`);
 
         try {
-          // Try RREO first (more detailed), then DCA as fallback
-          let items = await fetchRREO(estado.ibge, ano);
-          let source: "RREO" | "DCA" = "RREO";
+          let items: unknown[];
+          let source: "DCA" | "RREO";
 
-          if (!items || items.length === 0) {
-            console.log(`  RREO vazio, tentando DCA...`);
-            items = await fetchDCA(estado.ibge, ano);
+          if (ano < 2025) {
+            // Histórico consolidado: DCA tem melhor granularidade de programa/ação
+            items = await fetchDCA_IE(estado.ibge, ano);
             source = "DCA";
+
+            // Fallback: se DCA não retornar, tenta RREO
+            if (items.length === 0) {
+              console.log(`  DCA vazia, tentando RREO como fallback...`);
+              items = await fetchRREO(estado.ibge, ano);
+              source = "RREO";
+            }
+          } else {
+            // 2025: dados mais recentes via RREO
+            items = await fetchRREO(estado.ibge, ano);
+            source = "RREO";
+
+            // Fallback: se RREO não retornar, tenta DCA (pode estar sendo enviado)
+            if (items.length === 0) {
+              console.log(`  RREO 2025 vazia, tentando DCA...`);
+              items = await fetchDCA_IE(estado.ibge, ano);
+              source = "DCA";
+            }
           }
 
-          console.log(`  ${source}: ${items.length} itens brutos`);
+          console.log(`  ${source}: ${items.length} itens brutos totais`);
 
           if (items.length > 0) {
-            console.log(`  SAMPLE: ${JSON.stringify(items[0]).substring(0, 300)}`);
+            // Log sample para debug — mostra campos disponíveis
+            const sample = items[0] as Record<string, unknown>;
+            const campos = Object.keys(sample).join(", ");
+            console.log(`  Campos disponíveis: ${campos.substring(0, 200)}`);
           }
 
-          const registros = processRREOData(items, estado, ano, source);
-          console.log(`  → ${registros.length} registros relevantes`);
+          const registros = processItems(items, estado, ano, source);
+          console.log(`  → ${registros.length} registros com termos raciais`);
+
+          if (registros.length > 0) {
+            registros.forEach((r) =>
+              console.log(`    • ${String(r.programa).substring(0, 80)} | dot=${r.dotacao_inicial} | liq=${r.liquidado}`)
+            );
+          }
 
           allRegistros.push(...registros);
         } catch (error) {
@@ -333,17 +502,17 @@ Deno.serve(async (req) => {
           console.error(msg);
         }
 
-        // Rate limiting - SICONFI is generous but let's be polite
-        await new Promise(r => setTimeout(r, 500));
+        // Rate limiting — polido com a API do Tesouro
+        await new Promise((r) => setTimeout(r, 500));
       }
     }
 
-    // Deduplicate by programa+ano+orgao
-    const deduped = new Map<string, any>();
+    // Deduplicação por programa+ano+orgao (mantém o com maior valor)
+    const deduped = new Map<string, Record<string, unknown>>();
     for (const r of allRegistros) {
       const key = `${r.orgao}|${r.programa}|${r.ano}`;
       const existing = deduped.get(key);
-      if (!existing || (r.pago && (!existing.pago || r.pago > existing.pago))) {
+      if (!existing || ((r.liquidado as number) > ((existing.liquidado as number) ?? 0))) {
         deduped.set(key, r);
       }
     }
@@ -363,6 +532,9 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Resumo de programas únicos encontrados para auditoria
+    const programasUnicos = batch.map((r) => String(r.programa)).slice(0, 30);
+
     console.log(`\n=== Concluído: ${totalInserted} inseridos, ${erros.length} erros ===`);
 
     return new Response(
@@ -371,8 +543,9 @@ Deno.serve(async (req) => {
         total_inseridos: totalInserted,
         total_brutos: allRegistros.length,
         deduplicados: deduped.size,
-        estados: estadosAlvo.map(e => e.uf),
+        estados: estadosAlvo.map((e) => e.uf),
         anos,
+        programas_encontrados: programasUnicos,
         erros: erros.slice(0, 20),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -380,7 +553,10 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error("Fatal:", error);
     return new Response(
-      JSON.stringify({ success: false, error: error instanceof Error ? error.message : "Erro desconhecido" }),
+      JSON.stringify({
+        success: false,
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
