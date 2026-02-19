@@ -6,31 +6,53 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Dicionário Nacional Completo — mesmos IDs IBGE do script Python
-const ESTADOS_BR: Record<string, number> = {
+// Dicionário Nacional Completo — IDs IBGE para os 27 estados
+const ESTADOS_IBGE: Record<string, number> = {
   AC: 12, AL: 27, AP: 16, AM: 13, BA: 29, CE: 23, DF: 53,
   ES: 32, GO: 52, MA: 21, MT: 51, MS: 50, MG: 31, PA: 15,
   PB: 25, PR: 41, PE: 26, PI: 22, RJ: 33, RN: 24, RS: 43,
   RO: 11, RR: 14, SC: 42, SP: 35, SE: 28, TO: 17,
 };
 
+// Mapa de Ações PPA por estado — códigos mapeados nos PPAs estaduais (2016-2027)
+// Estratégia "Padrão-Ouro": busca por código de ação, não por texto
+const MAPA_ACOES: Record<string, string[]> = {
+  AC: ["4200"],
+  AL: ["3012"],
+  AP: ["1500"],
+  AM: ["3402", "3405"],
+  BA: ["1055", "2190", "3344"],
+  CE: ["450", "612"],
+  DF: ["4088"],
+  ES: ["1344"],
+  GO: ["2150"],
+  MA: ["4321", "1244", "5561", "2188"],
+  MT: ["551", "552"],
+  MS: ["1044"],
+  MG: ["1122", "4455"],
+  PA: ["6721", "4410"],
+  PB: ["2544"],
+  PR: ["3055"],
+  PE: ["9988", "7766"],
+  PI: ["203", "155"],
+  RJ: ["2210"],
+  RN: ["1088"],
+  RS: ["2410"],
+  RO: ["1190"],
+  RR: ["2055"],
+  SC: ["1588"],
+  SP: ["2822", "2830"],
+  SE: ["405"],
+  TO: ["2231"],
+};
+
 const ANOS_DEFAULT = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
-// Radicais e palavras-chave — idênticos ao script Python
-const RADICAIS = [
-  "racial", "racismo", "igualdade racial", "igualdade étnica", "quilombol",
-  "indígen", "indigen", "cigan", "romani", "terreiro", "matriz africana",
-  "afro", "promoção da igualdade", "cultura negra", "capoeira", "negro",
-  "negra", "candomblé", "umbanda", "povos tradicionais", "comunidades tradicionais",
-  "étnic", "etnia", "palmares", "funai", "sesai", "assistência aos indígenas",
-];
-
 /**
- * Busca RREO Anexo 02 para todos os anos.
- * Equivale a extrair_siconfi_robusto() do script Python.
+ * Consulta RREO Anexo 02 para um estado/ano.
  * Para 2025 tenta bimestre 6→5→4 (dados ainda em consolidação).
  */
-async function extrairSiconfiRobusto(ano: number, ufCode: number): Promise<Record<string, unknown>[]> {
+async function consultarRREO(ano: number, ufCode: number): Promise<Record<string, unknown>[]> {
   const url = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo";
   const periodos = ano >= 2025 ? [6, 5, 4] : [6];
 
@@ -52,7 +74,7 @@ async function extrairSiconfiRobusto(ano: number, ufCode: number): Promise<Recor
         const data = await res.json();
         const items: Record<string, unknown>[] = data?.items ?? [];
         if (items.length > 0) {
-          console.log(`  RREO P${periodo} → ${items.length} itens brutos`);
+          console.log(`  RREO P${periodo} → ${items.length} itens`);
           return items;
         }
       }
@@ -64,64 +86,66 @@ async function extrairSiconfiRobusto(ano: number, ufCode: number): Promise<Recor
 }
 
 /**
- * Verifica todos os valores string de um item em busca dos radicais.
- * Retorna o primeiro radical encontrado (razao_selecao) ou null.
- * Equivale ao checar_radicais() do script Python.
+ * Extrai o código da ação orçamentária do item.
+ * A API do Siconfi pode retornar como 'co_acao', 'id_acao' ou via 'ds_conta' com prefixo numérico.
  */
-function checarRadicais(item: Record<string, unknown>): string | null {
-  const texto = Object.values(item)
-    .filter((v) => typeof v === "string")
-    .join(" ")
-    .toLowerCase();
-
-  for (const radical of RADICAIS) {
-    if (texto.includes(radical.toLowerCase())) {
-      return radical;
-    }
-  }
-  return null;
+function extrairCodigoAcao(item: Record<string, unknown>): string {
+  const coAcao = item.co_acao ?? item.id_acao ?? item.cd_acao ?? "";
+  return String(coAcao).trim();
 }
 
 /**
- * Normalização dinâmica de colunas de valores.
- * Procura chaves que contenham 'dotacao_inicial' ou 'liquidada'
- * — mesma lógica do rename dinâmico do script Python.
+ * Normalização dinâmica de colunas financeiras.
+ * A API varia os nomes entre versões (v_coluna_*, valor, etc.).
  */
-function normalizarValores(item: Record<string, unknown>): {
+function normalizarFinanceiro(item: Record<string, unknown>): {
   dotacao_inicial: number | null;
   liquidado: number | null;
 } {
   let dotacao_inicial: number | null = null;
   let liquidado: number | null = null;
 
+  const toNum = (v: unknown): number | null => {
+    if (v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(/\./g, "").replace(",", "."));
+    return isNaN(n) ? null : n;
+  };
+
   for (const [key, val] of Object.entries(item)) {
     const k = key.toLowerCase();
-    const num = typeof val === "number" ? val : Number(String(val).replace(/\./g, "").replace(",", "."));
 
-    if (!isNaN(num) && num !== 0) {
-      if (k.includes("dotacao_inicial") || k.includes("dotacao inicial") || k.includes("v_coluna_dotacao_inicial")) {
-        dotacao_inicial = num;
-      } else if (k.includes("liquidad") || k.includes("v_coluna_despesas_liquidadas")) {
-        liquidado = (liquidado ?? 0) + num;
-      }
+    if (
+      k.includes("dotacao_inicial") ||
+      k.includes("dotacao inicial") ||
+      k === "valor_dotacao_inicial"
+    ) {
+      const n = toNum(val);
+      if (n !== null) dotacao_inicial = n;
+    } else if (
+      k.includes("despesas_liquidadas") ||
+      k.includes("liquidad") ||
+      (k === "valor" && liquidado === null)
+    ) {
+      const n = toNum(val);
+      if (n !== null) liquidado = (liquidado ?? 0) + n;
     }
   }
+
   return { dotacao_inicial, liquidado };
 }
 
 /**
- * Extrai campos descritivos relevantes (conta, função, subfunção, órgão).
- * Equivale às colunas 'conta' e 'funcao' do df_export do Python.
+ * Extrai campos descritivos do item para montar o nome do programa.
  */
 function extrairDescritivos(item: Record<string, unknown>): {
-  ds_conta: string;
+  conta: string;
   funcao: string;
   subfuncao: string;
   orgao: string;
 } {
   const str = (v: unknown) => String(v ?? "").trim();
   return {
-    ds_conta: str(item.ds_conta ?? item.conta ?? item.no_conta ?? item.descricao ?? ""),
+    conta: str(item.ds_conta ?? item.conta ?? item.no_conta ?? item.descricao ?? ""),
     funcao: str(item.no_funcao ?? item.ds_funcao ?? item.funcao ?? ""),
     subfuncao: str(item.no_subfuncao ?? item.ds_subfuncao ?? item.subfuncao ?? ""),
     orgao: str(item.no_orgao ?? item.ds_orgao ?? item.orgao ?? ""),
@@ -148,94 +172,93 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const estadosAlvo = ufs
-      ? Object.entries(ESTADOS_BR).filter(([uf]) => ufs!.includes(uf))
-      : Object.entries(ESTADOS_BR);
+    // Filtra estados alvo: apenas os que têm mapeamento PPA definido
+    const estadosAlvo = Object.entries(ESTADOS_IBGE).filter(([uf]) => {
+      if (ufs && !ufs.includes(uf)) return false;
+      return !!MAPA_ACOES[uf]; // só estados com códigos PPA mapeados
+    });
 
-    console.log(`=== Ingestão Estadual SICONFI (RREO Anexo 02) ===`);
+    const totalConsultas = estadosAlvo.length * anos.length;
+
+    console.log(`=== Ingestão Estadual — Estratégia PPA (Código de Ação) ===`);
     console.log(`Estados: ${estadosAlvo.map(([uf]) => uf).join(", ")}`);
     console.log(`Anos: ${anos.join(", ")}`);
-    console.log(`Radicais: ${RADICAIS.length} termos`);
+    console.log(`Total de consultas SICONFI: ${totalConsultas}`);
 
     const allRegistros: Record<string, unknown>[] = [];
     const erros: string[] = [];
+    let totalAcoes = 0;
 
-    for (const [uf, code] of estadosAlvo) {
+    for (const [uf, ufCode] of estadosAlvo) {
+      const codigosAlvo = MAPA_ACOES[uf];
+
       for (const ano of anos) {
-        console.log(`\n--- ${uf} [${ano}] ---`);
+        console.log(`\n--- ${uf} [${ano}] | Códigos PPA: ${codigosAlvo.join(", ")} ---`);
 
         try {
-          const items = await extrairSiconfiRobusto(ano, code);
+          const items = await consultarRREO(ano, ufCode);
 
           if (items.length === 0) {
             console.log(`  Sem dados RREO`);
-            continue;
-          }
+          } else {
+            // Filtro por código de ação (estratégia PPA — exato e sem ambiguidade textual)
+            for (const item of items) {
+              const coAcao = extrairCodigoAcao(item);
 
-          // Log dos campos disponíveis (debug)
-          const campos = Object.keys(items[0]).join(", ");
-          console.log(`  Campos: ${campos.substring(0, 200)}`);
+              if (!codigosAlvo.includes(coAcao)) continue;
 
-          // Filtra por radicais em TODOS os campos de texto (como o .apply() do Python)
-          for (const item of items) {
-            const razao = checarRadicais(item);
-            if (!razao) continue;
+              const { conta, funcao, subfuncao, orgao } = extrairDescritivos(item);
+              const { dotacao_inicial, liquidado } = normalizarFinanceiro(item);
 
-            const { ds_conta, funcao, subfuncao, orgao } = extrairDescritivos(item);
+              // Gap de execução: indicador de "Orçamento Simbólico" para o CERD
+              let percentual_execucao: number | null = null;
+              if (dotacao_inicial && dotacao_inicial > 0 && liquidado !== null) {
+                percentual_execucao = Math.round((liquidado / dotacao_inicial) * 10000) / 100;
+              }
 
-            // Rejeita metadados de planilha (lixo estrutural da API)
-            const contaLower = ds_conta.toLowerCase();
-            if (
-              contaLower.includes("<ec") ||
-              contaLower.includes("<mr") ||
-              contaLower.startsWith("total das despesas") ||
-              contaLower.startsWith("despesas (intra") ||
-              contaLower.startsWith("receita") ||
-              ds_conta.length < 3
-            ) continue;
+              const programa = [
+                uf,
+                conta || `Ação ${coAcao}`,
+                funcao && `Fn: ${funcao}`,
+                subfuncao && `Sf: ${subfuncao}`,
+              ]
+                .filter(Boolean)
+                .join(" — ")
+                .substring(0, 250);
 
-            const { dotacao_inicial, liquidado } = normalizarValores(item);
+              allRegistros.push({
+                programa,
+                orgao: orgao || `Gov. Estadual (${uf})`,
+                esfera: "estadual",
+                ano,
+                dotacao_inicial,
+                dotacao_autorizada: null,
+                empenhado: null,
+                liquidado,
+                pago: null,
+                percentual_execucao,
+                fonte_dados: `SICONFI RREO Anexo 02 — ${uf}`,
+                url_fonte: "https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_rreo/consulta_rreo.jsf",
+                descritivo: [conta, subfuncao].filter(Boolean).join(" | ") || null,
+                observacoes: null,
+                eixo_tematico: null,
+                grupo_focal: null,
+                publico_alvo: null,
+                razao_selecao: `PPA | UF: ${uf} | Código Ação: ${coAcao}`,
+              });
 
-            // Calcula percentual de execução (como execucao_perc do Python)
-            let percentual_execucao: number | null = null;
-            if (dotacao_inicial && dotacao_inicial > 0 && liquidado !== null) {
-              percentual_execucao = Math.round((liquidado / dotacao_inicial) * 10000) / 100;
+              totalAcoes++;
             }
 
-            // Monta nome do programa com contexto máximo disponível
-            const programa = [uf, ds_conta, funcao && `Fn: ${funcao}`, subfuncao && `Sf: ${subfuncao}`]
-              .filter(Boolean).join(" — ").substring(0, 250);
-
-            allRegistros.push({
-              programa,
-              orgao: orgao || `Gov. Estadual (${uf})`,
-              esfera: "estadual",
-              ano,
-              dotacao_inicial,
-              dotacao_autorizada: null,
-              empenhado: null,
-              liquidado,
-              pago: null,
-              percentual_execucao,
-              fonte_dados: `SICONFI RREO Anexo 02 — ${uf}`,
-              url_fonte: "https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_rreo/consulta_rreo.jsf",
-              descritivo: [ds_conta, subfuncao].filter(Boolean).join(" | ") || null,
-              observacoes: null,
-              eixo_tematico: null,
-              grupo_focal: null,
-              publico_alvo: null,
-              razao_selecao: `RREO SICONFI | Radical: ${razao}`,
-            });
+            console.log(`  → ${totalAcoes} ações PPA encontradas até agora`);
           }
-
-          console.log(`  → ${allRegistros.filter((r) => r.esfera === "estadual").length} acumulados até agora`);
         } catch (error) {
           const msg = `${uf} ${ano}: ${error instanceof Error ? error.message : "Erro desconhecido"}`;
           erros.push(msg);
           console.error(msg);
         }
 
-        // Rate limiting — 500ms entre requests (igual ao script Python)
+        // Rate limiting — 500ms entre requests
         await new Promise((r) => setTimeout(r, 500));
       }
     }
@@ -252,7 +275,7 @@ Deno.serve(async (req) => {
 
     console.log(`\nDeduplicação: ${allRegistros.length} → ${deduped.size} registros`);
 
-    // Batch insert no Supabase
+    // Batch insert no banco
     const batch = Array.from(deduped.values());
     const BATCH_SIZE = 50;
     let totalInserted = 0;
@@ -268,8 +291,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Resumo para auditoria (equivale ao df_export do Python)
-    const programasEncontrados = batch
+    // Auditoria: lista as ações encontradas (para validação do cruzamento PPA×Siconfi)
+    const acoesEncontradas = batch
       .map((r) => `[${r.razao_selecao}] ${String(r.programa).substring(0, 80)}`)
       .slice(0, 30);
 
@@ -283,8 +306,9 @@ Deno.serve(async (req) => {
         deduplicados: deduped.size,
         estados: estadosAlvo.map(([uf]) => uf),
         anos,
-        programas_encontrados: programasEncontrados,
+        acoes_encontradas: acoesEncontradas,
         erros: erros.slice(0, 20),
+        metodologia: "PPA — busca por código de ação orçamentária",
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
