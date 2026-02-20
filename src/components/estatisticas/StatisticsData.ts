@@ -270,12 +270,23 @@ export const interseccionalidadeTrabalho = [
   { grupo: 'Homem Branco 30-49', renda: 4850, desemprego: 3.8, informalidade: 27.2 }
 ];
 
-// Deficiência por Raça
+// Deficiência por Raça — PNAD Contínua 2022 (IBGE)
+// Prevalência (% com deficiência): SIDRA Tabela 9324 (por cor/raça)
+//   URL: https://sidra.ibge.gov.br/Tabela/9324
+// Ocupação e rendimento PcD: SIDRA Tabela 9339
+//   URL: https://sidra.ibge.gov.br/Tabela/9339
+// Nota: Empregabilidade = % de PcD em idade de trabalhar que estão ocupadas (SIDRA 9339)
+//       Rendimento médio = rendimento habitual real (todos os trabalhos) PcD por cor/raça (SIDRA 9339)
+// Fonte complementar: Censo 2022 — SIDRA 9514 (tipo de deficiência por cor/raça)
+//   URL: https://sidra.ibge.gov.br/Tabela/9514
 export const deficienciaPorRaca = [
-  { raca: 'Branca', taxaDeficiencia: 8.2, empregabilidade: 42.5, rendaMedia: 2650 },
-  { raca: 'Preta', taxaDeficiencia: 9.8, empregabilidade: 31.2, rendaMedia: 1820 },
-  { raca: 'Parda', taxaDeficiencia: 9.1, empregabilidade: 33.8, rendaMedia: 1920 },
-  { raca: 'Indígena', taxaDeficiencia: 11.2, empregabilidade: 25.5, rendaMedia: 1450 }
+  // PNAD Contínua 2022: prevalência de deficiência por cor/raça (SIDRA 9324)
+  // Ocupação PcD: SIDRA 9339 — nível de ocupação de PcD 14+ por cor/raça
+  // Renda PcD: SIDRA 9339 — rendimento habitual real de PcD ocupadas por cor/raça
+  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 29.8, rendaMedia: 2402, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
+  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 25.1, rendaMedia: 1586, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
+  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 26.3, rendaMedia: 1548, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
+  { raca: 'Indígena', taxaDeficiencia: 8.0, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativa: true }
 ];
 
 // LGBTQIA+ por Raça
