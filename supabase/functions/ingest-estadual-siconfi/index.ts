@@ -145,10 +145,17 @@ function extrairCodigoFuncional(conta: string): { funcao: string; subfuncao: str
   return null;
 }
 
-/** Processa itens DCA (estrutura: exercicio, conta, coluna, valor, cod_conta) */
+/** Processa itens DCA (estrutura real: exercicio, rotulo, coluna, valor, cod_conta) */
 function processarDCA(
   items: Record<string, unknown>[], uf: string, ano: number, fonteAnexo: string,
 ): Record<string, unknown>[] {
+  // Log amostra do primeiro item para diagnóstico de campos
+  if (items.length > 0) {
+    const sample = items[0];
+    console.log(`  Campos DCA (${fonteAnexo}): ${Object.keys(sample).join(", ")}`);
+    console.log(`  Amostra: rotulo=${sample.rotulo}, coluna=${sample.coluna}, valor=${sample.valor}, cod_conta=${sample.cod_conta}, conta=${sample.conta}`);
+  }
+
   // Agrupar por conta para consolidar Empenhada/Liquidada/Paga
   const porConta = new Map<string, {
     conta: string; codConta: string; coluna: string;
@@ -158,24 +165,27 @@ function processarDCA(
   }>();
 
   for (const item of items) {
+    // O DCA retorna AMBOS: "conta" (descritivo da linha) e "rotulo" (cabeçalho genérico)
+    // Usar "conta" como identificador, mas buscar keywords em TODOS os campos
     const conta = String(item.conta ?? "").trim();
+    const rotulo = String(item.rotulo ?? "").trim();
     const coluna = String(item.coluna ?? "").toLowerCase();
     const codConta = String(item.cod_conta ?? "");
     const valor = typeof item.valor === "number" ? item.valor : null;
 
-    if (!conta || valor === null) continue;
+    if ((!conta && !rotulo) || valor === null) continue;
 
-    const contaLower = conta.toLowerCase();
-
-    // Estratégia 1: Subfunção relevante (422 = Direitos Individuais)
-    const funcional = extrairCodigoFuncional(conta);
+    const contaDisplay = conta || rotulo; // Para exibição
+    // Combinar TODOS os campos textuais para busca ampla de keywords
+    const textoCompleto = `${conta} ${rotulo} ${codConta} ${coluna}`.toLowerCase();
+    const funcional = extrairCodigoFuncional(contaDisplay);
     let match = false;
     let razao = "";
     let grupoEtnico: string | null = null;
 
+    // Estratégia 1: Subfunção relevante (422 = Direitos Individuais)
     if (funcional && SUBFUNCOES_RELEVANTES.includes(funcional.subfuncao)) {
-      // Subfunção 422 — mas verificar se tem keyword racial para evitar falsos positivos
-      const check = checarRadicais(contaLower);
+      const check = checarRadicais(textoCompleto);
       if (check) {
         match = true;
         razao = `Subfunção ${funcional.subfuncao} + Radical | ${check.palavras.slice(0, 3).join(", ")}`;
@@ -183,9 +193,9 @@ function processarDCA(
       }
     }
 
-    // Estratégia 2: Keyword match direto no campo conta
+    // Estratégia 2: Keyword match em todos os campos textuais
     if (!match) {
-      const check = checarRadicais(contaLower);
+      const check = checarRadicais(textoCompleto);
       if (check) {
         match = true;
         razao = `Radical | ${fonteAnexo} | Termos: ${check.palavras.slice(0, 3).join(", ")}`;
@@ -202,9 +212,9 @@ function processarDCA(
 
     if (!match) continue;
 
-    const key = `${conta}`;
+    const key = `${contaDisplay}`;
     const existing = porConta.get(key) ?? {
-      conta, codConta, coluna: "",
+      conta: contaDisplay, codConta, coluna: "",
       empenhado: null, liquidado: null, dotacao_inicial: null, pago: null,
       razao, grupoEtnico,
     };
