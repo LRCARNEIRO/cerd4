@@ -377,39 +377,6 @@ export function LgbtqiaTab() {
         </CardContent>
       </Card>
 
-      {/* Total de assassinatos por ano */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Total de Assassinatos de Pessoas Trans — 2017-2025</CardTitle>
-          <CardDescription>Dossiê ANTRA — números absolutos</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={serieAntraTrans}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(value: number) => [value, 'Assassinatos']}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="totalAssassinatos" name="Total" fill="hsl(var(--destructive))" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <AuditFooter
-            fontes={[
-              { nome: 'ANTRA — Dossiê 2026', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
-            ]}
-          />
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tabela da série com recorte racial completo */}
         <Card>
