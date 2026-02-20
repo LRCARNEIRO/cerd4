@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2 } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -20,6 +20,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/EstadualResumoComparativo';
+import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/EstadualRelatorioTab';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -584,6 +585,10 @@ export default function Orcamento() {
           <TabsTrigger value="resumo">
             <PieChart className="w-4 h-4 mr-1" />
             Resumo Comparativo
+          </TabsTrigger>
+          <TabsTrigger value="relatorio">
+            <FileText className="w-4 h-4 mr-1" />
+            Relatório
           </TabsTrigger>
           <TabsTrigger value="metodologia">
             <BookOpen className="w-4 h-4 mr-1" />
@@ -1174,6 +1179,31 @@ export default function Orcamento() {
 
           {esfera === 'municipal' && (
             <EmptyEsferaCard esfera="Municipal" descricao="Dados municipais ainda não disponíveis para o Resumo Comparativo. Utilize portais de transparência municipais." />
+          )}
+        </TabsContent>
+
+        {/* ===== RELATÓRIO ===== */}
+        <TabsContent value="relatorio">
+          {esfera === 'estadual' && (
+            <div className="space-y-6">
+              {classified.estadual.all.length > 0 ? (
+                <EstadualRelatorioTab
+                  records={classified.estadual.all}
+                  formatCurrency={formatCurrency}
+                  formatCurrencyFull={formatCurrencyFull}
+                />
+              ) : (
+                <EmptyEsferaCard esfera="Estadual" descricao="Dados estaduais não disponíveis para o Relatório. Insira dados via MSC/PPA." />
+              )}
+            </div>
+          )}
+
+          {esfera === 'federal' && (
+            <EmptyEsferaCard esfera="Federal" descricao="Relatório Federal em elaboração. Utilize o Resumo Comparativo para análise detalhada." />
+          )}
+
+          {esfera === 'municipal' && (
+            <EmptyEsferaCard esfera="Municipal" descricao="Relatório Municipal em elaboração. Dados ainda insuficientes." />
           )}
         </TabsContent>
 
