@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
   violenciaInterseccional, 
   mulheresChefeFamilia, 
@@ -513,7 +514,7 @@ export function DeficienciaTab() {
                     <TableCell className="font-medium">
                       {item.raca}
                       {(item as any).estimativa && (
-                        <Badge variant="outline" className="ml-2 text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+                        <EstimativaBadge tipo="simples" metodologia="Censo 2022 + SIS: o SIS não publica faixas para indígenas com essa granularidade" />
                       )}
                     </TableCell>
                     <TableCell className="text-right">{item.taxaDeficiencia}%</TableCell>
@@ -619,7 +620,7 @@ export function JuventudeTab() {
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-sm font-medium">{item.indicador}</p>
                     {(item as any).estimativa && (
-                      <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+                      <EstimativaBadge tipo="simples" metodologia="Proxy etário aplicado sobre dado racial disponível" />
                     )}
                   </div>
                   <p className="text-[10px] text-muted-foreground mb-2">Fonte: {item.fonte}</p>
@@ -696,7 +697,7 @@ export function JuventudeTab() {
                 <li>• Encarceramento: 68,2% dos presos são negros (SISDEPEN 2024)</li>
                 <li className="flex items-center gap-1">
                   • Evasão escolar 2x maior
-                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Estimativa</Badge>
+                  <EstimativaBadge tipo="simples" className="ml-1" />
                 </li>
               </ul>
             </div>
@@ -773,7 +774,7 @@ export function ClasseSocialTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               Saúde × Raça × Classe
-              <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativas</Badge>
+              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento DataSUS (raça) × CadÚnico (renda). O DataSUS não publica mortalidade materna por faixa de renda." />
             </CardTitle>
             <CardDescription>Cruzamento raça × classe não é publicado diretamente pelo DataSUS</CardDescription>
           </CardHeader>
@@ -825,7 +826,7 @@ export function ClasseSocialTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             Mobilidade Social Intergeracional por Raça
-            <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento PNAD Contínua (renda × raça) com dados de escolaridade dos pais" />
           </CardTitle>
           <CardDescription>
             Dados derivados de estudos do IPEA e Banco Mundial. Não há publicação oficial com esses valores exatos em formato tabular.
