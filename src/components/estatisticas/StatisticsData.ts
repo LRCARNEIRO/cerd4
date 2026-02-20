@@ -286,7 +286,7 @@ export const deficienciaPorRaca = [
   { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 29.8, rendaMedia: 2402, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
   { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 25.1, rendaMedia: 1586, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
   { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 26.3, rendaMedia: 1548, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
-  { raca: 'Indígena', taxaDeficiencia: 8.0, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativa: true }
+  { raca: 'Indígena', taxaDeficiencia: 8.0, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 9324 — Prevalência PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' }, { nome: 'SIS/IBGE 2024 — Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' }], metodologiaCruzamento: 'O SIS não publica faixas para indígenas com essa granularidade; valores derivados do cruzamento Censo 2022 (pop. indígena) × PNAD/SIS (emprego e renda PcD).' }
 ];
 
 // =============================================
@@ -417,11 +417,11 @@ export const povosTradicionais = {
 // NOTA: Os valores de "Indígena" são estimativas derivadas do Censo 2022 + SIS, pois
 // o SIS não publica faixas de renda para indígenas com essa granularidade.
 export const classePorRaca = [
-  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.4, indigena: 18.2, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
-  { faixa: 'Pobreza', branca: 8.3, negra: 17.8, indigena: 25.5, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
-  { faixa: 'Vulnerável', branca: 22.1, negra: 35.4, indigena: 32.1, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
-  { faixa: 'Classe média', branca: 42.8, negra: 29.1, indigena: 18.5, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
-  { faixa: 'Alta renda', branca: 23.6, negra: 9.3, indigena: 5.7, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' }
+  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.4, indigena: 18.2, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'O SIS não publica faixas de renda para indígenas com essa granularidade. Valores derivados do cruzamento Censo 2022 (pop. indígena) × SIS/IBGE 2024 (distribuição de renda por raça).' },
+  { faixa: 'Pobreza', branca: 8.3, negra: 17.8, indigena: 25.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'O SIS não publica faixas de renda para indígenas com essa granularidade.' },
+  { faixa: 'Vulnerável', branca: 22.1, negra: 35.4, indigena: 32.1, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'O SIS não publica faixas de renda para indígenas com essa granularidade.' },
+  { faixa: 'Classe média', branca: 42.8, negra: 29.1, indigena: 18.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'O SIS não publica faixas de renda para indígenas com essa granularidade.' },
+  { faixa: 'Alta renda', branca: 23.6, negra: 9.3, indigena: 5.7, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'O SIS não publica faixas de renda para indígenas com essa granularidade.' }
 ];
 
 // Mulheres chefes de família
@@ -456,7 +456,7 @@ export const juventudeNegra = [
   { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
   { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Cruzamento SIDRA 7113 (desocupação por cor/raça) × SIDRA 9605 (NEET por faixa etária). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
   { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
-  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'SIM/DataSUS 2024', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/', estimativa: true }
+  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'Fiocruz 2025 (processamento SIM/DataSUS)', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/', estimativa: true, metodologiaEstimativa: 'Valor calculado pela Fiocruz a partir de microdados SIM/DataSUS filtrando faixa etária 15-29 × cor/raça × causas externas. O DataSUS não publica esse cruzamento específico em tabela pré-formatada.' }
 ];
 
 // Educação interseccional
@@ -475,9 +475,9 @@ export const educacaoInterseccional = [
 // Os valores "Negra Pobre" e "Negra Média" são ESTIMATIVAS derivadas do cruzamento
 // de indicadores do DataSUS (raça) com faixas de renda do CadÚnico.
 export const saudeInterseccional = [
-  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, estimativa: true },
-  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, estimativa: true },
-  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, estimativa: true }
+  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'DataSUS publica mortalidade materna por raça, mas NÃO por faixa de renda. Valores "Negra Pobre" e "Negra Média" derivados do cruzamento SIM/DataSUS (raça) × CadÚnico (renda).' },
+  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'SINASC publica consultas de pré-natal por raça, mas NÃO por faixa de renda. Cruzamento SINASC (raça) × CadÚnico (renda).' },
+  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'SINASC publica tipo de parto por raça, mas NÃO por faixa de renda. Cruzamento SINASC (raça) × CadÚnico (renda).' }
 ];
 
 // Radar: Vulnerabilidades por grupo
