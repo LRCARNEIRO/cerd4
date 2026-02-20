@@ -513,8 +513,8 @@ export function DeficienciaTab() {
                   <TableRow key={item.raca}>
                     <TableCell className="font-medium">
                       {item.raca}
-                      {(item as any).estimativa && (
-                        <EstimativaBadge tipo="simples" metodologia="Censo 2022 + SIS: o SIS não publica faixas para indígenas com essa granularidade" />
+                      {(item as any).cruzamento && (
+                        <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento} />
                       )}
                     </TableCell>
                     <TableCell className="text-right">{item.taxaDeficiencia}%</TableCell>
@@ -623,7 +623,7 @@ export function JuventudeTab() {
                       <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'Cruzamento de 2+ fontes distintas'} />
                     )}
                     {(item as any).estimativa && !(item as any).cruzamento && (
-                      <EstimativaBadge tipo="simples" metodologia="Proxy etário aplicado sobre dado racial disponível" />
+                      <EstimativaBadge tipo="simples" metodologia={(item as any).metodologiaEstimativa || 'Proxy etário aplicado sobre dado racial disponível'} />
                     )}
                   </div>
                   <p className="text-[10px] text-muted-foreground mb-2">
@@ -709,7 +709,7 @@ export function JuventudeTab() {
                 <li>• Encarceramento: 68,2% dos presos são negros (SISDEPEN 2024)</li>
                 <li className="flex items-center gap-1">
                   • Evasão escolar 2x maior
-                  <EstimativaBadge tipo="simples" className="ml-1" />
+                  <EstimativaBadge tipo="simples" metodologia="Estimativa baseada em proxy etário: INEP publica evasão por raça, mas o recorte jovens negros 15-17 vs brancos requer filtro adicional." className="ml-1" />
                 </li>
               </ul>
             </div>
@@ -764,13 +764,13 @@ export function ClasseSocialTab() {
                   <Legend />
                   <Bar dataKey="branca" name="Branca" fill="hsl(var(--chart-1))" />
                   <Bar dataKey="negra" name="Negra" fill="hsl(var(--chart-2))" />
-                  <Bar dataKey="indigena" name="Indígena ⚠️" fill="hsl(var(--chart-3))" />
+                  <Bar dataKey="indigena" name="Indígena" fill="hsl(var(--chart-3))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
-              <AlertTriangle className="w-3 h-3" />
-              <span>Dados "Indígena" são estimativas (Censo 2022 + SIS); o SIS não publica faixas de renda para indígenas com essa granularidade.</span>
+            <div className="mt-2 flex items-center gap-2">
+              <EstimativaBadge tipo="cruzamento" metodologia="Dados 'Indígena' derivados do cruzamento Censo 2022 (pop. indígena) × SIS/IBGE 2024. O SIS não publica faixas de renda para indígenas com essa granularidade." />
+              <span className="text-[10px] text-muted-foreground">Coluna Indígena: Censo 2022 × SIS/IBGE 2024</span>
             </div>
             <AuditFooter
               fontes={[
@@ -813,9 +813,9 @@ export function ClasseSocialTab() {
                 ))}
               </TableBody>
             </Table>
-            <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
-              <AlertTriangle className="w-3 h-3" />
-              <span>Valores "Negra Pobre" e "Negra Média" são estimativas derivadas do cruzamento DataSUS (raça) × CadÚnico (renda). O DataSUS publica mortalidade materna por raça, mas não por faixa de renda.</span>
+            <div className="mt-2 flex items-center gap-2">
+              <EstimativaBadge tipo="cruzamento" metodologia="Valores 'Negra Pobre' e 'Negra Média' derivados do cruzamento DataSUS (mortalidade por raça) × CadÚnico (faixas de renda). O DataSUS NÃO publica mortalidade materna por faixa de renda." />
+              <span className="text-[10px] text-muted-foreground">DataSUS × CadÚnico</span>
             </div>
             <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
               <p className="text-xs">
@@ -827,6 +827,7 @@ export function ClasseSocialTab() {
               fontes={[
                 { nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
                 { nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+                { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' },
               ]}
               documentos={['CERD 2022']}
             />
@@ -886,9 +887,9 @@ export function ClasseSocialTab() {
               </div>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
-            <AlertTriangle className="w-3 h-3" />
-            <span>Valores derivados de estudos acadêmicos (IPEA/Retrato das Desigualdades + Banco Mundial "A Broken Social Elevator"). Não há publicação oficial brasileira com esses indicadores exatos.</span>
+          <div className="mt-2 flex items-center gap-2">
+            <EstimativaBadge tipo="cruzamento" metodologia="Valores derivados de estudos acadêmicos que cruzam PNAD Contínua (renda × raça) com dados de escolaridade dos pais. Não há publicação oficial brasileira com esses indicadores exatos em formato tabular." />
+            <span className="text-[10px] text-muted-foreground">IPEA/Retrato × Banco Mundial</span>
           </div>
           <AuditFooter
             fontes={[
