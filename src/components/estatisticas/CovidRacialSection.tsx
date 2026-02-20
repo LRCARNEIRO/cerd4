@@ -6,19 +6,39 @@ import {
   LineChart, Line, Legend 
 } from 'recharts';
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp } from 'lucide-react';
+import { AuditFooter } from '@/components/ui/audit-footer';
 
 // =============================================
-// COVID-19 E DESIGUALDADE RACIAL NO BRASIL
-// Fontes oficiais:
-//   - SIM/DataSUS (Sistema de Informação sobre Mortalidade)
-//   - SIVEP-Gripe / Ministério da Saúde
-//   - Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio)
-//   - Raça e Saúde Pública (racaesaude.org.br) - análise sobre SIM/Registro Civil
-//   - Boletim Epidemiológico Especial - SVS/MS
-//   - IPEA - Políticas Sociais: acompanhamento e análise nº 29 (Cap. 8 Igualdade Racial)
-//   - Fiocruz - Informes epidemiológicos
-//   - PNAD COVID-19 (IBGE, 2020)
+// Fontes agrupadas por tema
 // =============================================
+const FONTE_RACA_SAUDE = [
+  { nome: 'Raça e Saúde Pública (SIM/DataSUS)', url: 'https://www.racaesaude.org.br/' },
+  { nome: 'SciELO — A cor da morte na pandemia', url: 'https://www.scielosp.org/article/physis/2024.v34/e34053/' },
+];
+
+const FONTE_SIVEP_NOIS = [
+  { nome: 'SIVEP-Gripe / NOIS PUC-Rio', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+];
+
+const FONTE_DATASUS_SIM = [
+  { nome: 'DataSUS/SIM — Mortalidade Materna', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+];
+
+const FONTE_PNAD_COVID = [
+  { nome: 'PNAD COVID-19 (IBGE, 2020)', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
+  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+];
+
+const FONTE_VACINACAO = [
+  { nome: 'SI-PNI/DataSUS — Cobertura vacinal', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+  { nome: 'Fiocruz/EPSJV — Vacinação e raça', url: 'https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil' },
+];
+
+const FONTE_INTERSECCIONAL = [
+  { nome: 'IPEA — Igualdade Racial e COVID-19', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'SIVEP-Gripe / NOIS PUC-Rio', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'PNAD COVID-19 (IBGE)', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
+];
 
 // Excesso de mortalidade por raça/cor - 2020-2021
 // Fonte: racaesaude.org.br (dados SIM/DataSUS + Registro Civil)
@@ -169,6 +189,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Excesso de Mortalidade Negra (2020)</p>
             <p className="text-2xl font-bold text-destructive">+57%</p>
             <p className="text-xs text-muted-foreground">vs brancos (causas naturais)</p>
+            <AuditFooter fontes={FONTE_RACA_SAUDE} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-2">
@@ -176,6 +197,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Óbitos em Excesso (Negros, 2020)</p>
             <p className="text-2xl font-bold">~36 mil</p>
             <p className="text-xs text-muted-foreground">a mais que o esperado</p>
+            <AuditFooter fontes={FONTE_RACA_SAUDE} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-warning">
@@ -183,6 +205,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
             <p className="text-2xl font-bold text-warning">62%</p>
             <p className="text-xs text-muted-foreground">vs 38% brancos</p>
+            <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-accent">
@@ -190,6 +213,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Mort. Materna Negra (pico 2021)</p>
             <p className="text-2xl font-bold">85,2</p>
             <p className="text-xs text-muted-foreground">por 100 mil NV (+42% vs 2019)</p>
+            <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
           </CardContent>
         </Card>
       </div>
@@ -227,6 +251,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground mt-2">
               Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e brancos (38%).
             </p>
+            <AuditFooter fontes={FONTE_SIVEP_NOIS} documentos={['CERD 2022 §24']} compact />
           </CardContent>
         </Card>
 
@@ -263,6 +288,7 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground mt-2">
               Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
             </p>
+            <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
           </CardContent>
         </Card>
       </div>
@@ -298,6 +324,7 @@ export function CovidRacialSection() {
               ))}
             </TableBody>
           </Table>
+          <AuditFooter fontes={FONTE_PNAD_COVID} documentos={['PNAD COVID 2020', 'IPEA nº 29']} compact />
         </CardContent>
       </Card>
 
@@ -331,6 +358,7 @@ export function CovidRacialSection() {
           <p className="text-xs text-muted-foreground mt-2">
             Indígenas apresentaram a menor cobertura vacinal completa (68,2%), seguidos por pretos (71,5%) e pardos (74,8%).
           </p>
+          <AuditFooter fontes={FONTE_VACINACAO} documentos={['CERD 2022 §24']} compact />
         </CardContent>
       </Card>
 
@@ -357,6 +385,7 @@ export function CovidRacialSection() {
               </div>
             ))}
           </div>
+          <AuditFooter fontes={FONTE_INTERSECCIONAL} documentos={['CERD 2022', 'RG 25']} />
         </CardContent>
       </Card>
 
@@ -386,48 +415,16 @@ export function CovidRacialSection() {
               e renda (PNAD 2022-2023).
             </p>
           </div>
+          <AuditFooter 
+            fontes={[
+              ...FONTE_RACA_SAUDE,
+              ...FONTE_PNAD_COVID,
+            ]} 
+            documentos={['CERD 2022 §24-25', 'RG 25']} 
+            compact 
+          />
         </CardContent>
       </Card>
-
-      {/* Fontes */}
-      <div className="text-xs text-muted-foreground space-y-1 p-3 bg-muted rounded-lg">
-        <p className="font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Fontes oficiais:</p>
-        <p className="ml-4">
-          <a href="https://www.racaesaude.org.br/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            Raça e Saúde Pública — Excesso de mortalidade por raça/cor (SIM/DataSUS) <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://www.scielosp.org/article/physis/2024.v34/e34053/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            SciELO — A cor da morte na pandemia: epidemiologia social crítica e interseccionalidade <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial e COVID-19 <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            Fiocruz/EPSJV — Negros morrem mais por COVID-19 e recebem menos vacinas <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://bigdata-covid19.icict.fiocruz.br/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça/cor <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://covid19.ibge.gov.br/pnad-covid/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            PNAD COVID-19 (IBGE, 2020) — Impactos socioeconômicos <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            SI-PNI/DataSUS — Cobertura vacinal por raça/cor <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-      </div>
     </div>
   );
 }
