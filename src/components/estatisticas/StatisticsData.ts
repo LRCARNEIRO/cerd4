@@ -320,10 +320,12 @@ export const serieAntraTrans = [
 ];
 // Média da série 2017-2025: Negros 77%, Brancos 22%, Indígenas 1%
 
-// LGBTQIA+ por Raça — apenas indicadores com fonte oficial auditável
+// NOTA: Disque 100/ONDH publica microdados como dados abertos (CSV), mas os relatórios
+// publicados NÃO desagregam denúncias LGBTQIA+ por raça/cor. Portanto, o cruzamento
+// LGBT × raça no Disque 100 NÃO é auditável sem processamento dos microdados.
+// Dados abertos: https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100
 export const lgbtqiaPorRaca = [
   { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 26.0, indigenaLGBT: 4.0, fonte: 'ANTRA Dossiê 2026 (dados 2025)', estimativa: false },
-  { indicador: 'Denúncias LGBTfóbicas — vítimas negras (%)', negroLGBT: 58.0, brancoLGBT: 42.0, indigenaLGBT: 0, fonte: 'Disque 100/ONDH 2024', estimativa: true },
 ];
 
 // =============================================

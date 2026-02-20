@@ -457,6 +457,7 @@ export function LgbtqiaTab() {
                 <li>• Ausência de campo orientação sexual no Censo IBGE</li>
                 <li>• Subnotificação de violência LGBTfóbica</li>
                 <li>• Designação post mortem da raça pode ser imprecisa (nota 115 do Dossiê)</li>
+                <li>• Disque 100/ONDH: microdados disponíveis como <a href="https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dados abertos</a>, mas relatórios publicados não desagregam LGBTQIA+ por raça</li>
               </ul>
             </div>
             <AuditFooter
