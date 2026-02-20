@@ -289,19 +289,37 @@ export const deficienciaPorRaca = [
   { raca: 'Indígena', taxaDeficiencia: 8.0, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativa: true }
 ];
 
-// LGBTQIA+ por Raça
-// NOTA: Dados interseccionais LGBT × raça NÃO são publicados oficialmente com essa granularidade.
-// As fontes disponíveis são:
-//   - ANTRA (Dossiê de Assassinatos Trans): publica cor/raça das vítimas trans
-//   - GGB (Relatório de Mortes LGBTI+): publica dados agregados
-//   - Disque 100/ONDH: publica denúncias por tipo, mas sem cruzamento raça × orientação sexual
-// Os valores abaixo são ESTIMATIVAS baseadas no cruzamento de ANTRA 2024 (violência/assassinatos trans)
-// e Disque 100 (denúncias). Desemprego e abandono escolar LGBT por raça não são coletados oficialmente.
+// =============================================
+// LGBTQIA+ — Violência contra Pessoas Trans
+// Fonte: Dossiê ANTRA (Associação Nacional de Travestis e Transexuais)
+// Publicação anual — série histórica completa 2018-2025
+// URLs dos Dossiês:
+//   2019 (dados 2018): https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf
+//   2020 (dados 2019): https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf
+//   2021 (dados 2020): https://antrabrasil.org/wp-content/uploads/2021/01/dossie-trans-2021-29jan2021.pdf
+//   2022 (dados 2021): https://antrabrasil.org/wp-content/uploads/2022/01/dossieantra2022-web.pdf
+//   2023 (dados 2022): https://antrabrasil.org/wp-content/uploads/2023/01/dossieantra2023.pdf
+//   2024 (dados 2023): https://antrabrasil.org/wp-content/uploads/2024/01/dossieantra2024-web.pdf
+//   2025 (dados 2024): https://antrabrasil.org/wp-content/uploads/2025/01/dossie-antra-2025.pdf
+//   2026 (dados 2025): https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf
+// Página oficial: https://antrabrasil.org/assassinatos/
+// =============================================
+
+export const serieAntraTrans = [
+  { ano: 2018, totalAssassinatos: 163, percentualNegras: 82, fonte: 'Dossiê ANTRA 2019 (dados 2018)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
+  { ano: 2019, totalAssassinatos: 124, percentualNegras: 82, fonte: 'Dossiê ANTRA 2020 (dados 2019)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
+  { ano: 2020, totalAssassinatos: 175, percentualNegras: 78, fonte: 'Dossiê ANTRA 2021 (dados 2020)', url: 'https://antrabrasil.org/wp-content/uploads/2021/01/dossie-trans-2021-29jan2021.pdf' },
+  { ano: 2021, totalAssassinatos: 140, percentualNegras: 81, fonte: 'Dossiê ANTRA 2022 (dados 2021)', url: 'https://antrabrasil.org/wp-content/uploads/2022/01/dossieantra2022-web.pdf' },
+  { ano: 2022, totalAssassinatos: 131, percentualNegras: 80, fonte: 'Dossiê ANTRA 2023 (dados 2022)', url: 'https://antrabrasil.org/wp-content/uploads/2023/01/dossieantra2023.pdf' },
+  { ano: 2023, totalAssassinatos: 145, percentualNegras: 78, fonte: 'Dossiê ANTRA 2024 (dados 2023)', url: 'https://antrabrasil.org/wp-content/uploads/2024/01/dossieantra2024-web.pdf' },
+  { ano: 2024, totalAssassinatos: 122, percentualNegras: 73, fonte: 'Dossiê ANTRA 2025 (dados 2024)', url: 'https://antrabrasil.org/wp-content/uploads/2025/01/dossie-antra-2025.pdf' },
+  { ano: 2025, totalAssassinatos: 80, percentualNegras: 70, fonte: 'Dossiê ANTRA 2026 (dados 2025)', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+];
+
+// LGBTQIA+ por Raça — apenas indicadores com fonte oficial auditável
 export const lgbtqiaPorRaca = [
-  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 78.0, brancoLGBT: 22.0, fonte: 'ANTRA Dossiê 2024', estimativa: false },
+  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 26.3, fonte: 'ANTRA Dossiê 2026 (dados 2025)', estimativa: false },
   { indicador: 'Denúncias LGBTfóbicas — vítimas negras (%)', negroLGBT: 58.0, brancoLGBT: 42.0, fonte: 'Disque 100/ONDH 2024', estimativa: true },
-  { indicador: 'Abandono escolar LGBT (%)', negroLGBT: 35.8, brancoLGBT: 18.5, fonte: 'Sem fonte oficial — Estimativa', estimativa: true },
-  { indicador: 'Situação de rua LGBTQIA+ (%)', negroLGBT: 72.5, brancoLGBT: 27.5, fonte: 'Sem fonte oficial — Estimativa', estimativa: true }
 ];
 
 // =============================================
