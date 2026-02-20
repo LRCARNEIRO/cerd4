@@ -8,6 +8,7 @@ import {
   Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AuditFooter } from '@/components/ui/audit-footer';
 import { 
   violenciaInterseccional, 
   mulheresChefeFamilia, 
@@ -435,7 +436,7 @@ export function DeficienciaTab() {
               <Accessibility className="w-5 h-5 text-primary" />
               Pessoas com Deficiência por Raça
             </CardTitle>
-            <CardDescription>Censo 2022 e PNAD Contínua 2024 | Metodologia do Grupo de Washington</CardDescription>
+            <CardDescription>PNAD Contínua 2022 (IBGE) | Metodologia do Grupo de Washington</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -443,16 +444,21 @@ export function DeficienciaTab() {
                 <TableRow>
                   <TableHead>Raça/Cor</TableHead>
                   <TableHead className="text-right">% com Deficiência</TableHead>
-                  <TableHead className="text-right">Empregabilidade</TableHead>
-                  <TableHead className="text-right">Renda Média</TableHead>
+                  <TableHead className="text-right">Nível Ocupação PcD</TableHead>
+                  <TableHead className="text-right">Renda Média PcD</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {deficienciaPorRaca.map(item => (
                   <TableRow key={item.raca}>
-                    <TableCell className="font-medium">{item.raca}</TableCell>
+                    <TableCell className="font-medium">
+                      {item.raca}
+                      {(item as any).estimativa && (
+                        <Badge variant="outline" className="ml-2 text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">{item.taxaDeficiencia}%</TableCell>
-                    <TableCell className={cn("text-right", item.empregabilidade < 35 && "text-destructive font-semibold")}>
+                    <TableCell className={cn("text-right", item.empregabilidade < 25 && "text-destructive font-semibold")}>
                       {item.empregabilidade}%
                     </TableCell>
                     <TableCell className="text-right">{formatCurrency(item.rendaMedia)}</TableCell>
@@ -460,12 +466,20 @@ export function DeficienciaTab() {
                 ))}
               </TableBody>
             </Table>
+            <AuditFooter
+              fontes={[
+                { nome: 'SIDRA 9324 — Prevalência PcD por cor/raça (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' },
+                { nome: 'SIDRA 9339 — Ocupação e rendimento PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9339' },
+              ]}
+              documentos={['CERD 2022', 'Common Core']}
+            />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Disparidades Interseccionais</CardTitle>
+            <CardTitle className="text-base">Disparidades Interseccionais PcD</CardTitle>
+            <CardDescription>Nível de ocupação e prevalência por cor/raça — PNAD Contínua 2022</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -486,37 +500,27 @@ export function DeficienciaTab() {
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="empregabilidade" name="Empregabilidade (%)" fill="hsl(var(--primary))" />
+                  <Bar dataKey="empregabilidade" name="Nível Ocupação PcD (%)" fill="hsl(var(--primary))" />
                   <Bar dataKey="taxaDeficiencia" name="% com Deficiência" fill="hsl(var(--warning))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Dupla desvantagem:</strong> Pessoas negras com deficiência têm taxa de emprego 26% menor que brancos com deficiência, 
-                e renda 31% inferior.
+                <strong>Dupla desvantagem:</strong> Pessoas pretas com deficiência têm nível de ocupação 16% menor
+                e renda 34% inferior às pessoas brancas com deficiência (SIDRA 9339, PNAD 2022).
               </p>
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'SIDRA 9324 — Prevalência PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' },
+                { nome: 'SIDRA 9339 — Ocupação PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9339' },
+                { nome: 'SIDRA 9514 — PcD por tipo de deficiência e cor (Censo 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9514' },
+              ]}
+              documentos={['CERD 2022']}
+            />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Fontes Deficiência */}
-      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
-        </p>
-        <div className="flex flex-wrap gap-3 text-xs">
-          <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SIDRA 9605 — Censo 2022
-          </a>
-          <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/40235-pesquisa-nacional-de-saude-pcd.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> PNS PcD 2019 (IBGE)
-          </a>
-          <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
-          </a>
-        </div>
       </div>
     </div>
   );
