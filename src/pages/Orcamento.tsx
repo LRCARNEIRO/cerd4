@@ -1255,6 +1255,57 @@ export default function Orcamento() {
                           </TableRow>
                         </TableBody>
                       </Table>
+
+                      {/* Listagem completa de palavras-chave */}
+                      <div className="bg-muted/50 rounded-lg p-4 space-y-4 mt-4">
+                        <h5 className="font-semibold text-foreground">📋 Listagem Completa de Radicais e Palavras-Chave</h5>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <p className="font-semibold text-foreground text-xs mb-1">Radicais Unificados (capturam variações morfológicas)</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
+                                <Badge key={r} variant="secondary" className="text-xs font-mono">{r}*</Badge>
+                              ))}
+                            </div>
+                            <p className="text-xs mt-1 italic">Ex: <code>indígen*</code> captura: indígena, indigenista, indígenas, indigenismo.</p>
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-foreground text-xs mb-1">Palavras-Chave Específicas (busca exata)</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {[
+                                'igualdade racial', 'promoção da igualdade', 'racismo', 'racial',
+                                'negro', 'negra', 'afro', 'afrodescendente',
+                                'candomblé', 'umbanda', 'matriz africana', 'terreiro',
+                                'povos tradicionais', 'comunidades tradicionais',
+                                'etnodesenvolvimento', 'saúde indígena',
+                                'povo cigano', 'romani'
+                              ].map(k => (
+                                <Badge key={k} variant="outline" className="text-xs">{k}</Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-destructive text-xs mb-1">🚫 Termos Genéricos Excluídos (evitam falsos positivos)</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {[
+                                'direitos da cidadania', 'direitos individuais coletivos',
+                                'assistência comunitária', 'gestão administrativa',
+                                'administração geral', 'previdência social'
+                              ].map(e => (
+                                <Badge key={e} variant="destructive" className="text-xs opacity-70">{e}</Badge>
+                              ))}
+                            </div>
+                            <p className="text-xs mt-1 italic">Esses termos aparecem em Função/Subfunção genéricas e incluiriam programas universais sem relação com política racial.</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
+                          <p className="text-xs"><strong>Campo de aplicação:</strong> Os radicais e palavras-chave são aplicados exclusivamente sobre os campos <code>programa</code>, <code>orgao</code> e <code>descritivo</code> retornados pela API do Portal da Transparência. O campo <code>publico_alvo</code> é ignorado por conter dados inconsistentes e não-auditáveis. O campo <code>razao_selecao</code> documenta qual critério foi responsável pela inclusão de cada registro.</p>
+                        </div>
+                      </div>
                     </section>
 
                     {/* 3. Exclusões Explícitas */}
