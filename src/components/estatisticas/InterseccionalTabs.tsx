@@ -327,10 +327,24 @@ export function LgbtqiaTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça</h3>
               <p className="text-sm text-muted-foreground">
-                Pessoas LGBTQIA+ negras enfrentam <strong>dupla discriminação</strong>. Em 2024, 68,2% das vítimas de violência LGBTfóbica eram negras (ANTRA 2025). 
+                Pessoas LGBTQIA+ negras enfrentam <strong>dupla discriminação</strong>. Em 2024, 78% das vítimas de assassinatos de pessoas trans eram negras (ANTRA 2024). 
                 O Brasil segue líder mundial em assassinatos de pessoas trans, com mulheres trans negras sendo as mais vulneráveis.
               </p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-l-4 border-l-warning">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              <strong>Limitação metodológica:</strong> Não existem pesquisas oficiais brasileiras que cruzem orientação sexual/identidade de gênero com raça/cor de forma sistemática. 
+              Os dados de violência vêm da ANTRA e Disque 100; indicadores de emprego e educação LGBT por raça <strong>não são coletados oficialmente</strong>. 
+              Itens marcados com <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 mx-1">Estimativa</Badge> 
+              são derivados de fontes não-governamentais ou cruzamentos indiretos.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -342,7 +356,7 @@ export function LgbtqiaTab() {
               <Rainbow className="w-5 h-5 text-primary" />
               Indicadores LGBTQIA+ por Raça (%)
             </CardTitle>
-            <CardDescription>ANTRA/GGB 2024 | Dossiê de Mortes e Violências LGBTI+</CardDescription>
+            <CardDescription>ANTRA 2024 / Disque 100 (ONDH) 2024</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-72">
@@ -365,6 +379,22 @@ export function LgbtqiaTab() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            <div className="mt-2 space-y-1">
+              {lgbtqiaPorRaca.filter((item: any) => item.estimativa).map((item: any, i: number) => (
+                <div key={i} className="flex items-center gap-1 text-[10px] text-warning">
+                  <AlertTriangle className="w-3 h-3" />
+                  <span>"{item.indicador}" — {item.fonte}</span>
+                </div>
+              ))}
+            </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'ANTRA — Dossiê de Assassinatos Trans 2024', url: 'https://antrabrasil.org/assassinatos/' },
+                { nome: 'Disque 100/ONDH — Painel de Dados', url: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados' },
+                { nome: 'GGB — Relatório Mortes LGBTI+', url: 'https://grupogaydabahia.com.br/' },
+              ]}
+              documentos={['CERD 2022']}
+            />
           </CardContent>
         </Card>
 
@@ -377,7 +407,7 @@ export function LgbtqiaTab() {
               <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/30">
                 <p className="text-xs text-muted-foreground">Assassinatos Trans (2024)</p>
                 <p className="text-2xl font-bold text-destructive">145</p>
-                <p className="text-xs text-muted-foreground">79% negras</p>
+                <p className="text-xs text-muted-foreground">78% negras</p>
               </div>
               <div className="p-4 bg-warning/10 rounded-lg border border-warning/30">
                 <p className="text-xs text-muted-foreground">Expectativa de vida Trans</p>
@@ -390,29 +420,16 @@ export function LgbtqiaTab() {
               <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• Ausência de campo orientação sexual no Censo</li>
                 <li>• Subnotificação de violência LGBTfóbica</li>
-                <li>• Não há pesquisa oficial sobre emprego LGBTQIA+</li>
+                <li>• Não há pesquisa oficial sobre emprego LGBTQIA+ por raça</li>
               </ul>
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'ANTRA — Dossiê Trans 2024', url: 'https://antrabrasil.org/assassinatos/' },
+              ]}
+            />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Fontes LGBTQIA+ */}
-      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
-        </p>
-        <div className="flex flex-wrap gap-3 text-xs">
-          <a href="https://antrabrasil.org/assassinatos/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> ANTRA — Dossiê de Assassinatos Trans
-          </a>
-          <a href="https://www.gov.br/mdh/pt-br/ondh/painel-de-dados" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> Disque 100/ONDH — Violência LGBTfóbica
-          </a>
-          <a href="https://grupogaydabahia.com.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> GGB — Relatório Mortes LGBTI+
-          </a>
-        </div>
       </div>
     </div>
   );
@@ -536,8 +553,8 @@ export function JuventudeTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
-                Jovens negros (12-29 anos) representam <strong>56% das vítimas de homicídio</strong> no Brasil. 
-                A taxa de homicídio de jovens negros é <strong>2,78 vezes maior</strong> que a de jovens brancos.
+                Jovens negros (12-29 anos) representam <strong>56% das vítimas de homicídio</strong> no Brasil (19º Anuário FBSP 2025). 
+                A taxa de homicídio de jovens negros é <strong>2,78 vezes maior</strong> que a de jovens brancos (Atlas da Violência 2025).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
@@ -557,7 +574,13 @@ export function JuventudeTab() {
             <div className="space-y-4">
               {juventudeNegra.map(item => (
                 <div key={item.indicador} className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm font-medium mb-2">{item.indicador}</p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-sm font-medium">{item.indicador}</p>
+                    {(item as any).estimativa && (
+                      <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mb-2">Fonte: {item.fonte}</p>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
@@ -587,6 +610,16 @@ export function JuventudeTab() {
                 </div>
               ))}
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+                { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+                { nome: 'SIDRA 7113 — Desocupação por idade e cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
+                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
+                { nome: 'SIM/DataSUS — Mortalidade por causas externas', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+              ]}
+              documentos={['CERD 2022', '19º Anuário FBSP 2025']}
+            />
           </CardContent>
         </Card>
 
@@ -598,47 +631,41 @@ export function JuventudeTab() {
             <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
               <p className="text-sm font-medium text-success mb-2">Avanços 2023-2025:</p>
               <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Orçamento: R$ 45M → R$ 285M (aumento de 533%)</li>
-                <li>• 15 estados aderiram ao programa</li>
-                <li>• 180 municípios com ações focalizadas</li>
                 <li>• Criação do Plano Nacional (Decreto 11.786/2023)</li>
+                <li className="flex items-center gap-1">
+                  • Orçamento: R$ 45M → R$ 285M (aumento de 533%)
+                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem deep link SIOP</Badge>
+                </li>
+                <li className="flex items-center gap-1">
+                  • 15 estados aderiram ao programa
+                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem fonte oficial</Badge>
+                </li>
+                <li className="flex items-center gap-1">
+                  • 180 municípios com ações focalizadas
+                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem fonte oficial</Badge>
+                </li>
               </ul>
             </div>
             <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
               <p className="text-sm font-medium text-warning mb-2">Desafios Persistentes:</p>
               <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Taxa de homicídio ainda 2,55x maior</li>
-                <li>• Letalidade policial: 83% das vítimas são negras</li>
-                <li>• Encarceramento massivo de jovens negros</li>
-                <li>• Evasão escolar 2x maior</li>
+                <li>• Taxa de homicídio ainda 2,78x maior (Atlas 2025)</li>
+                <li>• Letalidade policial: 83% das vítimas são negras (19º Anuário FBSP 2025)</li>
+                <li>• Encarceramento: 68,2% dos presos são negros (SISDEPEN 2024)</li>
+                <li className="flex items-center gap-1">
+                  • Evasão escolar 2x maior
+                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Estimativa</Badge>
+                </li>
               </ul>
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'Decreto 11.786/2023 — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/D11786.htm' },
+              ]}
+              documentos={['CERD 2022']}
+            />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Fontes Juventude */}
-      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
-        </p>
-        <div className="flex flex-wrap gap-3 text-xs">
-          <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> Atlas da Violência 2025 (IPEA)
-          </a>
-          <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
-          </a>
-          <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
-          </a>
-          <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SISDEPEN/SENAPPEN
-          </a>
-          <a href="https://www.fiocruz.br" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> Fiocruz — Informe Epidemiológico Juventude
-          </a>
-        </div>
       </div>
     </div>
   );
@@ -662,7 +689,7 @@ export function ClasseSocialTab() {
               <Briefcase className="w-5 h-5 text-primary" />
               Distribuição por Faixa de Renda × Raça (%)
             </CardTitle>
-            <CardDescription>PNAD Contínua 2024 | Linhas de pobreza: Banco Mundial</CardDescription>
+            <CardDescription>SIS/IBGE 2024 | Linhas de pobreza: Banco Mundial</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-72">
@@ -682,16 +709,31 @@ export function ClasseSocialTab() {
                   <Legend />
                   <Bar dataKey="branca" name="Branca" fill="hsl(var(--chart-1))" />
                   <Bar dataKey="negra" name="Negra" fill="hsl(var(--chart-2))" />
-                  <Bar dataKey="indigena" name="Indígena" fill="hsl(var(--chart-3))" />
+                  <Bar dataKey="indigena" name="Indígena ⚠️" fill="hsl(var(--chart-3))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
+              <AlertTriangle className="w-3 h-3" />
+              <span>Dados "Indígena" são estimativas (Censo 2022 + SIS); o SIS não publica faixas de renda para indígenas com essa granularidade.</span>
+            </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+                { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
+              ]}
+              documentos={['CERD 2022', 'Common Core']}
+            />
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Saúde × Raça × Classe</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              Saúde × Raça × Classe
+              <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativas</Badge>
+            </CardTitle>
+            <CardDescription>Cruzamento raça × classe não é publicado diretamente pelo DataSUS</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -716,41 +758,36 @@ export function ClasseSocialTab() {
                 ))}
               </TableBody>
             </Table>
+            <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
+              <AlertTriangle className="w-3 h-3" />
+              <span>Valores "Negra Pobre" e "Negra Média" são estimativas derivadas do cruzamento DataSUS (raça) × CadÚnico (renda). O DataSUS publica mortalidade materna por raça, mas não por faixa de renda.</span>
+            </div>
             <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
               <p className="text-xs">
-                <strong>Intersecção crítica:</strong> Mulheres negras pobres têm mortalidade materna 2,7x maior que mulheres brancas, 
-                evidenciando como raça e classe se combinam.
+                <strong>Intersecção crítica:</strong> Mulheres negras têm mortalidade materna 2,7x maior que mulheres brancas (SIM/DataSUS 2024), 
+                evidenciando como raça se combina com determinantes sociais.
               </p>
             </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+                { nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+              ]}
+              documentos={['CERD 2022']}
+            />
           </CardContent>
         </Card>
       </div>
 
-      {/* Fontes Classe Social */}
-      <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
-        </p>
-        <div className="flex flex-wrap gap-3 text-xs">
-          <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
-          </a>
-          <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> SIS/IBGE — Síntese de Indicadores Sociais
-          </a>
-          <a href="https://www.ipea.gov.br/retrato/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> IPEA — Retrato das Desigualdades
-          </a>
-          <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-            <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Mortalidade materna
-          </a>
-        </div>
-      </div>
-
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Mobilidade Social Intergeracional por Raça</CardTitle>
-          <CardDescription>IPEA/Retrato das Desigualdades 2024 | Estudo de coortes 1980-2020</CardDescription>
+          <CardTitle className="text-base flex items-center gap-2">
+            Mobilidade Social Intergeracional por Raça
+            <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30">Estimativa</Badge>
+          </CardTitle>
+          <CardDescription>
+            Dados derivados de estudos do IPEA e Banco Mundial. Não há publicação oficial com esses valores exatos em formato tabular.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -794,6 +831,17 @@ export function ClasseSocialTab() {
               </div>
             </div>
           </div>
+          <div className="mt-2 flex items-center gap-1 text-[10px] text-warning">
+            <AlertTriangle className="w-3 h-3" />
+            <span>Valores derivados de estudos acadêmicos (IPEA/Retrato das Desigualdades + Banco Mundial "A Broken Social Elevator"). Não há publicação oficial brasileira com esses indicadores exatos.</span>
+          </div>
+          <AuditFooter
+            fontes={[
+              { nome: 'IPEA — Retrato das Desigualdades', url: 'https://www.ipea.gov.br/retrato/' },
+              { nome: 'SIS/IBGE — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+            ]}
+            documentos={['CERD 2022']}
+          />
         </CardContent>
       </Card>
     </div>
