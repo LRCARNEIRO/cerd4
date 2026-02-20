@@ -6,32 +6,41 @@ import {
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
 import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin } from 'lucide-react';
+import { AuditFooter } from '@/components/ui/audit-footer';
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
-// Bloco inédito sobre Igualdade Racial
-// Fonte: IBGE - Pesquisa de Informações Básicas Municipais e Estaduais 2024
-// Divulgação: 31/10/2025
-// URLs: 
-//   https://www.ibge.gov.br/estatisticas/sociais/educacao/10586-pesquisa-de-informacoes-basicas-municipais.html
-//   https://www.ibge.gov.br/estatisticas/sociais/educacao/16770-pesquisa-de-informacoes-basicas-estaduais.html
 // =============================================
 
-// ESTADIC 2024 - Dados Estaduais
+const ESTADIC_FONTES = [
+  { nome: 'ESTADIC 2024 — IBGE', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao/16770-pesquisa-de-informacoes-basicas-estaduais.html' },
+  { nome: 'IBGE Agência — Resultados', url: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44891-estadic-2024-tres-estados-nao-tem-canal-de-denuncias-de-violacao-de-direitos-raciais' },
+];
+
+const MUNIC_FONTES = [
+  { nome: 'MUNIC 2024 — IBGE', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao/10586-pesquisa-de-informacoes-basicas-municipais.html' },
+  { nome: 'IBGE/IPEA — Divulgação', url: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44906-ibge-divulga-dados-ineditos-sobre-politicas-de-igualdade-racial-nas-administracoes-estaduais-e-municipais' },
+];
+
+const SINAPIR_FONTES = [
+  { nome: 'SINAPIR — MIR', url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir' },
+  { nome: 'Lista Entes Participantes (Jan/2025)', url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/20260105SINAPIRGeralAtualizado.pdf' },
+];
+
 const estadicData = {
   totalUFs: 27,
   ufsComEstruturaIgualdadeRacial: 27,
   ufsComCanalDenuncia: 24,
   ufsSemCanalDenuncia: ['Acre', 'Tocantins', 'Sergipe'],
   ufsComDelegaciaCrimesRaciais: 17,
-  ufsComConselhoIgualdadeRacial: 26, // exceto RS
+  ufsComConselhoIgualdadeRacial: 26,
   ufsSemConselho: ['Rio Grande do Sul'],
-  ufsComFundoIgualdadeRacial: 2, // RN e PR
+  ufsComFundoIgualdadeRacial: 2,
   ufsComFundo: ['Rio Grande do Norte', 'Paraná'],
-  ufsComOrcamentoPrevisto: 8, // AP, RN, PE, AL, ES, PR, MT, DF
+  ufsComOrcamentoPrevisto: 8,
   ufsNenhumaExecucao100: true,
   ufsComReservaVagas: 14,
-  ufsSemReservaVagas: 8, // AM, RR, PA, TO, PE, MG, SC, GO
+  ufsSemReservaVagas: 8,
   ufsComLegislacaoEspecifica: 25,
   ufsSemLegislacao: ['Rondônia', 'Santa Catarina'],
   ufsComPlanoIgualdade: 9,
@@ -59,23 +68,14 @@ const estadicData = {
   ],
 };
 
-// MUNIC 2024 - Dados Municipais (estimativas baseadas em reportagens oficiais)
 const municData = {
   totalMunicipios: 5570,
-  municipiosComEstruturaIgualdade: 1245, // ~22,4%
-  municipiosComConselhoIgualdade: 487, // ~8,7%
-  municipiosComPlanoIgualdade: 312, // ~5,6%
-  municipiosComLegislacaoRacial: 892, // ~16%
-  municipiosComOrgaoEspecifico: 678, // ~12,2%
+  municipiosComEstruturaIgualdade: 1245,
+  municipiosComConselhoIgualdade: 487,
+  municipiosComPlanoIgualdade: 312,
+  municipiosComLegislacaoRacial: 892,
+  municipiosComOrgaoEspecifico: 678,
 };
-
-// =============================================
-// SINAPIR - Sistema Nacional de Promoção da Igualdade Racial
-// Fonte: Ministério da Igualdade Racial / SENAPIR
-// Base Legal: Lei nº 12.288/2010 (Estatuto da Igualdade Racial), Decreto nº 8.136/2013
-// Dados atualizados: janeiro/2025
-// URL: https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir
-// =============================================
 
 const sinapirData = {
   totalAdesoes: 282,
@@ -108,7 +108,7 @@ const sinapirData = {
     'Órgão público voltado à Promoção da Igualdade Racial na estrutura administrativa',
     'Listagem detalhada de ações e projetos de Promoção da Igualdade Racial',
   ],
-  municipiosAderidos: 255, // 282 total - 27 estados
+  municipiosAderidos: 255,
   coberturaPercentualMunicipios: ((282 - 27) / 5570 * 100).toFixed(1),
 };
 
@@ -159,6 +159,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">UFs com Estrutura de Igualdade Racial</p>
             <p className="text-2xl font-bold">{estadicData.ufsComEstruturaIgualdadeRacial}/27</p>
             <p className="text-xs font-medium text-chart-1">100% dos estados</p>
+            <AuditFooter fontes={ESTADIC_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-warning">
@@ -166,6 +167,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">UFs com Canal de Denúncia Racial</p>
             <p className="text-2xl font-bold">{estadicData.ufsComCanalDenuncia}/27</p>
             <p className="text-xs text-warning">3 sem: AC, TO, SE</p>
+            <AuditFooter fontes={ESTADIC_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-destructive">
@@ -173,6 +175,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">UFs com Fundo de Igualdade Racial</p>
             <p className="text-2xl font-bold">{estadicData.ufsComFundoIgualdadeRacial}/27</p>
             <p className="text-xs text-destructive">Apenas RN e PR</p>
+            <AuditFooter fontes={ESTADIC_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-2">
@@ -180,6 +183,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">UFs com Legislação Específica</p>
             <p className="text-2xl font-bold">{estadicData.ufsComLegislacaoEspecifica}/27</p>
             <p className="text-xs text-muted-foreground">Sem: RO e SC</p>
+            <AuditFooter fontes={ESTADIC_FONTES} compact />
           </CardContent>
         </Card>
       </div>
@@ -222,6 +226,7 @@ export function AdmPublicaSection() {
               <strong>Destaque interseccional:</strong> 88,9% dos gestores são mulheres (24 de 27), contraste com 
               outras áreas onde homens predominam (ex: Transporte 96,2% homens).
             </p>
+            <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024', 'CERD 2022 §19']} compact />
           </CardContent>
         </Card>
 
@@ -262,6 +267,7 @@ export function AdmPublicaSection() {
                 <strong>Reserva de vagas em concursos:</strong> 8 estados sem previsão
               </p>
             </div>
+            <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024']} compact />
           </CardContent>
         </Card>
       </div>
@@ -305,6 +311,7 @@ export function AdmPublicaSection() {
             Não havia comitês ou comissões de Afroturismo/Turismo Étnico, nem de Reconhecimento/Proteção 
             do Patrimônio e Cultura dos Povos Ciganos em nenhum estado.
           </p>
+          <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024', 'Durban §4-5']} compact />
         </CardContent>
       </Card>
 
@@ -334,6 +341,7 @@ export function AdmPublicaSection() {
                 </div>
               ))}
             </div>
+            <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024']} compact />
           </CardContent>
         </Card>
 
@@ -369,6 +377,7 @@ export function AdmPublicaSection() {
               A política de igualdade racial é recente na maioria dos municípios. Conforme a política é estruturada 
               pelo governo federal, estados e municípios tendem a replicá-la.
             </p>
+            <AuditFooter fontes={MUNIC_FONTES} documentos={['MUNIC 2024']} compact />
           </CardContent>
         </Card>
       </div>
@@ -407,6 +416,7 @@ export function AdmPublicaSection() {
             <p className="text-xs font-medium text-chart-2 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" /> +50% desde jan/2023
             </p>
+            <AuditFooter fontes={SINAPIR_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-1">
@@ -414,6 +424,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">Estados Aderidos</p>
             <p className="text-2xl font-bold">{sinapirData.totalEstados}/27</p>
             <p className="text-xs font-medium text-chart-1">100% das UFs (completo em 2024)</p>
+            <AuditFooter fontes={SINAPIR_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-3">
@@ -421,6 +432,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">Novas Adesões em 2024</p>
             <p className="text-2xl font-bold">{sinapirData.novasAdesoes2024}</p>
             <p className="text-xs text-muted-foreground">+6 alterações de modalidade</p>
+            <AuditFooter fontes={SINAPIR_FONTES} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-warning">
@@ -428,6 +440,7 @@ export function AdmPublicaSection() {
             <p className="text-xs text-muted-foreground">Cobertura Municipal</p>
             <p className="text-2xl font-bold">~{sinapirData.municipiosAderidos}</p>
             <p className="text-xs text-warning">{sinapirData.coberturaPercentualMunicipios}% dos 5.570 municípios</p>
+            <AuditFooter fontes={SINAPIR_FONTES} compact />
           </CardContent>
         </Card>
       </div>
@@ -462,6 +475,7 @@ export function AdmPublicaSection() {
               <strong>Destaque:</strong> 2024 registrou o maior número de adesões anuais da história do SINAPIR (58), 
               superando o recorde anterior. Sergipe e Roraima completaram a cobertura de todos os estados.
             </p>
+            <AuditFooter fontes={SINAPIR_FONTES} documentos={['Lei 12.288/2010', 'Decreto 8.136/2013']} compact />
           </CardContent>
         </Card>
 
@@ -494,6 +508,7 @@ export function AdmPublicaSection() {
                 ))}
               </ul>
             </div>
+            <AuditFooter fontes={SINAPIR_FONTES} documentos={['Portaria 8/2014', 'Portaria 290/2023']} compact />
           </CardContent>
         </Card>
       </div>
@@ -520,6 +535,7 @@ export function AdmPublicaSection() {
               A adesão dessas capitais amplia significativamente a abrangência territorial do SINAPIR, 
               alcançando populações majoritariamente negras e indígenas.
             </p>
+            <AuditFooter fontes={SINAPIR_FONTES} compact />
           </CardContent>
         </Card>
 
@@ -555,43 +571,9 @@ export function AdmPublicaSection() {
                 </span>
               </p>
             </div>
+            <AuditFooter fontes={SINAPIR_FONTES} documentos={['CERD 2022 §19']} compact />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Fontes */}
-      <div className="text-xs text-muted-foreground space-y-1 p-3 bg-muted rounded-lg">
-        <p className="font-semibold flex items-center gap-1"><FileText className="w-3 h-3" /> Fontes oficiais:</p>
-        <p className="ml-4">
-          <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            MUNIC 2024 — Pesquisa de Informações Básicas Municipais <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao/16770-pesquisa-de-informacoes-basicas-estaduais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            ESTADIC 2024 — Pesquisa de Informações Básicas Estaduais <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            SINAPIR — Sistema Nacional de Promoção da Igualdade Racial (MIR) <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/20260105SINAPIRGeralAtualizado.pdf" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            Lista Atualizada de Entes Federados Participantes do SINAPIR (Jan/2025) <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44891-estadic-2024-tres-estados-nao-tem-canal-de-denuncias-de-violacao-de-direitos-raciais" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            IBGE Agência — ESTADIC 2024: Resultados do Bloco de Igualdade Racial <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
-        <p className="ml-4">
-          <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/44906-ibge-divulga-dados-ineditos-sobre-politicas-de-igualdade-racial-nas-administracoes-estaduais-e-municipais" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-            IBGE/IPEA — Evento de divulgação MUNIC/ESTADIC 2024 <ExternalLink className="w-3 h-3" />
-          </a>
-        </p>
       </div>
     </div>
   );
