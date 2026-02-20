@@ -619,11 +619,23 @@ export function JuventudeTab() {
                 <div key={item.indicador} className="p-4 bg-muted rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-sm font-medium">{item.indicador}</p>
-                    {(item as any).estimativa && (
+                    {(item as any).cruzamento && (
+                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'Cruzamento de 2+ fontes distintas'} />
+                    )}
+                    {(item as any).estimativa && !(item as any).cruzamento && (
                       <EstimativaBadge tipo="simples" metodologia="Proxy etário aplicado sobre dado racial disponível" />
                     )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mb-2">Fonte: {item.fonte}</p>
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    Fonte: {(item as any).cruzamento && (item as any).fontesCruzamento ? (
+                      (item as any).fontesCruzamento.map((f: any, i: number) => (
+                        <span key={i}>
+                          {i > 0 && ' × '}
+                          <a href={f.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{f.nome}</a>
+                        </span>
+                      ))
+                    ) : item.fonte}
+                  </p>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
