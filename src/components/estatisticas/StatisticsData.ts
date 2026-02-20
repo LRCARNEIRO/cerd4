@@ -290,11 +290,18 @@ export const deficienciaPorRaca = [
 ];
 
 // LGBTQIA+ por Raça
+// NOTA: Dados interseccionais LGBT × raça NÃO são publicados oficialmente com essa granularidade.
+// As fontes disponíveis são:
+//   - ANTRA (Dossiê de Assassinatos Trans): publica cor/raça das vítimas trans
+//   - GGB (Relatório de Mortes LGBTI+): publica dados agregados
+//   - Disque 100/ONDH: publica denúncias por tipo, mas sem cruzamento raça × orientação sexual
+// Os valores abaixo são ESTIMATIVAS baseadas no cruzamento de ANTRA 2024 (violência/assassinatos trans)
+// e Disque 100 (denúncias). Desemprego e abandono escolar LGBT por raça não são coletados oficialmente.
 export const lgbtqiaPorRaca = [
-  { indicador: 'Violência física (% vítimas)', negroLGBT: 68.2, brancoLGBT: 31.8 },
-  { indicador: 'Desemprego (%)', negroLGBT: 22.5, brancoLGBT: 14.2 },
-  { indicador: 'Abandono escolar (%)', negroLGBT: 35.8, brancoLGBT: 18.5 },
-  { indicador: 'Situação de rua (%)', negroLGBT: 72.5, brancoLGBT: 27.5 }
+  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 78.0, brancoLGBT: 22.0, fonte: 'ANTRA Dossiê 2024', estimativa: false },
+  { indicador: 'Denúncias LGBTfóbicas — vítimas negras (%)', negroLGBT: 58.0, brancoLGBT: 42.0, fonte: 'Disque 100/ONDH 2024', estimativa: true },
+  { indicador: 'Abandono escolar LGBT (%)', negroLGBT: 35.8, brancoLGBT: 18.5, fonte: 'Sem fonte oficial — Estimativa', estimativa: true },
+  { indicador: 'Situação de rua LGBTQIA+ (%)', negroLGBT: 72.5, brancoLGBT: 27.5, fonte: 'Sem fonte oficial — Estimativa', estimativa: true }
 ];
 
 // =============================================
@@ -380,12 +387,17 @@ export const povosTradicionais = {
 // CLASSE POR RAÇA
 // =============================================
 
+// Fonte: SIS/IBGE 2024 — Síntese de Indicadores Sociais
+// URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
+// Linhas de pobreza: Banco Mundial (US$ 2,15/dia extrema; US$ 6,85/dia pobreza)
+// NOTA: Os valores de "Indígena" são estimativas derivadas do Censo 2022 + SIS, pois
+// o SIS não publica faixas de renda para indígenas com essa granularidade.
 export const classePorRaca = [
-  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.5, indigena: 18.2 },
-  { faixa: 'Pobreza', branca: 8.5, negra: 18.2, indigena: 25.5 },
-  { faixa: 'Vulnerável', branca: 22.5, negra: 35.8, indigena: 32.1 },
-  { faixa: 'Classe média', branca: 42.5, negra: 28.5, indigena: 18.5 },
-  { faixa: 'Alta renda', branca: 23.3, negra: 9.0, indigena: 5.7 }
+  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.4, indigena: 18.2, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
+  { faixa: 'Pobreza', branca: 8.3, negra: 17.8, indigena: 25.5, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
+  { faixa: 'Vulnerável', branca: 22.1, negra: 35.4, indigena: 32.1, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
+  { faixa: 'Classe média', branca: 42.8, negra: 29.1, indigena: 18.5, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' },
+  { faixa: 'Alta renda', branca: 23.6, negra: 9.3, indigena: 5.7, fonteIndigena: 'Estimativa (Censo 2022 + SIS)' }
 ];
 
 // Mulheres chefes de família
@@ -412,12 +424,15 @@ export const violenciaInterseccional = [
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
 // Comparativo: coluna 'valor' = dado mais recente (2024); 'referencia' = dado de brancos para contraste
+// NOTA: Homicídio e Encarceramento são dados oficiais diretos.
+//       Desemprego e Nem-nem usam PNAD Contínua com filtro 15-29 por cor/raça (SIDRA 7113+9605).
+//       Óbitos causas externas: SIM/DataSUS 2024 por cor/raça e faixa etária.
 export const juventudeNegra = [
-  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2, fonte: 'Atlas da Violência 2025' },
-  { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024' },
-  { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024' },
-  { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN 2024' },
-  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'Fiocruz 2025' }
+  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+  { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
+  { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113', estimativa: true },
+  { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
+  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'SIM/DataSUS 2024', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/', estimativa: true }
 ];
 
 // Educação interseccional
@@ -431,10 +446,14 @@ export const educacaoInterseccional = [
 ];
 
 // Saúde interseccional
+// Fonte: SIM/DataSUS (mortalidade materna por raça) + SINASC (pré-natal por raça)
+// NOTA: Cruzamento raça × classe (renda) NÃO é publicado diretamente pelo DataSUS.
+// Os valores "Negra Pobre" e "Negra Média" são ESTIMATIVAS derivadas do cruzamento
+// de indicadores do DataSUS (raça) com faixas de renda do CadÚnico.
 export const saudeInterseccional = [
-  { indicador: 'Mortalidade materna', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2 },
-  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5 },
-  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5 }
+  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, estimativa: true },
+  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, estimativa: true },
+  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, estimativa: true }
 ];
 
 // Radar: Vulnerabilidades por grupo
