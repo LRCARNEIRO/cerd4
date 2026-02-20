@@ -263,10 +263,10 @@ export function EstadualRelatorioTab({ records, formatCurrency, formatCurrencyFu
             <TableHeader>
               <TableRow>
                 <TableHead>Bloco / UF</TableHead>
-                <TableHead className="text-right">Dotação P1</TableHead>
-                <TableHead className="text-right">Exec. P1 (%)</TableHead>
-                <TableHead className="text-right">Dotação P2</TableHead>
-                <TableHead className="text-right">Exec. P2 (%)</TableHead>
+                <TableHead className="text-right">Dotação 2018–2022</TableHead>
+                <TableHead className="text-right">Exec. 2018–2022 (%)</TableHead>
+                <TableHead className="text-right">Dotação 2023–2025</TableHead>
+                <TableHead className="text-right">Exec. 2023–2025 (%)</TableHead>
                 <TableHead className="text-right">Registros</TableHead>
               </TableRow>
             </TableHeader>
