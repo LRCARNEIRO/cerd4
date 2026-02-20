@@ -1190,126 +1190,226 @@ export default function Orcamento() {
               <CardContent className="space-y-6 text-sm text-muted-foreground">
                 {esfera === 'federal' && (
                   <>
-                    {/* 1. Estratégia de Coleta */}
+                    {/* 1. Estratégia de Coleta em 4 Camadas */}
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">1. Estratégia Híbrida de Coleta de Dados</h4>
+                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta em 4 Camadas</h4>
                       <p>A base orçamentária federal (2018–2025) utiliza uma estratégia híbrida de coleta:</p>
-                      <ul className="list-disc pl-5 space-y-1">
-                        <li><strong>API REST do Portal da Transparência (CGU):</strong> Fornece dados de execução orçamentária — valor empenhado, liquidado e pago — com granularidade por ação, programa e órgão.</li>
-                        <li><strong>Arquivos ZIP/CSV do portal de dados abertos (LOA):</strong> Complementam a base com dados de dotação (inicial e autorizada).</li>
-                        <li><strong>Upload manual via CSV:</strong> Permite preenchimento de lacunas identificadas na API.</li>
-                      </ul>
-                    </section>
-
-                    {/* 2. Camadas de Filtragem */}
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">2. Metodologia de Filtragem em Quatro Camadas</h4>
                       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 1 — Programas Temáticos do PPA</h5>
-                          <p>Consulta direta por código de programa finalístico: <code>2034</code>, <code>5034</code>, <code>0617</code>, <code>2065</code>, <code>5136</code>, <code>5802</code>/<code>5803</code>/<code>5804</code>.</p>
+                          <p>Consulta direta por código de programa finalístico: <code>2034</code> (SEPPIR), <code>5034</code> (MDHC), <code>0617</code>/<code>2065</code>/<code>5136</code> (indígenas), <code>5802</code>/<code>5803</code>/<code>5804</code> (MIR 2024+).</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 2 — Subfunção 422</h5>
-                          <p>Direitos Individuais, Coletivos e Difusos. Validados por palavras-chave raciais/étnicas.</p>
+                          <h5 className="font-semibold text-foreground">Camada 2 — Órgãos com Mandato Direto</h5>
+                          <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. Para 2018–2022: órgãos predecessores.</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 3 — Órgãos com Mandato Direto</h5>
-                          <p>MIR (67000) e MPI (92000). Para 2018–2022: SEPPIR, FUNAI e INCRA.</p>
+                          <h5 className="font-semibold text-foreground">Camada 3 — Ações Estratégicas</h5>
+                          <p>SESAI (<code>20YP</code> e <code>7684</code>), Quilombolas (<code>20G7</code>, <code>0859</code>, <code>6440</code>), Subfunção 422.</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 4 — Ações Específicas SESAI</h5>
-                          <p>Consulta direta por código de ação (<code>20YP</code> e <code>7684</code>).</p>
+                          <h5 className="font-semibold text-foreground">Camada 4 — Dotação via Dados Abertos</h5>
+                          <p>Arquivos ZIP/CSV do portal de dados abertos (LOA) complementam a base com dotação (inicial e autorizada), processados pela edge function <code>ingest-dotacao-loa</code>.</p>
                         </div>
                       </div>
+                      <p className="text-xs mt-2">A mesclagem ocorre por par <strong>Programa–Ação × Ano</strong>, consolidando valores de execução (API) e dotação (LOA) em um único registro.</p>
                     </section>
 
-                    {/* 3. Classificação Temática */}
+                    {/* 2. Classificação por Campos Reais */}
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">3. Classificação Temática — Campos Reais da API</h4>
-                      <p>A classificação utiliza <strong>exclusivamente</strong> campos reais: <code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code>.</p>
+                      <h4 className="font-semibold text-foreground text-base">2. Classificação Temática — Campos Reais da API</h4>
+                      <p>A classificação utiliza <strong>exclusivamente</strong> campos reais: <code className="bg-muted px-1 rounded">programa</code>, <code className="bg-muted px-1 rounded">orgao</code> e <code className="bg-muted px-1 rounded">descritivo</code>. O campo <code className="bg-muted px-1 rounded">publico_alvo</code> é <strong>ignorado</strong> por conter dados inconsistentes na API.</p>
                       <Table>
                         <TableHeader>
                           <TableRow>
                             <TableHead>Categoria</TableHead>
                             <TableHead>Critérios</TableHead>
+                            <TableHead>Radicais de Filtragem</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           <TableRow>
                             <TableCell className="font-medium">Política Racial</TableCell>
                             <TableCell>MIR, MDHC, SEPPIR; 5034 filtrado por palavras-chave</TableCell>
+                            <TableCell><code className="text-xs">racial, racismo, negro/a, afro, palmares, igualdade racial</code></TableCell>
                           </TableRow>
                           <TableRow>
                             <TableCell className="font-medium">Povos Indígenas</TableCell>
                             <TableCell>FUNAI, MPI; Programas 2065 → 0617 → 5136</TableCell>
+                            <TableCell><code className="text-xs">indígen, funai, etnodesenvolvimento</code></TableCell>
                           </TableRow>
                           <TableRow>
                             <TableCell className="font-medium">Quilombolas</TableCell>
-                            <TableCell>INCRA; Ações 20G7, 0859; Programa 5802</TableCell>
+                            <TableCell>INCRA; Ações 20G7, 0859, 6440; Programa 5802</TableCell>
+                            <TableCell><code className="text-xs">quilombol, palmares, terreiro, matriz africana</code></TableCell>
                           </TableRow>
                           <TableRow>
-                            <TableCell className="font-medium">SESAI</TableCell>
+                            <TableCell className="font-medium">SESAI (separada)</TableCell>
                             <TableCell>Ações 20YP e 7684 (~R$ 1,3–1,5 bi/ano)</TableCell>
+                            <TableCell><code className="text-xs">saúde indígena, sesai</code></TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Ciganos/Romani</TableCell>
+                            <TableCell>Ações com radicais específicos</TableCell>
+                            <TableCell><code className="text-xs">cigano, romani, povo cigano</code></TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>
                     </section>
 
-                    {/* 4. SESAI */}
+                    {/* 3. Exclusões Explícitas */}
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">4. SESAI — Detalhamento Técnico</h4>
-                      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                        <div>
-                          <h5 className="font-semibold text-foreground">Mudanças de Código entre PPAs</h5>
-                          <ul className="list-disc pl-5 space-y-1 mt-1">
-                            <li><strong>PPA 2016-2019 (2065):</strong> SESAI vinculada ao programa indígena.</li>
-                            <li><strong>PPA 2020-2023 (5022):</strong> Migrou para programa genérico de Saúde. Camada 4 criada.</li>
-                            <li><strong>PPA 2024-2027 (5022):</strong> Estrutura mantida.</li>
+                      <h4 className="font-semibold text-foreground text-base">3. Exclusões Explícitas</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-destructive/10 rounded-lg p-4 space-y-2 border border-destructive/30">
+                          <p className="text-sm font-semibold text-destructive">❌ Programas Universais Excluídos</p>
+                          <ul className="text-xs list-disc pl-4 space-y-0.5">
+                            <li><strong>Bolsa Família / Auxílio Brasil</strong></li>
+                            <li><strong>Minha Casa Minha Vida</strong></li>
+                            <li><strong>Educação Superior (genérico)</strong></li>
+                            <li><strong>SUS / SUAS (não-SESAI)</strong></li>
                           </ul>
+                        </div>
+                        <div className="bg-destructive/10 rounded-lg p-4 space-y-2 border border-destructive/30">
+                          <p className="text-sm font-semibold text-destructive">❌ Ações Genéricas do MDHC (2020–2022)</p>
+                          <ul className="text-xs list-disc pl-4 space-y-0.5">
+                            <li><strong>00SN</strong> — Casas da Mulher Brasileira</li>
+                            <li><strong>00SO</strong> — Socioeducativo</li>
+                            <li><strong>0E85</strong> — Subsídios genéricos</li>
+                            <li><strong>14XS</strong> — Gestão administrativa</li>
+                            <li><strong>21AR–21AU</strong> — Ações sem palavras-chave raciais</li>
+                          </ul>
+                          <p className="text-xs italic mt-2">Bypass temporal: ações rotuladas retroativamente como MIR na API, mas sem caráter racial, são filtradas.</p>
                         </div>
                       </div>
                     </section>
 
-                    {/* 5. Exclusões 5034 */}
+                    {/* 4. Detalhamento Técnico SESAI */}
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">5. Exclusões do Programa 5034/MDHC</h4>
-                      <p>O 5034 foi guarda-chuva do MDHC. Apenas ações com palavras-chave raciais nos campos reais são incluídas.</p>
-                      <div className="bg-destructive/10 rounded-lg p-3 mt-2 space-y-2">
-                        <p className="text-xs text-destructive font-semibold">Ações explicitamente excluídas:</p>
-                        <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
-                          <li><strong>0E85</strong> — Subsídios genéricos</li>
-                          <li><strong>14XS</strong> — Gestão administrativa</li>
-                          <li><strong>00SN</strong> — Casas da Mulher Brasileira</li>
-                          <li><strong>00SO</strong> — Socioeducativo (corrigido)</li>
-                        </ul>
+                      <h4 className="font-semibold text-foreground text-base">4. SESAI — Detalhamento Técnico e Integração</h4>
+                      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                        <div>
+                          <h5 className="font-semibold text-foreground">Mudanças de Código entre PPAs</h5>
+                          <ul className="list-disc pl-5 space-y-1 mt-1">
+                            <li><strong>PPA 2016-2019 (Programa 2065):</strong> SESAI vinculada ao programa indígena geral.</li>
+                            <li><strong>PPA 2020-2023 (Programa 5022):</strong> Migrou para programa genérico de Saúde. Camada 3 criada especificamente para capturar por código de ação.</li>
+                            <li><strong>PPA 2024-2027 (Programa 5022):</strong> Estrutura mantida. Captura por ações 20YP e 7684.</li>
+                          </ul>
+                        </div>
+                        <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
+                          <p className="text-xs"><strong>Efeito Mascaramento:</strong> A SESAI representou ~95% do total em 2018–2019 e ~56% em 2025. A inclusão/exclusão da SESAI altera fundamentalmente a interpretação do investimento racial federal. Por isso, o sistema apresenta <strong>duas perspectivas</strong> (com e sem SESAI).</p>
+                        </div>
                       </div>
                     </section>
 
-                    {/* 6. Limitações Federais */}
+                    {/* 5. Transições de Códigos PPA (2018–2027) */}
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base text-destructive">6. Limitações Conhecidas (Federal)</h4>
+                      <h4 className="font-semibold text-foreground text-base">5. Transições de Códigos PPA (2018–2027)</h4>
+                      <p>O rastreio da série histórica exigiu o mapeamento de transições entre três ciclos de PPA:</p>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Tema</TableHead>
+                            <TableHead>PPA 2016–2019</TableHead>
+                            <TableHead>PPA 2020–2023</TableHead>
+                            <TableHead>PPA 2024–2027</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="font-medium">Igualdade Racial</TableCell>
+                            <TableCell><code>2034</code> (SEPPIR)</TableCell>
+                            <TableCell><code>5034</code> (MDHC guarda-chuva)</TableCell>
+                            <TableCell><code>5802, 5803, 5804</code> (MIR)</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Povos Indígenas</TableCell>
+                            <TableCell><code>2065</code> (FUNAI/MJ)</TableCell>
+                            <TableCell><code>0617</code> (FUNAI)</TableCell>
+                            <TableCell><code>5136</code> (MPI)</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">SESAI</TableCell>
+                            <TableCell><code>2065</code> (dentro do prog. indígena)</TableCell>
+                            <TableCell><code>5022</code> (prog. Saúde genérico)</TableCell>
+                            <TableCell><code>5022</code> (mantido)</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Quilombolas</TableCell>
+                            <TableCell><code>2034</code> (via SEPPIR)</TableCell>
+                            <TableCell><code>5034</code> (via INCRA)</TableCell>
+                            <TableCell><code>5802</code> (MIR)</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">Órgão Líder</TableCell>
+                            <TableCell>SEPPIR + FUNAI</TableCell>
+                            <TableCell>MDHC + FUNAI</TableCell>
+                            <TableCell>MIR + MPI</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </section>
+
+                    {/* 6. Padrão da Série Histórica (2018–2025) */}
+                    <section className="space-y-2">
+                      <h4 className="font-semibold text-foreground text-base">6. Padrão Nuançado da Série Histórica (2018–2025)</h4>
+                      <p>A série revela um padrão de <strong>"Trava Institucional" (2018–2022)</strong> seguida de <strong>"Retomada sem Entrega" (2023–2025)</strong>:</p>
                       <div className="space-y-3">
+                        <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                          <h5 className="font-semibold text-foreground">2018–2019 — Base Modesta</h5>
+                          <p>SEPPIR ativa com R$ 5–20 mi/ano de execução real (sem SESAI). Dotação total: R$ 93–123 mi. FUNAI operante com 5 ações finalísticas.</p>
+                        </div>
+                        <div className="bg-destructive/10 rounded-lg p-4 space-y-2 border border-destructive/30">
+                          <h5 className="font-semibold text-destructive">2020 — Distorção pelo 5034</h5>
+                          <p>O programa 5034 (MDHC) inflou artificialmente o total com ações genéricas sem caráter racial. Aplicado filtro de exclusão.</p>
+                        </div>
+                        <div className="bg-destructive/10 rounded-lg p-4 space-y-2 border border-destructive/30">
+                          <h5 className="font-semibold text-destructive">2021–2022 — Vale do Desmonte</h5>
+                          <p>Queda real para R$ 60–63 mi (sem SESAI). Dotações simbólicas com liquidação zero em igualdade racial. Ponto mais baixo relativo da série.</p>
+                        </div>
+                        <div className="bg-success/10 rounded-lg p-4 space-y-2 border border-success/30">
+                          <h5 className="font-semibold text-success">2023 — Reconstrução Institucional</h5>
+                          <p>Criação do MIR. Sem SESAI, o pago subiu para ~R$ 107 mi. Dotação total: R$ 457 mi (salto de +180%).</p>
+                        </div>
+                        <div className="bg-primary/10 rounded-lg p-4 space-y-2 border border-primary/30">
+                          <h5 className="font-semibold text-primary">2024–2025 — Novos Programas PPA</h5>
+                          <p>MPI explodiu para R$ 307 mi (2024) e R$ 1,4 bi (2025). MIR com dotação de R$ 132–157 mi (programas 5802, 5803, 5804). <strong>Pela primeira vez, políticas raciais sem SESAI superam R$ 1 bilhão.</strong></p>
+                        </div>
+                      </div>
+                      <div className="bg-muted/50 rounded p-3 mt-3">
+                        <p className="text-xs"><strong>🔑 Achado Central:</strong> A SESAI representou ~95% do total em 2018–2019 e ~56% em 2025. A queda percentual da SESAI reflete o <em>crescimento exponencial das demais políticas</em>, não a redução da saúde indígena.</p>
+                      </div>
+                    </section>
+
+                    {/* 7. Dotação via Dados Abertos e SICONFI */}
+                    <section className="space-y-2">
+                      <h4 className="font-semibold text-foreground text-base">7. Dotação via Dados Abertos (LOA) e Limitações</h4>
+                      <p>Os valores de <strong>dotação inicial</strong> e <strong>dotação autorizada</strong> não estão disponíveis na API REST do Portal da Transparência. A complementação ocorre por:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Arquivos LOA (dados.gov.br):</strong> ZIP/CSV com dotação por ação, processados pela edge function <code>ingest-dotacao-loa</code>.</li>
+                        <li><strong>Upload manual CSV:</strong> Para preenchimento de lacunas específicas (ex: INCRA/Quilombolas).</li>
+                        <li><strong>SIOP (consulta manual):</strong> Para validação cruzada quando disponível.</li>
+                      </ul>
+
+                      <div className="space-y-3 mt-3">
                         <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
                           <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">✅ Limitações Superadas</p>
                           <ul className="list-disc pl-5 space-y-1.5 text-sm">
-                            <li><strong>Povos Indígenas:</strong> FUNAI/MPI cobertura completa 2018–2025.</li>
-                            <li><strong>SESAI:</strong> Cobertura completa via Camada 4.</li>
+                            <li><strong>Povos Indígenas (FUNAI/MPI):</strong> Cobertura completa 2018–2025.</li>
+                            <li><strong>SESAI:</strong> Cobertura completa via Camada 3 (ações 20YP/7684).</li>
+                            <li><strong>MIR (2023+):</strong> Programas 5802/5803/5804 com dados completos.</li>
                           </ul>
                         </div>
                         <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
                           <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Limitações Persistentes</p>
                           <ul className="list-disc pl-5 space-y-1.5 text-sm">
-                            <li><strong>Quilombolas (INCRA):</strong> Ações 20G7/0859 não localizadas na base.</li>
-                            <li><strong>5034 (2020–2023):</strong> Filtrados dos cálculos comparativos.</li>
+                            <li><strong>Quilombolas (INCRA):</strong> Ações 20G7/0859/6440 com cobertura parcial.</li>
+                            <li><strong>5034 (2020–2023):</strong> Filtrados dos cálculos comparativos por impossibilidade de desagregação confiável.</li>
                           </ul>
                         </div>
                       </div>
-                    </section>
 
-                    {/* 7. Órgãos Federais */}
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">7. Identificação de Órgãos Federais</h4>
+                      <h5 className="font-semibold text-foreground mt-4">Identificação de Órgãos Federais</h5>
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -1324,7 +1424,7 @@ export default function Orcamento() {
                             <TableCell className="font-medium">MIR</TableCell>
                             <TableCell><code>OS67000</code></TableCell>
                             <TableCell>2023–presente</TableCell>
-                            <TableCell>SEPPIR, MMFDH</TableCell>
+                            <TableCell>SEPPIR → MMFDH</TableCell>
                           </TableRow>
                           <TableRow>
                             <TableCell className="font-medium">MPI</TableCell>
@@ -1341,6 +1441,12 @@ export default function Orcamento() {
                           <TableRow>
                             <TableCell className="font-medium">INCRA</TableCell>
                             <TableCell><code>OS49000</code></TableCell>
+                            <TableCell>2018–presente</TableCell>
+                            <TableCell>—</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">SESAI/MS</TableCell>
+                            <TableCell><code>36000</code></TableCell>
                             <TableCell>2018–presente</TableCell>
                             <TableCell>—</TableCell>
                           </TableRow>
