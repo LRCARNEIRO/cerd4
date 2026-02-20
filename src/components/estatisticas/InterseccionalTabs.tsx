@@ -336,27 +336,24 @@ export function LgbtqiaTab() {
         </CardContent>
       </Card>
 
-      {/* Série Histórica ANTRA — Assassinatos de Pessoas Trans */}
+      {/* Gráfico: Perfil das vítimas por raça e etnia — reproduz gráfico oficial ANTRA */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Rainbow className="w-5 h-5 text-primary" />
-            Assassinatos de Pessoas Trans — Série Histórica 2018-2025
+            Perfil das Vítimas por Raça e Etnia — 2017-2025 (%)
           </CardTitle>
-          <CardDescription>Dossiê ANTRA — publicação anual (fonte oficial da sociedade civil)</CardDescription>
+          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros 77%, Brancos 22%, Indígenas 1%</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-72">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={serieAntraTrans}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
                 <Tooltip 
-                  formatter={(value: number, name: string) => {
-                    if (name === 'Total') return [value, 'Assassinatos'];
-                    return [`${value}%`, '% Vítimas Negras'];
-                  }}
+                  formatter={(value: number, name: string) => [`${value}%`, name]}
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
@@ -364,33 +361,15 @@ export function LgbtqiaTab() {
                   }}
                 />
                 <Legend />
-                <Bar dataKey="totalAssassinatos" name="Total" fill="hsl(var(--destructive))" />
+                <Bar dataKey="negros" name="Negros (pretos e pardos)" fill="hsl(var(--chart-1))" />
+                <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--muted-foreground))" opacity={0.5} />
+                <Bar dataKey="indigenas" name="Indígenas" fill="hsl(var(--destructive))" opacity={0.7} />
               </BarChart>
-            </ResponsiveContainer>
-          </div>
-          {/* Linha auxiliar: % negras */}
-          <div className="mt-3 h-48">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Percentual de vítimas negras por ano (%)</p>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={serieAntraTrans}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                <YAxis domain={[60, 90]} tick={{ fontSize: 12 }} />
-                <Tooltip 
-                  formatter={(value: number) => [`${value}%`, '% Negras']}
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Line type="monotone" dataKey="percentualNegras" name="% Vítimas Negras" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 4 }} />
-              </LineChart>
             </ResponsiveContainer>
           </div>
           <AuditFooter
             fontes={[
-              { nome: 'ANTRA — Dossiê 2026 (dados 2025)', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+              { nome: 'ANTRA — Dossiê 2026 (dados 2025), p.30', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
               { nome: 'ANTRA — Página Assassinatos', url: 'https://antrabrasil.org/assassinatos/' },
             ]}
             documentos={['CERD 2022', 'Plano de Durban']}
@@ -398,20 +377,55 @@ export function LgbtqiaTab() {
         </CardContent>
       </Card>
 
+      {/* Total de assassinatos por ano */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Total de Assassinatos de Pessoas Trans — 2017-2025</CardTitle>
+          <CardDescription>Dossiê ANTRA — números absolutos</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={serieAntraTrans}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  formatter={(value: number) => [value, 'Assassinatos']}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="totalAssassinatos" name="Total" fill="hsl(var(--destructive))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <AuditFooter
+            fontes={[
+              { nome: 'ANTRA — Dossiê 2026', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+            ]}
+          />
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Tabela da série */}
+        {/* Tabela da série com recorte racial completo */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Dados Anuais — Dossiê ANTRA</CardTitle>
-            <CardDescription>Assassinatos e % de vítimas negras (2018-2025)</CardDescription>
+            <CardDescription>Assassinatos e perfil racial das vítimas (2017-2025)</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Ano</TableHead>
-                  <TableHead className="text-right">Assassinatos</TableHead>
-                  <TableHead className="text-right">% Negras</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">% Negros</TableHead>
+                  <TableHead className="text-right">% Brancos</TableHead>
+                  <TableHead className="text-right">% Indígenas</TableHead>
                   <TableHead>Dossiê</TableHead>
                 </TableRow>
               </TableHeader>
@@ -420,7 +434,9 @@ export function LgbtqiaTab() {
                   <TableRow key={item.ano}>
                     <TableCell className="font-medium">{item.ano}</TableCell>
                     <TableCell className="text-right font-semibold text-destructive">{item.totalAssassinatos}</TableCell>
-                    <TableCell className="text-right">{item.percentualNegras}%</TableCell>
+                    <TableCell className="text-right">{item.negros}%</TableCell>
+                    <TableCell className="text-right">{item.brancos}%</TableCell>
+                    <TableCell className="text-right">{item.indigenas > 0 ? `${item.indigenas}%` : '—'}</TableCell>
                     <TableCell>
                       <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
                         <ExternalLink className="w-3 h-3" /> PDF
@@ -443,23 +459,29 @@ export function LgbtqiaTab() {
             <CardTitle className="text-base">Dados-Chave (2025)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/30">
-                <p className="text-xs text-muted-foreground">Assassinatos Trans (2025)</p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/30">
+                <p className="text-xs text-muted-foreground">Assassinatos (2025)</p>
                 <p className="text-2xl font-bold text-destructive">80</p>
-                <p className="text-xs text-muted-foreground">70% negras — queda de 34% vs 2024</p>
+                <p className="text-xs text-muted-foreground">–34% vs 2024</p>
               </div>
-              <div className="p-4 bg-warning/10 rounded-lg border border-warning/30">
-                <p className="text-xs text-muted-foreground">Expectativa de vida Trans</p>
-                <p className="text-2xl font-bold text-warning">35 anos</p>
-                <p className="text-xs text-muted-foreground">vs. 76 anos pop. geral</p>
+              <div className="p-3 bg-chart-1/10 rounded-lg border border-chart-1/30">
+                <p className="text-xs text-muted-foreground">Vítimas negras</p>
+                <p className="text-2xl font-bold" style={{ color: 'hsl(var(--chart-1))' }}>70%</p>
+                <p className="text-xs text-muted-foreground">Média série: 77%</p>
+              </div>
+              <div className="p-3 bg-accent/10 rounded-lg border border-accent/30">
+                <p className="text-xs text-muted-foreground">Vítimas indígenas</p>
+                <p className="text-2xl font-bold text-accent-foreground">4%</p>
+                <p className="text-xs text-muted-foreground">Maior % da série</p>
               </div>
             </div>
             <div className="p-4 bg-destructive/5 rounded-lg border border-destructive/20">
-              <p className="text-sm font-medium mb-1">Tendência 2018→2025</p>
+              <p className="text-sm font-medium mb-1">Tendência 2017→2025</p>
               <p className="text-xs text-muted-foreground">
-                Assassinatos: 163 → 80 (–51%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
-                Percentual de vítimas negras: 82% → 70%, mantendo predominância ao longo de toda a série.
+                Assassinatos: 179 → 80 (–55%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
+                Vítimas negras: mantiveram-se acima de 70% em toda a série (média 77%). 
+                Vítimas indígenas: de 0% (2017-2020) para 4% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
             <div className="p-4 bg-muted rounded-lg">
@@ -467,7 +489,7 @@ export function LgbtqiaTab() {
               <ul className="text-xs text-muted-foreground space-y-1">
                 <li>• Ausência de campo orientação sexual no Censo IBGE</li>
                 <li>• Subnotificação de violência LGBTfóbica</li>
-                <li>• Não há pesquisa oficial sobre emprego LGBTQIA+ por raça</li>
+                <li>• Designação post mortem da raça pode ser imprecisa (nota 115 do Dossiê)</li>
               </ul>
             </div>
             <AuditFooter
