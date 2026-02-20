@@ -326,10 +326,10 @@ export function LgbtqiaTab() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-6 h-6 text-destructive" />
             <div>
-              <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça</h3>
+              <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça — Dados de Pessoas Trans e Travestis</h3>
               <p className="text-sm text-muted-foreground">
-                Pessoas LGBTQIA+ negras enfrentam <strong>dupla discriminação</strong>. Em 2025, 70% das vítimas de assassinatos de pessoas trans eram negras (ANTRA 2026). 
-                O Brasil segue líder mundial em assassinatos de pessoas trans, com mulheres trans negras sendo as mais vulneráveis.
+                Os dados desta aba referem-se exclusivamente a <strong>pessoas trans e travestis assassinadas</strong>, conforme documentado pelo Dossiê ANTRA. 
+                Em 2025, 70% das vítimas eram negras. O Brasil segue líder mundial nesta violência, com mulheres trans negras sendo as mais vulneráveis.
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export function LgbtqiaTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Rainbow className="w-5 h-5 text-primary" />
-            Perfil das Vítimas por Raça e Etnia — 2017-2025 (%)
+            Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)
           </CardTitle>
           <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros 77%, Brancos 22%, Indígenas 1%</CardDescription>
         </CardHeader>
@@ -381,8 +381,8 @@ export function LgbtqiaTab() {
         {/* Tabela da série com recorte racial completo */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Dados Anuais — Dossiê ANTRA</CardTitle>
-            <CardDescription>Assassinatos e perfil racial das vítimas (2017-2025)</CardDescription>
+            <CardTitle className="text-base">Dados Anuais — Assassinatos de Pessoas Trans e Travestis</CardTitle>
+            <CardDescription>Dossiê ANTRA — perfil racial das vítimas (2017-2025)</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -451,13 +451,17 @@ export function LgbtqiaTab() {
                 Vítimas indígenas: de 0% (2017-2020) para 4% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
-            <div className="p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Lacunas nos Dados:</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Ausência de campo orientação sexual no Censo IBGE</li>
-                <li>• Subnotificação de violência LGBTfóbica</li>
-                <li>• Designação post mortem da raça pode ser imprecisa (nota 115 do Dossiê)</li>
-                <li>• Disque 100/ONDH: microdados disponíveis como <a href="https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dados abertos</a>, mas relatórios publicados não desagregam LGBTQIA+ por raça</li>
+            <div className="p-4 bg-chart-4/10 rounded-lg border border-chart-4/30">
+              <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-chart-4" />
+                Limitações das Fontes sobre Violência × Sexualidade × Raça
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-2">
+                <li><strong>ANTRA Dossiê:</strong> Cobre apenas assassinatos de <strong>pessoas trans e travestis</strong>, com recorte racial. Não inclui outras identidades LGBTQIA+.</li>
+                <li><strong>FBSP Anuário:</strong> Homicídios, feminicídios e letalidade policial com recorte racial e etário, mas <strong>sem campo de orientação sexual</strong>.</li>
+                <li><strong>Atlas da Violência (IPEA):</strong> Mesma base SIM/DataSUS — <strong>não desagrega por sexualidade</strong>.</li>
+                <li><strong>Disque 100/ONDH:</strong> Microdados disponíveis como <a href="https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dados abertos (CSV)</a>, mas relatórios publicados <strong>não cruzam LGBTQIA+ por raça</strong>.</li>
+                <li><strong>Censo IBGE:</strong> <strong>Não possui campo de orientação sexual</strong>, impedindo análise interseccional ampla.</li>
               </ul>
             </div>
             <AuditFooter
