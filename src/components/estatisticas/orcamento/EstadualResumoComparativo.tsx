@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line } from 'recharts';
-import { AlertTriangle, Building2, TrendingUp, TrendingDown, MapPin } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { AlertTriangle, Building2, TrendingUp, TrendingDown, MapPin, Scale } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
@@ -12,6 +12,22 @@ interface Props {
   formatCurrency: (v: number) => string;
   formatCurrencyFull: (v: number) => string;
 }
+
+/** Regional block for grouping */
+function getRegionalBloco(uf: string): string {
+  const map: Record<string, string> = {
+    MA: 'NE', BA: 'NE', PE: 'NE', CE: 'NE', PI: 'NE', AL: 'NE', PB: 'NE', RN: 'NE', SE: 'NE',
+    PA: 'N', AM: 'N', AC: 'N', AP: 'N', RO: 'N', RR: 'N', TO: 'N',
+    SP: 'SE', RJ: 'SE', MG: 'SE', ES: 'SE',
+    RS: 'S', PR: 'S', SC: 'S',
+    MT: 'CO', MS: 'CO', GO: 'CO', DF: 'CO',
+  };
+  return map[uf] || 'Outro';
+}
+
+const REGIAO_LABELS: Record<string, string> = {
+  NE: 'Nordeste', N: 'Norte', SE: 'Sudeste', S: 'Sul', CO: 'Centro-Oeste',
+};
 
 export function EstadualResumoComparativo({ records, formatCurrency, formatCurrencyFull }: Props) {
   const analysis = useMemo(() => {
@@ -59,18 +75,62 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
       else { g.dotP2 += dot; g.liqP2 += liq; }
     }
 
-    // Top/bottom executors
+    // UF stats
     const ufStats = Array.from(byUF.entries()).map(([uf, recs]) => {
       const dot = recs.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
       const liq = recs.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-      return { uf, dotacao: dot, liquidado: liq, exec: dot > 0 ? (liq / dot * 100) : 0, count: recs.length };
+      const p1Recs = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const p2Recs = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const dotP1UF = p1Recs.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+      const dotP2UF = p2Recs.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+      const liqP1UF = p1Recs.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const liqP2UF = p2Recs.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const regiao = getRegionalBloco(uf);
+      return {
+        uf, dotacao: dot, liquidado: liq,
+        exec: dot > 0 ? (liq / dot * 100) : 0,
+        dotP1: dotP1UF, dotP2: dotP2UF, liqP1: liqP1UF, liqP2: liqP2UF,
+        execP1: dotP1UF > 0 ? (liqP1UF / dotP1UF * 100) : 0,
+        execP2: dotP2UF > 0 ? (liqP2UF / dotP2UF * 100) : 0,
+        count: recs.length, regiao,
+      };
     }).sort((a, b) => b.dotacao - a.dotacao);
+
+    // Regional aggregates
+    const byRegiao = new Map<string, { dot: number; liq: number; count: number }>();
+    for (const s of ufStats) {
+      if (!byRegiao.has(s.regiao)) byRegiao.set(s.regiao, { dot: 0, liq: 0, count: 0 });
+      const r = byRegiao.get(s.regiao)!;
+      r.dot += s.dotacao;
+      r.liq += s.liquidado;
+      r.count += s.count;
+    }
+
+    // Vinculado vs Transversal
+    const vinculadoKws = ['indígen', 'indigen', 'saúde indígen', 'educação indígen', 'sesai', 'funai'];
+    const transversalKws = ['igualdade racial', 'promoção da igualdade', 'quilombol', 'matriz africana', 'afrodescendente'];
+    const isVinculado = (r: DadoOrcamentario) => {
+      const txt = [r.programa, r.descritivo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
+      return vinculadoKws.some(kw => txt.includes(kw));
+    };
+    const vinculados = records.filter(isVinculado);
+    const transversais = records.filter(r => {
+      const txt = [r.programa, r.descritivo, r.observacoes].filter(Boolean).join(' ').toLowerCase();
+      return transversalKws.some(kw => txt.includes(kw)) && !isVinculado(r);
+    });
+    const vDot = vinculados.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+    const vLiq = vinculados.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+    const tDot = transversais.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+    const tLiq = transversais.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
 
     return {
       byUF, byYear, dotP1, dotP2, liqP1, liqP2, execP1, execP2,
       varDot: dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0,
       varLiq: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
-      byGroup, ufStats, totalUFs: byUF.size,
+      byGroup, ufStats, totalUFs: byUF.size, byRegiao,
+      vinculadoExec: vDot > 0 ? (vLiq / vDot * 100) : 0,
+      transversalExec: tDot > 0 ? (tLiq / tDot * 100) : 0,
+      vDot, vLiq, tDot, tLiq,
     };
   }, [records]);
 
@@ -79,6 +139,24 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
   const yearData = Array.from(analysis.byYear.entries())
     .map(([ano, v]) => ({ ano, dotacao: v.dotacao, liquidado: v.liquidado, exec: v.dotacao > 0 ? (v.liquidado / v.dotacao * 100) : 0 }))
     .sort((a, b) => a.ano - b.ano);
+
+  // Top 10 UFs for bar comparison
+  const top10UFs = analysis.ufStats.slice(0, 10);
+
+  // Regional radar data
+  const radarData = Array.from(analysis.byRegiao.entries()).map(([regiao, v]) => ({
+    regiao: REGIAO_LABELS[regiao] || regiao,
+    dotacao: v.dot,
+    liquidado: v.liq,
+    exec: v.dot > 0 ? (v.liq / v.dot * 100) : 0,
+  }));
+
+  // UF comparison bar chart data (exec P1 vs P2)
+  const ufComparisonData = analysis.ufStats.filter(s => s.dotP1 > 0 || s.dotP2 > 0).slice(0, 12).map(s => ({
+    uf: s.uf,
+    execP1: s.execP1,
+    execP2: s.execP2,
+  }));
 
   return (
     <div className="space-y-6">
@@ -92,7 +170,7 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
               <p className="text-xs text-muted-foreground mt-1">
                 Dados extraídos via <strong>MSC/PPA (Matriz de Saldos Contábeis)</strong> de {analysis.totalUFs} estados.
                 A métrica principal é a <strong>Dotação Inicial</strong>, complementada pela <strong>Liquidação</strong> para medir a efetividade real.
-                Dados de 2025 são parciais (até 6º bimestre).
+                Dados de 2025 são parciais (até 6º bimestre) e devem ser interpretados com cautela.
               </p>
             </div>
           </div>
@@ -133,7 +211,28 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
         </Card>
       </div>
 
-      {/* Gráfico evolução anual */}
+      {/* Infográfico: Vinculado vs Transversal */}
+      <Card className="border-l-4 border-l-warning">
+        <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Scale className="w-4 h-4 text-warning" /> Disparidade: Vinculado vs. Transversal (Omissão Seletiva)</CardTitle></CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-success/5 rounded-lg p-4 border border-success/20">
+              <p className="font-semibold text-sm text-foreground">Educação/Saúde Indígena (Vinculado)</p>
+              <p className="text-2xl font-bold text-success mt-1">{analysis.vinculadoExec.toFixed(1)}%</p>
+              <p className="text-xs text-muted-foreground mt-1">Dotação: {formatCurrency(analysis.vDot)} · Liquidado: {formatCurrency(analysis.vLiq)}</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Repasses federais obrigatórios (fundo a fundo). A máquina estatal <strong>consegue gastar</strong>.</p>
+            </div>
+            <div className="bg-destructive/5 rounded-lg p-4 border border-destructive/20">
+              <p className="font-semibold text-sm text-foreground">Igualdade Racial / Quilombola (Transversal)</p>
+              <p className="text-2xl font-bold text-destructive mt-1">{analysis.transversalExec.toFixed(1)}%</p>
+              <p className="text-xs text-muted-foreground mt-1">Dotação: {formatCurrency(analysis.tDot)} · Liquidado: {formatCurrency(analysis.tLiq)}</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Recursos discricionários. Primeiros a sofrer contingenciamento seletivo.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gráfico evolução anual + taxa execução */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-sm">Evolução Anual — Dotação vs. Liquidação (Estadual)</CardTitle></CardHeader>
@@ -171,6 +270,86 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
         </Card>
       </div>
 
+      {/* Comparativo UF: Execução P1 vs P2 */}
+      {ufComparisonData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              Comparativo por UF: Execução P1 (2018–2022) vs. P2 (2023–2025)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={ufComparisonData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 9 }} tickFormatter={(v) => `${v}%`} />
+                  <YAxis type="category" dataKey="uf" tick={{ fontSize: 11 }} width={40} />
+                  <Tooltip formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name === 'execP1' ? '2018–2022' : '2023–2025']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                  <Legend verticalAlign="top" height={30} />
+                  <Bar dataKey="execP1" name="2018–2022" fill="hsl(var(--chart-1))" radius={[0, 3, 3, 0]} barSize={12} />
+                  <Bar dataKey="execP2" name="2023–2025" fill="hsl(var(--chart-2))" radius={[0, 3, 3, 0]} barSize={12} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">
+              * Dados de 2025 são parciais (até 6º bimestre). A execução final pode ser significativamente diferente.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Dotação por Região */}
+      {radarData.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-sm">Distribuição Regional — Dotação e Execução</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={radarData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="regiao" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                    <Tooltip formatter={(value: number, name: string) => [name === 'exec' ? `${(value as number).toFixed(1)}%` : formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : '% Exec']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                    <Legend verticalAlign="top" height={30} />
+                    <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-1))" radius={[3, 3, 0, 0]} />
+                    <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-2))" radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Região</TableHead>
+                      <TableHead className="text-right">Dotação</TableHead>
+                      <TableHead className="text-right">Liquidado</TableHead>
+                      <TableHead className="text-right">% Exec</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {radarData.sort((a, b) => b.dotacao - a.dotacao).map(r => (
+                      <TableRow key={r.regiao}>
+                        <TableCell className="font-medium text-xs">{r.regiao}</TableCell>
+                        <TableCell className="text-right font-mono text-xs">{formatCurrency(r.dotacao)}</TableCell>
+                        <TableCell className="text-right font-mono text-xs">{formatCurrency(r.liquidado)}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={r.exec >= 60 ? 'default' : r.exec >= 30 ? 'secondary' : 'destructive'} className="text-[10px]">
+                            {r.exec.toFixed(1)}%
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Ranking por UF */}
       <Card>
         <CardHeader>
@@ -185,6 +364,7 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
               <TableRow>
                 <TableHead className="w-12">#</TableHead>
                 <TableHead>UF</TableHead>
+                <TableHead>Região</TableHead>
                 <TableHead className="text-right">Dotação Total</TableHead>
                 <TableHead className="text-right">Liquidado Total</TableHead>
                 <TableHead className="text-right">% Execução</TableHead>
@@ -196,6 +376,7 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
                 <TableRow key={s.uf}>
                   <TableCell className="font-mono text-xs">{i + 1}</TableCell>
                   <TableCell><Badge variant="outline">{s.uf}</Badge></TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{REGIAO_LABELS[s.regiao] || s.regiao}</TableCell>
                   <TableCell className="text-right font-mono text-xs">{formatCurrency(s.dotacao)}</TableCell>
                   <TableCell className="text-right font-mono text-xs">{formatCurrency(s.liquidado)}</TableCell>
                   <TableCell className="text-right">
@@ -244,34 +425,22 @@ export function EstadualResumoComparativo({ records, formatCurrency, formatCurre
         </CardContent>
       </Card>
 
-      {/* Conclusão interpretativa */}
+      {/* Insights-chave */}
       <Card className="border-l-4 border-l-primary">
         <CardContent className="pt-4 pb-3">
-          <h4 className="font-semibold text-sm mb-3">📊 Diagnóstico Estadual — "Orçamento de Papel"</h4>
-          <div className="text-xs text-muted-foreground space-y-3">
-            <div>
-              <p className="font-semibold text-foreground mb-1">A. Período da "Trava Institucional" (2018–2022)</p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li><strong>Ações "Zumbis":</strong> Muitas ações de promoção da igualdade racial apareciam no orçamento com valores simbólicos, impedindo qualquer execução real.</li>
-                <li><strong>Liquidação Inexistente:</strong> Estados como RJ, RS e MA tiveram anos com 0% de liquidação em ações de fomento à cultura negra.</li>
-                <li><strong>Exceção — Vinculados:</strong> A única frente que não "travou" foi a Educação/Saúde Indígena (repasses federais obrigatórios, com execução &gt;80%).</li>
-              </ul>
+          <h4 className="font-semibold text-sm mb-3">🔑 Insights-Chave</h4>
+          <div className="text-xs text-muted-foreground space-y-2">
+            <div className="bg-destructive/5 rounded p-3 border border-destructive/20">
+              <p className="font-semibold text-foreground mb-1">Orçamento Simbólico</p>
+              <p>Em estados como MA, PI e RJ, ações de "Promoção da Igualdade Racial" mantêm liquidação inferior a 25% da dotação inicial, caracterizando políticas de baixa efetividade orçamentária.</p>
             </div>
-            <div>
-              <p className="font-semibold text-foreground mb-1">B. Período da "Retomada sem Entrega" (2023–2025)</p>
-              <ul className="list-disc pl-4 space-y-1">
-                <li><strong>Explosão da Dotação:</strong> Novos PPAs (2024-2027) apresentam dotações até 3x maiores que o ciclo anterior.</li>
-                <li><strong>Novo Gargalo:</strong> Embora o orçamento exista no papel, a liquidação real em 2025 (até 6º bim) é criticamente baixa, evidenciando que as máquinas estaduais não recuperaram capacidade operacional.</li>
-                <li><strong>"Efeito Tesoura":</strong> Em quase todos os 27 estados, a dotação sobe e a liquidação não acompanha, gerando um represamento crescente de recursos.</li>
-              </ul>
+            <div className="bg-warning/5 rounded p-3 border border-warning/20">
+              <p className="font-semibold text-foreground mb-1">Dualidade Indígena vs. Racial</p>
+              <p>Ações para povos indígenas (AM, MS, MT) mantêm taxas de liquidação superiores às de igualdade racial/quilombola. As políticas de Promoção da Igualdade Racial são as primeiras a sofrer cortes.</p>
             </div>
-            <div className="bg-muted/50 rounded p-3 mt-3">
-              <p className="font-semibold text-foreground mb-1">🔑 Achado Central para o CERD</p>
-              <p>O Brasil saiu de um cenário de <strong>negação da política</strong> (2018–2022) para um cenário de <strong>incapacidade de implementação</strong> (2023–2025). O recurso é empenhado para cumprir formalidades, mas não é liquidado. Ações de Igualdade Racial raramente ultrapassam 25% de liquidação, contrastando com Educação Indígena (recursos vinculados) que atinge 80%. Isso demonstra uma <strong>omissão seletiva</strong> — a máquina estatal consegue gastar quando quer.</p>
-            </div>
-            <div className="mt-3">
-              <p className="font-semibold text-foreground mb-1">C. Dualidade Indígena vs. Racial</p>
-              <p>Ações voltadas para povos indígenas (AM, MS, MT) mantêm taxas de liquidação superiores às de igualdade racial/quilombola. As políticas de Promoção da Igualdade Racial são as primeiras a sofrer cortes orçamentários (contingenciamento seletivo).</p>
+            <div className="bg-muted/50 rounded p-3">
+              <p className="font-semibold text-foreground mb-1">Invisibilidade RJ e DF</p>
+              <p>Rio de Janeiro e Distrito Federal apresentam dotações elevadas, mas taxas de liquidação que não acompanham a complexidade das demandas locais.</p>
             </div>
           </div>
         </CardContent>
