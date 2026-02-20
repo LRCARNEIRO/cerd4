@@ -306,20 +306,24 @@ export const deficienciaPorRaca = [
 // =============================================
 
 export const serieAntraTrans = [
-  { ano: 2018, totalAssassinatos: 163, percentualNegras: 82, fonte: 'Dossiê ANTRA 2019 (dados 2018)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
-  { ano: 2019, totalAssassinatos: 124, percentualNegras: 82, fonte: 'Dossiê ANTRA 2020 (dados 2019)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
-  { ano: 2020, totalAssassinatos: 175, percentualNegras: 78, fonte: 'Dossiê ANTRA 2021 (dados 2020)', url: 'https://antrabrasil.org/wp-content/uploads/2021/01/dossie-trans-2021-29jan2021.pdf' },
-  { ano: 2021, totalAssassinatos: 140, percentualNegras: 81, fonte: 'Dossiê ANTRA 2022 (dados 2021)', url: 'https://antrabrasil.org/wp-content/uploads/2022/01/dossieantra2022-web.pdf' },
-  { ano: 2022, totalAssassinatos: 131, percentualNegras: 80, fonte: 'Dossiê ANTRA 2023 (dados 2022)', url: 'https://antrabrasil.org/wp-content/uploads/2023/01/dossieantra2023.pdf' },
-  { ano: 2023, totalAssassinatos: 145, percentualNegras: 78, fonte: 'Dossiê ANTRA 2024 (dados 2023)', url: 'https://antrabrasil.org/wp-content/uploads/2024/01/dossieantra2024-web.pdf' },
-  { ano: 2024, totalAssassinatos: 122, percentualNegras: 73, fonte: 'Dossiê ANTRA 2025 (dados 2024)', url: 'https://antrabrasil.org/wp-content/uploads/2025/01/dossie-antra-2025.pdf' },
-  { ano: 2025, totalAssassinatos: 80, percentualNegras: 70, fonte: 'Dossiê ANTRA 2026 (dados 2025)', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+  // Dados oficiais do gráfico "Perfil das vítimas por raça e etnia" — Dossiê ANTRA 2026 (p. 30)
+  // Negros = pretos + pardos | Brancos | Indígenas (%)
+  { ano: 2017, totalAssassinatos: 179, negros: 80, brancos: 20, indigenas: 0, fonte: 'Dossiê ANTRA 2018 (dados 2017)', url: 'https://antrabrasil.org/assassinatos/' },
+  { ano: 2018, totalAssassinatos: 163, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2019 (dados 2018)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
+  { ano: 2019, totalAssassinatos: 124, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2020 (dados 2019)', url: 'https://antrabrasil.org/wp-content/uploads/2020/01/dossic3aa-dos-assassinatos-e-da-violc3aancia-contra-pessoas-trans-em-2019.pdf' },
+  { ano: 2020, totalAssassinatos: 175, negros: 78, brancos: 22, indigenas: 0, fonte: 'Dossiê ANTRA 2021 (dados 2020)', url: 'https://antrabrasil.org/wp-content/uploads/2021/01/dossie-trans-2021-29jan2021.pdf' },
+  { ano: 2021, totalAssassinatos: 140, negros: 81, brancos: 18, indigenas: 1, fonte: 'Dossiê ANTRA 2022 (dados 2021)', url: 'https://antrabrasil.org/wp-content/uploads/2022/01/dossieantra2022-web.pdf' },
+  { ano: 2022, totalAssassinatos: 131, negros: 76, brancos: 24, indigenas: 1, fonte: 'Dossiê ANTRA 2023 (dados 2022)', url: 'https://antrabrasil.org/wp-content/uploads/2023/01/dossieantra2023.pdf' },
+  { ano: 2023, totalAssassinatos: 145, negros: 72, brancos: 27, indigenas: 1, fonte: 'Dossiê ANTRA 2024 (dados 2023)', url: 'https://antrabrasil.org/wp-content/uploads/2024/01/dossieantra2024-web.pdf' },
+  { ano: 2024, totalAssassinatos: 122, negros: 76, brancos: 22, indigenas: 2, fonte: 'Dossiê ANTRA 2025 (dados 2024)', url: 'https://antrabrasil.org/wp-content/uploads/2025/01/dossie-antra-2025.pdf' },
+  { ano: 2025, totalAssassinatos: 80, negros: 70, brancos: 26, indigenas: 4, fonte: 'Dossiê ANTRA 2026 (dados 2025)', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
 ];
+// Média da série 2017-2025: Negros 77%, Brancos 22%, Indígenas 1%
 
 // LGBTQIA+ por Raça — apenas indicadores com fonte oficial auditável
 export const lgbtqiaPorRaca = [
-  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 26.3, fonte: 'ANTRA Dossiê 2026 (dados 2025)', estimativa: false },
-  { indicador: 'Denúncias LGBTfóbicas — vítimas negras (%)', negroLGBT: 58.0, brancoLGBT: 42.0, fonte: 'Disque 100/ONDH 2024', estimativa: true },
+  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 26.0, indigenaLGBT: 4.0, fonte: 'ANTRA Dossiê 2026 (dados 2025)', estimativa: false },
+  { indicador: 'Denúncias LGBTfóbicas — vítimas negras (%)', negroLGBT: 58.0, brancoLGBT: 42.0, indigenaLGBT: 0, fonte: 'Disque 100/ONDH 2024', estimativa: true },
 ];
 
 // =============================================
