@@ -1518,8 +1518,65 @@ export default function Orcamento() {
                           <p>Mapeamento manual dos códigos de ação específicos de políticas raciais/étnicas nos PPAs de cada estado (ex: BA 1055, MA 4321, SP 2822).</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 2 — Busca por Palavras-chave</h5>
-                          <p>Filtragem por radicais: <code>quilombol</code>, <code>indígen</code>, <code>racial</code>, <code>igualdade racial</code>, <code>matriz africana</code>, <code>terreiro</code>, <code>cigan</code>.</p>
+                          <h5 className="font-semibold text-foreground">Camada 2 — Busca por Palavras-chave nos Descritivos</h5>
+                          <p>Filtragem complementar por radicais unificados e palavras-chave específicas aplicada sobre campos descritivos do SICONFI/MSC.</p>
+                        </div>
+
+                        {/* Listagem detalhada de palavras-chave estaduais */}
+                        <div className="bg-muted/30 rounded-lg p-4 space-y-3 border border-border/50">
+                          <p className="font-semibold text-foreground text-sm">📋 Palavras-Chave e Radicais — Detalhamento Estadual</p>
+                          
+                          <div>
+                            <p className="font-semibold text-foreground text-xs mb-1">Radicais Unificados (capturam variações morfológicas)</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
+                                <Badge key={r} variant="secondary" className="text-xs font-mono">{r}*</Badge>
+                              ))}
+                            </div>
+                            <p className="text-xs mt-1 italic">Ex: <code>quilombol*</code> captura: quilombola, quilombolas, quilombos.</p>
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-foreground text-xs mb-1">Palavras-Chave Específicas</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {[
+                                'igualdade racial', 'promoção da igualdade', 'racismo', 'racial',
+                                'negro', 'negra', 'afro', 'afrodescendente',
+                                'candomblé', 'umbanda', 'matriz africana', 'terreiro',
+                                'povos tradicionais', 'comunidades tradicionais',
+                                'povo cigano', 'romani'
+                              ].map(k => (
+                                <Badge key={k} variant="outline" className="text-xs">{k}</Badge>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-foreground text-xs mb-1">Referências Estruturais (Classificação Funcional)</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              <Badge variant="secondary" className="text-xs">Função 14 — Direitos da Cidadania</Badge>
+                              <Badge variant="secondary" className="text-xs">Subfunção 422 — Direitos Individuais, Coletivos e Difusos</Badge>
+                            </div>
+                            <p className="text-xs mt-1 italic">Usadas como filtro de baseline no SICONFI, mas <strong>insuficientes isoladamente</strong> — incluem ações genéricas sem relação com política racial. A seleção técnica prioriza códigos PPA (Camada 1).</p>
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-destructive text-xs mb-1">🚫 Termos Genéricos Excluídos</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {[
+                                'direitos da cidadania (genérico)', 'direitos individuais coletivos (genérico)',
+                                'assistência comunitária', 'gestão administrativa',
+                                'administração geral'
+                              ].map(e => (
+                                <Badge key={e} variant="destructive" className="text-xs opacity-70">{e}</Badge>
+                              ))}
+                            </div>
+                            <p className="text-xs mt-1 italic">Esses termos na classificação funcional capturam programas universais sem relação com política racial/étnica.</p>
+                          </div>
+
+                          <div className="bg-primary/10 rounded p-3 border border-primary/30">
+                            <p className="text-xs"><strong>Campo de aplicação:</strong> Os radicais são aplicados sobre todos os campos descritivos retornados pelo SICONFI/MSC. A seleção prioritária é pelo código de ação PPA (Camada 1). O campo <code>razao_selecao</code> documenta o critério de inclusão de cada registro.</p>
+                          </div>
                         </div>
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 3 — Cruzamento MSC/SICONFI</h5>
