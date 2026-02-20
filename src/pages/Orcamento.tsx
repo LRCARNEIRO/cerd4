@@ -19,6 +19,7 @@ import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/EstadualResumoComparativo';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -1514,6 +1515,15 @@ export default function Orcamento() {
               </div>
             )}
           </div>
+
+          {/* ===== RESUMO ESTADUAL ===== */}
+          {classified.estadual.all.length > 0 && (
+            <EstadualResumoComparativo
+              records={classified.estadual.all}
+              formatCurrency={formatCurrency}
+              formatCurrencyFull={formatCurrencyFull}
+            />
+          )}
         </TabsContent>
 
         {/* METODOLOGIA */}
@@ -1790,7 +1800,8 @@ export default function Orcamento() {
                       <ul className="list-disc pl-5 space-y-1.5 text-sm">
                         <li><strong>Quilombolas (INCRA):</strong> Ações específicas 20G7 (Regularização de Territórios Quilombolas) e 0859 (Indenização de Benfeitorias) <strong>não foram localizadas</strong> na base. Possíveis causas: encerramento das ações, reclassificação sob outro código no PPA 2024-2027, ou ausência nos endpoints consultados. Impacto: o investimento federal específico em regularização fundiária quilombola pode estar subrepresentado.</li>
                         <li><strong>Programa 5034 (2020–2023):</strong> Registros existem na base ({`${16 + 10 + 9 + 10}`} registros), mas são <strong>filtrados dos cálculos comparativos</strong> pela função <code>is5034Distortion()</code>. Motivo: o 5034 foi um guarda-chuva multi-temático do MDHC que englobava ações genéricas de direitos humanos (0083, 00SN, 00SO, 0E85, 14XS, 21AR–21AU) sem caráter racial. Apenas ações com palavras-chave raciais explícitas no campo <code>descritivo</code> são preservadas.</li>
-                        <li><strong>Esferas estadual e municipal (SICONFI):</strong> Ainda sem registros na base. Os dados RREO/DCA do Tesouro Nacional refletem <strong>função/subfunção</strong> (agregados contábeis), não programas específicos do PPA local. A granularidade é estruturalmente inferior à federal, dificultando a identificação de políticas raciais específicas.</li>
+                        <li><strong>Esfera estadual (MSC/PPA):</strong> Cobertos <strong>20 estados</strong> com 76 registros granulares (2018–2025) via Matriz de Saldos Contábeis. A API SICONFI (RREO/DCA) retorna apenas dados de função/subfunção (agregados contábeis), insuficientes para identificar ações específicas. Dados complementados por códigos PPA mapeados manualmente. Dados de 2025 são parciais (até 6º bimestre). <strong>7 estados</strong> (AC, AL, ES, GO, SC, AP, RN) ainda sem ações mapeadas.</li>
+                        <li><strong>Esfera municipal (SICONFI):</strong> Ainda sem registros detalhados na base. Portais de transparência municipais exigem coleta individualizada.</li>
                         <li><strong>Série incompleta:</strong> Variações percentuais extremas (ex: quedas de -90%) podem refletir hiatos na coleta ou na disponibilidade de dados nos endpoints da API, não necessariamente alterações reais de dotação ou execução.</li>
                       </ul>
                     </div>
