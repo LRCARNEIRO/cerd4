@@ -524,10 +524,7 @@ export default function Orcamento() {
               </p>
             </div>
             <div className="flex gap-2 flex-wrap items-center">
-              <FederalIngestionPanel />
-              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('federal', 'Federal')}>
-                <Trash2 className="w-3.5 h-3.5" /> Reset Federal
-              </Button>
+              {/* FederalIngestionPanel e Reset Federal ocultados — base já organizada. Reativar se necessário. */}
               <EstadualIngestionPanel />
               <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('estadual', 'Estadual')}>
                 <Trash2 className="w-3.5 h-3.5" /> Reset Estadual
