@@ -150,9 +150,9 @@ export function EstadualIngestionPanel() {
           <ScrollArea className="flex-1 pr-2">
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground">
-                <strong>Camada 1:</strong> Busca nos PPAs estaduais via Firecrawl (Portais de Transparência) por palavras-chave raciais/étnicas.
-                <strong className="ml-1">Camada 3:</strong> Cruzamento SICONFI/RREO para execução (Função 14).
-                <br />Processamento <strong>estado por estado</strong> — nomes reais dos programas PPA.
+                <strong>Camada 1:</strong> Busca nos documentos PPA de cada estado (3 ciclos: 2016-2019, 2020-2023, 2024-2027) por palavras-chave raciais/étnicas nos títulos, justificativas e objetivos das ações.
+                <strong className="ml-1">Camada 3:</strong> Cruzamento SICONFI/RREO Função 14 para execução (empenho/liquidação).
+                <br />Retorna nome da ação, código, dotação inicial e o <strong>critério exato</strong> de seleção.
               </p>
 
               {/* Estados */}
@@ -290,7 +290,7 @@ export function EstadualIngestionPanel() {
                               <TableHead className="text-[10px] p-1">Ano</TableHead>
                               <TableHead className="text-[10px] p-1">Dot. Inicial</TableHead>
                               <TableHead className="text-[10px] p-1">Liquidado</TableHead>
-                              <TableHead className="text-[10px] p-1">Razão</TableHead>
+                              <TableHead className="text-[10px] p-1">Critério</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
