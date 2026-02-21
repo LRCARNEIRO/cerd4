@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,8 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
+import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
+
 export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
@@ -42,7 +45,26 @@ export default function Conclusoes() {
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores,
   } = useAnalyticalInsights();
 
-  const handleRefresh = () => { queryClient.invalidateQueries(); };
+  const [diffOpen, setDiffOpen] = useState(false);
+  const [beforeSnap, setBeforeSnap] = useState<SnapshotData | null>(null);
+  const [afterSnap, setAfterSnap] = useState<SnapshotData | null>(null);
+  const waitingRefresh = useRef(false);
+
+  const handleRefresh = () => {
+    // Capture current state
+    setBeforeSnap(captureSnapshot(stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats));
+    waitingRefresh.current = true;
+    queryClient.invalidateQueries();
+  };
+
+  // When loading finishes after a refresh, capture "after" and show diff
+  useEffect(() => {
+    if (waitingRefresh.current && !isLoading) {
+      waitingRefresh.current = false;
+      setAfterSnap(captureSnapshot(stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats));
+      setDiffOpen(true);
+    }
+  }, [isLoading]);
 
   const now = new Date().toLocaleString('pt-BR');
 
@@ -529,6 +551,7 @@ export default function Conclusoes() {
           </Tabs>
         </>
       )}
+      <RefreshDiffDialog open={diffOpen} onOpenChange={setDiffOpen} before={beforeSnap} after={afterSnap} />
     </DashboardLayout>
   );
 }
