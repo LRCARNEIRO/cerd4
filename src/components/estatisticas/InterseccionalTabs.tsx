@@ -496,7 +496,12 @@ export function DeficienciaTab() {
               <Accessibility className="w-5 h-5 text-primary" />
               Pessoas com Deficiência por Raça
             </CardTitle>
-            <CardDescription>PNAD Contínua 2022 (IBGE) | Metodologia do Grupo de Washington</CardDescription>
+            <CardDescription>
+              PNAD Contínua 2022 (IBGE) |{' '}
+              <a href="https://www.washingtongroup-disability.com/question-sets/wg-short-set-on-functioning-wg-ss/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Metodologia do Grupo de Washington (WG-SS)
+              </a>
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
