@@ -221,21 +221,24 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    let anos: number[] = [2022, 2023, 2024, 2025];
+    let anos: number[] = [2023, 2024];
     let ufs: string[] | undefined;
     let mode = "insert";
+    let maxEstados = 5;
 
     try {
       const body = await req.json();
       if (Array.isArray(body.anos) && body.anos.length > 0) anos = body.anos;
       if (Array.isArray(body.ufs) && body.ufs.length > 0) ufs = body.ufs;
       if (body.mode === "preview") mode = "preview";
+      if (typeof body.maxEstados === "number") maxEstados = body.maxEstados;
     } catch { /* defaults */ }
 
-    const estadosAlvo = Object.entries(ESTADOS_IBGE).filter(([uf]) => !ufs || ufs.includes(uf));
+    const allEstados = Object.entries(ESTADOS_IBGE).filter(([uf]) => !ufs || ufs.includes(uf));
+    const estadosAlvo = ufs ? allEstados : allEstados.slice(0, maxEstados);
 
     console.log(`=== Ingestão Estadual (Radicais+Keywords) ===`);
-    console.log(`Mode: ${mode} | Estados: ${estadosAlvo.map(([u]) => u).join(",")} | Anos: ${anos.join(",")}`);
+    console.log(`Mode: ${mode} | Estados(${estadosAlvo.length}): ${estadosAlvo.map(([u]) => u).join(",")} | Anos: ${anos.join(",")}`);
 
     const allRegistros: Record<string, unknown>[] = [];
     const erros: string[] = [];
