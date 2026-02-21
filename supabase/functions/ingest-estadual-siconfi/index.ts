@@ -14,19 +14,14 @@ const ESTADOS_IBGE: Record<string, number> = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// CAMADA 1 — Radicais e Palavras-Chave para identificação de
-// ações e programas dos PPAs estaduais voltados a políticas
-// raciais/étnicas. Aplicados sobre título, nome, justificativa,
-// objetivo (campos: conta, rotulo, cod_conta, coluna no SICONFI).
-// Período: 2018–2025 (3 ciclos de PPA: 2016-2019, 2020-2023, 2024-2027)
+// Radicais e Palavras-Chave para identificação de ações/programas
+// dos PPAs estaduais voltados a políticas raciais/étnicas
 // ═══════════════════════════════════════════════════════════════
 
 const RADICAIS: { radical: string; grupo: string }[] = [
-  { radical: "indígen", grupo: "Indígena" },
   { radical: "indigen", grupo: "Indígena" },
   { radical: "quilombol", grupo: "Quilombola" },
   { radical: "cigan", grupo: "Cigano/Roma" },
-  { radical: "étnic", grupo: "Racial/Étnico" },
   { radical: "etnic", grupo: "Racial/Étnico" },
   { radical: "palmares", grupo: "Negro/Afrodescendente" },
   { radical: "funai", grupo: "Indígena" },
@@ -35,105 +30,115 @@ const RADICAIS: { radical: string; grupo: string }[] = [
 
 const PALAVRAS_CHAVE: { termo: string; grupo: string }[] = [
   { termo: "igualdade racial", grupo: "Negro/Afrodescendente" },
-  { termo: "promoção da igualdade", grupo: "Racial/Étnico" },
+  { termo: "promocao da igualdade", grupo: "Racial/Étnico" },
   { termo: "racismo", grupo: "Negro/Afrodescendente" },
   { termo: "racial", grupo: "Negro/Afrodescendente" },
   { termo: "negro", grupo: "Negro/Afrodescendente" },
   { termo: "negra", grupo: "Negro/Afrodescendente" },
   { termo: "afrodescendente", grupo: "Negro/Afrodescendente" },
   { termo: "afro", grupo: "Negro/Afrodescendente" },
-  { termo: "consciência negra", grupo: "Negro/Afrodescendente" },
+  { termo: "consciencia negra", grupo: "Negro/Afrodescendente" },
   { termo: "matriz africana", grupo: "Negro/Afrodescendente" },
   { termo: "capoeira", grupo: "Negro/Afrodescendente" },
-  { termo: "candomblé", grupo: "Negro/Afrodescendente" },
+  { termo: "candomble", grupo: "Negro/Afrodescendente" },
   { termo: "umbanda", grupo: "Negro/Afrodescendente" },
   { termo: "terreiro", grupo: "Negro/Afrodescendente" },
   { termo: "seppir", grupo: "Negro/Afrodescendente" },
-  { termo: "povos originários", grupo: "Indígena" },
-  { termo: "terra indígena", grupo: "Indígena" },
+  { termo: "povos originarios", grupo: "Indígena" },
+  { termo: "terra indigena", grupo: "Indígena" },
   { termo: "povos tradicionais", grupo: "Comunidade Tradicional" },
   { termo: "comunidades tradicionais", grupo: "Comunidade Tradicional" },
   { termo: "povo cigano", grupo: "Cigano/Roma" },
   { termo: "romani", grupo: "Cigano/Roma" },
-  { termo: "discriminação racial", grupo: "Racial/Étnico" },
+  { termo: "discriminacao racial", grupo: "Racial/Étnico" },
 ];
 
 const TERMOS_EXCLUSAO = [
   "direitos da cidadania",
   "direitos individuais coletivos",
-  "assistência comunitária",
-  "direitos individuais",
-  "gestão administrativa",
-  "administração geral",
+  "assistencia comunitaria",
+  "gestao administrativa",
+  "administracao geral",
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// FETCH helpers
+// FETCH com paginação completa — busca TODAS as páginas
 // ═══════════════════════════════════════════════════════════════
 
-async function fetchJson(url: string, params: URLSearchParams): Promise<Record<string, unknown>[]> {
+async function fetchAllPages(url: string, params: URLSearchParams): Promise<Record<string, unknown>[]> {
+  const allItems: Record<string, unknown>[] = [];
+  let offset = 0;
+  const limit = 5000;
+  let page = 0;
+  const maxPages = 20; // safety
+
   try {
-    const fullUrl = `${url}?${params}`;
-    console.log(`  Fetch: ${fullUrl.substring(0, 160)}...`);
-    const res = await fetch(fullUrl, {
-      headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(45_000),
-    });
-    if (!res.ok) { console.error(`  HTTP ${res.status}`); return []; }
-    const ct = res.headers.get("content-type");
-    if (!ct?.includes("application/json")) return [];
-    const data = await res.json();
-    return data?.items ?? [];
+    while (page < maxPages) {
+      params.set("$offset", String(offset));
+      params.set("$limit", String(limit));
+      const fullUrl = `${url}?${params}`;
+      console.log(`  Fetch p${page}: ${fullUrl.substring(0, 180)}`);
+
+      const res = await fetch(fullUrl, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(60_000),
+      });
+
+      if (!res.ok) { console.error(`  HTTP ${res.status}`); break; }
+      const ct = res.headers.get("content-type");
+      if (!ct?.includes("application/json")) break;
+
+      const data = await res.json();
+      const items: Record<string, unknown>[] = data?.items ?? [];
+      if (items.length === 0) break;
+
+      allItems.push(...items);
+      console.log(`  → p${page}: ${items.length} items (total: ${allItems.length})`);
+
+      if (!data.hasMore && items.length < limit) break;
+      offset += items.length;
+      page++;
+      await new Promise(r => setTimeout(r, 200));
+    }
   } catch (e) {
     console.error(`  Fetch error: ${e instanceof Error ? e.message : e}`);
-    return [];
   }
+  return allItems;
 }
 
-// DCA Anexo I-E (2018–2024): contém as ações do PPA com dotação + empenho + liquidado + pago
+// DCA Anexo I-E (2018–2024): programas/ações do PPA com dotação + execução
 async function consultarDCA(ano: number, ufCode: number) {
-  return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
+  return fetchAllPages("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
     new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), no_anexo: "DCA-Anexo I-E" }));
 }
 
-// RREO Anexo 02 (2025+): fallback bimestral para exercícios sem DCA fechado
+// RREO Anexo 02 (2025+): fallback bimestral
 async function consultarRREO(ano: number, ufCode: number) {
   for (let bim = 6; bim >= 1; bim--) {
-    const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo",
+    const items = await fetchAllPages("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo",
       new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), nr_periodo: String(bim), no_anexo: "RREO-Anexo 02", co_tipo_demonstrativo: "RREO" }));
-    if (items.length > 0) { console.log(`  RREO bim ${bim}: ${items.length}`); return items; }
+    if (items.length > 0) { console.log(`  RREO bim ${bim}: ${items.length} total`); return items; }
   }
   return [];
 }
 
-// MSC Orçamentária — classe 5 (despesa), mês 12 (acumulado anual)
-// Usada para capturar empenho e liquidação real dos códigos identificados na Camada 1
+// MSC Orçamentária — classe 5 (despesa)
 async function consultarMSC(ano: number, ufCode: number) {
-  const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
+  const items = await fetchAllPages("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
     new URLSearchParams({
-      an_referencia: String(ano),
-      me_referencia: "12",
-      id_ente: String(ufCode),
-      co_tipo_matriz: "MSCC",
-      classe_conta: "5",
-      id_tv: "beginning_balance",
+      an_referencia: String(ano), me_referencia: "12", id_ente: String(ufCode),
+      co_tipo_matriz: "MSCC", classe_conta: "5", id_tv: "beginning_balance",
     }));
-  if (items.length === 0) {
-    return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
-      new URLSearchParams({
-        an_referencia: String(ano),
-        me_referencia: "12",
-        id_ente: String(ufCode),
-        co_tipo_matriz: "MSCC",
-        classe_conta: "5",
-        id_tv: "period_change",
-      }));
-  }
-  return items;
+  if (items.length > 0) return items;
+  return fetchAllPages("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
+    new URLSearchParams({
+      an_referencia: String(ano), me_referencia: "12", id_ente: String(ufCode),
+      co_tipo_matriz: "MSCC", classe_conta: "5", id_tv: "period_change",
+    }));
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MATCHING — busca por palavras-chave nos descritivos
+// MATCHING — normalização + busca por radicais/palavras-chave
 // ═══════════════════════════════════════════════════════════════
 
 function normalize(t: string): string {
@@ -146,17 +151,16 @@ function matchRadicaisKeywords(texto: string): { termos: string[]; grupos: Set<s
   const grupos = new Set<string>();
 
   for (const r of RADICAIS) {
-    if (norm.includes(normalize(r.radical))) { termos.push(r.radical); grupos.add(r.grupo); }
+    if (norm.includes(r.radical)) { termos.push(r.radical); grupos.add(r.grupo); }
   }
   for (const pk of PALAVRAS_CHAVE) {
-    if (norm.includes(normalize(pk.termo)) && !termos.includes(pk.termo)) { termos.push(pk.termo); grupos.add(pk.grupo); }
+    if (norm.includes(pk.termo) && !termos.includes(pk.termo)) { termos.push(pk.termo); grupos.add(pk.grupo); }
   }
   if (termos.length === 0) return null;
 
   // Exclusão de termos genéricos
-  const lower = texto.toLowerCase();
   for (const excl of TERMOS_EXCLUSAO) {
-    if (lower.includes(excl)) {
+    if (norm.includes(excl)) {
       if (grupos.size === 1 && grupos.has("Racial/Étnico")) return null;
     }
   }
@@ -164,23 +168,30 @@ function matchRadicaisKeywords(texto: string): { termos: string[]; grupos: Set<s
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CAMADA 1 — Identificação de ações dos PPAs nos dados DCA/RREO
-// Busca palavras-chave em todos os campos descritivos (título,
-// nome, justificativa, objetivo = conta, rotulo, cod_conta, coluna)
-// e captura códigos e dotação inicial
+// CAMADA 1 — Busca nos PPAs: identificar ações/programas por
+// palavras-chave em TODOS os campos descritivos
+// (conta = nome programa, rotulo = título, cod_conta, coluna)
+// Captura códigos e dotação inicial
 // ═══════════════════════════════════════════════════════════════
 
-function processarDCA(
-  items: Record<string, unknown>[], uf: string, ano: number, fonteAnexo: string,
-): { registros: Record<string, unknown>[]; codContas: Set<string> } {
-  const porConta = new Map<string, {
-    conta: string; codConta: string;
-    empenhado: number | null; liquidado: number | null;
-    dotacao_inicial: number | null; pago: number | null;
-    razao: string; grupoEtnico: string | null;
-  }>();
+interface AcaoPPA {
+  nomePrograma: string;
+  codConta: string;
+  dotacao_inicial: number | null;
+  empenhado: number | null;
+  liquidado: number | null;
+  pago: number | null;
+  razao: string;
+  grupoEtnico: string;
+}
 
-  const codContasMatched = new Set<string>();
+function identificarAcoesPPA(
+  items: Record<string, unknown>[], uf: string,
+): { acoes: Map<string, AcaoPPA>; codContas: Set<string> } {
+  const acoes = new Map<string, AcaoPPA>();
+  const codContas = new Set<string>();
+
+  console.log(`  Buscando palavras-chave em ${items.length} registros...`);
 
   for (const item of items) {
     const conta = String(item.conta ?? "").trim();
@@ -189,81 +200,53 @@ function processarDCA(
     const codConta = String(item.cod_conta ?? "");
     const valor = typeof item.valor === "number" ? item.valor : null;
 
-    if ((!conta && !rotulo) || valor === null) continue;
+    if (!conta && !rotulo) continue;
 
-    const contaDisplay = conta || rotulo;
-    // Concatenação de todos os campos descritivos para busca ampla
-    const textoCompleto = `${conta} ${rotulo} ${codConta} ${coluna}`;
-
+    // Busca em TODOS os campos descritivos concatenados
+    const textoCompleto = `${conta} ${rotulo} ${codConta}`;
     const match = matchRadicaisKeywords(textoCompleto);
     if (!match) continue;
 
-    // Código da ação identificada — será usado no cruzamento MSC
-    codContasMatched.add(codConta);
+    const nomePrograma = conta || rotulo;
+    codContas.add(codConta);
 
-    const razao = `Camada1: ${match.termos.slice(0, 3).join(", ")}`;
-    const grupoEtnico = [...match.grupos].join(" | ");
-
-    const key = contaDisplay;
-    const existing = porConta.get(key) ?? {
-      conta: contaDisplay, codConta,
-      empenhado: null, liquidado: null, dotacao_inicial: null, pago: null,
-      razao, grupoEtnico,
+    const key = nomePrograma;
+    const existing = acoes.get(key) ?? {
+      nomePrograma,
+      codConta,
+      dotacao_inicial: null,
+      empenhado: null,
+      liquidado: null,
+      pago: null,
+      razao: match.termos.slice(0, 3).join(", "),
+      grupoEtnico: [...match.grupos].join(" | "),
     };
 
-    // Extração dos valores financeiros por tipo de coluna
-    if (coluna.includes("empenha")) existing.empenhado = (existing.empenhado ?? 0) + (valor ?? 0);
-    else if (coluna.includes("liquida")) existing.liquidado = (existing.liquidado ?? 0) + (valor ?? 0);
-    else if (coluna.includes("pag")) existing.pago = (existing.pago ?? 0) + (valor ?? 0);
-    else if (coluna.includes("dotação") || coluna.includes("dotacao") || coluna.includes("inicial") || coluna.includes("crédito") || coluna.includes("credito"))
-      existing.dotacao_inicial = (existing.dotacao_inicial ?? 0) + (valor ?? 0);
-
-    porConta.set(key, existing);
+    if (valor !== null) {
+      if (coluna.includes("empenha")) existing.empenhado = (existing.empenhado ?? 0) + valor;
+      else if (coluna.includes("liquida")) existing.liquidado = (existing.liquidado ?? 0) + valor;
+      else if (coluna.includes("pag")) existing.pago = (existing.pago ?? 0) + valor;
+      else if (coluna.includes("dotação") || coluna.includes("dotacao") || coluna.includes("inicial") || coluna.includes("crédito") || coluna.includes("credito"))
+        existing.dotacao_inicial = (existing.dotacao_inicial ?? 0) + valor;
+    }
+    acoes.set(key, existing);
   }
 
-  const registros: Record<string, unknown>[] = [];
-  for (const [, d] of porConta) {
-    let pctExec: number | null = null;
-    if (d.dotacao_inicial && d.dotacao_inicial > 0 && d.liquidado !== null)
-      pctExec = Math.round((d.liquidado / d.dotacao_inicial) * 10000) / 100;
-
-    registros.push({
-      programa: `${uf} — ${d.conta}`.substring(0, 250),
-      orgao: `Gov. Estadual (${uf})`,
-      esfera: "estadual",
-      ano,
-      dotacao_inicial: d.dotacao_inicial,
-      dotacao_autorizada: null,
-      empenhado: d.empenhado,
-      liquidado: d.liquidado,
-      pago: d.pago,
-      percentual_execucao: pctExec,
-      fonte_dados: `SICONFI ${fonteAnexo} — ${uf}`,
-      url_fonte: "https://siconfi.tesouro.gov.br/siconfi/pages/public/declaracao/declaracao_list.jsf",
-      descritivo: d.conta,
-      observacoes: d.grupoEtnico,
-      eixo_tematico: null,
-      grupo_focal: null,
-      publico_alvo: null,
-      razao_selecao: d.razao,
-    });
-  }
-  return { registros, codContas: codContasMatched };
+  console.log(`  → ${acoes.size} ações/programas identificados, ${codContas.size} códigos`);
+  return { acoes, codContas };
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CAMADA 3 — Cruzamento MSC/SICONFI (obrigatório)
-// Os códigos identificados na Camada 1 são rastreados na MSC
-// para capturar empenho e liquidação real, mesmo que o SICONFI
-// omita descritivos textuais nos dados contábeis
+// CAMADA 3 — Cruzamento MSC: usar os códigos da Camada 1 para
+// capturar empenho e liquidação real na Matriz de Saldos Contábeis
 // ═══════════════════════════════════════════════════════════════
 
-function enrichWithMSC(
-  registros: Record<string, unknown>[],
+function cruzarMSC(
+  acoes: Map<string, AcaoPPA>,
   mscItems: Record<string, unknown>[],
   codContas: Set<string>,
-) {
-  if (mscItems.length === 0 || codContas.size === 0) return;
+): number {
+  if (mscItems.length === 0 || codContas.size === 0) return 0;
 
   const mscByConta = new Map<string, { empenhado: number; liquidado: number; pago: number }>();
   for (const item of mscItems) {
@@ -280,38 +263,29 @@ function enrichWithMSC(
     mscByConta.set(codConta, existing);
   }
 
-  // Enriquecer registros sem dados de execução com dados da MSC
-  for (const reg of registros) {
-    const desc = String(reg.descritivo ?? "");
-    for (const [codConta, vals] of mscByConta) {
-      if (desc.includes(codConta) || normalize(desc).includes(normalize(codConta))) {
-        if (reg.empenhado === null && vals.empenhado > 0) reg.empenhado = vals.empenhado;
-        if (reg.liquidado === null && vals.liquidado > 0) reg.liquidado = vals.liquidado;
-        if (reg.pago === null && vals.pago > 0) reg.pago = vals.pago;
-        if (reg.razao_selecao) reg.razao_selecao = `${reg.razao_selecao} + MSC`;
-        break;
-      }
-    }
+  let enriched = 0;
+  for (const [, acao] of acoes) {
+    const mscData = mscByConta.get(acao.codConta);
+    if (!mscData) continue;
+    if (acao.empenhado === null && mscData.empenhado > 0) { acao.empenhado = mscData.empenhado; enriched++; }
+    if (acao.liquidado === null && mscData.liquidado > 0) acao.liquidado = mscData.liquidado;
+    if (acao.pago === null && mscData.pago > 0) acao.pago = mscData.pago;
+    acao.razao += " + MSC";
   }
+  return enriched;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CAMADA 4 — Transição de Códigos entre PPAs
-// Quando o código de ação muda entre ciclos de PPA
-// (2016-2019 → 2020-2023 → 2024-2027), os registros são
-// rastreados por similaridade de descrição para garantir
-// continuidade da série histórica.
-// Implementação: deduplicação por par programa×ano, mantendo
-// o registro com maior dotação quando há sobreposição.
+// CAMADA 4 — Transição de Códigos entre PPAs: deduplicação
+// por similaridade de descrição, mantendo maior dotação
 // ═══════════════════════════════════════════════════════════════
 
-function deduplicateWithTransition(registros: Record<string, unknown>[]): Map<string, Record<string, unknown>> {
+function deduplicateTransition(registros: Record<string, unknown>[]): Map<string, Record<string, unknown>> {
   const deduped = new Map<string, Record<string, unknown>>();
   for (const r of registros) {
     const key = `${r.programa}|${r.ano}`;
     const existing = deduped.get(key);
     if (!existing) { deduped.set(key, r); continue; }
-    // Manter registro com maior dotação (transição entre PPAs)
     const dotR = (r.dotacao_inicial as number) ?? 0;
     const dotE = (existing.dotacao_inicial as number) ?? 0;
     if (dotR > dotE) deduped.set(key, r);
@@ -320,8 +294,7 @@ function deduplicateWithTransition(registros: Record<string, unknown>[]): Map<st
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HANDLER — processa 1 estado por chamada (WORKER_LIMIT safety)
-// O frontend orquestra as chamadas sequencialmente
+// HANDLER — 1 estado por chamada
 // ═══════════════════════════════════════════════════════════════
 
 Deno.serve(async (req) => {
@@ -344,14 +317,12 @@ Deno.serve(async (req) => {
     const targetUF = uf ?? ufs?.[0];
     if (!targetUF || !ESTADOS_IBGE[targetUF]) {
       return new Response(JSON.stringify({
-        success: false,
-        error: `UF inválida: ${targetUF}. Use o parâmetro 'uf' com uma sigla válida.`,
+        success: false, error: `UF inválida: ${targetUF}`,
       }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const ufCode = ESTADOS_IBGE[targetUF];
-    console.log(`=== Ingestão Estadual: ${targetUF} (${ufCode}) | Anos: ${anos.join(",")} | Mode: ${mode} ===`);
-    console.log(`  Camadas: 1 (PPA keywords) → 3 (MSC execução) → 4 (transição PPAs)`);
+    console.log(`=== Ingestão ${targetUF} (${ufCode}) | Anos: ${anos.join(",")} | ${mode} ===`);
 
     const allRegistros: Record<string, unknown>[] = [];
     const erros: string[] = [];
@@ -360,7 +331,7 @@ Deno.serve(async (req) => {
     for (const ano of anos) {
       console.log(`\n--- ${targetUF} [${ano}] ---`);
       try {
-        // ── CAMADA 1: Identificação de ações do PPA via DCA/RREO ──
+        // ── CAMADA 1: Buscar TODOS os dados do PPA e filtrar por palavras-chave ──
         let items: Record<string, unknown>[] = [];
         let fonte = "";
 
@@ -372,29 +343,53 @@ Deno.serve(async (req) => {
           fonte = "DCA-Anexo I-E";
         }
 
-        if (items.length > 0) {
-          const { registros, codContas } = processarDCA(items, targetUF, ano, fonte);
-          logConsultas.push(`${targetUF}/${ano}: Camada1 ${fonte} → ${items.length} brutos → ${registros.length} ações PPA identificadas`);
+        logConsultas.push(`${targetUF}/${ano}: ${fonte} → ${items.length} registros brutos baixados`);
 
-          // ── CAMADA 3: Cruzamento MSC (obrigatório para 2018–2024) ──
+        if (items.length > 0) {
+          const { acoes, codContas } = identificarAcoesPPA(items, targetUF);
+          logConsultas.push(`${targetUF}/${ano}: Camada1 → ${acoes.size} ações PPA identificadas por palavras-chave`);
+
+          // ── CAMADA 3: Cruzamento MSC para execução real ──
           if (codContas.size > 0 && ano <= 2024) {
-            console.log(`  Camada3 MSC: rastreando ${codContas.size} códigos para execução real...`);
+            console.log(`  Camada3: rastreando ${codContas.size} códigos na MSC...`);
             try {
               const mscItems = await consultarMSC(ano, ufCode);
-              if (mscItems.length > 0) {
-                enrichWithMSC(registros, mscItems, codContas);
-                logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → ${mscItems.length} registros → enriquecimento concluído`);
-              } else {
-                logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → sem dados disponíveis`);
-              }
+              const enriched = cruzarMSC(acoes, mscItems, codContas);
+              logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → ${mscItems.length} itens, ${enriched} ações enriquecidas`);
             } catch (mscErr) {
               logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → erro: ${mscErr instanceof Error ? mscErr.message : "Erro"}`);
             }
           }
 
-          allRegistros.push(...registros);
+          // Converter ações para registros de inserção
+          for (const [, acao] of acoes) {
+            let pctExec: number | null = null;
+            if (acao.dotacao_inicial && acao.dotacao_inicial > 0 && acao.liquidado !== null)
+              pctExec = Math.round((acao.liquidado / acao.dotacao_inicial) * 10000) / 100;
+
+            allRegistros.push({
+              programa: `${targetUF} — ${acao.nomePrograma}`.substring(0, 250),
+              orgao: `Gov. Estadual (${targetUF})`,
+              esfera: "estadual",
+              ano,
+              dotacao_inicial: acao.dotacao_inicial,
+              dotacao_autorizada: null,
+              empenhado: acao.empenhado,
+              liquidado: acao.liquidado,
+              pago: acao.pago,
+              percentual_execucao: pctExec,
+              fonte_dados: `SICONFI ${fonte} — ${targetUF}`,
+              url_fonte: "https://siconfi.tesouro.gov.br/siconfi/pages/public/declaracao/declaracao_list.jsf",
+              descritivo: acao.nomePrograma,
+              observacoes: acao.grupoEtnico,
+              eixo_tematico: null,
+              grupo_focal: null,
+              publico_alvo: null,
+              razao_selecao: acao.razao,
+            });
+          }
         } else {
-          logConsultas.push(`${targetUF}/${ano}: ${fonte} → sem dados`);
+          logConsultas.push(`${targetUF}/${ano}: ${fonte} → sem dados disponíveis`);
         }
       } catch (error) {
         erros.push(`${targetUF} ${ano}: ${error instanceof Error ? error.message : "Erro"}`);
@@ -403,18 +398,16 @@ Deno.serve(async (req) => {
     }
 
     // ── CAMADA 4: Transição de códigos entre PPAs ──
-    const deduped = deduplicateWithTransition(allRegistros);
+    const deduped = deduplicateTransition(allRegistros);
     const batch = Array.from(deduped.values());
-    logConsultas.push(`Camada4: ${allRegistros.length} brutos → ${batch.length} após deduplicação/transição`);
+    logConsultas.push(`Camada4: ${allRegistros.length} brutos → ${batch.length} após deduplicação`);
 
-    // Stats por grupo étnico
     const porGrupo: Record<string, number> = {};
     for (const r of batch) {
       const g = String(r.observacoes ?? "N/C");
       porGrupo[g] = (porGrupo[g] ?? 0) + 1;
     }
 
-    // PREVIEW
     if (mode === "preview") {
       return new Response(JSON.stringify({
         success: true, mode: "preview", uf: targetUF,
@@ -438,7 +431,8 @@ Deno.serve(async (req) => {
     for (let i = 0; i < batch.length; i += 50) {
       const chunk = batch.slice(i, i + 50);
       const { error: insErr } = await supabase.from("dados_orcamentarios").insert(chunk);
-      if (insErr) { erros.push(`Batch ${i}: ${insErr.message}`); } else { totalInserted += chunk.length; }
+      if (insErr) erros.push(`Batch ${i}: ${insErr.message}`);
+      else totalInserted += chunk.length;
     }
 
     return new Response(JSON.stringify({
