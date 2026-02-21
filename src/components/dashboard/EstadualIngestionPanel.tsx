@@ -27,7 +27,7 @@ const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 interface PreviewData {
   total_brutos: number;
   total_deduplicados: number;
-  por_layer: Record<string, number>;
+  por_camada: Record<string, number>;
   por_grupo_etnico: Record<string, number>;
   por_uf: Record<string, number>;
   log_consultas: string[];
@@ -193,13 +193,13 @@ export function EstadualIngestionPanel() {
                     <p className="text-xs text-muted-foreground">{preview.total_brutos} brutos → {preview.total_deduplicados} deduplicados</p>
                   </div>
 
-                  {/* Por Layer */}
-                  {Object.keys(preview.por_layer).length > 0 && (
+                  {/* Por Camada */}
+                  {Object.keys(preview.por_camada).length > 0 && (
                     <div>
-                      <p className="text-xs font-medium mb-1">Por Layer de Match</p>
+                      <p className="text-xs font-medium mb-1">Por Camada de Match</p>
                       <div className="flex flex-wrap gap-1">
-                        {Object.entries(preview.por_layer).map(([layer, count]) => (
-                          <Badge key={layer} variant="secondary" className="text-[10px]">{layer}: {count}</Badge>
+                        {Object.entries(preview.por_camada).map(([camada, count]) => (
+                          <Badge key={camada} variant="secondary" className="text-[10px]">{camada}: {count}</Badge>
                         ))}
                       </div>
                     </div>
