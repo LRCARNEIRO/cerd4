@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -47,6 +47,7 @@ export function EstadualIngestionPanel() {
   const [results, setResults] = useState<UFResult[]>([]);
   const [mode, setMode] = useState<'idle' | 'preview' | 'insert' | 'done'>('idle');
   const queryClient = useQueryClient();
+  const cancelRef = useRef(false);
 
   const toggleUF = (uf: string) => setSelectedUFs(prev => prev.includes(uf) ? prev.filter(u => u !== uf) : [...prev, uf]);
   const toggleAno = (ano: number) => setSelectedAnos(prev => prev.includes(ano) ? prev.filter(a => a !== ano) : [...prev, ano]);
@@ -60,10 +61,15 @@ export function EstadualIngestionPanel() {
     setResults([]);
     setProgress(0);
     setMode(runMode);
+    cancelRef.current = false;
 
     const allResults: UFResult[] = [];
 
     for (let i = 0; i < selectedUFs.length; i++) {
+      if (cancelRef.current) {
+        toast.info(`Cancelado após ${allResults.length} estados.`);
+        break;
+      }
       const uf = selectedUFs[i];
       setCurrentUF(uf);
       setProgress(Math.round((i / selectedUFs.length) * 100));
@@ -116,7 +122,8 @@ export function EstadualIngestionPanel() {
     return `R$ ${(v / 1_000_000).toFixed(2)}M`;
   };
 
-  const reset = () => { setResults([]); setMode('idle'); setProgress(0); };
+  const reset = () => { cancelRef.current = true; setResults([]); setMode('idle'); setProgress(0); setIsRunning(false); setCurrentUF(null); };
+  const cancel = () => { cancelRef.current = true; toast.info('Cancelando após o estado atual...'); };
 
   // Aggregate stats
   const totalRegs = results.reduce((s, r) => s + r.total, 0);
@@ -210,9 +217,14 @@ export function EstadualIngestionPanel() {
               {/* Progress */}
               {isRunning && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Processando <strong>{currentUF}</strong>... ({results.length}/{selectedUFs.length})</span>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>Processando <strong>{currentUF}</strong>... ({results.length}/{selectedUFs.length})</span>
+                    </div>
+                    <Button variant="destructive" size="sm" className="h-6 text-xs px-2" onClick={cancel}>
+                      <XCircle className="w-3 h-3 mr-1" /> Cancelar
+                    </Button>
                   </div>
                   <Progress value={progress} className="h-2" />
                   {results.length > 0 && (
