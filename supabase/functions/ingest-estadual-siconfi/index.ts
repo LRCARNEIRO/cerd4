@@ -294,7 +294,7 @@ Deno.serve(async (req) => {
     let uf: string | undefined;
     let ufs: string[] | undefined;
     let mode = "insert";
-    let useMSC = false;
+    const useMSC = true; // All layers are mandatory
 
     try {
       const body = await req.json();
@@ -302,7 +302,7 @@ Deno.serve(async (req) => {
       if (typeof body.uf === "string") uf = body.uf;
       if (Array.isArray(body.ufs) && body.ufs.length > 0) ufs = body.ufs;
       if (body.mode === "preview") mode = "preview";
-      if (body.useMSC === true) useMSC = true;
+      // useMSC is always true — all layers are mandatory
     } catch { /* defaults */ }
 
     // Single state mode (preferred for batch safety)
@@ -339,8 +339,8 @@ Deno.serve(async (req) => {
         if (items.length > 0) {
           const { registros, codContas } = processarDCA(items, targetUF, ano, fonte);
 
-          // Camada 3: MSC enrichment (optional)
-          if (useMSC && codContas.size > 0 && ano <= 2024) {
+          // Camada 3: MSC enrichment (obrigatório)
+          if (codContas.size > 0 && ano <= 2024) {
             console.log(`  MSC: buscando dados de execução para ${codContas.size} contas...`);
             try {
               const mscItems = await consultarMSC(ano, ufCode);
