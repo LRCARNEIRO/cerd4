@@ -601,8 +601,12 @@ export function JuventudeTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
-                Jovens negros (12-29 anos) representam <strong>56% das vítimas de homicídio</strong> no Brasil (19º Anuário FBSP 2025). 
-                A taxa de homicídio de jovens negros é <strong>2,78 vezes maior</strong> que a de jovens brancos (Atlas da Violência 2025).
+                Jovens negros (12-29 anos) representam{' '}
+                <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">56% das vítimas de homicídio</a>{' '}
+                no Brasil (19º Anuário FBSP 2025). 
+                A taxa de homicídio de jovens negros é{' '}
+                <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">2,78 vezes maior</a>{' '}
+                que a de jovens brancos (Atlas da Violência 2025).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
