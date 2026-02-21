@@ -21,6 +21,7 @@ import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/Ses
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/EstadualResumoComparativo';
 import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/EstadualRelatorioTab';
+import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -1273,7 +1274,20 @@ export default function Orcamento() {
           )}
 
           {esfera === 'federal' && (
-            <EmptyEsferaCard esfera="Federal" descricao="Relatório Federal em elaboração. Utilize o Resumo Comparativo para análise detalhada." />
+            <div className="space-y-6">
+              {classified.federal.all.length > 0 ? (
+                <FederalRelatorioTab
+                  records={classified.federal.all}
+                  sesaiRecords={classified.sesai}
+                  stats={stats}
+                  formatCurrency={formatCurrency}
+                  formatCurrencyFull={formatCurrencyFull}
+                  includeExcludedInCalc={includeExcludedInCalc}
+                />
+              ) : (
+                <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />
+              )}
+            </div>
           )}
 
           {esfera === 'municipal' && (
