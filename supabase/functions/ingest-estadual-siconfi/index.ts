@@ -484,6 +484,117 @@ async function buscarExecucaoF14(
 }
 
 // ════════════════════════════════════════════════════════════
+// ETAPA 3b: Carregar DCA completo e fazer matching por programa
+// ════════════════════════════════════════════════════════════
+
+interface DCAItem {
+  conta: string;
+  coluna: string;
+  valor: number | null;
+}
+
+async function carregarDCA(
+  ufCode: number, ano: number,
+): Promise<{ items: DCAItem[]; logs: string[] }> {
+  const logs: string[] = [];
+  const allItems: DCAItem[] = [];
+
+  // Tentar DCA Anexo I-E (Despesas por Programa) — mais granular
+  for (const anexo of ["DCA-Anexo I-E", "DCA-Anexo I-D"]) {
+    try {
+      const params = new URLSearchParams({
+        an_exercicio: String(ano),
+        id_ente: String(ufCode),
+        no_anexo: anexo,
+        "$limit": "10000",
+      });
+      const res = await fetch(
+        `https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?${params}`,
+        { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(25_000) },
+      );
+      if (!res.ok) { logs.push(`${anexo} HTTP ${res.status}`); continue; }
+      const data = await res.json();
+      const items: Record<string, unknown>[] = data?.items ?? [];
+      if (items.length === 0) { logs.push(`${anexo}: vazio`); continue; }
+
+      for (const item of items) {
+        allItems.push({
+          conta: String(item.conta ?? ""),
+          coluna: String(item.coluna ?? ""),
+          valor: typeof item.valor === "number" ? item.valor : null,
+        });
+      }
+      logs.push(`${anexo}: ${items.length} registros carregados`);
+    } catch (e) {
+      logs.push(`${anexo}: ${e instanceof Error ? e.message : "Erro"}`);
+    }
+  }
+
+  return { items: allItems, logs };
+}
+
+interface ExecResult {
+  empenhado: number | null;
+  liquidado: number | null;
+  dotacao: number | null;
+  conta: string;
+}
+
+function matchExecucao(
+  prog: ProgramaPPA, dcaItems: DCAItem[],
+): ExecResult | null {
+  if (dcaItems.length === 0) return null;
+
+  // Strategy 1: Match by codigo if available
+  if (prog.codigo) {
+    const matched = dcaItems.filter(i => i.conta.includes(prog.codigo!));
+    if (matched.length > 0) {
+      return aggregateExec(matched);
+    }
+  }
+
+  // Strategy 2: Match by keywords from program name
+  const words = normalize(prog.nome)
+    .replace(/programa\s+\d+\s*[—–\-:]\s*/i, "")
+    .replace(/acao\s+\d+\s*[—–\-:]\s*/i, "")
+    .split(/\s+/)
+    .filter(w => w.length > 4);
+
+  if (words.length === 0) return null;
+
+  // Need at least 2 key words to match (or 1 if very specific)
+  const candidates = dcaItems.filter(item => {
+    const contaNorm = normalize(item.conta);
+    const matchCount = words.filter(w => contaNorm.includes(w)).length;
+    return matchCount >= Math.min(2, words.length);
+  });
+
+  if (candidates.length > 0) {
+    return aggregateExec(candidates);
+  }
+
+  return null;
+}
+
+function aggregateExec(items: DCAItem[]): ExecResult {
+  let emp: number | null = null;
+  let liq: number | null = null;
+  let dot: number | null = null;
+  let conta = "";
+
+  for (const item of items) {
+    const col = normalize(item.coluna);
+    if (item.valor === null) continue;
+    if (!conta && item.conta) conta = item.conta;
+    if (col.includes("empenhad")) emp = (emp ?? 0) + item.valor;
+    else if (col.includes("liquidad")) liq = (liq ?? 0) + item.valor;
+    else if (col.includes("dotacao") || col.includes("credito inicial")) dot = (dot ?? 0) + item.valor;
+  }
+
+  return { empenhado: emp, liquidado: liq, dotacao: dot, conta };
+}
+
+// ════════════════════════════════════════════════════════════
 // HANDLER
 // ════════════════════════════════════════════════════════════
 
