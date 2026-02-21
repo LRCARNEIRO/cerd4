@@ -41,7 +41,7 @@ import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/compone
 export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
-    isLoading, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores,
   } = useAnalyticalInsights();
 
@@ -49,22 +49,26 @@ export default function Conclusoes() {
   const [beforeSnap, setBeforeSnap] = useState<SnapshotData | null>(null);
   const [afterSnap, setAfterSnap] = useState<SnapshotData | null>(null);
   const waitingRefresh = useRef(false);
+  const wasFetching = useRef(false);
 
   const handleRefresh = () => {
-    // Capture current state
     setBeforeSnap(captureSnapshot(stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats));
     waitingRefresh.current = true;
     queryClient.invalidateQueries();
   };
 
-  // When loading finishes after a refresh, capture "after" and show diff
+  // Track fetching transitions: true→false means refetch completed
   useEffect(() => {
-    if (waitingRefresh.current && !isLoading) {
+    if (waitingRefresh.current && isFetching) {
+      wasFetching.current = true;
+    }
+    if (waitingRefresh.current && wasFetching.current && !isFetching) {
       waitingRefresh.current = false;
+      wasFetching.current = false;
       setAfterSnap(captureSnapshot(stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats));
       setDiffOpen(true);
     }
-  }, [isLoading]);
+  }, [isFetching, stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats]);
 
   const now = new Date().toLocaleString('pt-BR');
 
