@@ -271,11 +271,16 @@ Deno.serve(async (req) => {
 
     // INSERT
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const ppaStartYear = (ppa: string): number => {
+      const m = ppa.match(/(\d{4})/);
+      return m ? parseInt(m[1]) : new Date().getFullYear();
+    };
+
     const registros = acoes.map(a => ({
       programa: `${uf} — ${a.nome}`.substring(0, 250),
       orgao: `Gov. Estadual (${uf})`,
       esfera: "estadual",
-      ano: new Date().getFullYear(),
+      ano: ppaStartYear(a.ppa),
       fonte_dados: `PPA ${nomeEstado} (${a.ppa})`,
       url_fonte: a.url,
       descritivo: a.codigo ? `Código: ${a.codigo} | ${a.nome}` : a.nome,
