@@ -27,13 +27,11 @@ const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 interface PreviewData {
   total_brutos: number;
   total_deduplicados: number;
-  por_camada: Record<string, number>;
   por_grupo_etnico: Record<string, number>;
   por_uf: Record<string, number>;
   log_consultas: string[];
   amostra: { programa: string; ano: number; dotacao_inicial: number | null; liquidado: number | null; razao_selecao: string; grupo: string }[];
   erros: string[];
-  metodologia: string;
 }
 
 export function EstadualIngestionPanel() {
@@ -99,9 +97,9 @@ export function EstadualIngestionPanel() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+              <DialogTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              Ingestão Estadual — Metodologia Padrão-Ouro
+              Ingestão Estadual — SICONFI
             </DialogTitle>
           </DialogHeader>
 
@@ -109,7 +107,7 @@ export function EstadualIngestionPanel() {
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground">
                 <strong>DCA Anexo I-E</strong> (2018–2024) e <strong>RREO Anexo 02</strong> (2025+).
-                Busca por Função 14, Subfunção 422 e radicais unificados (indígen, quilombol, cigan, étnic, palmares, funai, sesai).
+                Busca por radicais unificados (indígen, quilombol, cigan, étnic, palmares, funai, sesai) e palavras-chave nos campos descritivos.
               </p>
 
               {/* Estados */}
@@ -192,18 +190,6 @@ export function EstadualIngestionPanel() {
                     </div>
                     <p className="text-xs text-muted-foreground">{preview.total_brutos} brutos → {preview.total_deduplicados} deduplicados</p>
                   </div>
-
-                  {/* Por Camada */}
-                  {Object.keys(preview.por_camada).length > 0 && (
-                    <div>
-                      <p className="text-xs font-medium mb-1">Por Camada de Match</p>
-                      <div className="flex flex-wrap gap-1">
-                        {Object.entries(preview.por_camada).map(([camada, count]) => (
-                          <Badge key={camada} variant="secondary" className="text-[10px]">{camada}: {count}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Por Grupo */}
                   {Object.keys(preview.por_grupo_etnico).length > 0 && (
