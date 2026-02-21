@@ -683,49 +683,6 @@ export function JuventudeTab() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Programa Juventude Negra Viva (2023-2025)</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
-              <p className="text-sm font-medium text-success mb-2">Avanços 2023-2025:</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Criação do Plano Nacional (Decreto 11.786/2023)</li>
-                <li className="flex items-center gap-1">
-                  • Orçamento: R$ 45M → R$ 285M (aumento de 533%)
-                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem deep link SIOP</Badge>
-                </li>
-                <li className="flex items-center gap-1">
-                  • 15 estados aderiram ao programa
-                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem fonte oficial</Badge>
-                </li>
-                <li className="flex items-center gap-1">
-                  • 180 municípios com ações focalizadas
-                  <Badge variant="outline" className="text-[9px] bg-warning/10 text-warning border-warning/30 ml-1">Sem fonte oficial</Badge>
-                </li>
-              </ul>
-            </div>
-            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
-              <p className="text-sm font-medium text-warning mb-2">Desafios Persistentes:</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• Taxa de homicídio ainda 2,78x maior (Atlas 2025)</li>
-                <li>• Letalidade policial: 83% das vítimas são negras (19º Anuário FBSP 2025)</li>
-                <li>• Encarceramento: 68,2% dos presos são negros (SISDEPEN 2024)</li>
-                <li className="flex items-center gap-1">
-                  • Evasão escolar 2x maior
-                  <EstimativaBadge tipo="simples" metodologia="Estimativa baseada em proxy etário: INEP publica evasão por raça, mas o recorte jovens negros 15-17 vs brancos requer filtro adicional." className="ml-1" />
-                </li>
-              </ul>
-            </div>
-            <AuditFooter
-              fontes={[
-                { nome: 'Decreto 11.786/2023 — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/D11786.htm' },
-              ]}
-              documentos={['CERD 2022']}
-            />
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
