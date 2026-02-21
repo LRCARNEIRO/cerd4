@@ -342,25 +342,29 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 3: Secretarias/Órgãos temáticos conhecidos ═══
-    const secPat = /(Secretaria\s+(?:de\s+|da\s+|do\s+)?(?:Promoção\s+da\s+Igualdade\s+Racial|Igualdade\s+Racial|Políticas\s+(?:para|de)\s+(?:Promoção|Igualdade)\s+Racial|Povos\s+Ind[íi]genas)|SEPROMI|SEPIR|SEPPIR|Fundação\s+(?:Cultural\s+)?Palmares)/i;
-    const secMatch = line.match(secPat);
-    if (secMatch) {
-      const nomeSecretaria = secMatch[0].trim();
-      const key = `sec_${normalize(nomeSecretaria).substring(0, 30)}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        programas.push({
-          nome: nomeSecretaria, codigo: null,
-          dotacao_inicial: extrairValor(contexto),
-          secretaria: nomeSecretaria, url_fonte: url,
-          grupo: classificarGrupo(nomeSecretaria),
-          criterio: `Secretaria/Órgão temático identificado no PPA`,
-          ppa_cycle: ppaCycle,
-        });
+    // ═══ Padrão 3: Código numérico genérico + radical racial/étnico ═══
+    // Captura linhas como "1234 - Promoção da Igualdade Racial" sem prefixo "Programa"/"Ação"
+    const codeGenericMatch = line.match(/^(\d{3,6})\s*[—–\-:\.]\s*(.{10,200})/);
+    if (codeGenericMatch) {
+      const codigo = codeGenericMatch[1];
+      const nome = codeGenericMatch[2].trim();
+      const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
+      if (radical) {
+        const key = `gen_${codigo}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          programas.push({
+            nome: limparNome(`${codigo} — ${nome}`), codigo,
+            dotacao_inicial: extrairValor(contexto),
+            secretaria: extrairSecretaria(contexto),
+            url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
+            criterio: `Código ${codigo} com radical "${radical}" no PPA`,
+            ppa_cycle: ppaCycle,
+          });
+        }
       }
     }
-    // NÃO há Padrão 4 — apenas programas/ações com código ou secretarias conhecidas são aceitos
+    // Secretarias são usadas apenas como metadado (via extrairSecretaria), nunca como registros standalone
   }
 
   return programas;
