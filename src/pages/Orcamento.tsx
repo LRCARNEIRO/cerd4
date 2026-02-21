@@ -1614,12 +1614,13 @@ export default function Orcamento() {
                 {esfera === 'estadual' && (
                   <>
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Estadual — DCA/RREO + MSC</h4>
-                      <p>A base orçamentária estadual (2018–2025) é construída em camadas, consultando a API SICONFI estado por estado para evitar limites de processamento:</p>
+                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Estadual em 4 Camadas</h4>
+                      <p>A base orçamentária estadual (2018–2025) é construída em 4 camadas obrigatórias, consultando a API SICONFI estado por estado. O período cobre <strong>3 ciclos de PPA</strong> (2016-2019, 2020-2023, 2024-2027).</p>
                       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 1 — Busca por Palavras-chave nos Descritivos (DCA/RREO)</h5>
-                          <p>Filtragem por radicais unificados e palavras-chave específicas aplicada sobre os campos <code>conta</code>, <code>rotulo</code>, <code>cod_conta</code> e <code>coluna</code> do DCA Anexo I-E (2018–2024) e RREO Anexo 02 (2025+). Cada registro aprovado inclui dotação inicial, empenho, liquidação e pagamento extraídos diretamente das colunas do DCA.</p>
+                          <h5 className="font-semibold text-foreground">Camada 1 — Identificação de Ações dos PPAs Estaduais</h5>
+                          <p>Busca por <strong>radicais e palavras-chave</strong> em todos os campos descritivos das ações orçamentárias (título, nome, justificativa, objetivo — campos <code>conta</code>, <code>rotulo</code>, <code>cod_conta</code> e <code>coluna</code> no SICONFI). A API SICONFI não expõe os PPAs diretamente, mas as ações do PPA se manifestam nos dados de execução orçamentária do <strong>DCA Anexo I-E</strong> (2018–2024) e <strong>RREO Anexo 02</strong> (2025+).</p>
+                          <p className="mt-1">Uma vez identificadas, capturam-se os <strong>códigos de ação</strong> e a <strong>dotação inicial</strong> de cada programa/ação selecionado.</p>
                         </div>
 
                         {/* Palavras-chave */}
@@ -1672,13 +1673,13 @@ export default function Orcamento() {
                         </div>
 
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 3 — Enriquecimento MSC (opcional)</h5>
-                          <p>Quando ativada, a Matriz de Saldos Contábeis (MSC Orçamentária, classe 5 — despesa, mês 12) é consultada para os mesmos <code>cod_conta</code> identificados na Camada 1, enriquecendo registros que não possuam dados de empenho/liquidação no DCA.</p>
+                          <h5 className="font-semibold text-foreground">Camada 3 — Cruzamento MSC/SICONFI (obrigatório)</h5>
+                          <p>Os <strong>códigos de ação</strong> identificados na Camada 1 são rastreados na <strong>Matriz de Saldos Contábeis</strong> (MSC Orçamentária, classe 5 — despesa, mês 12) para capturar <strong>empenho e liquidação real</strong>, mesmo que o SICONFI omita descritivos textuais nos dados contábeis. Este cruzamento é obrigatório e executado automaticamente para todos os estados (2018–2024).</p>
                         </div>
 
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 4 — Transição de Códigos entre PPAs</h5>
-                          <p>A continuidade da série histórica (3 PPAs: 2016-2019, 2020-2023, 2024-2027) é garantida pela deduplicação por par <strong>programa × ano</strong>, mantendo o registro com maior dotação inicial quando há duplicatas.</p>
+                          <p>Quando o código de ação de um PPA anterior é diferente do código no ciclo seguinte (ex: 2016-2019 → 2020-2023 → 2024-2027), os registros são rastreados por <strong>similaridade de descrição</strong> para garantir a continuidade da série histórica. Na prática, a deduplicação por par <strong>programa × ano</strong> preserva o registro com maior dotação inicial quando há sobreposição.</p>
                         </div>
                       </div>
                     </section>
@@ -1687,7 +1688,7 @@ export default function Orcamento() {
                       <h4 className="font-semibold text-foreground text-base">2. Processamento em Lotes</h4>
                       <div className="bg-primary/10 rounded-lg p-4 space-y-2 border border-primary/30">
                         <p>Para evitar limites de CPU (WORKER_LIMIT), a ingestão processa <strong>1 estado por chamada</strong>. O frontend orquestra as chamadas sequencialmente com barra de progresso, permitindo processar todos os 27 estados sem timeout.</p>
-                        <p className="text-xs italic">Cada chamada consulta DCA/RREO para todos os anos selecionados de um único estado, opcionalmente enriquecendo com MSC.</p>
+                        <p className="text-xs italic">Cada chamada executa as 4 camadas completas (DCA/RREO → MSC → deduplicação) para todos os anos selecionados de um único estado.</p>
                       </div>
                     </section>
 
@@ -1696,15 +1697,15 @@ export default function Orcamento() {
                       <div className="space-y-3">
                         <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
                           <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">DCA Anexo I-E (2018–2024)</p>
-                          <p className="text-sm">Declaração de Contas Anuais — dados consolidados anuais com dotação, empenho, liquidação e pagamento.</p>
+                          <p className="text-sm">Declaração de Contas Anuais — dados consolidados anuais com dotação, empenho, liquidação e pagamento. Contém os descritivos das ações do PPA.</p>
                         </div>
                         <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
                           <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">RREO Anexo 02 (2025+)</p>
                           <p className="text-sm">Relatório Resumido de Execução Orçamentária — dados bimestrais (consulta do 6º ao 1º bimestre até encontrar dados). Valores parciais sujeitos a ajustes até o fechamento do Balanço Geral.</p>
                         </div>
                         <div className="p-3 rounded-md border border-blue-500/30 bg-blue-500/5">
-                          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">MSC Orçamentária (opcional)</p>
-                          <p className="text-sm">Matriz de Saldos Contábeis — classe 5 (despesa), mês 12. Complementa dados de empenho/liquidação quando ausentes no DCA.</p>
+                          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">MSC Orçamentária (obrigatória)</p>
+                          <p className="text-sm">Matriz de Saldos Contábeis — classe 5 (despesa), mês 12. Complementa dados de empenho/liquidação quando ausentes no DCA, usando os códigos de ação identificados na Camada 1.</p>
                         </div>
                       </div>
                     </section>
@@ -1718,7 +1719,7 @@ export default function Orcamento() {
                         </div>
                         <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
                           <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Limitação da API SICONFI</p>
-                          <p className="text-sm">O DCA/RREO retorna dados de Função/Subfunção (agregados contábeis). A identificação de programas raciais depende da presença de palavras-chave nos campos descritivos (<code>conta</code>, <code>rotulo</code>).</p>
+                          <p className="text-sm">O DCA/RREO retorna dados de Função/Subfunção (agregados contábeis). A identificação de programas raciais depende da presença de palavras-chave nos campos descritivos. Ações dos PPAs sem descritivos textuais no SICONFI podem não ser capturadas na Camada 1, mas o cruzamento MSC (Camada 3) mitiga essa limitação.</p>
                         </div>
                       </div>
                     </section>

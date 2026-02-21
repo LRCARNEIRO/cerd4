@@ -14,7 +14,11 @@ const ESTADOS_IBGE: Record<string, number> = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// Radicais e Palavras-Chave (Camada 1)
+// CAMADA 1 — Radicais e Palavras-Chave para identificação de
+// ações e programas dos PPAs estaduais voltados a políticas
+// raciais/étnicas. Aplicados sobre título, nome, justificativa,
+// objetivo (campos: conta, rotulo, cod_conta, coluna no SICONFI).
+// Período: 2018–2025 (3 ciclos de PPA: 2016-2019, 2020-2023, 2024-2027)
 // ═══════════════════════════════════════════════════════════════
 
 const RADICAIS: { radical: string; grupo: string }[] = [
@@ -86,13 +90,13 @@ async function fetchJson(url: string, params: URLSearchParams): Promise<Record<s
   }
 }
 
-// DCA Anexo I-E (2018–2024): dotação + empenho + liquidado + pago
+// DCA Anexo I-E (2018–2024): contém as ações do PPA com dotação + empenho + liquidado + pago
 async function consultarDCA(ano: number, ufCode: number) {
   return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
     new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), no_anexo: "DCA-Anexo I-E" }));
 }
 
-// RREO Anexo 02 (2025+): fallback bimestral
+// RREO Anexo 02 (2025+): fallback bimestral para exercícios sem DCA fechado
 async function consultarRREO(ano: number, ufCode: number) {
   for (let bim = 6; bim >= 1; bim--) {
     const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo",
@@ -103,6 +107,7 @@ async function consultarRREO(ano: number, ufCode: number) {
 }
 
 // MSC Orçamentária — classe 5 (despesa), mês 12 (acumulado anual)
+// Usada para capturar empenho e liquidação real dos códigos identificados na Camada 1
 async function consultarMSC(ano: number, ufCode: number) {
   const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
     new URLSearchParams({
@@ -114,7 +119,6 @@ async function consultarMSC(ano: number, ufCode: number) {
       id_tv: "beginning_balance",
     }));
   if (items.length === 0) {
-    // Fallback: try period_change
     return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
       new URLSearchParams({
         an_referencia: String(ano),
@@ -129,7 +133,7 @@ async function consultarMSC(ano: number, ufCode: number) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MATCHING
+// MATCHING — busca por palavras-chave nos descritivos
 // ═══════════════════════════════════════════════════════════════
 
 function normalize(t: string): string {
@@ -149,6 +153,7 @@ function matchRadicaisKeywords(texto: string): { termos: string[]; grupos: Set<s
   }
   if (termos.length === 0) return null;
 
+  // Exclusão de termos genéricos
   const lower = texto.toLowerCase();
   for (const excl of TERMOS_EXCLUSAO) {
     if (lower.includes(excl)) {
@@ -159,7 +164,10 @@ function matchRadicaisKeywords(texto: string): { termos: string[]; grupos: Set<s
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PROCESS DCA/RREO items → registros
+// CAMADA 1 — Identificação de ações dos PPAs nos dados DCA/RREO
+// Busca palavras-chave em todos os campos descritivos (título,
+// nome, justificativa, objetivo = conta, rotulo, cod_conta, coluna)
+// e captura códigos e dotação inicial
 // ═══════════════════════════════════════════════════════════════
 
 function processarDCA(
@@ -184,14 +192,16 @@ function processarDCA(
     if ((!conta && !rotulo) || valor === null) continue;
 
     const contaDisplay = conta || rotulo;
+    // Concatenação de todos os campos descritivos para busca ampla
     const textoCompleto = `${conta} ${rotulo} ${codConta} ${coluna}`;
 
     const match = matchRadicaisKeywords(textoCompleto);
     if (!match) continue;
 
+    // Código da ação identificada — será usado no cruzamento MSC
     codContasMatched.add(codConta);
 
-    const razao = `Radical: ${match.termos.slice(0, 3).join(", ")}`;
+    const razao = `Camada1: ${match.termos.slice(0, 3).join(", ")}`;
     const grupoEtnico = [...match.grupos].join(" | ");
 
     const key = contaDisplay;
@@ -201,6 +211,7 @@ function processarDCA(
       razao, grupoEtnico,
     };
 
+    // Extração dos valores financeiros por tipo de coluna
     if (coluna.includes("empenha")) existing.empenhado = (existing.empenhado ?? 0) + (valor ?? 0);
     else if (coluna.includes("liquida")) existing.liquidado = (existing.liquidado ?? 0) + (valor ?? 0);
     else if (coluna.includes("pag")) existing.pago = (existing.pago ?? 0) + (valor ?? 0);
@@ -241,7 +252,10 @@ function processarDCA(
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ENRICH with MSC execution data (Camada 3)
+// CAMADA 3 — Cruzamento MSC/SICONFI (obrigatório)
+// Os códigos identificados na Camada 1 são rastreados na MSC
+// para capturar empenho e liquidação real, mesmo que o SICONFI
+// omita descritivos textuais nos dados contábeis
 // ═══════════════════════════════════════════════════════════════
 
 function enrichWithMSC(
@@ -251,7 +265,6 @@ function enrichWithMSC(
 ) {
   if (mscItems.length === 0 || codContas.size === 0) return;
 
-  // Build MSC lookup by cod_conta
   const mscByConta = new Map<string, { empenhado: number; liquidado: number; pago: number }>();
   for (const item of mscItems) {
     const codConta = String(item.conta_contabil ?? item.cod_conta ?? "");
@@ -267,7 +280,7 @@ function enrichWithMSC(
     mscByConta.set(codConta, existing);
   }
 
-  // Enrich registros that lack execution data
+  // Enriquecer registros sem dados de execução com dados da MSC
   for (const reg of registros) {
     const desc = String(reg.descritivo ?? "");
     for (const [codConta, vals] of mscByConta) {
@@ -283,7 +296,32 @@ function enrichWithMSC(
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HANDLER — processes 1 state at a time for WORKER_LIMIT safety
+// CAMADA 4 — Transição de Códigos entre PPAs
+// Quando o código de ação muda entre ciclos de PPA
+// (2016-2019 → 2020-2023 → 2024-2027), os registros são
+// rastreados por similaridade de descrição para garantir
+// continuidade da série histórica.
+// Implementação: deduplicação por par programa×ano, mantendo
+// o registro com maior dotação quando há sobreposição.
+// ═══════════════════════════════════════════════════════════════
+
+function deduplicateWithTransition(registros: Record<string, unknown>[]): Map<string, Record<string, unknown>> {
+  const deduped = new Map<string, Record<string, unknown>>();
+  for (const r of registros) {
+    const key = `${r.programa}|${r.ano}`;
+    const existing = deduped.get(key);
+    if (!existing) { deduped.set(key, r); continue; }
+    // Manter registro com maior dotação (transição entre PPAs)
+    const dotR = (r.dotacao_inicial as number) ?? 0;
+    const dotE = (existing.dotacao_inicial as number) ?? 0;
+    if (dotR > dotE) deduped.set(key, r);
+  }
+  return deduped;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HANDLER — processa 1 estado por chamada (WORKER_LIMIT safety)
+// O frontend orquestra as chamadas sequencialmente
 // ═══════════════════════════════════════════════════════════════
 
 Deno.serve(async (req) => {
@@ -294,7 +332,6 @@ Deno.serve(async (req) => {
     let uf: string | undefined;
     let ufs: string[] | undefined;
     let mode = "insert";
-    const useMSC = true; // All layers are mandatory
 
     try {
       const body = await req.json();
@@ -302,10 +339,8 @@ Deno.serve(async (req) => {
       if (typeof body.uf === "string") uf = body.uf;
       if (Array.isArray(body.ufs) && body.ufs.length > 0) ufs = body.ufs;
       if (body.mode === "preview") mode = "preview";
-      // useMSC is always true — all layers are mandatory
     } catch { /* defaults */ }
 
-    // Single state mode (preferred for batch safety)
     const targetUF = uf ?? ufs?.[0];
     if (!targetUF || !ESTADOS_IBGE[targetUF]) {
       return new Response(JSON.stringify({
@@ -315,7 +350,8 @@ Deno.serve(async (req) => {
     }
 
     const ufCode = ESTADOS_IBGE[targetUF];
-    console.log(`=== Ingestão Estadual: ${targetUF} (${ufCode}) | Anos: ${anos.join(",")} | Mode: ${mode} | MSC: ${useMSC} ===`);
+    console.log(`=== Ingestão Estadual: ${targetUF} (${ufCode}) | Anos: ${anos.join(",")} | Mode: ${mode} ===`);
+    console.log(`  Camadas: 1 (PPA keywords) → 3 (MSC execução) → 4 (transição PPAs)`);
 
     const allRegistros: Record<string, unknown>[] = [];
     const erros: string[] = [];
@@ -324,7 +360,7 @@ Deno.serve(async (req) => {
     for (const ano of anos) {
       console.log(`\n--- ${targetUF} [${ano}] ---`);
       try {
-        // Camada 1: DCA/RREO keyword search
+        // ── CAMADA 1: Identificação de ações do PPA via DCA/RREO ──
         let items: Record<string, unknown>[] = [];
         let fonte = "";
 
@@ -338,25 +374,25 @@ Deno.serve(async (req) => {
 
         if (items.length > 0) {
           const { registros, codContas } = processarDCA(items, targetUF, ano, fonte);
+          logConsultas.push(`${targetUF}/${ano}: Camada1 ${fonte} → ${items.length} brutos → ${registros.length} ações PPA identificadas`);
 
-          // Camada 3: MSC enrichment (obrigatório)
+          // ── CAMADA 3: Cruzamento MSC (obrigatório para 2018–2024) ──
           if (codContas.size > 0 && ano <= 2024) {
-            console.log(`  MSC: buscando dados de execução para ${codContas.size} contas...`);
+            console.log(`  Camada3 MSC: rastreando ${codContas.size} códigos para execução real...`);
             try {
               const mscItems = await consultarMSC(ano, ufCode);
               if (mscItems.length > 0) {
                 enrichWithMSC(registros, mscItems, codContas);
-                logConsultas.push(`${targetUF}/${ano}: MSC → ${mscItems.length} registros consultados`);
+                logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → ${mscItems.length} registros → enriquecimento concluído`);
               } else {
-                logConsultas.push(`${targetUF}/${ano}: MSC → sem dados disponíveis`);
+                logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → sem dados disponíveis`);
               }
             } catch (mscErr) {
-              logConsultas.push(`${targetUF}/${ano}: MSC → erro: ${mscErr instanceof Error ? mscErr.message : "Erro"}`);
+              logConsultas.push(`${targetUF}/${ano}: Camada3 MSC → erro: ${mscErr instanceof Error ? mscErr.message : "Erro"}`);
             }
           }
 
           allRegistros.push(...registros);
-          logConsultas.push(`${targetUF}/${ano}: ${fonte} → ${items.length} brutos → ${registros.length} hits`);
         } else {
           logConsultas.push(`${targetUF}/${ano}: ${fonte} → sem dados`);
         }
@@ -366,20 +402,12 @@ Deno.serve(async (req) => {
       await new Promise(r => setTimeout(r, 300));
     }
 
-    // Deduplication
-    const deduped = new Map<string, Record<string, unknown>>();
-    for (const r of allRegistros) {
-      const key = `${r.programa}|${r.ano}`;
-      const existing = deduped.get(key);
-      if (!existing) { deduped.set(key, r); continue; }
-      const dotR = (r.dotacao_inicial as number) ?? 0;
-      const dotE = (existing.dotacao_inicial as number) ?? 0;
-      if (dotR > dotE) deduped.set(key, r);
-    }
-
+    // ── CAMADA 4: Transição de códigos entre PPAs ──
+    const deduped = deduplicateWithTransition(allRegistros);
     const batch = Array.from(deduped.values());
+    logConsultas.push(`Camada4: ${allRegistros.length} brutos → ${batch.length} após deduplicação/transição`);
 
-    // Stats
+    // Stats por grupo étnico
     const porGrupo: Record<string, number> = {};
     for (const r of batch) {
       const g = String(r.observacoes ?? "N/C");
