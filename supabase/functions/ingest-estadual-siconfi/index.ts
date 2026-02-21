@@ -349,12 +349,18 @@ function extrairProgramasDoConteudo(
           lineNorm.includes("projeto") || lineNorm.includes("meta") ||
           lineNorm.includes("objetivo");
 
-        // Rejeitar ruído
+        // Rejeitar ruído: labels de tabela, indicadores, compromissos
         const ruido = lineNorm.includes("publicad") || lineNorm.includes("confira") ||
           lineNorm.includes("saiba mais") || lineNorm.includes("clique") ||
           line.includes("...") || line.includes("…") ||
-          line.includes(";") ||  // listas separadas por ponto-e-vírgula
-          (line.match(/,/g)?.length ?? 0) > 3;
+          line.includes(";") ||
+          (line.match(/,/g)?.length ?? 0) > 3 ||
+          lineNorm.includes("indicador de compromisso") ||
+          lineNorm.includes("indicador de programa") ||
+          lineNorm.includes("prioridade da ldo") ||
+          lineNorm.includes("acao orcamentaria") || lineNorm.includes("aco orcamentaria") ||
+          lineNorm.includes("nao programada na loa") ||
+          /^(compromisso|iniciativa|ano\s?\d|prioridade|destaque)\s*:/i.test(line.trim());
 
         if (pareceTitulo && !ruido) {
           const cMatch = line.match(/(\d{3,6})/);
@@ -364,7 +370,7 @@ function extrairProgramasDoConteudo(
             .replace(/^\*+\s*/, "").replace(/^#+\s*/, "")
             .replace(/^\d+[\.\)]\s*/, "").trim());
           const key = `gen_${normalize(nome).substring(0, 50)}`;
-          if (!seen.has(key) && nome.length > 8) {
+          if (!seen.has(key) && nome.length > 12) {
             seen.add(key);
             programas.push({
               nome, codigo,
@@ -412,14 +418,14 @@ function extrairValor(texto: string): number | null {
 }
 
 // ════════════════════════════════════════════════════════════
-// ETAPA 3: SICONFI — Execução Função 14 (agregado)
+// ETAPA 3: SICONFI — Execução F14 (referência agregada)
+// NOTA: SICONFI organiza por Função/Subfunção, NÃO por programa.
 // ════════════════════════════════════════════════════════════
 
-async function buscarExecucaoSICONFI(
+async function buscarExecucaoF14(
   ufCode: number, ano: number,
-): Promise<{ empenhado: number | null; liquidado: number | null; pago: number | null; dotacao: number | null; logs: string[] }> {
+): Promise<{ dotacao: number | null; empenhado: number | null; liquidado: number | null; pago: number | null; fonte: string; logs: string[] }> {
   const logs: string[] = [];
-
   for (let bim = 6; bim >= 1; bim--) {
     try {
       const params = new URLSearchParams({
@@ -428,63 +434,53 @@ async function buscarExecucaoSICONFI(
         co_tipo_demonstrativo: "RREO", "$limit": "5000",
       });
       const res = await fetch(`https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?${params}`, {
-        headers: { Accept: "application/json" }, signal: AbortSignal.timeout(25_000),
+        headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000),
       });
       if (!res.ok) continue;
       const data = await res.json();
       const items: Record<string, unknown>[] = data?.items ?? [];
       if (items.length === 0) continue;
-
-      const f14Items = items.filter(i => normalize(String(i.conta ?? "")).includes("direitos da cidadania"));
-      if (f14Items.length === 0) continue;
-
-      let empenhado: number | null = null, liquidado: number | null = null, pago: number | null = null, dotacao: number | null = null;
-      for (const item of f14Items) {
-        const coluna = normalize(String(item.coluna ?? ""));
-        const valor = typeof item.valor === "number" ? item.valor : null;
-        if (valor === null) continue;
-        if (coluna.includes("dotacao inicial")) dotacao = (dotacao ?? 0) + valor;
-        else if (coluna.includes("empenhadas ate o bimestre")) empenhado = (empenhado ?? 0) + valor;
-        else if (coluna.includes("liquidadas ate o bimestre")) liquidado = (liquidado ?? 0) + valor;
-        else if (coluna.includes("pagas ate o bimestre")) pago = (pago ?? 0) + valor;
+      const f14 = items.filter(i => normalize(String(i.conta ?? "")).includes("direitos da cidadania"));
+      if (f14.length === 0) continue;
+      let emp: number | null = null, liq: number | null = null, pag: number | null = null, dot: number | null = null;
+      for (const item of f14) {
+        const col = normalize(String(item.coluna ?? ""));
+        const val = typeof item.valor === "number" ? item.valor : null;
+        if (val === null) continue;
+        if (col.includes("dotacao inicial")) dot = (dot ?? 0) + val;
+        else if (col.includes("empenhadas ate o bimestre")) emp = (emp ?? 0) + val;
+        else if (col.includes("liquidadas ate o bimestre")) liq = (liq ?? 0) + val;
+        else if (col.includes("pagas ate o bimestre")) pag = (pag ?? 0) + val;
       }
-      logs.push(`RREO bim${bim}: F14 dot=${dotacao?.toLocaleString() ?? "—"} emp=${empenhado?.toLocaleString() ?? "—"} liq=${liquidado?.toLocaleString() ?? "—"}`);
-      return { empenhado, liquidado, pago, dotacao, logs };
-    } catch (e) {
-      logs.push(`RREO bim${bim}: ${e instanceof Error ? e.message : "Erro"}`);
-    }
+      logs.push(`RREO bim${bim}: F14 dot=${dot?.toLocaleString() ?? "—"} emp=${emp?.toLocaleString() ?? "—"} liq=${liq?.toLocaleString() ?? "—"}`);
+      return { dotacao: dot, empenhado: emp, liquidado: liq, pago: pag, fonte: `RREO Bim${bim}`, logs };
+    } catch (e) { logs.push(`RREO bim${bim}: ${e instanceof Error ? e.message : "Erro"}`); }
   }
-
   // DCA fallback
   try {
-    const params = new URLSearchParams({
-      an_exercicio: String(ano), id_ente: String(ufCode),
-      no_anexo: "DCA-Anexo I-E", "$limit": "5000",
-    });
+    const params = new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), no_anexo: "DCA-Anexo I-E", "$limit": "5000" });
     const res = await fetch(`https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?${params}`, {
-      headers: { Accept: "application/json" }, signal: AbortSignal.timeout(25_000),
+      headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000),
     });
     if (res.ok) {
       const data = await res.json();
       const items: Record<string, unknown>[] = data?.items ?? [];
-      const f14 = items.filter(i => String(i.conta ?? "").startsWith("14 "));
-      let empenhado: number | null = null, liquidado: number | null = null, dotacao: number | null = null;
+      const f14 = items.filter(i => { const c = normalize(String(i.conta ?? "")); return c.startsWith("14 ") || c.includes("direitos da cidadania"); });
+      let emp: number | null = null, liq: number | null = null, dot: number | null = null;
       for (const item of f14) {
-        const coluna = normalize(String(item.coluna ?? ""));
-        const valor = typeof item.valor === "number" ? item.valor : null;
-        if (valor === null) continue;
-        if (coluna.includes("empenhad")) empenhado = (empenhado ?? 0) + valor;
-        else if (coluna.includes("liquidad")) liquidado = (liquidado ?? 0) + valor;
-        else if (coluna.includes("dotacao")) dotacao = (dotacao ?? 0) + valor;
+        const col = normalize(String(item.coluna ?? "")); const val = typeof item.valor === "number" ? item.valor : null;
+        if (val === null) continue;
+        if (col.includes("empenhad")) emp = (emp ?? 0) + val;
+        else if (col.includes("liquidad")) liq = (liq ?? 0) + val;
+        else if (col.includes("dotacao")) dot = (dot ?? 0) + val;
       }
-      logs.push(`DCA I-E: F14 dot=${dotacao?.toLocaleString() ?? "—"}`);
-      return { empenhado, liquidado, pago: null, dotacao, logs };
+      if (dot !== null || emp !== null) {
+        logs.push(`DCA I-E: F14 dot=${dot?.toLocaleString() ?? "—"}`);
+        return { dotacao: dot, empenhado: emp, liquidado: liq, pago: null, fonte: "DCA I-E", logs };
+      }
     }
-  } catch (e) {
-    logs.push(`DCA I-E: ${e instanceof Error ? e.message : "Erro"}`);
-  }
-
-  return { empenhado: null, liquidado: null, pago: null, dotacao: null, logs };
+  } catch (e) { logs.push(`DCA I-E: ${e instanceof Error ? e.message : "Erro"}`); }
+  return { dotacao: null, empenhado: null, liquidado: null, pago: null, fonte: "", logs };
 }
 
 // ════════════════════════════════════════════════════════════
@@ -552,49 +548,49 @@ Deno.serve(async (req) => {
     }
     allLogs.push(`Total: ${todosProgramas.length} programas/ações únicos extraídos dos PPAs`);
 
-    // ── ETAPA 3: Cruzamento SICONFI para execução ──
-    allLogs.push("─── ETAPA 3: Cruzamento SICONFI ───");
+    // ── ETAPA 3: Cruzamento SICONFI por programa/ação ──
+    allLogs.push("─── ETAPA 3: Cruzamento SICONFI por programa ───");
     const registros: Record<string, unknown>[] = [];
 
     for (const ano of anos) {
-      const { empenhado, liquidado, pago, dotacao: dotSiconfi, logs: siconfiLogs } =
-        await buscarExecucaoSICONFI(ufCode, ano);
-      allLogs.push(...siconfiLogs.map(l => `SICONFI/${ano}: ${l}`));
+      // Carregar todo o DCA do ano para matching local
+      const { items: dcaItems, logs: dcaLogs } = await carregarDCA(ufCode, ano);
+      allLogs.push(...dcaLogs.map(l => `SICONFI/${ano}: ${l}`));
 
-      // Registros por programa PPA
+      let matchCount = 0;
+
       for (const prog of todosProgramas) {
+        // Tentar encontrar execução correspondente no DCA
+        const exec = matchExecucao(prog, dcaItems);
+
+        const empenhado = exec?.empenhado ?? null;
+        const liquidado = exec?.liquidado ?? null;
+        const dotIni = prog.dotacao_inicial ?? exec?.dotacao ?? null;
+        let pctExec: number | null = null;
+        if (dotIni && dotIni > 0 && liquidado !== null)
+          pctExec = Math.round((liquidado / dotIni) * 10000) / 100;
+
+        if (exec) matchCount++;
+
         registros.push({
           programa: `${uf} — ${prog.nome}`.substring(0, 250),
           orgao: prog.secretaria ?? `Gov. Estadual (${uf})`,
           esfera: "estadual", ano,
-          dotacao_inicial: prog.dotacao_inicial, dotacao_autorizada: null,
-          empenhado: null, liquidado: null, pago: null, percentual_execucao: null,
-          fonte_dados: `PPA ${nomeEstado} (${prog.ppa_cycle})`,
+          dotacao_inicial: dotIni, dotacao_autorizada: null,
+          empenhado, liquidado, pago: null, percentual_execucao: pctExec,
+          fonte_dados: exec
+            ? `PPA + SICONFI DCA (${nomeEstado})`
+            : `PPA ${nomeEstado} (${prog.ppa_cycle})`,
           url_fonte: prog.url_fonte,
           descritivo: prog.codigo ? `Código: ${prog.codigo} | ${prog.nome}` : prog.nome,
           observacoes: prog.grupo, eixo_tematico: null, grupo_focal: null, publico_alvo: null,
-          razao_selecao: `${prog.criterio} | ${prog.ppa_cycle}`,
+          razao_selecao: exec
+            ? `${prog.criterio} | Exec. SICONFI: "${exec.conta.substring(0, 80)}"`
+            : `${prog.criterio} | ${prog.ppa_cycle}`,
         });
       }
 
-      // Agregado SICONFI F14
-      if (dotSiconfi !== null || empenhado !== null) {
-        let pctExec: number | null = null;
-        if (dotSiconfi && dotSiconfi > 0 && liquidado !== null)
-          pctExec = Math.round((liquidado / dotSiconfi) * 10000) / 100;
-
-        registros.push({
-          programa: `${uf} — Função 14: Direitos da Cidadania (SICONFI)`.substring(0, 250),
-          orgao: `Gov. Estadual (${uf})`, esfera: "estadual", ano,
-          dotacao_inicial: dotSiconfi, dotacao_autorizada: null,
-          empenhado, liquidado, pago, percentual_execucao: pctExec,
-          fonte_dados: `SICONFI RREO/DCA — ${uf}`,
-          url_fonte: "https://siconfi.tesouro.gov.br",
-          descritivo: "Função 14 — Direitos da Cidadania (execução agregada estadual)",
-          observacoes: "Agregado F14", eixo_tematico: null, grupo_focal: null, publico_alvo: null,
-          razao_selecao: "SICONFI Função 14 — referência de execução agregada",
-        });
-      }
+      allLogs.push(`SICONFI/${ano}: ${matchCount}/${todosProgramas.length} programas com execução encontrada`);
     }
 
     // Deduplicação
