@@ -1,7 +1,5 @@
-// Contagem total de indicadores/séries estatísticas disponíveis
-// em StatisticsData.ts (todas as abas da Base Estatística)
+// Contagem unificada de todos os indicadores do sistema
 import {
-  dadosDemograficos,
   evolucaoComposicaoRacial,
   indicadoresSocioeconomicos,
   segurancaPublica,
@@ -20,9 +18,23 @@ import {
   saudeInterseccional,
   radarVulnerabilidades,
   evolucaoDesigualdade,
+  dadosDemograficos,
 } from '@/components/estatisticas/StatisticsData';
 
-const allArrays = [
+import {
+  tabelasDemograficas,
+  tabelasEconomicas,
+  tabelasEducacao,
+  tabelasSaude,
+  tabelasTrabalho,
+  tabelasPobreza,
+  tabelasSeguranca,
+  tabelasHabitacao,
+  tabelasSistemaPolitico,
+} from '@/components/estatisticas/CommonCoreTab';
+
+// Todas as séries de Estatísticas Gerais
+const seriesEstatisticas = [
   evolucaoComposicaoRacial,
   indicadoresSocioeconomicos,
   segurancaPublica,
@@ -43,9 +55,27 @@ const allArrays = [
   evolucaoDesigualdade,
 ];
 
-/** Número de séries temáticas (arrays) + objetos compostos */
-export const TOTAL_SERIES = allArrays.length + 3; // +3: dadosDemograficos, povosTradicionais, rendimentosCenso2022
+// Todas as tabelas do Common Core (77 tabelas)
+const tabelasCommonCore = [
+  ...tabelasDemograficas,
+  ...tabelasEconomicas,
+  ...tabelasEducacao,
+  ...tabelasSaude,
+  ...tabelasTrabalho,
+  ...tabelasPobreza,
+  ...tabelasSeguranca,
+  ...tabelasHabitacao,
+  ...tabelasSistemaPolitico,
+];
 
-/** Número total de registros/dados individuais em todas as séries */
-export const TOTAL_DADOS = allArrays.reduce((sum, arr) => sum + arr.length, 0)
-  + dadosDemograficos.composicaoRacial.length; // +5 raças do demográfico
+/** Total de dados nas séries de Estatísticas Gerais */
+export const TOTAL_DADOS_ESTATISTICAS = seriesEstatisticas.reduce((s, a) => s + a.length, 0)
+  + dadosDemograficos.composicaoRacial.length;
+
+/** Total de tabelas do Common Core */
+export const TOTAL_TABELAS_COMMON_CORE = tabelasCommonCore.length;
+
+/** Total de dados individuais nas tabelas do Common Core (linhas de dados) */
+export const TOTAL_DADOS_COMMON_CORE = tabelasCommonCore.reduce(
+  (s, t) => s + t.dados.rows.length, 0
+);
