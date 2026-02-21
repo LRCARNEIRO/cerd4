@@ -4,7 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, Play, CheckCircle, XCircle, Home, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Loader2, Play, CheckCircle, XCircle, Home, RefreshCw, AlertTriangle, Eye, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -27,11 +28,10 @@ const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
 interface UFResult {
   uf: string;
   status: 'pending' | 'running' | 'done' | 'error';
-  inserted?: number;
-  processados?: number;
   total?: number;
-  restantes?: number;
   error?: string;
+  porGrupo?: Record<string, number>;
+  amostra?: { programa: string; ano: number; grupo: string; criterio: string }[];
 }
 
 export function MunicipalIngestionPanel() {
@@ -40,6 +40,7 @@ export function MunicipalIngestionPanel() {
   const [selectedAnos, setSelectedAnos] = useState<number[]>([2022, 2023, 2024]);
   const [isRunning, setIsRunning] = useState(false);
   const [ufResults, setUfResults] = useState<UFResult[]>([]);
+  const [mode, setMode] = useState<'preview' | 'insert'>('preview');
   const queryClient = useQueryClient();
 
   const toggleUF = (uf: string) => {
@@ -49,73 +50,71 @@ export function MunicipalIngestionPanel() {
     setSelectedAnos(prev => prev.includes(ano) ? prev.filter(a => a !== ano) : [...prev, ano]);
   };
 
-  const run = async () => {
+  const run = async (runMode: 'preview' | 'insert') => {
     if (selectedUFs.length === 0 || selectedAnos.length === 0) {
       toast.warning('Selecione pelo menos uma UF e um ano.');
       return;
     }
 
     setIsRunning(true);
+    setMode(runMode);
     const results: UFResult[] = selectedUFs.map(uf => ({ uf, status: 'pending' as const }));
     setUfResults(results);
 
-    let totalInserted = 0;
+    let totalFound = 0;
     let totalErrors = 0;
 
-    // Process one UF at a time to stay within edge function timeout
     for (let i = 0; i < selectedUFs.length; i++) {
       const uf = selectedUFs[i];
-
-      setUfResults(prev => prev.map(r =>
-        r.uf === uf ? { ...r, status: 'running' } : r
-      ));
+      setUfResults(prev => prev.map(r => r.uf === uf ? { ...r, status: 'running' } : r));
 
       try {
         const { data, error } = await supabase.functions.invoke('ingest-municipal-siconfi', {
-          body: { ufs: [uf], anos: selectedAnos },
+          body: { ufs: [uf], anos: selectedAnos, mode: runMode },
         });
 
         if (error) throw error;
 
-        const inserted = data?.total_inseridos || 0;
-        totalInserted += inserted;
+        const total = runMode === 'preview' ? (data?.total_registros ?? 0) : (data?.total_inseridos ?? 0);
+        totalFound += total;
 
         setUfResults(prev => prev.map(r =>
           r.uf === uf ? {
-            ...r,
-            status: 'done',
-            inserted,
-            processados: data?.municipios_processados,
-            total: data?.municipios_total,
-            restantes: data?.municipios_restantes,
+            ...r, status: 'done', total,
+            porGrupo: data?.por_grupo_etnico,
+            amostra: data?.amostra,
           } : r
         ));
       } catch (err) {
         totalErrors++;
-        const msg = err instanceof Error ? err.message : 'Erro desconhecido';
         setUfResults(prev => prev.map(r =>
-          r.uf === uf ? { ...r, status: 'error', error: msg } : r
+          r.uf === uf ? { ...r, status: 'error', error: err instanceof Error ? err.message : 'Erro' } : r
         ));
       }
 
-      // Delay between UFs
-      if (i < selectedUFs.length - 1) {
-        await new Promise(r => setTimeout(r, 2000));
-      }
+      if (i < selectedUFs.length - 1) await new Promise(r => setTimeout(r, 2000));
     }
 
     setIsRunning(false);
-    queryClient.invalidateQueries();
+    if (runMode === 'insert') queryClient.invalidateQueries();
 
     if (totalErrors === 0) {
-      toast.success(`Ingestão municipal completa: ${totalInserted} registros de ${selectedUFs.length} UFs`);
+      toast.success(`${runMode === 'preview' ? 'Preview' : 'Ingestão'}: ${totalFound} ações de ${selectedUFs.length} UFs`);
     } else {
-      toast.warning(`Ingestão: ${totalInserted} registros, ${totalErrors} UFs com erro`);
+      toast.warning(`${totalFound} ações, ${totalErrors} UFs com erro`);
     }
   };
 
   const completedUFs = ufResults.filter(r => r.status === 'done' || r.status === 'error').length;
   const progress = ufResults.length > 0 ? (completedUFs / ufResults.length) * 100 : 0;
+  const allDone = ufResults.length > 0 && ufResults.every(r => r.status !== 'pending' && r.status !== 'running');
+
+  // Aggregate amostra
+  const allAmostra = ufResults.flatMap(r => r.amostra ?? []);
+  const allGrupos: Record<string, number> = {};
+  for (const r of ufResults) {
+    for (const [g, c] of Object.entries(r.porGrupo ?? {})) allGrupos[g] = (allGrupos[g] ?? 0) + c;
+  }
 
   return (
     <>
@@ -129,19 +128,19 @@ export function MunicipalIngestionPanel() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Home className="w-5 h-5 text-primary" />
-              Ingestão Municipal (SICONFI) — 5.570 Municípios
+              Ingestão Municipal — Scraping de Ações por Palavras-chave
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <p className="text-xs text-muted-foreground">
-              Busca dados RREO/DCA via API SICONFI do Tesouro Nacional para <strong>todos os municípios</strong> das UFs selecionadas.
-              Filtra por Função 14, Subfunções 422/423 e palavras-chave raciais/étnicas. Cada UF é processada em uma chamada separada.
+              Busca nomes de ações orçamentárias no SICONFI (RREO/DCA) cujo título contenha palavras-chave raciais/étnicas.
+              <strong className="ml-1">Sem dados de dotação ou execução</strong> — apenas identificação das ações.
             </p>
 
             <div className="p-2 bg-muted/50 rounded-lg flex items-start gap-2 text-xs text-muted-foreground">
               <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
-              <span>Cada UF busca <strong>todos</strong> os seus municípios automaticamente via SICONFI. Para 27 UFs, o processo pode levar vários minutos.</span>
+              <span>Cada UF consulta todos os seus municípios via SICONFI. Pode levar vários minutos.</span>
             </div>
 
             {/* UFs */}
@@ -149,15 +148,9 @@ export function MunicipalIngestionPanel() {
               <p className="text-sm font-medium mb-2">UFs ({selectedUFs.length}/27)</p>
               <div className="flex flex-wrap gap-1.5">
                 {UFS.map(e => (
-                  <Button
-                    key={e.uf}
-                    variant={selectedUFs.includes(e.uf) ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-7 text-xs px-2"
-                    onClick={() => toggleUF(e.uf)}
-                    disabled={isRunning}
-                    title={e.nome}
-                  >
+                  <Button key={e.uf} variant={selectedUFs.includes(e.uf) ? 'default' : 'outline'}
+                    size="sm" className="h-7 text-xs px-2"
+                    onClick={() => toggleUF(e.uf)} disabled={isRunning} title={e.nome}>
                     {e.uf}
                   </Button>
                 ))}
@@ -173,14 +166,9 @@ export function MunicipalIngestionPanel() {
               <p className="text-sm font-medium mb-2">Anos</p>
               <div className="flex flex-wrap gap-2">
                 {ANOS.map(ano => (
-                  <Button
-                    key={ano}
-                    variant={selectedAnos.includes(ano) ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-8 w-16"
-                    onClick={() => toggleAno(ano)}
-                    disabled={isRunning}
-                  >
+                  <Button key={ano} variant={selectedAnos.includes(ano) ? 'default' : 'outline'}
+                    size="sm" className="h-8 w-16"
+                    onClick={() => toggleAno(ano)} disabled={isRunning}>
                     {ano}
                   </Button>
                 ))}
@@ -191,19 +179,19 @@ export function MunicipalIngestionPanel() {
               </div>
             </div>
 
-            {/* Preview */}
-            {!isRunning && ufResults.length === 0 && selectedUFs.length > 0 && selectedAnos.length > 0 && (
-              <div className="p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-                Serão processadas <strong>{selectedUFs.length} UF(s)</strong> × <strong>{selectedAnos.length} ano(s)</strong>.
-                Todos os municípios de cada UF serão consultados automaticamente via SICONFI.
+            {/* Buttons */}
+            {!isRunning && ufResults.length === 0 && (
+              <div className="flex gap-2">
+                <Button onClick={() => run('preview')} disabled={selectedUFs.length === 0 || selectedAnos.length === 0}
+                  variant="outline" className="flex-1 gap-2">
+                  <Eye className="w-4 h-4" /> Preview
+                </Button>
+                <Button onClick={() => run('insert')} disabled={selectedUFs.length === 0 || selectedAnos.length === 0}
+                  className="flex-1 gap-2">
+                  <Upload className="w-4 h-4" /> Inserir no Banco
+                </Button>
               </div>
             )}
-
-            {/* Run button */}
-            <Button onClick={run} disabled={isRunning || selectedUFs.length === 0 || selectedAnos.length === 0} className="w-full gap-2">
-              {isRunning ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-              {isRunning ? `Processando ${selectedUFs.length} UFs...` : 'Iniciar Ingestão Municipal'}
-            </Button>
 
             {/* Progress */}
             {ufResults.length > 0 && (
@@ -218,7 +206,7 @@ export function MunicipalIngestionPanel() {
 
             {/* UF results */}
             {ufResults.length > 0 && (
-              <ScrollArea className="max-h-52">
+              <ScrollArea className="max-h-32">
                 <div className="space-y-1">
                   {ufResults.map(r => (
                     <div key={r.uf} className="flex items-center gap-2 text-xs p-2 rounded bg-muted/30">
@@ -227,25 +215,58 @@ export function MunicipalIngestionPanel() {
                       {r.status === 'done' && <CheckCircle className="w-3 h-3 text-green-600" />}
                       {r.status === 'error' && <XCircle className="w-3 h-3 text-destructive" />}
                       <span className="font-medium w-6">{r.uf}</span>
-                      {r.status === 'done' && (
-                        <span className="text-muted-foreground ml-auto">
-                          {r.inserted} registros • {r.processados}/{r.total} municípios
-                          {r.restantes ? ` (${r.restantes} pendentes)` : ''}
-                        </span>
-                      )}
-                      {r.status === 'error' && (
-                        <span className="text-destructive ml-auto truncate max-w-[200px]">{r.error}</span>
-                      )}
+                      {r.status === 'done' && <span className="text-muted-foreground ml-auto">{r.total} ações</span>}
+                      {r.status === 'error' && <span className="text-destructive ml-auto truncate max-w-[200px]">{r.error}</span>}
                     </div>
                   ))}
                 </div>
               </ScrollArea>
             )}
 
+            {/* Aggregated results */}
+            {allDone && Object.keys(allGrupos).length > 0 && (
+              <div>
+                <p className="text-xs font-medium mb-1">Por Grupo Étnico</p>
+                <div className="flex flex-wrap gap-1">
+                  {Object.entries(allGrupos).sort((a, b) => b[1] - a[1]).map(([g, c]) => (
+                    <Badge key={g} variant="outline" className="text-[10px]">{g}: {c}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {allDone && allAmostra.length > 0 && (
+              <div>
+                <p className="text-xs font-medium mb-1">Ações encontradas ({Math.min(allAmostra.length, 20)})</p>
+                <div className="border rounded-lg overflow-auto max-h-48">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-[10px] p-1">Ação</TableHead>
+                        <TableHead className="text-[10px] p-1">Ano</TableHead>
+                        <TableHead className="text-[10px] p-1">Grupo</TableHead>
+                        <TableHead className="text-[10px] p-1">Critério</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allAmostra.slice(0, 20).map((r, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="text-[10px] p-1 max-w-[180px] truncate" title={r.programa}>{r.programa}</TableCell>
+                          <TableCell className="text-[10px] p-1">{r.ano}</TableCell>
+                          <TableCell className="text-[10px] p-1">{r.grupo}</TableCell>
+                          <TableCell className="text-[10px] p-1 max-w-[120px] truncate" title={r.criterio}>{r.criterio}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            )}
+
             {/* Reset */}
-            {!isRunning && ufResults.length > 0 && ufResults.every(r => r.status !== 'pending' && r.status !== 'running') && (
+            {!isRunning && allDone && (
               <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => setUfResults([])}>
-                <RefreshCw className="w-3 h-3" /> Nova Ingestão
+                <RefreshCw className="w-3 h-3" /> Nova Consulta
               </Button>
             )}
           </div>

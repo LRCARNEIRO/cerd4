@@ -9,7 +9,6 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const ESTADOS = [
   { uf: 'AC', nome: 'Acre' }, { uf: 'AL', nome: 'Alagoas' }, { uf: 'AP', nome: 'Amapá' },
@@ -24,8 +23,6 @@ const ESTADOS = [
   { uf: 'SP', nome: 'São Paulo' }, { uf: 'SE', nome: 'Sergipe' }, { uf: 'TO', nome: 'Tocantins' },
 ];
 
-const ANOS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
-
 interface UFResult {
   uf: string;
   success: boolean;
@@ -33,14 +30,12 @@ interface UFResult {
   erros: string[];
   porGrupo: Record<string, number>;
   logConsultas: string[];
-  amostra: { programa: string; ano: number; dotacao_inicial: number | null; liquidado: number | null; empenhado: number | null; razao_selecao: string; grupo: string }[];
+  amostra: { programa: string; codigo?: string; grupo: string; criterio: string; ppa?: string; url?: string }[];
 }
 
 export function EstadualIngestionPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedUFs, setSelectedUFs] = useState<string[]>(['BA', 'SP', 'RJ']);
-  const [selectedAnos, setSelectedAnos] = useState<number[]>([2023, 2024]);
-  
   const [isRunning, setIsRunning] = useState(false);
   const [currentUF, setCurrentUF] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -50,11 +45,10 @@ export function EstadualIngestionPanel() {
   const cancelRef = useRef(false);
 
   const toggleUF = (uf: string) => setSelectedUFs(prev => prev.includes(uf) ? prev.filter(u => u !== uf) : [...prev, uf]);
-  const toggleAno = (ano: number) => setSelectedAnos(prev => prev.includes(ano) ? prev.filter(a => a !== ano) : [...prev, ano]);
 
   const run = useCallback(async (runMode: 'preview' | 'insert') => {
-    if (selectedUFs.length === 0 || selectedAnos.length === 0) {
-      toast.warning('Selecione pelo menos um estado e um ano.');
+    if (selectedUFs.length === 0) {
+      toast.warning('Selecione pelo menos um estado.');
       return;
     }
     setIsRunning(true);
@@ -76,7 +70,7 @@ export function EstadualIngestionPanel() {
 
       try {
         const { data, error } = await supabase.functions.invoke('ingest-estadual-siconfi', {
-          body: { uf, anos: selectedAnos, mode: runMode },
+          body: { uf, mode: runMode },
         });
 
         if (error) {
@@ -85,7 +79,7 @@ export function EstadualIngestionPanel() {
           allResults.push({
             uf,
             success: data.success,
-            total: runMode === 'preview' ? (data.total_registros ?? data.total_deduplicados ?? 0) : (data.total_inseridos ?? 0),
+            total: runMode === 'preview' ? (data.total_registros ?? 0) : (data.total_inseridos ?? 0),
             erros: data.erros ?? [],
             porGrupo: data.por_grupo_etnico ?? {},
             logConsultas: data.log_consultas ?? [],
@@ -97,7 +91,6 @@ export function EstadualIngestionPanel() {
       }
 
       setResults([...allResults]);
-      // Small delay between states
       if (i < selectedUFs.length - 1) await new Promise(r => setTimeout(r, 500));
     }
 
@@ -107,20 +100,13 @@ export function EstadualIngestionPanel() {
     setMode('done');
 
     const totalRegs = allResults.reduce((s, r) => s + r.total, 0);
-    const failCount = allResults.filter(r => !r.success).length;
-
     if (runMode === 'insert') {
       queryClient.invalidateQueries();
-      toast.success(`Ingestão concluída: ${totalRegs} registros de ${allResults.length - failCount}/${allResults.length} estados`);
+      toast.success(`Ingestão: ${totalRegs} ações de ${allResults.filter(r => r.success).length} estados`);
     } else {
-      toast.success(`Preview: ${totalRegs} registros encontrados em ${allResults.length - failCount} estados`);
+      toast.success(`Preview: ${totalRegs} ações encontradas`);
     }
-  }, [selectedUFs, selectedAnos, queryClient]);
-
-  const fmtCurrency = (v: number | null) => {
-    if (v === null || v === undefined) return '—';
-    return `R$ ${(v / 1_000_000).toFixed(2)}M`;
-  };
+  }, [selectedUFs, queryClient]);
 
   const reset = useCallback(() => {
     cancelRef.current = true;
@@ -130,9 +116,7 @@ export function EstadualIngestionPanel() {
     setIsRunning(false);
     setCurrentUF(null);
   }, []);
-  const cancel = () => { cancelRef.current = true; toast.info('Cancelando após o estado atual...'); };
 
-  // Aggregate stats
   const totalRegs = results.reduce((s, r) => s + r.total, 0);
   const allGrupos: Record<string, number> = {};
   const allAmostra: UFResult['amostra'] = [];
@@ -154,43 +138,31 @@ export function EstadualIngestionPanel() {
 
       <Dialog open={isOpen} onOpenChange={(open) => {
         setIsOpen(open);
-        if (open && mode === 'done') {
-          // Auto-reset when reopening after a completed run
-          cancelRef.current = true;
-          setResults([]);
-          setMode('idle');
-          setProgress(0);
-          setIsRunning(false);
-          setCurrentUF(null);
-        }
+        if (open && mode === 'done') reset();
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              Ingestão Estadual — PPAs via Portais de Transparência
+              Ingestão Estadual — Scraping de Ações por Palavras-chave
             </DialogTitle>
           </DialogHeader>
 
           <ScrollArea className="flex-1 pr-2">
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground">
-                <strong>Camada 1:</strong> Busca nos documentos PPA de cada estado (3 ciclos: 2016-2019, 2020-2023, 2024-2027) por palavras-chave raciais/étnicas nos títulos, justificativas e objetivos das ações.
-                <strong className="ml-1">Camada 3:</strong> Cruzamento SICONFI/RREO Função 14 para execução (empenho/liquidação).
-                <br />Retorna nome da ação, código, dotação inicial e o <strong>critério exato</strong> de seleção.
+                Busca nos PPAs estaduais (via Firecrawl) por <strong>nomes de ações e programas</strong> que contenham palavras-chave raciais/étnicas.
+                <strong className="ml-1">Sem dados de dotação ou execução</strong> — apenas identificação das ações.
               </p>
 
               {/* Estados */}
               <div>
-                <p className="text-sm font-medium mb-2">Estados</p>
+                <p className="text-sm font-medium mb-2">Estados ({selectedUFs.length}/27)</p>
                 <div className="flex flex-wrap gap-1.5">
                   {ESTADOS.map(e => (
-                    <Button
-                      key={e.uf}
-                      variant={selectedUFs.includes(e.uf) ? 'default' : 'outline'}
+                    <Button key={e.uf} variant={selectedUFs.includes(e.uf) ? 'default' : 'outline'}
                       size="sm" className="h-7 text-xs px-2"
-                      onClick={() => toggleUF(e.uf)} disabled={isRunning}
-                    >
+                      onClick={() => toggleUF(e.uf)} disabled={isRunning}>
                       {e.uf}
                     </Button>
                   ))}
@@ -201,34 +173,10 @@ export function EstadualIngestionPanel() {
                 </div>
               </div>
 
-              {/* Anos */}
-              <div>
-                <p className="text-sm font-medium mb-2">Anos</p>
-                <div className="flex flex-wrap gap-2">
-                  {ANOS.map(ano => (
-                    <Button
-                      key={ano}
-                      variant={selectedAnos.includes(ano) ? 'default' : 'outline'}
-                      size="sm" className="h-8 w-16"
-                      onClick={() => toggleAno(ano)} disabled={isRunning}
-                    >
-                      {ano}
-                    </Button>
-                  ))}
-                </div>
-                <div className="flex gap-1 mt-1">
-                  <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setSelectedAnos([...ANOS])} disabled={isRunning}>Todos</Button>
-                  <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setSelectedAnos([])} disabled={isRunning}>Limpar</Button>
-                </div>
-              </div>
-
-
               {/* Info */}
-              {mode === 'idle' && selectedUFs.length > 0 && selectedAnos.length > 0 && (
+              {mode === 'idle' && selectedUFs.length > 0 && (
                 <div className="p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-                  <strong>{selectedUFs.length}</strong> estado(s) × <strong>{selectedAnos.length}</strong> ano(s).
-                  Processamento sequencial: ~{selectedUFs.length * 3}s estimado.
-                  {selectedAnos.includes(2025) && <span className="ml-1 text-amber-600 font-medium">2025 via RREO (dados parciais).</span>}
+                  <strong>{selectedUFs.length}</strong> estado(s). Processamento sequencial via Firecrawl.
                 </div>
               )}
 
@@ -240,7 +188,8 @@ export function EstadualIngestionPanel() {
                       <Loader2 className="w-3 h-3 animate-spin" />
                       <span>Processando <strong>{currentUF}</strong>... ({results.length}/{selectedUFs.length})</span>
                     </div>
-                    <Button variant="destructive" size="sm" className="h-6 text-xs px-2" onClick={cancel}>
+                    <Button variant="destructive" size="sm" className="h-6 text-xs px-2"
+                      onClick={() => { cancelRef.current = true; toast.info('Cancelando...'); }}>
                       <XCircle className="w-3 h-3 mr-1" /> Cancelar
                     </Button>
                   </div>
@@ -260,18 +209,12 @@ export function EstadualIngestionPanel() {
               {/* Buttons */}
               {mode === 'idle' && (
                 <div className="flex gap-2">
-                  <Button
-                    onClick={() => run('preview')}
-                    disabled={isRunning || selectedUFs.length === 0 || selectedAnos.length === 0}
-                    variant="outline" className="flex-1 gap-2"
-                  >
-                    <Eye className="w-4 h-4" /> Preview (Testar)
+                  <Button onClick={() => run('preview')} disabled={isRunning || selectedUFs.length === 0}
+                    variant="outline" className="flex-1 gap-2">
+                    <Eye className="w-4 h-4" /> Preview
                   </Button>
-                  <Button
-                    onClick={() => run('insert')}
-                    disabled={isRunning || selectedUFs.length === 0 || selectedAnos.length === 0}
-                    className="flex-1 gap-2"
-                  >
+                  <Button onClick={() => run('insert')} disabled={isRunning || selectedUFs.length === 0}
+                    className="flex-1 gap-2">
                     <Upload className="w-4 h-4" /> Inserir no Banco
                   </Button>
                 </div>
@@ -280,14 +223,13 @@ export function EstadualIngestionPanel() {
               {/* RESULTS */}
               {mode === 'done' && results.length > 0 && (
                 <div className="space-y-3">
-                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg space-y-2">
+                  <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-semibold">{totalRegs} registros — {results.filter(r => r.success).length}/{results.length} estados</span>
+                      <span className="text-sm font-semibold">{totalRegs} ações — {results.filter(r => r.success).length}/{results.length} estados</span>
                     </div>
                   </div>
 
-                  {/* Per-state results */}
                   <div className="flex flex-wrap gap-1">
                     {results.map(r => (
                       <Badge key={r.uf} variant={r.success && r.total > 0 ? 'default' : r.success ? 'secondary' : 'destructive'} className="text-[10px]">
@@ -296,7 +238,6 @@ export function EstadualIngestionPanel() {
                     ))}
                   </div>
 
-                  {/* Por Grupo */}
                   {Object.keys(allGrupos).length > 0 && (
                     <div>
                       <p className="text-xs font-medium mb-1">Por Grupo Étnico</p>
@@ -308,18 +249,17 @@ export function EstadualIngestionPanel() {
                     </div>
                   )}
 
-                  {/* Amostra */}
+                  {/* Amostra — sem colunas financeiras */}
                   {allAmostra.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium mb-1">Amostra ({Math.min(allAmostra.length, 30)} registros)</p>
+                      <p className="text-xs font-medium mb-1">Ações encontradas ({Math.min(allAmostra.length, 30)})</p>
                       <div className="border rounded-lg overflow-auto max-h-60">
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead className="text-[10px] p-1">Programa</TableHead>
-                              <TableHead className="text-[10px] p-1">Ano</TableHead>
-                              <TableHead className="text-[10px] p-1">Dot. Inicial</TableHead>
-                              <TableHead className="text-[10px] p-1">Liquidado</TableHead>
+                              <TableHead className="text-[10px] p-1">Ação/Programa</TableHead>
+                              <TableHead className="text-[10px] p-1">Código</TableHead>
+                              <TableHead className="text-[10px] p-1">Grupo</TableHead>
                               <TableHead className="text-[10px] p-1">Critério</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -327,10 +267,9 @@ export function EstadualIngestionPanel() {
                             {allAmostra.slice(0, 30).map((r, i) => (
                               <TableRow key={i}>
                                 <TableCell className="text-[10px] p-1 max-w-[200px] truncate" title={r.programa}>{r.programa}</TableCell>
-                                <TableCell className="text-[10px] p-1">{r.ano}</TableCell>
-                                <TableCell className="text-[10px] p-1 font-mono">{fmtCurrency(r.dotacao_inicial)}</TableCell>
-                                <TableCell className="text-[10px] p-1 font-mono">{fmtCurrency(r.liquidado)}</TableCell>
-                                <TableCell className="text-[10px] p-1 max-w-[150px] truncate" title={r.razao_selecao}>{r.razao_selecao}</TableCell>
+                                <TableCell className="text-[10px] p-1 font-mono">{r.codigo ?? '—'}</TableCell>
+                                <TableCell className="text-[10px] p-1">{r.grupo}</TableCell>
+                                <TableCell className="text-[10px] p-1 max-w-[150px] truncate" title={r.criterio}>{r.criterio}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -339,10 +278,9 @@ export function EstadualIngestionPanel() {
                     </div>
                   )}
 
-                  {/* Log */}
                   {allLogs.length > 0 && (
                     <details className="text-xs">
-                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Log de consultas ({allLogs.length})</summary>
+                      <summary className="cursor-pointer text-muted-foreground">Log ({allLogs.length})</summary>
                       <div className="mt-1 p-2 bg-muted/30 rounded text-[10px] space-y-0.5 max-h-40 overflow-auto">
                         {allLogs.map((l, i) => <p key={i}>{l}</p>)}
                       </div>
@@ -351,7 +289,7 @@ export function EstadualIngestionPanel() {
 
                   {allErros.length > 0 && (
                     <details className="text-xs">
-                      <summary className="cursor-pointer text-destructive hover:text-destructive/80">Erros ({allErros.length})</summary>
+                      <summary className="cursor-pointer text-destructive">Erros ({allErros.length})</summary>
                       <div className="mt-1 p-2 bg-destructive/5 rounded text-[10px] space-y-0.5 max-h-32 overflow-auto text-destructive">
                         {allErros.map((e, i) => <p key={i}>{e}</p>)}
                       </div>

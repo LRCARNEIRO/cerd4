@@ -37,7 +37,7 @@ const ESTADOS_IBGE: Record<string, { cod: number; nome: string; dominio: string 
 };
 
 // ════════════════════════════════════════════════════════════
-// RADICAIS E KEYWORDS PARA BUSCA NOS PPAs
+// RADICAIS E KEYWORDS
 // ════════════════════════════════════════════════════════════
 
 const RADICAIS_POR_GRUPO: { grupo: string; radicais: string[] }[] = [
@@ -89,7 +89,7 @@ function encontrarRadical(texto: string): string | null {
 }
 
 // ════════════════════════════════════════════════════════════
-// ETAPA 1: Localizar URLs de documentos PPA (PDFs) via Search
+// BUSCA VIA FIRECRAWL SEARCH
 // ════════════════════════════════════════════════════════════
 
 const URL_REJEICAO = [
@@ -107,33 +107,36 @@ function isUrlValida(url: string): boolean {
   } catch { return false; }
 }
 
-interface PPADoc {
-  url: string;
-  cycle: string;
-  title: string;
+interface AcaoOrcamentaria {
+  nome: string;
+  codigo: string | null;
+  secretaria: string | null;
+  url_fonte: string;
+  grupo: string;
+  criterio: string;
+  ppa_cycle: string;
 }
 
-async function localizarPPAs(
+async function buscarAcoes(
   nomeEstado: string, dominio: string, firecrawlKey: string,
-): Promise<{ docs: PPADoc[]; programasFromSearch: ProgramaPPA[]; logs: string[] }> {
-  const docs: PPADoc[] = [];
+): Promise<{ acoes: AcaoOrcamentaria[]; logs: string[] }> {
   const logs: string[] = [];
-  const seenUrls = new Set<string>();
-  const searchExtracted: ProgramaPPA[] = [];
-  const seenProgsFromSearch = new Set<string>();
+  const seenKeys = new Set<string>();
+  const acoes: AcaoOrcamentaria[] = [];
 
-  // 3 queries compactas — uma por ciclo PPA
   const ciclos = [
     { label: "PPA 2024-2027", queries: [
-      `PPA 2024 2027 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" OR "SEPROMI" site:*.gov.br`,
+      `PPA 2024 2027 ${nomeEstado} programa ação "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" site:*.gov.br`,
     ]},
     { label: "PPA 2020-2023", queries: [
-      `PPA 2020 2023 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" site:*.gov.br`,
+      `PPA 2020 2023 ${nomeEstado} programa ação "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" site:*.gov.br`,
     ]},
     { label: "PPA 2016-2019", queries: [
-      `PPA 2016 2019 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" site:*.gov.br`,
+      `PPA 2016 2019 ${nomeEstado} programa ação "igualdade racial" OR "quilombola" OR "indígena" site:*.gov.br`,
     ]},
   ];
+
+  const docsToScrape: { url: string; cycle: string }[] = [];
 
   for (const ciclo of ciclos) {
     for (const query of ciclo.queries) {
@@ -147,7 +150,7 @@ async function localizarPPAs(
         });
 
         if (res.status === 429) {
-          logs.push(`Rate limit na busca ${ciclo.label}, pausando...`);
+          logs.push(`Rate limit ${ciclo.label}, pausando...`);
           await new Promise(r => setTimeout(r, 3000));
           continue;
         }
@@ -158,27 +161,28 @@ async function localizarPPAs(
 
         for (const r of results) {
           const url = String(r.url ?? "");
-          if (!url || seenUrls.has(url) || !isUrlValida(url)) continue;
-          seenUrls.add(url);
+          if (!url || !isUrlValida(url)) continue;
 
-          // Extrair programas do markdown/description que a Search já retorna
           const md = String(r.markdown ?? r.description ?? "");
           const title = String(r.title ?? "");
           const content = [title, md].join("\n");
+
           if (content.length > 50) {
-            const progsFromSearch = extrairProgramasDoConteudo(content, url, ciclo.label);
-            for (const p of progsFromSearch) {
-              const key = normalize(p.nome).substring(0, 60);
-              if (!seenProgsFromSearch.has(key)) {
-                seenProgsFromSearch.add(key);
-                searchExtracted.push(p);
+            const extracted = extrairAcoesDoConteudo(content, url, ciclo.label);
+            for (const a of extracted) {
+              const key = normalize(a.nome).substring(0, 60);
+              if (!seenKeys.has(key)) {
+                seenKeys.add(key);
+                acoes.push(a);
               }
             }
           }
-          // Guardar URL para scrape profundo
-          docs.push({ url, cycle: ciclo.label, title });
+
+          if (!docsToScrape.some(d => d.url === url)) {
+            docsToScrape.push({ url, cycle: ciclo.label });
+          }
         }
-        logs.push(`Search ${ciclo.label}: ${results.length} resultados, ${searchExtracted.length} programas extraídos`);
+        logs.push(`Search ${ciclo.label}: ${results.length} resultados, ${acoes.length} ações acumuladas`);
       } catch (e) {
         logs.push(`Search ${ciclo.label}: ${e instanceof Error ? e.message : "Erro"}`);
       }
@@ -186,127 +190,100 @@ async function localizarPPAs(
     }
   }
 
-  logs.push(`Total: ${docs.length} docs para scrape, ${searchExtracted.length} programas já extraídos da busca`);
-  return { docs, programasFromSearch: searchExtracted, logs };
-}
+  // Scrape top 3 docs for deeper extraction
+  const toScrape = docsToScrape.slice(0, 3);
+  for (const doc of toScrape) {
+    try {
+      const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ url: doc.url, formats: ["markdown"], onlyMainContent: false, waitFor: 2000 }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (!res.ok) { logs.push(`Scrape HTTP ${res.status}: ${doc.url.substring(0, 60)}`); continue; }
+      const data = await res.json();
+      const md = String(data?.data?.markdown ?? data?.markdown ?? "");
+      if (md.length < 100) { logs.push(`Scrape vazio: ${doc.url.substring(0, 60)}`); continue; }
 
-// ════════════════════════════════════════════════════════════
-// ETAPA 2: Scrape completo de cada documento e extração
-// ════════════════════════════════════════════════════════════
-
-interface ProgramaPPA {
-  nome: string;
-  codigo: string | null;
-  dotacao_inicial: number | null;
-  secretaria: string | null;
-  url_fonte: string;
-  grupo: string;
-  criterio: string;
-  ppa_cycle: string;
-}
-
-async function scrapeEExtrair(
-  doc: PPADoc, firecrawlKey: string,
-): Promise<{ programas: ProgramaPPA[]; log: string }> {
-  try {
-    const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url: doc.url,
-        formats: ["markdown"],
-        onlyMainContent: false,
-        waitFor: 2000,
-      }),
-      signal: AbortSignal.timeout(30_000),
-    });
-
-    if (!res.ok) {
-      return { programas: [], log: `Scrape falhou HTTP ${res.status}: ${doc.url}` };
+      const extracted = extrairAcoesDoConteudo(md, doc.url, doc.cycle);
+      let added = 0;
+      for (const a of extracted) {
+        const key = normalize(a.nome).substring(0, 60);
+        if (!seenKeys.has(key)) {
+          seenKeys.add(key);
+          acoes.push(a);
+          added++;
+        }
+      }
+      logs.push(`Scrape OK (${md.length} chars) → +${added} ações: ${doc.url.substring(0, 60)}`);
+    } catch (e) {
+      logs.push(`Scrape erro: ${e instanceof Error ? e.message : "?"}`);
     }
-
-    const data = await res.json();
-    const md = String(data?.data?.markdown ?? data?.markdown ?? "");
-    if (md.length < 100) {
-      return { programas: [], log: `Scrape vazio (${md.length} chars): ${doc.url}` };
-    }
-
-    const programas = extrairProgramasDoConteudo(md, doc.url, doc.cycle);
-    return {
-      programas,
-      log: `Scrape OK (${md.length} chars) → ${programas.length} programas: ${doc.url.substring(0, 80)}`,
-    };
-  } catch (e) {
-    return { programas: [], log: `Scrape erro: ${e instanceof Error ? e.message : "?"} — ${doc.url}` };
+    await new Promise(r => setTimeout(r, 500));
   }
+
+  logs.push(`Total: ${acoes.length} ações orçamentárias únicas extraídas`);
+  return { acoes, logs };
 }
 
-/** Limpa nomes de programas removendo artefatos de scraping */
+// ════════════════════════════════════════════════════════════
+// EXTRAÇÃO DE AÇÕES DO CONTEÚDO SCRAPED
+// ════════════════════════════════════════════════════════════
+
+const REJEITAR_LINHA = [
+  "indicador de", "eixo tematic", "eixo estrateg", "eixo:", "# eixo",
+  "diretriz", "compromisso:", "# compromisso",
+  "macro-desafio", "macrodesafio", "prioridade da ldo",
+  "saiba mais", "confira", "clique aqui",
+  "licitacao", "edital n", "portaria n",
+  "meta fisic", "meta prevista", "unidade de medida",
+  "produto esperado", "indice de referencia",
+  "apuracao do indice", "periodicidade", "base geografica",
+  "fonte do indicador", "orgao responsavel pelo indicador",
+  "formula de calculo", "objetivo estrategico",
+  "# destaque", "secretari", "subsecretari",
+];
+
 function limparNome(nome: string): string {
   return nome
     .replace(/^\[PDF\]\s*/i, "")
     .replace(/\s*-\s*(?:BA|SP|RJ|MG|RS|PR|SC|PE|CE|GO|PA|MA|MT|MS|AM|RN|PB|PI|SE|AL|RO|AC|AP|RR|TO|DF|ES)\s*(?:\.?\s*Gov\b)?\.?\s*$/i, "")
     .replace(/,\s*conforme\s+o\s+PPA.*$/i, "")
     .replace(/,\s*possui\s+\d+\s+\w+.*$/i, "")
-    .replace(/\.\s*\.\s*\d+\s*$/i, "")  // ". . 12"
+    .replace(/\.\s*\.\s*\d+\s*$/i, "")
     .replace(/\.\s*$/, "")
     .replace(/\s{2,}/g, " ")
     .trim()
     .substring(0, 200);
 }
 
-/** Extrai programas e ações orçamentárias de conteúdo scraped de PPAs estaduais.
- *  Usa 4 padrões de detecção em ordem de especificidade, rejeitando indicadores e metadados. */
-function extrairProgramasDoConteudo(
-  content: string, url: string, ppaCycle: string,
-): ProgramaPPA[] {
-  const programas: ProgramaPPA[] = [];
+function extrairAcoesDoConteudo(content: string, url: string, ppaCycle: string): AcaoOrcamentaria[] {
+  const acoes: AcaoOrcamentaria[] = [];
   const seen = new Set<string>();
   const lines = content.split(/\n/);
 
-  const REJEITAR_LINHA = [
-    "indicador de", "eixo tematic", "eixo estrateg", "eixo:", "# eixo",
-    "diretriz", "compromisso:", "# compromisso",
-    "macro-desafio", "macrodesafio", "prioridade da ldo",
-    "saiba mais", "confira", "clique aqui",
-    "licitacao", "edital n", "portaria n",
-    "meta fisic", "meta prevista", "unidade de medida",
-    "produto esperado", "indice de referencia",
-    "apuracao do indice", "periodicidade", "base geografica",
-    "fonte do indicador", "orgao responsavel pelo indicador",
-    "formula de calculo", "objetivo estrategico",
-    "# destaque", "secretari", "subsecretari",
-  ];
-
-  const MARCADORES_ORC = [
-    "programa", "acao orcamentaria", "acao orcamentaria", "atividade", "projeto",
-    "operacao especial", "dotacao", "credito", "orcament", "despesa",
-  ];
-
-  /** Limpa artefatos de tabelas markdown */
   function cleanTableLine(raw: string): string {
     return raw.replace(/^\|+/, "").replace(/\|+$/, "").replace(/\|/g, " ").replace(/\s{2,}/g, " ").trim();
   }
 
-  /** Extrai ação orçamentária de dentro de célula de tabela.
-   *  Padrão: "Ação Orçamentária | 3293 Realização de ..." ou "3293 - Nome" */
   function extractAcaoFromTableRow(raw: string): { codigo: string; nome: string } | null {
     const cleaned = cleanTableLine(raw);
-    // "Ação Orçamentária 3293 Nome..." or "Açäo Orçamentária 3293 Nome..."
     const m1 = cleaned.match(/A[çc][ãäa]o\s+Or[çc]ament[áa]ria\s+(\d{3,6})\s+(.+)/i);
     if (m1) return { codigo: m1[1], nome: m1[2].trim() };
-    // Just "3293 - Nome" inside a table
     const m2 = cleaned.match(/^(\d{3,6})\s*[-–—]\s*(.{10,})/);
     if (m2) return { codigo: m2[1], nome: m2[2].trim() };
     return null;
   }
 
+  function extrairSecretaria(texto: string): string | null {
+    const m = texto.match(/(Secretaria\s+(?:de\s+|da\s+|do\s+)?\S+(?:\s+\S+){0,5})/i);
+    return m ? m[1].trim().substring(0, 120) : null;
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (line.length < 8 || line.length > 500) continue;
-
     const lineNorm = normalize(line);
-
     if (REJEITAR_LINHA.some(t => lineNorm.includes(t))) continue;
     if (/^[\d\s\.,R\$%\-|]+$/.test(line)) continue;
 
@@ -314,7 +291,7 @@ function extrairProgramasDoConteudo(
     const ctxEnd = Math.min(lines.length, i + 6);
     const contexto = lines.slice(ctxStart, ctxEnd).join(" ");
 
-    // ═══ Padrão T: Tabela com "Ação Orçamentária | CÓDIGO Nome" ═══
+    // Padrão T: Tabela
     if (line.includes("|")) {
       const acaoTable = extractAcaoFromTableRow(line);
       if (acaoTable) {
@@ -323,37 +300,35 @@ function extrairProgramasDoConteudo(
           const key = `tab_${acaoTable.codigo}`;
           if (!seen.has(key)) {
             seen.add(key);
-            programas.push({
+            acoes.push({
               nome: limparNome(`Ação ${acaoTable.codigo} — ${acaoTable.nome}`),
               codigo: acaoTable.codigo,
-              dotacao_inicial: extrairValor(contexto),
               secretaria: extrairSecretaria(contexto),
               url_fonte: url, grupo: classificarGrupo(acaoTable.nome + " " + contexto),
-              criterio: `Ação Orçamentária ${acaoTable.codigo} (tabela PPA): radical "${radical}"`,
+              criterio: `Ação ${acaoTable.codigo} (tabela PPA): radical "${radical}"`,
               ppa_cycle: ppaCycle,
             });
           }
         }
       }
-      continue; // Skip other patterns for table rows
+      continue;
     }
 
-    // ═══ Padrão 1: "Programa XXXX — Nome" ═══
+    // Padrão 1: "Programa XXXX — Nome"
     const progMatch = line.match(/Programa\s+(\d{3,5})\s*[—–\-:\.\s]\s*(.+)/i);
     if (progMatch) {
       const codigo = progMatch[1];
-      const nome = progMatch[2].trim().substring(0, 200);
+      const nome = progMatch[2].trim();
       const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
       if (radical) {
         const key = `prog_${codigo}`;
         if (!seen.has(key)) {
           seen.add(key);
-          programas.push({
+          acoes.push({
             nome: limparNome(`Programa ${codigo} — ${nome}`), codigo,
-            dotacao_inicial: extrairValor(contexto),
             secretaria: extrairSecretaria(contexto),
             url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
-            criterio: `Programa PPA código ${codigo}: radical "${radical}"`,
+            criterio: `Programa PPA ${codigo}: radical "${radical}"`,
             ppa_cycle: ppaCycle,
           });
         }
@@ -361,22 +336,21 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 2: "Ação/Atividade/Projeto XXXX — Nome" ═══
+    // Padrão 2: "Ação/Atividade/Projeto XXXX — Nome"
     const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto|Opera[çc][ãa]o\s+Especial)\s+(\d{4,6})\s*[—–\-:\.\s]\s*(.+)/i);
     if (acaoMatch) {
       const codigo = acaoMatch[1];
-      const nome = acaoMatch[2].trim().substring(0, 200);
+      const nome = acaoMatch[2].trim();
       const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
       if (radical) {
         const key = `acao_${codigo}`;
         if (!seen.has(key)) {
           seen.add(key);
-          programas.push({
+          acoes.push({
             nome: limparNome(`Ação ${codigo} — ${nome}`), codigo,
-            dotacao_inicial: extrairValor(contexto),
             secretaria: extrairSecretaria(contexto),
             url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
-            criterio: `Ação PPA código ${codigo}: radical "${radical}"`,
+            criterio: `Ação PPA ${codigo}: radical "${radical}"`,
             ppa_cycle: ppaCycle,
           });
         }
@@ -384,22 +358,21 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 3: Código numérico no início + radical ═══
-    const codeGenericMatch = line.match(/^(\d{3,6})\s*[—–\-:\.]\s*(.{8,200})/);
-    if (codeGenericMatch) {
-      const codigo = codeGenericMatch[1];
-      const nome = codeGenericMatch[2].trim();
+    // Padrão 3: Código no início + radical
+    const codeMatch = line.match(/^(\d{3,6})\s*[—–\-:\.]\s*(.{8,200})/);
+    if (codeMatch) {
+      const codigo = codeMatch[1];
+      const nome = codeMatch[2].trim();
       const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
       if (radical) {
         const key = `gen_${codigo}`;
         if (!seen.has(key)) {
           seen.add(key);
-          programas.push({
+          acoes.push({
             nome: limparNome(`${codigo} — ${nome}`), codigo,
-            dotacao_inicial: extrairValor(contexto),
             secretaria: extrairSecretaria(contexto),
             url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
-            criterio: `Código ${codigo} com radical "${radical}" no PPA`,
+            criterio: `Código ${codigo}: radical "${radical}"`,
             ppa_cycle: ppaCycle,
           });
         }
@@ -407,251 +380,59 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 4: Programa/Ação textual (sem número no início, mas com código no contexto) ═══
+    // Padrão 4: Texto com radical + código no contexto
     const radical = encontrarRadical(lineNorm);
     if (radical) {
-      // Só aceitar se tem um código de programa/ação no contexto
       const codeInCtx = contexto.match(/(?:programa|a[çc][ãa]o|projeto|atividade)\s*(?:or[çc]ament[áa]ria)?\s*[:\.]?\s*(\d{3,6})\b/i);
       if (!codeInCtx) continue;
       const codigo = codeInCtx[1];
       const wordCount = line.split(/\s+/).length;
       if (wordCount > 15 || wordCount < 3) continue;
-
       const key = `flex_${codigo}_${normalize(line).substring(0, 30)}`;
       if (!seen.has(key)) {
         seen.add(key);
-        programas.push({
+        acoes.push({
           nome: limparNome(line), codigo,
-          dotacao_inicial: extrairValor(contexto),
           secretaria: extrairSecretaria(contexto),
           url_fonte: url, grupo: classificarGrupo(line + " " + contexto),
-          criterio: `Radical "${radical}" + código ${codigo} no contexto PPA`,
+          criterio: `Radical "${radical}" + código ${codigo}`,
           ppa_cycle: ppaCycle,
         });
+      }
+    }
+
+    // Padrão 5: Linha com radical em contexto orçamentário (sem código)
+    if (!radical) continue;
+    const hasOrcContext = ["programa", "acao", "atividade", "projeto", "orcament", "despesa", "dotacao"]
+      .some(w => normalize(contexto).includes(w));
+    if (hasOrcContext) {
+      const wordCount = line.split(/\s+/).length;
+      if (wordCount >= 3 && wordCount <= 20) {
+        const key = `nocode_${normalize(line).substring(0, 40)}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          acoes.push({
+            nome: limparNome(line), codigo: null,
+            secretaria: extrairSecretaria(contexto),
+            url_fonte: url, grupo: classificarGrupo(line + " " + contexto),
+            criterio: `Radical "${radical}" em contexto orçamentário do PPA`,
+            ppa_cycle: ppaCycle,
+          });
+        }
       }
     }
   }
 
   // Diagnóstico
-  if (programas.length === 0 && lines.length > 50) {
-    const racialLines = lines
-      .filter(l => encontrarRadical(l) !== null)
-      .slice(0, 10)
-      .map(l => l.trim().substring(0, 120));
+  if (acoes.length === 0 && lines.length > 50) {
+    const racialLines = lines.filter(l => encontrarRadical(l) !== null).slice(0, 10);
     if (racialLines.length > 0) {
-      console.log(`DIAG: ${racialLines.length} linhas com radicais mas 0 programas. Amostras:`);
-      for (const rl of racialLines) console.log(`  → "${rl}"`);
-    } else {
-      console.log(`DIAG: 0 linhas com radicais em ${lines.length} linhas totais. URL: ${url.substring(0, 80)}`);
+      console.log(`DIAG: ${racialLines.length} linhas com radicais mas 0 ações. Amostras:`);
+      for (const rl of racialLines) console.log(`  → "${rl.trim().substring(0, 120)}"`);
     }
   }
 
-  return programas;
-}
-
-function extrairSecretaria(texto: string): string | null {
-  const m = texto.match(/(Secretaria\s+(?:de\s+|da\s+|do\s+)?\S+(?:\s+\S+){0,5})/i);
-  return m ? m[1].trim().substring(0, 120) : null;
-}
-
-function extrairValor(texto: string): number | null {
-  const patterns = [
-    /R\$\s*([\d.,]+(?:\s*(?:milh[õo]es|milh[ãa]o|mil|bi))?)/i,
-    /(?:dota[çc][ãa]o|valor|total|previsto|inicial)[:\s]*R?\$?\s*([\d.,]+)/i,
-  ];
-  for (const pat of patterns) {
-    const m = texto.match(pat);
-    if (m) {
-      let raw = m[1].trim();
-      const multiplier = raw.match(/milh[õo]es|milh[ãa]o/i) ? 1_000_000 :
-        raw.match(/bil/i) ? 1_000_000_000 :
-        raw.match(/\bm[i]l\b/i) ? 1_000 : 1;
-      raw = raw.replace(/\s*(milh[õo]es|milh[ãa]o|mil|bi(?:lh[õo]es)?)\s*/i, "");
-      const val = parseFloat(raw.replace(/\./g, "").replace(",", "."));
-      if (!isNaN(val) && val > 0) {
-        const result = val * multiplier;
-        if (result > 500) return result;
-      }
-    }
-  }
-  return null;
-}
-
-// ════════════════════════════════════════════════════════════
-// ETAPA 3: SICONFI — Execução F14 (referência agregada)
-// NOTA: SICONFI organiza por Função/Subfunção, NÃO por programa.
-// ════════════════════════════════════════════════════════════
-
-async function buscarExecucaoF14(
-  ufCode: number, ano: number,
-): Promise<{ dotacao: number | null; empenhado: number | null; liquidado: number | null; pago: number | null; fonte: string; logs: string[] }> {
-  const logs: string[] = [];
-  for (let bim = 6; bim >= 1; bim--) {
-    try {
-      const params = new URLSearchParams({
-        an_exercicio: String(ano), id_ente: String(ufCode),
-        nr_periodo: String(bim), no_anexo: "RREO-Anexo 02",
-        co_tipo_demonstrativo: "RREO", "$limit": "5000",
-      });
-      const res = await fetch(`https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?${params}`, {
-        headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000),
-      });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const items: Record<string, unknown>[] = data?.items ?? [];
-      if (items.length === 0) continue;
-      const f14 = items.filter(i => normalize(String(i.conta ?? "")).includes("direitos da cidadania"));
-      if (f14.length === 0) continue;
-      let emp: number | null = null, liq: number | null = null, pag: number | null = null, dot: number | null = null;
-      for (const item of f14) {
-        const col = normalize(String(item.coluna ?? ""));
-        const val = typeof item.valor === "number" ? item.valor : null;
-        if (val === null) continue;
-        if (col.includes("dotacao inicial")) dot = (dot ?? 0) + val;
-        else if (col.includes("empenhadas ate o bimestre")) emp = (emp ?? 0) + val;
-        else if (col.includes("liquidadas ate o bimestre")) liq = (liq ?? 0) + val;
-        else if (col.includes("pagas ate o bimestre")) pag = (pag ?? 0) + val;
-      }
-      logs.push(`RREO bim${bim}: F14 dot=${dot?.toLocaleString() ?? "—"} emp=${emp?.toLocaleString() ?? "—"} liq=${liq?.toLocaleString() ?? "—"}`);
-      return { dotacao: dot, empenhado: emp, liquidado: liq, pago: pag, fonte: `RREO Bim${bim}`, logs };
-    } catch (e) { logs.push(`RREO bim${bim}: ${e instanceof Error ? e.message : "Erro"}`); }
-  }
-  // DCA fallback
-  try {
-    const params = new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), no_anexo: "DCA-Anexo I-E", "$limit": "5000" });
-    const res = await fetch(`https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?${params}`, {
-      headers: { Accept: "application/json" }, signal: AbortSignal.timeout(20_000),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const items: Record<string, unknown>[] = data?.items ?? [];
-      const f14 = items.filter(i => { const c = normalize(String(i.conta ?? "")); return c.startsWith("14 ") || c.includes("direitos da cidadania"); });
-      let emp: number | null = null, liq: number | null = null, dot: number | null = null;
-      for (const item of f14) {
-        const col = normalize(String(item.coluna ?? "")); const val = typeof item.valor === "number" ? item.valor : null;
-        if (val === null) continue;
-        if (col.includes("empenhad")) emp = (emp ?? 0) + val;
-        else if (col.includes("liquidad")) liq = (liq ?? 0) + val;
-        else if (col.includes("dotacao")) dot = (dot ?? 0) + val;
-      }
-      if (dot !== null || emp !== null) {
-        logs.push(`DCA I-E: F14 dot=${dot?.toLocaleString() ?? "—"}`);
-        return { dotacao: dot, empenhado: emp, liquidado: liq, pago: null, fonte: "DCA I-E", logs };
-      }
-    }
-  } catch (e) { logs.push(`DCA I-E: ${e instanceof Error ? e.message : "Erro"}`); }
-  return { dotacao: null, empenhado: null, liquidado: null, pago: null, fonte: "", logs };
-}
-
-// ════════════════════════════════════════════════════════════
-// ETAPA 3b: Carregar DCA completo e fazer matching por programa
-// ════════════════════════════════════════════════════════════
-
-interface DCAItem {
-  conta: string;
-  coluna: string;
-  valor: number | null;
-}
-
-async function carregarDCA(
-  ufCode: number, ano: number,
-): Promise<{ items: DCAItem[]; logs: string[] }> {
-  const logs: string[] = [];
-  const allItems: DCAItem[] = [];
-
-  // Tentar DCA Anexo I-E (Despesas por Programa) — mais granular
-  for (const anexo of ["DCA-Anexo I-E", "DCA-Anexo I-D"]) {
-    try {
-      const params = new URLSearchParams({
-        an_exercicio: String(ano),
-        id_ente: String(ufCode),
-        no_anexo: anexo,
-        "$limit": "10000",
-      });
-      const res = await fetch(
-        `https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?${params}`,
-        { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(25_000) },
-      );
-      if (!res.ok) { logs.push(`${anexo} HTTP ${res.status}`); continue; }
-      const data = await res.json();
-      const items: Record<string, unknown>[] = data?.items ?? [];
-      if (items.length === 0) { logs.push(`${anexo}: vazio`); continue; }
-
-      for (const item of items) {
-        allItems.push({
-          conta: String(item.conta ?? ""),
-          coluna: String(item.coluna ?? ""),
-          valor: typeof item.valor === "number" ? item.valor : null,
-        });
-      }
-      logs.push(`${anexo}: ${items.length} registros carregados`);
-    } catch (e) {
-      logs.push(`${anexo}: ${e instanceof Error ? e.message : "Erro"}`);
-    }
-  }
-
-  return { items: allItems, logs };
-}
-
-interface ExecResult {
-  empenhado: number | null;
-  liquidado: number | null;
-  dotacao: number | null;
-  conta: string;
-}
-
-function matchExecucao(
-  prog: ProgramaPPA, dcaItems: DCAItem[],
-): ExecResult | null {
-  if (dcaItems.length === 0) return null;
-
-  // Strategy 1: Match by codigo if available
-  if (prog.codigo) {
-    const matched = dcaItems.filter(i => i.conta.includes(prog.codigo!));
-    if (matched.length > 0) {
-      return aggregateExec(matched);
-    }
-  }
-
-  // Strategy 2: Match by keywords from program name
-  const words = normalize(prog.nome)
-    .replace(/programa\s+\d+\s*[—–\-:]\s*/i, "")
-    .replace(/acao\s+\d+\s*[—–\-:]\s*/i, "")
-    .split(/\s+/)
-    .filter(w => w.length > 4);
-
-  if (words.length === 0) return null;
-
-  // Need at least 2 key words to match (or 1 if very specific)
-  const candidates = dcaItems.filter(item => {
-    const contaNorm = normalize(item.conta);
-    const matchCount = words.filter(w => contaNorm.includes(w)).length;
-    return matchCount >= Math.min(2, words.length);
-  });
-
-  if (candidates.length > 0) {
-    return aggregateExec(candidates);
-  }
-
-  return null;
-}
-
-function aggregateExec(items: DCAItem[]): ExecResult {
-  let emp: number | null = null;
-  let liq: number | null = null;
-  let dot: number | null = null;
-  let conta = "";
-
-  for (const item of items) {
-    const col = normalize(item.coluna);
-    if (item.valor === null) continue;
-    if (!conta && item.conta) conta = item.conta;
-    if (col.includes("empenhad")) emp = (emp ?? 0) + item.valor;
-    else if (col.includes("liquidad")) liq = (liq ?? 0) + item.valor;
-    else if (col.includes("dotacao") || col.includes("credito inicial")) dot = (dot ?? 0) + item.valor;
-  }
-
-  return { empenhado: emp, liquidado: liq, dotacao: dot, conta };
+  return acoes;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -662,13 +443,11 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    let anos: number[] = [2023, 2024];
     let uf: string | undefined;
     let mode = "insert";
 
     try {
       const body = await req.json();
-      if (Array.isArray(body.anos) && body.anos.length > 0) anos = body.anos;
       if (typeof body.uf === "string") uf = body.uf;
       if (Array.isArray(body.ufs) && body.ufs.length > 0 && !uf) uf = body.ufs[0];
       if (body.mode === "preview") mode = "preview";
@@ -679,142 +458,82 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { cod: ufCode, nome: nomeEstado, dominio } = ESTADOS_IBGE[uf];
+    const { nome: nomeEstado, dominio } = ESTADOS_IBGE[uf];
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     if (!firecrawlKey) {
       return new Response(JSON.stringify({ success: false, error: "FIRECRAWL_API_KEY não configurada." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    console.log(`=== Ingestão PPA ${uf} (${nomeEstado}) | Anos: ${anos.join(",")} | ${mode} ===`);
+    console.log(`=== Ingestão Estadual ${uf} (${nomeEstado}) | ${mode} ===`);
 
-    const allLogs: string[] = [];
-    const allErros: string[] = [];
+    const { acoes, logs } = await buscarAcoes(nomeEstado, dominio, firecrawlKey);
 
-    // ── ETAPA 1: Localizar documentos PPA + extração direta da busca ──
-    allLogs.push("─── ETAPA 1: Localizando documentos PPA ───");
-    const { docs, programasFromSearch, logs: searchLogs } = await localizarPPAs(nomeEstado, dominio, firecrawlKey);
-    allLogs.push(...searchLogs);
-
-    // ── ETAPA 2: Scrape profundo (apenas docs curtos na busca) + extração ──
-    allLogs.push("─── ETAPA 2: Scrape e extração de programas ───");
-    const todosProgramas: ProgramaPPA[] = [...programasFromSearch];
-    const seenProgs = new Set<string>();
-    for (const p of programasFromSearch) seenProgs.add(normalize(p.nome).substring(0, 60));
-
-    // Limitar a 3 docs para não exceder timeout
-    const docsToScrape = docs.slice(0, 3);
-    for (const doc of docsToScrape) {
-      const { programas, log } = await scrapeEExtrair(doc, firecrawlKey);
-      allLogs.push(log);
-
-      for (const p of programas) {
-        const key = normalize(p.nome).substring(0, 60);
-        if (!seenProgs.has(key)) {
-          seenProgs.add(key);
-          todosProgramas.push(p);
-        }
-      }
-      await new Promise(r => setTimeout(r, 500));
-    }
-    allLogs.push(`Total: ${todosProgramas.length} programas/ações únicos extraídos dos PPAs`);
-
-    // ── ETAPA 3: Cruzamento SICONFI por programa/ação ──
-    allLogs.push("─── ETAPA 3: Cruzamento SICONFI por programa ───");
-    const registros: Record<string, unknown>[] = [];
-
-    for (const ano of anos) {
-      // Carregar todo o DCA do ano para matching local
-      const { items: dcaItems, logs: dcaLogs } = await carregarDCA(ufCode, ano);
-      allLogs.push(...dcaLogs.map(l => `SICONFI/${ano}: ${l}`));
-
-      let matchCount = 0;
-
-      for (const prog of todosProgramas) {
-        // Tentar encontrar execução correspondente no DCA
-        const exec = matchExecucao(prog, dcaItems);
-
-        const empenhado = exec?.empenhado ?? null;
-        const liquidado = exec?.liquidado ?? null;
-        const dotIni = prog.dotacao_inicial ?? exec?.dotacao ?? null;
-        let pctExec: number | null = null;
-        if (dotIni && dotIni > 0 && liquidado !== null)
-          pctExec = Math.round((liquidado / dotIni) * 10000) / 100;
-
-        if (exec) matchCount++;
-
-        registros.push({
-          programa: `${uf} — ${prog.nome}`.substring(0, 250),
-          orgao: prog.secretaria ?? `Gov. Estadual (${uf})`,
-          esfera: "estadual", ano,
-          dotacao_inicial: dotIni, dotacao_autorizada: null,
-          empenhado, liquidado, pago: null, percentual_execucao: pctExec,
-          fonte_dados: exec
-            ? `PPA + SICONFI DCA (${nomeEstado})`
-            : `PPA ${nomeEstado} (${prog.ppa_cycle})`,
-          url_fonte: prog.url_fonte,
-          descritivo: prog.codigo ? `Código: ${prog.codigo} | ${prog.nome}` : prog.nome,
-          observacoes: prog.grupo, eixo_tematico: null, grupo_focal: null, publico_alvo: null,
-          razao_selecao: exec
-            ? `${prog.criterio} | Exec. SICONFI: "${exec.conta.substring(0, 80)}"`
-            : `${prog.criterio} | ${prog.ppa_cycle}`,
-        });
-      }
-
-      allLogs.push(`SICONFI/${ano}: ${matchCount}/${todosProgramas.length} programas com execução encontrada`);
-    }
-
-    // Deduplicação
-    const deduped = new Map<string, Record<string, unknown>>();
-    for (const r of registros) {
-      const key = `${r.programa}|${r.ano}`;
-      if (!deduped.has(key)) deduped.set(key, r);
+    // Deduplicar
+    const deduped = new Map<string, AcaoOrcamentaria>();
+    for (const a of acoes) {
+      const key = normalize(a.nome).substring(0, 60);
+      if (!deduped.has(key)) deduped.set(key, a);
     }
     const batch = Array.from(deduped.values());
 
     const porGrupo: Record<string, number> = {};
-    for (const r of batch) {
-      const g = String(r.observacoes ?? "N/C");
-      porGrupo[g] = (porGrupo[g] ?? 0) + 1;
+    for (const a of batch) {
+      porGrupo[a.grupo] = (porGrupo[a.grupo] ?? 0) + 1;
     }
 
     if (mode === "preview") {
       return new Response(JSON.stringify({
         success: true, mode: "preview", uf,
-        total_programas_ppa: todosProgramas.length,
         total_registros: batch.length,
         por_grupo_etnico: porGrupo,
-        documentos_scrapeados: docsToScrape.map(d => ({ url: d.url, cycle: d.cycle, title: d.title })),
-        programas_ppa: todosProgramas.map(p => ({
-          nome: p.nome, codigo: p.codigo, dotacao_inicial: p.dotacao_inicial,
-          secretaria: p.secretaria, grupo: p.grupo, criterio: p.criterio,
-          ppa: p.ppa_cycle, url: p.url_fonte,
+        log_consultas: logs,
+        amostra: batch.slice(0, 50).map(a => ({
+          programa: a.nome, codigo: a.codigo, grupo: a.grupo,
+          criterio: a.criterio, ppa: a.ppa_cycle, url: a.url_fonte,
         })),
-        log_consultas: allLogs,
-        amostra: batch.slice(0, 30).map(r => ({
-          programa: r.programa, ano: r.ano,
-          dotacao_inicial: r.dotacao_inicial, liquidado: r.liquidado,
-          empenhado: r.empenhado, razao_selecao: r.razao_selecao, grupo: r.observacoes,
-        })),
-        erros: allErros.slice(0, 10),
+        erros: [],
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // INSERT
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const registros = batch.map(a => ({
+      programa: `${uf} — ${a.nome}`.substring(0, 250),
+      orgao: a.secretaria ?? `Gov. Estadual (${uf})`,
+      esfera: "estadual",
+      ano: new Date().getFullYear(),
+      fonte_dados: `PPA ${nomeEstado} (${a.ppa_cycle})`,
+      url_fonte: a.url_fonte,
+      descritivo: a.codigo ? `Código: ${a.codigo} | ${a.nome}` : a.nome,
+      observacoes: a.grupo,
+      razao_selecao: a.criterio,
+      dotacao_inicial: null,
+      dotacao_autorizada: null,
+      empenhado: null,
+      liquidado: null,
+      pago: null,
+      percentual_execucao: null,
+      eixo_tematico: null,
+      grupo_focal: null,
+      publico_alvo: null,
+    }));
+
     let totalInserted = 0;
-    for (let i = 0; i < batch.length; i += 50) {
-      const chunk = batch.slice(i, i + 50);
+    const erros: string[] = [];
+    for (let i = 0; i < registros.length; i += 50) {
+      const chunk = registros.slice(i, i + 50);
       const { error: insErr } = await supabase.from("dados_orcamentarios").insert(chunk);
-      if (insErr) allErros.push(`Batch ${i}: ${insErr.message}`);
+      if (insErr) erros.push(`Batch ${i}: ${insErr.message}`);
       else totalInserted += chunk.length;
     }
 
     return new Response(JSON.stringify({
       success: true, mode: "insert", uf,
-      total_inseridos: totalInserted, total_programas_ppa: todosProgramas.length,
+      total_inseridos: totalInserted,
       por_grupo_etnico: porGrupo,
-      log_consultas: allLogs.slice(0, 30), erros: allErros.slice(0, 10),
+      log_consultas: logs.slice(0, 30),
+      erros: erros.slice(0, 10),
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     console.error("Fatal:", error);
