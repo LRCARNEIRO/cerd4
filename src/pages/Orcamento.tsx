@@ -1117,6 +1117,80 @@ export default function Orcamento() {
                 </CardContent>
               </Card>
 
+              {/* RANKING: Gastos por Programa (Não-Saúde) */}
+              {(() => {
+                const nonSesai = classified.federal.all.filter(r => classifyThematic(r) !== 'sesai');
+                const progTotals: Record<string, { pago: number; orgao: string }> = {};
+                nonSesai.forEach(r => {
+                  const key = r.programa;
+                  if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao };
+                  progTotals[key].pago += Number(r.pago) || 0;
+                });
+                const sorted = Object.entries(progTotals)
+                  .sort((a, b) => b[1].pago - a[1].pago)
+                  .slice(0, 12);
+                const maxVal = sorted[0]?.[1].pago || 1;
+
+                if (sorted.length === 0) return null;
+
+                const colors = [
+                  'hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))',
+                  'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))',
+                ];
+
+                return (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-chart-4" />
+                        Ranking de Gastos por Programa — Políticas Não-Saúde (Pago Acumulado)
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        Top {sorted.length} programas federais por valor pago acumulado (2018–2025), excluindo SESAI.
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {sorted.map(([programa, { pago, orgao }], idx) => {
+                          const pct = maxVal > 0 ? (pago / maxVal) * 100 : 0;
+                          return (
+                            <div key={programa} className="space-y-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                  <span className="text-xs font-bold text-muted-foreground w-5 text-right flex-shrink-0">
+                                    {idx + 1}.
+                                  </span>
+                                  <span className="text-xs truncate" title={programa}>{programa}</span>
+                                  <Badge variant="outline" className="text-[10px] flex-shrink-0">{orgao}</Badge>
+                                </div>
+                                <span className="text-xs font-mono font-semibold flex-shrink-0">
+                                  {formatCurrency(pago)}
+                                </span>
+                              </div>
+                              <div className="ml-7 h-2.5 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${pct}%`,
+                                    backgroundColor: colors[idx % colors.length],
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-4">
+                        <AuditFooter
+                          fontes={[{ nome: 'Portal da Transparência — Despesas Federais', url: 'https://portaldatransparencia.gov.br/despesas' }]}
+                          documentos={['Cálculo: Pago acumulado por programa, excluindo SESAI']}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
               {/* Gráficos comparativos Federal */}
               {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
