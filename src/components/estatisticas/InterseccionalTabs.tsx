@@ -687,6 +687,44 @@ export function JuventudeTab() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Desafios Persistentes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
+              <ul className="text-xs text-muted-foreground space-y-2">
+                <li className="flex items-center gap-1">
+                  • Taxa de homicídio ainda{' '}
+                  <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">2,78x maior</a>{' '}
+                  (Atlas da Violência 2025)
+                </li>
+                <li className="flex items-center gap-1">
+                  • Letalidade policial:{' '}
+                  <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">83% das vítimas são negras</a>{' '}
+                  (19º Anuário FBSP 2025)
+                </li>
+                <li className="flex items-center gap-1">
+                  • Encarceramento:{' '}
+                  <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,2% dos presos são negros</a>{' '}
+                  (SISDEPEN 2024)
+                </li>
+                <li className="flex items-center gap-1">
+                  • Evasão escolar 2x maior
+                  <EstimativaBadge tipo="simples" metodologia="Estimativa baseada em proxy etário: INEP publica evasão por raça, mas o recorte jovens negros 15-17 vs brancos requer filtro adicional." className="ml-1" />
+                </li>
+              </ul>
+            </div>
+            <AuditFooter
+              fontes={[
+                { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+                { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
+              ]}
+              documentos={['CERD 2022']}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
