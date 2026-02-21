@@ -1614,26 +1614,22 @@ export default function Orcamento() {
                 {esfera === 'estadual' && (
                   <>
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Estadual — MSC/PPA em 4 Camadas</h4>
-                      <p>A base orçamentária estadual (2018–2025) foi construída cruzando códigos de ação dos PPAs estaduais com a Matriz de Saldos Contábeis (MSC) no SICONFI:</p>
+                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Estadual — DCA/RREO + MSC</h4>
+                      <p>A base orçamentária estadual (2018–2025) é construída em camadas, consultando a API SICONFI estado por estado para evitar limites de processamento:</p>
                       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 1 — Identificação de Ações nos PPAs Estaduais</h5>
-                          <p>Mapeamento manual dos códigos de ação específicos de políticas raciais/étnicas nos PPAs de cada estado (ex: BA 1055, MA 4321, SP 2822).</p>
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-foreground">Camada 2 — Busca por Palavras-chave nos Descritivos</h5>
-                          <p>Filtragem complementar por radicais unificados e palavras-chave específicas aplicada sobre campos descritivos do SICONFI/MSC.</p>
+                          <h5 className="font-semibold text-foreground">Camada 1 — Busca por Palavras-chave nos Descritivos (DCA/RREO)</h5>
+                          <p>Filtragem por radicais unificados e palavras-chave específicas aplicada sobre os campos <code>conta</code>, <code>rotulo</code>, <code>cod_conta</code> e <code>coluna</code> do DCA Anexo I-E (2018–2024) e RREO Anexo 02 (2025+). Cada registro aprovado inclui dotação inicial, empenho, liquidação e pagamento extraídos diretamente das colunas do DCA.</p>
                         </div>
 
-                        {/* Listagem detalhada de palavras-chave estaduais */}
+                        {/* Palavras-chave */}
                         <div className="bg-muted/30 rounded-lg p-4 space-y-3 border border-border/50">
-                          <p className="font-semibold text-foreground text-sm">📋 Palavras-Chave e Radicais — Detalhamento Estadual</p>
+                          <p className="font-semibold text-foreground text-sm">📋 Palavras-Chave e Radicais</p>
                           
                           <div>
                             <p className="font-semibold text-foreground text-xs mb-1">Radicais Unificados (capturam variações morfológicas)</p>
                             <div className="flex flex-wrap gap-1.5">
-                              {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
+                              {['indígen', 'indigen', 'quilombol', 'cigan', 'étnic', 'etnic', 'palmares', 'funai', 'sesai'].map(r => (
                                 <Badge key={r} variant="secondary" className="text-xs font-mono">{r}*</Badge>
                               ))}
                             </div>
@@ -1645,10 +1641,11 @@ export default function Orcamento() {
                             <div className="flex flex-wrap gap-1.5">
                               {[
                                 'igualdade racial', 'promoção da igualdade', 'racismo', 'racial',
-                                'negro', 'negra', 'afro', 'afrodescendente',
-                                'candomblé', 'umbanda', 'matriz africana', 'terreiro',
+                                'negro', 'negra', 'afro', 'afrodescendente', 'consciência negra',
+                                'matriz africana', 'capoeira', 'candomblé', 'umbanda', 'terreiro', 'seppir',
+                                'povos originários', 'terra indígena',
                                 'povos tradicionais', 'comunidades tradicionais',
-                                'povo cigano', 'romani'
+                                'povo cigano', 'romani', 'discriminação racial'
                               ].map(k => (
                                 <Badge key={k} variant="outline" className="text-xs">{k}</Badge>
                               ))}
@@ -1656,92 +1653,72 @@ export default function Orcamento() {
                           </div>
 
                           <div>
-                            <p className="font-semibold text-foreground text-xs mb-1">Referências Estruturais (Classificação Funcional)</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              <Badge variant="secondary" className="text-xs">Função 14 — Direitos da Cidadania</Badge>
-                              <Badge variant="secondary" className="text-xs">Subfunção 422 — Direitos Individuais, Coletivos e Difusos</Badge>
-                            </div>
-                            <p className="text-xs mt-1 italic">Usadas como filtro de baseline no SICONFI, mas <strong>insuficientes isoladamente</strong> — incluem ações genéricas sem relação com política racial. A seleção técnica prioriza códigos PPA (Camada 1).</p>
-                          </div>
-
-                          <div>
                             <p className="font-semibold text-destructive text-xs mb-1">🚫 Termos Genéricos Excluídos</p>
                             <div className="flex flex-wrap gap-1.5">
                               {[
-                                'direitos da cidadania (genérico)', 'direitos individuais coletivos (genérico)',
-                                'assistência comunitária', 'gestão administrativa',
-                                'administração geral'
+                                'direitos da cidadania', 'direitos individuais coletivos',
+                                'assistência comunitária', 'direitos individuais',
+                                'gestão administrativa', 'administração geral'
                               ].map(e => (
                                 <Badge key={e} variant="destructive" className="text-xs opacity-70">{e}</Badge>
                               ))}
                             </div>
-                            <p className="text-xs mt-1 italic">Esses termos na classificação funcional capturam programas universais sem relação com política racial/étnica.</p>
+                            <p className="text-xs mt-1 italic">Capturam programas universais sem relação com política racial/étnica.</p>
                           </div>
 
                           <div className="bg-primary/10 rounded p-3 border border-primary/30">
-                            <p className="text-xs"><strong>Campo de aplicação:</strong> Os radicais são aplicados sobre todos os campos descritivos retornados pelo SICONFI/MSC. A seleção prioritária é pelo código de ação PPA (Camada 1). O campo <code>razao_selecao</code> documenta o critério de inclusão de cada registro.</p>
+                            <p className="text-xs"><strong>Campo de aplicação:</strong> Os radicais são aplicados sobre todos os campos descritivos retornados pelo SICONFI (conta, rotulo, cod_conta, coluna). O campo <code>razao_selecao</code> documenta o critério de inclusão de cada registro.</p>
                           </div>
                         </div>
+
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 3 — Cruzamento MSC/SICONFI</h5>
-                          <p>Os códigos identificados na Camada 1 são rastreados na MSC para capturar Dotação Inicial e Liquidação real, mesmo que o SICONFI omita descritivos textuais.</p>
+                          <h5 className="font-semibold text-foreground">Camada 3 — Enriquecimento MSC (opcional)</h5>
+                          <p>Quando ativada, a Matriz de Saldos Contábeis (MSC Orçamentária, classe 5 — despesa, mês 12) é consultada para os mesmos <code>cod_conta</code> identificados na Camada 1, enriquecendo registros que não possuam dados de empenho/liquidação no DCA.</p>
                         </div>
+
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 4 — Transição de Códigos entre PPAs</h5>
-                          <p>Quando o código do PPA anterior era diferente, os valores foram rastreados por similaridade de descrição para garantir a continuidade da série histórica.</p>
+                          <p>A continuidade da série histórica (3 PPAs: 2016-2019, 2020-2023, 2024-2027) é garantida pela deduplicação por par <strong>programa × ano</strong>, mantendo o registro com maior dotação inicial quando há duplicatas.</p>
                         </div>
                       </div>
                     </section>
 
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">2. "Dicionário de Ações Raciais" — Códigos PPA por Estado</h4>
-                      <p>Exemplos de âncoras mapeadas (ciclo 2024-2027):</p>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {[
-                          { uf: 'BA', codigos: '1055, 2190, 3344' },
-                          { uf: 'MA', codigos: '4321, 1244, 5561, 2188' },
-                          { uf: 'PA', codigos: '6721, 4410' },
-                          { uf: 'SP', codigos: '2822, 2830' },
-                          { uf: 'MG', codigos: '1122, 4455' },
-                          { uf: 'PE', codigos: '9988, 7766' },
-                          { uf: 'CE', codigos: '450, 612' },
-                          { uf: 'PI', codigos: '203, 155' },
-                          { uf: 'RJ', codigos: '2210' },
-                          { uf: 'DF', codigos: '4088' },
-                          { uf: 'RS', codigos: '2410' },
-                          { uf: 'MT', codigos: '551, 552' },
-                        ].map(item => (
-                          <div key={item.uf} className="bg-muted/50 rounded p-2">
-                            <Badge variant="outline" className="mr-2">{item.uf}</Badge>
-                            <code className="text-xs">{item.codigos}</code>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">3. Diferenciação de Execução por Tipo de Recurso</h4>
+                      <h4 className="font-semibold text-foreground text-base">2. Processamento em Lotes</h4>
                       <div className="bg-primary/10 rounded-lg p-4 space-y-2 border border-primary/30">
-                        <p><strong>Recursos Vinculados (Educação/Saúde Indígena):</strong> Liquidação &gt;80%. São verbas "carimbadas" (SUS/FNDE) que o estado é obrigado a gastar.</p>
-                        <p><strong>Recursos Discricionários (Igualdade Racial, Quilombolas):</strong> Liquidação &lt;25% em média. São as primeiras rubricas a sofrer contingenciamento.</p>
-                        <p className="text-xs italic">Isso demonstra uma <strong>omissão seletiva</strong> — a máquina estatal consegue gastar quando quer.</p>
+                        <p>Para evitar limites de CPU (WORKER_LIMIT), a ingestão processa <strong>1 estado por chamada</strong>. O frontend orquestra as chamadas sequencialmente com barra de progresso, permitindo processar todos os 27 estados sem timeout.</p>
+                        <p className="text-xs italic">Cada chamada consulta DCA/RREO para todos os anos selecionados de um único estado, opcionalmente enriquecendo com MSC.</p>
                       </div>
                     </section>
 
                     <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">4. Cobertura e Limitações</h4>
+                      <h4 className="font-semibold text-foreground text-base">3. Fontes de Dados por Período</h4>
                       <div className="space-y-3">
                         <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
-                          <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">✅ Cobertos (20 estados)</p>
-                          <p className="text-sm">MA, BA, PA, SP, MG, PE, CE, PI, RJ, RS, PR, AM, MT, MS, DF, RO, TO, RR, PB, SE — com 76 registros granulares (2018–2025).</p>
+                          <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">DCA Anexo I-E (2018–2024)</p>
+                          <p className="text-sm">Declaração de Contas Anuais — dados consolidados anuais com dotação, empenho, liquidação e pagamento.</p>
                         </div>
                         <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
-                          <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Pendentes (7 estados)</p>
-                          <p className="text-sm">AC, AL, ES, GO, SC, AP, RN — ainda sem ações mapeadas nos PPAs estaduais.</p>
+                          <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">RREO Anexo 02 (2025+)</p>
+                          <p className="text-sm">Relatório Resumido de Execução Orçamentária — dados bimestrais (consulta do 6º ao 1º bimestre até encontrar dados). Valores parciais sujeitos a ajustes até o fechamento do Balanço Geral.</p>
+                        </div>
+                        <div className="p-3 rounded-md border border-blue-500/30 bg-blue-500/5">
+                          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">MSC Orçamentária (opcional)</p>
+                          <p className="text-sm">Matriz de Saldos Contábeis — classe 5 (despesa), mês 12. Complementa dados de empenho/liquidação quando ausentes no DCA.</p>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="space-y-2">
+                      <h4 className="font-semibold text-foreground text-base">4. Cobertura</h4>
+                      <div className="space-y-3">
+                        <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
+                          <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">✅ 27 estados + DF</p>
+                          <p className="text-sm">Todos os estados são consultados na API SICONFI. A quantidade de registros capturados depende de cada estado possuir programas com termos raciais/étnicos nos descritivos contábeis.</p>
                         </div>
                         <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
                           <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Limitação da API SICONFI</p>
-                          <p className="text-sm">O endpoint RREO/DCA retorna apenas dados de Função/Subfunção (agregados contábeis), insuficientes para identificar ações específicas. A granularidade ação-por-ação depende da MSC e dos códigos PPA mapeados manualmente.</p>
+                          <p className="text-sm">O DCA/RREO retorna dados de Função/Subfunção (agregados contábeis). A identificação de programas raciais depende da presença de palavras-chave nos campos descritivos (<code>conta</code>, <code>rotulo</code>).</p>
                         </div>
                       </div>
                     </section>

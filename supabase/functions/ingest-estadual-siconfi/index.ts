@@ -14,7 +14,7 @@ const ESTADOS_IBGE: Record<string, number> = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// Radicais e Palavras-Chave
+// Radicais e Palavras-Chave (Camada 1)
 // ═══════════════════════════════════════════════════════════════
 
 const RADICAIS: { radical: string; grupo: string }[] = [
@@ -64,16 +64,16 @@ const TERMOS_EXCLUSAO = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// FETCH
+// FETCH helpers
 // ═══════════════════════════════════════════════════════════════
 
 async function fetchJson(url: string, params: URLSearchParams): Promise<Record<string, unknown>[]> {
   try {
     const fullUrl = `${url}?${params}`;
-    console.log(`  Fetch: ${fullUrl.substring(0, 150)}...`);
+    console.log(`  Fetch: ${fullUrl.substring(0, 160)}...`);
     const res = await fetch(fullUrl, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(60_000),
+      signal: AbortSignal.timeout(45_000),
     });
     if (!res.ok) { console.error(`  HTTP ${res.status}`); return []; }
     const ct = res.headers.get("content-type");
@@ -86,11 +86,13 @@ async function fetchJson(url: string, params: URLSearchParams): Promise<Record<s
   }
 }
 
+// DCA Anexo I-E (2018–2024): dotação + empenho + liquidado + pago
 async function consultarDCA(ano: number, ufCode: number) {
   return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca",
     new URLSearchParams({ an_exercicio: String(ano), id_ente: String(ufCode), no_anexo: "DCA-Anexo I-E" }));
 }
 
+// RREO Anexo 02 (2025+): fallback bimestral
 async function consultarRREO(ano: number, ufCode: number) {
   for (let bim = 6; bim >= 1; bim--) {
     const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo",
@@ -100,8 +102,34 @@ async function consultarRREO(ano: number, ufCode: number) {
   return [];
 }
 
+// MSC Orçamentária — classe 5 (despesa), mês 12 (acumulado anual)
+async function consultarMSC(ano: number, ufCode: number) {
+  const items = await fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
+    new URLSearchParams({
+      an_referencia: String(ano),
+      me_referencia: "12",
+      id_ente: String(ufCode),
+      co_tipo_matriz: "MSCC",
+      classe_conta: "5",
+      id_tv: "beginning_balance",
+    }));
+  if (items.length === 0) {
+    // Fallback: try period_change
+    return fetchJson("https://apidatalake.tesouro.gov.br/ords/siconfi/tt/msc_orcamentaria",
+      new URLSearchParams({
+        an_referencia: String(ano),
+        me_referencia: "12",
+        id_ente: String(ufCode),
+        co_tipo_matriz: "MSCC",
+        classe_conta: "5",
+        id_tv: "period_change",
+      }));
+  }
+  return items;
+}
+
 // ═══════════════════════════════════════════════════════════════
-// MATCHING — Radicais + Keywords
+// MATCHING
 // ═══════════════════════════════════════════════════════════════
 
 function normalize(t: string): string {
@@ -121,33 +149,30 @@ function matchRadicaisKeywords(texto: string): { termos: string[]; grupos: Set<s
   }
   if (termos.length === 0) return null;
 
-  // Excluir falsos positivos genéricos
   const lower = texto.toLowerCase();
   for (const excl of TERMOS_EXCLUSAO) {
     if (lower.includes(excl)) {
-      if (grupos.size === 1 && (grupos.has("Racial/Étnico"))) return null;
+      if (grupos.size === 1 && grupos.has("Racial/Étnico")) return null;
     }
   }
   return { termos, grupos };
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PROCESSAMENTO
+// PROCESS DCA/RREO items → registros
 // ═══════════════════════════════════════════════════════════════
 
-function processarItems(
+function processarDCA(
   items: Record<string, unknown>[], uf: string, ano: number, fonteAnexo: string,
-): Record<string, unknown>[] {
-  if (items.length > 0) {
-    console.log(`  Campos (${fonteAnexo}): ${Object.keys(items[0]).join(", ")}`);
-  }
-
+): { registros: Record<string, unknown>[]; codContas: Set<string> } {
   const porConta = new Map<string, {
     conta: string; codConta: string;
     empenhado: number | null; liquidado: number | null;
     dotacao_inicial: number | null; pago: number | null;
     razao: string; grupoEtnico: string | null;
   }>();
+
+  const codContasMatched = new Set<string>();
 
   for (const item of items) {
     const conta = String(item.conta ?? "").trim();
@@ -163,6 +188,8 @@ function processarItems(
 
     const match = matchRadicaisKeywords(textoCompleto);
     if (!match) continue;
+
+    codContasMatched.add(codConta);
 
     const razao = `Radical: ${match.termos.slice(0, 3).join(", ")}`;
     const grupoEtnico = [...match.grupos].join(" | ");
@@ -210,11 +237,53 @@ function processarItems(
       razao_selecao: d.razao,
     });
   }
-  return registros;
+  return { registros, codContas: codContasMatched };
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HANDLER
+// ENRICH with MSC execution data (Camada 3)
+// ═══════════════════════════════════════════════════════════════
+
+function enrichWithMSC(
+  registros: Record<string, unknown>[],
+  mscItems: Record<string, unknown>[],
+  codContas: Set<string>,
+) {
+  if (mscItems.length === 0 || codContas.size === 0) return;
+
+  // Build MSC lookup by cod_conta
+  const mscByConta = new Map<string, { empenhado: number; liquidado: number; pago: number }>();
+  for (const item of mscItems) {
+    const codConta = String(item.conta_contabil ?? item.cod_conta ?? "");
+    const valor = typeof item.valor === "number" ? item.valor : 0;
+    const natureza = String(item.natureza_conta ?? item.coluna ?? "").toLowerCase();
+
+    if (!codContas.has(codConta)) continue;
+
+    const existing = mscByConta.get(codConta) ?? { empenhado: 0, liquidado: 0, pago: 0 };
+    if (natureza.includes("empenh")) existing.empenhado += valor;
+    else if (natureza.includes("liquid")) existing.liquidado += valor;
+    else if (natureza.includes("pag")) existing.pago += valor;
+    mscByConta.set(codConta, existing);
+  }
+
+  // Enrich registros that lack execution data
+  for (const reg of registros) {
+    const desc = String(reg.descritivo ?? "");
+    for (const [codConta, vals] of mscByConta) {
+      if (desc.includes(codConta) || normalize(desc).includes(normalize(codConta))) {
+        if (reg.empenhado === null && vals.empenhado > 0) reg.empenhado = vals.empenhado;
+        if (reg.liquidado === null && vals.liquidado > 0) reg.liquidado = vals.liquidado;
+        if (reg.pago === null && vals.pago > 0) reg.pago = vals.pago;
+        if (reg.razao_selecao) reg.razao_selecao = `${reg.razao_selecao} + MSC`;
+        break;
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HANDLER — processes 1 state at a time for WORKER_LIMIT safety
 // ═══════════════════════════════════════════════════════════════
 
 Deno.serve(async (req) => {
@@ -222,58 +291,82 @@ Deno.serve(async (req) => {
 
   try {
     let anos: number[] = [2023, 2024];
+    let uf: string | undefined;
     let ufs: string[] | undefined;
     let mode = "insert";
-    let maxEstados = 5;
+    let useMSC = false;
 
     try {
       const body = await req.json();
       if (Array.isArray(body.anos) && body.anos.length > 0) anos = body.anos;
+      if (typeof body.uf === "string") uf = body.uf;
       if (Array.isArray(body.ufs) && body.ufs.length > 0) ufs = body.ufs;
       if (body.mode === "preview") mode = "preview";
-      if (typeof body.maxEstados === "number") maxEstados = body.maxEstados;
+      if (body.useMSC === true) useMSC = true;
     } catch { /* defaults */ }
 
-    const allEstados = Object.entries(ESTADOS_IBGE).filter(([uf]) => !ufs || ufs.includes(uf));
-    const estadosAlvo = ufs ? allEstados : allEstados.slice(0, maxEstados);
+    // Single state mode (preferred for batch safety)
+    const targetUF = uf ?? ufs?.[0];
+    if (!targetUF || !ESTADOS_IBGE[targetUF]) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: `UF inválida: ${targetUF}. Use o parâmetro 'uf' com uma sigla válida.`,
+      }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
-    console.log(`=== Ingestão Estadual (Radicais+Keywords) ===`);
-    console.log(`Mode: ${mode} | Estados(${estadosAlvo.length}): ${estadosAlvo.map(([u]) => u).join(",")} | Anos: ${anos.join(",")}`);
+    const ufCode = ESTADOS_IBGE[targetUF];
+    console.log(`=== Ingestão Estadual: ${targetUF} (${ufCode}) | Anos: ${anos.join(",")} | Mode: ${mode} | MSC: ${useMSC} ===`);
 
     const allRegistros: Record<string, unknown>[] = [];
     const erros: string[] = [];
     const logConsultas: string[] = [];
 
-    for (const [uf, ufCode] of estadosAlvo) {
-      for (const ano of anos) {
-        console.log(`\n--- ${uf} [${ano}] ---`);
-        try {
-          let items: Record<string, unknown>[] = [];
-          let fonte = "";
+    for (const ano of anos) {
+      console.log(`\n--- ${targetUF} [${ano}] ---`);
+      try {
+        // Camada 1: DCA/RREO keyword search
+        let items: Record<string, unknown>[] = [];
+        let fonte = "";
 
-          if (ano >= 2025) {
-            items = await consultarRREO(ano, ufCode);
-            fonte = "RREO-Anexo 02";
-          } else {
-            items = await consultarDCA(ano, ufCode);
-            fonte = "DCA-Anexo I-E";
-          }
-
-          if (items.length > 0) {
-            const regs = processarItems(items, uf, ano, fonte);
-            allRegistros.push(...regs);
-            logConsultas.push(`${uf}/${ano}: ${fonte} → ${items.length} brutos → ${regs.length} hits`);
-          } else {
-            logConsultas.push(`${uf}/${ano}: ${fonte} → sem dados`);
-          }
-        } catch (error) {
-          erros.push(`${uf} ${ano}: ${error instanceof Error ? error.message : "Erro"}`);
+        if (ano >= 2025) {
+          items = await consultarRREO(ano, ufCode);
+          fonte = "RREO-Anexo 02";
+        } else {
+          items = await consultarDCA(ano, ufCode);
+          fonte = "DCA-Anexo I-E";
         }
-        await new Promise(r => setTimeout(r, 350));
+
+        if (items.length > 0) {
+          const { registros, codContas } = processarDCA(items, targetUF, ano, fonte);
+
+          // Camada 3: MSC enrichment (optional)
+          if (useMSC && codContas.size > 0 && ano <= 2024) {
+            console.log(`  MSC: buscando dados de execução para ${codContas.size} contas...`);
+            try {
+              const mscItems = await consultarMSC(ano, ufCode);
+              if (mscItems.length > 0) {
+                enrichWithMSC(registros, mscItems, codContas);
+                logConsultas.push(`${targetUF}/${ano}: MSC → ${mscItems.length} registros consultados`);
+              } else {
+                logConsultas.push(`${targetUF}/${ano}: MSC → sem dados disponíveis`);
+              }
+            } catch (mscErr) {
+              logConsultas.push(`${targetUF}/${ano}: MSC → erro: ${mscErr instanceof Error ? mscErr.message : "Erro"}`);
+            }
+          }
+
+          allRegistros.push(...registros);
+          logConsultas.push(`${targetUF}/${ano}: ${fonte} → ${items.length} brutos → ${registros.length} hits`);
+        } else {
+          logConsultas.push(`${targetUF}/${ano}: ${fonte} → sem dados`);
+        }
+      } catch (error) {
+        erros.push(`${targetUF} ${ano}: ${error instanceof Error ? error.message : "Erro"}`);
       }
+      await new Promise(r => setTimeout(r, 300));
     }
 
-    // Deduplicação
+    // Deduplication
     const deduped = new Map<string, Record<string, unknown>>();
     for (const r of allRegistros) {
       const key = `${r.programa}|${r.ano}`;
@@ -286,31 +379,28 @@ Deno.serve(async (req) => {
 
     const batch = Array.from(deduped.values());
 
-    // Estatísticas
+    // Stats
     const porGrupo: Record<string, number> = {};
-    const porUF: Record<string, number> = {};
     for (const r of batch) {
       const g = String(r.observacoes ?? "N/C");
       porGrupo[g] = (porGrupo[g] ?? 0) + 1;
-      const ufM = String(r.programa ?? "").match(/^([A-Z]{2})/);
-      if (ufM) porUF[ufM[1]] = (porUF[ufM[1]] ?? 0) + 1;
     }
 
     // PREVIEW
     if (mode === "preview") {
       return new Response(JSON.stringify({
-        success: true, mode: "preview",
+        success: true, mode: "preview", uf: targetUF,
         total_brutos: allRegistros.length,
         total_deduplicados: deduped.size,
         por_grupo_etnico: porGrupo,
-        por_uf: porUF,
         log_consultas: logConsultas,
         amostra: batch.slice(0, 30).map(r => ({
           programa: r.programa, ano: r.ano,
           dotacao_inicial: r.dotacao_inicial, liquidado: r.liquidado,
+          empenhado: r.empenhado, pago: r.pago,
           razao_selecao: r.razao_selecao, grupo: r.observacoes,
         })),
-        erros: erros.slice(0, 20),
+        erros: erros.slice(0, 10),
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -324,11 +414,10 @@ Deno.serve(async (req) => {
     }
 
     return new Response(JSON.stringify({
-      success: true, mode: "insert",
+      success: true, mode: "insert", uf: targetUF,
       total_inseridos: totalInserted, total_brutos: allRegistros.length, deduplicados: deduped.size,
-      por_grupo_etnico: porGrupo, por_uf: porUF,
-      estados: estadosAlvo.map(([u]) => u), anos,
-      log_consultas: logConsultas.slice(0, 40), erros: erros.slice(0, 20),
+      por_grupo_etnico: porGrupo,
+      log_consultas: logConsultas.slice(0, 20), erros: erros.slice(0, 10),
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (error) {
     console.error("Fatal:", error);
