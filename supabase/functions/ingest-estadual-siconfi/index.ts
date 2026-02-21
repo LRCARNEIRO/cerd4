@@ -255,7 +255,8 @@ function limparNome(nome: string): string {
     .substring(0, 200);
 }
 
-/** Extrai programas/ações/secretarias de conteúdo completo de um PPA */
+/** Extrai APENAS programas e ações orçamentárias com código numérico, ou secretarias temáticas conhecidas.
+ *  Rejeita indicadores, eixos, metas textuais, compromissos e qualquer item sem estrutura orçamentária. */
 function extrairProgramasDoConteudo(
   content: string, url: string, ppaCycle: string,
 ): ProgramaPPA[] {
@@ -263,23 +264,43 @@ function extrairProgramasDoConteudo(
   const seen = new Set<string>();
   const lines = content.split(/\n/);
 
+  // ── Termos que NUNCA são programas/ações orçamentárias ──
+  const REJEITAR_LINHA = [
+    "indicador", "eixo tematic", "eixo estrateg", "diretriz",
+    "macro-desafio", "macrodesafio", "compromisso", "prioridade da ldo",
+    "nao programada na loa", "saiba mais", "confira", "clique aqui",
+    "publicad", "licitacao", "edital", "portaria", "decreto",
+    "resultado", "meta fisic", "meta prevista", "unidade de medida",
+    "produto", "indice de referencia", "indice recente",
+    "apuracao do indice", "periodicidade", "base geografica",
+    "fonte do indicador", "orgao responsavel pelo indicador",
+    "data de referencia", "polaridade", "formula de calculo",
+  ];
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.length < 5 || line.length > 600) continue;
+    if (line.length < 10 || line.length > 400) continue;
 
-    // Contexto: 5 linhas antes e depois para verificar relevância racial
-    const ctxStart = Math.max(0, i - 5);
-    const ctxEnd = Math.min(lines.length, i + 6);
-    const contexto = lines.slice(ctxStart, ctxEnd).join(" ");
-    const contextoNorm = normalize(contexto);
     const lineNorm = normalize(line);
 
-    // ═══ Padrão 1: "Programa XXXX — Nome" ═══
+    // Rejeição rápida por termos proibidos
+    if (REJEITAR_LINHA.some(t => lineNorm.includes(t))) continue;
+    // Rejeitar linhas com muita pontuação (tabelas, listas genéricas)
+    if (line.includes("...") || line.includes("…") || line.includes(";")) continue;
+    if ((line.match(/,/g)?.length ?? 0) > 3) continue;
+    // Rejeitar linhas que são apenas números ou valores monetários
+    if (/^[\d\s\.,R\$%]+$/.test(line)) continue;
+
+    // Contexto: 3 linhas antes e depois
+    const ctxStart = Math.max(0, i - 3);
+    const ctxEnd = Math.min(lines.length, i + 4);
+    const contexto = lines.slice(ctxStart, ctxEnd).join(" ");
+
+    // ═══ Padrão 1: "Programa XXXX — Nome" (com código obrigatório) ═══
     const progMatch = line.match(/Programa\s+(\d{3,5})\s*[—–\-:]\s*(.+)/i);
     if (progMatch) {
       const codigo = progMatch[1];
       const nome = progMatch[2].trim().substring(0, 200);
-      // O programa tem relevância racial? (no próprio nome OU no contexto próximo)
       const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
       if (radical) {
         const key = `prog_${codigo}`;
@@ -290,16 +311,17 @@ function extrairProgramasDoConteudo(
             dotacao_inicial: extrairValor(contexto),
             secretaria: extrairSecretaria(contexto),
             url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
-            criterio: `Programa PPA: radical "${radical}" no nome/contexto`,
+            criterio: `Programa PPA código ${codigo}: radical "${radical}"`,
             ppa_cycle: ppaCycle,
           });
         }
       }
+      continue;
     }
 
-    // ═══ Padrão 2: "Ação XXXX — Nome" ═══
-    const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto|Iniciativa)\s+(\d{4,6})\s*[—–\-:]\s*(.+)/i);
-    if (acaoMatch && !progMatch) {
+    // ═══ Padrão 2: "Ação/Atividade/Projeto XXXX — Nome" (com código obrigatório) ═══
+    const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto)\s+(\d{4,6})\s*[—–\-:]\s*(.+)/i);
+    if (acaoMatch) {
       const codigo = acaoMatch[1];
       const nome = acaoMatch[2].trim().substring(0, 200);
       const radical = encontrarRadical(nome) ?? encontrarRadical(contexto);
@@ -312,15 +334,16 @@ function extrairProgramasDoConteudo(
             dotacao_inicial: extrairValor(contexto),
             secretaria: extrairSecretaria(contexto),
             url_fonte: url, grupo: classificarGrupo(nome + " " + contexto),
-            criterio: `Ação PPA: radical "${radical}" no nome/contexto`,
+            criterio: `Ação PPA código ${codigo}: radical "${radical}"`,
             ppa_cycle: ppaCycle,
           });
         }
       }
+      continue;
     }
 
-    // ═══ Padrão 3: Secretarias/Órgãos relevantes ═══
-    const secPat = /(Secretaria\s+(?:de\s+|da\s+|do\s+)?(?:Promoção\s+da\s+Igualdade\s+Racial|Igualdade\s+Racial|Justiça\s+e\s+(?:Cidadania|Igualdade)|Políticas\s+(?:para|de)\s+(?:Promoção|Igualdade)|Direitos\s+Humanos.*?Igualdade|Povos\s+Ind[íi]genas)|SEPROMI|SEPIR|SEPPIR|Fundação\s+(?:Cultural\s+)?Palmares)/i;
+    // ═══ Padrão 3: Secretarias/Órgãos temáticos conhecidos ═══
+    const secPat = /(Secretaria\s+(?:de\s+|da\s+|do\s+)?(?:Promoção\s+da\s+Igualdade\s+Racial|Igualdade\s+Racial|Políticas\s+(?:para|de)\s+(?:Promoção|Igualdade)\s+Racial|Povos\s+Ind[íi]genas)|SEPROMI|SEPIR|SEPPIR|Fundação\s+(?:Cultural\s+)?Palmares)/i;
     const secMatch = line.match(secPat);
     if (secMatch) {
       const nomeSecretaria = secMatch[0].trim();
@@ -332,58 +355,12 @@ function extrairProgramasDoConteudo(
           dotacao_inicial: extrairValor(contexto),
           secretaria: nomeSecretaria, url_fonte: url,
           grupo: classificarGrupo(nomeSecretaria),
-          criterio: `Secretaria/Órgão identificado no documento PPA`,
+          criterio: `Secretaria/Órgão temático identificado no PPA`,
           ppa_cycle: ppaCycle,
         });
       }
     }
-
-    // ═══ Padrão 4: Linhas curtas tipo título com radicais no próprio texto ═══
-    if (line.length < 150 && !progMatch && !acaoMatch && !secMatch) {
-      const radicalNaLinha = encontrarRadical(line);
-      if (radicalNaLinha) {
-        // Precisa parecer título de programa, não texto corrido
-        const pareceTitulo =
-          /^[\d\.\)\-\|#\*]*\s*[A-ZÁÉÍÓÚÂÊÔÃ]/.test(line) ||
-          lineNorm.includes("programa") || lineNorm.includes("acao") ||
-          lineNorm.includes("projeto") || lineNorm.includes("meta") ||
-          lineNorm.includes("objetivo");
-
-        // Rejeitar ruído: labels de tabela, indicadores, compromissos
-        const ruido = lineNorm.includes("publicad") || lineNorm.includes("confira") ||
-          lineNorm.includes("saiba mais") || lineNorm.includes("clique") ||
-          line.includes("...") || line.includes("…") ||
-          line.includes(";") ||
-          (line.match(/,/g)?.length ?? 0) > 3 ||
-          lineNorm.includes("indicador de compromisso") ||
-          lineNorm.includes("indicador de programa") ||
-          lineNorm.includes("prioridade da ldo") ||
-          lineNorm.includes("acao orcamentaria") || lineNorm.includes("aco orcamentaria") ||
-          lineNorm.includes("nao programada na loa") ||
-          /^(compromisso|iniciativa|ano\s?\d|prioridade|destaque)\s*:/i.test(line.trim());
-
-        if (pareceTitulo && !ruido) {
-          const cMatch = line.match(/(\d{3,6})/);
-          const codigo = cMatch ? cMatch[1] : null;
-          const nome = limparNome(line
-            .replace(/^\|?\s*/, "").replace(/\|.*$/, "")
-            .replace(/^\*+\s*/, "").replace(/^#+\s*/, "")
-            .replace(/^\d+[\.\)]\s*/, "").trim());
-          const key = `gen_${normalize(nome).substring(0, 50)}`;
-          if (!seen.has(key) && nome.length > 12) {
-            seen.add(key);
-            programas.push({
-              nome, codigo,
-              dotacao_inicial: extrairValor(contexto),
-              secretaria: extrairSecretaria(contexto),
-              url_fonte: url, grupo: classificarGrupo(line),
-              criterio: `Título PPA contém radical "${radicalNaLinha}"`,
-              ppa_cycle: ppaCycle,
-            });
-          }
-        }
-      }
-    }
+    // NÃO há Padrão 4 — apenas programas/ações com código ou secretarias conhecidas são aceitos
   }
 
   return programas;
