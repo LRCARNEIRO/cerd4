@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
-import { TOTAL_STATISTICS_INDICATORS } from '@/utils/countStatisticsIndicators';
+import { TOTAL_SERIES, TOTAL_DADOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -160,8 +160,8 @@ export default function Index() {
         />
         <StatCard
           title="Indicadores"
-          value={isLoading ? '...' : TOTAL_STATISTICS_INDICATORS + stats.totalIndicadores}
-          subtitle={`${TOTAL_STATISTICS_INDICATORS} séries + ${stats.totalIndicadores} no BD`}
+          value={isLoading ? '...' : `${TOTAL_DADOS + stats.totalIndicadores}`}
+          subtitle={`${TOTAL_SERIES} séries · ${TOTAL_DADOS} dados locais · ${stats.totalIndicadores} no BD`}
           icon={BarChart3}
           variant="success"
           sourceInfo={{ label: 'SIDRA/IBGE + DataSUS + FBSP', url: 'https://sidra.ibge.gov.br/home/pnadct/brasil' }}
