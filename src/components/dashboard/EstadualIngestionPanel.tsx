@@ -79,7 +79,7 @@ export function EstadualIngestionPanel() {
           allResults.push({
             uf,
             success: data.success,
-            total: runMode === 'preview' ? (data.total_deduplicados ?? 0) : (data.total_inseridos ?? 0),
+            total: runMode === 'preview' ? (data.total_registros ?? data.total_deduplicados ?? 0) : (data.total_inseridos ?? 0),
             erros: data.erros ?? [],
             porGrupo: data.por_grupo_etnico ?? {},
             logConsultas: data.log_consultas ?? [],
@@ -143,16 +143,16 @@ export function EstadualIngestionPanel() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              Ingestão Estadual — SICONFI (por Estado)
+              Ingestão Estadual — PPAs via Portais de Transparência
             </DialogTitle>
           </DialogHeader>
 
           <ScrollArea className="flex-1 pr-2">
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground">
-                <strong>Camada 1:</strong> DCA/RREO — busca por radicais e palavras-chave nos descritivos.
-                <strong className="ml-1">Camada 3:</strong> MSC — enriquecimento com dados de empenho/liquidação.
-                <br />Todas as camadas são executadas obrigatoriamente. Processamento <strong>estado por estado</strong>.
+                <strong>Camada 1:</strong> Busca nos PPAs estaduais via Firecrawl (Portais de Transparência) por palavras-chave raciais/étnicas.
+                <strong className="ml-1">Camada 3:</strong> Cruzamento SICONFI/RREO para execução (Função 14).
+                <br />Processamento <strong>estado por estado</strong> — nomes reais dos programas PPA.
               </p>
 
               {/* Estados */}
