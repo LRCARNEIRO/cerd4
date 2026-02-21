@@ -228,15 +228,36 @@ async function buscarDocumentosPPA(
         if (!url || seenUrls.has(url)) continue;
         seenUrls.add(url);
 
-        // Priorizar PDFs e páginas de PPA
+        // SKIP PDFs — são muito grandes/lentos para scraping em Edge Function
+        const isPdf = url.toLowerCase().endsWith(".pdf") || url.toLowerCase().includes(".pdf?");
         const title = String(r.title ?? "");
         const desc = String(r.description ?? "");
-
-        // Verificar se título/descrição contêm termos relevantes
         const fullText = `${title} ${desc}`;
         const hasKeyword = matchKeywords(fullText);
+
         if (hasKeyword) {
-          urlsToScrape.push({ url, title, desc });
+          if (isPdf) {
+            // Para PDFs: usar apenas título+descrição (sem scraping)
+            const key = normalize(title).substring(0, 80);
+            if (!seenNomes.has(key) && title.length > 10) {
+              seenNomes.add(key);
+              const codeMatch = fullText.match(/(?:Programa|Ação|Projeto)\s*(\d{3,6})/i);
+              let ppaCycle = "PPA 2024-2027";
+              for (const cycle of PPA_CYCLES) {
+                if (fullText.includes(String(cycle.start)) || fullText.includes(`${cycle.start}-${cycle.end}`)) {
+                  ppaCycle = cycle.label; break;
+                }
+              }
+              acoes.push({
+                nome: title.replace(/^\[PDF\]\s*/i, "").trim().substring(0, 250),
+                codigo: codeMatch?.[1] ?? null, dotacao_inicial: null, url_fonte: url,
+                grupo: hasKeyword.grupo, criterio: hasKeyword.criterio, ppa_cycle: ppaCycle,
+              });
+              logs.push(`PDF (metadados): ${title.substring(0, 50)}`);
+            }
+          } else {
+            urlsToScrape.push({ url, title, desc });
+          }
         }
       }
     } catch (e) {
@@ -247,8 +268,8 @@ async function buscarDocumentosPPA(
 
   logs.push(`URLs para scraping: ${urlsToScrape.length}`);
 
-  // Fase 2: Scrape dos documentos/páginas encontrados
-  const maxScrapes = Math.min(urlsToScrape.length, 5); // Limitar para evitar timeout
+  // Fase 2: Scrape apenas de páginas HTML (PDFs já processados acima)
+  const maxScrapes = Math.min(urlsToScrape.length, 3); // Max 3 para evitar timeout
   for (let s = 0; s < maxScrapes; s++) {
     const { url, title } = urlsToScrape[s];
     try {
@@ -259,10 +280,10 @@ async function buscarDocumentosPPA(
         body: JSON.stringify({
           url,
           formats: ["markdown"],
-          onlyMainContent: false, // Capturar tudo — PPAs podem estar em tabelas e anexos
-          waitFor: 3000,
+          onlyMainContent: false,
+          waitFor: 2000,
         }),
-        signal: AbortSignal.timeout(45_000),
+        signal: AbortSignal.timeout(20_000), // 20s max por scrape
       });
 
       if (!res.ok) { logs.push(`Scrape ${url.substring(0, 50)}: HTTP ${res.status}`); continue; }
