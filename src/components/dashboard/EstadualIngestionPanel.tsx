@@ -122,7 +122,14 @@ export function EstadualIngestionPanel() {
     return `R$ ${(v / 1_000_000).toFixed(2)}M`;
   };
 
-  const reset = () => { cancelRef.current = true; setResults([]); setMode('idle'); setProgress(0); setIsRunning(false); setCurrentUF(null); };
+  const reset = useCallback(() => {
+    cancelRef.current = true;
+    setResults([]);
+    setMode('idle');
+    setProgress(0);
+    setIsRunning(false);
+    setCurrentUF(null);
+  }, []);
   const cancel = () => { cancelRef.current = true; toast.info('Cancelando após o estado atual...'); };
 
   // Aggregate stats
@@ -145,7 +152,18 @@ export function EstadualIngestionPanel() {
         Ingestão Estadual
       </Button>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);
+        if (open && mode === 'done') {
+          // Auto-reset when reopening after a completed run
+          cancelRef.current = true;
+          setResults([]);
+          setMode('idle');
+          setProgress(0);
+          setIsRunning(false);
+          setCurrentUF(null);
+        }
+      }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
