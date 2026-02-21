@@ -6,100 +6,100 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ESTADOS_IBGE: Record<string, { cod: number; nome: string }> = {
-  AC: { cod: 12, nome: "Acre" }, AL: { cod: 27, nome: "Alagoas" }, AP: { cod: 16, nome: "Amapá" },
-  AM: { cod: 13, nome: "Amazonas" }, BA: { cod: 29, nome: "Bahia" }, CE: { cod: 23, nome: "Ceará" },
-  DF: { cod: 53, nome: "Distrito Federal" }, ES: { cod: 32, nome: "Espírito Santo" },
-  GO: { cod: 52, nome: "Goiás" }, MA: { cod: 21, nome: "Maranhão" }, MT: { cod: 51, nome: "Mato Grosso" },
-  MS: { cod: 50, nome: "Mato Grosso do Sul" }, MG: { cod: 31, nome: "Minas Gerais" },
-  PA: { cod: 15, nome: "Pará" }, PB: { cod: 25, nome: "Paraíba" }, PR: { cod: 41, nome: "Paraná" },
-  PE: { cod: 26, nome: "Pernambuco" }, PI: { cod: 22, nome: "Piauí" }, RJ: { cod: 33, nome: "Rio de Janeiro" },
-  RN: { cod: 24, nome: "Rio Grande do Norte" }, RS: { cod: 43, nome: "Rio Grande do Sul" },
-  RO: { cod: 11, nome: "Rondônia" }, RR: { cod: 14, nome: "Roraima" }, SC: { cod: 42, nome: "Santa Catarina" },
-  SP: { cod: 35, nome: "São Paulo" }, SE: { cod: 28, nome: "Sergipe" }, TO: { cod: 17, nome: "Tocantins" },
+const ESTADOS_IBGE: Record<string, { cod: number; nome: string; dominio: string }> = {
+  AC: { cod: 12, nome: "Acre", dominio: "ac.gov.br" },
+  AL: { cod: 27, nome: "Alagoas", dominio: "al.gov.br" },
+  AP: { cod: 16, nome: "Amapá", dominio: "ap.gov.br" },
+  AM: { cod: 13, nome: "Amazonas", dominio: "am.gov.br" },
+  BA: { cod: 29, nome: "Bahia", dominio: "ba.gov.br" },
+  CE: { cod: 23, nome: "Ceará", dominio: "ce.gov.br" },
+  DF: { cod: 53, nome: "Distrito Federal", dominio: "df.gov.br" },
+  ES: { cod: 32, nome: "Espírito Santo", dominio: "es.gov.br" },
+  GO: { cod: 52, nome: "Goiás", dominio: "go.gov.br" },
+  MA: { cod: 21, nome: "Maranhão", dominio: "ma.gov.br" },
+  MT: { cod: 51, nome: "Mato Grosso", dominio: "mt.gov.br" },
+  MS: { cod: 50, nome: "Mato Grosso do Sul", dominio: "ms.gov.br" },
+  MG: { cod: 31, nome: "Minas Gerais", dominio: "mg.gov.br" },
+  PA: { cod: 15, nome: "Pará", dominio: "pa.gov.br" },
+  PB: { cod: 25, nome: "Paraíba", dominio: "pb.gov.br" },
+  PR: { cod: 41, nome: "Paraná", dominio: "pr.gov.br" },
+  PE: { cod: 26, nome: "Pernambuco", dominio: "pe.gov.br" },
+  PI: { cod: 22, nome: "Piauí", dominio: "pi.gov.br" },
+  RJ: { cod: 33, nome: "Rio de Janeiro", dominio: "rj.gov.br" },
+  RN: { cod: 24, nome: "Rio Grande do Norte", dominio: "rn.gov.br" },
+  RS: { cod: 43, nome: "Rio Grande do Sul", dominio: "rs.gov.br" },
+  RO: { cod: 11, nome: "Rondônia", dominio: "ro.gov.br" },
+  RR: { cod: 14, nome: "Roraima", dominio: "rr.gov.br" },
+  SC: { cod: 42, nome: "Santa Catarina", dominio: "sc.gov.br" },
+  SP: { cod: 35, nome: "São Paulo", dominio: "sp.gov.br" },
+  SE: { cod: 28, nome: "Sergipe", dominio: "se.gov.br" },
+  TO: { cod: 17, nome: "Tocantins", dominio: "to.gov.br" },
 };
 
-const PPA_CYCLES = [
-  { label: "PPA 2016-2019", start: 2016, end: 2019 },
-  { label: "PPA 2020-2023", start: 2020, end: 2023 },
-  { label: "PPA 2024-2027", start: 2024, end: 2027 },
+// ════════════════════════════════════════════════════════════
+// BUSCA DIRECIONADA POR GRUPO TEMÁTICO
+// ════════════════════════════════════════════════════════════
+
+interface BuscaTematica {
+  grupo: string;
+  termos: string[];  // termos de busca para Firecrawl
+  radicais: string[]; // para validar no conteúdo retornado
+}
+
+const BUSCAS: BuscaTematica[] = [
+  {
+    grupo: "Negro/Afrodescendente",
+    termos: [
+      "igualdade racial", "antirracista", "promoção da igualdade racial",
+      "consciência negra", "enfrentamento ao racismo", "discriminação racial",
+      "matriz africana", "candomblé", "capoeira afro",
+    ],
+    radicais: ["racial", "racis", "negr", "afro", "afrodescend", "palmares", "seppir", "candombl", "umbanda", "matriz african"],
+  },
+  {
+    grupo: "Indígena",
+    termos: [
+      "indígena", "povos indígenas", "terra indígena", "saúde indígena",
+      "educação indígena", "FUNAI", "SESAI",
+    ],
+    radicais: ["indigen", "funai", "sesai", "povos originari"],
+  },
+  {
+    grupo: "Quilombola",
+    termos: ["quilombola", "comunidades quilombolas", "remanescentes de quilombo"],
+    radicais: ["quilombol", "quilombo"],
+  },
+  {
+    grupo: "Comunidade Tradicional",
+    termos: ["povos tradicionais", "comunidades tradicionais", "povos e comunidades tradicionais"],
+    radicais: ["comunidades tradicion", "povos tradicion"],
+  },
+  {
+    grupo: "Cigano/Roma",
+    termos: ["cigano", "povo cigano", "comunidades ciganas"],
+    radicais: ["cigan", "romani"],
+  },
 ];
 
-// ════════════════════════════════════════════════════════════
-// DICIONÁRIO DE BUSCA
-// ════════════════════════════════════════════════════════════
-const RADICAIS = ["indigen", "quilombol", "cigan", "etnic", "palmares", "funai", "sesai"];
-const PALAVRAS = [
-  "igualdade racial", "promocao da igualdade", "racismo", "racial",
-  "negro", "negra", "afro", "afrodescendente",
-  "candomble", "umbanda", "matriz africana", "terreiro",
-  "povos tradicionais", "comunidades tradicionais", "povo cigano", "romani",
-  "consciencia negra", "seppir", "terra indigena", "povos originarios",
-  "discriminacao racial", "enfrentamento ao racismo",
-];
-
-const TERMOS_EXCLUSAO = [
-  "direitos da cidadania", "direitos individuais coletivos",
-  "assistencia comunitaria", "gestao administrativa", "administracao geral",
+// Padrões para rejeitar URLs que NÃO são documentos PPA/orçamentários
+const URL_REJEICAO = [
+  "/noticias/", "/noticia/", "/news/", "/blog/", "/imprensa/",
+  "/doe/", "/diariooficial/", "/licitacao/", "/edital/",
+  "/concurso/", "/processo-seletivo/",
 ];
 
 function normalize(t: string): string {
   return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function matchKeywords(texto: string): { criterio: string; grupo: string } | null {
-  const norm = normalize(texto);
-  let criterio = "";
-  let grupo = "Racial/Étnico";
-
-  for (const r of RADICAIS) {
-    const idx = norm.indexOf(r);
-    if (idx === -1) continue;
-    const wordStart = texto.lastIndexOf(" ", idx) + 1;
-    let wordEnd = texto.indexOf(" ", idx);
-    if (wordEnd === -1) wordEnd = texto.length;
-    const palavra = texto.substring(wordStart, wordEnd).replace(/[.,;:()|\[\]]/g, "").trim();
-    if (palavra && palavra.length > 2) criterio = criterio ? `${criterio}; ${palavra}` : palavra;
-    if (r === "indigen" || r === "funai" || r === "sesai") grupo = "Indígena";
-    else if (r === "quilombol") grupo = "Quilombola";
-    else if (r === "cigan") grupo = "Cigano/Roma";
-    else if (r === "palmares") grupo = "Negro/Afrodescendente";
+function isUrlRelevante(url: string): boolean {
+  const lower = url.toLowerCase();
+  for (const pat of URL_REJEICAO) {
+    if (lower.includes(pat)) return false;
   }
-
-  for (const p of PALAVRAS) {
-    const idx = norm.indexOf(p);
-    if (idx === -1) continue;
-    const trecho = texto.substring(idx, idx + p.length);
-    if (trecho) criterio = criterio ? `${criterio}; ${trecho}` : trecho;
-    if (p.includes("negro") || p.includes("negra") || p.includes("afro") || p.includes("racial")) grupo = "Negro/Afrodescendente";
-    else if (p.includes("indigena") || p.includes("originario")) grupo = "Indígena";
-    else if (p.includes("quilombol")) grupo = "Quilombola";
-    else if (p.includes("cigano") || p.includes("romani")) grupo = "Cigano/Roma";
-    else if (p.includes("tradiciona")) grupo = "Comunidade Tradicional";
-  }
-
-  if (!criterio) return null;
-  if (criterio.split(";").length <= 1) {
-    for (const excl of TERMOS_EXCLUSAO) { if (norm.includes(excl)) return null; }
-  }
-  return { criterio, grupo };
+  return true;
 }
 
-// ════════════════════════════════════════════════════════════
-// ETAPA 1 — Localizar documentos PPA reais (.gov.br apenas)
-// ════════════════════════════════════════════════════════════
-
-interface AcaoPPA {
-  nome: string;
-  codigo: string | null;
-  dotacao_inicial: number | null;
-  url_fonte: string;
-  grupo: string;
-  criterio: string;
-  ppa_cycle: string;
-}
-
-/** Verifica se URL é de domínio governamental */
 function isGovDomain(url: string): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase();
@@ -107,224 +107,282 @@ function isGovDomain(url: string): boolean {
   } catch { return false; }
 }
 
-/** Queries ultra-focadas para encontrar o DOCUMENTO PPA em si */
-function buildPPAQueries(nomeEstado: string): { query: string; cycle: string }[] {
-  return [
-    // Ciclo 2024-2027
-    { query: `"plano plurianual" "2024" "2027" "${nomeEstado}" programas ações site:*.gov.br`, cycle: "PPA 2024-2027" },
-    { query: `"PPA 2024-2027" "${nomeEstado}" anexo programas dotação site:*.gov.br`, cycle: "PPA 2024-2027" },
-    // Ciclo 2020-2023
-    { query: `"plano plurianual" "2020" "2023" "${nomeEstado}" programas ações site:*.gov.br`, cycle: "PPA 2020-2023" },
-    { query: `"PPA 2020-2023" "${nomeEstado}" anexo programas dotação site:*.gov.br`, cycle: "PPA 2020-2023" },
-    // Ciclo 2016-2019
-    { query: `"plano plurianual" "2016" "2019" "${nomeEstado}" programas site:*.gov.br`, cycle: "PPA 2016-2019" },
-  ];
+/** Limpa nomes de programas removendo artefatos de scraping */
+function limparNome(nome: string): string {
+  return nome
+    .replace(/^\[PDF\]\s*/i, "")
+    .replace(/\s*-\s*(?:BA|SP|RJ|MG|RS|PR|SC|PE|CE|GO|PA|MA|MT|MS|AM|RN|PB|PI|SE|AL|RO|AC|AP|RR|TO|DF|ES)\s*(?:\.?\s*Gov\b)?\.?\s*$/i, "")
+    .replace(/\s*\.\s*$/, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\.\s*\d+\s*Relat[óo]rio.*$/i, "")
+    .replace(/,\s*conforme\s+o\s+PPA.*$/i, "")
+    .trim()
+    .substring(0, 200);
 }
 
-/** Extrai ações/programas de conteúdo markdown do PPA buscando keywords */
-function extractAcoesFromContent(
-  content: string, url: string, ppaCycle: string,
-): AcaoPPA[] {
-  const acoes: AcaoPPA[] = [];
+// ════════════════════════════════════════════════════════════
+// EXTRAÇÃO DE PROGRAMAS/AÇÕES DO CONTEÚDO
+// ════════════════════════════════════════════════════════════
+
+interface ProgramaPPA {
+  nome: string;
+  codigo: string | null;
+  dotacao_inicial: number | null;
+  secretaria: string | null;
+  url_fonte: string;
+  grupo: string;
+  criterio: string;
+  ppa_cycle: string;
+}
+
+/** Extrai programas/ações/secretarias do conteúdo de um resultado de busca */
+function extrairProgramas(
+  content: string, url: string, grupo: string, radicais: string[], ppaCycle: string,
+): ProgramaPPA[] {
+  const programas: ProgramaPPA[] = [];
   const seen = new Set<string>();
+  const norm = normalize(content);
+
+  // Verificar se o conteúdo realmente contém termos relevantes
+  const hasRelevantContent = radicais.some(r => norm.includes(r));
+  if (!hasRelevantContent) return [];
+
   const lines = content.split(/\n/);
 
-  // Processar linha a linha buscando keywords raciais/étnicas
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.length < 8 || line.length > 600) continue;
+    if (line.length < 5 || line.length > 500) continue;
+    const lineNorm = normalize(line);
 
-    const match = matchKeywords(line);
-    if (!match) continue;
-
-    // Capturar contexto: 2 linhas antes e 2 depois para pegar código e dotação
-    const contextLines: string[] = [];
-    for (let j = Math.max(0, i - 2); j <= Math.min(lines.length - 1, i + 3); j++) {
-      contextLines.push(lines[j]);
-    }
-    const context = contextLines.join(" ");
-
-    // Extrair nome da ação/programa (limpar formatação markdown/tabela)
-    let nome = line
-      .replace(/^\|?\s*/, "").replace(/\|.*$/, "")
-      .replace(/^\*+\s*/, "").replace(/^#+\s*/, "")
-      .replace(/^\d+[\.\)]\s*/, "")
-      .trim();
-
-    if (nome.length < 5) nome = line.substring(0, 200);
-    nome = nome.substring(0, 250);
-
-    // Extrair código de ação/programa
-    const codeMatch = context.match(/(?:(?:A[çc][ãa]o|Programa|Projeto|Atividade|C[óo]digo)\s*(?:n[ºo°.]?\s*)?)?(\d{4,6})/i);
-    const codigo = codeMatch ? codeMatch[1] : null;
-
-    // Extrair dotação inicial
-    let dotacao: number | null = null;
-    const valPatterns = [
-      /R\$\s*([\d.,]+)/,
-      /(?:dota[çc][ãa]o|valor|total|previsto)[:\s]*([\d.,]+)/i,
-      /(\d{1,3}(?:\.\d{3})+(?:,\d{2})?)/,
-    ];
-    for (const pat of valPatterns) {
-      const m = context.match(pat);
-      if (m) {
-        const val = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
-        if (val > 1000) { dotacao = val; break; } // mínimo R$1.000 para evitar ruído
+    // ── Padrão 1: "Programa XXXX — Nome" ou "Programa XXXX - Nome" ──
+    const progMatch = line.match(/Programa\s+(\d{3,5})\s*[—–\-:]\s*(.+)/i);
+    if (progMatch) {
+      const codigo = progMatch[1];
+      const nome = progMatch[2].trim().substring(0, 200);
+      // Verificar se o nome contém termos relevantes OU está próximo de conteúdo relevante
+      const contexto = lines.slice(Math.max(0, i - 3), Math.min(lines.length, i + 5)).join(" ");
+      const contextoNorm = normalize(contexto);
+      const temRadical = radicais.some(r => contextoNorm.includes(r));
+      if (temRadical) {
+        const key = `prog_${codigo}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          const criterioRadical = radicais.find(r => contextoNorm.includes(r)) ?? "";
+          // Tentar extrair dotação do contexto
+          const dotacao = extrairValor(contexto);
+          programas.push({
+            nome: limparNome(`Programa ${codigo} — ${nome}`), codigo, dotacao_inicial: dotacao,
+            secretaria: null, url_fonte: url, grupo,
+            criterio: `Programa PPA: "${criterioRadical}" encontrado no contexto`,
+            ppa_cycle: ppaCycle,
+          });
+        }
       }
     }
 
-    const key = normalize(nome).substring(0, 80);
-    if (seen.has(key)) continue;
-    seen.add(key);
+    // ── Padrão 2: "Ação XXXX — Nome" ou "XXXX - Nome da Ação" (dentro de contexto racial) ──
+    const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto)\s+(\d{4,6})\s*[—–\-:]\s*(.+)/i);
+    if (acaoMatch) {
+      const codigo = acaoMatch[1];
+      const nome = acaoMatch[2].trim().substring(0, 200);
+      const contexto = lines.slice(Math.max(0, i - 3), Math.min(lines.length, i + 5)).join(" ");
+      const contextoNorm = normalize(contexto);
+      const temRadical = radicais.some(r => contextoNorm.includes(r));
+      if (temRadical) {
+        const key = `acao_${codigo}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          const criterioRadical = radicais.find(r => contextoNorm.includes(r)) ?? "";
+          const dotacao = extrairValor(contexto);
+          programas.push({
+            nome: limparNome(`Ação ${codigo} — ${nome}`), codigo, dotacao_inicial: dotacao,
+            secretaria: null, url_fonte: url, grupo,
+            criterio: `Ação PPA: "${criterioRadical}" no contexto`,
+            ppa_cycle: ppaCycle,
+          });
+        }
+      }
+    }
 
-    acoes.push({ nome, codigo, dotacao_inicial: dotacao, url_fonte: url, grupo: match.grupo, criterio: match.criterio, ppa_cycle: ppaCycle });
+    // ── Padrão 3: Secretarias relevantes (SEPROMI, SEPIR, FUNAI, etc.) ──
+    const secMatch = line.match(/(Secretaria\s+(?:de\s+|da\s+|do\s+)?(?:Promoção\s+da\s+Igualdade\s+Racial|Igualdade\s+Racial|Justiça\s+e\s+Igualdade\s+Racial|Políticas\s+(?:para|de)\s+(?:Promoção|Igualdade)|Povos\s+Ind[íi]genas)|SEPROMI|SEPIR|SEPPIR|FUNAI|SESAI|INCRA|Fundação\s+(?:Cultural\s+)?Palmares)/i);
+    if (secMatch) {
+      const nomeSecretaria = secMatch[1] || secMatch[0];
+      const key = `sec_${normalize(nomeSecretaria).substring(0, 30)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        const contexto = lines.slice(Math.max(0, i - 2), Math.min(lines.length, i + 5)).join(" ");
+        const dotacao = extrairValor(contexto);
+        programas.push({
+          nome: nomeSecretaria.trim(), codigo: null, dotacao_inicial: dotacao,
+          secretaria: nomeSecretaria.trim(), url_fonte: url, grupo,
+          criterio: `Secretaria/Órgão identificado no PPA`,
+          ppa_cycle: ppaCycle,
+        });
+      }
+    }
+
+    // ── Padrão 4: Linhas que contêm radicais + parecem ser títulos de programa ──
+    // Linhas que NÃO são parágrafos longos de texto corrido
+    if (line.length < 150 && !progMatch && !acaoMatch && !secMatch) {
+      const temRadical = radicais.some(r => lineNorm.includes(r));
+      if (temRadical) {
+        // Verificar se parece título de programa/ação (não texto corrido)
+        const parecePrograma = /^[\d\.\)\-\|#\*]*\s*[A-ZÁÉÍÓÚÂÊÔÃ]/.test(line) ||
+          lineNorm.includes("programa") || lineNorm.includes("acao") ||
+          lineNorm.includes("projeto") || lineNorm.includes("atividade") ||
+          lineNorm.includes("objetivo") || lineNorm.includes("meta");
+
+        // Rejeitar texto corrido, snippets, notícias
+        const pareceNoticia = lineNorm.includes("publicad") || lineNorm.includes("confira") ||
+          lineNorm.includes("saiba mais") || lineNorm.includes("clique") ||
+          lineNorm.includes("acesse") || lineNorm.includes("leia");
+        const pareceSnippet = line.includes("...") || line.includes("…") ||
+          (line.match(/,/g)?.length ?? 0) > 3 || (line.match(/\./g)?.length ?? 0) > 3;
+
+        if (parecePrograma && !pareceNoticia && !pareceSnippet) {
+          // Tentar extrair código
+          const cMatch = line.match(/(\d{3,6})/);
+          const codigo = cMatch ? cMatch[1] : null;
+          const nome = limparNome(line.replace(/^\|?\s*/, "").replace(/\|.*$/, "")
+            .replace(/^\*+\s*/, "").replace(/^#+\s*/, "")
+            .replace(/^\d+[\.\)]\s*/, "").trim());
+          const key = `gen_${normalize(nome).substring(0, 50)}`;
+          if (!seen.has(key) && nome.length > 8) {
+            seen.add(key);
+            const criterioRadical = radicais.find(r => lineNorm.includes(r)) ?? "";
+            const contexto = lines.slice(Math.max(0, i - 2), Math.min(lines.length, i + 3)).join(" ");
+            const dotacao = extrairValor(contexto);
+            programas.push({
+              nome, codigo, dotacao_inicial: dotacao,
+              secretaria: null, url_fonte: url, grupo,
+              criterio: `Título PPA contém: "${criterioRadical}"`,
+              ppa_cycle: ppaCycle,
+            });
+          }
+        }
+      }
+    }
   }
 
-  return acoes;
+  return programas;
 }
 
-async function buscarEProcessarPPAs(
-  uf: string, nomeEstado: string, firecrawlKey: string,
-): Promise<{ acoes: AcaoPPA[]; logs: string[]; erros: string[] }> {
-  const acoes: AcaoPPA[] = [];
+function extrairValor(texto: string): number | null {
+  const patterns = [
+    /R\$\s*([\d.,]+(?:\s*(?:milh[õo]es|milh[ãa]o|mil|bi))?)/i,
+    /(?:dota[çc][ãa]o|valor|total|previsto|inicial)[:\s]*R?\$?\s*([\d.,]+)/i,
+  ];
+  for (const pat of patterns) {
+    const m = texto.match(pat);
+    if (m) {
+      let raw = m[1].trim();
+      // Handle "milhões", "mil" etc
+      const multiplier = raw.match(/milh[õo]es|milh[ãa]o/i) ? 1_000_000 :
+        raw.match(/bil/i) ? 1_000_000_000 :
+        raw.match(/\bm[i]l\b/i) ? 1_000 : 1;
+      raw = raw.replace(/\s*(milh[õo]es|milh[ãa]o|mil|bi(?:lh[õo]es)?)\s*/i, "");
+      const val = parseFloat(raw.replace(/\./g, "").replace(",", "."));
+      if (!isNaN(val) && val > 0) {
+        const result = val * multiplier;
+        if (result > 500) return result; // mínimo R$500 para filtrar ruído
+      }
+    }
+  }
+  return null;
+}
+
+// ════════════════════════════════════════════════════════════
+// BUSCA PRINCIPAL: Firecrawl Search com queries temáticas
+// ════════════════════════════════════════════════════════════
+
+async function buscarProgramasPPA(
+  uf: string, nomeEstado: string, dominio: string, firecrawlKey: string,
+): Promise<{ programas: ProgramaPPA[]; logs: string[]; erros: string[] }> {
+  const programas: ProgramaPPA[] = [];
   const logs: string[] = [];
   const erros: string[] = [];
-  const seenNomes = new Set<string>();
-  const processedUrls = new Set<string>();
+  const seenKeys = new Set<string>();
 
-  const queries = buildPPAQueries(nomeEstado);
+  // Queries consolidadas: 2 por ciclo PPA (racial + indígena/quilombola)
+  const queries: { query: string; cycle: string }[] = [
+    // PPA 2024-2027
+    { query: `PPA 2024 2027 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" site:${dominio}`, cycle: "PPA 2024-2027" },
+    { query: `"plano plurianual" 2024-2027 ${nomeEstado} programa racial OR étnico OR SEPROMI OR "povos tradicionais" site:*.gov.br`, cycle: "PPA 2024-2027" },
+    // PPA 2020-2023
+    { query: `PPA 2020 2023 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" OR "comunidades tradicionais" site:${dominio}`, cycle: "PPA 2020-2023" },
+    { query: `"plano plurianual" 2020-2023 ${nomeEstado} programa racial OR étnico OR SEPROMI OR "povos tradicionais" site:*.gov.br`, cycle: "PPA 2020-2023" },
+    // PPA 2016-2019
+    { query: `PPA 2016 2019 ${nomeEstado} programa "igualdade racial" OR "quilombola" OR "indígena" site:${dominio}`, cycle: "PPA 2016-2019" },
+    { query: `"plano plurianual" 2016-2019 ${nomeEstado} programa racial OR étnico site:*.gov.br`, cycle: "PPA 2016-2019" },
+  ];
 
-  // ── ETAPA 1: Encontrar URLs de documentos PPA em domínios .gov.br ──
-  const ppaDocuments: { url: string; title: string; cycle: string }[] = [];
+  // Todas as radicais unificadas para validação no conteúdo
+  const todosRadicais = BUSCAS.flatMap(b => b.radicais);
 
   for (const { query, cycle } of queries) {
     try {
-      console.log(`  Search PPA: ${query.substring(0, 80)}...`);
+      console.log(`  Search: ${query.substring(0, 100)}...`);
       const res = await fetch("https://api.firecrawl.dev/v1/search", {
         method: "POST",
         headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ query, limit: 5, lang: "pt-BR", country: "BR" }),
-        signal: AbortSignal.timeout(25_000),
-      });
-
-      if (!res.ok) { erros.push(`Search HTTP ${res.status}`); continue; }
-      const data = await res.json();
-      const results = data?.data ?? [];
-
-      let govCount = 0;
-      let rejectedCount = 0;
-
-      for (const r of results) {
-        const url = String(r.url ?? "");
-        const title = String(r.title ?? "");
-        if (!url || processedUrls.has(url)) continue;
-
-        // ── FILTRO RÍGIDO: apenas .gov.br ──
-        if (!isGovDomain(url)) {
-          rejectedCount++;
-          continue;
-        }
-
-        // Rejeitar URLs que claramente NÃO são documentos PPA
-        const urlLower = url.toLowerCase();
-        const titleLower = normalize(title);
-        const isNews = titleLower.includes("noticia") || titleLower.includes("imprensa") || urlLower.includes("/noticias/") || urlLower.includes("/news/") || urlLower.includes("/blog/");
-        const isEdital = titleLower.includes("edital") || titleLower.includes("licitac") || titleLower.includes("pregao") || titleLower.includes("dispensa");
-        const isDiario = titleLower.includes("diario oficial") || urlLower.includes("/doe/") || urlLower.includes("/diariooficial/");
-
-        if (isNews || isEdital || isDiario) {
-          rejectedCount++;
-          logs.push(`  REJEITADO (${isNews ? "notícia" : isEdital ? "edital" : "diário"}): ${title.substring(0, 50)}`);
-          continue;
-        }
-
-        processedUrls.add(url);
-        govCount++;
-        ppaDocuments.push({ url, title, cycle });
-      }
-
-      logs.push(`Busca "${cycle}" → ${results.length} resultados, ${govCount} .gov.br aceitos, ${rejectedCount} rejeitados`);
-    } catch (e) {
-      erros.push(`Search: ${e instanceof Error ? e.message : "Erro"}`);
-    }
-    await new Promise(r => setTimeout(r, 300));
-  }
-
-  logs.push(`Total documentos PPA encontrados: ${ppaDocuments.length}`);
-
-  // ── ETAPA 2: Scrape dos documentos PPA (Firecrawl suporta PDF) ──
-  // Limitar a 4 scrapes para não estourar timeout
-  const maxScrapes = Math.min(ppaDocuments.length, 4);
-
-  for (let s = 0; s < maxScrapes; s++) {
-    const doc = ppaDocuments[s];
-    try {
-      console.log(`  Scraping PPA (${s + 1}/${maxScrapes}): ${doc.url.substring(0, 80)}`);
-      const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          url: doc.url,
-          formats: ["markdown"],
-          onlyMainContent: false,
-          waitFor: 3000,
+          query, limit: 5, lang: "pt-BR", country: "BR",
         }),
         signal: AbortSignal.timeout(30_000),
       });
 
       if (!res.ok) {
-        logs.push(`  Scrape HTTP ${res.status}: ${doc.title.substring(0, 50)}`);
+        if (res.status === 429) {
+          logs.push(`Rate limit, pausando 5s...`);
+          await new Promise(r => setTimeout(r, 5000));
+        } else {
+          logs.push(`Search HTTP ${res.status} para ${cycle}`);
+        }
         continue;
       }
 
       const data = await res.json();
-      const md = String(data?.data?.markdown ?? data?.markdown ?? "");
+      const results = data?.data ?? [];
+      let accepted = 0;
 
-      if (md.length < 100) {
-        logs.push(`  Scrape vazio: ${doc.title.substring(0, 50)} (${md.length} chars)`);
-        continue;
-      }
+      for (const r of results) {
+        const url = String(r.url ?? "");
+        const title = String(r.title ?? "");
+        const desc = String(r.description ?? "");
+        const md = String(r.markdown ?? "");
+        const content = [title, desc, md].filter(Boolean).join("\n");
+        if (!url || !isUrlRelevante(url) || !isGovDomain(url) || content.length < 20) continue;
+        if (!url || !isUrlRelevante(url) || !isGovDomain(url)) continue;
 
-      logs.push(`  Scrape OK: ${doc.title.substring(0, 50)} (${md.length} chars)`);
-
-      // Determinar ciclo PPA real pelo conteúdo
-      let detectedCycle = doc.cycle;
-      for (const cycle of PPA_CYCLES) {
-        if (md.includes(`${cycle.start}-${cycle.end}`) || md.includes(`${cycle.start}/${cycle.end}`) || md.includes(`PPA ${cycle.start}`)) {
-          detectedCycle = cycle.label;
-          break;
+        // Extrair para TODOS os grupos étnicos de uma vez
+        for (const busca of BUSCAS) {
+          const extracted = extrairProgramas(content, url, busca.grupo, busca.radicais, cycle);
+          for (const prog of extracted) {
+            const key = normalize(prog.nome).substring(0, 60);
+            if (!seenKeys.has(key)) {
+              seenKeys.add(key);
+              programas.push(prog);
+              accepted++;
+            }
+          }
         }
       }
 
-      // ── ETAPA 3: Buscar keywords no conteúdo do PPA ──
-      const extracted = extractAcoesFromContent(md, doc.url, detectedCycle);
-
-      for (const acao of extracted) {
-        const key = normalize(acao.nome).substring(0, 80);
-        if (!seenNomes.has(key)) {
-          seenNomes.add(key);
-          acoes.push(acao);
-        }
-      }
-
-      logs.push(`  Extraídas ${extracted.length} ações com keywords raciais/étnicas (${detectedCycle})`);
+      logs.push(`${cycle}: ${results.length} resultados, ${accepted} programas aceitos`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Erro";
-      if (msg.includes("abort") || msg.includes("timeout")) {
-        logs.push(`  Scrape timeout: ${doc.title.substring(0, 50)}`);
-      } else {
-        erros.push(`Scrape: ${msg}`);
-      }
+      erros.push(`Search ${cycle}: ${msg}`);
     }
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 600));
   }
 
-  logs.push(`Total: ${acoes.length} ações/programas PPA com keywords raciais identificados`);
-  return { acoes, logs, erros };
+  logs.push(`Total: ${programas.length} programas/ações PPA identificados para ${uf}`);
+  return { programas, logs, erros };
 }
 
 // ════════════════════════════════════════════════════════════
-// ETAPA 4 — Cruzamento SICONFI para execução
+// SICONFI — Execução Função 14 (agregado)
 // ════════════════════════════════════════════════════════════
 
 async function buscarExecucaoSICONFI(
@@ -332,6 +390,7 @@ async function buscarExecucaoSICONFI(
 ): Promise<{ empenhado: number | null; liquidado: number | null; pago: number | null; dotacao: number | null; logs: string[] }> {
   const logs: string[] = [];
 
+  // RREO Anexo 02
   for (let bim = 6; bim >= 1; bim--) {
     try {
       const params = new URLSearchParams({
@@ -348,7 +407,7 @@ async function buscarExecucaoSICONFI(
       if (items.length === 0) continue;
 
       const f14Items = items.filter(i => normalize(String(i.conta ?? "")).includes("direitos da cidadania"));
-      if (f14Items.length === 0) { logs.push(`RREO bim${bim}: ${items.length} itens, 0 F14`); continue; }
+      if (f14Items.length === 0) continue;
 
       let empenhado: number | null = null, liquidado: number | null = null, pago: number | null = null, dotacao: number | null = null;
       for (const item of f14Items) {
@@ -360,13 +419,14 @@ async function buscarExecucaoSICONFI(
         else if (coluna.includes("liquidadas ate o bimestre")) liquidado = (liquidado ?? 0) + valor;
         else if (coluna.includes("pagas ate o bimestre")) pago = (pago ?? 0) + valor;
       }
-      logs.push(`RREO bim${bim}: F14 dot=${dotacao?.toLocaleString() ?? "—"} emp=${empenhado?.toLocaleString() ?? "—"}`);
+      logs.push(`RREO bim${bim}: F14 dot=${dotacao?.toLocaleString() ?? "—"} emp=${empenhado?.toLocaleString() ?? "—"} liq=${liquidado?.toLocaleString() ?? "—"}`);
       return { empenhado, liquidado, pago, dotacao, logs };
     } catch (e) {
       logs.push(`RREO bim${bim}: ${e instanceof Error ? e.message : "Erro"}`);
     }
   }
 
+  // DCA fallback
   try {
     const params = new URLSearchParams({
       an_exercicio: String(ano), id_ente: String(ufCode),
@@ -399,7 +459,7 @@ async function buscarExecucaoSICONFI(
 }
 
 // ════════════════════════════════════════════════════════════
-// HANDLER — 1 UF por chamada
+// HANDLER
 // ════════════════════════════════════════════════════════════
 
 Deno.serve(async (req) => {
@@ -423,7 +483,7 @@ Deno.serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { cod: ufCode, nome: nomeEstado } = ESTADOS_IBGE[uf];
+    const { cod: ufCode, nome: nomeEstado, dominio } = ESTADOS_IBGE[uf];
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
     if (!firecrawlKey) {
       return new Response(JSON.stringify({ success: false, error: "FIRECRAWL_API_KEY não configurada." }),
@@ -436,8 +496,8 @@ Deno.serve(async (req) => {
     const allErros: string[] = [];
     const registros: Record<string, unknown>[] = [];
 
-    // ── ETAPAS 1-3: Localizar PPAs → Scrape → Extrair ações com keywords ──
-    const { acoes, logs: ppaLogs, erros: ppaErros } = await buscarEProcessarPPAs(uf, nomeEstado, firecrawlKey);
+    // ── ETAPA 1-3: Buscar programas PPA com keywords raciais/étnicas ──
+    const { programas, logs: ppaLogs, erros: ppaErros } = await buscarProgramasPPA(uf, nomeEstado, dominio, firecrawlKey);
     allLogs.push(...ppaLogs);
     allErros.push(...ppaErros);
 
@@ -447,37 +507,38 @@ Deno.serve(async (req) => {
         await buscarExecucaoSICONFI(ufCode, ano);
       allLogs.push(...siconfiLogs.map(l => `SICONFI/${ano}: ${l}`));
 
-      // Criar registros para cada ação PPA encontrada
-      for (const acao of acoes) {
+      // Criar registros para cada programa PPA encontrado
+      for (const prog of programas) {
         registros.push({
-          programa: `${uf} — ${acao.nome}`.substring(0, 250),
-          orgao: `Gov. Estadual (${uf})`, esfera: "estadual", ano,
-          dotacao_inicial: acao.dotacao_inicial, dotacao_autorizada: null,
+          programa: `${uf} — ${prog.nome}`.substring(0, 250),
+          orgao: prog.secretaria ?? `Gov. Estadual (${uf})`,
+          esfera: "estadual", ano,
+          dotacao_inicial: prog.dotacao_inicial, dotacao_autorizada: null,
           empenhado: null, liquidado: null, pago: null, percentual_execucao: null,
-          fonte_dados: `PPA ${nomeEstado} (${acao.ppa_cycle})`,
-          url_fonte: acao.url_fonte,
-          descritivo: acao.codigo ? `Código: ${acao.codigo} | ${acao.nome}` : acao.nome,
-          observacoes: acao.grupo, eixo_tematico: null, grupo_focal: null, publico_alvo: null,
-          razao_selecao: `${acao.criterio} | ${acao.ppa_cycle}`,
+          fonte_dados: `PPA ${nomeEstado} (${prog.ppa_cycle})`,
+          url_fonte: prog.url_fonte,
+          descritivo: prog.codigo ? `Código: ${prog.codigo} | ${prog.nome}` : prog.nome,
+          observacoes: prog.grupo, eixo_tematico: null, grupo_focal: null, publico_alvo: null,
+          razao_selecao: `${prog.criterio} | ${prog.ppa_cycle}`,
         });
       }
 
-      // Registro agregado SICONFI F14
+      // Registro agregado SICONFI F14 (referência)
       if (dotSiconfi !== null || empenhado !== null) {
         let pctExec: number | null = null;
         if (dotSiconfi && dotSiconfi > 0 && liquidado !== null)
           pctExec = Math.round((liquidado / dotSiconfi) * 10000) / 100;
 
         registros.push({
-          programa: `${uf} — Função 14: Direitos da Cidadania (agregado)`.substring(0, 250),
+          programa: `${uf} — Função 14: Direitos da Cidadania (SICONFI)`.substring(0, 250),
           orgao: `Gov. Estadual (${uf})`, esfera: "estadual", ano,
           dotacao_inicial: dotSiconfi, dotacao_autorizada: null,
           empenhado, liquidado, pago, percentual_execucao: pctExec,
           fonte_dados: `SICONFI RREO/DCA — ${uf}`,
           url_fonte: "https://siconfi.tesouro.gov.br",
           descritivo: "Função 14 — Direitos da Cidadania (execução agregada estadual)",
-          observacoes: "Agregado F14", eixo_tematico: null, grupo_focal: null, publico_alvo: null,
-          razao_selecao: "SICONFI Função 14 — valores agregados de execução",
+          observacoes: "Referência SICONFI", eixo_tematico: null, grupo_focal: null, publico_alvo: null,
+          razao_selecao: "SICONFI Função 14 — referência de execução agregada",
         });
       }
     }
@@ -499,11 +560,13 @@ Deno.serve(async (req) => {
     if (mode === "preview") {
       return new Response(JSON.stringify({
         success: true, mode: "preview", uf,
-        total_acoes_ppa: acoes.length, total_registros: batch.length,
+        total_programas_ppa: programas.length,
+        total_registros: batch.length,
         por_grupo_etnico: porGrupo,
-        acoes_ppa: acoes.map(a => ({
-          nome: a.nome, codigo: a.codigo, dotacao_inicial: a.dotacao_inicial,
-          grupo: a.grupo, criterio: a.criterio, ppa: a.ppa_cycle, url: a.url_fonte,
+        programas_ppa: programas.map(p => ({
+          nome: p.nome, codigo: p.codigo, dotacao_inicial: p.dotacao_inicial,
+          secretaria: p.secretaria, grupo: p.grupo, criterio: p.criterio,
+          ppa: p.ppa_cycle, url: p.url_fonte,
         })),
         log_consultas: allLogs,
         amostra: batch.slice(0, 30).map(r => ({
@@ -527,7 +590,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true, mode: "insert", uf,
-      total_inseridos: totalInserted, total_acoes_ppa: acoes.length,
+      total_inseridos: totalInserted, total_programas_ppa: programas.length,
       por_grupo_etnico: porGrupo,
       log_consultas: allLogs.slice(0, 20), erros: allErros.slice(0, 10),
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
