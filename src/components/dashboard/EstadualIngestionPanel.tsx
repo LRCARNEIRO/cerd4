@@ -40,7 +40,7 @@ export function EstadualIngestionPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedUFs, setSelectedUFs] = useState<string[]>(['BA', 'SP', 'RJ']);
   const [selectedAnos, setSelectedAnos] = useState<number[]>([2023, 2024]);
-  const [useMSC, setUseMSC] = useState(false);
+  
   const [isRunning, setIsRunning] = useState(false);
   const [currentUF, setCurrentUF] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -70,7 +70,7 @@ export function EstadualIngestionPanel() {
 
       try {
         const { data, error } = await supabase.functions.invoke('ingest-estadual-siconfi', {
-          body: { uf, anos: selectedAnos, mode: runMode, useMSC },
+          body: { uf, anos: selectedAnos, mode: runMode },
         });
 
         if (error) {
@@ -109,7 +109,7 @@ export function EstadualIngestionPanel() {
     } else {
       toast.success(`Preview: ${totalRegs} registros encontrados em ${allResults.length - failCount} estados`);
     }
-  }, [selectedUFs, selectedAnos, useMSC, queryClient]);
+  }, [selectedUFs, selectedAnos, queryClient]);
 
   const fmtCurrency = (v: number | null) => {
     if (v === null || v === undefined) return '—';
@@ -151,8 +151,8 @@ export function EstadualIngestionPanel() {
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground">
                 <strong>Camada 1:</strong> DCA/RREO — busca por radicais e palavras-chave nos descritivos.
-                <strong className="ml-1">Camada 3 (opcional):</strong> MSC — enriquecimento com dados de empenho/liquidação.
-                <br />Processamento <strong>estado por estado</strong> para evitar timeout.
+                <strong className="ml-1">Camada 3:</strong> MSC — enriquecimento com dados de empenho/liquidação.
+                <br />Todas as camadas são executadas obrigatoriamente. Processamento <strong>estado por estado</strong>.
               </p>
 
               {/* Estados */}
@@ -197,13 +197,6 @@ export function EstadualIngestionPanel() {
                 </div>
               </div>
 
-              {/* MSC toggle */}
-              <div className="flex items-center gap-2">
-                <Checkbox id="useMSC" checked={useMSC} onCheckedChange={(v) => setUseMSC(!!v)} disabled={isRunning} />
-                <label htmlFor="useMSC" className="text-xs text-muted-foreground cursor-pointer">
-                  Camada 3 — Enriquecer com MSC (empenho/liquidação via Matriz de Saldos Contábeis)
-                </label>
-              </div>
 
               {/* Info */}
               {mode === 'idle' && selectedUFs.length > 0 && selectedAnos.length > 0 && (
