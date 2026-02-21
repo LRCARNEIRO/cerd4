@@ -14,7 +14,6 @@ import { SegurancaSaudeEducacaoTab } from '@/components/estatisticas/SegurancaSa
 import { VulnerabilidadesTab } from '@/components/estatisticas/VulnerabilidadesTab';
 import { 
   RacaGeneroTab, 
-  PovosTradicionaisTab, 
   LgbtqiaTab, 
   DeficienciaTab, 
   JuventudeTab, 
@@ -102,9 +101,6 @@ export default function Estatisticas() {
           <TabsTrigger value="raca-genero" className="gap-1">
             <Users className="w-4 h-4" /> Raça × Gênero
           </TabsTrigger>
-          <TabsTrigger value="povos-tradicionais" className="gap-1">
-            <Users className="w-4 h-4" /> Povos Tradicionais
-          </TabsTrigger>
           <TabsTrigger value="lgbtqia" className="gap-1">
             <Rainbow className="w-4 h-4" /> LGBTQIA+
           </TabsTrigger>
@@ -175,10 +171,6 @@ export default function Estatisticas() {
           <RacaGeneroTab />
         </TabsContent>
 
-        {/* Povos Tradicionais */}
-        <TabsContent value="povos-tradicionais">
-          <PovosTradicionaisTab />
-        </TabsContent>
 
         {/* LGBTQIA+ */}
         <TabsContent value="lgbtqia">
