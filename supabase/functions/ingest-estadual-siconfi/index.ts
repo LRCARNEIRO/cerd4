@@ -255,8 +255,8 @@ function limparNome(nome: string): string {
     .substring(0, 200);
 }
 
-/** Extrai APENAS programas e ações orçamentárias com código numérico, ou secretarias temáticas conhecidas.
- *  Rejeita indicadores, eixos, metas textuais, compromissos e qualquer item sem estrutura orçamentária. */
+/** Extrai programas e ações orçamentárias de conteúdo scraped de PPAs estaduais.
+ *  Usa 4 padrões de detecção em ordem de especificidade, rejeitando indicadores e metadados. */
 function extrairProgramasDoConteudo(
   content: string, url: string, ppaCycle: string,
 ): ProgramaPPA[] {
@@ -264,40 +264,82 @@ function extrairProgramasDoConteudo(
   const seen = new Set<string>();
   const lines = content.split(/\n/);
 
-  // ── Termos que NUNCA são programas/ações orçamentárias ──
   const REJEITAR_LINHA = [
-    "indicador", "eixo tematic", "eixo estrateg", "diretriz",
-    "macro-desafio", "macrodesafio", "compromisso", "prioridade da ldo",
-    "nao programada na loa", "saiba mais", "confira", "clique aqui",
-    "publicad", "licitacao", "edital", "portaria", "decreto",
-    "resultado", "meta fisic", "meta prevista", "unidade de medida",
-    "produto", "indice de referencia", "indice recente",
+    "indicador de", "eixo tematic", "eixo estrateg", "eixo:", "# eixo",
+    "diretriz", "compromisso:", "# compromisso",
+    "macro-desafio", "macrodesafio", "prioridade da ldo",
+    "saiba mais", "confira", "clique aqui",
+    "licitacao", "edital n", "portaria n",
+    "meta fisic", "meta prevista", "unidade de medida",
+    "produto esperado", "indice de referencia",
     "apuracao do indice", "periodicidade", "base geografica",
     "fonte do indicador", "orgao responsavel pelo indicador",
-    "data de referencia", "polaridade", "formula de calculo",
+    "formula de calculo", "objetivo estrategico",
+    "# destaque", "secretari", "subsecretari",
   ];
+
+  const MARCADORES_ORC = [
+    "programa", "acao orcamentaria", "acao orcamentaria", "atividade", "projeto",
+    "operacao especial", "dotacao", "credito", "orcament", "despesa",
+  ];
+
+  /** Limpa artefatos de tabelas markdown */
+  function cleanTableLine(raw: string): string {
+    return raw.replace(/^\|+/, "").replace(/\|+$/, "").replace(/\|/g, " ").replace(/\s{2,}/g, " ").trim();
+  }
+
+  /** Extrai ação orçamentária de dentro de célula de tabela.
+   *  Padrão: "Ação Orçamentária | 3293 Realização de ..." ou "3293 - Nome" */
+  function extractAcaoFromTableRow(raw: string): { codigo: string; nome: string } | null {
+    const cleaned = cleanTableLine(raw);
+    // "Ação Orçamentária 3293 Nome..." or "Açäo Orçamentária 3293 Nome..."
+    const m1 = cleaned.match(/A[çc][ãäa]o\s+Or[çc]ament[áa]ria\s+(\d{3,6})\s+(.+)/i);
+    if (m1) return { codigo: m1[1], nome: m1[2].trim() };
+    // Just "3293 - Nome" inside a table
+    const m2 = cleaned.match(/^(\d{3,6})\s*[-–—]\s*(.{10,})/);
+    if (m2) return { codigo: m2[1], nome: m2[2].trim() };
+    return null;
+  }
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.length < 10 || line.length > 400) continue;
+    if (line.length < 8 || line.length > 500) continue;
 
     const lineNorm = normalize(line);
 
-    // Rejeição rápida por termos proibidos
     if (REJEITAR_LINHA.some(t => lineNorm.includes(t))) continue;
-    // Rejeitar linhas com muita pontuação (tabelas, listas genéricas)
-    if (line.includes("...") || line.includes("…") || line.includes(";")) continue;
-    if ((line.match(/,/g)?.length ?? 0) > 3) continue;
-    // Rejeitar linhas que são apenas números ou valores monetários
-    if (/^[\d\s\.,R\$%]+$/.test(line)) continue;
+    if (/^[\d\s\.,R\$%\-|]+$/.test(line)) continue;
 
-    // Contexto: 3 linhas antes e depois
-    const ctxStart = Math.max(0, i - 3);
-    const ctxEnd = Math.min(lines.length, i + 4);
+    const ctxStart = Math.max(0, i - 5);
+    const ctxEnd = Math.min(lines.length, i + 6);
     const contexto = lines.slice(ctxStart, ctxEnd).join(" ");
 
-    // ═══ Padrão 1: "Programa XXXX — Nome" (com código obrigatório) ═══
-    const progMatch = line.match(/Programa\s+(\d{3,5})\s*[—–\-:]\s*(.+)/i);
+    // ═══ Padrão T: Tabela com "Ação Orçamentária | CÓDIGO Nome" ═══
+    if (line.includes("|")) {
+      const acaoTable = extractAcaoFromTableRow(line);
+      if (acaoTable) {
+        const radical = encontrarRadical(acaoTable.nome) ?? encontrarRadical(contexto);
+        if (radical) {
+          const key = `tab_${acaoTable.codigo}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            programas.push({
+              nome: limparNome(`Ação ${acaoTable.codigo} — ${acaoTable.nome}`),
+              codigo: acaoTable.codigo,
+              dotacao_inicial: extrairValor(contexto),
+              secretaria: extrairSecretaria(contexto),
+              url_fonte: url, grupo: classificarGrupo(acaoTable.nome + " " + contexto),
+              criterio: `Ação Orçamentária ${acaoTable.codigo} (tabela PPA): radical "${radical}"`,
+              ppa_cycle: ppaCycle,
+            });
+          }
+        }
+      }
+      continue; // Skip other patterns for table rows
+    }
+
+    // ═══ Padrão 1: "Programa XXXX — Nome" ═══
+    const progMatch = line.match(/Programa\s+(\d{3,5})\s*[—–\-:\.\s]\s*(.+)/i);
     if (progMatch) {
       const codigo = progMatch[1];
       const nome = progMatch[2].trim().substring(0, 200);
@@ -319,8 +361,8 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 2: "Ação/Atividade/Projeto XXXX — Nome" (com código obrigatório) ═══
-    const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto)\s+(\d{4,6})\s*[—–\-:]\s*(.+)/i);
+    // ═══ Padrão 2: "Ação/Atividade/Projeto XXXX — Nome" ═══
+    const acaoMatch = line.match(/(?:A[çc][ãa]o|Atividade|Projeto|Opera[çc][ãa]o\s+Especial)\s+(\d{4,6})\s*[—–\-:\.\s]\s*(.+)/i);
     if (acaoMatch) {
       const codigo = acaoMatch[1];
       const nome = acaoMatch[2].trim().substring(0, 200);
@@ -342,9 +384,8 @@ function extrairProgramasDoConteudo(
       continue;
     }
 
-    // ═══ Padrão 3: Código numérico genérico + radical racial/étnico ═══
-    // Captura linhas como "1234 - Promoção da Igualdade Racial" sem prefixo "Programa"/"Ação"
-    const codeGenericMatch = line.match(/^(\d{3,6})\s*[—–\-:\.]\s*(.{10,200})/);
+    // ═══ Padrão 3: Código numérico no início + radical ═══
+    const codeGenericMatch = line.match(/^(\d{3,6})\s*[—–\-:\.]\s*(.{8,200})/);
     if (codeGenericMatch) {
       const codigo = codeGenericMatch[1];
       const nome = codeGenericMatch[2].trim();
@@ -363,8 +404,46 @@ function extrairProgramasDoConteudo(
           });
         }
       }
+      continue;
     }
-    // Secretarias são usadas apenas como metadado (via extrairSecretaria), nunca como registros standalone
+
+    // ═══ Padrão 4: Programa/Ação textual (sem número no início, mas com código no contexto) ═══
+    const radical = encontrarRadical(lineNorm);
+    if (radical) {
+      // Só aceitar se tem um código de programa/ação no contexto
+      const codeInCtx = contexto.match(/(?:programa|a[çc][ãa]o|projeto|atividade)\s*(?:or[çc]ament[áa]ria)?\s*[:\.]?\s*(\d{3,6})\b/i);
+      if (!codeInCtx) continue;
+      const codigo = codeInCtx[1];
+      const wordCount = line.split(/\s+/).length;
+      if (wordCount > 15 || wordCount < 3) continue;
+
+      const key = `flex_${codigo}_${normalize(line).substring(0, 30)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        programas.push({
+          nome: limparNome(line), codigo,
+          dotacao_inicial: extrairValor(contexto),
+          secretaria: extrairSecretaria(contexto),
+          url_fonte: url, grupo: classificarGrupo(line + " " + contexto),
+          criterio: `Radical "${radical}" + código ${codigo} no contexto PPA`,
+          ppa_cycle: ppaCycle,
+        });
+      }
+    }
+  }
+
+  // Diagnóstico
+  if (programas.length === 0 && lines.length > 50) {
+    const racialLines = lines
+      .filter(l => encontrarRadical(l) !== null)
+      .slice(0, 10)
+      .map(l => l.trim().substring(0, 120));
+    if (racialLines.length > 0) {
+      console.log(`DIAG: ${racialLines.length} linhas com radicais mas 0 programas. Amostras:`);
+      for (const rl of racialLines) console.log(`  → "${rl}"`);
+    } else {
+      console.log(`DIAG: 0 linhas com radicais em ${lines.length} linhas totais. URL: ${url.substring(0, 80)}`);
+    }
   }
 
   return programas;
