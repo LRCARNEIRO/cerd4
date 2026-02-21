@@ -747,95 +747,164 @@ export default function GruposFocais() {
 
         {/* Indicadores de Vulnerabilidade */}
         <TabsContent value="vulnerabilidade">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Homicídios Juventude */}
-            <Card className="border-l-4 border-l-destructive">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosJuventude.nome}</CardTitle>
-                <CardDescription>Por 100 mil habitantes | {indicadoresVulnerabilidade.homicidiosJuventude.ano}</CardDescription>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Homicídios Juventude */}
+              <Card className="border-l-4 border-l-destructive">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosJuventude.nome}</CardTitle>
+                  <CardDescription>Por 100 mil habitantes | {indicadoresVulnerabilidade.homicidiosJuventude.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-end mb-4">
+                    <div>
+                      <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.homicidiosJuventude.valorNegros}</p>
+                      <p className="text-xs text-muted-foreground">Jovens Negros</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold">{indicadoresVulnerabilidade.homicidiosJuventude.valorBrancos}</p>
+                      <p className="text-xs text-muted-foreground">Jovens Brancos</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                    <p className="text-sm font-bold text-destructive">
+                      {indicadoresVulnerabilidade.homicidiosJuventude.razaoDesigualdade}x maior risco
+                    </p>
+                  </div>
+                  <div className="text-xs space-y-1">
+                    <p className="flex items-center gap-1">
+                      <TendenciaIcon tendencia="down" />
+                      <span>Queda de 24% desde 2018</span>
+                    </p>
+                  </div>
+                  <FonteInfo 
+                    fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
+                    tabela="Anuário 2023"
+                    link={indicadoresVulnerabilidade.homicidiosJuventude.link}
+                    atualizacao="2023-07-01"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Letalidade Policial */}
+              <Card className="border-l-4 border-l-destructive">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
+                  <CardDescription>{indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-3xl font-bold mb-2">{indicadoresVulnerabilidade.letalidadePolicial.totalMortes.toLocaleString()}</p>
+                  <p className="text-sm text-muted-foreground mb-4">mortes por intervenção policial</p>
+                  <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                    <p className="text-sm font-bold text-destructive">
+                      {indicadoresVulnerabilidade.letalidadePolicial.percentualNegros}% eram negros
+                    </p>
+                  </div>
+                  <FonteInfo 
+                    fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
+                    tabela="Anuário FBSP"
+                    link={indicadoresVulnerabilidade.letalidadePolicial.link}
+                    atualizacao="2023-07-01"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Mortalidade Materna */}
+              <Card className="border-l-4 border-l-warning">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
+                  <CardDescription>{indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-end mb-4">
+                    <div>
+                      <p className="text-3xl font-bold text-warning">{indicadoresVulnerabilidade.mortalidadeMaterna.valorNegras}</p>
+                      <p className="text-xs text-muted-foreground">Mulheres Negras</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold">{indicadoresVulnerabilidade.mortalidadeMaterna.valorBrancas}</p>
+                      <p className="text-xs text-muted-foreground">Mulheres Brancas</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-warning/10 rounded text-center mb-3">
+                    <p className="text-sm font-bold text-warning">
+                      {indicadoresVulnerabilidade.mortalidadeMaterna.razaoDesigualdade}x maior risco
+                    </p>
+                  </div>
+                  <FonteInfo 
+                    fonte={indicadoresVulnerabilidade.mortalidadeMaterna.fonte}
+                    tabela="SIM/SINASC"
+                    link={indicadoresVulnerabilidade.mortalidadeMaterna.link}
+                    atualizacao="2023-12-01"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Indicadores Sociais — Povos Tradicionais */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Users className="w-5 h-5 text-accent" />
+                  Indicadores Sociais — Povos Indígenas
+                </CardTitle>
+                <CardDescription>SESAI/DataSUS, IBGE Censo 2022, Censo Escolar/INEP</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-between items-end mb-4">
-                  <div>
-                    <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.homicidiosJuventude.valorNegros}</p>
-                    <p className="text-xs text-muted-foreground">Jovens Negros</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="p-4 bg-destructive/10 rounded-lg text-center">
+                    <p className="text-3xl font-bold text-destructive">42,8‰</p>
+                    <p className="text-sm text-muted-foreground">Mortalidade Infantil</p>
+                    <p className="text-xs text-muted-foreground mt-1">vs 11,6‰ média nacional</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold">{indicadoresVulnerabilidade.homicidiosJuventude.valorBrancos}</p>
-                    <p className="text-xs text-muted-foreground">Jovens Brancos</p>
+                  <div className="p-4 bg-warning/10 rounded-lg text-center">
+                    <p className="text-3xl font-bold text-warning">68,5%</p>
+                    <p className="text-sm text-muted-foreground">Acesso Regular à Saúde</p>
+                    <p className="text-xs text-muted-foreground mt-1">SESAI — cobertura DSEI</p>
+                  </div>
+                  <div className="p-4 bg-warning/10 rounded-lg text-center">
+                    <p className="text-3xl font-bold text-warning">32,5%</p>
+                    <p className="text-sm text-muted-foreground">Educação Bilíngue/Intercultural</p>
+                    <p className="text-xs text-muted-foreground mt-1">Escolas indígenas c/ currículo diferenciado</p>
                   </div>
                 </div>
-                <div className="p-2 bg-destructive/10 rounded text-center mb-3">
-                  <p className="text-sm font-bold text-destructive">
-                    {indicadoresVulnerabilidade.homicidiosJuventude.razaoDesigualdade}x maior risco
+                <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
                   </p>
+                  <div className="flex flex-wrap gap-3 text-xs">
+                    <a href="https://sage.saude.gov.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Mortalidade Infantil Indígena
+                    </a>
+                    <a href="https://www.gov.br/saude/pt-br/composicao/sesai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> SESAI — Cobertura DSEI
+                    </a>
+                    <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar (Educação Indígena)
+                    </a>
+                  </div>
                 </div>
-                <div className="text-xs space-y-1">
-                  <p className="flex items-center gap-1">
-                    <TendenciaIcon tendencia="down" />
-                    <span>Queda de 24% desde 2018</span>
-                  </p>
-                </div>
-                <FonteInfo 
-                  fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
-                  tabela="Anuário 2023"
-                  link={indicadoresVulnerabilidade.homicidiosJuventude.link}
-                  atualizacao="2023-07-01"
-                />
               </CardContent>
             </Card>
 
-            {/* Letalidade Policial */}
+            {/* Ciganos — dados precários */}
             <Card className="border-l-4 border-l-destructive">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
-                <CardDescription>{indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold mb-2">{indicadoresVulnerabilidade.letalidadePolicial.totalMortes.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground mb-4">mortes por intervenção policial</p>
-                <div className="p-2 bg-destructive/10 rounded text-center mb-3">
-                  <p className="text-sm font-bold text-destructive">
-                    {indicadoresVulnerabilidade.letalidadePolicial.percentualNegros}% eram negros
+              <CardContent className="pt-6 flex gap-3">
+                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">Ciganos/Roma — Indicadores Sociais Indisponíveis</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Não há dados oficiais desagregados sobre saúde, educação ou renda para povos ciganos.
+                    O Censo 2022 não incluiu pergunta específica (lacuna CERD §54-55).
+                    Primeiro levantamento parcial: MUNIC/IBGE 2024 (apenas acampamentos identificados por municípios).
                   </p>
-                </div>
-                <FonteInfo 
-                  fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
-                  tabela="Anuário FBSP"
-                  link={indicadoresVulnerabilidade.letalidadePolicial.link}
-                  atualizacao="2023-07-01"
-                />
-              </CardContent>
-            </Card>
-
-            {/* Mortalidade Materna */}
-            <Card className="border-l-4 border-l-warning">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
-                <CardDescription>{indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-end mb-4">
-                  <div>
-                    <p className="text-3xl font-bold text-warning">{indicadoresVulnerabilidade.mortalidadeMaterna.valorNegras}</p>
-                    <p className="text-xs text-muted-foreground">Mulheres Negras</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold">{indicadoresVulnerabilidade.mortalidadeMaterna.valorBrancas}</p>
-                    <p className="text-xs text-muted-foreground">Mulheres Brancas</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="destructive" className="text-xs">Dados Indisponíveis</Badge>
+                    <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> MUNIC/IBGE 2024
+                    </a>
                   </div>
                 </div>
-                <div className="p-2 bg-warning/10 rounded text-center mb-3">
-                  <p className="text-sm font-bold text-warning">
-                    {indicadoresVulnerabilidade.mortalidadeMaterna.razaoDesigualdade}x maior risco
-                  </p>
-                </div>
-                <FonteInfo 
-                  fonte={indicadoresVulnerabilidade.mortalidadeMaterna.fonte}
-                  tabela="SIM/SINASC"
-                  link={indicadoresVulnerabilidade.mortalidadeMaterna.link}
-                  atualizacao="2023-12-01"
-                />
               </CardContent>
             </Card>
           </div>
