@@ -17,6 +17,7 @@ export type Database = {
       conclusoes_analiticas: {
         Row: {
           argumento_central: string
+          artigos_convencao: string[] | null
           created_at: string
           eixos_tematicos: Database["public"]["Enums"]["thematic_axis"][] | null
           evidencias: string[] | null
@@ -36,6 +37,7 @@ export type Database = {
         }
         Insert: {
           argumento_central: string
+          artigos_convencao?: string[] | null
           created_at?: string
           eixos_tematicos?:
             | Database["public"]["Enums"]["thematic_axis"][]
@@ -57,6 +59,7 @@ export type Database = {
         }
         Update: {
           argumento_central?: string
+          artigos_convencao?: string[] | null
           created_at?: string
           eixos_tematicos?:
             | Database["public"]["Enums"]["thematic_axis"][]
@@ -81,6 +84,7 @@ export type Database = {
       dados_orcamentarios: {
         Row: {
           ano: number
+          artigos_convencao: string[] | null
           created_at: string
           descritivo: string | null
           dotacao_autorizada: number | null
@@ -104,6 +108,7 @@ export type Database = {
         }
         Insert: {
           ano: number
+          artigos_convencao?: string[] | null
           created_at?: string
           descritivo?: string | null
           dotacao_autorizada?: number | null
@@ -127,6 +132,7 @@ export type Database = {
         }
         Update: {
           ano?: number
+          artigos_convencao?: string[] | null
           created_at?: string
           descritivo?: string | null
           dotacao_autorizada?: number | null
@@ -183,6 +189,30 @@ export type Database = {
           tabelas_afetadas?: string[]
           total_registros?: number
           usuario_id?: string | null
+        }
+        Relationships: []
+      }
+      documentos_balizadores_ref: {
+        Row: {
+          created_at: string
+          id: string
+          sigla: string
+          tipo: string
+          titulo: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sigla: string
+          tipo: string
+          titulo: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sigla?: string
+          tipo?: string
+          titulo?: string
         }
         Relationships: []
       }
@@ -251,6 +281,7 @@ export type Database = {
       indicadores_interseccionais: {
         Row: {
           analise_interseccional: string | null
+          artigos_convencao: string[] | null
           categoria: string
           created_at: string
           dados: Json
@@ -273,6 +304,7 @@ export type Database = {
         }
         Insert: {
           analise_interseccional?: string | null
+          artigos_convencao?: string[] | null
           categoria: string
           created_at?: string
           dados: Json
@@ -295,6 +327,7 @@ export type Database = {
         }
         Update: {
           analise_interseccional?: string | null
+          artigos_convencao?: string[] | null
           categoria?: string
           created_at?: string
           dados?: Json
@@ -320,6 +353,7 @@ export type Database = {
       lacunas_identificadas: {
         Row: {
           acoes_brasil: string[] | null
+          artigos_convencao: string[] | null
           created_at: string
           data_documento: string
           descricao_lacuna: string
@@ -345,6 +379,7 @@ export type Database = {
         }
         Insert: {
           acoes_brasil?: string[] | null
+          artigos_convencao?: string[] | null
           created_at?: string
           data_documento?: string
           descricao_lacuna: string
@@ -370,6 +405,7 @@ export type Database = {
         }
         Update: {
           acoes_brasil?: string[] | null
+          artigos_convencao?: string[] | null
           created_at?: string
           data_documento?: string
           descricao_lacuna?: string

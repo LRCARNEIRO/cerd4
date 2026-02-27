@@ -8,6 +8,7 @@ import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
+import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
 import { 
   ClipboardCheck, 
   AlertTriangle, 
@@ -20,7 +21,9 @@ import {
   RotateCcw,
   ExternalLink
 } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
@@ -233,6 +236,34 @@ export default function Index() {
               <RecommendationCard key={rec.id} recommendation={rec} />
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Artigos da Convenção ICERD — Eixo Organizador */}
+      <div className="mt-6 mb-6">
+        <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Scale className="w-5 h-5 text-primary" />
+          Convenção ICERD — Artigos I-VII
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Eixo organizador fundamental: todos os dados servem à atualização de avanços e retrocessos nos compromissos de cada artigo.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {ARTIGOS_CONVENCAO.map((art) => (
+            <Link
+              key={art.numero}
+              to={`/recomendacoes`}
+              className="p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/50 transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="default" className="text-xs">Art. {art.numero}</Badge>
+              </div>
+              <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                {art.titulo}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{art.descricao}</p>
+            </Link>
+          ))}
         </div>
       </div>
 
