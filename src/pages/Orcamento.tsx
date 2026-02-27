@@ -436,17 +436,15 @@ export default function Orcamento() {
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
-    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean, useDotacaoInicial = false) => {
-      const valorEfetivo = useDotacaoInicial
-        ? (r: DadoOrcamentario) => Number(r.dotacao_inicial) || Number(r.dotacao_autorizada) || Number(r.pago) || 0
-        : (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean) => {
+      const valorLiquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
       const clean = exclude5034Only
         ? records.filter(r => !is5034NonRacial(r))
         : records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
-      const t1 = p1.reduce((s, r) => s + valorEfetivo(r), 0);
-      const t2 = p2.reduce((s, r) => s + valorEfetivo(r), 0);
+      const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
+      const t2 = p2.reduce((s, r) => s + valorLiquidado(r), 0);
       const anos = new Set(clean.map(r => r.ano));
       const programas = new Set(clean.map(r => r.programa));
       return {
@@ -456,13 +454,13 @@ export default function Orcamento() {
         totalRegistros: clean.length,
         totalProgramas: programas.size,
         anosCobertura: Array.from(anos).sort(),
-        metricaLabel: useDotacaoInicial ? 'Dotação Inicial' : 'Pago/Dotação Autorizada',
+        metricaLabel: 'Liquidado',
       };
     };
     return {
-      federal: compute(classified.federal.all, !includeExcludedInCalc, true),
-      estadual: compute(classified.estadual.all, false, true),
-      municipal: compute(classified.municipal.all, false, true),
+      federal: compute(classified.federal.all, !includeExcludedInCalc),
+      estadual: compute(classified.estadual.all, false),
+      municipal: compute(classified.municipal.all, false),
     };
   }, [classified, includeExcludedInCalc]);
 
