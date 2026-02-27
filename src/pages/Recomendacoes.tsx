@@ -12,6 +12,8 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
 import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
 import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
+import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -46,6 +48,7 @@ export default function Recomendacoes() {
   const [filterEixo, setFilterEixo] = useState<ThematicAxis | 'all'>('all');
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
@@ -58,6 +61,11 @@ export default function Recomendacoes() {
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
   const filteredLacunas = lacunas?.filter(lacuna => {
+    // Filtro por artigo da Convenção
+    if (filterArtigo) {
+      const artigosDoEixo = EIXO_PARA_ARTIGOS[lacuna.eixo_tematico] || [];
+      if (!artigosDoEixo.includes(filterArtigo)) return false;
+    }
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -66,6 +74,13 @@ export default function Recomendacoes() {
       lacuna.paragrafo.toLowerCase().includes(term)
     );
   }) || [];
+
+  // Contagens por artigo para o filtro
+  const artigoCounts = lacunas?.reduce((acc, l) => {
+    const artigos = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
+    artigos.forEach(a => { acc[a] = (acc[a] || 0) + 1; });
+    return acc;
+  }, {} as Record<ArtigoConvencao, number>) || {} as Record<ArtigoConvencao, number>;
 
   const isLoading = loadingLacunas || loadingStats;
 
@@ -148,6 +163,10 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="lacunas">
+          {/* Filtro por Artigos da Convenção ICERD */}
+          <div className="mb-4">
+            <ArtigoFilter selected={filterArtigo} onSelect={setFilterArtigo} counts={artigoCounts} compact />
+          </div>
           {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-6">
             <div className="relative flex-1 min-w-[200px]">
