@@ -11,6 +11,7 @@ import {
   type IndicadorInterseccional,
   type DadoOrcamentario
 } from './useLacunasData';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // =============================================
 // TIPOS
@@ -26,6 +27,8 @@ export interface FioCondutor {
   grupos: string[];
   relevancia: 'alta' | 'media' | 'baixa';
   comparativo2018?: string;
+  /** Artigos da Convenção ICERD endereçados por este fio (auto-derived from eixos) */
+  artigosConvencao?: ArtigoConvencao[];
 }
 
 export interface EvidenciaDinamica {
@@ -57,6 +60,8 @@ export interface ConclusaoDinamica {
   relevancia_common_core: boolean;
   relevancia_cerd_iv: boolean;
   fiosCondutores: string[];
+  /** Artigos da Convenção ICERD endereçados */
+  artigosConvencao?: ArtigoConvencao[];
 }
 
 // =============================================
@@ -97,6 +102,16 @@ const statusLabels: Record<string, string> = {
   retrocesso: 'Retrocesso',
   em_andamento: 'Em Andamento'
 };
+
+/** Derive unique ICERD articles from an array of thematic axes */
+function deriveArtigos(eixos: string[]): ArtigoConvencao[] {
+  const arts = new Set<ArtigoConvencao>();
+  eixos.forEach(e => {
+    const mapped = EIXO_PARA_ARTIGOS[e as keyof typeof EIXO_PARA_ARTIGOS];
+    if (mapped) mapped.forEach(a => arts.add(a));
+  });
+  return [...arts].sort();
+}
 
 // =============================================
 // HOOK PRINCIPAL
@@ -473,7 +488,11 @@ function gerarFiosCondutores(
   const fiosEmergentes = gerarFiosEmergentes(lacunas, stats, respostas, orcStats, indicadores, orcDados, fios);
   fios.push(...fiosEmergentes);
 
-  return fios;
+  // Auto-fill artigosConvencao from eixos for all fios
+  return fios.map(f => ({
+    ...f,
+    artigosConvencao: f.artigosConvencao ?? deriveArtigos(f.eixos),
+  }));
 }
 
 // =============================================
@@ -765,7 +784,11 @@ function gerarConclusoesDinamicas(
     });
   }
 
-  return conclusoes;
+  // Auto-fill artigosConvencao from eixos for all conclusions
+  return conclusoes.map(c => ({
+    ...c,
+    artigosConvencao: c.artigosConvencao ?? deriveArtigos(c.eixos),
+  }));
 }
 
 // =============================================
