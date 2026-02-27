@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
 import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
 import { NormativaBalizadorFilter } from '@/components/normativa/NormativaBalizadorFilter';
+import { ArtigoEngagementPanel } from '@/components/normativa/ArtigoEngagementPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -261,6 +262,9 @@ export default function Normativa() {
           compact
         />
       </div>
+
+      {/* Engajamento por Artigo ICERD */}
+      <ArtigoEngagementPanel documentos={documentos} />
 
       {/* Filtro agrupado por Documento Balizador */}
       <NormativaBalizadorFilter
