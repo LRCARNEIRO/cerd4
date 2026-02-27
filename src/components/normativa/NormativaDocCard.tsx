@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ExternalLink, FileText, Globe, Trash2, Scale, Building2, FileCheck, BookOpen } from 'lucide-react';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -83,7 +84,7 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
           </div>
         </div>
 
-        {/* Tags row: categoria + metas */}
+        {/* Tags row: categoria + metas + artigos ICERD */}
         <div className="flex flex-wrap gap-1.5">
           <Badge variant="outline" className={`text-[10px] gap-1 ${catConfig.color}`}>
             <CatIcon className="w-3 h-3" />
@@ -92,6 +93,11 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
           {doc.metas_impactadas?.map((m) => (
             <Badge key={m} className="text-[10px] bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
               {m}
+            </Badge>
+          ))}
+          {deriveArtigosFromDoc(doc).map((art) => (
+            <Badge key={art} variant="outline" className="text-[10px] font-bold border-accent bg-accent/10 text-accent-foreground">
+              Art. {art}
             </Badge>
           ))}
         </div>
@@ -162,4 +168,15 @@ function buildRacialSummary(doc: any): string | null {
     parts.push(`com ${doc.total_itens_extraidos} itens extraídos`);
   }
   return parts.length > 0 ? parts.join(' ') + '.' : null;
+}
+
+/** Derive ICERD articles from document's thematic axes (secoes_impactadas) */
+function deriveArtigosFromDoc(doc: any): ArtigoConvencao[] {
+  const eixos: string[] = doc.secoes_impactadas || [];
+  const artigos = new Set<ArtigoConvencao>();
+  eixos.forEach(eixo => {
+    const mapped = EIXO_PARA_ARTIGOS[eixo as keyof typeof EIXO_PARA_ARTIGOS];
+    if (mapped) mapped.forEach(a => artigos.add(a));
+  });
+  return [...artigos].sort();
 }
