@@ -1,4 +1,3 @@
-import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import type { WorkPlanMeta } from '@/types/cerd';
 
@@ -43,12 +42,14 @@ export function MetaProgressCard({ meta }: MetaProgressCardProps) {
         </div>
       </div>
       
-      <div className="mt-4">
-        <Progress value={meta.progresso} className="h-2" />
+      <div className="mt-4 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">{meta.resultadosEsperados.length} resultados esperados</span>
+        <span className="font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
+          Meta final: 2029
+        </span>
       </div>
-      
-      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{meta.resultadosEsperados.length} resultados esperados</span>
+
+      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
         <span>Prazo: {new Date(meta.prazoFim).toLocaleDateString('pt-BR')}</span>
       </div>
     </div>
