@@ -19,6 +19,18 @@ interface DocumentoBalizador {
 
 const documentos: DocumentoBalizador[] = [
   {
+    titulo: 'Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial (ICERD)',
+    tituloOriginal: 'International Convention on the Elimination of All Forms of Racial Discrimination',
+    tipo: 'Tratado Internacional',
+    data: '1966/1969',
+    sigla: 'ICERD',
+    descricao: 'Tratado-mãe que fundamenta todo o sistema CERD. Assinada pelo Brasil em 1966 e decretada em 1969 (Decreto nº 65.810). Os 7 primeiros artigos (I-VII) constituem a base normativa de todas as demais recomendações, observações finais, recomendações gerais e do Plano de Durban. Art. I define discriminação racial; Art. II estabelece obrigações de eliminação; Art. III condena segregação; Art. IV criminaliza propaganda racista; Art. V garante igualdade em direitos civis, políticos, econômicos, sociais e culturais; Art. VI assegura proteção judicial; Art. VII compromete ações em ensino, educação e cultura.',
+    arquivo: '/documentos/Convencao-ICERD-Artigos-Demandas.pdf',
+    icon: Scale,
+    cor: 'text-destructive',
+    paragrafosChave: ['Art. I - Definição de discriminação racial', 'Art. II - Obrigações dos Estados', 'Art. III - Segregação/Apartheid', 'Art. IV - Propaganda racista', 'Art. V - Igualdade de direitos (civis, políticos, DESCA)', 'Art. VI - Proteção judicial', 'Art. VII - Ensino, educação e cultura']
+  },
+  {
     titulo: 'Observações Finais ao Brasil (CERD/C/BRA/CO/18-20)',
     tituloOriginal: 'Concluding observations on the combined 18th to 20th periodic reports of Brazil',
     tipo: 'Observações Finais',
@@ -54,16 +66,16 @@ const documentos: DocumentoBalizador[] = [
     cor: 'text-accent-foreground',
   },
   {
-    titulo: 'Recomendações Gerais do CERD - Parágrafos Importantes',
-    tituloOriginal: 'General Recommendations - Key Paragraphs',
+    titulo: 'Recomendações Gerais do CERD - Parágrafos Importantes (Atualizada 2025)',
+    tituloOriginal: 'General Recommendations - Key Paragraphs (Updated with RG 37 & 38)',
     tipo: 'Compilação',
     data: '1997-2025',
     sigla: 'RGs CERD',
-    descricao: 'Compilação dos parágrafos mais relevantes das Recomendações Gerais: RG 23 (Povos Indígenas), RG 31 (Justiça Criminal), RG 34 (Afrodescendentes), RG 35 (Discurso de Ódio), RG 36 (Perfilamento Racial), RG 37 (Saúde) e RG 38 (Xenofobia/Migrantes). Cada RG estabelece obrigações específicas dos Estados.',
-    arquivo: '/documentos/Recomendacoes-Gerais-Paragrafos.docx',
+    descricao: 'Compilação atualizada dos parágrafos mais relevantes das Recomendações Gerais, incluindo a correspondência explícita com os artigos da Convenção ICERD. Inclui: Declaração e Plano de Ação de Durban (§114, §90, §117), RG 23 (Povos Indígenas, Arts. I/II/V), RG 31 (Justiça Criminal, Arts. V/VI), RG 34 (Afrodescendentes, Arts. II-VI), RG 35 (Discurso de Ódio, Arts. IV/V/VII), RG 36 (Perfilamento Racial, Arts. II/V/VI/VII), RG 37 (Saúde, Arts. I/V - NOVA 2024) e RG 38 (Xenofobia/Migrantes, Arts. I/III/V/VI/VII - NOVA 2025).',
+    arquivo: '/documentos/Recomendacoes-Gerais-Paragrafos-NOVA.pdf',
     icon: BookOpen,
     cor: 'text-primary',
-    paragrafosChave: ['RG 23 - Indígenas', 'RG 31 - Justiça Criminal', 'RG 34 - Afrodescendentes', 'RG 35 - Discurso de Ódio', 'RG 36 - Perfilamento Racial', 'RG 37 - Saúde', 'RG 38 - Xenofobia']
+    paragrafosChave: ['Durban §114/§90/§117', 'RG 23 - Indígenas (Arts. I/II/V)', 'RG 31 - Justiça Criminal (Arts. V/VI)', 'RG 34 - Afrodescendentes (Arts. II-VI)', 'RG 35 - Discurso de Ódio (Arts. IV/V/VII)', 'RG 36 - Perfilamento Racial (Arts. II/V/VI/VII)', 'RG 37 - Saúde (Arts. I/V) [2024]', 'RG 38 - Xenofobia (Arts. I/III/V/VI/VII) [2025]']
   },
   {
     titulo: 'Guidelines para Relatórios CERD (CERD/C/2007/1)',
@@ -253,10 +265,11 @@ export default function DocumentosBalizadores() {
             <div>
               <h2 className="font-bold text-lg">Marcos Normativos e Documentos-Base</h2>
               <p className="text-sm text-primary-foreground/80 mt-1">
-                Estes são os documentos oficiais da ONU que parametrizam todo o sistema: as observações finais ao Brasil,
-                as recomendações gerais do CERD, a Declaração de Durban, as guidelines para relatórios e os documentos
-                de referência do próprio Brasil. Todos os dados, metas, recomendações e relatórios do sistema derivam
-                destes marcos.
+                Estes são os {documentos.length} documentos oficiais que parametrizam todo o sistema. A <strong>Convenção ICERD</strong> (1966)
+                é o tratado-mãe cujos 7 artigos fundamentam todas as demais obrigações: as observações finais ao Brasil,
+                as recomendações gerais do CERD (com correspondência explícita aos artigos da Convenção), a Declaração de Durban,
+                os cruzamentos analíticos, as guidelines para relatórios e os documentos de referência do próprio Brasil.
+                Todos os dados, metas, recomendações e relatórios do sistema derivam destes marcos.
               </p>
             </div>
           </div>
