@@ -16,11 +16,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
 import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
+import { NormativaBalizadorFilter } from '@/components/normativa/NormativaBalizadorFilter';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const categoriasNormativas = [
@@ -262,31 +262,12 @@ export default function Normativa() {
         />
       </div>
 
-      {/* Recommendation coverage stats */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Cobertura por Recomendação CERD</CardTitle>
-          <CardDescription>Quantos documentos normativos respondem a cada recomendação do Comitê</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {recomendacaoCoverage.map(({ recomendacao, count }) => (
-              <Badge
-                key={recomendacao}
-                variant={selectedRecomendacao === recomendacao ? 'default' : 'outline'}
-                className="cursor-pointer text-xs gap-1 transition-all hover:shadow-sm"
-                onClick={() => setSelectedRecomendacao(selectedRecomendacao === recomendacao ? null : recomendacao)}
-              >
-                {recomendacao}
-                <span className="ml-1 bg-background/50 rounded-full px-1.5 text-[10px] font-bold">{count}</span>
-              </Badge>
-            ))}
-          </div>
-          {recomendacaoCoverage.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhuma recomendação vinculada ainda.</p>
-          )}
-        </CardContent>
-      </Card>
+      {/* Filtro agrupado por Documento Balizador */}
+      <NormativaBalizadorFilter
+        recomendacoes={recomendacaoCoverage}
+        selectedRecomendacao={selectedRecomendacao}
+        onSelectRecomendacao={setSelectedRecomendacao}
+      />
 
       {/* Recent documents from DB */}
       <Card>
@@ -294,17 +275,6 @@ export default function Normativa() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <CardTitle>Documentos Normativos ({filteredDocs.length})</CardTitle>
             <div className="flex items-center gap-2">
-              <Select value={selectedRecomendacao || 'all'} onValueChange={(v) => setSelectedRecomendacao(v === 'all' ? null : v)}>
-                <SelectTrigger className="w-[200px] text-xs h-9">
-                  <SelectValue placeholder="Filtrar por recomendação" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as recomendações</SelectItem>
-                  {allRecomendacoes.map(r => (
-                    <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input placeholder="Buscar..." className="pl-9 w-48 h-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
