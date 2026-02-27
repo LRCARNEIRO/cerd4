@@ -16,10 +16,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
 import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
+import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const categoriasNormativas = [
   { id: 'legislacao', titulo: 'Legislação Antidiscriminatória', descricao: 'Leis, decretos e normas', icon: Scale, meta: 'Meta 1', cor: 'bg-blue-500' },
@@ -32,6 +34,7 @@ export default function Normativa() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
   const [selectedRecomendacao, setSelectedRecomendacao] = useState<string | null>(null);
+  const [selectedArtigo, setSelectedArtigo] = useState<ArtigoConvencao | null>(null);
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -65,10 +68,28 @@ export default function Normativa() {
     count: documentos.filter(d => d.recomendacoes_impactadas?.includes(r)).length,
   }));
 
+  // Derive artigos for each doc from secoes_impactadas
+  const getDocArtigos = (doc: any): ArtigoConvencao[] => {
+    const eixos: string[] = doc.secoes_impactadas || [];
+    const artigos = new Set<ArtigoConvencao>();
+    eixos.forEach(eixo => {
+      const mapped = EIXO_PARA_ARTIGOS[eixo as keyof typeof EIXO_PARA_ARTIGOS];
+      if (mapped) mapped.forEach(a => artigos.add(a));
+    });
+    return [...artigos];
+  };
+
+  // Article coverage counts
+  const artigoCounts = ARTIGOS_CONVENCAO.reduce((acc, art) => {
+    acc[art.numero] = documentos.filter(d => getDocArtigos(d).includes(art.numero)).length;
+    return acc;
+  }, {} as Record<ArtigoConvencao, number>);
+
   const filteredDocs = documentos.filter(doc =>
     doc.titulo.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (!selectedCategoria || doc.categoria === selectedCategoria) &&
-    (!selectedRecomendacao || doc.recomendacoes_impactadas?.includes(selectedRecomendacao))
+    (!selectedRecomendacao || doc.recomendacoes_impactadas?.includes(selectedRecomendacao)) &&
+    (!selectedArtigo || getDocArtigos(doc).includes(selectedArtigo))
   );
   const handleDeleteDoc = async (doc: any) => {
     setIsDeleting(true);
@@ -229,6 +250,16 @@ export default function Normativa() {
             </Card>
           );
         })}
+      </div>
+
+      {/* Filtro por Artigo ICERD (I-VII) */}
+      <div className="mb-6">
+        <ArtigoFilter
+          selected={selectedArtigo}
+          onSelect={setSelectedArtigo}
+          counts={artigoCounts}
+          compact
+        />
       </div>
 
       {/* Recommendation coverage stats */}
