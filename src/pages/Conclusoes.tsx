@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign, HeartPulse, Printer } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, XCircle, Lightbulb, BarChart3, Loader2, Database, RefreshCw, FileText, Scale, BookOpen, Users, Landmark, Link2, Zap, Eye, ArrowRight, Shield, GraduationCap, Heart, DollarSign, HeartPulse, Printer, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ import {
   educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos,
   povosTradicionais
 } from '@/components/estatisticas/StatisticsData';
-
+import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
   politicas_institucionais: 'Políticas Institucionais',
@@ -48,8 +48,20 @@ export default function Conclusoes() {
   const [diffOpen, setDiffOpen] = useState(false);
   const [beforeSnap, setBeforeSnap] = useState<SnapshotData | null>(null);
   const [afterSnap, setAfterSnap] = useState<SnapshotData | null>(null);
+  const [artigoFiltro, setArtigoFiltro] = useState<ArtigoConvencao | null>(null);
   const waitingRefresh = useRef(false);
   const wasFetching = useRef(false);
+
+  // Filter fios/conclusões by selected article
+  const fiosFiltrados = useMemo(() => {
+    if (!artigoFiltro) return fiosCondutores;
+    return fiosCondutores.filter(f => f.artigosConvencao?.includes(artigoFiltro));
+  }, [fiosCondutores, artigoFiltro]);
+
+  const conclusoesFiltradas = useMemo(() => {
+    if (!artigoFiltro) return conclusoesDinamicas;
+    return conclusoesDinamicas.filter(c => c.artigosConvencao?.includes(artigoFiltro));
+  }, [conclusoesDinamicas, artigoFiltro]);
 
   const handleRefresh = () => {
     setBeforeSnap(captureSnapshot(stats, fiosCondutores, insightsCruzamento, conclusoesDinamicas, indicadores, respostas, orcStats));
@@ -156,9 +168,9 @@ export default function Conclusoes() {
   };
 
   const conclusoesAgrupadas = {
-    lacuna_persistente: conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente'),
-    avanco: conclusoesDinamicas.filter(c => c.tipo === 'avanco'),
-    retrocesso: conclusoesDinamicas.filter(c => c.tipo === 'retrocesso'),
+    lacuna_persistente: conclusoesFiltradas.filter(c => c.tipo === 'lacuna_persistente'),
+    avanco: conclusoesFiltradas.filter(c => c.tipo === 'avanco'),
+    retrocesso: conclusoesFiltradas.filter(c => c.tipo === 'retrocesso'),
   };
 
   // Dados do Escopo para síntese
@@ -191,6 +203,35 @@ export default function Conclusoes() {
           <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />
           Atualizar
         </Button>
+      </div>
+
+      {/* Filtro por Artigo da Convenção ICERD */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <Filter className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground font-medium">Artigo ICERD:</span>
+        <Badge
+          variant={artigoFiltro === null ? "default" : "outline"}
+          className="cursor-pointer text-xs"
+          onClick={() => setArtigoFiltro(null)}
+        >
+          Todos
+        </Badge>
+        {ARTIGOS_CONVENCAO.map(art => (
+          <Badge
+            key={art.numero}
+            variant={artigoFiltro === art.numero ? "default" : "outline"}
+            className="cursor-pointer text-xs"
+            onClick={() => setArtigoFiltro(artigoFiltro === art.numero ? null : art.numero)}
+            title={art.tituloCompleto}
+          >
+            Art. {art.numero}
+          </Badge>
+        ))}
+        {artigoFiltro && (
+          <span className="text-xs text-muted-foreground ml-2">
+            — {ARTIGOS_CONVENCAO.find(a => a.numero === artigoFiltro)?.titulo}
+          </span>
+        )}
       </div>
 
       {isLoading && (
@@ -309,7 +350,7 @@ export default function Conclusoes() {
             <TabsList className="mb-6 flex-wrap h-auto gap-1">
               <TabsTrigger value="infograficos" className="gap-1"><BarChart3 className="w-4 h-4" /> Infográficos Comparativos</TabsTrigger>
               <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Tabela Síntese</TabsTrigger>
-              <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosCondutores.length})</TabsTrigger>
+              <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosFiltrados.length})</TabsTrigger>
               <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
               <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
               <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
@@ -390,7 +431,7 @@ export default function Conclusoes() {
                     <Printer className="w-3 h-3" /> Gerar PDF
                   </Button>
                 </div>
-                {fiosCondutores.map((fio) => (
+                {fiosFiltrados.map((fio) => (
                   <FioCondutorCard key={fio.id} fio={fio} />
                 ))}
               </div>
@@ -614,6 +655,11 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
           </div>
         )}
         <div className="flex flex-wrap gap-1.5">
+          {fio.artigosConvencao && fio.artigosConvencao.length > 0 && fio.artigosConvencao.map((art, i) => (
+            <Badge key={`art-${i}`} className="text-[10px] bg-primary/15 text-primary border-primary/30" variant="outline">
+              Art. {art}
+            </Badge>
+          ))}
           {fio.eixos.map((e, i) => (
             <Badge key={i} variant="outline" className="text-xs">{eixoLabels[e] || e}</Badge>
           ))}
@@ -697,6 +743,11 @@ function ConclusaoCard({ conclusao }: { conclusao: ConclusaoDinamica }) {
           </div>
         )}
         <div className="flex flex-wrap gap-1.5">
+          {conclusao.artigosConvencao && conclusao.artigosConvencao.length > 0 && conclusao.artigosConvencao.map((art, i) => (
+            <Badge key={`art-${i}`} className="text-[10px] bg-primary/15 text-primary border-primary/30" variant="outline">
+              Art. {art}
+            </Badge>
+          ))}
           {conclusao.eixos.map((eixo, i) => (
             <Badge key={i} variant="outline" className="text-xs">{eixoLabels[eixo] || eixo.replace(/_/g, ' ')}</Badge>
           ))}
