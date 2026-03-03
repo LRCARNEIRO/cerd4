@@ -198,8 +198,15 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
-      // Lacunas by article
-      const artLacunas = lacunas.filter(l => l.artigos_convencao?.includes(art.numero));
+      // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
+      const artLacunas = lacunas.filter(l => {
+        if (l.artigos_convencao && l.artigos_convencao.length > 0) {
+          return l.artigos_convencao.includes(art.numero);
+        }
+        // Fallback: infer from eixo_tematico
+        const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+        return mapped ? mapped.includes(art.numero) : false;
+      });
       const cumpridas = artLacunas.filter(l => l.status_cumprimento === 'cumprido').length;
       const parciais = artLacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
       const naoCumpridas = artLacunas.filter(l => l.status_cumprimento === 'nao_cumprido').length;
