@@ -175,15 +175,18 @@ export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; 
 
   const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
   const arts: ArtigoConvencao[] = [];
-  if (texto.match(/educa|escola|ensino|formação|lei 10.639/)) arts.push('V', 'VII');
-  if (texto.match(/saúde|saude|sesai|sanitár/)) arts.push('V');
+  if (texto.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) arts.push('V', 'VII');
+  if (texto.match(/saúde|saude|sesai|sanitár|sanitar/)) arts.push('V');
   if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
-  if (texto.match(/terra|territór|quilomb|funai|incra|demarcaç/)) arts.push('III', 'V');
-  if (texto.match(/justiça|justice|judiciár|proteç|reparaç/)) arts.push('VI');
-  if (texto.match(/cultur|patrimôn|capoeira|candomblé|matriz africana/)) arts.push('V', 'VII');
-  if (texto.match(/igualdade|discrimin|racis/)) arts.push('I', 'II');
-  if (texto.match(/segurança|polícia|homicíd|violência|letal/)) arts.push('V', 'VI');
-  if (texto.match(/polític|institucional|ação afirmativa/)) arts.push('II');
+  if (texto.match(/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/)) arts.push('III', 'V');
+  if (texto.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos|socioeducativ/)) arts.push('VI');
+  if (texto.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) arts.push('V', 'VII');
+  if (texto.match(/igualdade|discrimin|racis|enfrentamento ao racismo/)) arts.push('I', 'II');
+  if (texto.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/)) arts.push('V', 'VI');
+  if (texto.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|fortalecimento institucional/)) arts.push('II');
+  if (texto.match(/mulher|gênero|genero/)) arts.push('V');
+  if (texto.match(/idoso|pessoa idosa/)) arts.push('V');
+  if (texto.match(/povos indígenas|povos indigenas|etnodesenvolvimento|pluriétnic|plurietnic/)) arts.push('III', 'V');
   return [...new Set(arts)];
 }
 
