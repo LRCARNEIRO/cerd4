@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users, EyeOff, Info } from 'lucide-react';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { inferArtigosOrcamento, ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 interface ProgramCardProps {
   programa: string;
@@ -37,6 +38,12 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const name = extractName(programa);
   const orgao = registros[0]?.orgao;
   const descritivo = registros[0]?.descritivo;
+
+  // Infer ICERD articles from first record
+  const artigosBadges = useMemo(() => {
+    if (!registros[0]) return [];
+    return inferArtigosOrcamento(registros[0]);
+  }, [registros]);
   const razaoSelecao = registros[0]?.razao_selecao;
 
   // Deduplicate by year: keep the record with most data per year
@@ -79,6 +86,21 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
                 Excluído do cálculo
               </Badge>
             )}
+            {/* ICERD Article badges */}
+            {artigosBadges.map(art => {
+              const def = ARTIGOS_CONVENCAO.find(a => a.numero === art);
+              return (
+                <Badge
+                  key={art}
+                  variant="outline"
+                  className="text-[10px] px-1.5 py-0 font-bold"
+                  style={{ borderColor: def?.cor, color: def?.cor }}
+                  title={def?.titulo}
+                >
+                  Art. {art}
+                </Badge>
+              );
+            })}
           </div>
           {excluded && exclusionReason && (
             <p className="text-[10px] text-warning mt-0.5">{exclusionReason}</p>

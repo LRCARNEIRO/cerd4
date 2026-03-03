@@ -23,11 +23,13 @@ import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/E
 import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/EstadualRelatorioTab';
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
+import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
 import { MunicipalIngestionPanel } from '@/components/dashboard/MunicipalIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // Estrutura de fontes para referência
 const estruturaFederal = [
@@ -337,6 +339,7 @@ export default function Orcamento() {
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [includeExcludedInCalc, setIncludeExcludedInCalc] = useState(false);
+  const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
   const handleResetEsfera = async (esferaKey: string, label: string) => {
     if (!confirm(`Apagar todos os dados orçamentários da esfera "${label}"? Esta ação não pode ser desfeita.`)) return;
@@ -602,6 +605,11 @@ export default function Orcamento() {
           {/* Thematic filter bar */}
           <ThematicFilterBar filters={currentFilters} counts={getThemeCounts(esfera)} onToggle={currentToggle} />
 
+          {/* Article filter */}
+          <div className="mb-4">
+            <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
+          </div>
+
           {/* Federal-specific: 5034 toggle */}
           {esfera === 'federal' && (
             <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
@@ -619,9 +627,9 @@ export default function Orcamento() {
             </div>
           )}
 
-          {/* Data listing */}
+          {/* Data listing — filtered by article */}
           <EsferaContent
-            records={currentRecords}
+            records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
             isLoading={isLoading}
             emptyMessage={`Nenhum programa ${esferaLabel.toLowerCase()} encontrado com os filtros selecionados.`}
             useOrgaoSection={esfera === 'federal'}
