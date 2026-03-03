@@ -11,7 +11,7 @@ import {
   type IndicadorInterseccional,
   type DadoOrcamentario
 } from './useLacunasData';
-import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // =============================================
 // TIPOS
@@ -451,6 +451,60 @@ function gerarFiosCondutores(
     comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros e os efeitos de longo prazo (Long COVID, perda educacional) afetam desproporcionalmente crianças e jovens negros.`
   });
 
+  // FIO 10: Assimetria ICERD × Orçamento — cruzamento aderência × investimento por artigo
+  if (orcDados.length > 0) {
+    const artigoOrc = new Map<ArtigoConvencao, { liq: number; count: number }>();
+    ARTIGOS_CONVENCAO.forEach(a => artigoOrc.set(a.numero, { liq: 0, count: 0 }));
+    for (const r of orcDados) {
+      const arts = inferArtigosOrcamento(r);
+      for (const a of arts) {
+        const cur = artigoOrc.get(a)!;
+        cur.liq += Number(r.liquidado) || 0;
+        cur.count += 1;
+      }
+    }
+    // Lacunas per article (with fallback inference)
+    const artigoLac = new Map<ArtigoConvencao, number>();
+    ARTIGOS_CONVENCAO.forEach(a => artigoLac.set(a.numero, 0));
+    for (const l of lacunas) {
+      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+      const arts: ArtigoConvencao[] = mapped || [];
+      for (const a of arts) artigoLac.set(a, (artigoLac.get(a) || 0) + 1);
+    }
+
+    const totalLiq = Array.from(artigoOrc.values()).reduce((s, v) => s + v.liq, 0);
+    const evidIcerd: EvidenciaDinamica[] = [];
+    const artigosConcentrados: string[] = [];
+    const artigosSemCobertura: string[] = [];
+
+    ARTIGOS_CONVENCAO.forEach(art => {
+      const orc = artigoOrc.get(art.numero)!;
+      const lac = artigoLac.get(art.numero) || 0;
+      const pct = totalLiq > 0 ? (orc.liq / totalLiq * 100) : 0;
+      if (pct > 30) artigosConcentrados.push(`Art. ${art.numero} (${pct.toFixed(0)}%)`);
+      if (orc.count === 0 && lac > 0) artigosSemCobertura.push(`Art. ${art.numero}`);
+      if (lac > 0 || orc.count > 0) {
+        evidIcerd.push({
+          texto: `Art. ${art.numero} — ${art.titulo}: ${orc.count} registros (${formatBRL(orc.liq)} liq.) × ${lac} lacunas ONU`,
+          fonte: 'Cruzamento ICERD × Orçamento × Lacunas',
+          tipo: 'orcamentaria',
+        });
+      }
+    });
+
+    fios.push({
+      id: 'assimetria-icerd-orcamento',
+      titulo: 'Assimetria ICERD × Orçamento: Investimento vs. Compromissos',
+      tipo: 'paradoxo',
+      argumento: `O cruzamento do investimento federal com os 7 artigos da Convenção revela assimetria estrutural. ${artigosConcentrados.length > 0 ? `O investimento concentra-se em ${artigosConcentrados.join(', ')}, dominado por saúde indígena (SESAI).` : ''} ${artigosSemCobertura.length > 0 ? `Enquanto isso, ${artigosSemCobertura.join(', ')} possuem lacunas ONU sem nenhuma cobertura orçamentária identificada — revelando compromissos do tratado desatendidos financeiramente.` : 'Todos os artigos possuem alguma cobertura orçamentária.'} Esta desproporção é evidência de que o orçamento racial brasileiro não responde às obrigações do tratado de forma equilibrada.`,
+      evidencias: evidIcerd,
+      eixos: Object.keys(eixoLabels),
+      grupos: [],
+      relevancia: 'alta',
+      artigosConvencao: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'],
+    });
+  }
+
   // FIO 7: Respostas CERD III - o que o Brasil respondeu e o que falta
   if (respostas.length > 0) {
     const naoCumpridas = respostas.filter(r => r.grau_atendimento === 'nao_cumprido');
@@ -781,6 +835,80 @@ function gerarConclusoesDinamicas(
       relevancia_common_core: true,
       relevancia_cerd_iv: true,
       fiosCondutores: ['divida-cerd-iii', 'paradoxo-normativo']
+    });
+  }
+
+  // =============================================
+  // CONCLUSÕES ICERD — Avanços/Retrocessos por Artigo da Convenção
+  // Cruza cobertura orçamentária com lacunas por artigo
+  // =============================================
+  if (orcDados.length > 0) {
+    const artigoOrc = new Map<ArtigoConvencao, { liq: number; liqP1: number; liqP2: number; count: number }>();
+    ARTIGOS_CONVENCAO.forEach(a => artigoOrc.set(a.numero, { liq: 0, liqP1: 0, liqP2: 0, count: 0 }));
+    for (const r of orcDados) {
+      const arts = inferArtigosOrcamento(r);
+      for (const a of arts) {
+        const cur = artigoOrc.get(a)!;
+        const val = Number(r.liquidado) || 0;
+        cur.liq += val;
+        cur.count += 1;
+        if (r.ano <= 2022) cur.liqP1 += val; else cur.liqP2 += val;
+      }
+    }
+
+    const artigoLacStatus = new Map<ArtigoConvencao, { nc: number; ret: number; cum: number; parc: number; total: number }>();
+    ARTIGOS_CONVENCAO.forEach(a => artigoLacStatus.set(a.numero, { nc: 0, ret: 0, cum: 0, parc: 0, total: 0 }));
+    for (const l of lacunas) {
+      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+      const arts: ArtigoConvencao[] = mapped || [];
+      for (const a of arts) {
+        const cur = artigoLacStatus.get(a)!;
+        cur.total += 1;
+        if (l.status_cumprimento === 'nao_cumprido') cur.nc += 1;
+        else if (l.status_cumprimento === 'retrocesso') cur.ret += 1;
+        else if (l.status_cumprimento === 'cumprido') cur.cum += 1;
+        else if (l.status_cumprimento === 'parcialmente_cumprido') cur.parc += 1;
+      }
+    }
+
+    ARTIGOS_CONVENCAO.forEach(art => {
+      const orc = artigoOrc.get(art.numero)!;
+      const lac = artigoLacStatus.get(art.numero)!;
+      if (lac.total === 0 && orc.count === 0) return;
+
+      const varOrc = orc.liqP1 > 0 ? ((orc.liqP2 - orc.liqP1) / orc.liqP1 * 100) : (orc.liqP2 > 0 ? 100 : 0);
+      const positivos = lac.cum + lac.parc;
+      const negativos = lac.nc + lac.ret;
+
+      let tipo: 'avanco' | 'retrocesso' | 'lacuna_persistente';
+      if (lac.ret > 0 && negativos > positivos) tipo = 'retrocesso';
+      else if (positivos > negativos && varOrc > 0) tipo = 'avanco';
+      else tipo = 'lacuna_persistente';
+
+      const evidencias: string[] = [];
+      if (orc.count > 0) evidencias.push(`${orc.count} registros orçamentários · Liquidado total: ${formatBRL(orc.liq)}`);
+      if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-26): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
+      if (lac.total > 0) evidencias.push(`${lac.total} lacunas ONU: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s)`);
+      if (orc.count === 0 && lac.total > 0) evidencias.push('⚠ Nenhum registro orçamentário identificado para este compromisso');
+
+      const contradicao = varOrc > 20 && negativos > positivos
+        ? ` Apesar do crescimento orçamentário de ${varOrc.toFixed(0)}%, a maioria das lacunas ONU permanece sem cumprimento — evidenciando que o investimento não se traduziu em conformidade com o tratado.`
+        : '';
+
+      conclusoes.push({
+        id: `conclusao-icerd-art-${art.numero}`,
+        tipo,
+        titulo: `Art. ${art.numero} — ${art.titulo}: ${tipo === 'avanco' ? 'Avanços Identificados' : tipo === 'retrocesso' ? 'Retrocesso' : 'Lacuna Persistente'}`,
+        periodo: '2018-2026',
+        argumento_central: `O Artigo ${art.numero} da Convenção (${art.titulo}) possui ${lac.total} observações ONU e ${orc.count} registros orçamentários (${formatBRL(orc.liq)} liquidados). ${lac.total > 0 ? `Grau de cumprimento: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s).` : ''} ${varOrc !== 0 ? `Variação orçamentária entre períodos: ${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%.` : ''}${contradicao}`,
+        evidencias,
+        eixos: [],
+        fromDatabase: true,
+        relevancia_common_core: true,
+        relevancia_cerd_iv: true,
+        fiosCondutores: ['assimetria-icerd-orcamento'],
+        artigosConvencao: [art.numero],
+      });
     });
   }
 
