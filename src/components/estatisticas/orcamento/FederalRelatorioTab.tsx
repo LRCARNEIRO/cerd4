@@ -621,46 +621,119 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       {/* ═══ 8. CRUZAMENTO ARTIGOS ICERD ═══ */}
       <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} includeExcludedInCalc={includeExcludedInCalc} sectionNumber={8} />
 
-      {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
-      <Card className="border-l-4 border-l-destructive">
-        <CardHeader><CardTitle className="text-sm">9. Conclusão e Veredito Técnico</CardTitle></CardHeader>
-        <CardContent className="text-xs text-muted-foreground space-y-3">
-          <div className="bg-destructive/5 rounded p-4 border border-destructive/20 space-y-2">
-            <p className="font-bold text-foreground flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-destructive" />
-              Diagnóstico: "Orçamento de Papel"
-            </p>
-            <p>
-              A análise dos {analysis.totalRegistros} registros orçamentários federais ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})
-              revela um padrão estrutural de <strong>planejamento sem execução</strong> nas políticas raciais <em>stricto sensu</em>.
-            </p>
-            <ul className="list-disc pl-4 space-y-1">
-              <li>
-                <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.pagoP1NoSesai)} pagos sem SESAI em 5 anos
-                — média anual de {formatCurrency(analysis.pagoP1NoSesai / 5)}.
-              </li>
-              <li>
-                <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
-                mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento.
-              </li>
-              <li>
-                <strong>Prova de capacidade:</strong> A SESAI manteve execução &gt;80% em todo o período, demonstrando que
-                a máquina estatal <em>sabe e consegue gastar</em> — a baixa execução nas demais políticas é <strong>escolha de gestão</strong>.
-              </li>
-            </ul>
-          </div>
+      {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO (integra Seção 8 — ICERD) ═══ */}
+      {(() => {
+        // Compute ICERD data inline for integration into verdict
+        const allRecs = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+        const icerdByArtigo = ARTIGOS_CONVENCAO.map(art => {
+          const matched = allRecs.filter(r => inferArtigosOrcamento(r).includes(art.numero));
+          const liq = matched.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+          return { numero: art.numero, titulo: art.titulo, liquidado: liq, programas: new Set(matched.map(r => r.programa)).size, registros: matched.length };
+        });
+        const totalLiqIcerd = allRecs.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+        const artigosComDados = icerdByArtigo.filter(a => a.registros > 0).sort((a, b) => b.liquidado - a.liquidado);
+        const artigosSemDados = icerdByArtigo.filter(a => a.registros === 0);
+        const topArt = artigosComDados[0];
+        const bottomArt = artigosComDados.length > 1 ? artigosComDados[artigosComDados.length - 1] : null;
+        const topPct = topArt && totalLiqIcerd > 0 ? (topArt.liquidado / totalLiqIcerd * 100).toFixed(1) : '0';
+        const bottomPct = bottomArt && totalLiqIcerd > 0 ? (bottomArt.liquidado / totalLiqIcerd * 100).toFixed(1) : '0';
 
-          <div className="bg-muted/50 rounded p-3 space-y-2">
-            <p className="font-semibold text-foreground">Recomendações ao Comitê CERD:</p>
-            <ol className="list-decimal pl-4 space-y-1">
-              <li>Solicitar ao Brasil metas de <strong>liquidação mínima</strong> (≥70%) para todos os programas raciais do PPA 2024–2027.</li>
-              <li>Exigir <strong>desagregação por ação orçamentária</strong> no próximo relatório periódico, não apenas por função/subfunção.</li>
-              <li>Recomendar <strong>vinculação de receita</strong> para igualdade racial (similar à saúde/educação) para evitar contingenciamento recorrente.</li>
-              <li>Incluir a análise de <strong>dupla perspectiva (com/sem SESAI)</strong> como padrão metodológico em futuros relatórios sombra.</li>
-            </ol>
-          </div>
-        </CardContent>
-      </Card>
+        return (
+          <Card className="border-l-4 border-l-destructive">
+            <CardHeader><CardTitle className="text-sm">9. Conclusão e Veredito Técnico</CardTitle></CardHeader>
+            <CardContent className="text-xs text-muted-foreground space-y-3">
+              <div className="bg-destructive/5 rounded p-4 border border-destructive/20 space-y-2">
+                <p className="font-bold text-foreground flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-destructive" />
+                  Diagnóstico: "Orçamento de Papel"
+                </p>
+                <p>
+                  A análise dos {analysis.totalRegistros} registros orçamentários federais ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})
+                  revela um padrão estrutural de <strong>planejamento sem execução</strong> nas políticas raciais <em>stricto sensu</em>.
+                </p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>
+                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.pagoP1NoSesai)} pagos sem SESAI em 5 anos
+                    — média anual de {formatCurrency(analysis.pagoP1NoSesai / 5)}.
+                  </li>
+                  <li>
+                    <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
+                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento.
+                  </li>
+                  <li>
+                    <strong>Prova de capacidade:</strong> A SESAI manteve execução &gt;80% em todo o período, demonstrando que
+                    a máquina estatal <em>sabe e consegue gastar</em> — a baixa execução nas demais políticas é <strong>escolha de gestão</strong>.
+                  </li>
+                </ul>
+              </div>
+
+              {/* ── Integração da Seção 8: Cruzamento ICERD ── */}
+              <div className="bg-primary/5 rounded p-4 border border-primary/20 space-y-2">
+                <p className="font-bold text-foreground flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-primary" />
+                  Análise Integrada: Cobertura Orçamentária dos Artigos ICERD (I–VII)
+                </p>
+                <p>
+                  O cruzamento das {allRecs.length} ações orçamentárias com os compromissos da Convenção (Seção 8) revela
+                  <strong> assimetrias estruturais</strong> na alocação de recursos por artigo:
+                </p>
+                <ul className="list-disc pl-4 space-y-1">
+                  {topArt && (
+                    <li>
+                      <strong>Art. {topArt.numero} ({topArt.titulo})</strong> concentra <strong>{topPct}%</strong> do liquidado total
+                      ({formatCurrency(topArt.liquidado)}), com {topArt.programas} programa(s) mapeado(s)
+                      — reflete a predominância temática do eixo saúde/indígena.
+                    </li>
+                  )}
+                  {bottomArt && bottomArt.numero !== topArt?.numero && (
+                    <li>
+                      <strong>Art. {bottomArt.numero} ({bottomArt.titulo})</strong> recebe apenas <strong>{bottomPct}%</strong> ({formatCurrency(bottomArt.liquidado)})
+                      — evidência de <em>subfinanciamento relativo</em> deste compromisso convencional.
+                    </li>
+                  )}
+                  {artigosSemDados.length > 0 && (
+                    <li>
+                      <strong>{artigosSemDados.length} artigo(s) sem qualquer cobertura orçamentária:</strong>{' '}
+                      {artigosSemDados.map(a => `Art. ${a.numero} (${a.titulo})`).join('; ')}
+                      — configura <strong>lacuna de implementação</strong> em relação à Convenção.
+                    </li>
+                  )}
+                  {artigosComDados.length >= 3 && (
+                    <li>
+                      <strong>Índice de concentração:</strong> Os 2 artigos mais financiados absorvem{' '}
+                      {totalLiqIcerd > 0
+                        ? ((artigosComDados[0].liquidado + artigosComDados[1].liquidado) / totalLiqIcerd * 100).toFixed(0)
+                        : 0}% do liquidado total, indicando <em>desequilíbrio na cobertura</em> dos compromissos assumidos pelo Estado.
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 rounded p-3 space-y-2">
+                <p className="font-semibold text-foreground">Recomendações ao Comitê CERD:</p>
+                <ol className="list-decimal pl-4 space-y-1">
+                  <li>Solicitar ao Brasil metas de <strong>liquidação mínima</strong> (≥70%) para todos os programas raciais do PPA 2024–2027.</li>
+                  <li>Exigir <strong>desagregação por ação orçamentária</strong> no próximo relatório periódico, não apenas por função/subfunção.</li>
+                  <li>Recomendar <strong>vinculação de receita</strong> para igualdade racial (similar à saúde/educação) para evitar contingenciamento recorrente.</li>
+                  <li>Incluir a análise de <strong>dupla perspectiva (com/sem SESAI)</strong> como padrão metodológico em futuros relatórios sombra.</li>
+                  {artigosSemDados.length > 0 && (
+                    <li>
+                      Solicitar <strong>plano de ação específico</strong> para os artigos {artigosSemDados.map(a => a.numero).join(', ')} da Convenção,
+                      atualmente sem nenhuma ação orçamentária federal identificada.
+                    </li>
+                  )}
+                  {bottomArt && Number(bottomPct) < 5 && (
+                    <li>
+                      Recomendar <strong>ampliação do financiamento</strong> ao Art. {bottomArt.numero} ({bottomArt.titulo}),
+                      que recebe menos de 5% do liquidado total apesar de sua relevância convencional.
+                    </li>
+                  )}
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       <AuditFooter
         fontes={[
