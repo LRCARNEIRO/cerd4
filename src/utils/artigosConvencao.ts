@@ -164,6 +164,30 @@ export const DOCUMENTOS_BALIZADORES_SIGLAS: readonly string[] = [
 ] as const;
 
 /**
+ * Infer ICERD articles for a budget record based on explicit tags, eixo_tematico, or keywords.
+ */
+export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; eixo_tematico?: string | null; programa: string; orgao: string; descritivo?: string | null }): ArtigoConvencao[] {
+  const explicit = (r.artigos_convencao || []).filter(a => ['I','II','III','IV','V','VI','VII'].includes(a)) as ArtigoConvencao[];
+  if (explicit.length > 0) return explicit;
+
+  const eixo = r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS | undefined;
+  if (eixo && EIXO_PARA_ARTIGOS[eixo]) return EIXO_PARA_ARTIGOS[eixo];
+
+  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
+  const arts: ArtigoConvencao[] = [];
+  if (texto.match(/educa|escola|ensino|formação|lei 10.639/)) arts.push('V', 'VII');
+  if (texto.match(/saúde|saude|sesai|sanitár/)) arts.push('V');
+  if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
+  if (texto.match(/terra|territór|quilomb|funai|incra|demarcaç/)) arts.push('III', 'V');
+  if (texto.match(/justiça|justice|judiciár|proteç|reparaç/)) arts.push('VI');
+  if (texto.match(/cultur|patrimôn|capoeira|candomblé|matriz africana/)) arts.push('V', 'VII');
+  if (texto.match(/igualdade|discrimin|racis/)) arts.push('I', 'II');
+  if (texto.match(/segurança|polícia|homicíd|violência|letal/)) arts.push('V', 'VI');
+  if (texto.match(/polític|institucional|ação afirmativa/)) arts.push('II');
+  return [...new Set(arts)];
+}
+
+/**
  * Valida se um documento é Balizador (regra de ouro normativa).
  * Retorna true se a sigla consta entre os 20 documentos oficiais.
  */

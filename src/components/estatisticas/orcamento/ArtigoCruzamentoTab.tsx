@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Scale, ChevronDown, ChevronUp } from 'lucide-react';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 interface ArtigoCruzamentoTabProps {
@@ -15,28 +15,7 @@ const formatCompact = (value: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 };
 
-/** Infer articles from eixo_tematico when artigos_convencao is empty */
-function inferArtigos(r: DadoOrcamentario): ArtigoConvencao[] {
-  const explicit = (r.artigos_convencao || []).filter(a => ['I','II','III','IV','V','VI','VII'].includes(a)) as ArtigoConvencao[];
-  if (explicit.length > 0) return explicit;
-
-  const eixo = r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS | undefined;
-  if (eixo && EIXO_PARA_ARTIGOS[eixo]) return EIXO_PARA_ARTIGOS[eixo];
-
-  // Keyword-based fallback
-  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-  const arts: ArtigoConvencao[] = [];
-  if (texto.match(/educa|escola|ensino|formação|lei 10.639/)) arts.push('V', 'VII');
-  if (texto.match(/saúde|saude|sesai|sanitár/)) arts.push('V');
-  if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
-  if (texto.match(/terra|territór|quilomb|funai|incra|demarcaç/)) arts.push('III', 'V');
-  if (texto.match(/justiça|justice|judiciár|proteç|reparaç/)) arts.push('VI');
-  if (texto.match(/cultur|patrimôn|capoeira|candomblé|matriz africana/)) arts.push('V', 'VII');
-  if (texto.match(/igualdade|discrimin|racis/)) arts.push('I', 'II');
-  if (texto.match(/segurança|polícia|homicíd|violência|letal/)) arts.push('V', 'VI');
-  if (texto.match(/polític|institucional|ação afirmativa/)) arts.push('II');
-  return [...new Set(arts)];
-}
+const inferArtigos = inferArtigosOrcamento;
 
 function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0]; records: DadoOrcamentario[] }) {
   const [open, setOpen] = useState(false);
