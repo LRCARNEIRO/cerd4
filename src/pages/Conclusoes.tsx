@@ -38,6 +38,8 @@ const eixoLabels: Record<string, string> = {
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Conclusoes() {
   const queryClient = useQueryClient();
@@ -45,6 +47,18 @@ export default function Conclusoes() {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
   } = useAnalyticalInsights();
+
+  const { data: documentosNormativos } = useQuery({
+    queryKey: ['documentos_normativos_aderencia'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('documentos_normativos')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   const [diffOpen, setDiffOpen] = useState(false);
   const [beforeSnap, setBeforeSnap] = useState<SnapshotData | null>(null);
@@ -605,6 +619,8 @@ export default function Conclusoes() {
                 orcamentoRecords={orcDados || []}
                 indicadores={indicadores || []}
                 stats={stats}
+                respostas={respostas || []}
+                documentosNormativos={documentosNormativos || []}
               />
             </TabsContent>
           </Tabs>

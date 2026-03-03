@@ -2,14 +2,29 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users } from 'lucide-react';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
-import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
+import {
+  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
+  saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais,
+  dadosDemograficos
+} from '@/components/estatisticas/StatisticsData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Cell
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
+
+interface DocumentoNormativo {
+  id: string;
+  titulo: string;
+  categoria: string;
+  status: string;
+  secoes_impactadas?: string[] | null;
+  recomendacoes_impactadas?: string[] | null;
+  metas_impactadas?: string[] | null;
+}
 
 interface IcerdAdherencePanelProps {
   fiosCondutores: FioCondutor[];
@@ -18,6 +33,8 @@ interface IcerdAdherencePanelProps {
   orcamentoRecords: DadoOrcamentario[];
   indicadores: any[];
   stats: any;
+  respostas: RespostaLacunaCerdIII[];
+  documentosNormativos: DocumentoNormativo[];
 }
 
 type ArtigoAnalysis = {
@@ -40,11 +57,63 @@ type ArtigoAnalysis = {
   orcamentoLiquidado: number;
   orcamentoProgramas: number;
   indicadoresCount: number;
+  // NEW dimensions
+  respostasTotal: number;
+  respostasCumpridas: number;
+  respostasNaoCumpridas: number;
+  normativosCount: number;
+  seriesEstatisticas: number; // count of stat series covering this article
   // Computed
   grauAderencia: number; // 0-100
   tendencia: 'melhora' | 'piora' | 'estagnacao';
   veredito: string;
 };
+
+/**
+ * Map statistical series to ICERD articles based on thematic coverage.
+ * Returns a count of distinct statistical evidence series per article.
+ */
+function countStatSeriesPerArticle(): Record<ArtigoConvencao, number> {
+  const counts: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
+
+  // Segurança pública → V (segurança pessoal), VI (proteção judicial)
+  if (segurancaPublica.length > 0) { counts['V'] += 2; counts['VI'] += 2; } // homicídio + letalidade
+  // Feminicídio → V
+  if (feminicidioSerie.length > 0) { counts['V'] += 1; }
+  // Educação → V, VII
+  if (educacaoSerieHistorica.length > 0) { counts['V'] += 2; counts['VII'] += 2; } // superior + analfabetismo
+  // Saúde → V
+  if (saudeSerieHistorica.length > 0) { counts['V'] += 2; } // materna + infantil
+  // Renda/trabalho → V
+  if (indicadoresSocioeconomicos.length > 0) { counts['V'] += 3; } // renda + desemprego + pobreza
+  // Povos tradicionais → III, V
+  if (povosTradicionais) { counts['III'] += 1; counts['V'] += 1; }
+  // Dados demográficos → I, II (base para definição)
+  if (dadosDemograficos) { counts['I'] += 1; counts['II'] += 1; }
+
+  return counts;
+}
+
+/**
+ * Infer which articles a normative document covers based on secoes_impactadas
+ */
+function inferArtigosNormativo(doc: DocumentoNormativo): ArtigoConvencao[] {
+  const arts = new Set<ArtigoConvencao>();
+  (doc.secoes_impactadas || []).forEach(secao => {
+    const mapped = EIXO_PARA_ARTIGOS[secao as keyof typeof EIXO_PARA_ARTIGOS];
+    if (mapped) mapped.forEach(a => arts.add(a));
+  });
+  // keyword fallback on titulo
+  const t = doc.titulo.toLowerCase();
+  if (t.match(/injúria|racismo|discrimin|igualdade/)) { arts.add('I'); arts.add('II'); }
+  if (t.match(/cota|ação afirmativa|acao afirmativa/)) { arts.add('II'); arts.add('V'); }
+  if (t.match(/quilomb|indígena|indigena|terra|funai|incra/)) { arts.add('III'); arts.add('V'); }
+  if (t.match(/discurso de ódio|propaganda racista/)) arts.add('IV');
+  if (t.match(/saúde|saude|educaç|educac|trabalho|moradia|cultura/)) arts.add('V');
+  if (t.match(/proteção judicial|reparaç|justiça|justica/)) arts.add('VI');
+  if (t.match(/ensino|lei 10.639|formação docente|formacao docente|currículo/)) arts.add('VII');
+  return [...arts];
+}
 
 const formatCompact = (value: number) => {
   if (value >= 1_000_000_000) return `R$ ${(value / 1_000_000_000).toFixed(1)} bi`;
@@ -53,57 +122,80 @@ const formatCompact = (value: number) => {
 };
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Weighted score: lacunas compliance (40%), budget coverage (20%), conclusions balance (20%), evidence breadth (20%)
+  // Weighted: lacunas (30%), budget (15%), conclusions (15%), evidence breadth (10%), normativos (15%), respostas (10%), stats (5%)
   let score = 0;
 
-  // Lacunas compliance (0-40)
+  // Lacunas compliance (0-30)
   if (a.lacunasTotal > 0) {
     const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.5) / a.lacunasTotal;
     const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.3;
-    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 40;
+    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 30;
   } else {
-    score += 10; // No data = low baseline
+    score += 8;
   }
 
-  // Budget coverage (0-20)
+  // Budget coverage (0-15)
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(20, a.orcamentoProgramas * 3); // Up to 20 for 7+ programs
+    score += Math.min(15, a.orcamentoProgramas * 2.5);
   }
 
-  // Conclusions balance (0-20)
+  // Conclusions balance (0-15)
   const totalConc = a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna;
   if (totalConc > 0) {
-    const avancoRatio = a.conclusoesAvanco / totalConc;
-    score += avancoRatio * 20;
+    score += (a.conclusoesAvanco / totalConc) * 15;
   }
 
-  // Evidence breadth (0-20)
+  // Evidence breadth (0-10)
   const hasLacunas = a.lacunasTotal > 0;
   const hasFios = a.fiosTotal > 0;
   const hasOrc = a.orcamentoProgramas > 0;
   const hasInd = a.indicadoresCount > 0;
-  const breadth = [hasLacunas, hasFios, hasOrc, hasInd].filter(Boolean).length;
-  score += (breadth / 4) * 20;
+  const hasNorm = a.normativosCount > 0;
+  const hasResp = a.respostasTotal > 0;
+  const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
+  score += (breadth / 6) * 10;
+
+  // Normative coverage (0-15)
+  if (a.normativosCount > 0) {
+    score += Math.min(15, a.normativosCount * 2);
+  }
+
+  // Respostas CERD III (0-10)
+  if (a.respostasTotal > 0) {
+    const respRatio = a.respostasCumpridas / a.respostasTotal;
+    score += respRatio * 10;
+  }
+
+  // Statistical series (0-5)
+  if (a.seriesEstatisticas > 0) {
+    score += Math.min(5, a.seriesEstatisticas);
+  }
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
 
 function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
-  const avancos = a.fiosAvanco + a.conclusoesAvanco;
-  const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso;
+  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas;
+  const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
   if (avancos > retrocessos * 1.5) return 'melhora';
   if (retrocessos > avancos * 1.5) return 'piora';
   return 'estagnacao';
 }
 
 function generateVerdict(a: ArtigoAnalysis): string {
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}, com ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas e ${a.orcamentoProgramas} programas orçamentários dedicados.`;
-  if (a.grauAderencia >= 40) return `Aderência parcial. Existem avanços pontuais no Art. ${a.numero} (${a.conclusoesAvanco} avanços identificados), mas ${a.lacunasNaoCumpridas + a.lacunasRetrocesso} obrigações permanecem sem cumprimento adequado. O investimento orçamentário (${a.orcamentoProgramas} programas) não se traduz em resultados proporcionais.`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} obrigações não cumpridas, ${a.lacunasRetrocesso} retrocessos e cobertura orçamentária limitada (${a.orcamentoProgramas} programas).`;
-  return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção. Lacunas graves persistem sem resposta institucional ou orçamentária adequada.`;
+  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : ', sem respaldo normativo específico identificado';
+  const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
+  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) do Escopo comprovam a situação.` : '';
+
+  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}, com ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas e ${a.orcamentoProgramas} programas orçamentários${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 40) return `Aderência parcial. Existem avanços pontuais no Art. ${a.numero} (${a.conclusoesAvanco} avanços identificados), mas ${a.lacunasNaoCumpridas + a.lacunasRetrocesso} obrigações permanecem sem cumprimento adequado${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} obrigações não cumpridas, ${a.lacunasRetrocesso} retrocessos e cobertura orçamentária limitada (${a.orcamentoProgramas} programas)${normText}.${respText}${statsText}`;
+  return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
 }
 
-export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats }: IcerdAdherencePanelProps) {
+export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
+  const statSeriesPerArticle = useMemo(() => countStatSeriesPerArticle(), []);
+
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       // Lacunas by article
@@ -125,15 +217,28 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       const concLacuna = artConc.filter(c => c.tipo === 'lacuna_persistente').length;
 
       // Orçamento by article
-      const artOrc = orcamentoRecords.filter(r => {
-        const arts = inferArtigosOrcamento(r);
-        return arts.includes(art.numero);
-      });
+      const artOrc = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(art.numero));
       const liquidado = artOrc.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
       const programas = new Set(artOrc.map(r => r.programa)).size;
 
       // Indicadores by article
       const artInd = indicadores.filter((ind: any) => ind.artigos_convencao?.includes(art.numero));
+
+      // NEW: Respostas CERD III by article (match via lacunas paragraphs)
+      const artParagraphs = new Set(artLacunas.map(l => l.paragrafo));
+      const artRespostas = respostas.filter(r => {
+        // Match by paragraph prefix (e.g., "§31" in paragrafo_cerd_iii)
+        return artParagraphs.has(r.paragrafo_cerd_iii) ||
+          [...artParagraphs].some(p => r.paragrafo_cerd_iii.includes(p) || p.includes(r.paragrafo_cerd_iii));
+      });
+      const respCumpridas = artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length;
+      const respNaoCumpridas = artRespostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso').length;
+
+      // NEW: Documentos normativos by article
+      const artNormativos = documentosNormativos.filter(doc => {
+        const docArts = inferArtigosNormativo(doc);
+        return docArts.includes(art.numero);
+      });
 
       const base = {
         numero: art.numero,
@@ -154,6 +259,11 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         orcamentoLiquidado: liquidado,
         orcamentoProgramas: programas,
         indicadoresCount: artInd.length,
+        respostasTotal: artRespostas.length,
+        respostasCumpridas: respCumpridas,
+        respostasNaoCumpridas: respNaoCumpridas,
+        normativosCount: artNormativos.length,
+        seriesEstatisticas: statSeriesPerArticle[art.numero] || 0,
       };
 
       const grau = computeAdherenceScore(base);
@@ -162,13 +272,14 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores]);
+  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, respostas, documentosNormativos, statSeriesPerArticle]);
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
     aderencia: a.grauAderencia,
     lacunas: a.lacunasTotal,
     orcamento: Math.min(100, a.orcamentoProgramas * 15),
+    normativos: Math.min(100, a.normativosCount * 10),
   }));
 
   const barData = analysis.map(a => ({
@@ -185,6 +296,11 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   const avgAdherencia = Math.round(analysis.reduce((s, a) => s + a.grauAderencia, 0) / analysis.length);
 
+  // Total data sources summary
+  const totalNormativos = documentosNormativos.length;
+  const totalRespostas = respostas.length;
+  const totalStatSeries = Object.values(statSeriesPerArticle).reduce((s, v) => s + v, 0);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -195,15 +311,62 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
             <div>
               <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Avaliação consolidada do grau de cobertura de cada artigo (I-VII) pelo Estado brasileiro,
-                cruzando {stats?.total || 0} lacunas ONU, {fiosCondutores.length} fios condutores,
-                {conclusoes.length} conclusões analíticas, {orcamentoRecords.length} registros orçamentários
-                e {indicadores.length} indicadores interseccionais.
+                Avaliação consolidada integrando <strong>todas as bases do sistema</strong>:
+                {' '}{stats?.total || 0} lacunas ONU, {fiosCondutores.length} fios condutores,
+                {' '}{conclusoes.length} conclusões analíticas, {orcamentoRecords.length} registros orçamentários,
+                {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
+                {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Data Sources Inventory */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <Card className="border-chart-1/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <Database className="w-4 h-4 mx-auto text-chart-1 mb-1" />
+            <p className="text-lg font-bold">{stats?.total || 0}</p>
+            <p className="text-[10px] text-muted-foreground">Lacunas ONU</p>
+          </CardContent>
+        </Card>
+        <Card className="border-chart-2/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <BarChart3 className="w-4 h-4 mx-auto text-chart-2 mb-1" />
+            <p className="text-lg font-bold">{orcamentoRecords.length}</p>
+            <p className="text-[10px] text-muted-foreground">Registros Orçam.</p>
+          </CardContent>
+        </Card>
+        <Card className="border-chart-3/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <FileText className="w-4 h-4 mx-auto text-chart-3 mb-1" />
+            <p className="text-lg font-bold">{totalNormativos}</p>
+            <p className="text-[10px] text-muted-foreground">Normativos</p>
+          </CardContent>
+        </Card>
+        <Card className="border-chart-4/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <BookOpen className="w-4 h-4 mx-auto text-chart-4 mb-1" />
+            <p className="text-lg font-bold">{totalRespostas}</p>
+            <p className="text-[10px] text-muted-foreground">Respostas CERD III</p>
+          </CardContent>
+        </Card>
+        <Card className="border-chart-5/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <Users className="w-4 h-4 mx-auto text-chart-5 mb-1" />
+            <p className="text-lg font-bold">{indicadores.length}</p>
+            <p className="text-[10px] text-muted-foreground">Indicadores</p>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/30">
+          <CardContent className="pt-2 pb-2 text-center">
+            <BarChart3 className="w-4 h-4 mx-auto text-primary mb-1" />
+            <p className="text-lg font-bold">{totalStatSeries}</p>
+            <p className="text-[10px] text-muted-foreground">Séries Estatísticas</p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Score Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -243,7 +406,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Radar de Aderência por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Escala 0-100 integrando lacunas ONU, orçamento, conclusões e evidências
+              Escala 0-100 integrando lacunas ONU, orçamento, normativos, respostas CERD III, séries estatísticas e indicadores
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -324,8 +487,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
               <Progress value={a.grauAderencia} className="h-2 mb-3" />
 
-              {/* Metrics grid */}
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-3">
+              {/* Metrics grid - expanded with new dimensions */}
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 mb-3">
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
                   <p className="text-[10px] text-muted-foreground">Lacunas ONU</p>
@@ -339,12 +502,24 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
                   <p className="text-[10px] text-muted-foreground">Programas</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold">{a.normativosCount}</p>
+                  <p className="text-[10px] text-muted-foreground">Normativos</p>
+                </div>
+                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold">{a.respostasTotal}</p>
+                  <p className="text-[10px] text-muted-foreground">Respostas CERD</p>
+                </div>
+                <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.fiosTotal}</p>
                   <p className="text-[10px] text-muted-foreground">Fios Condutores</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.indicadoresCount}</p>
                   <p className="text-[10px] text-muted-foreground">Indicadores</p>
+                </div>
+                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold">{a.seriesEstatisticas}</p>
+                  <p className="text-[10px] text-muted-foreground">Séries Estat.</p>
                 </div>
               </div>
 
@@ -369,6 +544,9 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
             <Scale className="w-5 h-5 text-primary" />
             Síntese: Priorização Histórica dos Artigos pelo Estado Brasileiro
           </CardTitle>
+          <CardDescription className="text-xs">
+            Baseada no cruzamento exaustivo de {stats?.total || 0} lacunas ONU + {totalNormativos} normativos + {orcamentoRecords.length} registros orçamentários + {totalRespostas} respostas CERD III + {indicadores.length} indicadores + {totalStatSeries} séries estatísticas
+          </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -403,6 +581,16 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
                 ? ` Este índice revela que a maioria dos compromissos do tratado permanece sem cobertura adequada em termos de políticas públicas, orçamento e resultados mensuráveis. Os artigos ${menosPriorizados.map(a => a.numero).join(', ')} apresentam as maiores lacunas de implementação.`
                 : ` Embora existam avanços em artigos específicos (${maisPriorizados.map(a => a.numero).join(', ')}), a cobertura permanece desigual entre os compromissos, com os artigos ${menosPriorizados.map(a => a.numero).join(', ')} exigindo atenção prioritária.`
               }
+            </p>
+          </div>
+
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-[10px] text-muted-foreground">
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: cumprimento de lacunas ONU (30%), cobertura orçamentária (15%),
+              balanço de conclusões analíticas (15%), cobertura normativa/institucional (15%), respostas CERD III (10%),
+              amplitude de fontes de evidência (10%) e séries estatísticas oficiais IBGE/FBSP/DataSUS (5%).
+              Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais.
+              Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2026).
             </p>
           </div>
         </CardContent>
