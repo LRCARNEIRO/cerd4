@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { AlertTriangle, Building, FileText, Scale, TrendingUp, Users, TreePine, MapPin, Tent, ShieldAlert, BookOpen } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 interface Props {
   records: DadoOrcamentario[];
@@ -37,6 +38,168 @@ function is5034NonRacial(r: DadoOrcamentario): boolean {
   const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
   const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
   return !racialKws.some(kw => texto.includes(kw));
+}
+
+const ARTIGO_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--primary))', 'hsl(var(--chart-2))'];
+
+function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, includeExcludedInCalc, sectionNumber }: {
+  records: DadoOrcamentario[];
+  sesaiRecords: DadoOrcamentario[];
+  formatCurrency: (v: number) => string;
+  includeExcludedInCalc: boolean;
+  sectionNumber: number;
+}) {
+  const icerdData = useMemo(() => {
+    const allRecords = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+    
+    const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; liquidado: number; pago: number; programas: Set<string> }>();
+    for (const art of ARTIGOS_CONVENCAO) {
+      byArtigo.set(art.numero, { records: [], liquidado: 0, pago: 0, programas: new Set() });
+    }
+
+    let unmappedCount = 0;
+    for (const r of allRecords) {
+      const arts = inferArtigosOrcamento(r);
+      if (arts.length === 0) { unmappedCount++; continue; }
+      for (const a of arts) {
+        const entry = byArtigo.get(a);
+        if (entry) {
+          entry.records.push(r);
+          entry.liquidado += Number(r.liquidado) || 0;
+          entry.pago += Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+          entry.programas.add(r.programa);
+        }
+      }
+    }
+
+    const totalLiq = allRecords.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+    const chartData = ARTIGOS_CONVENCAO.map((art, i) => {
+      const entry = byArtigo.get(art.numero)!;
+      return {
+        name: `Art. ${art.numero}`,
+        titulo: art.titulo,
+        liquidado: entry.liquidado,
+        pago: entry.pago,
+        programas: entry.programas.size,
+        registros: entry.records.length,
+        pct: totalLiq > 0 ? (entry.liquidado / totalLiq * 100) : 0,
+        fill: ARTIGO_COLORS[i],
+      };
+    }).filter(d => d.registros > 0);
+
+    return { chartData, byArtigo, unmappedCount, totalRecords: allRecords.length, totalLiq };
+  }, [records, sesaiRecords, includeExcludedInCalc]);
+
+  if (icerdData.chartData.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm flex items-center gap-2">
+          <Scale className="w-4 h-4 text-primary" />
+          {sectionNumber}. Cruzamento Orçamentário × Artigos da Convenção ICERD
+        </CardTitle>
+        <p className="text-[10px] text-muted-foreground">
+          Mapeamento automático das {icerdData.totalRecords} ações orçamentárias aos artigos I–VII da Convenção.
+          {icerdData.unmappedCount > 0 && ` ${icerdData.unmappedCount} registros sem mapeamento.`}
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Chart + Table side by side */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Bar chart */}
+          <div>
+            <p className="text-xs font-medium text-center mb-2">Liquidado por Artigo da Convenção</p>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={icerdData.chartData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={50} />
+                  <Tooltip
+                    formatter={(value: number) => [formatCurrency(value), 'Liquidado']}
+                    labelFormatter={(label) => {
+                      const item = icerdData.chartData.find(d => d.name === label);
+                      return `${label} — ${item?.titulo || ''}`;
+                    }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
+                  />
+                  <Bar dataKey="liquidado" radius={[0, 4, 4, 0]}>
+                    {icerdData.chartData.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Summary table */}
+          <div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-[10px]">Artigo</TableHead>
+                  <TableHead className="text-right text-[10px]">Liquidado</TableHead>
+                  <TableHead className="text-right text-[10px]">% Total</TableHead>
+                  <TableHead className="text-right text-[10px]">Programas</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {icerdData.chartData.map((d, i) => (
+                  <TableRow key={d.name}>
+                    <TableCell className="py-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: d.fill }} />
+                        <div>
+                          <span className="text-xs font-medium">{d.name}</span>
+                          <p className="text-[10px] text-muted-foreground">{d.titulo}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(d.liquidado)}</TableCell>
+                    <TableCell className="text-right text-xs">{d.pct.toFixed(1)}%</TableCell>
+                    <TableCell className="text-right text-xs">{d.programas}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Analytical insight */}
+        <div className="bg-primary/5 rounded p-3 border border-primary/20">
+          <p className="text-xs font-semibold text-foreground mb-1">
+            <Scale className="w-3.5 h-3.5 inline mr-1" />
+            Síntese Analítica
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {(() => {
+              const sorted = [...icerdData.chartData].sort((a, b) => b.liquidado - a.liquidado);
+              const top = sorted[0];
+              const bottom = sorted.filter(d => d.liquidado > 0).pop();
+              const zeroArts = ARTIGOS_CONVENCAO.filter(a => {
+                const entry = icerdData.byArtigo.get(a.numero);
+                return !entry || entry.records.length === 0;
+              });
+              return (
+                <>
+                  O <strong>{top?.name} ({top?.titulo})</strong> concentra {top?.pct.toFixed(1)}% do liquidado total,
+                  refletindo a predominância de ações em seu escopo temático.
+                  {bottom && bottom.name !== top?.name && (
+                    <> O <strong>{bottom.name} ({bottom.titulo})</strong> recebe apenas {bottom.pct.toFixed(1)}%, sinalizando subfinanciamento relativo.</>
+                  )}
+                  {zeroArts.length > 0 && (
+                    <> Os artigos {zeroArts.map(a => a.numero).join(', ')} não possuem ações orçamentárias mapeadas, indicando lacunas de cobertura.</>
+                  )}
+                </>
+              );
+            })()}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull, includeExcludedInCalc }: Props) {
@@ -455,9 +618,12 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
         </Card>
       )}
 
-      {/* ═══ 8. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
+      {/* ═══ 8. CRUZAMENTO ARTIGOS ICERD ═══ */}
+      <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} includeExcludedInCalc={includeExcludedInCalc} sectionNumber={8} />
+
+      {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
       <Card className="border-l-4 border-l-destructive">
-        <CardHeader><CardTitle className="text-sm">8. Conclusão e Veredito Técnico</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm">9. Conclusão e Veredito Técnico</CardTitle></CardHeader>
         <CardContent className="text-xs text-muted-foreground space-y-3">
           <div className="bg-destructive/5 rounded p-4 border border-destructive/20 space-y-2">
             <p className="font-bold text-foreground flex items-center gap-2">
