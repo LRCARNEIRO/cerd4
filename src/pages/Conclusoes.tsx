@@ -37,12 +37,13 @@ const eixoLabels: Record<string, string> = {
 };
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
+import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
 
 export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
-    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores,
+    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
   } = useAnalyticalInsights();
 
   const [diffOpen, setDiffOpen] = useState(false);
@@ -355,6 +356,7 @@ export default function Conclusoes() {
               <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
               <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
               <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
+              <TabsTrigger value="aderencia" className="gap-1"><Scale className="w-4 h-4" /> Aderência ICERD</TabsTrigger>
             </TabsList>
 
             {/* ABA: INFOGRÁFICOS */}
@@ -592,6 +594,18 @@ export default function Conclusoes() {
                   ))
                 )}
               </div>
+            </TabsContent>
+
+            {/* ABA: ADERÊNCIA ICERD */}
+            <TabsContent value="aderencia">
+              <IcerdAdherencePanel
+                fiosCondutores={fiosCondutores}
+                conclusoes={conclusoesDinamicas}
+                lacunas={lacunas || []}
+                orcamentoRecords={orcDados || []}
+                indicadores={indicadores || []}
+                stats={stats}
+              />
             </TabsContent>
           </Tabs>
         </>
