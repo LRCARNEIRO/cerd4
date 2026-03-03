@@ -243,6 +243,7 @@ export interface DadoOrcamentario {
   descritivo: string | null;
   publico_alvo: string | null;
   razao_selecao: string | null;
+  artigos_convencao: string[] | null;
   created_at: string;
   updated_at: string;
 }
