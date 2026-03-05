@@ -10,16 +10,19 @@ import {
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
+import { AuditFooter as AuditFooterComponent } from '@/components/ui/audit-footer';
 import { 
   violenciaInterseccional, 
   mulheresChefeFamilia, 
   educacaoInterseccional,
+  educacaoInterseccionalFontes,
   saudeInterseccional,
   lgbtqiaPorRaca,
   serieAntraTrans,
   deficienciaPorRaca,
   juventudeNegra,
   classePorRaca,
+  mulheresChefeFamiliaFontes,
   povosTradicionais,
   fonteDados
 } from './StatisticsData';
@@ -103,15 +106,17 @@ export function RacaGeneroTab() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-              <p className="text-xs text-muted-foreground">
-                <FileText className="w-3 h-3 inline mr-1" />
-                Fonte: PNAD/IBGE 2018-2024 | Crescimento de 34% em famílias chefiadas por mulheres negras
-              </p>
-              <a href="https://sidra.ibge.gov.br/tabela/7106" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 7106 — Arranjos familiares
-              </a>
+            <div className="mt-2 flex items-center gap-2">
+              <EstimativaBadge
+                tipo="cruzamento"
+                metodologia="Cruzamento SIDRA 6403 (arranjos familiares por cor/raça) × SIS/IBGE 2024 (síntese de indicadores sociais). O IBGE não publica série temporal de chefia monoparental por raça em tabela única."
+              />
+              <span className="text-[10px] text-muted-foreground">SIDRA 6403 × SIS/IBGE 2024</span>
             </div>
+            <AuditFooterComponent
+              fontes={mulheresChefeFamiliaFontes}
+              documentos={['CERD 2022']}
+            />
           </CardContent>
         </Card>
       </div>
@@ -137,7 +142,16 @@ export function RacaGeneroTab() {
             <TableBody>
               {educacaoInterseccional.map(item => (
                 <TableRow key={item.grupo}>
-                  <TableCell className="font-medium">{item.grupo}</TableCell>
+                  <TableCell className="font-medium">
+                    {item.grupo}
+                    {(item.grupo === 'Indígena' || item.grupo === 'Quilombola') && (
+                      <EstimativaBadge
+                        tipo="cruzamento"
+                        metodologia={`Cruzamento SIDRA 7267 (educação por cor/raça) × INEP Censo Educação Superior × PNAD Contínua 2024. O IBGE/INEP não publica ensino superior e evasão específicos para ${item.grupo.toLowerCase()}s em tabela direta.`}
+                        className="ml-1"
+                      />
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">{item.superiorCompleto}%</TableCell>
                   <TableCell className="text-right">{item.posGraduacao}%</TableCell>
                   <TableCell className={cn("text-right", item.evasaoMedio > 15 && "text-destructive font-semibold")}>
@@ -147,19 +161,10 @@ export function RacaGeneroTab() {
               ))}
             </TableBody>
           </Table>
-          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <FileText className="w-3 h-3" /> <strong>Fontes:</strong>
-            </p>
-            <div className="flex flex-wrap gap-3 text-xs">
-              <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> INEP — Censo Educação Superior 2023
-              </a>
-              <a href="https://sidra.ibge.gov.br/Tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 7267 — Educação por cor/raça
-              </a>
-            </div>
-          </div>
+          <AuditFooterComponent
+            fontes={educacaoInterseccionalFontes}
+            documentos={['CERD 2022', 'Common Core']}
+          />
         </CardContent>
       </Card>
     </div>
