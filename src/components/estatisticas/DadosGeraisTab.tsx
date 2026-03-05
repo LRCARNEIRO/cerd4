@@ -52,20 +52,33 @@ export function DadosGeraisTab() {
             <p className="text-xs text-muted-foreground">População Negra (Pretos + Pardos)</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoNegra)}</p>
             <p className="text-xs font-medium text-chart-2">{dadosDemograficos.percentualNegro}% da população</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA 9605 — Pretos + Pardos <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Povos Indígenas</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.composicaoRacial[3].populacao)}</p>
-            <p className="text-xs text-muted-foreground mt-1">Primeiro censo específico</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              <a href="https://www.ibge.gov.br/brasil-indigena/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                IBGE Brasil Indígena — Censo 2022 <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-warning">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Quilombolas</p>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.quilombolas)}</p>
-            <p className="text-xs text-muted-foreground mt-1">Primeira contagem oficial</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              <a href="https://sidra.ibge.gov.br/Tabela/9578" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                SIDRA 9578 — Primeira contagem oficial <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
           </CardContent>
         </Card>
       </div>
