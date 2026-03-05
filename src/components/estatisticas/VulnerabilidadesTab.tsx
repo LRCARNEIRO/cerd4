@@ -6,10 +6,14 @@ import {
 } from 'recharts';
 import { Layers, Filter, FileText, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
   radarVulnerabilidades, 
+  radarVulnerabilidadesFontes,
   evolucaoDesigualdade, 
-  interseccionalidadeTrabalho 
+  interseccionalidadeTrabalho,
+  interseccionalidadeTrabalhoFontes
 } from './StatisticsData';
 
 export function VulnerabilidadesTab() {
@@ -49,23 +53,17 @@ export function VulnerabilidadesTab() {
                 </RadarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <FileText className="w-3 h-3" />
-                <strong>Fontes:</strong> Síntese de indicadores IBGE/IPEA/DataSUS 2024 | Elaboração própria
-              </p>
-              <div className="flex flex-wrap gap-3 text-xs">
-                <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/25844-desigualdades-sociais-por-cor-ou-raca.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Desigualdades por Cor/Raça (IBGE)
-                </a>
-                <a href="https://www.ipea.gov.br/retrato/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Retrato das Desigualdades (IPEA)
-                </a>
-                <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> TabNet/DataSUS
-                </a>
-              </div>
+            <div className="mt-2 flex items-center gap-2">
+              <EstimativaBadge
+                tipo="cruzamento"
+                metodologia="Índice composto (0-100) elaborado a partir do cruzamento de 5 fontes: SIDRA 6800 (renda por raça), SIDRA 6381 (desocupação por raça), SIM/DataSUS (mortalidade por raça), 19º Anuário FBSP 2025 (violência por raça) e SIS/IBGE 2024 (condições de moradia). Cada eixo normalizado onde 100 = maior vulnerabilidade."
+              />
+              <span className="text-[10px] text-muted-foreground">Índice composto: 5 fontes cruzadas</span>
             </div>
+            <AuditFooter
+              fontes={radarVulnerabilidadesFontes}
+              documentos={['CERD 2022', 'Common Core']}
+            />
           </CardContent>
         </Card>
 
@@ -165,23 +163,17 @@ export function VulnerabilidadesTab() {
               ))}
             </TableBody>
           </Table>
-          <div className="mt-4 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <FileText className="w-3 h-3" />
-              <strong>Fonte:</strong> PNAD Contínua/IBGE 2024 — Microanálise por raça/cor × sexo × faixa etária
-            </p>
-            <div className="flex flex-wrap gap-3 text-xs">
-              <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Rendimento
-              </a>
-              <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
-              </a>
-              <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 6403 — Características gerais
-              </a>
-            </div>
+          <div className="mt-2 flex items-center gap-2">
+            <EstimativaBadge
+              tipo="cruzamento"
+              metodologia="Cruzamento de 3 tabelas SIDRA/IBGE: rendimento por cor/raça (6800) × desocupação por cor/raça (6381) × informalidade e características gerais (6403). O IBGE não publica tabela única com renda × desemprego × informalidade por raça × sexo × faixa etária."
+            />
+            <span className="text-[10px] text-muted-foreground">SIDRA 6800 × 6381 × 6403</span>
           </div>
+          <AuditFooter
+            fontes={interseccionalidadeTrabalhoFontes}
+            documentos={['CERD 2022', 'Common Core']}
+          />
         </CardContent>
       </Card>
     </div>
