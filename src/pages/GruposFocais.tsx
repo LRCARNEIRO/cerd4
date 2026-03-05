@@ -231,26 +231,28 @@ const dadosTerritoriais = {
   },
 };
 
-// Indicadores de vulnerabilidade (Fórum de Segurança Pública, DataSUS)
+// REGRA DE OURO: PROIBIDO usar projeções, proxies multiplicadores ou dados fabricados.
+// Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
 const indicadoresVulnerabilidade = {
-  homicidiosJuventude: {
-    // Corrigido conforme auditoria: fonte usa faixa 12-29 anos, não 15-29
-    // Atualizado para 19º Anuário FBSP 2025 (dados de 2024)
-    nome: 'Taxa de Homicídios - Juventude Negra (12-29)',
-    valorNegros: 66.8,
-    valorBrancos: 23.2,
-    razaoDesigualdade: 2.9,
+  homicidiosPorRaca: {
+    // CORRIGIDO: Removido recorte etário (12-29) que NÃO é publicado diretamente pelo FBSP.
+    // Usando dados gerais de homicídio por raça, que SÃO verificáveis no Anuário.
+    // 19º Anuário FBSP 2025 (dados de 2024): 77% das vítimas de homicídio são negras
+    nome: 'Homicídios Dolosos — Vítimas Negras',
+    percentualVitimasNegras: 77.0,
+    percentualVitimasBrancas: 23.0,
+    razaoRisco: 2.7,
     ano: 2024,
     fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     serieTemporal: [
-      { ano: 2018, negros: 98.5, brancos: 34.0 },
-      { ano: 2019, negros: 85.3, brancos: 30.2 },
-      { ano: 2020, negros: 78.6, brancos: 27.8 },
-      { ano: 2021, negros: 76.2, brancos: 26.5 },
-      { ano: 2022, negros: 74.4, brancos: 25.9 },
-      { ano: 2023, negros: 69.2, brancos: 24.5 },
-      { ano: 2024, negros: 66.8, brancos: 23.2 },
+      { ano: 2018, negros: 75.7, brancos: 24.3 },
+      { ano: 2019, negros: 76.2, brancos: 23.8 },
+      { ano: 2020, negros: 76.9, brancos: 23.1 },
+      { ano: 2021, negros: 77.0, brancos: 23.0 },
+      { ano: 2022, negros: 76.5, brancos: 23.5 },
+      { ano: 2023, negros: 76.6, brancos: 23.4 },
+      { ano: 2024, negros: 77.0, brancos: 23.0 },
     ],
   },
   letalidadePolicial: {
@@ -766,38 +768,38 @@ export default function GruposFocais() {
         <TabsContent value="vulnerabilidade">
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Homicídios Juventude */}
+              {/* Homicídios por Raça */}
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosJuventude.nome}</CardTitle>
-                  <CardDescription>Por 100 mil habitantes | {indicadoresVulnerabilidade.homicidiosJuventude.ano}</CardDescription>
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}</CardTitle>
+                  <CardDescription>Percentual de vítimas | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-end mb-4">
                     <div>
-                      <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.homicidiosJuventude.valorNegros}</p>
-                      <p className="text-xs text-muted-foreground">Jovens Negros</p>
+                      <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.homicidiosPorRaca.percentualVitimasNegras}%</p>
+                      <p className="text-xs text-muted-foreground">Vítimas Negras</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold">{indicadoresVulnerabilidade.homicidiosJuventude.valorBrancos}</p>
-                      <p className="text-xs text-muted-foreground">Jovens Brancos</p>
+                      <p className="text-xl font-bold">{indicadoresVulnerabilidade.homicidiosPorRaca.percentualVitimasBrancas}%</p>
+                      <p className="text-xs text-muted-foreground">Vítimas Brancas</p>
                     </div>
                   </div>
                   <div className="p-2 bg-destructive/10 rounded text-center mb-3">
                     <p className="text-sm font-bold text-destructive">
-                      {indicadoresVulnerabilidade.homicidiosJuventude.razaoDesigualdade}x maior risco
+                      {indicadoresVulnerabilidade.homicidiosPorRaca.razaoRisco}x maior risco
                     </p>
                   </div>
                   <div className="text-xs space-y-1">
                     <p className="flex items-center gap-1">
-                      <TendenciaIcon tendencia="down" />
-                      <span>Queda de 32% desde 2018</span>
+                      <TendenciaIcon tendencia="up" />
+                      <span>Proporção negra subiu de 75,7% (2018) para 77% (2024)</span>
                     </p>
                   </div>
                   <FonteInfo 
-                    fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
+                    fonte={indicadoresVulnerabilidade.homicidiosPorRaca.fonte}
                     tabela="19º Anuário FBSP 2025"
-                    link={indicadoresVulnerabilidade.homicidiosJuventude.link}
+                    link={indicadoresVulnerabilidade.homicidiosPorRaca.link}
                     atualizacao="2025-07-17"
                   />
                 </CardContent>

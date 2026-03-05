@@ -49,7 +49,9 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
-// Dados históricos SIDRA/IBGE - séries 2010-2026
+// Dados históricos SIDRA/IBGE - séries até último ano com dado real
+// REGRA DE OURO: PROIBIDO adicionar projeções (fonte: 'Projeção') ou estimativas com proxies multiplicadores.
+// Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
 const dadosEducacaoHistorico = [
   { ano: 2010, brancos: 69.1, negros: 44.2, indigenas: 35.8, fonte: 'Censo 2010' },
   { ano: 2012, brancos: 71.5, negros: 48.1, indigenas: 38.2, fonte: 'PNAD' },
@@ -61,9 +63,7 @@ const dadosEducacaoHistorico = [
   { ano: 2021, brancos: 81.5, negros: 67.2, indigenas: 52.8, fonte: 'PNAD Contínua' },
   { ano: 2022, brancos: 82.8, negros: 69.8, indigenas: 55.2, fonte: 'Censo 2022' },
   { ano: 2023, brancos: 83.5, negros: 71.5, indigenas: 57.0, fonte: 'PNAD Contínua' },
-  { ano: 2024, brancos: 84.2, negros: 73.2, indigenas: 58.8, fonte: 'Projeção' },
-  { ano: 2025, brancos: 85.0, negros: 75.0, indigenas: 60.5, fonte: 'Projeção' },
-  { ano: 2026, brancos: 85.8, negros: 76.8, indigenas: 62.2, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
 ];
 
 const dadosDesempregoHistorico = [
@@ -77,9 +77,7 @@ const dadosDesempregoHistorico = [
   { ano: 2021, brancos: 10.2, negros: 15.5, diferenca: 5.3, fonte: 'PNAD Contínua' },
   { ano: 2022, brancos: 8.5, negros: 12.8, diferenca: 4.3, fonte: 'PNAD Contínua' },
   { ano: 2023, brancos: 6.8, negros: 10.5, diferenca: 3.7, fonte: 'PNAD Contínua' },
-  { ano: 2024, brancos: 6.2, negros: 9.8, diferenca: 3.6, fonte: 'Projeção' },
-  { ano: 2025, brancos: 5.8, negros: 9.2, diferenca: 3.4, fonte: 'Projeção' },
-  { ano: 2026, brancos: 5.5, negros: 8.8, diferenca: 3.3, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
 ];
 
 const dadosHomicidioHistorico = [
@@ -94,9 +92,7 @@ const dadosHomicidioHistorico = [
   { ano: 2021, negros: 25.5, brancos: 8.2, razao: 3.11, fonte: 'Fórum Seg. Pública' },
   { ano: 2022, negros: 23.8, brancos: 7.8, razao: 3.05, fonte: 'Fórum Seg. Pública' },
   { ano: 2023, negros: 22.5, brancos: 7.5, razao: 3.00, fonte: 'Fórum Seg. Pública' },
-  { ano: 2024, negros: 21.5, brancos: 7.2, razao: 2.99, fonte: 'Projeção' },
-  { ano: 2025, negros: 20.5, brancos: 7.0, razao: 2.93, fonte: 'Projeção' },
-  { ano: 2026, negros: 19.8, brancos: 6.8, razao: 2.91, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
 ];
 
 const dadosRendaHistorico = [
@@ -110,9 +106,7 @@ const dadosRendaHistorico = [
   { ano: 2021, brancos: 2850, negros: 1582, razao: 0.56, fonte: 'PNAD Contínua' },
   { ano: 2022, brancos: 3100, negros: 1736, razao: 0.56, fonte: 'Censo 2022' },
   { ano: 2023, brancos: 3350, negros: 1910, razao: 0.57, fonte: 'PNAD Contínua' },
-  { ano: 2024, brancos: 3520, negros: 2042, razao: 0.58, fonte: 'Projeção' },
-  { ano: 2025, brancos: 3700, negros: 2183, razao: 0.59, fonte: 'Projeção' },
-  { ano: 2026, brancos: 3890, negros: 2334, razao: 0.60, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
 ];
 
 const dadosTerrasQuilombolasHistorico = [
@@ -126,9 +120,7 @@ const dadosTerrasQuilombolasHistorico = [
   { ano: 2021, tituladas: 136, certificadas: 3410, taxa: 4.0, fonte: 'INCRA/FCP' },
   { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola' },
   { ano: 2023, tituladas: 145, certificadas: 3550, taxa: 4.1, fonte: 'INCRA/FCP' },
-  { ano: 2024, tituladas: 158, certificadas: 3680, taxa: 4.3, fonte: 'Projeção' },
-  { ano: 2025, tituladas: 175, certificadas: 3820, taxa: 4.6, fonte: 'Projeção' },
-  { ano: 2026, tituladas: 195, certificadas: 3950, taxa: 4.9, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
 ];
 
 const dadosLetalidadePolicial = [
@@ -142,10 +134,7 @@ const dadosLetalidadePolicial = [
   { ano: 2020, total: 6416, negros: 5325, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2021, total: 6145, negros: 5100, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2022, total: 6429, negros: 5336, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2023, total: 5800, negros: 4814, percentual: 83.0, fonte: 'Projeção' },
-  { ano: 2024, total: 5500, negros: 4565, percentual: 83.0, fonte: 'Projeção' },
-  { ano: 2025, total: 5200, negros: 4316, percentual: 83.0, fonte: 'Projeção' },
-  { ano: 2026, total: 4900, negros: 4067, percentual: 83.0, fonte: 'Projeção' },
+  // PROIBIDO: Projeções removidas (2023-2026). Série encerrada no último ano com dado real.
 ];
 
 export function LacunasCerdTab() {
