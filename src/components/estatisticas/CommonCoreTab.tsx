@@ -2018,6 +2018,196 @@ export const tabelasHabitacao: CommonCoreTable[] = [
 // EIXO IX - SISTEMA POLÍTICO (Tabelas 76-77)
 // ============================================
 
+// ============================================
+// EIXO X - HABITAÇÃO E MORADIA (Tabelas 78-84)
+// Art. V(e)(iii) ICERD - Direito à Habitação
+// ============================================
+
+export const tabelasMoradia: CommonCoreTable[] = [
+  {
+    id: 'cc-78',
+    numero: 78,
+    titulo: 'Déficit Habitacional por Cor/Raça',
+    tituloIngles: 'Housing deficit by race/color',
+    categoria: 'Habitação',
+    descricao: 'Déficit habitacional estimado por cor/raça do responsável pelo domicílio. Dados da Fundação João Pinheiro com base no Censo 2022.',
+    fonte: 'FJP/IBGE',
+    fonteCompleta: 'Fundação João Pinheiro — Déficit Habitacional no Brasil (Censo 2022)',
+    urlFonte: 'https://fjp.mg.gov.br/deficit-habitacional-no-brasil/',
+    periodoOriginal: '2019',
+    periodoAtualizado: '2019-2022',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Cor/Raça', 'Déficit 2019 (mil)', '% do déficit', 'Déficit 2022 (mil)', '% do déficit'],
+      rows: [
+        ['Negros (Pretos+Pardos)', '3.650', '58,2%', '3.870', '59,8%'],
+        ['Brancos', '2.350', '37,5%', '2.280', '35,2%'],
+        ['Indígenas', '85', '1,4%', '92', '1,4%'],
+        ['Outros/NI', '185', '2,9%', '230', '3,6%'],
+        ['Total Brasil', '6.270', '100%', '6.472', '100%']
+      ]
+    },
+    notas: 'Negros representam 55,5% da população mas 59,8% do déficit habitacional. Cruzamento indireto 🔀: FJP + IBGE Censo 2022 (Tabela 9879).',
+    tendencia: 'crescente'
+  },
+  {
+    id: 'cc-79',
+    numero: 79,
+    titulo: 'Inadequação Habitacional por Cor/Raça',
+    tituloIngles: 'Housing inadequacy by race/color',
+    categoria: 'Habitação',
+    descricao: 'Domicílios com inadequação (sem banheiro exclusivo, adensamento excessivo, cobertura precária) por cor/raça.',
+    fonte: 'IBGE/Censo',
+    fonteCompleta: 'IBGE — Censo Demográfico 2022 / SIDRA Tabela 9878',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9878',
+    tabelaSidra: 'Tabela 9878',
+    periodoOriginal: '2010',
+    periodoAtualizado: '2010-2022',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Indicador', 'Negros (%)', 'Brancos (%)', 'Razão N/B'],
+      rows: [
+        ['Sem banheiro exclusivo', '6,8%', '2,1%', '3,2x'],
+        ['Adensamento excessivo', '8,5%', '4,2%', '2,0x'],
+        ['Material precário (paredes)', '4,2%', '1,3%', '3,2x'],
+        ['Cobertura inadequada', '3,8%', '1,5%', '2,5x'],
+        ['Ônus excessivo com aluguel (>30% renda)', '12,4%', '7,8%', '1,6x']
+      ]
+    },
+    notas: 'Censo 2022. Todas as formas de inadequação habitacional são significativamente maiores para a população negra.',
+    tendencia: 'estavel'
+  },
+  {
+    id: 'cc-80',
+    numero: 80,
+    titulo: 'Domicílios em Aglomerados Subnormais por Cor/Raça',
+    tituloIngles: 'Households in subnormal agglomerates (favelas) by race/color',
+    categoria: 'Habitação',
+    descricao: 'Pessoas residentes em favelas e comunidades urbanas por cor/raça do responsável.',
+    fonte: 'IBGE/Censo',
+    fonteCompleta: 'IBGE — Censo Demográfico 2022 / SIDRA Tabela 9587',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9587',
+    tabelaSidra: 'Tabela 9587',
+    periodoOriginal: '2010',
+    periodoAtualizado: '2010-2022',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Indicador', '2010', '2022'],
+      rows: [
+        ['Total em aglom. subnormais', '11.425.644', '16.390.000'],
+        ['Negros (Pretos+Pardos)', '7.398.000 (64,7%)', '11.310.000 (69,0%)'],
+        ['Brancos', '3.542.000 (31,0%)', '4.425.000 (27,0%)'],
+        ['% negros na pop. geral', '50,7%', '55,5%'],
+        ['Sobre-representação negra', '+14,0 p.p.', '+13,5 p.p.']
+      ]
+    },
+    notas: 'Negros são sobre-representados em favelas: 69% dos moradores vs 55,5% da população geral.',
+    tendencia: 'crescente'
+  },
+  {
+    id: 'cc-81',
+    numero: 81,
+    titulo: 'Perfil Racial dos Beneficiários MCMV (CadÚnico)',
+    tituloIngles: 'Racial profile of MCMV housing program beneficiaries (CadÚnico)',
+    categoria: 'Habitação',
+    descricao: 'Composição racial das famílias beneficiárias do Minha Casa Minha Vida por faixa do programa, com base no CadÚnico/MDS.',
+    fonte: 'MDS/CadÚnico',
+    fonteCompleta: 'Ministério do Desenvolvimento Social — CadÚnico / VIS Data',
+    urlFonte: 'https://aplicacoes.mds.gov.br/sagi/vis/data3/',
+    periodoOriginal: '2023',
+    periodoAtualizado: '2023-2024',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Faixa MCMV', '% Negros', '% Brancos', '% Outros', 'Total famílias (mil)'],
+      rows: [
+        ['Faixa 1 (até R$ 2.640)', '72,4%', '24,8%', '2,8%', '4.250'],
+        ['Faixa 2 (R$ 2.640-4.400)', '58,3%', '38,2%', '3,5%', '1.850'],
+        ['Faixa 3 (R$ 4.400-8.000)', '42,1%', '54,6%', '3,3%', '920'],
+        ['Total MCMV', '64,8%', '32,0%', '3,2%', '7.020']
+      ]
+    },
+    notas: 'Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades.',
+    tendencia: 'estavel'
+  },
+  {
+    id: 'cc-82',
+    numero: 82,
+    titulo: 'Titularidade Feminina Negra no MCMV',
+    tituloIngles: 'Black women as titleholders in MCMV housing program',
+    categoria: 'Habitação',
+    descricao: 'Percentual de unidades habitacionais tituladas em nome de mulheres negras, conforme Lei 11.977/2009 §3º.',
+    fonte: 'MCidades/MDS',
+    fonteCompleta: 'Ministério das Cidades / MDS — SISHAB + CadÚnico',
+    urlFonte: 'https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida',
+    periodoOriginal: '2020',
+    periodoAtualizado: '2020-2024',
+    statusAtualizacao: 'parcial',
+    dados: {
+      headers: ['Indicador', '2020', '2022', '2024'],
+      rows: [
+        ['% titularidade feminina (total)', '82,5%', '84,2%', '85,1%'],
+        ['% titularidade mulher negra', '56,8%', '58,5%', '60,2%'],
+        ['% titularidade mulher branca', '23,2%', '23,5%', '22,8%'],
+        ['UH entregues (Faixa 1, mil)', '285', '142', '380']
+      ]
+    },
+    notas: 'Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Cruzamento indireto 🔀: SISHAB + CadÚnico.',
+    tendencia: 'crescente'
+  },
+  {
+    id: 'cc-83',
+    numero: 83,
+    titulo: 'Acesso a Água Potável por Cor/Raça',
+    tituloIngles: 'Access to potable water by race/color',
+    categoria: 'Habitação',
+    descricao: 'Proporção de domicílios com acesso a água tratada (rede geral) por cor/raça do responsável.',
+    fonte: 'IBGE/PNAD',
+    fonteCompleta: 'IBGE — PNAD Contínua / SIDRA Tabela 7110',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/7110',
+    tabelaSidra: 'Tabela 7110',
+    periodoOriginal: '2016',
+    periodoAtualizado: '2016-2023',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Cor/Raça', '2016', '2019', '2022', '2023'],
+      rows: [
+        ['Brancos', '89,2%', '90,1%', '91,5%', '91,8%'],
+        ['Negros (Pretos+Pardos)', '78,5%', '80,2%', '82,8%', '83,5%'],
+        ['Diferença (p.p.)', '10,7', '9,9', '8,7', '8,3'],
+        ['Indígenas', '42,5%', '45,8%', '48,2%', '49,5%']
+      ]
+    },
+    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre brancos e negros. Indígenas com acesso muito inferior.',
+    tendencia: 'crescente'
+  },
+  {
+    id: 'cc-84',
+    numero: 84,
+    titulo: 'Esgotamento Sanitário por Cor/Raça',
+    tituloIngles: 'Sanitation coverage by race/color',
+    categoria: 'Habitação',
+    descricao: 'Proporção de domicílios com esgotamento sanitário adequado (rede geral ou fossa séptica) por cor/raça.',
+    fonte: 'IBGE/PNAD',
+    fonteCompleta: 'IBGE — PNAD Contínua / SIDRA Tabela 7110',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/7110',
+    tabelaSidra: 'Tabela 7110',
+    periodoOriginal: '2016',
+    periodoAtualizado: '2016-2023',
+    statusAtualizacao: 'atualizado',
+    dados: {
+      headers: ['Cor/Raça', '2016', '2019', '2022', '2023'],
+      rows: [
+        ['Brancos', '78,5%', '80,2%', '82,5%', '83,2%'],
+        ['Negros (Pretos+Pardos)', '58,2%', '61,5%', '65,8%', '67,2%'],
+        ['Diferença (p.p.)', '20,3', '18,7', '16,7', '16,0'],
+        ['Indígenas', '28,5%', '32,1%', '35,8%', '37,2%']
+      ]
+    },
+    notas: 'Disparidade de 16 p.p. entre brancos e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
+    tendencia: 'crescente'
+  }
+];
+
 export const tabelasSistemaPolitico: CommonCoreTable[] = [
   {
     id: 'cc-76',
@@ -2245,7 +2435,8 @@ export const CommonCoreTab = () => {
     ...tabelasPobreza,
     ...tabelasSeguranca,
     ...tabelasHabitacao,
-    ...tabelasSistemaPolitico
+    ...tabelasSistemaPolitico,
+    ...tabelasMoradia
   ];
 
   const totalTables = allTables.length;
@@ -2262,7 +2453,7 @@ export const CommonCoreTab = () => {
             <div>
               <h2 className="text-xl font-bold">HRI/CORE/BRA - Documento Base Comum</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Atualização do período 2018-2026 | 77 tabelas estatísticas oficiais
+                Atualização do período 2018-2026 | {totalTables} tabelas estatísticas oficiais
               </p>
               <div className="flex gap-2 mt-3">
                 <Badge className="bg-primary text-primary-foreground">Common Core 2020</Badge>
@@ -2314,6 +2505,7 @@ export const CommonCoreTab = () => {
           <TabsTrigger value="pobreza">VI. Pobreza (8)</TabsTrigger>
           <TabsTrigger value="seguranca">VII. Segurança (11)</TabsTrigger>
           <TabsTrigger value="politico">VIII-IX. Sistema Político (8)</TabsTrigger>
+          <TabsTrigger value="moradia">X. Habitação e Moradia (7)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="demografia">
@@ -2321,6 +2513,14 @@ export const CommonCoreTab = () => {
             title="Eixo I - Características Demográficas" 
             tables={tabelasDemograficas}
             icon={<div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600">I</div>}
+          />
+        </TabsContent>
+
+        <TabsContent value="moradia">
+          <EixoSection 
+            title="Eixo X - Habitação, Moradia e Saneamento — Art. V(e)(iii) ICERD" 
+            tables={tabelasMoradia}
+            icon={<div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-600">X</div>}
           />
         </TabsContent>
 
