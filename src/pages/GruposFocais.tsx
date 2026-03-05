@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, MapPin, AlertTriangle, FileText, ExternalLink, Database, Calendar, TrendingUp, TrendingDown, Minus, RefreshCw, Info } from 'lucide-react';
@@ -419,14 +420,26 @@ export default function GruposFocais() {
                 <p className="text-2xl font-bold">~{(gruposFocaisData.juventude_negra.populacao! / 1000000).toFixed(0)} mi</p>
                 <p className="text-xs text-muted-foreground mt-1">Grupo prioritário segurança</p>
               </div>
-              <Badge variant="outline" className="text-xs border-warning text-warning">Estimativa</Badge>
+              <EstimativaBadge
+                tipo="cruzamento"
+                metodologia="Cruzamento de 2 tabelas SIDRA: proporção negra (55,5% — Tab. 9605, Censo 2022) × população 15-29 anos (Tab. 7113, PNAD Contínua). O IBGE não publica tabela com cruzamento direto idade × cor/raça para total populacional. Cálculo: 46,5 mi (15-29) × 0,555 ≈ 25,8 mi."
+              />
             </div>
-            <FonteInfo 
-              fonte={gruposFocaisData.juventude_negra.fonte}
-              tabela={gruposFocaisData.juventude_negra.tabela}
-              link={gruposFocaisData.juventude_negra.link}
-              atualizacao={gruposFocaisData.juventude_negra.ultimaAtualizacao}
-            />
+            <div className="mt-3 space-y-1">
+              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <FileText className="w-3 h-3" /> <strong>Fontes do cruzamento:</strong>
+              </p>
+              <div className="flex flex-wrap gap-2 text-[10px]">
+                <a href="https://sidra.ibge.gov.br/tabela/9605" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                  <ExternalLink className="w-2.5 h-2.5" /> SIDRA 9605 — Cor/raça (Censo 2022)
+                </a>
+                <span className="text-muted-foreground">×</span>
+                <a href="https://sidra.ibge.gov.br/tabela/7113" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                  <ExternalLink className="w-2.5 h-2.5" /> SIDRA 7113 — Faixa etária (PNAD)
+                </a>
+              </div>
+              <p className="text-[9px] text-muted-foreground italic">Atualizado: {gruposFocaisData.juventude_negra.ultimaAtualizacao}</p>
+            </div>
           </CardContent>
         </Card>
       </div>
