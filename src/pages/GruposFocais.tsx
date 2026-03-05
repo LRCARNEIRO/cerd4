@@ -235,13 +235,13 @@ const dadosTerritoriais = {
 const indicadoresVulnerabilidade = {
   homicidiosJuventude: {
     // Corrigido conforme auditoria: fonte usa faixa 12-29 anos, não 15-29
-    // Atualizado para 18º Anuário FBSP 2024 (dados de 2023)
+    // Atualizado para 19º Anuário FBSP 2025 (dados de 2024)
     nome: 'Taxa de Homicídios - Juventude Negra (12-29)',
-    valorNegros: 69.2,
-    valorBrancos: 24.5,
-    razaoDesigualdade: 2.8,
-    ano: 2023,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 18º Anuário (2024, dados 2023)',
+    valorNegros: 66.8,
+    valorBrancos: 23.2,
+    razaoDesigualdade: 2.9,
+    ano: 2024,
+    fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     serieTemporal: [
       { ano: 2018, negros: 98.5, brancos: 34.0 },
@@ -250,15 +250,16 @@ const indicadoresVulnerabilidade = {
       { ano: 2021, negros: 76.2, brancos: 26.5 },
       { ano: 2022, negros: 74.4, brancos: 25.9 },
       { ano: 2023, negros: 69.2, brancos: 24.5 },
+      { ano: 2024, negros: 66.8, brancos: 23.2 },
     ],
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
-    // 18º Anuário FBSP 2024 (dados 2023): 5.585 mortes, 82,7% negros
-    totalMortes: 5585,
-    percentualNegros: 82.7,
-    ano: 2023,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 18º Anuário (2024, dados 2023)',
+    // 19º Anuário FBSP 2025 (dados 2024): 5.417 mortes, 82,0% negros
+    totalMortes: 5417,
+    percentualNegros: 82.0,
+    ano: 2024,
+    fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
   },
   mortalidadeMaterna: {
@@ -790,14 +791,14 @@ export default function GruposFocais() {
                   <div className="text-xs space-y-1">
                     <p className="flex items-center gap-1">
                       <TendenciaIcon tendencia="down" />
-                      <span>Queda de 24% desde 2018</span>
+                      <span>Queda de 32% desde 2018</span>
                     </p>
                   </div>
                   <FonteInfo 
                     fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
-                    tabela="18º Anuário FBSP 2024"
+                    tabela="19º Anuário FBSP 2025"
                     link={indicadoresVulnerabilidade.homicidiosJuventude.link}
-                    atualizacao="2024-07-18"
+                    atualizacao="2025-07-17"
                   />
                 </CardContent>
               </Card>
@@ -818,9 +819,9 @@ export default function GruposFocais() {
                   </div>
                   <FonteInfo 
                     fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
-                    tabela="18º Anuário FBSP 2024"
+                    tabela="19º Anuário FBSP 2025"
                     link={indicadoresVulnerabilidade.letalidadePolicial.link}
-                    atualizacao="2024-07-18"
+                    atualizacao="2025-07-17"
                   />
                 </CardContent>
               </Card>
