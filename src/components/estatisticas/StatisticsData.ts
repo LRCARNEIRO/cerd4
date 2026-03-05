@@ -257,6 +257,12 @@ export const rendimentosCenso2022 = {
 // =============================================
 
 // Raça × Gênero × Idade - Trabalho
+// Fonte: PNAD Contínua 2024 — Cruzamento raça × sexo × faixa etária
+// SIDRA 6800 (rendimento por cor/raça) + SIDRA 6381 (desocupação por cor/raça) + SIDRA 6403 (informalidade)
+// URLs:
+//   Rendimento: https://sidra.ibge.gov.br/Tabela/6800
+//   Desocupação: https://sidra.ibge.gov.br/Tabela/6381
+//   Características gerais: https://sidra.ibge.gov.br/Tabela/6403
 export const interseccionalidadeTrabalho = [
   { grupo: 'Mulher Negra 18-29', renda: 1680, desemprego: 17.5, informalidade: 51.2 },
   { grupo: 'Mulher Negra 30-49', renda: 2250, desemprego: 10.8, informalidade: 47.5 },
@@ -268,6 +274,11 @@ export const interseccionalidadeTrabalho = [
   { grupo: 'Mulher Branca 30-49', renda: 3650, desemprego: 6.2, informalidade: 31.5 },
   { grupo: 'Homem Branco 18-29', renda: 2850, desemprego: 9.0, informalidade: 34.8 },
   { grupo: 'Homem Branco 30-49', renda: 4850, desemprego: 3.8, informalidade: 27.2 }
+];
+export const interseccionalidadeTrabalhoFontes = [
+  { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
+  { nome: 'SIDRA 6381 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+  { nome: 'SIDRA 6403 — Características gerais', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
 ];
 
 // Deficiência por Raça — PNAD Contínua 2022 (IBGE)
@@ -425,6 +436,9 @@ export const classePorRaca = [
 ];
 
 // Mulheres chefes de família
+// Fonte: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
+// URL: https://sidra.ibge.gov.br/Tabela/6403
+// Complementar: SIS/IBGE 2024 — https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
 export const mulheresChefeFamilia = [
   { ano: 2018, negras: 28.5, brancas: 18.2 },
   { ano: 2019, negras: 29.8, brancas: 18.8 },
@@ -434,16 +448,20 @@ export const mulheresChefeFamilia = [
   { ano: 2023, negras: 37.5, brancas: 23.1 },
   { ano: 2024, negras: 38.2, brancas: 23.8 }
 ];
+export const mulheresChefeFamiliaFontes = [
+  { nome: 'SIDRA 6403 — Arranjos familiares por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
+  { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+];
 
 // Violência interseccional - 19º Anuário FBSP 2025 (dados 2024)
 // Comparativo 2018 → 2024:
 //   Feminicídio: 61% → 63,6% mulheres negras
 //   Estupro: registro recorde em 2024: 87.545 (FBSP 2025)
 export const violenciaInterseccional = [
-  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
-  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
-  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
-  { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'PNAD/IBGE 2024' }
+  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'PNAD/IBGE 2024', url: 'https://sidra.ibge.gov.br/Tabela/6403' }
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
@@ -460,6 +478,11 @@ export const juventudeNegra = [
 ];
 
 // Educação interseccional
+// Fontes: PNAD Contínua Educação 2024 — SIDRA 7267 (educação por cor/raça) + INEP Censo Educação Superior
+// URLs:
+//   SIDRA 7267: https://sidra.ibge.gov.br/Tabela/7267
+//   PNAD Educação: https://www.ibge.gov.br/estatisticas/sociais/educacao.html
+//   INEP: https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior
 export const educacaoInterseccional = [
   { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5 },
   { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2 },
@@ -467,6 +490,11 @@ export const educacaoInterseccional = [
   { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2 },
   { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5 },
   { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8 }
+];
+export const educacaoInterseccionalFontes = [
+  { nome: 'SIDRA 7267 — Educação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7267' },
+  { nome: 'PNAD Contínua Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
+  { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior' },
 ];
 
 // Saúde interseccional
@@ -481,6 +509,9 @@ export const saudeInterseccional = [
 ];
 
 // Radar: Vulnerabilidades por grupo
+// ÍNDICE COMPOSTO — Elaboração própria a partir de múltiplas fontes
+// Fontes base: PNAD Contínua 2024 (SIDRA 6800/6381), DataSUS/SIM, 19º Anuário FBSP 2025, SIS/IBGE 2024
+// Cada eixo normalizado 0-100 onde 100 = maior vulnerabilidade
 export const radarVulnerabilidades = [
   { eixo: 'Renda', mulherNegra: 85, homemNegro: 72, mulherBranca: 45, homemBranco: 28 },
   { eixo: 'Emprego', mulherNegra: 78, homemNegro: 65, mulherBranca: 52, homemBranco: 35 },
@@ -489,9 +520,21 @@ export const radarVulnerabilidades = [
   { eixo: 'Violência', mulherNegra: 88, homemNegro: 92, mulherBranca: 42, homemBranco: 38 },
   { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
 ];
+export const radarVulnerabilidadesFontes = [
+  { nome: 'SIDRA 6800 — Rendimento', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
+  { nome: 'SIDRA 6381 — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+  { nome: 'TabNet/DataSUS — Mortalidade', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+];
 
 // Evolução temporal das desigualdades (2018-2024)
 // Fontes: PNAD Contínua/SIDRA 6800, 6381 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
+// URLs:
+//   Renda: https://sidra.ibge.gov.br/Tabela/6800
+//   Desemprego: https://sidra.ibge.gov.br/Tabela/6381
+//   Homicídio: https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/
+//   Atlas: https://www.ipea.gov.br/atlasviolencia
 export const evolucaoDesigualdade = [
   { ano: 2018, razaoRenda: 1.73, razaoDesemprego: 1.72, razaoHomicidio: 2.60 },
   { ano: 2019, razaoRenda: 1.71, razaoDesemprego: 1.68, razaoHomicidio: 2.60 },
