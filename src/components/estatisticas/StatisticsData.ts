@@ -3,6 +3,12 @@
 // Fonte primária: SIDRA/IBGE (api.sidra.ibge.gov.br)
 // Tabelas utilizadas: 9605, 9606 (Censo 2022 - Cor ou Raça)
 // Última atualização: Janeiro 2026
+//
+// REGRA DE OURO — PROIBIÇÕES:
+// 1. Projeções futuras sem base oficial (fonte: 'Projeção')
+// 2. Proxies multiplicadores (fatores fixos ×1.5, ×1.8, ×2.5 etc.)
+// 3. Dados fabricados por IA sem fonte auditável
+// PERMITIDO: Cruzamentos indiretos (🔀) com 2+ fontes auditáveis + deep links + metodologia explícita
 // =============================================
 
 // =============================================
@@ -474,7 +480,7 @@ export const juventudeNegra = [
   { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
   { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
   { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
-  { indicador: 'Óbitos causas externas (%)', valor: 73.0, referencia: 27.0, fonte: 'Fiocruz 2025 (processamento SIM/DataSUS)', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/', estimativa: true, metodologiaEstimativa: 'Proxy: Fiocruz processou microdados SIM/DataSUS filtrando faixa etária 15-29 × cor/raça × causas externas. O DataSUS não publica esse cruzamento em tabela pré-formatada.' }
+  // REMOVIDO: 'Óbitos causas externas (%)' — era proxy (Fiocruz processou microdados, não publicação direta). PROIBIDO pela Regra de Ouro.
 ];
 
 // Educação interseccional

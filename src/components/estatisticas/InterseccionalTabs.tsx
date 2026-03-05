@@ -636,9 +636,7 @@ export function JuventudeTab() {
                     {(item as any).cruzamento && (
                       <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'Cruzamento de 2+ fontes distintas'} />
                     )}
-                    {(item as any).estimativa && !(item as any).cruzamento && (
-                      <EstimativaBadge tipo="simples" metodologia={(item as any).metodologiaEstimativa || 'Proxy etário aplicado sobre dado racial disponível'} />
-                    )}
+                    {/* REMOVIDO: EstimativaBadge tipo="simples" — estimativas/proxies PROIBIDOS pela Regra de Ouro */}
                   </div>
                   <p className="text-[10px] text-muted-foreground mb-2">
                     Fonte: {(item as any).cruzamento && (item as any).fontesCruzamento ? (

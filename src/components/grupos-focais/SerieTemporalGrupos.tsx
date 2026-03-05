@@ -50,6 +50,8 @@ const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'esta
 };
 
 // Build indicator series from StatisticsData
+// REGRA DE OURO: PROIBIDO usar proxies multiplicadores (×1.5, ×1.8, ×2.5 etc.) ou projeções.
+// Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
 function buildIndicadores(): Record<string, IndicadorTemporal[]> {
   const populacaoNegra: IndicadorTemporal[] = [
     {
@@ -118,36 +120,9 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     },
   ];
 
-  const juventudeNegra: IndicadorTemporal[] = [
-    {
-      nome: 'Taxa de homicídio jovem negro (⚠ estimativa)',
-      grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro * 1.8 })),
-      unidade: 'por 100 mil',
-      fonte: 'Atlas da Violência / FBSP',
-      interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: 'Taxa geral de homicídio negro × fator 1,8 (proxy etário). O Anuário FBSP não publica série completa 15-29 × raça.',
-    },
-    {
-      nome: 'Risco relativo de homicídio (razão)',
-      grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.razaoRisco })),
-      unidade: 'x',
-      fonte: 'Atlas da Violência',
-      interpretacao: 'menor_melhor',
-    },
-    {
-      nome: 'Desemprego jovem negro (⚠ estimativa)',
-      grupo: 'juventude_negra',
-      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro * 1.5 })),
-      unidade: '%',
-      fonte: 'PNAD Contínua',
-      interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: 'Desemprego negro geral × fator 1,5 (proxy etário). PNAD Contínua Tab. 6381 não cruza idade × raça diretamente.',
-    },
-  ];
+  // REMOVIDO: juventudeNegra usava proxies multiplicadores (×1.8, ×1.5) — PROIBIDO pela Regra de Ouro.
+  // Para reintroduzir, é obrigatório cruzamento indireto com 2+ fontes auditáveis e deep links.
+  const juventudeNegra: IndicadorTemporal[] = [];
 
   const mulheresNegras: IndicadorTemporal[] = [
     {
@@ -176,18 +151,9 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     },
   ];
 
-  const indigenas: IndicadorTemporal[] = [
-    {
-      nome: 'Mortalidade infantil indígena (⚠ estimativa)',
-      grupo: 'indigenas',
-      dados: saudeSerieHistorica.map(s => ({ ano: s.ano, valor: s.mortalidadeInfantilNegra * 2.5 })),
-      unidade: 'por mil NV',
-      fonte: 'SESAI/DataSUS',
-      interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: 'Mortalidade infantil negra × fator 2,5 (proxy). SESAI/DataSUS não publica série completa acessível via SIDRA para mortalidade infantil indígena.',
-    },
-  ];
+  // REMOVIDO: indigenas usava proxy multiplicador (×2.5) — PROIBIDO pela Regra de Ouro.
+  // Para reintroduzir, é obrigatório cruzamento indireto com 2+ fontes auditáveis e deep links.
+  const indigenas: IndicadorTemporal[] = [];
 
   return {
     populacao_negra: populacaoNegra,
