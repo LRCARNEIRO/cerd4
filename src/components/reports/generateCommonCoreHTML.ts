@@ -8,6 +8,7 @@ import {
   tabelasDemograficas, tabelasEconomicas, tabelasEducacao,
   tabelasSaude, tabelasTrabalho, tabelasPobreza,
   tabelasSeguranca, tabelasHabitacao, tabelasSistemaPolitico,
+  tabelasMoradia,
   type CommonCoreTable
 } from '@/components/estatisticas/CommonCoreTab';
 
@@ -161,7 +162,8 @@ export function generateCommonCoreHTML(
   const allTables = [
     ...tabelasDemograficas, ...tabelasEconomicas, ...tabelasEducacao,
     ...tabelasSaude, ...tabelasTrabalho, ...tabelasPobreza,
-    ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico
+    ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico,
+    ...tabelasMoradia
   ];
   const totalTabelas = allTables.length;
   const atualizadas = allTables.filter(t => t.statusAtualizacao === 'atualizado').length;
@@ -206,6 +208,7 @@ export function generateCommonCoreHTML(
       <li style="padding-left: 2cm;">IV.7 Segurança Pública (${tabelasSeguranca.length})</li>
       <li style="padding-left: 2cm;">IV.8 Sistema Eleitoral (${tabelasHabitacao.length})</li>
       <li style="padding-left: 2cm;">IV.9 Participação Social (${tabelasSistemaPolitico.length})</li>
+      <li style="padding-left: 2cm;">IV.10 Habitação e Moradia — Art. V(e)(iii) (${tabelasMoradia.length})</li>
       <li><strong>Anexos:</strong> Indicadores interseccionais e análise CERD</li>
     </ul>
   </div>
@@ -305,6 +308,7 @@ export function generateCommonCoreHTML(
     ${renderEixo('Segurança Pública', 'VII', tabelasSeguranca)}
     ${renderEixo('Sistema Eleitoral', 'VIII', tabelasHabitacao)}
     ${renderEixo('Participação Social', 'IX', tabelasSistemaPolitico)}
+    ${renderEixo('Habitação e Moradia — Art. V(e)(iii) ICERD', 'X', tabelasMoradia)}
   </div>
 
   <div class="footer">
