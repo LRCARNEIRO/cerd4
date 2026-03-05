@@ -158,9 +158,9 @@ const dadosTerritoriais = {
     notaFonte: 'Territórios/títulos/área: PDF "Títulos Expedidos" do INCRA (lista nominal). Certidões: Palmares - Portarias de Certificação.',
     // Infraestrutura: Censo 2022 - Domicílios em territórios quilombolas
     infraestrutura: {
-      fonte: 'IBGE - Censo 2022 (Domicílios em Territórios Quilombolas)',
-      link: 'https://sidra.ibge.gov.br/tabela/4696',
-      nota: 'Tabela 4696 - Características dos domicílios em territórios quilombolas',
+      fonte: 'IBGE - Censo 2022 (Resultados Quilombolas)',
+      link: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
+      nota: 'Censo 2022 — Panorama Quilombola (características domiciliares)',
     },
     serieHistorica: [
       { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
@@ -234,28 +234,31 @@ const dadosTerritoriais = {
 const indicadoresVulnerabilidade = {
   homicidiosJuventude: {
     // Corrigido conforme auditoria: fonte usa faixa 12-29 anos, não 15-29
+    // Atualizado para 18º Anuário FBSP 2024 (dados de 2023)
     nome: 'Taxa de Homicídios - Juventude Negra (12-29)',
-    valorNegros: 74.4,
-    valorBrancos: 25.9,
-    razaoDesigualdade: 2.9,
-    ano: 2022,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 17º Anuário (2023, dados 2022)',
-    link: 'https://forumseguranca.org.br/wp-content/uploads/2023/07/anuario-2023.pdf',
+    valorNegros: 69.2,
+    valorBrancos: 24.5,
+    razaoDesigualdade: 2.8,
+    ano: 2023,
+    fonte: 'Fórum Brasileiro de Segurança Pública - 18º Anuário (2024, dados 2023)',
+    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     serieTemporal: [
       { ano: 2018, negros: 98.5, brancos: 34.0 },
       { ano: 2019, negros: 85.3, brancos: 30.2 },
       { ano: 2020, negros: 78.6, brancos: 27.8 },
       { ano: 2021, negros: 76.2, brancos: 26.5 },
       { ano: 2022, negros: 74.4, brancos: 25.9 },
+      { ano: 2023, negros: 69.2, brancos: 24.5 },
     ],
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
-    totalMortes: 6429,
-    percentualNegros: 83.1,
-    ano: 2022,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 17º Anuário (2023, dados 2022)',
-    link: 'https://forumseguranca.org.br/wp-content/uploads/2023/07/anuario-2023.pdf',
+    // 18º Anuário FBSP 2024 (dados 2023): 5.585 mortes, 82,7% negros
+    totalMortes: 5585,
+    percentualNegros: 82.7,
+    ano: 2023,
+    fonte: 'Fórum Brasileiro de Segurança Pública - 18º Anuário (2024, dados 2023)',
+    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
   },
   mortalidadeMaterna: {
     nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
@@ -779,9 +782,9 @@ export default function GruposFocais() {
                   </div>
                   <FonteInfo 
                     fonte={indicadoresVulnerabilidade.homicidiosJuventude.fonte}
-                    tabela="Anuário 2023"
+                    tabela="18º Anuário FBSP 2024"
                     link={indicadoresVulnerabilidade.homicidiosJuventude.link}
-                    atualizacao="2023-07-01"
+                    atualizacao="2024-07-18"
                   />
                 </CardContent>
               </Card>
@@ -802,9 +805,9 @@ export default function GruposFocais() {
                   </div>
                   <FonteInfo 
                     fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
-                    tabela="Anuário FBSP"
+                    tabela="18º Anuário FBSP 2024"
                     link={indicadoresVulnerabilidade.letalidadePolicial.link}
-                    atualizacao="2023-07-01"
+                    atualizacao="2024-07-18"
                   />
                 </CardContent>
               </Card>
