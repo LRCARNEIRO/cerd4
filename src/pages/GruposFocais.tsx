@@ -255,6 +255,38 @@ const indicadoresVulnerabilidade = {
       { ano: 2024, negros: 77.0, brancos: 23.0 },
     ],
   },
+  // Atlas da Violência 2025 (IPEA/FBSP) — Taxas por 100 mil habitantes
+  taxaHomicidio100mil: {
+    nome: 'Taxa de Homicídio por 100 mil hab.',
+    taxaNegros: 28.9,
+    taxaNaoNegros: 10.6,
+    razaoRisco: 2.7,
+    razaoRisco2013: 2.4,
+    quedaNegros2013_2023: 21.5,
+    quedaNaoNegros2013_2023: 32.1,
+    ano: 2023,
+    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    link: 'https://www.ipea.gov.br/atlasviolencia',
+  },
+  // Violência letal na juventude 15-29 anos
+  violenciaJuventude: {
+    nome: 'Violência Letal — Juventude (15-29 anos)',
+    percentualVitimas: 47.8,
+    percentualNegrosHomens: 79,
+    ano: 2023,
+    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    link: 'https://www.ipea.gov.br/atlasviolencia',
+  },
+  // IVJ-N — Índice de Vulnerabilidade da Juventude Negra
+  ivjn: {
+    nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
+    riscoRelativo: 2.0,
+    riscoRelativo2017: 1.9,
+    riscoSuperiorNegro: 3.0, // entre jovens c/ ensino superior
+    ano: 2021,
+    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    link: 'https://www.ipea.gov.br/atlasviolencia',
+  },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
     // 19º Anuário FBSP 2025 (dados 2024): 5.417 mortes, 82,0% negros
@@ -767,12 +799,87 @@ export default function GruposFocais() {
         {/* Indicadores de Vulnerabilidade */}
         <TabsContent value="vulnerabilidade">
           <div className="space-y-6">
+            {/* Atlas da Violência 2025 — Header */}
+            <Card className="bg-gradient-to-r from-destructive/5 to-destructive/10 border-destructive/20">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-3">
+                  <Info className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Dados do Atlas da Violência 2025 (IPEA/FBSP) e 19º Anuário FBSP 2025</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Indicadores de violência letal com recorte racial — fontes oficiais auditáveis. 
+                      Juventude definida como <strong>15 a 29 anos</strong> conforme padrão ONU e Estatuto da Juventude.
+                    </p>
+                    <div className="flex gap-2 mt-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-1" /> Atlas da Violência 2025
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-1" /> 19º Anuário FBSP
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Row 1: Taxa por 100 mil + Concentração Racial + Risco Relativo */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Homicídios por Raça */}
+              {/* Taxa de homicídio por 100 mil */}
+              <Card className="border-l-4 border-l-destructive">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.taxaHomicidio100mil.nome}</CardTitle>
+                  <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.taxaHomicidio100mil.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-end mb-4">
+                    <div>
+                      <p className="text-3xl font-bold text-destructive">{indicadoresVulnerabilidade.taxaHomicidio100mil.taxaNegros}</p>
+                      <p className="text-xs text-muted-foreground">Negros (por 100 mil)</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold">{indicadoresVulnerabilidade.taxaHomicidio100mil.taxaNaoNegros}</p>
+                      <p className="text-xs text-muted-foreground">Não negros (por 100 mil)</p>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                    <p className="text-sm font-bold text-destructive">
+                      {indicadoresVulnerabilidade.taxaHomicidio100mil.razaoRisco}x maior risco para negros
+                    </p>
+                  </div>
+                  <div className="text-xs space-y-1 mb-3">
+                    <p className="font-medium text-muted-foreground">Evolução 2013→2023:</p>
+                    <p className="flex items-center gap-1">
+                      <TrendingDown className="w-3 h-3 text-success" />
+                      <span>Queda de {indicadoresVulnerabilidade.taxaHomicidio100mil.quedaNegros2013_2023}% entre negros</span>
+                    </p>
+                    <p className="flex items-center gap-1">
+                      <TrendingDown className="w-3 h-3 text-success" />
+                      <span>Queda de {indicadoresVulnerabilidade.taxaHomicidio100mil.quedaNaoNegros2013_2023}% entre não negros</span>
+                    </p>
+                    <p className="flex items-center gap-1 text-destructive">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>Desigualdade aumentou: risco {indicadoresVulnerabilidade.taxaHomicidio100mil.razaoRisco2013}x → {indicadoresVulnerabilidade.taxaHomicidio100mil.razaoRisco}x</span>
+                    </p>
+                  </div>
+                  <FonteInfo
+                    fonte={indicadoresVulnerabilidade.taxaHomicidio100mil.fonte}
+                    tabela="Atlas da Violência 2025"
+                    link={indicadoresVulnerabilidade.taxaHomicidio100mil.link}
+                    atualizacao="2025-05-01"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Concentração Racial — Vítimas Negras (FBSP) */}
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}</CardTitle>
-                  <CardDescription>Percentual de vítimas | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
+                  <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-end mb-4">
@@ -785,18 +892,14 @@ export default function GruposFocais() {
                       <p className="text-xs text-muted-foreground">Vítimas Brancas</p>
                     </div>
                   </div>
-                  <div className="p-2 bg-destructive/10 rounded text-center mb-3">
-                    <p className="text-sm font-bold text-destructive">
-                      {indicadoresVulnerabilidade.homicidiosPorRaca.razaoRisco}x maior risco
-                    </p>
-                  </div>
-                  <div className="text-xs space-y-1">
+                  <div className="text-xs space-y-1 mb-3">
+                    <p className="font-medium text-muted-foreground">Evolução (Atlas 2025):</p>
                     <p className="flex items-center gap-1">
-                      <TendenciaIcon tendencia="up" />
-                      <span>Proporção negra subiu de 75,7% (2018) para 77% (2024)</span>
+                      <TrendingUp className="w-3 h-3 text-destructive" />
+                      <span>73,1% (2013) → 76,5% (2022) — concentração aumentou</span>
                     </p>
                   </div>
-                  <FonteInfo 
+                  <FonteInfo
                     fonte={indicadoresVulnerabilidade.homicidiosPorRaca.fonte}
                     tabela="19º Anuário FBSP 2025"
                     link={indicadoresVulnerabilidade.homicidiosPorRaca.link}
@@ -809,7 +912,7 @@ export default function GruposFocais() {
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
-                  <CardDescription>{indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
+                  <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold mb-2">{indicadoresVulnerabilidade.letalidadePolicial.totalMortes.toLocaleString()}</p>
@@ -819,11 +922,71 @@ export default function GruposFocais() {
                       {indicadoresVulnerabilidade.letalidadePolicial.percentualNegros}% eram negros
                     </p>
                   </div>
-                  <FonteInfo 
+                  <FonteInfo
                     fonte={indicadoresVulnerabilidade.letalidadePolicial.fonte}
                     tabela="19º Anuário FBSP 2025"
                     link={indicadoresVulnerabilidade.letalidadePolicial.link}
                     atualizacao="2025-07-17"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Row 2: Juventude 15-29 + IVJ-N + Mortalidade Materna */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Violência Letal Juventude 15-29 */}
+              <Card className="border-l-4 border-l-warning">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.violenciaJuventude.nome}</CardTitle>
+                  <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.violenciaJuventude.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center mb-4">
+                    <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.violenciaJuventude.percentualVitimas}%</p>
+                    <p className="text-sm text-muted-foreground">das vítimas de homicídio tinham 15-29 anos</p>
+                  </div>
+                  <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                    <p className="text-sm font-bold text-destructive">
+                      {indicadoresVulnerabilidade.violenciaJuventude.percentualNegrosHomens}% jovens negros do sexo masculino
+                    </p>
+                    <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+                  </div>
+                  <FonteInfo
+                    fonte={indicadoresVulnerabilidade.violenciaJuventude.fonte}
+                    tabela="Atlas da Violência 2025"
+                    link={indicadoresVulnerabilidade.violenciaJuventude.link}
+                    atualizacao="2025-05-01"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* IVJ-N */}
+              <Card className="border-l-4 border-l-warning">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">{indicadoresVulnerabilidade.ivjn.nome}</CardTitle>
+                  <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center mb-4">
+                    <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
+                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p>
+                  </div>
+                  <div className="text-xs space-y-1 mb-3">
+                    <p className="font-medium text-muted-foreground">Evolução:</p>
+                    <p className="flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3 text-destructive" />
+                      <span>Desigualdade persistente: {indicadoresVulnerabilidade.ivjn.riscoRelativo2017}x (2017) → {indicadoresVulnerabilidade.ivjn.riscoRelativo}x (2021)</span>
+                    </p>
+                    <p className="flex items-center gap-1 text-destructive">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior</span>
+                    </p>
+                  </div>
+                  <FonteInfo
+                    fonte={indicadoresVulnerabilidade.ivjn.fonte}
+                    tabela="Atlas da Violência 2025"
+                    link={indicadoresVulnerabilidade.ivjn.link}
+                    atualizacao="2025-05-01"
                   />
                 </CardContent>
               </Card>
@@ -832,7 +995,7 @@ export default function GruposFocais() {
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
-                  <CardDescription>{indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
+                  <CardDescription>DataSUS | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-end mb-4">
@@ -850,7 +1013,7 @@ export default function GruposFocais() {
                       {indicadoresVulnerabilidade.mortalidadeMaterna.razaoDesigualdade}x maior risco
                     </p>
                   </div>
-                  <FonteInfo 
+                  <FonteInfo
                     fonte={indicadoresVulnerabilidade.mortalidadeMaterna.fonte}
                     tabela="SIM/SINASC"
                     link={indicadoresVulnerabilidade.mortalidadeMaterna.link}

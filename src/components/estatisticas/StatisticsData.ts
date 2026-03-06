@@ -146,12 +146,20 @@ export const razaoRendaRacial = 0.589;
 //     URL: https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/
 //   - Atlas da Violência 2025 (IPEA, mai/2025) - dados até 2023
 //     URL: https://www.ipea.gov.br/atlasviolencia
+// FONTES PRIMÁRIAS:
+//   - 19º Anuário Brasileiro de Segurança Pública (FBSP, jul/2025) - dados referentes a 2024
+//   - Atlas da Violência 2025 (IPEA/FBSP, mai/2025) - dados até 2023
 // DADOS-CHAVE do 19º Anuário FBSP 2025 (ano-referência 2024):
 //   • 77% das vítimas de homicídio são negras
 //   • 82% das vítimas de letalidade policial são negras
 //   • 63,6% das vítimas de feminicídio são mulheres negras
-//   • Risco de homicídio para pessoa negra: 2,7x maior (Atlas 2025)
 //   • População carcerária: 68,2% negra
+// DADOS-CHAVE do Atlas da Violência 2025 (IPEA/FBSP) (ano-referência 2023):
+//   • Taxa de homicídio negros: 28,9/100 mil vs não negros: 10,6/100 mil
+//   • Risco relativo: 2,7x (subiu de 2,4x em 2013)
+//   • 76,5% das vítimas de homicídio são negras (2022)
+//   • 47,8% das vítimas tinham 15-29 anos (2023), 79% jovens negros masculinos
+//   • IVJ-N: risco 2x maior para jovens negros (2021, subiu de 1,9x em 2017)
 // Comparativo 2018 → 2024:
 //   • Homicídios totais caíram, mas a proporção de negros entre vítimas aumentou (75,4% → 82%)
 //   • Letalidade policial contra negros manteve-se acima de 75% em todo o período
@@ -165,8 +173,9 @@ export const segurancaPublica = [
   { ano: 2020, homicidioNegro: 35.8, homicidioBranco: 13.5, letalidadePolicial: 78.5, percentualVitimasNegras: 76.9, razaoRisco: 2.7 },
   { ano: 2021, homicidioNegro: 32.5, homicidioBranco: 12.8, letalidadePolicial: 80.2, percentualVitimasNegras: 77.0, razaoRisco: 2.5 },
   { ano: 2022, homicidioNegro: 30.2, homicidioBranco: 12.2, letalidadePolicial: 82.5, percentualVitimasNegras: 76.5, razaoRisco: 2.5 },
+  // Atlas da Violência 2025 (IPEA/FBSP) — dados de 2023: taxa negros 28,9; não negros 10,6; risco 2,7x
   // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial, 76,6% vítimas negras
-  { ano: 2023, homicidioNegro: 28.8, homicidioBranco: 10.7, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
+  { ano: 2023, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
   // 19º Anuário FBSP 2025 (dados de 2024): 82% letalidade policial, 77% vítimas negras
   { ano: 2024, homicidioNegro: 27.5, homicidioBranco: 10.2, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
 ];
@@ -183,6 +192,43 @@ export const feminicidioSerie = [
   // 19º Anuário FBSP 2025 (dados 2024): 63,6% mulheres negras vítimas de feminicídio
   { ano: 2024, totalFeminicidios: 1589, percentualNegras: 63.6, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
 ];
+
+// =============================================
+// ATLAS DA VIOLÊNCIA 2025 (IPEA/FBSP) — Dados específicos
+// URL: https://www.ipea.gov.br/atlasviolencia
+// =============================================
+export const atlasViolencia2025 = {
+  // Taxa de homicídio por 100 mil — negros vs não negros (2023)
+  taxaHomicidioNegros: 28.9,
+  taxaHomicidioNaoNegros: 10.6,
+  anoTaxa: 2023,
+  // Evolução: queda menor entre negros (21,5%) vs não negros (32,1%) entre 2013-2023
+  quedaNegros2013_2023: 21.5,
+  quedaNaoNegros2013_2023: 32.1,
+  // Risco relativo: 2,7x em 2023 (era 2,4x em 2013)
+  riscoRelativo: 2.7,
+  riscoRelativo2013: 2.4,
+  // Concentração racial: 76,5% vítimas negras em 2022
+  concentracaoRacial2022: 76.5,
+  concentracaoRacial2013: 73.1,
+  // Violência letal na juventude 15-29: 47,8% das vítimas em 2023, 79% jovens negros masculinos
+  juventude15_29: {
+    percentualVitimas: 47.8,
+    ano: 2023,
+    percentualNegrosHomens: 79,
+    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+  },
+  // IVJ-N: Jovens negros têm risco 2x maior de homicídio que jovens brancos (2021)
+  ivjn: {
+    riscoRelativo: 2.0,
+    riscoRelativo2017: 1.9,
+    ano: 2021,
+    riscoSuperiorNegro: 3.0, // entre jovens com ensino superior, risco até 3x maior para negros
+    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+  },
+  fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+  link: 'https://www.ipea.gov.br/atlasviolencia',
+};
 
 // Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
 // População carcerária: 68,2% negra (SISDEPEN/SENAPPEN 2024)

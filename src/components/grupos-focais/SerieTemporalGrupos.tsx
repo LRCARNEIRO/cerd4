@@ -59,7 +59,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       grupo: 'populacao_negra',
       dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro })),
       unidade: 'por 100 mil',
-      fonte: 'FBSP/Atlas da Violência',
+      fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
     },
     {
