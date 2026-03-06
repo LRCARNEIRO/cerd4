@@ -325,6 +325,11 @@ ${(respostasCerd || []).map(r => {
           <ConsolidatedScopeReport />
         </TabsContent>
 
+        {/* ABA: CONCLUSÕES INTEGRAL */}
+        <TabsContent value="conclusoes-full">
+          <ConclusoesReportGenerator />
+        </TabsContent>
+
         {/* ABA: RELATÓRIOS COM IA */}
         <TabsContent value="ia-generator">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
