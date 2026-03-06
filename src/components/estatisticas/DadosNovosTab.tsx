@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -495,10 +495,70 @@ const indicadoresJudiciario: NovoIndicador[] = [
   }
 ];
 
+const indicadoresHabitacao: NovoIndicador[] = [
+  {
+    id: 'hab-1',
+    nome: 'Déficit habitacional por raça/cor',
+    descricao: 'Estimativa do déficit habitacional quantitativo e qualitativo desagregado por raça/cor do chefe do domicílio',
+    fonte: 'Fundação João Pinheiro',
+    siglaFonte: 'FJP',
+    urlFonte: 'https://fjp.mg.gov.br/deficit-habitacional-no-brasil/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2023 (dados PNAD 2022)',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Déficit habitacional: 72,2% das famílias em déficit são chefiadas por pessoas negras (FJP 2023). Total: 5,9 milhões de domicílios. Negros sobre-representados em relação aos 55,5% da população.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'hab-2',
+    nome: 'Beneficiários MCMV por raça/cor',
+    descricao: 'Perfil racial dos beneficiários do Minha Casa Minha Vida (Faixa 1)',
+    fonte: 'Ministério das Cidades / CadÚnico',
+    siglaFonte: 'MCidades/MDS',
+    urlFonte: 'https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '60,2% da titularidade feminina no CadÚnico (MDS 2024). Maioria dos beneficiários Faixa 1 são famílias negras. MCMV foi reclassificado como política com impacto racial indireto.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'hab-3',
+    nome: 'Inadequação habitacional e favelas por raça/cor',
+    descricao: 'Moradores em aglomerados subnormais (favelas) por raça/cor',
+    fonte: 'IBGE - Censo Demográfico 2022',
+    siglaFonte: 'IBGE',
+    urlFonte: 'https://www.ibge.gov.br/geociencias/organizacao-do-territorio/tipologias-do-territorio/15788-aglomerados-subnormais.html',
+    periodicidade: 'Decenal',
+    ultimaAtualizacao: '2023 (Censo 2022)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '69% dos moradores de favelas são negros (Censo 2022), contra 55,5% da população total — sobre-representação de 13,5 p.p. 16,4 milhões de pessoas em aglomerados subnormais.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'hab-4',
+    nome: 'Acesso a saneamento básico por raça/cor',
+    descricao: 'Acesso a água, esgoto e coleta de lixo por raça/cor do domicílio',
+    fonte: 'IBGE - Censo 2022 / PNAD Contínua',
+    siglaFonte: 'IBGE',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
+    periodicidade: 'Anual/Decenal',
+    ultimaAtualizacao: '2023 (Censo 2022)',
+    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos. Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  }
+];
+
 const categorias = [
   { id: 'seguranca', nome: 'Segurança Pública', icon: Shield, indicadores: indicadoresSeguranca, cor: 'bg-red-500' },
   { id: 'saude', nome: 'Saúde', icon: Heart, indicadores: indicadoresSaude, cor: 'bg-pink-500' },
   { id: 'educacao', nome: 'Educação', icon: GraduationCap, indicadores: indicadoresEducacao, cor: 'bg-blue-500' },
+  { id: 'habitacao', nome: 'Habitação e Moradia', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
   { id: 'territorio', nome: 'Terras e Territórios', icon: Map, indicadores: indicadoresTerritorio, cor: 'bg-green-500' },
   { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
   { id: 'judiciario', nome: 'Judiciário', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' }
