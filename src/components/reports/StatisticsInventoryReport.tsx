@@ -32,6 +32,7 @@ import {
   jovensNegrosViolencia,
   razaoRendaRacial,
   interseccionalidadeTrabalhoFontes,
+  povosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas,
@@ -143,6 +144,7 @@ function indicadorToHTML(ind: any): string {
 
 function generateFullStatisticsHTML(indicadoresBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const systemBaseUrl = window.location.origin;
 
   const bdCategorias: Record<string, any[]> = {};
   indicadoresBD.forEach(i => {
@@ -293,19 +295,121 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 
 <!-- ═══════════════════════════════════════ -->
 <h2>5. INFRAESTRUTURA POR GRUPO ÉTNICO-RACIAL (Censo 2022)</h2>
-<div class="section-summary">Dados de infraestrutura domiciliar (água, esgoto, lixo) disponíveis nas abas do sistema, comparando quilombolas, negros, indígenas e média nacional (IBGE Censo 2022).</div>
+<div class="section-summary">
+  <strong>📍 Origem no sistema:</strong> <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a> | <a href="${systemBaseUrl}/grupos-focais">Grupos Focais</a>
+</div>
+<table>
+  <tr><th>Indicador</th><th>Quilombolas</th><th>Pop. Negra</th><th>Indígenas</th><th>Média Nacional</th></tr>
+  <tr><td>Água rede geral (%)</td><td>${povosTradicionais.quilombolas.acessoRedeAgua}%</td><td>${povosTradicionais.populacaoNegra.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.indigenas.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.aguaRedeGeral}%</td></tr>
+  <tr><td>Esgoto adequado (%)</td><td>${povosTradicionais.quilombolas.esgotamentoAdequado}%</td><td>${povosTradicionais.populacaoNegra.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.indigenas.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.esgotoAdequado}%</td></tr>
+  <tr><td>Coleta de lixo (%)</td><td>${povosTradicionais.quilombolas.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.indigenas.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.coletaLixo}%</td></tr>
+</table>
+<p class="meta">Fontes: IBGE Censo 2022 — Panorama Quilombola (<a href="${povosTradicionais.populacaoNegra.infraestrutura.linkPanorama}">Panorama Censo</a>); Indígenas (<a href="${povosTradicionais.indigenas.infraestrutura.link}">Censo 2022 Indígenas</a>).</p>
 
 <!-- ═══════════════════════════════════════ -->
-<h2>6. ABAS ESPECIAIS</h2>
+<h2>6. GRUPOS FOCAIS — Diagnóstico por Grupo Étnico-Racial</h2>
+<div class="section-summary">
+  <strong>📍 Origem no sistema:</strong> <a href="${systemBaseUrl}/grupos-focais">Escopo → Base Estatística → Grupos Focais</a><br>
+  Cada grupo focal possui diagnóstico com série temporal (2018-2024/2025), vinculação a parágrafos das Observações Finais do CERD e políticas públicas específicas.
+</div>
 
-<h3>6.1. COVID-19 e Desigualdade Racial</h3>
-<div class="section-summary">Dados de mortalidade COVID-19 por raça/cor disponíveis nas abas do sistema (DataSUS/SIVEP-Gripe 2020-2023).</div>
+<h3>6.1. Quilombolas — ${povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')} pessoas</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Quilombolas</a> | Observações ONU: §47, §48, §49</div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="value">${povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')}</div><div class="label">População (Censo 2022)</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.quilombolas.municipiosComQuilombolas.toLocaleString('pt-BR')}</div><div class="label">Municípios</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.quilombolas.comunidadesCertificadas.toLocaleString('pt-BR')}</div><div class="label">Certidões FCP</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.quilombolas.territoriosTitulados}</div><div class="label">Territórios Titulados</div></div>
+</div>
+<table>
+  <tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr>
+  <tr><td>Títulos expedidos (INCRA)</td><td>${povosTradicionais.quilombolas.titulosExpedidos}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf">INCRA PDF</a></td></tr>
+  <tr><td>Processos abertos (INCRA)</td><td>${povosTradicionais.quilombolas.processosAbertosIncra.toLocaleString('pt-BR')}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas">INCRA Quilombolas</a></td></tr>
+  <tr><td>Área titulada (ha)</td><td>${povosTradicionais.quilombolas.areaHectaresTitulados.toLocaleString('pt-BR')}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf">INCRA PDF</a></td></tr>
+  <tr><td>Em territórios reconhecidos</td><td>${povosTradicionais.quilombolas.emTerritoriosReconhecidos.toLocaleString('pt-BR')} (${povosTradicionais.quilombolas.percentualEmTerritorios}%)</td><td><a href="${povosTradicionais.quilombolas.urlFonte}">SIDRA 9578</a></td></tr>
+  <tr><td>Água rede geral</td><td>${povosTradicionais.quilombolas.acessoRedeAgua}%</td><td>Censo 2022</td></tr>
+  <tr><td>Esgoto adequado</td><td>${povosTradicionais.quilombolas.esgotamentoAdequado}%</td><td>Censo 2022</td></tr>
+  <tr><td>Coleta de lixo</td><td>${povosTradicionais.quilombolas.coletaLixo}%</td><td>Censo 2022</td></tr>
+</table>
+<p class="meta">Fonte primária: <a href="${povosTradicionais.quilombolas.urlFonte}">SIDRA 9578</a> | <a href="https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola">Palmares Certificação</a></p>
 
-<h3>6.2. Administração Pública (MUNIC/ESTADIC)</h3>
-<div class="section-summary">Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
+<h3>6.2. Indígenas — ${povosTradicionais.indigenas.populacaoPessoasIndigenas.toLocaleString('pt-BR')} pessoas</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Indígenas</a> | Observações ONU: §50, §51, §52, §53</div>
+<div class="stats-grid">
+  <div class="stat-card"><div class="value">${povosTradicionais.indigenas.populacaoPessoasIndigenas.toLocaleString('pt-BR')}</div><div class="label">Pessoas Indígenas</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.indigenas.populacaoCorRaca.toLocaleString('pt-BR')}</div><div class="label">Cor/Raça Indígena</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.indigenas.etnias}</div><div class="label">Etnias</div></div>
+  <div class="stat-card"><div class="value">${povosTradicionais.indigenas.linguas}</div><div class="label">Línguas Vivas</div></div>
+</div>
+<table>
+  <tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr>
+  <tr><td>Pop. Amazônia Legal</td><td>${povosTradicionais.indigenas.populacaoAmazoniaLegal.toLocaleString('pt-BR')} (~51%)</td><td><a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a></td></tr>
+  <tr><td>Pop. Urbana</td><td>${povosTradicionais.indigenas.populacaoUrbana.toLocaleString('pt-BR')}</td><td><a href="${povosTradicionais.indigenas.infraestrutura.link}">IBGE Censo 2022</a></td></tr>
+  <tr><td>TIs Homologadas 2018-2022</td><td>${povosTradicionais.indigenas.terrasHomologadas2018_2022}</td><td>FUNAI</td></tr>
+  <tr><td>TIs Homologadas 2023-2025</td><td>${povosTradicionais.indigenas.terrasHomologadas2023_2025}</td><td>FUNAI</td></tr>
+  <tr><td>Mortalidade infantil</td><td>${povosTradicionais.indigenas.mortalidadeInfantil} p/1000 NV</td><td>DataSUS/SESAI</td></tr>
+  <tr><td>Educação bilíngue</td><td>${povosTradicionais.indigenas.educacaoBilingue}%</td><td>INEP/Censo Educação</td></tr>
+  <tr><td>Rendimento médio</td><td>R$ ${povosTradicionais.indigenas.rendimentoMedio.toLocaleString('pt-BR')}</td><td><a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a></td></tr>
+</table>
+<p class="meta">Fontes: <a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a> | <a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a> | <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas">FUNAI Geoprocessamento</a></p>
+
+<h3>6.3. Ciganos/Roma — Lacuna Crítica</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Ciganos</a> | Observações ONU: §54, §55</div>
+<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px;margin:8px 0;">
+  <p style="font-size:11px;color:#991b1b;font-weight:600;">⚠️ LACUNA CRÍTICA: Censo 2022 não incluiu pergunta específica para Ciganos/Roma</p>
+  <p style="font-size:10px;color:#7f1d1d;">Estimativa não-oficial: ~${povosTradicionais.ciganos.populacaoEstimada.toLocaleString('pt-BR')} pessoas | ${povosTradicionais.ciganos.acampamentosIdentificados} acampamentos identificados</p>
+  <p style="font-size:10px;color:#7f1d1d;">O CERD expressou preocupação específica (§54-55) sobre a ausência de dados oficiais. MUNIC 2024 registra apenas presença/ausência de acampamentos por município.</p>
+</div>
+
+<h3>6.4. Juventude Negra (15-29 anos)</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Juventude Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | ONU: §32-§36</div>
+<table>
+  <tr><th>Indicador</th><th>Negros</th><th>Brancos</th><th>Fonte</th></tr>
+  ${juventudeNegra.map(j => '<tr>' +
+    '<td>' + j.indicador + '</td>' +
+    '<td style="font-weight:600;color:#991b1b;">' + j.valor + '</td>' +
+    '<td>' + j.referencia + '</td>' +
+    '<td><a href="' + j.url + '">' + j.fonte + '</a></td>' +
+  '</tr>').join('')}
+</table>
+<div class="interpretation">📊 Jovens negros: ${jovensNegrosViolencia.percentualObitosExternos}% dos óbitos por causas externas (${jovensNegrosViolencia.fonte}). Pop. carcerária: ${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}% negra (${jovensNegrosViolencia.fonteCarce}).</div>
+
+<h3>6.5. Mulheres Negras — Violência e Saúde</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Mulheres Negras</a> | ONU: §15, §17, §23, §28</div>
+<h4>Violência contra Mulheres Negras</h4>
+${arrayToHTMLTable(violenciaInterseccional, '')}
+<h4>Saúde Interseccional (Raça × Classe)</h4>
+<table>
+  <tr><th>Indicador</th><th>Negra Pobre</th><th>Negra Média</th><th>Branca</th></tr>
+  ${saudeInterseccional.map(s => '<tr><td>' + s.indicador + '</td><td>' + s.mulherNegraPobre + '</td><td>' + s.mulherNegraMedia + '</td><td>' + s.mulherBranca + '</td></tr>').join('')}
+</table>
+<p class="meta">Fontes: 19º Anuário FBSP 2025, DataSUS/SIM, SINASC, CadÚnico (cruzamentos). <span class="badge badge-amber">🔀 Cruzamento indireto</span></p>
+<h4>Mulheres Chefes de Família — Série Histórica</h4>
+${arrayToHTMLTable(mulheresChefeFamilia, '')}
+
+<h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
+<table>
+  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Branca</th><th>Média Nacional</th></tr>
+  <tr><td>Água rede geral</td><td>${povosTradicionais.populacaoNegra.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.aguaRedeGeral}%</td></tr>
+  <tr><td>Esgoto adequado</td><td>${povosTradicionais.populacaoNegra.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.esgotoAdequado}%</td></tr>
+  <tr><td>Coleta de lixo</td><td>${povosTradicionais.populacaoNegra.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.coletaLixo}%</td></tr>
+  <tr><td>Sem banheiro</td><td>${povosTradicionais.populacaoNegra.infraestrutura.semBanheiro}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.semBanheiro}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.semBanheiro}%</td></tr>
+</table>
+<p class="meta">Fonte: <a href="${povosTradicionais.populacaoNegra.infraestrutura.link}">IBGE Censo 2022 — Características dos domicílios (Fev/2024)</a> | <a href="${povosTradicionais.populacaoNegra.infraestrutura.linkPanorama}">Panorama Censo 2022</a></p>
+<div class="interpretation">📊 ${povosTradicionais.populacaoNegra.infraestrutura.nota}</div>
 
 <!-- ═══════════════════════════════════════ -->
-<h2>7. COMMON CORE — ${TOTAL_TABELAS_COMMON_CORE} Tabelas (HRI/CORE/BRA)</h2>
+<h2>7. ABAS ESPECIAIS</h2>
+
+<h3>7.1. COVID-19 e Desigualdade Racial</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → COVID-19</a> | Dados de mortalidade COVID-19 por raça/cor (DataSUS/SIVEP-Gripe 2020-2023).</div>
+
+<h3>7.2. Administração Pública (MUNIC/ESTADIC)</h3>
+<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Adm. Pública</a> | Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>8. COMMON CORE — ${TOTAL_TABELAS_COMMON_CORE} Tabelas (HRI/CORE/BRA)</h2>
 
 ${ccCategorias.map(cat => `
 <h3>${cat.nome} (${cat.tabelas.length} tabelas)</h3>
@@ -318,7 +422,7 @@ ${cat.tabelas.map(t => `
 </div>`).join('')}`).join('')}
 
 <!-- ═══════════════════════════════════════ -->
-<h2>8. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
+<h2>9. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
 
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
