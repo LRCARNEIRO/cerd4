@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home, Phone, Vote, Building2 } from 'lucide-react';
+import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home, Vote, Building2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -437,20 +437,107 @@ const indicadoresOrcamento: NovoIndicador[] = [
 ];
 
 const indicadoresJudiciario: NovoIndicador[] = [
+  // §25-27 — Disque 100 / Acesso à Justiça (MDH)
   {
-    id: 'jud-1',
-    nome: 'Processos de racismo e injúria racial',
-    descricao: 'Casos novos, pendentes e julgados de crimes raciais',
-    fonte: 'Conselho Nacional de Justiça',
+    id: 'aj-1',
+    nome: 'Denúncias de discriminação racial — Disque 100',
+    descricao: 'Total de denúncias recebidas pelo Disque 100 classificadas como discriminação racial, por tipo de violação, perfil da vítima e UF',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 1.246 denúncias de discriminação racial → 2023: 2.896 (+132%). Perfil das vítimas: 73% negras, 62% mulheres. UFs com mais registros: SP, RJ, BA. Subnotificação estimada em 90% (MDH 2023).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'aj-2',
+    nome: 'Denúncias de violência contra povos tradicionais — Disque 100',
+    descricao: 'Denúncias envolvendo comunidades indígenas, quilombolas e ciganas',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2023: 487 denúncias contra indígenas, 312 contra quilombolas, 89 contra ciganos (Disque 100). Tipos: ameaça (34%), invasão territorial (22%), violência física (18%).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'aj-3',
+    nome: 'Denúncias de intolerância religiosa — Disque 100',
+    descricao: 'Denúncias de discriminação contra religiões de matriz africana e outras',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 506 denúncias de intolerância religiosa → 2023: 1.123 (+122%). 72% envolvem religiões de matriz africana (candomblé, umbanda). Vinculado ao Art. V(d)(vii) ICERD — liberdade religiosa.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  // §12-14 — Processos por Racismo (CNJ)
+  {
+    id: 'pr-1',
+    nome: 'Casos novos de racismo e injúria racial',
+    descricao: 'Processos novos distribuídos por tipo penal (Lei 7.716/89 e Art. 140§3º CP), por tribunal e UF',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
     siglaFonte: 'CNJ',
     urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 8.524 casos novos de racismo/injúria racial → 2023: 12.847 (+51%). Taxa de condenação: apenas 7%. Lei 14.532/2023 equiparou injúria racial a racismo (imprescritível).',
+    relevanciaRacial: '2018: 8.524 casos novos → 2023: 12.847 (+51%). Lei 14.532/2023 equiparou injúria racial a racismo (crime imprescritível e inafiançável). Maior crescimento: TJ-SP (+68%), TJ-RJ (+54%).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'pr-2',
+    nome: 'Taxa de condenação em crimes de racismo',
+    descricao: 'Proporção de processos que resultam em condenação vs absolvição/arquivamento',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Taxa de condenação em crimes de racismo: apenas 7% (CNJ 2023). Arquivamento: 52%. Prescrição: 18%. Impunidade estrutural como barreira ao acesso à justiça racial.',
     prioridade: 'alta',
     status: 'parcial'
   },
+  {
+    id: 'pr-3',
+    nome: 'Tempo médio de tramitação de processos raciais',
+    descricao: 'Duração média dos processos por crime de racismo da distribuição ao julgamento',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Tempo médio: 3,2 anos (1ª instância). Antes da Lei 14.532/2023, injúria racial prescrevia em 8 anos — muitos processos perdidos. Equiparação a racismo (imprescritível) é avanço legislativo.',
+    prioridade: 'media',
+    status: 'parcial'
+  },
+  {
+    id: 'pr-4',
+    nome: 'Racismo institucional no sistema de justiça',
+    descricao: 'Composição racial de magistrados, promotores e servidores do Judiciário',
+    fonte: 'CNJ — Censo do Poder Judiciário',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/censo-do-poder-judiciario/',
+    periodicidade: 'Quinquenal',
+    ultimaAtualizacao: '2023 (Censo Judiciário 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
+    relevanciaRacial: 'Magistrados negros: 18,1% (Censo Judiciário 2023) vs 55,5% da população. Desembargadores negros: 12,8%. Ministros STF/STJ negros: 2 de 22 (9%). Sub-representação estrutural no Judiciário.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  // Originais — STF, quilombolas, Defensoria
   {
     id: 'jud-2',
     nome: 'Decisões STF sobre questões raciais',
@@ -551,66 +638,6 @@ const indicadoresHabitacao: NovoIndicador[] = [
     relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos. Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
     prioridade: 'alta',
     status: 'disponivel'
-  }
-];
-
-// §25-27 — Disque 100 / Acesso à Justiça (MDH)
-const indicadoresAcessoJustica: NovoIndicador[] = [
-  {
-    id: 'aj-1',
-    nome: 'Denúncias de discriminação racial — Disque 100',
-    descricao: 'Total de denúncias recebidas pelo Disque 100 classificadas como discriminação racial, por tipo de violação, perfil da vítima e UF',
-    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
-    siglaFonte: 'MDH/Disque 100',
-    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 1.246 denúncias de discriminação racial → 2023: 2.896 (+132%). Perfil das vítimas: 73% negras, 62% mulheres. UFs com mais registros: SP, RJ, BA. Subnotificação estimada em 90% (MDH 2023).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'aj-2',
-    nome: 'Denúncias de violência contra povos tradicionais — Disque 100',
-    descricao: 'Denúncias envolvendo comunidades indígenas, quilombolas e ciganas',
-    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
-    siglaFonte: 'MDH/Disque 100',
-    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2023: 487 denúncias contra indígenas, 312 contra quilombolas, 89 contra ciganos (Disque 100). Tipos: ameaça (34%), invasão territorial (22%), violência física (18%).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'aj-3',
-    nome: 'Denúncias de intolerância religiosa — Disque 100',
-    descricao: 'Denúncias de discriminação contra religiões de matriz africana e outras',
-    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
-    siglaFonte: 'MDH/Disque 100',
-    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 506 denúncias de intolerância religiosa → 2023: 1.123 (+122%). 72% envolvem religiões de matriz africana (candomblé, umbanda). Vinculado ao Art. V(d)(vii) ICERD — liberdade religiosa.',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'aj-4',
-    nome: 'Atendimentos da Defensoria Pública por raça/cor',
-    descricao: 'Perfil racial dos assistidos pela Defensoria Pública da União e estaduais',
-    fonte: 'Associação Nacional dos Defensores Públicos / DPU',
-    siglaFonte: 'ANADEP/DPU',
-    urlFonte: 'https://www.anadep.org.br/',
-    periodicidade: 'Bienal',
-    ultimaAtualizacao: '2023 (dados 2022)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '73% dos assistidos pela Defensoria são negros (ANADEP 2022). Déficit de defensores: 1 para cada 14 mil pessoas elegíveis. Apenas 42% das comarcas têm defensoria instalada.',
-    prioridade: 'alta',
-    status: 'parcial'
   }
 ];
 
@@ -748,70 +775,9 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
   }
 ];
 
-// §12-14 — Processos por Racismo (CNJ) — expandido
-const indicadoresProcessosRacismo: NovoIndicador[] = [
-  {
-    id: 'pr-1',
-    nome: 'Casos novos de racismo e injúria racial',
-    descricao: 'Processos novos distribuídos por tipo penal (Lei 7.716/89 e Art. 140§3º CP), por tribunal e UF',
-    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 8.524 casos novos → 2023: 12.847 (+51%). Lei 14.532/2023 equiparou injúria racial a racismo (crime imprescritível e inafiançável). Maior crescimento: TJ-SP (+68%), TJ-RJ (+54%).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'pr-2',
-    nome: 'Taxa de condenação em crimes de racismo',
-    descricao: 'Proporção de processos que resultam em condenação vs absolvição/arquivamento',
-    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Taxa de condenação em crimes de racismo: apenas 7% (CNJ 2023). Arquivamento: 52%. Prescrição: 18%. Impunidade estrutural como barreira ao acesso à justiça racial.',
-    prioridade: 'alta',
-    status: 'parcial'
-  },
-  {
-    id: 'pr-3',
-    nome: 'Tempo médio de tramitação de processos raciais',
-    descricao: 'Duração média dos processos por crime de racismo da distribuição ao julgamento',
-    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Tempo médio: 3,2 anos (1ª instância). Antes da Lei 14.532/2023, injúria racial prescrevia em 8 anos — muitos processos perdidos. Equiparação a racismo (imprescritível) é avanço legislativo.',
-    prioridade: 'media',
-    status: 'parcial'
-  },
-  {
-    id: 'pr-4',
-    nome: 'Racismo institucional no sistema de justiça',
-    descricao: 'Composição racial de magistrados, promotores e servidores do Judiciário',
-    fonte: 'CNJ — Censo do Poder Judiciário',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/censo-do-poder-judiciario/',
-    periodicidade: 'Quinquenal',
-    ultimaAtualizacao: '2023 (Censo Judiciário 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Magistrados negros: 18,1% (Censo Judiciário 2023) vs 55,5% da população. Desembargadores negros: 12,8%. Ministros STF/STJ negros: 2 de 22 (9%). Sub-representação estrutural no Judiciário.',
-    prioridade: 'alta',
-    status: 'disponivel'
-  }
-];
-
 const categorias = [
-  { id: 'acesso-justica', nome: 'Acesso à Justiça / Disque 100 (§25-27)', icon: Phone, indicadores: indicadoresAcessoJustica, cor: 'bg-teal-600' },
+  { id: 'judiciario', nome: 'Judiciário, Acesso à Justiça e Racismo (§12-14, §25-27)', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' },
   { id: 'representatividade', nome: 'Representatividade Política (§45-46)', icon: Vote, indicadores: indicadoresRepresentatividade, cor: 'bg-indigo-600' },
-  { id: 'processos-racismo', nome: 'Processos por Racismo (§12-14)', icon: Scale, indicadores: indicadoresProcessosRacismo, cor: 'bg-rose-600' },
   { id: 'sistema-prisional', nome: 'Sistema Prisional (§38-40)', icon: Building2, indicadores: indicadoresSistemaPrisional, cor: 'bg-slate-700' },
   { id: 'seguranca', nome: 'Segurança Pública', icon: Shield, indicadores: indicadoresSeguranca, cor: 'bg-red-500' },
   { id: 'saude', nome: 'Saúde', icon: Heart, indicadores: indicadoresSaude, cor: 'bg-pink-500' },
@@ -819,7 +785,6 @@ const categorias = [
   { id: 'habitacao', nome: 'Habitação e Moradia (§42-44)', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
   { id: 'territorio', nome: 'Terras e Territórios', icon: Map, indicadores: indicadoresTerritorio, cor: 'bg-green-500' },
   { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
-  { id: 'judiciario', nome: 'Judiciário', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' }
 ];
 
 const StatusIcon = ({ status }: { status: string }) => {
