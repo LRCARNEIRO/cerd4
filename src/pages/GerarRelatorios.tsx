@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
@@ -11,6 +11,7 @@ import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerato
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
+import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
@@ -61,7 +62,8 @@ export default function GerarRelatorios() {
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{totalLacunas} lacunas ONU</Badge>
           <Badge variant="outline" className="gap-1"><FileCheck className="w-3 h-3" />{respostasCerd?.length || 0} respostas CERD III</Badge>
           <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />{orcStats?.totalRegistros || 0} registros orçamentários</Badge>
-          <Badge variant="outline" className="gap-1"><TrendingUp className="w-3 h-3" />{indicadores?.length || 0} indicadores</Badge>
+          <Badge variant="outline" className="gap-1"><TrendingUp className="w-3 h-3" />{indicadores?.length || 0} indicadores BD</Badge>
+          <Badge variant="outline" className="gap-1"><PlusCircle className="w-3 h-3" />{TOTAL_DADOS_NOVOS} dados novos auditáveis</Badge>
           <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />{conclusoes?.length || 0} conclusões</Badge>
         </div>
         <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
