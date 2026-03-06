@@ -133,11 +133,11 @@ const dadosTerritoriais = {
     // O PDF lista cada título com nº processo, comunidade, município, UF, área e data de expedição
     territoriosTitulados: 245,
     fonteTerritoriosTitulados: 'INCRA - PDF "Títulos Expedidos às Comunidades Quilombolas"',
-    linkTerritoriosTitulados: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    linkTerritoriosTitulados: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
     // 384 títulos: mesmo PDF (um território pode receber múltiplos títulos parciais)
     titulosExpedidos: 384,
     fonteTitulosExpedidos: 'INCRA - Total acumulado no PDF "Títulos Expedidos"',
-    linkTitulosExpedidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    linkTitulosExpedidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
     comunidadesAbrangidas: 395,
     // 2.014 processos: INCRA - painel de processos abertos
     territoriosEmProcesso: 2014,
@@ -146,15 +146,15 @@ const dadosTerritoriais = {
     // 3.158 certidões: Fundação Cultural Palmares - Portarias de Certificação
     comunidadesCertificadasFCP: 3158,
     fonteFCP: 'Fundação Cultural Palmares - Portarias de Certificação Quilombola',
-    linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/departamento-de-protecao-ao-patrimonio-afro-brasileiro/certificacao-quilombola/certificacao-quilombola',
+    linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola',
     familiasAtendidas: 155000,
     // 1.162.002 ha: soma das áreas no PDF de Títulos Expedidos
     areaTotal: 1162002,
     fonteArea: 'INCRA - Soma das áreas no PDF Títulos Expedidos (ha)',
-    linkArea: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    linkArea: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
     fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Certificação',
     link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
-    linkTitulos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Titulos_expedidos.pdf',
+    linkTitulos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
     ultimaAtualizacao: '2025-11-01',
     notaFonte: 'Territórios/títulos/área: PDF "Títulos Expedidos" do INCRA (lista nominal). Certidões: Palmares - Portarias de Certificação.',
     // Infraestrutura: Censo 2022 - Domicílios em territórios quilombolas
