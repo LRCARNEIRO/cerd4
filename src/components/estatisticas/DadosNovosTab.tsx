@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home, Vote, Building2 } from 'lucide-react';
+import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, CheckCircle2, Home, Vote, Building2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -26,7 +26,6 @@ interface NovoIndicador {
   };
   relevanciaRacial: string;
   prioridade: 'alta' | 'media' | 'baixa';
-  status: 'disponivel' | 'parcial' | 'indisponivel';
 }
 
 const indicadoresSeguranca: NovoIndicador[] = [
@@ -41,8 +40,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 40,2 (2018) → 27,5 (2024); brancos 15,5 → 10,2.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'seg-2',
@@ -55,8 +53,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 75,4% das vítimas de letalidade policial eram negras → 2024: 82% (19º Anuário FBSP 2025). 6.393 mortes por intervenção policial em 2024.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'seg-3',
@@ -69,22 +66,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.589 casos). Aumento absoluto de 32% no total de feminicídios no período (19º Anuário FBSP 2025).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'seg-4',
-    nome: 'Violência contra LGBTQIA+ por raça',
-    descricao: 'Casos de violência contra população LGBTQIA+ com recorte racial',
-    fonte: 'Atlas da Violência / IPEA',
-    siglaFonte: 'IPEA',
-    urlFonte: 'https://www.ipea.gov.br/atlasviolencia/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: true, deficiencia: false },
-    relevanciaRacial: '68,2% das vítimas de violência LGBTfóbica são negras (ANTRA 2025). Brasil líder mundial em assassinatos de pessoas trans — maioria mulheres trans negras.',
-    prioridade: 'alta',
-    status: 'parcial'
+    prioridade: 'alta'
   },
   {
     id: 'seg-5',
@@ -97,8 +79,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 63,6% da pop. carcerária era negra (726.354 presos) → 2024: 68,2% negra (832.295 presos). Aumento de 4,6 p.p. na sobre-representação racial.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'seg-6',
@@ -111,8 +92,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     ultimaAtualizacao: '2023',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '67% dos adolescentes em medidas socioeducativas são negros (SINASE 2023). Jovens negros (15-29 anos): 73% dos óbitos por causas externas (Fiocruz 2025).',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
@@ -128,8 +108,7 @@ const indicadoresSaude: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: mort. materna negras 62,8/100mil NV → 2023: 55,2. Brancas: 32,5 → 28,5. Razão persistente: negras 2x mais chance de morte materna que brancas.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'sau-2',
@@ -142,8 +121,7 @@ const indicadoresSaude: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: mort. infantil negra 14,5/mil NV → 2024: 11,8. Branca: 10,2 → 8,5. Diferença: negros ainda 39% acima dos brancos. Indígenas: 38,8/mil NV (SESAI 2023).',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'sau-3',
@@ -156,22 +134,7 @@ const indicadoresSaude: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 72% gestantes negras com 7+ consultas → 2023: 78%. Brancas: 85% → 89%. Gap reduziu de 13 p.p. para 11 p.p. Indígenas: apenas 52% (SESAI 2023).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'sau-4',
-    nome: 'Indicadores de Saúde Indígena',
-    descricao: 'Cobertura vacinal, mortalidade, doenças em territórios indígenas',
-    fonte: 'Secretaria Especial de Saúde Indígena',
-    siglaFonte: 'SESAI',
-    urlFonte: 'https://www.gov.br/saude/pt-br/composicao/sesai',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Mort. infantil indígena 38,8/mil NV vs média nacional 11,5 (3,4x). Crise Yanomami 2023: desnutrição infantil aguda em 52% das crianças. Cobertura vacinal: 62% vs 85% nacional.',
-    prioridade: 'alta',
-    status: 'parcial'
+    prioridade: 'alta'
   },
   {
     id: 'sau-5',
@@ -184,22 +147,7 @@ const indicadoresSaude: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Doença falciforme: 1 a cada 1.000 nascidos negros. Hipertensão: prevalência 30% maior em negros. Diabetes: negras 2x mais complicações que brancas (VIGITEL 2023).',
-    prioridade: 'media',
-    status: 'disponivel'
-  },
-  {
-    id: 'sau-6',
-    nome: 'Saúde mental por raça/cor e gênero',
-    descricao: 'Atendimentos em CAPS, suicídios, transtornos por raça/cor',
-    fonte: 'RAPS / DataSUS',
-    siglaFonte: 'DataSUS',
-    urlFonte: 'https://datasus.saude.gov.br/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: suicídio jovens negros (15-29) 5,8/100mil → 2023: 7,2/100mil (+24%). Indígenas: taxa 2,5x maior que média nacional. Mulheres negras: menor acesso a serviços de saúde mental.',
-    prioridade: 'alta',
-    status: 'parcial'
+    prioridade: 'media'
   }
 ];
 
@@ -215,8 +163,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: '2018: negros 9,1% analfabetos → 2024: 6,9%. Brancos: 3,8% → 3,1%. Razão negro/branco: 2,4x → 2,2x. Idosos negros 60+: 21,8% vs brancos 8,1%.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'edu-2',
@@ -229,8 +176,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: '2018: 9,3% negros com ensino superior → 2024: 16,2% (+74%). Brancos: 22,9% → 28,5%. Gap reduziu de 13,6 p.p. para 12,3 p.p. Cotas Lei 12.711/2012 aceleraram inclusão.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'edu-3',
@@ -243,8 +189,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: 'Distorção idade-série: negros 28,8% vs brancos 18,2% no ensino médio (Censo Escolar 2023). Meninos negros: taxa 35% acima da média.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'edu-4',
@@ -257,8 +202,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: 'Evasão ensino médio: jovens negros 7,2% vs brancos 4,5% (Censo Escolar 2023). Jovens negros de baixa renda: 12,8% de abandono. Indígenas: 9,5%.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'edu-5',
@@ -271,8 +215,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: '3.526 escolas indígenas e 2.749 quilombolas (Censo Escolar 2023). 38% sem acesso à internet. Apenas 43% implementam Lei 10.639/2003 plenamente.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'edu-6',
@@ -285,8 +228,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: 'Média ENEM 2023: brancos 542 pts vs negros 487 pts (gap de 55 pts). Redação: brancos 620 vs negros 558. Negros de baixa renda: 442 pts.',
-    prioridade: 'media',
-    status: 'disponivel'
+    prioridade: 'media'
   }
 ];
 
@@ -302,8 +244,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '644 Terras Indígenas (496 homologadas/regularizadas). 2019-2022: 0 homologações. 2023-2024: 10 novas homologações. 148 TIs aguardam demarcação.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'ter-2',
@@ -316,8 +257,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 2.523 comunidades certificadas → 2025: 3.158 (+635). 245 territórios titulados (384 títulos). 1.330.186 quilombolas (Censo 2022, 1ª contagem oficial).',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'ter-3',
@@ -330,8 +270,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2019-2022: apenas 4 titulações (retrocesso). 2023-2024: retomada com PNGTAQ (Dec. 11.786/2023). Orçamento INCRA para quilombos: queda de 90% (2016-2022), retomada parcial 2023-2024.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'ter-4',
@@ -344,8 +283,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 1.489 conflitos → 2023: 2.203 (+48%). Invasões em TIs cresceram 180% (2019-2022). Garimpo ilegal: pico de 20 mil em terras Yanomami (2022). Assassinatos de indígenas: 31 em 2023 (CIMI).',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'ter-5',
@@ -358,8 +296,7 @@ const indicadoresTerritorio: NovoIndicador[] = [
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Quilombos: 26,6% sem água canalizada, 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Negros em periferias: 2x menos acesso a saneamento que brancos em áreas centrais.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
@@ -375,22 +312,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2019: orçamento MIR/SEPPIR praticamente zerado (R$ 1,2mi executado). 2024: R$ 194mi dotação MIR (execução 72%). Comparativo 2018→2024: queda de 95% (2019-2022) seguida de retomada parcial.',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'orc-2',
-    nome: 'Transferências para estados e municípios - políticas raciais',
-    descricao: 'Repasses federais para ações de promoção da igualdade racial',
-    fonte: 'Sistema de Informações Contábeis e Fiscais',
-    siglaFonte: 'SICONFI',
-    urlFonte: 'https://siconfi.tesouro.gov.br/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Repasses federais para igualdade racial nos municípios: apenas 12% dos municípios receberam recursos específicos (SICONFI 2023). Desigualdade regional: SE e NE com menor execução.',
-    prioridade: 'media',
-    status: 'parcial'
+    prioridade: 'alta'
   },
   {
     id: 'orc-3',
@@ -403,8 +325,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (tempo real)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: false, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: SEPPIR com R$ 32mi executados → 2019-2022: extinção/esvaziamento (R$ 1-5mi). 2023: recriação MIR com R$ 137mi → 2024: R$ 194mi. Retomada: +490% vs 2022.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'orc-4',
@@ -417,8 +338,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Apenas 5,3% dos municípios têm órgão específico de igualdade racial (MUNIC 2023). Norte e Nordeste: 3,8%. Queda de 8,2% (2018) para 5,3% (2023) — desmonte institucional local.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'orc-5',
@@ -431,13 +351,11 @@ const indicadoresOrcamento: NovoIndicador[] = [
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 1.045 municípios aderentes → 2024: 1.832 (+75%). Cobertura: 33% dos municípios. Meta PPA 2024-2027: 3.000 municípios.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
 const indicadoresJudiciario: NovoIndicador[] = [
-  // §25-27 — Disque 100 / Acesso à Justiça (MDH)
   {
     id: 'aj-1',
     nome: 'Denúncias de discriminação racial — Disque 100',
@@ -449,8 +367,7 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2024: 5.200+ violações de racismo e injúria racial registradas pelo Disque 100 (MDH, nov/2024). Crescimento de 22,6% no total de denúncias em 2024 vs 2023 (657,2 mil denúncias totais). Deep link: Painel de Dados ONDH.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'aj-2',
@@ -463,8 +380,7 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Dados disponíveis no Painel ONDH com filtro por grupo vulnerável (indígenas, quilombolas, ciganos). Tipos de violação: ameaça, invasão territorial, violência física. Consultar relatórios anuais em Dados Abertos.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'aj-3',
@@ -477,10 +393,8 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Dados disponíveis no Painel ONDH com filtro por tipo de violação (intolerância religiosa). Maioria envolve religiões de matriz africana (candomblé, umbanda). Vinculado ao Art. V(d)(vii) ICERD. Dados Abertos: gov.br/mdh/dados-abertos/disque100.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
-  // §12-14 — Processos por Racismo (CNJ)
   {
     id: 'pr-1',
     nome: 'Casos novos de racismo e injúria racial',
@@ -492,36 +406,7 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 8.524 casos novos → 2023: 12.847 (+51%). Lei 14.532/2023 equiparou injúria racial a racismo (crime imprescritível e inafiançável). Maior crescimento: TJ-SP (+68%), TJ-RJ (+54%).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'pr-2',
-    nome: 'Taxa de condenação em crimes de racismo',
-    descricao: 'Proporção de processos que resultam em condenação vs absolvição/arquivamento',
-    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Taxa de condenação em crimes de racismo: apenas 7% (CNJ 2023). Arquivamento: 52%. Prescrição: 18%. Impunidade estrutural como barreira ao acesso à justiça racial.',
-    prioridade: 'alta',
-    status: 'parcial'
-  },
-  {
-    id: 'pr-3',
-    nome: 'Tempo médio de tramitação de processos raciais',
-    descricao: 'Duração média dos processos por crime de racismo da distribuição ao julgamento',
-    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
-    siglaFonte: 'CNJ',
-    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Tempo médio: 3,2 anos (1ª instância). Antes da Lei 14.532/2023, injúria racial prescrevia em 8 anos — muitos processos perdidos. Equiparação a racismo (imprescritível) é avanço legislativo.',
-    prioridade: 'media',
-    status: 'parcial'
+    prioridade: 'alta'
   },
   {
     id: 'pr-4',
@@ -534,10 +419,8 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2023 (Censo Judiciário 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: 'Magistrados negros: 18,1% (Censo Judiciário 2023) vs 55,5% da população. Desembargadores negros: 12,8%. Ministros STF/STJ negros: 2 de 22 (9%). Sub-representação estrutural no Judiciário.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
-  // Originais — STF, quilombolas, Defensoria
   {
     id: 'jud-2',
     nome: 'Decisões STF sobre questões raciais',
@@ -549,36 +432,7 @@ const indicadoresJudiciario: NovoIndicador[] = [
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: false, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Marco temporal indígena rejeitado (2023). Cotas raciais constitucionais (ADPF 186). ADPF 635: restrição a operações policiais em favelas/RJ. Lei de Cotas renovada (Lei 14.723/2023).',
-    prioridade: 'media',
-    status: 'disponivel'
-  },
-  {
-    id: 'jud-3',
-    nome: 'Ações de titulação quilombola no Judiciário',
-    descricao: 'Processos judiciais sobre demarcação de territórios quilombolas',
-    fonte: 'Superior Tribunal de Justiça',
-    siglaFonte: 'STJ',
-    urlFonte: 'https://scon.stj.jus.br/SCON/',
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'ADI 3239: constitucionalidade do Dec. 4.887/2003 confirmada (2018). 342 processos judiciais ativos sobre titulação quilombola (STJ/TRFs 2024). Tempo médio: 12 anos por processo.',
-    prioridade: 'media',
-    status: 'parcial'
-  },
-  {
-    id: 'jud-4',
-    nome: 'Defensoria Pública e população negra',
-    descricao: 'Atendimentos da Defensoria por raça/cor do assistido',
-    fonte: 'Diagnóstico da Defensoria Pública',
-    siglaFonte: 'ANADEP',
-    urlFonte: 'https://www.anadep.org.br/',
-    periodicidade: 'Bienal',
-    ultimaAtualizacao: '2023 (dados 2022)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '73% dos assistidos pela Defensoria são negros (ANADEP 2022). Déficit de defensores: 1 para cada 14 mil pessoas elegíveis. Apenas 42% das comarcas têm defensoria instalada.',
-    prioridade: 'media',
-    status: 'parcial'
+    prioridade: 'media'
   }
 ];
 
@@ -594,8 +448,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     ultimaAtualizacao: '2023 (dados PNAD 2022)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Déficit habitacional: 72,2% das famílias em déficit são chefiadas por pessoas negras (FJP 2023). Total: 5,9 milhões de domicílios. Negros sobre-representados em relação aos 55,5% da população.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'hab-2',
@@ -608,8 +461,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '60,2% da titularidade feminina no CadÚnico (MDS 2024). Maioria dos beneficiários Faixa 1 são famílias negras. MCMV foi reclassificado como política com impacto racial indireto.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'hab-3',
@@ -622,8 +474,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '69% dos moradores de favelas são negros (Censo 2022), contra 55,5% da população total — sobre-representação de 13,5 p.p. 16,4 milhões de pessoas em aglomerados subnormais.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'hab-4',
@@ -636,8 +487,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos. Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
@@ -654,8 +504,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2014: 46,7% dos candidatos autodeclarados negros → 2024: 52,4% (+5,7 p.p.). Porém, negros são apenas 33% dos eleitos para prefeito (sub-representação de 22 p.p.).',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'rep-2',
@@ -668,8 +517,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     ultimaAtualizacao: '2022',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2018: 24,4% dos deputados federais negros → 2022: 30,1% (+5,7 p.p.). Senado 2022: 19,7% negros. População negra: 55,5% — sub-representação persistente de 25 p.p. na Câmara.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'rep-3',
@@ -682,8 +530,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. 2022: candidatos negros receberam 37% dos recursos vs 55,5% da população. Gap de R$ 1,2 bilhão.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'rep-4',
@@ -696,8 +543,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2024: 44,2% dos vereadores eleitos são negros (vs 55,5% da população). Prefeitos negros: 33%. Mulheres negras: apenas 5,8% dos prefeitos eleitos.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
@@ -714,8 +560,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: '2024: 68,2% da pop. carcerária é negra (832.295 presos). 2018: 63,6% (726.354). Aumento de 4,6 p.p. Escolaridade: 61% não completou ensino fundamental. Mulheres negras presas: 68% do total feminino.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'sp-2',
@@ -728,8 +573,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: 'Taxa encarceramento negros: ~502/100mil vs brancos: ~195/100mil (cruzamento SISDEPEN 2024 × Censo 2022). Razão: 2,6x. Metodologia: pop. carcerária negra ÷ pop. negra total × 100mil.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   },
   {
     id: 'sp-3',
@@ -742,22 +586,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2024: 30,4% dos presos são provisórios. Negros provisórios: 72% do total de provisórios (sobre-representação). Tempo médio sem julgamento: 172 dias (negros) vs 128 dias (brancos).',
-    prioridade: 'alta',
-    status: 'disponivel'
-  },
-  {
-    id: 'sp-4',
-    nome: 'Superlotação carcerária e acesso a defensor público',
-    descricao: 'Taxa de ocupação de estabelecimentos penais e disponibilidade de defensores por raça dos internos',
-    fonte: 'SISDEPEN / ANADEP',
-    siglaFonte: 'SISDEPEN/ANADEP',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
-    periodicidade: 'Semestral/Bienal',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Taxa de ocupação: 170,7% (2024). Presos negros em unidades superlotadas (>200%): 74%. Acesso a defensor público: apenas 38% dos presos negros vs 52% dos brancos (ANADEP 2022).',
-    prioridade: 'alta',
-    status: 'parcial'
+    prioridade: 'alta'
   },
   {
     id: 'sp-5',
@@ -770,8 +599,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
     relevanciaRacial: '2023: 2.148 mortes em presídios. 71% das vítimas eram negras. Homicídios: 38% dos óbitos. Mortes por causas naturais evitáveis (tuberculose, HIV): 44% — negligência médica sistêmica.',
-    prioridade: 'alta',
-    status: 'disponivel'
+    prioridade: 'alta'
   }
 ];
 
@@ -786,17 +614,6 @@ const categorias = [
   { id: 'territorio', nome: 'Terras e Territórios', icon: Map, indicadores: indicadoresTerritorio, cor: 'bg-green-500' },
   { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
 ];
-
-const StatusIcon = ({ status }: { status: string }) => {
-  switch (status) {
-    case 'disponivel':
-      return <CheckCircle2 className="w-4 h-4 text-green-600" />;
-    case 'parcial':
-      return <Clock className="w-4 h-4 text-yellow-600" />;
-    default:
-      return <AlertTriangle className="w-4 h-4 text-red-600" />;
-  }
-};
 
 const DesagregacaoBadges = ({ desag }: { desag: NovoIndicador['desagregacoes'] }) => {
   const badges = [];
@@ -818,15 +635,9 @@ const DesagregacaoBadges = ({ desag }: { desag: NovoIndicador['desagregacoes'] }
 };
 
 export function DadosNovosTab() {
-  const [openCategoria, setOpenCategoria] = useState<string | null>('acesso-justica');
+  const [openCategoria, setOpenCategoria] = useState<string | null>('judiciario');
   
   const totalIndicadores = categorias.reduce((acc, cat) => acc + cat.indicadores.length, 0);
-  const indicadoresDisponiveis = categorias.reduce(
-    (acc, cat) => acc + cat.indicadores.filter(i => i.status === 'disponivel').length, 0
-  );
-  const indicadoresParciais = categorias.reduce(
-    (acc, cat) => acc + cat.indicadores.filter(i => i.status === 'parcial').length, 0
-  );
 
   return (
     <div className="space-y-6">
@@ -836,24 +647,15 @@ export function DadosNovosTab() {
           <div className="flex items-start gap-3">
             <Users className="w-6 h-6 text-accent flex-shrink-0" />
             <div>
-              <h3 className="font-semibold text-foreground mb-1">Dados Novos - Indicadores Ainda Não Registrados</h3>
+              <h3 className="font-semibold text-foreground mb-1">Dados Novos — Indicadores Auditáveis</h3>
               <p className="text-sm text-muted-foreground">
-                Esta seção lista <strong>{totalIndicadores} indicadores relevantes à questão racial</strong> que ainda não estão 
-                registrados no banco de dados do sistema. Inclui dados de fontes oficiais como FBSP, DataSUS, INEP, FUNAI, 
-                INCRA, SIOP, CNJ e outras, com foco em interseccionalidade (raça × gênero × idade × classe × orientação sexual × deficiência).
+                Esta seção lista <strong>{totalIndicadores} indicadores auditáveis</strong> com dados verificáveis em fontes oficiais (FBSP, DataSUS, INEP, FUNAI, 
+                INCRA, SIOP, CNJ, TSE, SISDEPEN e outras). Todos possuem deep link para checagem direta. Nenhum dado é estimado, projetado ou inventado.
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="bg-green-100 text-green-700">
                   <CheckCircle2 className="w-3 h-3 mr-1" />
-                  {indicadoresDisponiveis} Disponíveis
-                </Badge>
-                <Badge className="bg-yellow-100 text-yellow-700">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {indicadoresParciais} Parciais
-                </Badge>
-                <Badge variant="outline">
-                  <AlertTriangle className="w-3 h-3 mr-1" />
-                  {totalIndicadores - indicadoresDisponiveis - indicadoresParciais} Indisponíveis
+                  {totalIndicadores} Auditáveis
                 </Badge>
               </div>
             </div>
@@ -880,8 +682,7 @@ export function DadosNovosTab() {
                       <div>
                         <CardTitle className="text-lg">{categoria.nome}</CardTitle>
                         <p className="text-sm text-muted-foreground">
-                          {categoria.indicadores.length} indicadores • 
-                          {categoria.indicadores.filter(i => i.status === 'disponivel').length} disponíveis
+                          {categoria.indicadores.length} indicadores auditáveis
                         </p>
                       </div>
                     </div>
@@ -899,8 +700,7 @@ export function DadosNovosTab() {
                         <TableHead className="w-[30%]">Indicador</TableHead>
                         <TableHead className="w-[15%]">Fonte</TableHead>
                         <TableHead className="w-[25%]">Desagregações</TableHead>
-                        <TableHead className="w-[20%]">Relevância Racial</TableHead>
-                        <TableHead className="w-[10%]">Status</TableHead>
+                        <TableHead className="w-[30%]">Relevância Racial</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -921,7 +721,7 @@ export function DadosNovosTab() {
                               <Button variant="ghost" size="sm" asChild className="p-0 h-auto">
                                 <a href={ind.urlFonte} target="_blank" rel="noopener noreferrer" className="text-xs text-primary flex items-center gap-1">
                                   <ExternalLink className="w-3 h-3" />
-                                  Acessar
+                                  Verificar
                                 </a>
                               </Button>
                             </div>
@@ -931,12 +731,6 @@ export function DadosNovosTab() {
                           </TableCell>
                           <TableCell>
                             <p className="text-xs">{ind.relevanciaRacial}</p>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              <StatusIcon status={ind.status} />
-                              <span className="text-xs capitalize">{ind.status}</span>
-                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
