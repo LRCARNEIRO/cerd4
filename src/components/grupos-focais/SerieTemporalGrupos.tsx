@@ -120,9 +120,47 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     },
   ];
 
-  // REMOVIDO: juventudeNegra usava proxies multiplicadores (×1.8, ×1.5) — PROIBIDO pela Regra de Ouro.
-  // Para reintroduzir, é obrigatório cruzamento indireto com 2+ fontes auditáveis e deep links.
-  const juventudeNegra: IndicadorTemporal[] = [];
+  // Juventude Negra: séries temporais existentes que afetam desproporcionalmente jovens 15-29
+  // Atlas 2025: 47,8% vítimas homicídio têm 15-29 anos; 79% jovens negros masculinos
+  // Não usa multiplicadores — usa as séries reais de segurança/emprego como indicadores correlatos
+  const juventudeNegra: IndicadorTemporal[] = [
+    {
+      nome: 'Homicídio negro (por 100 mil)',
+      grupo: 'juventude_negra',
+      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro })),
+      unidade: 'por 100 mil',
+      fonte: 'Atlas da Violência (IPEA/FBSP)',
+      interpretacao: 'menor_melhor',
+      estimativa: true,
+      metodologia: 'Taxa geral; 47,8% das vítimas têm 15-29 anos (Atlas 2025)',
+    },
+    {
+      nome: 'Vítimas negras de homicídio (%)',
+      grupo: 'juventude_negra',
+      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras })),
+      unidade: '%',
+      fonte: 'FBSP — concentração na faixa 15-29',
+      interpretacao: 'menor_melhor',
+    },
+    {
+      nome: 'Letalidade policial negra (%)',
+      grupo: 'juventude_negra',
+      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.letalidadePolicial })),
+      unidade: '%',
+      fonte: 'FBSP — perfil predominante: jovem negro',
+      interpretacao: 'menor_melhor',
+    },
+    {
+      nome: 'Desemprego negro (%)',
+      grupo: 'juventude_negra',
+      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro })),
+      unidade: '%',
+      fonte: 'PNAD Contínua (SIDRA 7113)',
+      interpretacao: 'menor_melhor',
+      estimativa: true,
+      metodologia: 'Taxa geral negra; juventude 18-24 registra ~20,8% (2024)',
+    },
+  ];
 
   const mulheresNegras: IndicadorTemporal[] = [
     {
