@@ -7,7 +7,7 @@ import { useIndicadoresInterseccionais, useLacunasIdentificadas, useDadosOrcamen
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
-import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
   dadosDemograficos,
@@ -813,10 +813,25 @@ export function ConsolidatedScopeReport() {
                 O relatório inclui todas as tabelas, séries temporais, KPIs das três bases do Escopo + Conclusões Analíticas completas.
               </p>
             </div>
-            <Button size="lg" onClick={handleGenerate} disabled={isGenerating} className="gap-2">
-              {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              Gerar Relatório Consolidado
-            </Button>
+            <div className="flex gap-2">
+              <Button size="lg" onClick={handleGenerate} disabled={isGenerating} className="gap-2">
+                {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                PDF / HTML
+              </Button>
+              <Button size="lg" variant="outline" className="gap-2" disabled={isGenerating} onClick={() => {
+                setIsGenerating(true);
+                try {
+                  const html = generateConsolidatedHTML({
+                    indicadores: indicadores || [], lacunas: lacunas || [], lacunasStats, orcStats,
+                    orcamentarios: orcamentarios || [], documentosNormativos: documentosNormativos || [],
+                    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas: respostas || [],
+                  });
+                  downloadAsDocx(html, 'Relatorio-Consolidado-Escopo-CERD-IV');
+                } finally { setIsGenerating(false); }
+              }}>
+                <Download className="w-4 h-4" /> DOCX
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

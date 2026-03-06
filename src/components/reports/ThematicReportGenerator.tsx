@@ -5,10 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, BarChart3, Users, MapPin, BookOpen, Briefcase, Heart, Scale, Shield, Landmark, PieChart, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Loader2, FileText, BarChart3, Users, MapPin, BookOpen, Briefcase, Heart, Scale, Shield, Landmark, PieChart, TrendingUp, AlertTriangle, CheckCircle2, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { injectExportToolbar } from '@/utils/reportExportToolbar';
+import { injectExportToolbar, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useLacunasStats, useIndicadoresInterseccionais, useConclusoesAnaliticas } from '@/hooks/useLacunasData';
 
 const eixoOptions = [
@@ -45,6 +45,7 @@ export function ThematicReportGenerator() {
   const [grupo, setGrupo] = useState('todos');
   const [tituloPersonalizado, setTituloPersonalizado] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastGeneratedHtml, setLastGeneratedHtml] = useState<string | null>(null);
 
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
@@ -82,16 +83,16 @@ export function ThematicReportGenerator() {
 
       // Open HTML in new tab with export toolbar
       const htmlWithToolbar = injectExportToolbar(data, `Relatorio-Tematico-${eixo}-${grupo}`);
+      setLastGeneratedHtml(htmlWithToolbar);
       const blob = new Blob([htmlWithToolbar], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
 
       if (newWindow) {
         toast.success('Relatório gerado com sucesso!', {
-          description: 'O relatório foi aberto em uma nova aba. Use Ctrl+P para salvar como PDF.'
+          description: 'Use os botões na nova aba para salvar como PDF ou DOCX.'
         });
       } else {
-        // Fallback: download
         const link = document.createElement('a');
         link.href = url;
         link.download = `relatorio-tematico-${eixo}-${grupo}-${Date.now()}.html`;
@@ -210,25 +211,49 @@ export function ThematicReportGenerator() {
               </p>
             </div>
 
-            {/* Generate Button */}
-            <Button 
-              className="w-full gap-2" 
-              size="lg"
-              onClick={handleGenerateReport}
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Gerando relatório...
-                </>
-              ) : (
-                <>
-                  <FileText className="w-5 h-5" />
-                  Gerar Relatório Temático
-                </>
-              )}
-            </Button>
+            {/* Generate Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                className="gap-2" 
+                size="lg"
+                onClick={handleGenerateReport}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Gerando...</>
+                ) : (
+                  <><FileText className="w-5 h-5" /> PDF / HTML</>
+                )}
+              </Button>
+              <Button 
+                variant="outline"
+                className="gap-2" 
+                size="lg"
+                onClick={async () => {
+                  if (lastGeneratedHtml) {
+                    downloadAsDocx(lastGeneratedHtml, `Relatorio-Tematico-${eixo}-${grupo}`);
+                  } else {
+                    setIsGenerating(true);
+                    try {
+                      const { data, error } = await supabase.functions.invoke('generate-thematic-report', {
+                        body: { eixo_tematico: eixo, grupo_focal: grupo, titulo_personalizado: tituloPersonalizado || undefined }
+                      });
+                      if (error) throw error;
+                      const html = injectExportToolbar(data, `Relatorio-Tematico-${eixo}-${grupo}`);
+                      setLastGeneratedHtml(html);
+                      downloadAsDocx(html, `Relatorio-Tematico-${eixo}-${grupo}`);
+                    } catch (e) {
+                      toast.error('Erro ao gerar relatório');
+                    } finally {
+                      setIsGenerating(false);
+                    }
+                  }
+                }}
+                disabled={isGenerating}
+              >
+                <Download className="w-5 h-5" /> DOCX
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

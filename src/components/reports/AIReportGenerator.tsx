@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Sparkles, FileText, Download, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { injectExportToolbar } from '@/utils/reportExportToolbar';
+import { injectExportToolbar, downloadAsDocx } from '@/utils/reportExportToolbar';
 
 interface AIReportGeneratorProps {
   defaultType?: 'common-core' | 'cerd-iv' | 'tematico' | 'orcamentario';
@@ -54,6 +54,7 @@ export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGener
   const [grupo, setGrupo] = useState('todos');
   const [esfera, setEsfera] = useState('todas');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastGeneratedHtml, setLastGeneratedHtml] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -98,8 +99,8 @@ export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGener
         throw new Error(errorObj.error);
       }
 
-      // Open in new window
       const htmlWithToolbar = injectExportToolbar(htmlContent, `Relatorio-IA-${tipo}`);
+      setLastGeneratedHtml(htmlWithToolbar);
       const blob = new Blob([htmlWithToolbar], { type: 'text/html; charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
@@ -242,24 +243,33 @@ export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGener
           </p>
         </div>
 
-        {/* Botão */}
-        <Button 
-          onClick={handleGenerate} 
-          disabled={isGenerating}
-          className="w-full bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Gerando com IA...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4 mr-2" />
-              Gerar {selectedTipo?.label}
-            </>
-          )}
-        </Button>
+        {/* Botões */}
+        <div className="grid grid-cols-2 gap-2">
+          <Button 
+            onClick={handleGenerate} 
+            disabled={isGenerating}
+            className="bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700"
+          >
+            {isGenerating ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Gerando...</>
+            ) : (
+              <><Sparkles className="w-4 h-4 mr-2" /> PDF / HTML</>
+            )}
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              if (lastGeneratedHtml) {
+                downloadAsDocx(lastGeneratedHtml, `Relatorio-IA-${tipo}`);
+              } else {
+                toast.info('Gere o relatório primeiro (PDF/HTML), depois clique em DOCX para baixar.');
+              }
+            }}
+            disabled={isGenerating || !lastGeneratedHtml}
+          >
+            <Download className="w-4 h-4 mr-2" /> DOCX
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

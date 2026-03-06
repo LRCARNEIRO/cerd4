@@ -1,11 +1,12 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Globe, FileDown, Loader2 } from 'lucide-react';
+import { BookOpen, Globe, FileDown, Loader2, Download } from 'lucide-react';
 import { useState } from 'react';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVHTML } from './generateCerdIVHTML';
+import { downloadAsDocx } from '@/utils/reportExportToolbar';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -94,14 +95,27 @@ export function DocumentReportCards() {
             </p>
           </div>
 
-          <Button 
-            className="w-full gap-2" 
-            onClick={handleGenerateCCD}
-            disabled={generatingCCD}
-          >
-            {generatingCCD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-            Gerar HTML/PDF
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              className="gap-2" 
+              onClick={handleGenerateCCD}
+              disabled={generatingCCD}
+            >
+              {generatingCCD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              PDF / HTML
+            </Button>
+            <Button 
+              variant="outline"
+              className="gap-2" 
+              onClick={() => {
+                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+                downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
+              }}
+            >
+              <Download className="w-4 h-4" />
+              DOCX
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -142,15 +156,27 @@ export function DocumentReportCards() {
             </p>
           </div>
 
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={handleGenerateCERD}
-            disabled={generatingCERD}
-          >
-            {generatingCERD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-            Gerar HTML/PDF
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className="gap-2"
+              onClick={handleGenerateCERD}
+              disabled={generatingCERD}
+            >
+              {generatingCERD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              PDF / HTML
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => {
+                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+                downloadAsDocx(html, 'CERD-IV-Relatorio-Periodico');
+              }}
+            >
+              <Download className="w-4 h-4" />
+              DOCX
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
