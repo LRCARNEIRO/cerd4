@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { injectExportToolbar } from '@/utils/reportExportToolbar';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
@@ -331,7 +333,7 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
 
 function IndicadorDetail({ indicador }: { indicador: IndicadorData }) {
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 indicador-card">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -360,18 +362,8 @@ function IndicadorDetail({ indicador }: { indicador: IndicadorData }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Tabs defaultValue="grafico">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="grafico">Gráfico</TabsTrigger>
-            <TabsTrigger value="tabela">Tabela</TabsTrigger>
-          </TabsList>
-          <TabsContent value="grafico" className="mt-4">
-            <IndicadorChart indicador={indicador} />
-          </TabsContent>
-          <TabsContent value="tabela" className="mt-4">
-            <IndicadorTable indicador={indicador} />
-          </TabsContent>
-        </Tabs>
+        <IndicadorChart indicador={indicador} />
+        <IndicadorTable indicador={indicador} />
       </CardContent>
     </Card>
   );
@@ -445,10 +437,150 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
   );
 }
 
+function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
+  const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  
+  const categorias = [...new Set(indicadores.map(i => i.categoria))].sort();
+  
+  let html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Inventário de Indicadores Interseccionais — CERD IV Brasil</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #1e293b; font-size: 13px; }
+  h1 { font-size: 20px; border-bottom: 3px solid #1e3a5f; padding-bottom: 8px; }
+  h2 { font-size: 16px; color: #1e3a5f; margin-top: 28px; border-left: 4px solid #1e3a5f; padding-left: 8px; }
+  h3 { font-size: 14px; margin-top: 16px; }
+  .meta { color: #64748b; font-size: 11px; margin-bottom: 4px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-right: 4px; }
+  .badge-melhora { background: #dcfce7; color: #166534; }
+  .badge-piora { background: #fee2e2; color: #991b1b; }
+  .badge-estavel { background: #f1f5f9; color: #475569; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12px; }
+  th, td { border: 1px solid #e2e8f0; padding: 4px 8px; text-align: center; }
+  th { background: #f1f5f9; font-weight: 600; }
+  td:first-child, th:first-child { text-align: left; }
+  .interpretation { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 11px; }
+  .fonte { font-size: 10px; color: #64748b; margin-top: 4px; }
+  .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px; page-break-inside: avoid; }
+  .summary { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .summary-item { flex: 1; min-width: 150px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+  .summary-item .value { font-size: 24px; font-weight: 700; color: #1e3a5f; }
+  .summary-item .label { font-size: 11px; color: #64748b; }
+  @media print { body { padding: 0; } .no-print { display: none !important; } }
+  @page { margin: 1.5cm; }
+</style></head><body>
+<h1>Inventário de Indicadores Interseccionais</h1>
+<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2026) — Gerado em ${now}</p>
+<p class="meta">${indicadores.length} indicadores em ${categorias.length} categorias temáticas</p>
+
+<div class="summary">
+  <div class="summary-item"><div class="value">${indicadores.length}</div><div class="label">Indicadores</div></div>
+  <div class="summary-item"><div class="value">${categorias.length}</div><div class="label">Categorias</div></div>
+  <div class="summary-item"><div class="value">${indicadores.filter(i => i.desagregacao_raca).length}</div><div class="label">Desagregação Racial</div></div>
+  <div class="summary-item"><div class="value">${new Set(indicadores.map(i => i.fonte)).size}</div><div class="label">Fontes Oficiais</div></div>
+</div>
+`;
+
+  for (const cat of categorias) {
+    const catInds = indicadores.filter(i => i.categoria === cat);
+    html += `<h2>${cat} (${catInds.length} indicadores)</h2>`;
+    
+    for (const ind of catInds) {
+      const { groups, years, chartData } = normalizeIndicadorData(ind.dados || {});
+      const tendBadge = ind.tendencia
+        ? `<span class="badge ${ind.tendencia.includes('melhora') ? 'badge-melhora' : ind.tendencia.includes('piora') ? 'badge-piora' : 'badge-estavel'}">${ind.tendencia}</span>`
+        : '';
+      
+      html += `<div class="card">
+<h3>${ind.nome} ${tendBadge}</h3>
+<p class="meta">${ind.subcategoria ? ind.subcategoria + ' • ' : ''}${ind.fonte}</p>`;
+      
+      if (groups.length > 0 && years.length > 0) {
+        html += `<table><thead><tr><th>Grupo</th>`;
+        years.forEach(y => { html += `<th>${y}</th>`; });
+        html += `<th>Var.</th></tr></thead><tbody>`;
+        
+        for (const group of groups) {
+          const vals = chartData.filter(d => d[group] !== undefined).map(d => d[group] as number);
+          let variation = '';
+          if (vals.length >= 2 && vals[0] !== 0) {
+            const pct = ((vals[vals.length - 1] - vals[0]) / vals[0] * 100).toFixed(1);
+            variation = `${parseFloat(pct) > 0 ? '+' : ''}${pct}%`;
+          }
+          html += `<tr><td>${formatGroupName(group)}</td>`;
+          years.forEach((_, yi) => {
+            const val = chartData[yi]?.[group];
+            html += `<td>${val !== undefined ? (typeof val === 'number' ? val.toLocaleString('pt-BR') : val) : '-'}</td>`;
+          });
+          html += `<td>${variation}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+        
+        // Interpretation
+        if (years.length >= 2) {
+          const interps = groups.map(group => {
+            const vals = chartData.filter(d => d[group] !== undefined).map(d => d[group] as number);
+            if (vals.length < 2) return null;
+            const first = vals[0], last = vals[vals.length - 1];
+            const diff = last - first;
+            const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
+            const isSeg = ind.categoria === 'Segurança Pública';
+            const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
+            return `${formatGroupName(group)}: ${first.toLocaleString('pt-BR')} → ${last.toLocaleString('pt-BR')} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
+          }).filter(Boolean);
+          if (interps.length > 0) {
+            html += `<div class="interpretation">📊 <strong>Interpretação (${years[0]}→${years[years.length - 1]}):</strong> ${interps.join('. ')}.</div>`;
+          }
+        }
+      } else {
+        html += `<p class="meta">Dados não disponíveis para visualização tabular.</p>`;
+      }
+      
+      html += `<p class="fonte">Fonte: ${ind.fonte}${ind.url_fonte ? ` — ${ind.url_fonte}` : ''}</p>`;
+      if (ind.documento_origem?.length) {
+        html += `<p class="fonte">Documentos: ${ind.documento_origem.join(', ')}</p>`;
+      }
+      html += `</div>`;
+    }
+  }
+
+  html += `</body></html>`;
+  return html;
+}
+
 export function IndicadoresDbTab() {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
+
+  const handleExportPDF = useCallback(() => {
+    const typedInds = (indicadores || []) as IndicadorData[];
+    const html = generateIndicadoresHTML(typedInds);
+    const finalHtml = injectExportToolbar(html, 'Inventario-Indicadores-CERD-IV');
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.write(finalHtml);
+      w.document.close();
+    }
+  }, [indicadores]);
+
+  const handleExportDOCX = useCallback(() => {
+    const typedInds = (indicadores || []) as IndicadorData[];
+    const html = generateIndicadoresHTML(typedInds);
+    try {
+      const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Inventario-Indicadores-CERD-IV.doc';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      toast.success('Documento DOCX gerado com sucesso');
+    } catch (e) {
+      toast.error('Erro ao gerar documento');
+    }
+  }, [indicadores]);
 
   if (isLoading) {
     return (
@@ -477,6 +609,18 @@ export function IndicadoresDbTab() {
 
   return (
     <div className="space-y-6">
+      {/* Export toolbar */}
+      <div className="flex items-center justify-end gap-2 print:hidden">
+        <Button variant="outline" size="sm" onClick={handleExportPDF} className="gap-2">
+          <Printer className="w-4 h-4" />
+          Exportar PDF
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleExportDOCX} className="gap-2">
+          <Download className="w-4 h-4" />
+          Exportar DOCX
+        </Button>
+      </div>
+
       <SummaryCards indicadores={typedIndicadores} />
       
       {/* Document source filter */}
