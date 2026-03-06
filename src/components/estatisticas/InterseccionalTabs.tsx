@@ -5,12 +5,13 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { 
-  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink
+  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { AuditFooter as AuditFooterComponent } from '@/components/ui/audit-footer';
+import { atlasViolencia2025 } from './StatisticsData';
 import { 
   violenciaInterseccional, 
   mulheresChefeFamilia, 
@@ -599,6 +600,69 @@ export function DeficienciaTab() {
 export function JuventudeTab() {
   return (
     <div className="space-y-6">
+      {/* Atlas da Violência 2025 — Cards de Juventude */}
+      <Card className="bg-gradient-to-r from-warning/5 to-warning/10 border-warning/20">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold mb-1">Atlas da Violência 2025 (IPEA/FBSP) — Juventude Negra (15-29 anos)</h3>
+              <p className="text-sm text-muted-foreground">
+                Juventude definida como <strong>15 a 29 anos</strong> conforme padrão ONU e Estatuto da Juventude (Lei 12.852/2013).
+                Este é o principal ponto de crítica do Comitê CERD (§23, §32-36).
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Violência Letal Juventude 15-29 */}
+        <Card className="border-l-4 border-l-warning">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Violência Letal — Juventude (15-29 anos)</CardTitle>
+            <CardDescription>Atlas da Violência 2025 | {atlasViolencia2025.juventude15_29.ano}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center mb-4">
+              <p className="text-4xl font-bold text-warning">{atlasViolencia2025.juventude15_29.percentualVitimas}%</p>
+              <p className="text-sm text-muted-foreground">das vítimas de homicídio tinham 15-29 anos</p>
+            </div>
+            <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+              <p className="text-sm font-bold text-destructive">
+                {atlasViolencia2025.juventude15_29.percentualNegrosHomens}% jovens negros do sexo masculino
+              </p>
+              <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* IVJ-N */}
+        <Card className="border-l-4 border-l-warning">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">IVJ-N — Vulnerabilidade da Juventude Negra</CardTitle>
+            <CardDescription>Atlas da Violência 2025 | {atlasViolencia2025.ivjn.ano}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center mb-4">
+              <p className="text-4xl font-bold text-warning">{atlasViolencia2025.ivjn.riscoRelativo}x</p>
+              <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p>
+            </div>
+            <div className="text-xs space-y-1 mb-3">
+              <p className="font-medium text-muted-foreground">Evolução:</p>
+              <p className="flex items-center gap-1 text-destructive">
+                <TrendingUp className="w-3 h-3" />
+                Desigualdade persistente: {atlasViolencia2025.ivjn.riscoRelativo2017}x (2017) → {atlasViolencia2025.ivjn.riscoRelativo}x (2021)
+              </p>
+              <p className="flex items-center gap-1 text-destructive">
+                <AlertTriangle className="w-3 h-3" />
+                Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card className="border-l-4 border-l-destructive">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
@@ -606,12 +670,8 @@ export function JuventudeTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
-                Jovens negros (12-29 anos) representam{' '}
-                <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">56% das vítimas de homicídio</a>{' '}
-                no Brasil (19º Anuário FBSP 2025). 
-                A taxa de homicídio de jovens negros é{' '}
-                <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">2,78 vezes maior</a>{' '}
-                que a de jovens brancos (Atlas da Violência 2025).
+                Jovens negros (15-29 anos) representam a maioria absoluta das vítimas de homicídio no Brasil.
+                A taxa de homicídio de jovens negros é <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que a de jovens brancos (Atlas da Violência 2025).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
