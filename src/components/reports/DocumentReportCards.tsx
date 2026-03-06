@@ -18,6 +18,12 @@ export function DocumentReportCards() {
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
+  const [generatingConclusoes, setGeneratingConclusoes] = useState(false);
+
+  const {
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    generateFullConclusoesHTML,
+  } = useAnalyticalInsights();
 
   const totalLacunas = stats?.total || 0;
   const indicadoresCount = indicadores?.length || 0;
@@ -32,6 +38,13 @@ export function DocumentReportCards() {
   const cerdDados = indicadoresCount > 0 ? Math.round((indicadoresCount / (indicadoresCount + 6)) * 100) : 0;
   const cerdPovos = 100; // All groups covered
   const cerdProgress = Math.round((cerdRespostasOF + cerdDados + cerdPovos) / 3);
+
+  // Conclusões progress
+  const avancos = conclusoesDinamicas.filter(c => c.tipo === 'avanco').length;
+  const retrocessos = conclusoesDinamicas.filter(c => c.tipo === 'retrocesso').length;
+  const lacunasPersist = conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente').length;
+  const totalConclusoes = fiosCondutores.length + insightsCruzamento.length + avancos + retrocessos + lacunasPersist;
+  const conclusoesProgress = Math.min(100, Math.round((totalConclusoes / 25) * 100));
 
   const handleGenerateCCD = async () => {
     setGeneratingCCD(true);
