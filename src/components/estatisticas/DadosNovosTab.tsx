@@ -615,6 +615,9 @@ const categorias = [
   { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
 ];
 
+/** Total de indicadores auditáveis na aba Dados Novos */
+export const TOTAL_DADOS_NOVOS = categorias.reduce((acc, cat) => acc + cat.indicadores.length, 0);
+
 const DesagregacaoBadges = ({ desag }: { desag: NovoIndicador['desagregacoes'] }) => {
   const badges = [];
   if (desag.raca) badges.push({ label: 'Raça', color: 'bg-primary/10 text-primary' });

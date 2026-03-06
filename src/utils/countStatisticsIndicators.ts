@@ -33,6 +33,11 @@ import {
   tabelasSistemaPolitico,
 } from '@/components/estatisticas/CommonCoreTab';
 
+import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
+
+// Re-exportar para uso em outros módulos
+export { TOTAL_DADOS_NOVOS };
+
 // Todas as séries de Estatísticas Gerais
 const seriesEstatisticas = [
   evolucaoComposicaoRacial,

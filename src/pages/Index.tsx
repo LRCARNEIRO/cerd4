@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
-import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
+import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE, TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -163,8 +163,8 @@ export default function Index() {
         />
         <StatCard
           title="Indicadores"
-          value={isLoading ? '...' : TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + stats.totalIndicadores}
-          subtitle={`${TOTAL_TABELAS_COMMON_CORE} tabelas CC · ${TOTAL_DADOS_ESTATISTICAS} dados gerais · ${stats.totalIndicadores} no BD`}
+          value={isLoading ? '...' : TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + stats.totalIndicadores}
+          subtitle={`${TOTAL_TABELAS_COMMON_CORE} tabelas CC · ${TOTAL_DADOS_NOVOS} dados novos · ${stats.totalIndicadores} no BD`}
           icon={BarChart3}
           variant="success"
           sourceInfo={{ label: 'SIDRA/IBGE + DataSUS + FBSP', url: 'https://sidra.ibge.gov.br/home/pnadct/brasil' }}
