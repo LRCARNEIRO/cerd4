@@ -429,6 +429,25 @@ export const povosTradicionais = {
     acessoSaude: 68.5,
     educacaoBilingue: 32.5,
     rendimentoMedio: 1683,
+    // Infraestrutura domiciliar — Censo 2022 (Indígenas: características dos domicílios)
+    // Fonte: IBGE Agência de Notícias - Censo 2022: mais da metade da pop. indígena vive nas cidades (19/12/2024)
+    // Indígenas urbanos fora de TIs: água adequada 89,92%, esgoto adequado 59,24%, lixo precário 5,83%
+    // Indígenas em TIs: acesso muito inferior — taxa analfabetismo 20,8% vs 7% nacional
+    infraestrutura: {
+      // Total pop. indígena (urbana + rural, dentro e fora de TIs)
+      aguaRedeGeral: 56.3, // Estimativa cruzada: urbanos 89,92% (53,97% da pop.) + rurais ~17% (46,03%)
+      esgotoAdequado: 39.8, // Estimativa cruzada: urbanos 59,24% (53,97%) + rurais ~17% (46,03%)
+      coletaLixo: 69.5,    // Estimativa cruzada: urbanos ~94% + rurais ~40%
+      // Em TIs especificamente (situação mais precária)
+      aguaRedeGeralTIs: 34.8,
+      esgotoAdequadoTIs: 7.6,
+      coletaLixoTIs: 30.2,
+      estimativa: true,
+      metodologia: 'Cruzamento: dados urbanos (IBGE Censo 2022 Indígenas Dez/2024) × proporção urbana/rural. TIs: publicação IBGE Censo 2022 Indígenas (resultados do universo).',
+      fonte: 'IBGE - Censo 2022: Indígenas (Dez/2024)',
+      link: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades',
+      linkPDF: 'https://acervo.socioambiental.org/sites/default/files/documents/a4d00019.pdf',
+    },
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022',
     urlFonteCorRaca: 'https://sidra.ibge.gov.br/Tabela/9605',
     urlFontePessoasIndigenas: 'https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html'
@@ -460,6 +479,38 @@ export const povosTradicionais = {
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9578',
     urlFonte: 'https://sidra.ibge.gov.br/Tabela/9578',
     dataReferencia: '22/12/2023'
+  },
+  // =============================================
+  // POPULAÇÃO NEGRA — Infraestrutura domiciliar por raça/cor do responsável
+  // Fonte: IBGE - Censo 2022: Características dos domicílios (Resultados do Universo, Fev/2024)
+  // URL: https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39237
+  // Dados: pretos+pardos representam 69% dos sem saneamento adequado e 72% dos sem água adequada
+  // Tabela SIDRA complementar: Panorama Censo 2022 (Características domiciliares por cor/raça)
+  // =============================================
+  populacaoNegra: {
+    infraestrutura: {
+      aguaRedeGeral: 78.2,       // vs 88.1% brancos, 82.9% nacional
+      esgotoAdequado: 68.6,      // vs 83.2% brancos, 75.7% nacional (rede+fossa)
+      coletaLixo: 88.4,          // vs 94.1% brancos, 90.9% nacional
+      semBanheiro: 0.8,          // vs 0.3% brancos, 0.6% nacional
+      fonte: 'IBGE - Censo 2022: Características dos domicílios (Fev/2024)',
+      link: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39237-censo-2022-rede-de-esgoto-alcanca-62-5-da-populacao-mas-desigualdades-regionais-e-por-cor-e-raca-persistem',
+      linkPanorama: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
+      nota: 'Dados por cor/raça do responsável pelo domicílio. Pretos e pardos = 69% dos sem esgoto adequado e 72% dos sem água adequada.',
+    },
+    // Comparativo brancos para contexto
+    infraestruturaBrancos: {
+      aguaRedeGeral: 88.1,
+      esgotoAdequado: 83.2,
+      coletaLixo: 94.1,
+      semBanheiro: 0.3,
+    },
+    mediaNacional: {
+      aguaRedeGeral: 82.9,
+      esgotoAdequado: 75.7,
+      coletaLixo: 90.9,
+      semBanheiro: 0.6,
+    },
   },
   ciganos: {
     populacaoEstimada: 800000,

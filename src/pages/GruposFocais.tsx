@@ -754,6 +754,30 @@ export default function GruposFocais() {
                     </div>
                   </div>
 
+                  {/* Infraestrutura Indígena vs Média Nacional (Censo 2022) */}
+                  <div className="p-3 border border-destructive/30 bg-destructive/5 rounded-lg mb-4">
+                    <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-destructive" /> Infraestrutura em Terras Indígenas vs Média Nacional (Censo 2022)
+                    </p>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex justify-between items-center">
+                        <span>Rede geral de água</span>
+                        <span><strong className="text-destructive">34,8%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-48,1 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Esgotamento adequado</span>
+                        <span><strong className="text-destructive">7,6%</strong> vs 75,7% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-68,1 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Coleta de lixo</span>
+                        <span><strong className="text-destructive">30,2%</strong> vs 90,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-60,7 p.p.</Badge></span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                      Fonte: IBGE - Censo 2022: Indígenas (Dez/2024) — <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Resultados do Universo</a>
+                    </p>
+                  </div>
+
                   {/* Bloco de auditabilidade */}
                   <div className="p-3 bg-muted/50 rounded-lg border border-border mb-4">
                     <p className="text-xs font-semibold mb-1 flex items-center gap-1">
@@ -793,6 +817,129 @@ export default function GruposFocais() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Infraestrutura Comparativa — Negros, Indígenas, Quilombolas (Censo 2022) */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-destructive" />
+                  Infraestrutura Domiciliar por Grupo Racial — Censo 2022
+                </CardTitle>
+                <CardDescription>
+                  Comparativo de acesso a saneamento básico entre grupos raciais. Fonte: IBGE - Censo 2022 (Resultados do Universo)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-2 px-3 font-medium">Indicador</th>
+                        <th className="text-center py-2 px-3 font-medium">Nacional</th>
+                        <th className="text-center py-2 px-3 font-medium text-primary">Brancos</th>
+                        <th className="text-center py-2 px-3 font-medium text-warning">Negros</th>
+                        <th className="text-center py-2 px-3 font-medium text-accent">Indígenas (total)</th>
+                        <th className="text-center py-2 px-3 font-medium text-destructive">Indígenas (TIs)</th>
+                        <th className="text-center py-2 px-3 font-medium text-destructive">Quilombolas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-border/50">
+                        <td className="py-2 px-3 font-medium">Rede geral de água</td>
+                        <td className="text-center py-2 px-3">82,9%</td>
+                        <td className="text-center py-2 px-3 text-primary">88,1%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">78,2%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">56,3%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">34,8%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">33,6%</td>
+                      </tr>
+                      <tr className="border-b border-border/50">
+                        <td className="py-2 px-3 font-medium">Esgoto adequado</td>
+                        <td className="text-center py-2 px-3">75,7%</td>
+                        <td className="text-center py-2 px-3 text-primary">83,2%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">68,6%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">39,8%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
+                      </tr>
+                      <tr className="border-b border-border/50">
+                        <td className="py-2 px-3 font-medium">Coleta de lixo</td>
+                        <td className="text-center py-2 px-3">90,9%</td>
+                        <td className="text-center py-2 px-3 text-primary">94,1%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">88,4%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">69,5%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">30,2%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">50,4%</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 px-3 font-medium">Sem banheiro</td>
+                        <td className="text-center py-2 px-3">0,6%</td>
+                        <td className="text-center py-2 px-3 text-primary">0,3%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">0,8%</td>
+                        <td className="text-center py-2 px-3 text-muted-foreground" colSpan={2}>Dados não desagregados</td>
+                        <td className="text-center py-2 px-3 text-muted-foreground">—</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+                  <p className="text-sm font-medium text-destructive flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> Racismo Ambiental Estrutural
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Pretos e pardos representam <strong>69% dos sem esgoto adequado</strong> e <strong>72% dos sem água adequada</strong> no Brasil. 
+                    Indígenas em Terras Indígenas e quilombolas em territórios oficiais apresentam os piores indicadores — esgoto adequado em TIs chega a apenas 7,6%.
+                  </p>
+                </div>
+
+                <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div className="p-2 bg-muted/50 rounded text-xs">
+                    <p className="font-medium mb-1">📌 Negros</p>
+                    <p className="text-muted-foreground">Gap de -4,7 p.p. em água, -7,1 p.p. em esgoto vs média nacional. Art. V(e)(iii) ICERD.</p>
+                  </div>
+                  <div className="p-2 bg-muted/50 rounded text-xs">
+                    <p className="font-medium mb-1">📌 Indígenas (TIs)</p>
+                    <p className="text-muted-foreground">Gap de -48,1 p.p. em água, -68,1 p.p. em esgoto. Situação crítica. Art. V(e)(iii)+(iv) ICERD.</p>
+                  </div>
+                  <div className="p-2 bg-muted/50 rounded text-xs">
+                    <p className="font-medium mb-1">📌 Quilombolas</p>
+                    <p className="text-muted-foreground">Gap de -49,3 p.p. em água, -50,6 p.p. em esgoto. 90% com alguma precariedade em saneamento.</p>
+                  </div>
+                </div>
+
+                {/* Fontes */}
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-border">
+                  <p className="text-xs font-semibold mb-2 flex items-center gap-1">
+                    <Database className="w-3 h-3" /> Fontes de Verificação
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39237-censo-2022-rede-de-esgoto-alcanca-62-5-da-populacao-mas-desigualdades-regionais-e-por-cor-e-raca-persistem" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        IBGE — Esgoto por Raça (Fev/2024)
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        IBGE — Indígenas Domicílios (Dez/2024)
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href="https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        Panorama Censo 2022
+                      </a>
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-2 italic">
+                    ⚠ Indígenas (total): cruzamento indireto urbano/rural (IBGE Dez/2024). TIs: publicação IBGE Indígenas - Resultados do Universo.
+                    Negros: domicílios por cor/raça do responsável (IBGE Fev/2024). Quilombolas: dados diretos do Censo 2022.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
