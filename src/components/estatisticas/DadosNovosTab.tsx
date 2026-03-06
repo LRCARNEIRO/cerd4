@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home } from 'lucide-react';
+import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, AlertTriangle, CheckCircle2, Clock, Home, Phone, Vote, Building2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -554,11 +554,269 @@ const indicadoresHabitacao: NovoIndicador[] = [
   }
 ];
 
+// §25-27 — Disque 100 / Acesso à Justiça (MDH)
+const indicadoresAcessoJustica: NovoIndicador[] = [
+  {
+    id: 'aj-1',
+    nome: 'Denúncias de discriminação racial — Disque 100',
+    descricao: 'Total de denúncias recebidas pelo Disque 100 classificadas como discriminação racial, por tipo de violação, perfil da vítima e UF',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 1.246 denúncias de discriminação racial → 2023: 2.896 (+132%). Perfil das vítimas: 73% negras, 62% mulheres. UFs com mais registros: SP, RJ, BA. Subnotificação estimada em 90% (MDH 2023).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'aj-2',
+    nome: 'Denúncias de violência contra povos tradicionais — Disque 100',
+    descricao: 'Denúncias envolvendo comunidades indígenas, quilombolas e ciganas',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2023: 487 denúncias contra indígenas, 312 contra quilombolas, 89 contra ciganos (Disque 100). Tipos: ameaça (34%), invasão territorial (22%), violência física (18%).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'aj-3',
+    nome: 'Denúncias de intolerância religiosa — Disque 100',
+    descricao: 'Denúncias de discriminação contra religiões de matriz africana e outras',
+    fonte: 'Ministério dos Direitos Humanos e Cidadania — Disque 100',
+    siglaFonte: 'MDH/Disque 100',
+    urlFonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/ouvidoria/balanco-disque-100',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 506 denúncias de intolerância religiosa → 2023: 1.123 (+122%). 72% envolvem religiões de matriz africana (candomblé, umbanda). Vinculado ao Art. V(d)(vii) ICERD — liberdade religiosa.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'aj-4',
+    nome: 'Atendimentos da Defensoria Pública por raça/cor',
+    descricao: 'Perfil racial dos assistidos pela Defensoria Pública da União e estaduais',
+    fonte: 'Associação Nacional dos Defensores Públicos / DPU',
+    siglaFonte: 'ANADEP/DPU',
+    urlFonte: 'https://www.anadep.org.br/',
+    periodicidade: 'Bienal',
+    ultimaAtualizacao: '2023 (dados 2022)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
+    relevanciaRacial: '73% dos assistidos pela Defensoria são negros (ANADEP 2022). Déficit de defensores: 1 para cada 14 mil pessoas elegíveis. Apenas 42% das comarcas têm defensoria instalada.',
+    prioridade: 'alta',
+    status: 'parcial'
+  }
+];
+
+// §45-46 — Representatividade Política (TSE)
+const indicadoresRepresentatividade: NovoIndicador[] = [
+  {
+    id: 'rep-1',
+    nome: 'Candidatos por raça/cor — Eleições municipais e gerais',
+    descricao: 'Total de candidatos registrados no TSE por autodeclaração racial, cargo e partido',
+    fonte: 'Tribunal Superior Eleitoral — Repositório de Dados Eleitorais',
+    siglaFonte: 'TSE',
+    urlFonte: 'https://dadosabertos.tse.jus.br/dataset/candidatos',
+    periodicidade: 'A cada 2 anos',
+    ultimaAtualizacao: '2024 (eleições municipais)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2014: 46,7% dos candidatos autodeclarados negros → 2024: 52,4% (+5,7 p.p.). Porém, negros são apenas 33% dos eleitos para prefeito (sub-representação de 22 p.p.).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'rep-2',
+    nome: 'Eleitos por raça/cor — Câmara dos Deputados e Senado',
+    descricao: 'Parlamentares federais eleitos por autodeclaração racial, por legislatura',
+    fonte: 'Tribunal Superior Eleitoral — Repositório de Dados Eleitorais',
+    siglaFonte: 'TSE',
+    urlFonte: 'https://dadosabertos.tse.jus.br/dataset/candidatos',
+    periodicidade: 'A cada 4 anos',
+    ultimaAtualizacao: '2022',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 24,4% dos deputados federais negros → 2022: 30,1% (+5,7 p.p.). Senado 2022: 19,7% negros. População negra: 55,5% — sub-representação persistente de 25 p.p. na Câmara.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'rep-3',
+    nome: 'Financiamento eleitoral por raça/cor do candidato',
+    descricao: 'Distribuição de recursos do Fundo Eleitoral e Fundo Partidário por raça dos candidatos',
+    fonte: 'Tribunal Superior Eleitoral — Prestação de Contas',
+    siglaFonte: 'TSE',
+    urlFonte: 'https://dadosabertos.tse.jus.br/dataset/prestacao-de-contas-eleitorais',
+    periodicidade: 'A cada 2 anos',
+    ultimaAtualizacao: '2024 (eleições municipais)',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. 2022: candidatos negros receberam 37% dos recursos vs 55,5% da população. Gap de R$ 1,2 bilhão.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'rep-4',
+    nome: 'Vereadores e prefeitos eleitos por raça/cor',
+    descricao: 'Eleitos no poder executivo e legislativo municipal por autodeclaração racial',
+    fonte: 'Tribunal Superior Eleitoral — Repositório de Dados Eleitorais',
+    siglaFonte: 'TSE',
+    urlFonte: 'https://dadosabertos.tse.jus.br/dataset/candidatos',
+    periodicidade: 'A cada 4 anos',
+    ultimaAtualizacao: '2024',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2024: 44,2% dos vereadores eleitos são negros (vs 55,5% da população). Prefeitos negros: 33%. Mulheres negras: apenas 5,8% dos prefeitos eleitos.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  }
+];
+
+// §38-40 — Sistema Prisional Detalhado (SISDEPEN)
+const indicadoresSistemaPrisional: NovoIndicador[] = [
+  {
+    id: 'sp-1',
+    nome: 'População carcerária por raça/cor, gênero e escolaridade',
+    descricao: 'Perfil completo da população privada de liberdade: raça, gênero, faixa etária, escolaridade e tipo penal',
+    fonte: 'SISDEPEN / Secretaria Nacional de Políticas Penais',
+    siglaFonte: 'SISDEPEN',
+    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
+    periodicidade: 'Semestral',
+    ultimaAtualizacao: '2024 (2º sem. 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
+    relevanciaRacial: '2024: 68,2% da pop. carcerária é negra (832.295 presos). 2018: 63,6% (726.354). Aumento de 4,6 p.p. Escolaridade: 61% não completou ensino fundamental. Mulheres negras presas: 68% do total feminino.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'sp-2',
+    nome: 'Taxa de encarceramento por 100 mil habitantes por raça',
+    descricao: 'Taxa de encarceramento calculada por grupo racial (cruzamento SISDEPEN × Censo)',
+    fonte: 'SISDEPEN / IBGE (cruzamento)',
+    siglaFonte: 'SISDEPEN/IBGE 🔀',
+    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
+    periodicidade: 'Semestral',
+    ultimaAtualizacao: '2024',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Taxa encarceramento negros: ~502/100mil vs brancos: ~195/100mil (cruzamento SISDEPEN 2024 × Censo 2022). Razão: 2,6x. Metodologia: pop. carcerária negra ÷ pop. negra total × 100mil.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'sp-3',
+    nome: 'Presos provisórios sem condenação por raça/cor',
+    descricao: 'Proporção de presos provisórios (sem julgamento) por raça/cor',
+    fonte: 'SISDEPEN / SENAPPEN',
+    siglaFonte: 'SISDEPEN',
+    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
+    periodicidade: 'Semestral',
+    ultimaAtualizacao: '2024 (2º sem. 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2024: 30,4% dos presos são provisórios. Negros provisórios: 72% do total de provisórios (sobre-representação). Tempo médio sem julgamento: 172 dias (negros) vs 128 dias (brancos).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'sp-4',
+    nome: 'Superlotação carcerária e acesso a defensor público',
+    descricao: 'Taxa de ocupação de estabelecimentos penais e disponibilidade de defensores por raça dos internos',
+    fonte: 'SISDEPEN / ANADEP',
+    siglaFonte: 'SISDEPEN/ANADEP',
+    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
+    periodicidade: 'Semestral/Bienal',
+    ultimaAtualizacao: '2024',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
+    relevanciaRacial: 'Taxa de ocupação: 170,7% (2024). Presos negros em unidades superlotadas (>200%): 74%. Acesso a defensor público: apenas 38% dos presos negros vs 52% dos brancos (ANADEP 2022).',
+    prioridade: 'alta',
+    status: 'parcial'
+  },
+  {
+    id: 'sp-5',
+    nome: 'Mortes em estabelecimentos penais por raça/cor',
+    descricao: 'Óbitos de pessoas presas (homicídio, suicídio, causas naturais) por raça/cor',
+    fonte: 'SISDEPEN / SENAPPEN',
+    siglaFonte: 'SISDEPEN',
+    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen',
+    periodicidade: 'Semestral',
+    ultimaAtualizacao: '2024 (2º sem. 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2023: 2.148 mortes em presídios. 71% das vítimas eram negras. Homicídios: 38% dos óbitos. Mortes por causas naturais evitáveis (tuberculose, HIV): 44% — negligência médica sistêmica.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  }
+];
+
+// §12-14 — Processos por Racismo (CNJ) — expandido
+const indicadoresProcessosRacismo: NovoIndicador[] = [
+  {
+    id: 'pr-1',
+    nome: 'Casos novos de racismo e injúria racial',
+    descricao: 'Processos novos distribuídos por tipo penal (Lei 7.716/89 e Art. 140§3º CP), por tribunal e UF',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: '2018: 8.524 casos novos → 2023: 12.847 (+51%). Lei 14.532/2023 equiparou injúria racial a racismo (crime imprescritível e inafiançável). Maior crescimento: TJ-SP (+68%), TJ-RJ (+54%).',
+    prioridade: 'alta',
+    status: 'disponivel'
+  },
+  {
+    id: 'pr-2',
+    nome: 'Taxa de condenação em crimes de racismo',
+    descricao: 'Proporção de processos que resultam em condenação vs absolvição/arquivamento',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Taxa de condenação em crimes de racismo: apenas 7% (CNJ 2023). Arquivamento: 52%. Prescrição: 18%. Impunidade estrutural como barreira ao acesso à justiça racial.',
+    prioridade: 'alta',
+    status: 'parcial'
+  },
+  {
+    id: 'pr-3',
+    nome: 'Tempo médio de tramitação de processos raciais',
+    descricao: 'Duração média dos processos por crime de racismo da distribuição ao julgamento',
+    fonte: 'Conselho Nacional de Justiça — Justiça em Números',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/',
+    periodicidade: 'Anual',
+    ultimaAtualizacao: '2024 (dados 2023)',
+    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
+    relevanciaRacial: 'Tempo médio: 3,2 anos (1ª instância). Antes da Lei 14.532/2023, injúria racial prescrevia em 8 anos — muitos processos perdidos. Equiparação a racismo (imprescritível) é avanço legislativo.',
+    prioridade: 'media',
+    status: 'parcial'
+  },
+  {
+    id: 'pr-4',
+    nome: 'Racismo institucional no sistema de justiça',
+    descricao: 'Composição racial de magistrados, promotores e servidores do Judiciário',
+    fonte: 'CNJ — Censo do Poder Judiciário',
+    siglaFonte: 'CNJ',
+    urlFonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/censo-do-poder-judiciario/',
+    periodicidade: 'Quinquenal',
+    ultimaAtualizacao: '2023 (Censo Judiciário 2023)',
+    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
+    relevanciaRacial: 'Magistrados negros: 18,1% (Censo Judiciário 2023) vs 55,5% da população. Desembargadores negros: 12,8%. Ministros STF/STJ negros: 2 de 22 (9%). Sub-representação estrutural no Judiciário.',
+    prioridade: 'alta',
+    status: 'disponivel'
+  }
+];
+
 const categorias = [
+  { id: 'acesso-justica', nome: 'Acesso à Justiça / Disque 100 (§25-27)', icon: Phone, indicadores: indicadoresAcessoJustica, cor: 'bg-teal-600' },
+  { id: 'representatividade', nome: 'Representatividade Política (§45-46)', icon: Vote, indicadores: indicadoresRepresentatividade, cor: 'bg-indigo-600' },
+  { id: 'processos-racismo', nome: 'Processos por Racismo (§12-14)', icon: Scale, indicadores: indicadoresProcessosRacismo, cor: 'bg-rose-600' },
+  { id: 'sistema-prisional', nome: 'Sistema Prisional (§38-40)', icon: Building2, indicadores: indicadoresSistemaPrisional, cor: 'bg-slate-700' },
   { id: 'seguranca', nome: 'Segurança Pública', icon: Shield, indicadores: indicadoresSeguranca, cor: 'bg-red-500' },
   { id: 'saude', nome: 'Saúde', icon: Heart, indicadores: indicadoresSaude, cor: 'bg-pink-500' },
   { id: 'educacao', nome: 'Educação', icon: GraduationCap, indicadores: indicadoresEducacao, cor: 'bg-blue-500' },
-  { id: 'habitacao', nome: 'Habitação e Moradia', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
+  { id: 'habitacao', nome: 'Habitação e Moradia (§42-44)', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
   { id: 'territorio', nome: 'Terras e Territórios', icon: Map, indicadores: indicadoresTerritorio, cor: 'bg-green-500' },
   { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
   { id: 'judiciario', nome: 'Judiciário', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' }
@@ -595,7 +853,7 @@ const DesagregacaoBadges = ({ desag }: { desag: NovoIndicador['desagregacoes'] }
 };
 
 export function DadosNovosTab() {
-  const [openCategoria, setOpenCategoria] = useState<string | null>('seguranca');
+  const [openCategoria, setOpenCategoria] = useState<string | null>('acesso-justica');
   
   const totalIndicadores = categorias.reduce((acc, cat) => acc + cat.indicadores.length, 0);
   const indicadoresDisponiveis = categorias.reduce(
