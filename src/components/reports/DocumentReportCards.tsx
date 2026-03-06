@@ -22,7 +22,6 @@ export function DocumentReportCards() {
 
   const {
     fiosCondutores, conclusoesDinamicas, insightsCruzamento,
-    generateFullConclusoesHTML,
   } = useAnalyticalInsights();
 
   const totalLacunas = stats?.total || 0;
