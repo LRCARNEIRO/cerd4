@@ -12,6 +12,7 @@ import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
 import { StatisticsInventoryReport } from '@/components/reports/StatisticsInventoryReport';
+import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
@@ -305,6 +306,9 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="orcamento" className="gap-1">
             <DollarSign className="w-4 h-4" /> Orçamento
           </TabsTrigger>
+          <TabsTrigger value="conclusoes-full" className="gap-1 bg-primary/10">
+            <Scale className="w-4 h-4" /> Conclusões (Integral)
+          </TabsTrigger>
           <TabsTrigger value="lacunas-db" className="gap-1">
             <AlertTriangle className="w-4 h-4" /> Lacunas ONU ({totalLacunas})
           </TabsTrigger>
@@ -319,6 +323,11 @@ ${(respostasCerd || []).map(r => {
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
         <TabsContent value="consolidado">
           <ConsolidatedScopeReport />
+        </TabsContent>
+
+        {/* ABA: CONCLUSÕES INTEGRAL */}
+        <TabsContent value="conclusoes-full">
+          <ConclusoesReportGenerator />
         </TabsContent>
 
         {/* ABA: RELATÓRIOS COM IA */}
