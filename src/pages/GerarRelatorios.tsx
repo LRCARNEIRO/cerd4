@@ -241,11 +241,11 @@ ${(respostasCerd || []).map(r => {
       </div>
 
       {/* Cards de geração de documentos */}
+      <DocumentReportCards />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2">
-          <DocumentReportCards />
+        <div className="lg:col-span-3">
+          <StatisticsInventoryReport />
         </div>
-        <StatisticsInventoryReport />
       </div>
 
       {/* Panorama analítico */}
