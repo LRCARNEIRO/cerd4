@@ -15,7 +15,6 @@ import { StatisticsInventoryReport } from '@/components/reports/StatisticsInvent
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
-import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
