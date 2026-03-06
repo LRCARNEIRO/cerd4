@@ -3,6 +3,25 @@
  * Call getExportToolbarHTML() to get the CSS + HTML + JS to insert before </body>.
  * Call injectExportToolbar() to inject toolbar into an existing HTML string.
  */
+import { toast } from 'sonner';
+
+/** Download any HTML string as a .doc file */
+export function downloadAsDocx(html: string, fileName: string) {
+  try {
+    const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName.replace(/[^a-zA-Z0-9_-]/g, '_')}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast.success('Documento DOCX gerado com sucesso');
+  } catch (e) {
+    toast.error('Erro ao gerar documento DOCX');
+  }
+}
 
 export function injectExportToolbar(html: string, fileName: string = 'relatorio'): string {
   const toolbar = getExportToolbarHTML(fileName);

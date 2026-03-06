@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart } from 'lucide-react';
+import { Loader2, FileText, TrendingUp, TrendingDown, DollarSign, BarChart3, PieChart, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { injectExportToolbar } from '@/utils/reportExportToolbar';
+import { injectExportToolbar, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useOrcamentoStats } from '@/hooks/useLacunasData';
 
 export function BudgetReportGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastGeneratedHtml, setLastGeneratedHtml] = useState<string | null>(null);
   const { data: stats, isLoading } = useOrcamentoStats();
 
   const handleGenerateReport = async () => {
@@ -26,6 +27,7 @@ export function BudgetReportGenerator() {
       if (error) throw error;
 
       const htmlWithToolbar = injectExportToolbar(data, 'Relatorio-Orcamentario-CERD-IV');
+      setLastGeneratedHtml(htmlWithToolbar);
       const blob = new Blob([htmlWithToolbar], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const newWindow = window.open(url, '_blank');
@@ -193,24 +195,46 @@ export function BudgetReportGenerator() {
               </ul>
             </div>
 
-            <Button 
-              className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700" 
-              size="lg"
-              onClick={handleGenerateReport}
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Gerando...
-                </>
-              ) : (
-                <>
-                  <DollarSign className="w-5 h-5" />
-                  Gerar Relatório Orçamentário
-                </>
-              )}
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button 
+                className="gap-2 bg-emerald-600 hover:bg-emerald-700" 
+                size="lg"
+                onClick={handleGenerateReport}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Gerando...</>
+                ) : (
+                  <><DollarSign className="w-5 h-5" /> PDF / HTML</>
+                )}
+              </Button>
+              <Button 
+                variant="outline"
+                className="gap-2" 
+                size="lg"
+                onClick={async () => {
+                  if (lastGeneratedHtml) {
+                    downloadAsDocx(lastGeneratedHtml, 'Relatorio-Orcamentario-CERD-IV');
+                  } else {
+                    setIsGenerating(true);
+                    try {
+                      const { data, error } = await supabase.functions.invoke('generate-budget-report', { body: {} });
+                      if (error) throw error;
+                      const html = injectExportToolbar(data, 'Relatorio-Orcamentario-CERD-IV');
+                      setLastGeneratedHtml(html);
+                      downloadAsDocx(html, 'Relatorio-Orcamentario-CERD-IV');
+                    } catch (e) {
+                      toast.error('Erro ao gerar relatório');
+                    } finally {
+                      setIsGenerating(false);
+                    }
+                  }
+                }}
+                disabled={isGenerating}
+              >
+                <Download className="w-5 h-5" /> DOCX
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
