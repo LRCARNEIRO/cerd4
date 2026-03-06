@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
@@ -14,7 +14,6 @@ import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeR
 import { StatisticsInventoryReport } from '@/components/reports/StatisticsInventoryReport';
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
-import { useQueryClient } from '@tanstack/react-query';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
@@ -26,7 +25,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function GerarRelatorios() {
-  const queryClient = useQueryClient();
+  
   
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
@@ -37,9 +36,6 @@ export default function GerarRelatorios() {
 
   const isLoading = loadingLacunas || loadingRespostas || loadingStats;
 
-  const handleRefresh = () => {
-    queryClient.invalidateQueries();
-  };
 
   const totalLacunas = stats?.total || 0;
   const cumpridas = stats?.porStatus.cumprido || 0;
@@ -234,10 +230,11 @@ ${(respostasCerd || []).map(r => {
           <Badge variant="outline" className="gap-1"><PlusCircle className="w-3 h-3" />{TOTAL_DADOS_NOVOS} dados novos auditáveis</Badge>
           <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />{conclusoes?.length || 0} conclusões</Badge>
         </div>
-        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />
-          Atualizar
-        </Button>
+        {isLoading && (
+          <Badge variant="outline" className="gap-1 animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" /> Carregando dados...
+          </Badge>
+        )}
       </div>
 
       {/* Cards de geração de documentos */}
