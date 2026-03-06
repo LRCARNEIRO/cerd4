@@ -1,9 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Globe, FileDown, Loader2, Download } from 'lucide-react';
+import { BookOpen, Globe, FileDown, Loader2, Download, Scale } from 'lucide-react';
 import { useState } from 'react';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVHTML } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
