@@ -11,6 +11,7 @@ import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerato
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
+import { StatisticsInventoryReport } from '@/components/reports/StatisticsInventoryReport';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -73,7 +74,12 @@ export default function GerarRelatorios() {
       </div>
 
       {/* Cards de geração de documentos */}
-      <DocumentReportCards />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2">
+          <DocumentReportCards />
+        </div>
+        <StatisticsInventoryReport />
+      </div>
 
       {/* Panorama analítico */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
