@@ -234,10 +234,11 @@ ${(respostasCerd || []).map(r => {
           <Badge variant="outline" className="gap-1"><PlusCircle className="w-3 h-3" />{TOTAL_DADOS_NOVOS} dados novos auditáveis</Badge>
           <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />{conclusoes?.length || 0} conclusões</Badge>
         </div>
-        <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
-          <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />
-          Atualizar
-        </Button>
+        {isLoading && (
+          <Badge variant="outline" className="gap-1 animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" /> Carregando dados...
+          </Badge>
+        )}
       </div>
 
       {/* Cards de geração de documentos */}
