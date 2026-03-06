@@ -4,7 +4,9 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar 
 } from 'recharts';
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
-import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados } from './StatisticsData';
+import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025 } from './StatisticsData';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, Info } from 'lucide-react';
 
 export function SegurancaSaudeEducacaoTab() {
   return (
@@ -115,6 +117,91 @@ export function SegurancaSaudeEducacaoTab() {
               Atlas da Violência 2025 (IPEA) <ExternalLink className="w-3 h-3" />
             </a>
           </p>
+
+          {/* Atlas da Violência 2025 — 4 Indicadores Complementares */}
+          <div className="mt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Info className="w-5 h-5 text-destructive" />
+              <h4 className="text-sm font-semibold">Atlas da Violência 2025 (IPEA/FBSP) — Indicadores de Desigualdade Racial</h4>
+              <Badge variant="outline" className="text-xs">§23 §32-36</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* 1. Evolução do Risco Relativo */}
+              <Card className="border-l-4 border-l-destructive">
+                <CardContent className="pt-4 pb-4">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Vulnerabilidade Letal (Risco Relativo)</p>
+                  <p className="text-3xl font-bold text-destructive">{atlasViolencia2025.riscoRelativo}x</p>
+                  <p className="text-xs text-muted-foreground mb-3">chance de assassinato para negros vs não negros</p>
+                  <div className="flex items-center gap-1 text-xs text-destructive">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>{atlasViolencia2025.riscoRelativo2013}x (2013) → {atlasViolencia2025.riscoRelativo}x (2023)</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Desigualdade <strong>aumentou</strong> em 10 anos</p>
+                </CardContent>
+              </Card>
+
+              {/* 2. Queda Diferencial */}
+              <Card className="border-l-4 border-l-warning">
+                <CardContent className="pt-4 pb-4">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Queda Diferencial de Homicídios (2013→2023)</p>
+                  <div className="flex gap-3 items-end mb-3">
+                    <div>
+                      <p className="text-2xl font-bold text-warning">-{atlasViolencia2025.quedaNegros2013_2023}%</p>
+                      <p className="text-xs text-muted-foreground">Negros</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-success">-{atlasViolencia2025.quedaNaoNegros2013_2023}%</p>
+                      <p className="text-xs text-muted-foreground">Não negros</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    Políticas beneficiaram mais não negros (+10,6 p.p.)
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* 3. Violência Letal Juventude 15-29 */}
+              <Card className="border-l-4 border-l-warning">
+                <CardContent className="pt-4 pb-4">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Violência Letal — Juventude (15-29 anos)</p>
+                  <p className="text-3xl font-bold text-warning">{atlasViolencia2025.juventude15_29.percentualVitimas}%</p>
+                  <p className="text-xs text-muted-foreground mb-3">das vítimas de homicídio ({atlasViolencia2025.juventude15_29.ano})</p>
+                  <div className="p-2 bg-destructive/10 rounded text-center">
+                    <p className="text-xs font-bold text-destructive">
+                      {atlasViolencia2025.juventude15_29.percentualNegrosHomens}% jovens negros masculinos
+                    </p>
+                    <p className="text-xs text-muted-foreground">entre vítimas de mortes violentas</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* 4. IVJ-N */}
+              <Card className="border-l-4 border-l-warning">
+                <CardContent className="pt-4 pb-4">
+                  <p className="text-xs font-medium text-muted-foreground mb-1">IVJ-N — Vulnerabilidade Juventude Negra</p>
+                  <p className="text-3xl font-bold text-warning">{atlasViolencia2025.ivjn.riscoRelativo}x</p>
+                  <p className="text-xs text-muted-foreground mb-3">risco homicídio jovens negros vs brancos ({atlasViolencia2025.ivjn.ano})</p>
+                  <div className="text-xs space-y-1">
+                    <p className="flex items-center gap-1 text-destructive">
+                      <TrendingUp className="w-3 h-3" />
+                      {atlasViolencia2025.ivjn.riscoRelativo2017}x (2017) → {atlasViolencia2025.ivjn.riscoRelativo}x (2021)
+                    </p>
+                    <p className="flex items-center gap-1 text-destructive">
+                      <AlertTriangle className="w-3 h-3" />
+                      C/ ensino superior: até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior para negros
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
+              <FileText className="w-3 h-3" />
+              <a href={atlasViolencia2025.link} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                Atlas da Violência 2025 (IPEA/FBSP) <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
+          </div>
         </CardContent>
       </Card>
 
