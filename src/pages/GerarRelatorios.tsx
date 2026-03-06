@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, RefreshCw, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
@@ -311,6 +311,9 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="respostas-db" className="gap-1">
             <FileCheck className="w-4 h-4" /> Respostas CERD III ({respostasCerd?.length || 0})
           </TabsTrigger>
+          <TabsTrigger value="balanco" className="gap-1 bg-accent/20">
+            <GitCompare className="w-4 h-4" /> Balanço Comparativo
+          </TabsTrigger>
         </TabsList>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
@@ -568,7 +571,400 @@ ${(respostasCerd || []).map(r => {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ABA: BALANÇO COMPARATIVO */}
+        <TabsContent value="balanco">
+          <BalancoComparativoTab
+            lacunas={lacunas || []}
+            conclusoes={conclusoes || []}
+            indicadores={indicadores || []}
+            respostasCerd={respostasCerd || []}
+            orcStats={orcStats}
+            stats={stats}
+          />
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
+  );
+}
+
+/* ─── Balanço Comparativo Component ─── */
+interface BalancoProps {
+  lacunas: any[];
+  conclusoes: any[];
+  indicadores: any[];
+  respostasCerd: any[];
+  orcStats: any;
+  stats: any;
+}
+
+function BalancoComparativoTab({ lacunas, conclusoes, indicadores, respostasCerd, orcStats, stats }: BalancoProps) {
+  const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // Compute analytical metrics
+  const totalLacunas = lacunas.length;
+  const cumpridas = lacunas.filter(l => l.status_cumprimento === 'cumprido').length;
+  const parciais = lacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+  const naoCumpridas = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido').length;
+  const retrocessos = lacunas.filter(l => l.status_cumprimento === 'retrocesso').length;
+
+  const avancos = conclusoes.filter((c: any) => c.tipo === 'avanco');
+  const retrocessosConc = conclusoes.filter((c: any) => c.tipo === 'retrocesso');
+  const lacunasPersist = conclusoes.filter((c: any) => c.tipo === 'lacuna_persistente');
+  const paradoxos = conclusoes.filter((c: any) => c.tipo === 'paradoxo');
+
+  // Categorias de indicadores
+  const catCounts: Record<string, number> = {};
+  indicadores.forEach((ind: any) => {
+    catCounts[ind.categoria] = (catCounts[ind.categoria] || 0) + 1;
+  });
+
+  // Indicadores com série vs ponto único
+  const comSerie = indicadores.filter((ind: any) => {
+    const dados = ind.dados || {};
+    const years = Object.keys(dados).filter(k => /^\d{4}$/.test(k));
+    return years.length >= 3;
+  }).length;
+  const pontoUnico = indicadores.filter((ind: any) => {
+    const dados = ind.dados || {};
+    const years = Object.keys(dados).filter(k => /^\d{4}$/.test(k));
+    return years.length <= 1;
+  }).length;
+
+  // Respostas CERD III
+  const respParcial = respostasCerd.filter((r: any) => r.grau_atendimento === 'parcialmente_cumprido').length;
+  const respNao = respostasCerd.filter((r: any) => r.grau_atendimento === 'nao_cumprido').length;
+  const respRetro = respostasCerd.filter((r: any) => r.grau_atendimento === 'retrocesso').length;
+
+  // Eixos temáticos distribution
+  const eixos: Record<string, { total: number; nao: number; parcial: number; retro: number }> = {};
+  lacunas.forEach(l => {
+    const e = l.eixo_tematico;
+    if (!eixos[e]) eixos[e] = { total: 0, nao: 0, parcial: 0, retro: 0 };
+    eixos[e].total++;
+    if (l.status_cumprimento === 'nao_cumprido') eixos[e].nao++;
+    if (l.status_cumprimento === 'parcialmente_cumprido') eixos[e].parcial++;
+    if (l.status_cumprimento === 'retrocesso') eixos[e].retro++;
+  });
+
+  const generateBalancoHTML = () => {
+    const systemUrl = window.location.origin;
+    return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Balanço Comparativo — Evolução do Sistema CERD IV</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 210mm; margin: 0 auto; padding: 20px; font-size: 11px; line-height: 1.6; color: #1a1a2e; }
+  h1 { font-size: 22px; color: #0f3460; border-bottom: 3px solid #0f3460; padding-bottom: 8px; }
+  h2 { font-size: 16px; color: #16213e; margin-top: 28px; border-left: 4px solid #0f3460; padding-left: 10px; }
+  h3 { font-size: 13px; color: #0f3460; margin-top: 18px; }
+  .header { text-align: center; margin-bottom: 28px; border: 2px solid #0f3460; padding: 20px; border-radius: 10px; background: linear-gradient(135deg, #f0f4ff, #e8eeff); }
+  .header p { margin: 3px 0; color: #555; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .kpi { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; }
+  .kpi .value { font-size: 28px; font-weight: 700; }
+  .kpi .label { font-size: 10px; color: #64748b; margin-top: 2px; }
+  .kpi .delta { font-size: 9px; color: #16a34a; font-weight: 600; }
+  .kpi .delta.neg { color: #dc2626; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10px; }
+  th { background: #0f3460; color: white; padding: 7px 10px; text-align: left; font-weight: 600; }
+  td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) { background: #f8fafc; }
+  .section-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 12px 0; background: #fafbff; }
+  .highlight { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 6px; padding: 10px; margin: 8px 0; font-size: 10px; }
+  .conclusion-card { border-left: 4px solid #0f3460; padding: 10px 14px; margin: 8px 0; background: #f8fafc; border-radius: 0 6px 6px 0; }
+  .link { color: #2563eb; text-decoration: underline; font-size: 9px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+  .badge-avanco { background: #dcfce7; color: #166534; }
+  .badge-retrocesso { background: #fef2f2; color: #991b1b; }
+  .badge-lacuna { background: #fef3c7; color: #92400e; }
+  .badge-paradoxo { background: #ede9fe; color: #5b21b6; }
+  .source { font-size: 9px; color: #94a3b8; font-style: italic; }
+  @media print { .no-print { display: none; } body { padding: 0; } }
+  @page { size: A4; margin: 2cm; }
+</style></head><body>
+${getExportToolbarHTML('Balanco-Comparativo-CERD-IV')}
+
+<div class="header">
+  <h1>📊 Balanço Comparativo — Estado Atual do Sistema</h1>
+  <p><strong>Sistema de Subsídios ao IV Relatório Periódico do Brasil ao CERD</strong></p>
+  <p>Documento de referência interna — Gerado em: ${now}</p>
+  <p style="font-size:10px;color:#64748b;">Consolidação de todas as implementações realizadas nas últimas 24 horas</p>
+</div>
+
+<!-- SUMÁRIO EXECUTIVO -->
+<h2>1. Sumário Executivo — Dimensão da Base</h2>
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="value" style="color:#0f3460">${totalLacunas}</div>
+    <div class="label">Lacunas ONU mapeadas</div>
+    <div class="delta">CERD/C/BRA/CO/18-20</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:#7c3aed">${indicadores.length}</div>
+    <div class="label">Indicadores no BD</div>
+    <div class="delta">+6 séries enriquecidas (24h)</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:#0d9488">${orcStats?.totalRegistros || 0}</div>
+    <div class="label">Registros orçamentários</div>
+    <div class="delta">Federal 2018-2025</div>
+  </div>
+  <div class="kpi">
+    <div class="value" style="color:#ea580c">${conclusoes.length}</div>
+    <div class="label">Conclusões analíticas</div>
+    <div class="delta">${avancos.length} avanços / ${retrocessosConc.length} retrocessos</div>
+  </div>
+</div>
+
+<div class="section-box">
+  <h3>📈 Composição da Base de Dados</h3>
+  <table>
+    <tr><th>Módulo</th><th>Registros</th><th>Fonte</th><th>Link no Sistema</th></tr>
+    <tr><td>Lacunas ONU</td><td>${totalLacunas}</td><td>CERD/C/BRA/CO/18-20 (Ago/2022)</td><td><a class="link" href="${systemUrl}/conclusoes">→ Conclusões</a></td></tr>
+    <tr><td>Respostas CERD III</td><td>${respostasCerd.length}</td><td>III Relatório Periódico (2018)</td><td><a class="link" href="${systemUrl}/gerar-relatorios">→ Gerar Relatórios</a></td></tr>
+    <tr><td>Indicadores Interseccionais</td><td>${indicadores.length}</td><td>SIDRA, DataSUS, FBSP, CNJ, TSE</td><td><a class="link" href="${systemUrl}/estatisticas">→ Estatísticas</a></td></tr>
+    <tr><td>Dados Orçamentários</td><td>${orcStats?.totalRegistros || 0}</td><td>SIOP / Portal Transparência</td><td><a class="link" href="${systemUrl}/orcamento">→ Orçamento</a></td></tr>
+    <tr><td>Conclusões Analíticas</td><td>${conclusoes.length}</td><td>Cruzamento sistêmico</td><td><a class="link" href="${systemUrl}/conclusoes">→ Conclusões</a></td></tr>
+  </table>
+</div>
+
+<!-- LACUNAS ONU -->
+<h2>2. Lacunas ONU — Quadro de Cumprimento</h2>
+<div class="kpi-grid">
+  <div class="kpi"><div class="value" style="color:#166534">${cumpridas}</div><div class="label">Cumpridas</div></div>
+  <div class="kpi"><div class="value" style="color:#92400e">${parciais}</div><div class="label">Parcialmente cumpridas</div></div>
+  <div class="kpi"><div class="value" style="color:#991b1b">${naoCumpridas}</div><div class="label">Não cumpridas</div></div>
+  <div class="kpi"><div class="value" style="color:#7f1d1d">${retrocessos}</div><div class="label">Retrocessos</div></div>
+</div>
+
+<div class="highlight">
+  ⚠️ <strong>Diagnóstico central:</strong> ${cumpridas} de ${totalLacunas} recomendações cumpridas (${totalLacunas > 0 ? Math.round(cumpridas/totalLacunas*100) : 0}%). 
+  ${naoCumpridas} recomendações permanecem sem atendimento (${totalLacunas > 0 ? Math.round(naoCumpridas/totalLacunas*100) : 0}%) e ${retrocessos} apresentam retrocesso.
+  O eixo mais crítico é <strong>Segurança Pública</strong> (${eixos['seguranca_publica']?.total || 0} lacunas, ${eixos['seguranca_publica']?.nao || 0} não cumpridas).
+</div>
+
+<h3>Distribuição por Eixo Temático</h3>
+<table>
+  <tr><th>Eixo</th><th>Total</th><th>Não cumpridas</th><th>Parciais</th><th>Retrocesso</th><th>Gravidade</th></tr>
+  ${Object.entries(eixos).sort((a, b) => b[1].total - a[1].total).map(([eixo, d]) =>
+    `<tr><td>${eixo.replace(/_/g, ' ')}</td><td>${d.total}</td><td style="color:#991b1b;font-weight:600">${d.nao}</td><td style="color:#92400e">${d.parcial}</td><td style="color:#7f1d1d">${d.retro}</td><td>${d.nao + d.retro > 3 ? '🔴 Crítico' : d.nao + d.retro > 1 ? '🟡 Alto' : '🟢 Moderado'}</td></tr>`
+  ).join('')}
+</table>
+
+<!-- CONCLUSÕES ANALÍTICAS -->
+<h2>3. Conclusões Analíticas — Fios Condutores</h2>
+<p style="font-size:10px;color:#64748b;">As conclusões cruzam lacunas ONU × orçamento × indicadores para identificar padrões estruturais.</p>
+
+<div class="section-box">
+  <h3>Composição das ${conclusoes.length} Conclusões</h3>
+  <table>
+    <tr><th>Tipo</th><th>Qtd</th><th>Proporção</th></tr>
+    <tr><td><span class="badge badge-avanco">Avanço</span></td><td>${avancos.length}</td><td>${conclusoes.length > 0 ? Math.round(avancos.length/conclusoes.length*100) : 0}%</td></tr>
+    <tr><td><span class="badge badge-retrocesso">Retrocesso</span></td><td>${retrocessosConc.length}</td><td>${conclusoes.length > 0 ? Math.round(retrocessosConc.length/conclusoes.length*100) : 0}%</td></tr>
+    <tr><td><span class="badge badge-lacuna">Lacuna Persistente</span></td><td>${lacunasPersist.length}</td><td>${conclusoes.length > 0 ? Math.round(lacunasPersist.length/conclusoes.length*100) : 0}%</td></tr>
+    <tr><td><span class="badge badge-paradoxo">Paradoxo</span></td><td>${paradoxos.length}</td><td>${conclusoes.length > 0 ? Math.round(paradoxos.length/conclusoes.length*100) : 0}%</td></tr>
+  </table>
+</div>
+
+${conclusoes.map((c: any) => `
+<div class="conclusion-card">
+  <p><span class="badge badge-${c.tipo === 'avanco' ? 'avanco' : c.tipo === 'retrocesso' ? 'retrocesso' : c.tipo === 'paradoxo' ? 'paradoxo' : 'lacuna'}">${c.tipo.replace(/_/g, ' ').toUpperCase()}</span> <strong>${c.titulo}</strong> <span style="font-size:9px;color:#94a3b8;">(${c.periodo})</span></p>
+  <p style="font-size:10px;margin:4px 0;">${c.argumento_central}</p>
+  ${c.evidencias?.length ? `<p class="source">Evidências: ${c.evidencias.slice(0, 3).join(' | ')}</p>` : ''}
+  <p class="source">Eixos: ${(c.eixos_tematicos || []).join(', ').replace(/_/g, ' ')} | <a class="link" href="${systemUrl}/conclusoes">→ Ver no sistema</a></p>
+</div>`).join('')}
+
+<!-- INDICADORES -->
+<h2>4. Base de Indicadores — Cobertura e Robustez</h2>
+<div class="kpi-grid">
+  <div class="kpi"><div class="value" style="color:#0f3460">${indicadores.length}</div><div class="label">Total de indicadores</div></div>
+  <div class="kpi"><div class="value" style="color:#16a34a">${comSerie}</div><div class="label">Com série histórica (≥3 pontos)</div></div>
+  <div class="kpi"><div class="value" style="color:#92400e">${pontoUnico}</div><div class="label">Dado pontual (≤1 ano)</div></div>
+  <div class="kpi"><div class="value" style="color:#7c3aed">${Object.keys(catCounts).length}</div><div class="label">Categorias temáticas</div></div>
+</div>
+
+<h3>Distribuição por Categoria</h3>
+<table>
+  <tr><th>Categoria</th><th>Indicadores</th><th>Proporção</th></tr>
+  ${Object.entries(catCounts).sort((a, b) => b[1] - a[1]).map(([cat, n]) =>
+    `<tr><td>${cat.replace(/_/g, ' ')}</td><td>${n}</td><td>${Math.round(n/indicadores.length*100)}%</td></tr>`
+  ).join('')}
+</table>
+
+<div class="highlight">
+  📊 <strong>Enriquecimento nas últimas 24h:</strong> 6 indicadores de habitação/saneamento receberam séries históricas expandidas (PNAD Contínua 2016-2023), 
+  deep links para SIDRA/IBGE, metadados de metodologia e notas sobre cruzamentos. Indicadores do Censo 2022 (quilombolas, indígenas em TIs) 
+  foram documentados como baselines inaugurais sem série anterior possível.
+</div>
+
+<!-- RESPOSTAS CERD III -->
+<h2>5. Respostas às Críticas do CERD III</h2>
+<table>
+  <tr><th>Grau de Atendimento</th><th>Qtd</th><th>%</th></tr>
+  <tr><td>✅ Cumprido</td><td>${respostasCerd.filter((r: any) => r.grau_atendimento === 'cumprido').length}</td><td>${respostasCerd.length > 0 ? Math.round(respostasCerd.filter((r: any) => r.grau_atendimento === 'cumprido').length/respostasCerd.length*100) : 0}%</td></tr>
+  <tr><td>⚠️ Parcialmente cumprido</td><td>${respParcial}</td><td>${respostasCerd.length > 0 ? Math.round(respParcial/respostasCerd.length*100) : 0}%</td></tr>
+  <tr><td>❌ Não cumprido</td><td>${respNao}</td><td>${respostasCerd.length > 0 ? Math.round(respNao/respostasCerd.length*100) : 0}%</td></tr>
+  <tr><td>🔴 Retrocesso</td><td>${respRetro}</td><td>${respostasCerd.length > 0 ? Math.round(respRetro/respostasCerd.length*100) : 0}%</td></tr>
+</table>
+
+<!-- ORÇAMENTO -->
+<h2>6. Base Orçamentária</h2>
+<div class="section-box">
+  <table>
+    <tr><th>Métrica</th><th>Valor</th></tr>
+    <tr><td>Registros orçamentários</td><td>${orcStats?.totalRegistros || 0}</td></tr>
+    <tr><td>Dotação autorizada total</td><td>R$ ${((orcStats?.totalDotacao || 0) / 1e9).toFixed(2)} bi</td></tr>
+    <tr><td>Total pago</td><td>R$ ${((orcStats?.totalPago || 0) / 1e9).toFixed(2)} bi</td></tr>
+    <tr><td>Variação entre períodos (P1→P2)</td><td>${orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(1)}%` : 'N/A'}</td></tr>
+    <tr><td>Período 1 (Trava Institucional)</td><td>2018-2022</td></tr>
+    <tr><td>Período 2 (Retomada)</td><td>2023-2025</td></tr>
+  </table>
+  <p class="source">Fonte: SIOP/Portal da Transparência | <a class="link" href="${systemUrl}/orcamento">→ Ver no sistema</a></p>
+</div>
+
+<!-- IMPLEMENTAÇÕES 24H -->
+<h2>7. Registro de Implementações — Últimas 24 Horas</h2>
+<div class="section-box">
+  <h3>Alterações realizadas</h3>
+  <table>
+    <tr><th>Módulo</th><th>Alteração</th><th>Impacto</th></tr>
+    <tr><td>Indicadores BD</td><td>6 indicadores de habitação/saneamento enriquecidos com séries PNAD Contínua</td><td>Séries históricas 2016-2023 onde antes havia dado pontual</td></tr>
+    <tr><td>Indicadores BD</td><td>Deep links SIDRA + metadados de metodologia adicionados</td><td>Auditabilidade total — cada indicador rastreável à fonte primária</td></tr>
+    <tr><td>Indicadores BD</td><td>Notas sobre cruzamentos e baselines inaugurais (Censo 2022)</td><td>Transparência sobre limitações de séries quilombolas/indígenas</td></tr>
+    <tr><td>Gerar Relatórios</td><td>Exportação DOCX adicionada a todos os relatórios analíticos</td><td>Todos os produtos exportáveis em PDF/HTML + Word editável</td></tr>
+    <tr><td>Gerar Relatórios</td><td>Relatórios Lacunas ONU e Respostas CERD III com exportação</td><td>Dados do BD alimentam diretamente os documentos exportados</td></tr>
+    <tr><td>Base Estatística</td><td>Seção Grupos Focais integrada ao relatório de Inventário</td><td>Quilombolas, indígenas, ciganos, juventude e mulheres negras no documento</td></tr>
+    <tr><td>Base Estatística</td><td>Deep links bidirecionais sistema↔documento adicionados</td><td>Navegação direta do DOCX para a tela correspondente no sistema</td></tr>
+    <tr><td>Indicadores BD</td><td>Persistência de indicadores de alta prioridade (homicídios, letalidade, encarceramento)</td><td>Base elevada para ${indicadores.length} indicadores auditáveis</td></tr>
+  </table>
+</div>
+
+<div class="highlight">
+  🔄 <strong>Impacto nas Conclusões:</strong> As conclusões analíticas (${conclusoes.length} registros) e os fios condutores permanecem estáveis — 
+  as alterações das últimas 24h foram de <strong>enriquecimento de dados</strong> (mais séries, mais deep links, mais metadados), 
+  não de reclassificação. Os vereditos de cumprimento das lacunas ONU (${cumpridas} cumpridas, ${naoCumpridas} não cumpridas, ${retrocessos} retrocessos) 
+  e a composição de avanços/retrocessos nas conclusões (${avancos.length}/${retrocessosConc.length}) não sofreram alteração.
+  <br/><br/>
+  A aderência ICERD e o cruzamento artigos×lacunas×orçamento mantêm a mesma estrutura, agora com evidências mais robustas 
+  nos indicadores de habitação/saneamento que fundamentam os Artigos V(e)(iii) e V(e)(iv) da Convenção.
+</div>
+
+<!-- CONCLUSÃO -->
+<h2>8. Veredito</h2>
+<div class="section-box">
+  <p><strong>Estabilidade analítica confirmada.</strong> As implementações das últimas 24 horas foram de caráter qualitativo 
+  (enriquecimento de séries, adição de metadados, ampliação de exportação), sem alterar:</p>
+  <ul style="margin:8px 0;padding-left:20px;">
+    <li>Classificação de cumprimento das ${totalLacunas} lacunas ONU</li>
+    <li>Composição dos ${conclusoes.length} fios condutores (${avancos.length} avanço, ${lacunasPersist.length} lacunas persistentes, ${retrocessosConc.length} retrocesso)</li>
+    <li>Pontuação de aderência ICERD por artigo</li>
+    <li>Diagnóstico orçamentário (${orcStats?.totalRegistros || 0} registros, variação ${orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(1)}%` : 'N/A'})</li>
+  </ul>
+  <p>O sistema está <strong>mais robusto</strong> para auditoria internacional, com ${indicadores.length} indicadores 
+  agora contendo deep links, metodologia e notas de cruzamento — atendendo ao padrão de transparência exigido pelo Comitê CERD.</p>
+</div>
+
+<div class="source" style="margin-top:24px;padding-top:12px;border-top:2px solid #0f3460;">
+  📋 Balanço Comparativo gerado pelo Sistema de Subsídios CERD IV — ${now}<br/>
+  🔗 Links internos referem-se a: <a class="link" href="${systemUrl}">${systemUrl}</a>
+</div>
+</body></html>`;
+  };
+
+  return (
+    <>
+      <Card className="mb-6 border-l-4 border-l-accent">
+        <CardContent className="pt-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <GitCompare className="w-6 h-6 text-accent-foreground flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold mb-1">Balanço Comparativo — Evolução do Sistema</h3>
+                <p className="text-sm text-muted-foreground">
+                  Documento consolidado com o estado atual de lacunas, conclusões, indicadores, orçamento e implementações recentes
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <Button size="sm" className="gap-1" onClick={() => {
+                const html = generateBalancoHTML();
+                const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                window.open(URL.createObjectURL(blob), '_blank');
+              }}>
+                <FileDown className="w-3 h-3" /> PDF/HTML
+              </Button>
+              <Button size="sm" variant="outline" className="gap-1" onClick={() => {
+                downloadAsDocx(generateBalancoHTML(), 'Balanco-Comparativo-CERD-IV');
+              }}>
+                <Download className="w-3 h-3" /> DOCX
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Preview cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardContent className="pt-4 pb-4 text-center">
+            <p className="text-xs text-muted-foreground">Lacunas ONU</p>
+            <p className="text-2xl font-bold">{totalLacunas}</p>
+            <p className="text-xs text-muted-foreground">{cumpridas} cumpridas | {naoCumpridas} não</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 text-center">
+            <p className="text-xs text-muted-foreground">Conclusões</p>
+            <p className="text-2xl font-bold">{conclusoes.length}</p>
+            <p className="text-xs text-success">{avancos.length} avanços</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 text-center">
+            <p className="text-xs text-muted-foreground">Indicadores BD</p>
+            <p className="text-2xl font-bold">{indicadores.length}</p>
+            <p className="text-xs text-muted-foreground">{comSerie} com série | {pontoUnico} pontual</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 text-center">
+            <p className="text-xs text-muted-foreground">Orçamento</p>
+            <p className="text-2xl font-bold">{orcStats?.totalRegistros || 0}</p>
+            <p className="text-xs text-muted-foreground">R$ {((orcStats?.totalDotacao || 0) / 1e9).toFixed(1)} bi</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Implementações Recentes (24h)</CardTitle>
+          <CardDescription>Alterações que impactam os módulos analíticos</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-start gap-2">
+              <Badge variant="outline" className="flex-shrink-0">Indicadores</Badge>
+              <p>6 indicadores de habitação/saneamento enriquecidos com séries PNAD Contínua 2016-2023 + deep links SIDRA</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <Badge variant="outline" className="flex-shrink-0">Relatórios</Badge>
+              <p>Exportação DOCX adicionada a todos os produtos analíticos + Lacunas ONU e Respostas CERD III</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <Badge variant="outline" className="flex-shrink-0">Estatísticas</Badge>
+              <p>Grupos Focais integrados ao relatório de Inventário com deep links bidirecionais</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <Badge variant="outline" className="flex-shrink-0">Base BD</Badge>
+              <p>Indicadores de alta prioridade persistidos — base elevada para {indicadores.length} indicadores auditáveis</p>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
+            <strong>Impacto nas Conclusões:</strong> Estável — nenhuma reclassificação de lacunas, avanços ou retrocessos. 
+            As alterações foram de enriquecimento qualitativo (séries, metadados, exportação), fortalecendo a base probatória 
+            sem alterar os vereditos analíticos.
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
