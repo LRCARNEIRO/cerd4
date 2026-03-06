@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileDown, Loader2, Database, BarChart3 } from 'lucide-react';
+import { FileDown, Loader2, Database, BarChart3, Printer } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { toast } from 'sonner';
 import {
   dadosDemograficos,
   evolucaoComposicaoRacial,
@@ -25,6 +26,12 @@ import {
   saudeInterseccional,
   radarVulnerabilidades,
   evolucaoDesigualdade,
+  atlasViolencia2025,
+  rendimentosCenso2022,
+  analfabetismoGeral2024,
+  jovensNegrosViolencia,
+  razaoRendaRacial,
+  interseccionalidadeTrabalhoFontes,
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas,
@@ -39,6 +46,300 @@ import {
 } from '@/components/estatisticas/CommonCoreTab';
 import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
+
+// ─── Helper: render any array of objects as HTML table ───
+function arrayToHTMLTable(data: any[], title?: string): string {
+  if (!data || data.length === 0) return '';
+  const keys = Object.keys(data[0]).filter(k => k !== 'fonte' && k !== 'urlFonte' && k !== 'url');
+  const formatVal = (v: any) => {
+    if (v === null || v === undefined) return '—';
+    if (typeof v === 'number') return v.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+    return String(v);
+  };
+  const formatKey = (k: string) => k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  return `${title ? `<h3>${title}</h3>` : ''}
+<table><thead><tr>${keys.map(k => `<th>${formatKey(k)}</th>`).join('')}</tr></thead>
+<tbody>${data.map(row => `<tr>${keys.map(k => `<td>${formatVal(row[k])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+// ─── Helper: render indicadores BD with interpretation ───
+function indicadorToHTML(ind: any): string {
+  const dados = ind.dados || {};
+  const objectKeys = Object.keys(dados).filter(k => typeof dados[k] === 'object' && !['por_uf_2024','idade_media_vitima','unidade'].includes(k));
+  if (objectKeys.length === 0) return `<div class="card"><h4>${ind.nome}</h4><p class="meta">${ind.fonte} — Dados não disponíveis para tabulação</p></div>`;
+
+  const topKeysAreYears = objectKeys.every((k: string) => /^\d{4}$/.test(k));
+  let groups: string[], years: string[], chartData: Record<string, any>[];
+
+  if (topKeysAreYears) {
+    years = objectKeys.sort();
+    const metricsSet = new Set<string>();
+    years.forEach(y => Object.keys(dados[y] || {}).forEach(m => metricsSet.add(m)));
+    groups = Array.from(metricsSet);
+    chartData = years.map(y => {
+      const p: Record<string, any> = { ano: y };
+      groups.forEach(m => { if (dados[y]?.[m] !== undefined) p[m] = dados[y][m]; });
+      return p;
+    });
+  } else {
+    const allYears = new Set<string>();
+    objectKeys.forEach(g => Object.keys(dados[g] || {}).forEach(y => allYears.add(y)));
+    years = Array.from(allYears).sort();
+    groups = objectKeys;
+    chartData = years.map(y => {
+      const p: Record<string, any> = { ano: y };
+      objectKeys.forEach(g => { if (dados[g]?.[y] !== undefined) p[g] = dados[g][y]; });
+      return p;
+    });
+  }
+
+  const formatGroup = (k: string) => k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const tendBadge = ind.tendencia
+    ? `<span class="badge ${ind.tendencia.includes('melhora') ? 'badge-green' : ind.tendencia.includes('piora') ? 'badge-red' : 'badge-amber'}">${ind.tendencia}</span>`
+    : '';
+
+  let html = `<div class="card"><h4>${ind.nome} ${tendBadge}</h4>
+<p class="meta">${ind.subcategoria ? ind.subcategoria + ' • ' : ''}${ind.fonte}</p>
+<table><thead><tr><th>Grupo</th>${years.map(y => `<th>${y}</th>`).join('')}<th>Var.</th></tr></thead><tbody>`;
+
+  for (const g of groups) {
+    const vals = chartData.filter(d => d[g] !== undefined).map(d => d[g] as number);
+    let variation = '';
+    if (vals.length >= 2 && vals[0] !== 0) {
+      const pct = ((vals[vals.length - 1] - vals[0]) / vals[0] * 100).toFixed(1);
+      variation = `${parseFloat(pct) > 0 ? '+' : ''}${pct}%`;
+    }
+    html += `<tr><td>${formatGroup(g)}</td>${years.map((_, yi) => {
+      const v = chartData[yi]?.[g];
+      return `<td>${v !== undefined ? (typeof v === 'number' ? v.toLocaleString('pt-BR') : v) : '—'}</td>`;
+    }).join('')}<td>${variation}</td></tr>`;
+  }
+  html += `</tbody></table>`;
+
+  // Interpretation
+  if (years.length >= 2) {
+    const interps = groups.map(g => {
+      const vals = chartData.filter(d => d[g] !== undefined).map(d => d[g] as number);
+      if (vals.length < 2) return null;
+      const first = vals[0], last = vals[vals.length - 1], diff = last - first;
+      const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
+      const isSeg = ind.categoria === 'Segurança Pública' || ind.categoria === 'seguranca_publica';
+      const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
+      return `${formatGroup(g)}: ${first.toLocaleString('pt-BR')} → ${last.toLocaleString('pt-BR')} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
+    }).filter(Boolean);
+    if (interps.length > 0) {
+      html += `<div class="interpretation">📊 <strong>Interpretação (${years[0]}→${years[years.length - 1]}):</strong> ${interps.join('. ')}.</div>`;
+    }
+  }
+
+  html += `<p class="meta">Fonte: ${ind.fonte}${ind.url_fonte ? ` — <a href="${ind.url_fonte}">${ind.url_fonte}</a>` : ''}</p>`;
+  if (ind.documento_origem?.length) {
+    html += `<p class="meta">Documentos: ${ind.documento_origem.join(', ')}</p>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function generateFullStatisticsHTML(indicadoresBD: any[]) {
+  const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  const bdCategorias: Record<string, any[]> = {};
+  indicadoresBD.forEach(i => {
+    const cat = i.categoria || 'outros';
+    if (!bdCategorias[cat]) bdCategorias[cat] = [];
+    bdCategorias[cat].push(i);
+  });
+
+  const catLabels: Record<string, string> = {
+    seguranca_publica: 'Segurança Pública', saude: 'Saúde', educacao: 'Educação',
+    terra_territorio: 'Terras e Territórios', trabalho_renda: 'Trabalho e Renda',
+    politicas_institucionais: 'Políticas Institucionais', legislacao_justica: 'Legislação e Justiça',
+    participacao_social: 'Participação Social', dados_estatisticas: 'Dados e Estatísticas',
+    cultura_patrimonio: 'Cultura e Patrimônio', habitacao: 'Habitação',
+  };
+
+  // Common Core categories
+  const ccCategorias = [
+    { nome: 'Demográficas', tabelas: tabelasDemograficas },
+    { nome: 'Econômicas', tabelas: tabelasEconomicas },
+    { nome: 'Educação', tabelas: tabelasEducacao },
+    { nome: 'Saúde', tabelas: tabelasSaude },
+    { nome: 'Trabalho', tabelas: tabelasTrabalho },
+    { nome: 'Pobreza', tabelas: tabelasPobreza },
+    { nome: 'Segurança', tabelas: tabelasSeguranca },
+    { nome: 'Habitação', tabelas: tabelasHabitacao },
+    { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
+  ];
+
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBD.length;
+
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Relatório Completo — Base Estatística CERD IV</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 20px; color: #1a1a2e; line-height: 1.5; font-size: 12px; }
+  h1 { font-size: 20px; border-bottom: 3px solid #1e3a5f; padding-bottom: 8px; }
+  h2 { font-size: 16px; color: #1e3a5f; margin-top: 30px; border-left: 4px solid #1e3a5f; padding-left: 10px; page-break-after: avoid; }
+  h3 { font-size: 13px; margin-top: 16px; color: #0f3460; page-break-after: avoid; }
+  h4 { font-size: 12px; margin: 8px 0 4px; }
+  .meta { font-size: 11px; color: #64748b; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 14px 0; }
+  .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+  .stat-card .value { font-size: 24px; font-weight: 800; color: #1e3a5f; }
+  .stat-card .label { font-size: 10px; color: #666; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
+  th { background: #1e3a5f; color: white; padding: 5px 8px; text-align: left; font-weight: 600; font-size: 10px; }
+  td { padding: 4px 8px; border-bottom: 1px solid #e8e8e8; }
+  tr:nth-child(even) { background: #f8f9fc; }
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; margin-right: 3px; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #f3e8ff; color: #6b21a8; }
+  .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px; page-break-inside: avoid; }
+  .interpretation { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px 10px; margin: 6px 0; font-size: 10px; }
+  .section-summary { background: #f0f4ff; border-left: 3px solid #1e3a5f; padding: 8px 12px; margin: 8px 0; font-size: 11px; }
+  .footer { margin-top: 30px; padding-top: 12px; border-top: 2px solid #e8e8e8; font-size: 10px; color: #888; }
+  @media print { .no-print { display: none !important; } body { padding: 10px; } }
+  @page { margin: 1.5cm; size: A4; }
+</style></head><body>
+${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
+
+<h1>📊 Relatório Completo — Base Estatística</h1>
+<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2026) — Gerado em ${now}</p>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="value">${totalGeral.toLocaleString('pt-BR')}</div><div class="label">TOTAL GERAL</div></div>
+  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
+  <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">INDICADORES BD</div></div>
+  <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>1. DADOS GERAIS — Demografia e Indicadores Socioeconômicos</h2>
+
+<h3>1.1. Composição Racial do Brasil (Censo 2022)</h3>
+${arrayToHTMLTable(dadosDemograficos.composicaoRacial, '')}
+
+<h3>1.2. Evolução da Composição Racial — PNAD Contínua (2018-2024)</h3>
+${arrayToHTMLTable(evolucaoComposicaoRacial, '')}
+
+<h3>1.3. Indicadores Socioeconômicos por Raça/Cor</h3>
+${arrayToHTMLTable(indicadoresSocioeconomicos, '')}
+<div class="section-summary">Razão de renda negros/brancos: <strong>${razaoRendaRacial}</strong> — desigualdade estrutural persistente.</div>
+
+<h3>1.4. Rendimentos Médios por Raça (Censo 2022)</h3>
+${arrayToHTMLTable(rendimentosCenso2022.rendimentoPorRaca || [], '')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>2. SEGURANÇA PÚBLICA, SAÚDE e EDUCAÇÃO</h2>
+
+<h3>2.1. Segurança Pública — Série Histórica (FBSP)</h3>
+${arrayToHTMLTable(segurancaPublica, '')}
+
+<h3>2.2. Feminicídio — Série Histórica</h3>
+${arrayToHTMLTable(feminicidioSerie, '')}
+
+<h3>2.3. Educação — Série Histórica</h3>
+${arrayToHTMLTable(educacaoSerieHistorica, '')}
+<div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (${analfabetismoGeral2024.totalAnalfabetos?.toLocaleString('pt-BR')} pessoas).</div>
+
+<h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
+${arrayToHTMLTable(saudeSerieHistorica, '')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>3. INTERSECCIONALIDADES</h2>
+
+<h3>3.1. Raça × Gênero — Trabalho (PNAD Contínua)</h3>
+${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
+
+<h3>3.2. Mulheres Chefes de Família</h3>
+${arrayToHTMLTable(mulheresChefeFamilia, '')}
+
+<h3>3.3. Violência Interseccional</h3>
+${arrayToHTMLTable(violenciaInterseccional, '')}
+
+<h3>3.4. Juventude Negra</h3>
+${arrayToHTMLTable(juventudeNegra, '')}
+<div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
+
+<h3>3.5. Educação Interseccional</h3>
+${arrayToHTMLTable(educacaoInterseccional, '')}
+
+<h3>3.6. Saúde Interseccional</h3>
+${arrayToHTMLTable(saudeInterseccional, '')}
+
+<h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
+${arrayToHTMLTable(serieAntraTrans, '')}
+
+<h3>3.8. LGBTQIA+ × Raça</h3>
+${arrayToHTMLTable(lgbtqiaPorRaca, '')}
+
+<h3>3.9. Deficiência × Raça</h3>
+${arrayToHTMLTable(deficienciaPorRaca, '')}
+
+<h3>3.10. Classe Social × Raça</h3>
+${arrayToHTMLTable(classePorRaca, '')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>4. VULNERABILIDADES</h2>
+
+<h3>4.1. Radar de Vulnerabilidades</h3>
+${arrayToHTMLTable(radarVulnerabilidades, '')}
+
+<h3>4.2. Evolução da Desigualdade</h3>
+${arrayToHTMLTable(evolucaoDesigualdade, '')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>5. INFRAESTRUTURA POR GRUPO ÉTNICO-RACIAL (Censo 2022)</h2>
+<div class="section-summary">Dados de infraestrutura domiciliar (água, esgoto, lixo) disponíveis nas abas do sistema, comparando quilombolas, negros, indígenas e média nacional (IBGE Censo 2022).</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>6. ABAS ESPECIAIS</h2>
+
+<h3>6.1. COVID-19 e Desigualdade Racial</h3>
+<div class="section-summary">Dados de mortalidade COVID-19 por raça/cor disponíveis nas abas do sistema (DataSUS/SIVEP-Gripe 2020-2023).</div>
+
+<h3>6.2. Administração Pública (MUNIC/ESTADIC)</h3>
+<div class="section-summary">Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
+
+<!-- ═══════════════════════════════════════ -->
+<h2>7. COMMON CORE — ${TOTAL_TABELAS_COMMON_CORE} Tabelas (HRI/CORE/BRA)</h2>
+
+${ccCategorias.map(cat => `
+<h3>${cat.nome} (${cat.tabelas.length} tabelas)</h3>
+${cat.tabelas.map(t => `
+<div class="card">
+<h4>${t.numero}. ${t.titulo}</h4>
+<p class="meta">${t.fonte} | ${t.periodoAtualizado} | <span class="badge ${t.statusAtualizacao === 'atualizado' ? 'badge-green' : t.statusAtualizacao === 'parcial' ? 'badge-amber' : 'badge-red'}">${t.statusAtualizacao}</span></p>
+<table><thead><tr>${t.dados.headers.map((h: string) => `<th>${h}</th>`).join('')}</tr></thead>
+<tbody>${t.dados.rows.map((row: string[]) => `<tr>${row.map((c: string) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+</div>`).join('')}`).join('')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>8. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
+
+${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
+<h3>${catLabels[cat] || cat} (${inds.length})</h3>
+${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
+`).join('')}
+
+<!-- ═══════════════════════════════════════ -->
+<h2>Resumo Executivo</h2>
+<div class="stats-grid">
+  <div class="stat-card"><div class="value">${totalGeral.toLocaleString('pt-BR')}</div><div class="label">TOTAL GERAL</div></div>
+  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">Tabelas CC</div></div>
+  <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">Indicadores BD</div></div>
+  <div class="stat-card"><div class="value">${Object.keys(bdCategorias).length}</div><div class="label">Categorias</div></div>
+</div>
+
+<div class="footer">
+  <p>📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}</p>
+  <p>Todos os dados seguem a Regra de Ouro: apenas fontes oficiais auditáveis.</p>
+</div>
+</body></html>`;
+}
 
 function generateInventoryHTML(indicadoresBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -110,9 +411,9 @@ function generateInventoryHTML(indicadoresBD: any[]) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inventário Completo — Base Estatística CERD IV</title>
+<title>Inventário — Base Estatística CERD IV</title>
 <style>
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1100px; margin: 0 auto; padding: 20px; color: #1a1a2e; line-height: 1.6; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 20px; color: #1a1a2e; line-height: 1.6; font-size: 13px; }
   h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
   h2 { color: #e94560; margin-top: 30px; border-left: 4px solid #e94560; padding-left: 12px; }
   h3 { color: #0f3460; margin-top: 20px; }
@@ -137,9 +438,9 @@ function generateInventoryHTML(indicadoresBD: any[]) {
 </style>
 </head>
 <body>
-${getExportToolbarHTML()}
+${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
-<h1>📊 Inventário Completo — Base Estatística</h1>
+<h1>📊 Inventário — Base Estatística CERD IV</h1>
 <p style="color:#666;">Sistema de Subsídios para o IV Relatório CERD — Gerado em ${now}</p>
 
 <div class="meta-box">
@@ -151,7 +452,7 @@ ${getExportToolbarHTML()}
 <div class="stats-grid">
   <div class="stat-card">
     <div class="value">${totalGeral.toLocaleString('pt-BR')}</div>
-    <div class="label">TOTAL GERAL DE REGISTROS</div>
+    <div class="label">TOTAL GERAL</div>
   </div>
   <div class="stat-card">
     <div class="value">${TOTAL_TABELAS_COMMON_CORE}</div>
@@ -159,40 +460,34 @@ ${getExportToolbarHTML()}
   </div>
   <div class="stat-card">
     <div class="value">${indicadoresBD.length}</div>
-    <div class="label">INDICADORES NO BANCO</div>
+    <div class="label">INDICADORES BD</div>
   </div>
   <div class="stat-card">
     <div class="value">${TOTAL_DADOS_NOVOS}</div>
-    <div class="label">DADOS NOVOS AUDITÁVEIS</div>
+    <div class="label">DADOS NOVOS</div>
   </div>
 </div>
 
-<!-- SEÇÃO 1: SÉRIES TEMPORAIS -->
-<h2>1. Séries Temporais — Dados Gerais e Interseccionais</h2>
-<p style="font-size:13px;color:#555;">Dados das abas: <em>Dados Gerais, Segurança/Saúde/Educação, Vulnerabilidades, Raça×Gênero, LGBTQIA+, Deficiência, Juventude, Classe Social</em></p>
-
+<h2>1. Séries Temporais</h2>
 <table>
   <thead>
-    <tr><th>#</th><th>Série / Indicador</th><th>Registros</th><th>Fonte</th><th>Período</th></tr>
+    <tr><th>#</th><th>Série</th><th>Registros</th><th>Fonte</th><th>Período</th></tr>
   </thead>
   <tbody>
     ${series.map((s, i) => `<tr><td>${i + 1}</td><td>${s.nome}</td><td><strong>${s.registros}</strong></td><td>${s.fonte}</td><td>${s.periodo}</td></tr>`).join('')}
   </tbody>
   <tfoot>
     <tr style="background:#f0f4ff;font-weight:600;">
-      <td colspan="2">Total — Séries Temporais</td>
+      <td colspan="2">Total</td>
       <td>${totalSeriesRegistros}</td>
       <td colspan="2">${series.length} séries</td>
     </tr>
   </tfoot>
 </table>
 
-<!-- SEÇÃO 2: COMMON CORE -->
-<h2>2. Common Core Document (HRI/CORE/BRA) — ${TOTAL_TABELAS_COMMON_CORE} Tabelas</h2>
-<p style="font-size:13px;color:#555;">Aba: <em>Common Core (77)</em> — Atualização do documento HRI/CORE/BRA/2020</p>
-
+<h2>2. Common Core — ${TOTAL_TABELAS_COMMON_CORE} Tabelas</h2>
 ${ccCategorias.map(cat => `
-<h3>${cat.nome} (${cat.tabelas.length} tabelas)</h3>
+<h3>${cat.nome} (${cat.tabelas.length})</h3>
 <table>
   <thead>
     <tr><th>Nº</th><th>Título</th><th>Fonte</th><th>Período</th><th>Status</th><th>Linhas</th></tr>
@@ -209,16 +504,9 @@ ${ccCategorias.map(cat => `
   </tbody>
 </table>`).join('')}
 
-<div class="section-summary">
-  <strong>Resumo Common Core:</strong> ${TOTAL_TABELAS_COMMON_CORE} tabelas com ${TOTAL_DADOS_COMMON_CORE.toLocaleString('pt-BR')} linhas de dados individuais.
-</div>
-
-<!-- SEÇÃO 3: INDICADORES DO BANCO DE DADOS -->
-<h2>3. Indicadores no Banco de Dados — ${indicadoresBD.length} registros</h2>
-<p style="font-size:13px;color:#555;">Aba: <em>Indicadores (BD)</em> — Dados persistidos e consultáveis por todos os módulos analíticos</p>
-
+<h2>3. Indicadores BD — ${indicadoresBD.length}</h2>
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
-<h3>${catLabels[cat] || cat} (${inds.length} indicadores)</h3>
+<h3>${catLabels[cat] || cat} (${inds.length})</h3>
 <table>
   <thead>
     <tr><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Desagregações</th></tr>
@@ -243,102 +531,67 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
   </tbody>
 </table>`).join('')}
 
-<!-- SEÇÃO 4: DADOS NOVOS -->
-<h2>4. Dados Novos Auditáveis — ${TOTAL_DADOS_NOVOS} indicadores</h2>
-<p style="font-size:13px;color:#555;">Aba: <em>Dados Novos</em> — Indicadores confirmados com deep links para fontes oficiais (TSE, CNJ, SISDEPEN, DataSUS, FBSP)</p>
+<h2>4. Dados Novos — ${TOTAL_DADOS_NOVOS}</h2>
 <div class="section-summary">
-  <strong>${TOTAL_DADOS_NOVOS} indicadores auditáveis</strong> distribuídos em 9 categorias temáticas: Judiciário, Representatividade Política, Sistema Prisional, Segurança, Saúde, Educação, Habitação, Território e Orçamento.
-  Todos os indicadores de prioridade alta foram persistidos no banco de dados (Seção 3).
-</div>
-
-<!-- SEÇÃO 5: ABAS ESPECIAIS -->
-<h2>5. Abas Especiais</h2>
-
-<h3>Administração Pública (MUNIC/ESTADIC 2024)</h3>
-<div class="section-summary">
-  Dados da MUNIC/IBGE 2023-2024 sobre existência de órgãos municipais de igualdade racial, conselhos, 
-  planos municipais e adesão ao SINAPIR. Evidência da fragilidade institucional local.
-</div>
-
-<h3>COVID-19 e Desigualdade Racial</h3>
-<div class="section-summary">
-  Dados de mortalidade por COVID-19 desagregados por raça/cor (DataSUS/SIVEP-Gripe).
-  Impacto desproporcional na população negra e indígena. Séries 2020-2023.
-</div>
-
-<h3>Fontes de Dados</h3>
-<div class="section-summary">
-  Catálogo de fontes oficiais utilizadas no projeto: SIDRA/IBGE, DataSUS, FBSP, TSE, SISDEPEN, 
-  RAIS/CAGED, CadÚnico, SIOP, Portal da Transparência, FUNAI, FCP, INCRA, CNJ.
-</div>
-
-<h3>Lacunas CERD</h3>
-<div class="section-summary">
-  Vinculação das lacunas identificadas pelo Comitê CERD com evidências quantitativas 
-  (séries históricas 2010-2025) extraídas das fontes oficiais.
-</div>
-
-<!-- RESUMO FINAL -->
-<h2>Resumo Executivo</h2>
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="value">${series.length}</div>
-    <div class="label">Séries Temporais</div>
-  </div>
-  <div class="stat-card">
-    <div class="value">${totalSeriesRegistros}</div>
-    <div class="label">Registros em Séries</div>
-  </div>
-  <div class="stat-card">
-    <div class="value">${TOTAL_TABELAS_COMMON_CORE}</div>
-    <div class="label">Tabelas Common Core</div>
-  </div>
-  <div class="stat-card">
-    <div class="value">${TOTAL_DADOS_COMMON_CORE.toLocaleString('pt-BR')}</div>
-    <div class="label">Linhas Common Core</div>
-  </div>
-</div>
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="value">${indicadoresBD.length}</div>
-    <div class="label">Indicadores no BD</div>
-  </div>
-  <div class="stat-card">
-    <div class="value">${TOTAL_DADOS_NOVOS}</div>
-    <div class="label">Dados Novos</div>
-  </div>
-  <div class="stat-card">
-    <div class="value">${Object.keys(bdCategorias).length}</div>
-    <div class="label">Eixos Temáticos</div>
-  </div>
-  <div class="stat-card">
-    <div class="value" style="color:#0f3460;">${totalGeral.toLocaleString('pt-BR')}</div>
-    <div class="label" style="font-weight:700;">TOTAL GERAL</div>
-  </div>
+  <strong>${TOTAL_DADOS_NOVOS} indicadores auditáveis</strong> em 9 categorias temáticas com deep links para fontes oficiais.
 </div>
 
 <div class="footer">
-  <p>📋 Inventário gerado automaticamente pelo Sistema de Subsídios CERD IV — ${now}</p>
-  <p>Todos os dados seguem a Regra de Ouro: apenas fontes oficiais auditáveis. Proibição absoluta de projeções, estimativas e dados fabricados.</p>
+  <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
 </div>
 
 </body>
 </html>`;
 }
 
+function downloadDOCX(html: string, fileName: string) {
+  try {
+    const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast.success('Documento DOCX gerado com sucesso');
+  } catch (e) {
+    toast.error('Erro ao gerar documento');
+  }
+}
+
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
-  const [generating, setGenerating] = useState(false);
+  const [generating, setGenerating] = useState<string | null>(null);
 
-  const handleGenerate = () => {
-    setGenerating(true);
+  const handleFullReport = (format: 'html' | 'docx') => {
+    setGenerating(`full-${format}`);
+    try {
+      const html = generateFullStatisticsHTML(indicadoresBD || []);
+      if (format === 'docx') {
+        downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
+      } else {
+        const w = window.open('', '_blank');
+        if (w) { w.document.write(html); w.document.close(); }
+      }
+    } finally {
+      setGenerating(null);
+    }
+  };
+
+  const handleInventory = (format: 'html' | 'docx') => {
+    setGenerating(`inv-${format}`);
     try {
       const html = generateInventoryHTML(indicadoresBD || []);
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      if (format === 'docx') {
+        downloadDOCX(html, 'Inventario-Base-Estatistica-CERD-IV');
+      } else {
+        const w = window.open('', '_blank');
+        if (w) { w.document.write(html); w.document.close(); }
+      }
     } finally {
-      setGenerating(false);
+      setGenerating(null);
     }
   };
 
@@ -349,14 +602,14 @@ export function StatisticsInventoryReport() {
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Database className="w-5 h-5 text-chart-3" />
-          Inventário Completo — Base Estatística
+          Base Estatística — Relatórios
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Listagem de <strong>todos os dados</strong> contidos na Base Estatística: 
-          séries temporais, {TOTAL_TABELAS_COMMON_CORE} tabelas Common Core, {indicadoresBD?.length || 0} indicadores do BD 
-          e {TOTAL_DADOS_NOVOS} dados novos auditáveis.
+          Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
+          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBD?.length || 0} indicadores BD, 
+          interseccionalidades, vulnerabilidades) ou o inventário resumido.
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
           <div className="p-2 bg-muted/50 rounded-lg">
@@ -368,10 +621,36 @@ export function StatisticsInventoryReport() {
             <p className="text-xs text-muted-foreground">Tabelas + Séries + Abas</p>
           </div>
         </div>
-        <Button className="w-full gap-2" variant="outline" onClick={handleGenerate} disabled={generating}>
-          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-          Gerar Inventário HTML/PDF
-        </Button>
+
+        {/* Full report */}
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold text-foreground">📊 Relatório Completo (todas as abas)</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="default" size="sm" className="gap-1.5" onClick={() => handleFullReport('html')} disabled={!!generating}>
+              {generating === 'full-html' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
+              PDF / HTML
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => handleFullReport('docx')} disabled={!!generating}>
+              {generating === 'full-docx' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+              DOCX
+            </Button>
+          </div>
+        </div>
+
+        {/* Inventory */}
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold text-foreground">📋 Inventário (listagem resumida)</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => handleInventory('html')} disabled={!!generating}>
+              {generating === 'inv-html' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
+              PDF / HTML
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => handleInventory('docx')} disabled={!!generating}>
+              {generating === 'inv-docx' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+              DOCX
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
