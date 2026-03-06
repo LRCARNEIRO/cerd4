@@ -258,6 +258,35 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
           })}
         </TableBody>
       </Table>
+      {/* Interpretação compacta */}
+      {groups.length > 0 && sortedYears.length >= 2 && (
+        <div className="mt-3 p-3 bg-accent/30 rounded-lg border border-accent/50">
+          <p className="text-xs font-semibold text-foreground mb-1">📊 Interpretação ({sortedYears[0]}→{sortedYears[sortedYears.length - 1]}):</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {(() => {
+              const interpretations = groups.map(group => {
+                const vals = chartData.filter(d => d[group] !== undefined).map(d => d[group] as number);
+                if (vals.length < 2) return null;
+                const first = vals[0];
+                const last = vals[vals.length - 1];
+                const diff = last - first;
+                const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
+                const label = formatGroupName(group);
+                const isSeguranca = indicador.categoria === 'Segurança Pública';
+                const direction = diff > 0
+                  ? (isSeguranca ? 'piorou' : 'melhorou')
+                  : diff < 0
+                    ? (isSeguranca ? 'melhorou' : 'piorou')
+                    : 'manteve-se estável';
+                return `${label}: de ${first.toLocaleString('pt-BR')} para ${last.toLocaleString('pt-BR')} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'var. n/d'}, ${direction})`;
+              }).filter(Boolean);
+              return interpretations.length > 0
+                ? interpretations.join('. ') + '.'
+                : 'Dados insuficientes para interpretação.';
+            })()}
+          </p>
+        </div>
+      )}
       <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
