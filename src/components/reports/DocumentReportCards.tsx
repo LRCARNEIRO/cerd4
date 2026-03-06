@@ -1,9 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Globe, FileDown, Loader2, Download } from 'lucide-react';
+import { BookOpen, Globe, FileDown, Loader2, Download, Scale } from 'lucide-react';
 import { useState } from 'react';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVHTML } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
@@ -17,6 +18,11 @@ export function DocumentReportCards() {
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
+  const [generatingConclusoes, setGeneratingConclusoes] = useState(false);
+
+  const {
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+  } = useAnalyticalInsights();
 
   const totalLacunas = stats?.total || 0;
   const indicadoresCount = indicadores?.length || 0;
@@ -31,6 +37,13 @@ export function DocumentReportCards() {
   const cerdDados = indicadoresCount > 0 ? Math.round((indicadoresCount / (indicadoresCount + 6)) * 100) : 0;
   const cerdPovos = 100; // All groups covered
   const cerdProgress = Math.round((cerdRespostasOF + cerdDados + cerdPovos) / 3);
+
+  // Conclusões progress
+  const avancos = conclusoesDinamicas.filter(c => c.tipo === 'avanco').length;
+  const retrocessos = conclusoesDinamicas.filter(c => c.tipo === 'retrocesso').length;
+  const lacunasPersist = conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente').length;
+  const totalConclusoes = fiosCondutores.length + insightsCruzamento.length + avancos + retrocessos + lacunasPersist;
+  const conclusoesProgress = Math.min(100, Math.round((totalConclusoes / 25) * 100));
 
   const handleGenerateCCD = async () => {
     setGeneratingCCD(true);
@@ -56,8 +69,26 @@ export function DocumentReportCards() {
     }
   };
 
+  const handleGenerateConclusoes = async () => {
+    setGeneratingConclusoes(true);
+    try {
+      // Dynamically import to avoid circular deps
+      const { generateConclusoesFullHTML } = await import('./generateConclusoesFullHTML');
+      const html = generateConclusoesFullHTML({
+        fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+        stats, lacunas: lacunas || [], respostas: respostas || [],
+        indicadores: indicadores || [], orcStats,
+      });
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } finally {
+      setGeneratingConclusoes(false);
+    }
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
       {/* Common Core Document */}
       <Card className="border-l-4 border-l-primary">
         <CardContent className="pt-6 space-y-4">
@@ -171,6 +202,72 @@ export function DocumentReportCards() {
               onClick={() => {
                 const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
                 downloadAsDocx(html, 'CERD-IV-Relatorio-Periodico');
+              }}
+            >
+              <Download className="w-4 h-4" />
+              DOCX
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Conclusões Analíticas */}
+      <Card className="border-l-4 border-l-accent">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <Scale className="w-6 h-6 text-accent-foreground flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold">Conclusões Analíticas (Integral)</h3>
+              <p className="text-sm text-muted-foreground">Todas as 8 abas consolidadas</p>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Cobertura analítica</span>
+              <span className="font-bold">{conclusoesProgress}%</span>
+            </div>
+            <Progress value={conclusoesProgress} className="h-2.5 [&>div]:bg-[hsl(var(--chart-3))]" />
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="text-muted-foreground">Fios condutores:</p>
+              <p className="font-medium">{fiosCondutores.length}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-muted-foreground">Cruzamentos:</p>
+              <p className="font-medium">{insightsCruzamento.length}</p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs">
+              <strong>Conteúdo:</strong>{' '}
+              {avancos} avanços, {retrocessos} retrocessos, {lacunasPersist} lacunas persist.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className="gap-2"
+              onClick={handleGenerateConclusoes}
+              disabled={generatingConclusoes}
+            >
+              {generatingConclusoes ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              PDF / HTML
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={async () => {
+                const { generateConclusoesFullHTML } = await import('./generateConclusoesFullHTML');
+                const html = generateConclusoesFullHTML({
+                  fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+                  stats, lacunas: lacunas || [], respostas: respostas || [],
+                  indicadores: indicadores || [], orcStats,
+                });
+                downloadAsDocx(html, 'Conclusoes-Analiticas-Integral');
               }}
             >
               <Download className="w-4 h-4" />
