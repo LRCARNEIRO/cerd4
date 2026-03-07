@@ -177,11 +177,12 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                 <Badge variant="outline" className="text-xs border-chart-4 text-chart-4">Experimental</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Metodologia híbrida: para <strong>2024+</strong>, utiliza os programas oficialmente marcados nas
-                Agendas Transversais de <em>Igualdade Racial</em> e <em>Povos Indígenas</em> (PPA 2024-2027,
-                Espelho do Monitoramento do MPO). Para <strong>anos anteriores</strong> e <strong>povos ciganos</strong>,
-                mantém a busca por palavras-chave. Os resultados desta seção <strong>não integram</strong> as
-                demais análises do sistema.
+                Metodologia híbrida: para <strong>2024 e 2025</strong>, a lista de ações dos PDFs de Agendas
+                Transversais (<em>Igualdade Racial</em> e <em>Povos Indígenas</em>, PPA 2024-2027) baliza a
+                coleta de <strong>dotação inicial</strong> e <strong>liquidado</strong> de cada ação listada.
+                Para <strong>2018–2023</strong> e <strong>povos ciganos (todos os anos)</strong>,
+                permanece a metodologia anterior de seleção por palavras-chave com dados complementares SIOP.
+                Os resultados desta seção <strong>não integram</strong> as demais análises do sistema.
               </p>
             </div>
           </div>

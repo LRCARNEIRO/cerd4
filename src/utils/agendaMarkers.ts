@@ -74,9 +74,11 @@ export const AGENDA_INDIGENA_CODIGOS: Set<string> = new Set(
 
 /**
  * Classificação TESTE híbrida:
- * - Para ano >= 2024: usa as listas de marcadores de agenda
- * - Para ano < 2024: usa a mesma lógica de palavras-chave da metodologia atual
- * - Para ciganos: sempre usa palavras-chave (não há agenda transversal)
+ * - Para ano >= 2024: usa as listas de marcadores de agenda para balizar a
+ *   coleta de dotação inicial e liquidado de cada ação listada nos PDFs.
+ * - Para ano < 2024 (2018–2023): usa a mesma lógica de palavras-chave da
+ *   metodologia atual, com dados complementares SIOP.
+ * - Para ciganos (todos os anos): sempre usa palavras-chave (não há agenda transversal).
  */
 export type TesteThematicCategory = 'racial' | 'indigena' | 'quilombola' | 'ciganos' | 'sesai' | 'agenda_racial' | 'agenda_indigena';
 
