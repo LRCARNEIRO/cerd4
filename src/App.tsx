@@ -8,6 +8,7 @@ import PlanoTrabalho from "./pages/PlanoTrabalho";
 import CommonCore from "./pages/CommonCore";
 import Estatisticas from "./pages/Estatisticas";
 import Orcamento from "./pages/Orcamento";
+import OrcamentoTeste from "./pages/OrcamentoTeste";
 import Recomendacoes from "./pages/Recomendacoes";
 import Fontes from "./pages/Fontes";
 import GruposFocais from "./pages/GruposFocais";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/common-core" element={<CommonCore />} />
           <Route path="/estatisticas" element={<Estatisticas />} />
           <Route path="/orcamento" element={<Orcamento />} />
+          <Route path="/orcamento-teste" element={<OrcamentoTeste />} />
           <Route path="/recomendacoes" element={<Recomendacoes />} />
           <Route path="/fontes" element={<Fontes />} />
           <Route path="/grupos-focais" element={<GruposFocais />} />
