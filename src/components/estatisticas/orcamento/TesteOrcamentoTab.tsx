@@ -408,26 +408,29 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                     dois critérios conforme o período:
                   </p>
                   <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                    <div>
-                      <h5 className="font-semibold text-foreground">Período 2024+ — Marcadores Oficiais do PPA</h5>
+                     <div>
+                      <h5 className="font-semibold text-foreground">Período 2024–2025 — Marcadores Oficiais do PPA</h5>
                       <p>
-                        Utiliza a lista oficial de programas marcados nas Agendas Transversais de
-                        <em> Igualdade Racial</em> e <em>Povos Indígenas</em> no PPA 2024-2027,
-                        conforme publicado no Espelho do Monitoramento do Ministério do Planejamento e Orçamento (MPO).
+                        A lista de ações dos PDFs de Agendas Transversais de
+                        <em> Igualdade Racial</em> e <em>Povos Indígenas</em> (PPA 2024-2027,
+                        Espelho do Monitoramento do MPO) baliza a coleta de <strong>dotação inicial</strong> e
+                        <strong> liquidado</strong> de cada ação listada. Apenas essas métricas são extraídas
+                        para os programas marcados.
                       </p>
                     </div>
                     <div>
-                      <h5 className="font-semibold text-foreground">Período pré-2024 — Palavras-chave (mesma da metodologia vigente)</h5>
+                      <h5 className="font-semibold text-foreground">Período 2018–2023 — Palavras-chave + SIOP (mesma da metodologia vigente)</h5>
                       <p>
                         Mantém a busca por radicais e palavras-chave nos campos <code>programa</code>,
-                        <code> orgao</code> e <code>descritivo</code>.
+                        <code> orgao</code> e <code>descritivo</code>, com dados complementares do SIOP.
                       </p>
                     </div>
                     <div>
-                      <h5 className="font-semibold text-foreground">Povos Ciganos — Sempre por Palavras-chave</h5>
+                      <h5 className="font-semibold text-foreground">Povos Ciganos — Sempre por Palavras-chave (todos os anos)</h5>
                       <p>
                         Não há agenda transversal específica para povos ciganos no PPA 2024-2027.
-                        A classificação continua baseada em radicais: <code>cigano</code>, <code>romani</code>.
+                        A classificação continua baseada em radicais: <code>cigano</code>, <code>romani</code>,
+                        com coleta via metodologia anterior para todos os anos (2018–2025).
                       </p>
                     </div>
                   </div>
