@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, FlaskConical, BarChart3, BookOpen, ExternalLink, ChevronDown, ChevronUp, Info, Building } from 'lucide-react';
+import { AlertTriangle, FlaskConical, BarChart3, BookOpen, ExternalLink, ChevronDown, ChevronUp, Info, Building, Download, CheckCircle2, XCircle, Loader2, Database } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import {
   classifyTesteThematic,
   testeToDisplayGroup,
@@ -19,6 +20,9 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
