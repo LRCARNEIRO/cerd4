@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2, FileText, Scale } from 'lucide-react';
+import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2, FileText, Scale, FlaskConical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -24,6 +24,7 @@ import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/Estadu
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { TesteOrcamentoTab } from '@/components/estatisticas/orcamento/TesteOrcamentoTab';
 
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
@@ -597,6 +598,10 @@ export default function Orcamento() {
           <TabsTrigger value="artigos">
             <Scale className="w-4 h-4 mr-1" />
             Artigos ICERD
+          </TabsTrigger>
+          <TabsTrigger value="teste" className="border border-dashed border-chart-4/50">
+            <FlaskConical className="w-4 h-4 mr-1 text-chart-4" />
+            TESTE
           </TabsTrigger>
         </TabsList>
 
