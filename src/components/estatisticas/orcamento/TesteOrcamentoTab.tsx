@@ -373,7 +373,145 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
           })()}
         </TabsContent>
 
-        {/* ===== COMPARATIVO ===== */}
+        {/* ===== COBERTURA ===== */}
+        <TabsContent value="cobertura">
+          <div className="space-y-6">
+            {/* Ingestion controls */}
+            <Card className="border-l-4 border-l-chart-4">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <h4 className="font-semibold text-sm mb-1">Ingestão de Dados — Agenda Transversal</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Busca dados de dotação e execução dos {allAgendaPrograms.length} programas das agendas
+                      transversais via API do Portal da Transparência (2024–2025).
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleIngestAgenda}
+                    disabled={isIngesting}
+                    variant="outline"
+                    className="border-chart-4 text-chart-4 hover:bg-chart-4/10"
+                  >
+                    {isIngesting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Ingerindo...</>
+                    ) : (
+                      <><Download className="w-4 h-4 mr-2" /> Ingerir Programas de Agenda</>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Summary */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold">{coverageStats.total}</p>
+                  <p className="text-xs text-muted-foreground">Programas na Agenda</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-success/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-success">{coverageStats.withTeste}</p>
+                  <p className="text-xs text-muted-foreground">Com dados TESTE</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-chart-4/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-chart-4">{coverageStats.newOnly}</p>
+                  <p className="text-xs text-muted-foreground">Novos (sem keyword)</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-destructive/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-destructive">{coverageStats.missing}</p>
+                  <p className="text-xs text-muted-foreground">Sem dados TESTE</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Program-by-program table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Cobertura por Programa</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Código</TableHead>
+                      <TableHead>Programa</TableHead>
+                      <TableHead>Agenda</TableHead>
+                      <TableHead>Órgão</TableHead>
+                      <TableHead className="text-center">Dados TESTE</TableHead>
+                      <TableHead className="text-center">Dados Keyword</TableHead>
+                      <TableHead className="text-right">Registros</TableHead>
+                      <TableHead className="text-center">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {allAgendaPrograms.map(prog => {
+                      const info = coverageMap.get(prog.codigo);
+                      const isNew = info?.hasTesteData && !info?.hasRegularData;
+                      return (
+                        <TableRow key={prog.codigo} className={isNew ? 'bg-chart-4/5' : ''}>
+                          <TableCell className="font-mono text-xs">{prog.codigo}</TableCell>
+                          <TableCell className="text-xs max-w-[200px] truncate">{prog.nome}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px]">{prog.agenda}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs">{prog.orgao_nome}</TableCell>
+                          <TableCell className="text-center">
+                            {info?.hasTesteData ? (
+                              <CheckCircle2 className="w-4 h-4 text-success mx-auto" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-destructive/50 mx-auto" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {info?.hasRegularData ? (
+                              <CheckCircle2 className="w-4 h-4 text-primary mx-auto" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-muted-foreground/30 mx-auto" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono text-xs">
+                            {info?.testeCount || 0}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {isNew ? (
+                              <Badge className="text-[10px] bg-chart-4/20 text-chart-4 border-chart-4/30">NOVO</Badge>
+                            ) : info?.hasTesteData ? (
+                              <Badge variant="secondary" className="text-[10px]">OK</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">Pendente</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {testeRecords.length > 0 && (
+              <Card className="bg-success/5 border-success/20">
+                <CardContent className="pt-4 pb-3">
+                  <p className="text-sm font-medium text-success">
+                    ✓ {testeRecords.length} registros TESTE já ingeridos
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Liquidado total TESTE: {formatCurrency(testeRecords.reduce((s, r) => s + (Number(r.liquidado) || 0), 0))}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+
         <TabsContent value="comparativo">
           <div className="space-y-6">
             <Card>
