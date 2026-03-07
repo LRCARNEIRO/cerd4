@@ -276,6 +276,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
       <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="visao-geral"><BarChart3 className="w-4 h-4 mr-1" /> Visão Geral</TabsTrigger>
+          <TabsTrigger value="cobertura"><Database className="w-4 h-4 mr-1" /> Cobertura</TabsTrigger>
           <TabsTrigger value="comparativo"><Info className="w-4 h-4 mr-1" /> Comparativo</TabsTrigger>
           <TabsTrigger value="metodologia"><BookOpen className="w-4 h-4 mr-1" /> Metodologia</TabsTrigger>
         </TabsList>
