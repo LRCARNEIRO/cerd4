@@ -223,6 +223,25 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
     };
   }, [allRecords, classified]);
 
+  const handleIngestAgenda = async () => {
+    setIsIngesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ingest-agenda-teste', {
+        body: { anos: [2024, 2025] },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Ingestão concluída',
+        description: `${data.total_registros} registros coletados de ${data.programas_consultados} programas.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
+    } catch (e: any) {
+      toast({ title: 'Erro na ingestão', description: e.message, variant: 'destructive' });
+    } finally {
+      setIsIngesting(false);
+    }
+  };
+
   if (isLoading) {
     return <div className="space-y-4">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32" />)}</div>;
   }
