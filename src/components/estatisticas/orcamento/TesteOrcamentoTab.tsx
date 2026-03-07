@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, FlaskConical, BarChart3, BookOpen, ExternalLink, ChevronDown, ChevronUp, Info, Building } from 'lucide-react';
+import { AlertTriangle, FlaskConical, BarChart3, BookOpen, ExternalLink, ChevronDown, ChevronUp, Info, Building, Download, CheckCircle2, XCircle, Loader2, Database } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import {
   classifyTesteThematic,
   testeToDisplayGroup,
@@ -19,6 +20,9 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
@@ -59,19 +63,80 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
   const [filters, setFilters] = useState<Record<DisplayFilter, boolean>>({
     racial: true, indigena: true, quilombola: true, ciganos: true, sesai: true,
   });
+  const [isIngesting, setIsIngesting] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Classify all records using TESTE methodology
+  // Separate TESTE records (from agenda ingestion) from regular ones
+  const testeRecords = useMemo(() => 
+    allRecords.filter(r => r.fonte_dados === 'Agenda Transversal TESTE'),
+    [allRecords]
+  );
+
+  const regularRecords = useMemo(() =>
+    allRecords.filter(r => r.fonte_dados !== 'Agenda Transversal TESTE'),
+    [allRecords]
+  );
+
+  // Coverage analysis: which agenda programs have TESTE data?
+  const allAgendaPrograms = useMemo(() => {
+    const combined = [
+      ...AGENDA_RACIAL_PROGRAMAS.map(p => ({ ...p, agenda: 'racial' as const })),
+      ...AGENDA_INDIGENA_PROGRAMAS.map(p => ({ ...p, agenda: 'indigena' as const })),
+    ];
+    // Deduplicate by codigo
+    const seen = new Set<string>();
+    return combined.filter(p => {
+      if (seen.has(p.codigo)) return false;
+      seen.add(p.codigo);
+      return true;
+    });
+  }, []);
+
+  const coverageMap = useMemo(() => {
+    const map = new Map<string, { hasTesteData: boolean; hasRegularData: boolean; testeCount: number; regularCount: number; totalLiquidado: number }>();
+    for (const prog of allAgendaPrograms) {
+      const testeMatches = testeRecords.filter(r => r.programa.startsWith(prog.codigo));
+      const regularMatches = regularRecords.filter(r => r.programa.startsWith(prog.codigo));
+      map.set(prog.codigo, {
+        hasTesteData: testeMatches.length > 0,
+        hasRegularData: regularMatches.length > 0,
+        testeCount: testeMatches.length,
+        regularCount: regularMatches.length,
+        totalLiquidado: testeMatches.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+      });
+    }
+    return map;
+  }, [allAgendaPrograms, testeRecords, regularRecords]);
+
+  const coverageStats = useMemo(() => {
+    let withTeste = 0, withRegular = 0, newOnly = 0, missing = 0;
+    for (const [codigo, info] of coverageMap) {
+      if (info.hasTesteData) withTeste++;
+      if (info.hasRegularData) withRegular++;
+      if (info.hasTesteData && !info.hasRegularData) newOnly++;
+      if (!info.hasTesteData) missing++;
+    }
+    return { withTeste, withRegular, newOnly, missing, total: allAgendaPrograms.length };
+  }, [coverageMap, allAgendaPrograms]);
+
+  // Classify ALL records (TESTE + regular for keyword fallback) using TESTE methodology
   const classified = useMemo(() => {
     const result: Record<DisplayFilter, DadoOrcamentario[]> = {
       racial: [], indigena: [], quilombola: [], ciganos: [], sesai: [],
     };
     const matched: DadoOrcamentario[] = [];
     const unmatched: DadoOrcamentario[] = [];
-    const agendaMatched: DadoOrcamentario[] = []; // Matched via agenda (2024+)
-    const keywordMatched: DadoOrcamentario[] = []; // Matched via keywords
+    const agendaMatched: DadoOrcamentario[] = [];
+    const keywordMatched: DadoOrcamentario[] = [];
 
-    // Only federal records for this TESTE
-    const federal = allRecords.filter(r => r.esfera !== 'estadual' && r.esfera !== 'municipal');
+    // Use TESTE records for 2024+ and regular records for pre-2024
+    const recordsToClassify = [
+      ...testeRecords,
+      ...regularRecords.filter(r => r.ano < 2024),
+    ];
+
+    const federal = recordsToClassify.filter(r => r.esfera !== 'estadual' && r.esfera !== 'municipal');
 
     for (const r of federal) {
       const cat = classifyTesteThematic(r as any);
@@ -91,7 +156,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
     }
 
     return { byGroup: result, matched, unmatched, agendaMatched, keywordMatched, total: federal.length };
-  }, [allRecords]);
+  }, [testeRecords, regularRecords]);
 
   const filteredRecords = useMemo(() => {
     const result: DadoOrcamentario[] = [];
@@ -158,6 +223,25 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
     };
   }, [allRecords, classified]);
 
+  const handleIngestAgenda = async () => {
+    setIsIngesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ingest-agenda-teste', {
+        body: { anos: [2024, 2025] },
+      });
+      if (error) throw error;
+      toast({
+        title: 'Ingestão concluída',
+        description: `${data.total_registros} registros coletados de ${data.programas_consultados} programas.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
+    } catch (e: any) {
+      toast({ title: 'Erro na ingestão', description: e.message, variant: 'destructive' });
+    } finally {
+      setIsIngesting(false);
+    }
+  };
+
   if (isLoading) {
     return <div className="space-y-4">{[1, 2, 3].map(i => <Skeleton key={i} className="h-32" />)}</div>;
   }
@@ -192,6 +276,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
       <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="visao-geral"><BarChart3 className="w-4 h-4 mr-1" /> Visão Geral</TabsTrigger>
+          <TabsTrigger value="cobertura"><Database className="w-4 h-4 mr-1" /> Cobertura</TabsTrigger>
           <TabsTrigger value="comparativo"><Info className="w-4 h-4 mr-1" /> Comparativo</TabsTrigger>
           <TabsTrigger value="metodologia"><BookOpen className="w-4 h-4 mr-1" /> Metodologia</TabsTrigger>
         </TabsList>
@@ -288,7 +373,145 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
           })()}
         </TabsContent>
 
-        {/* ===== COMPARATIVO ===== */}
+        {/* ===== COBERTURA ===== */}
+        <TabsContent value="cobertura">
+          <div className="space-y-6">
+            {/* Ingestion controls */}
+            <Card className="border-l-4 border-l-chart-4">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <h4 className="font-semibold text-sm mb-1">Ingestão de Dados — Agenda Transversal</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Busca dados de dotação e execução dos {allAgendaPrograms.length} programas das agendas
+                      transversais via API do Portal da Transparência (2024–2025).
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleIngestAgenda}
+                    disabled={isIngesting}
+                    variant="outline"
+                    className="border-chart-4 text-chart-4 hover:bg-chart-4/10"
+                  >
+                    {isIngesting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Ingerindo...</>
+                    ) : (
+                      <><Download className="w-4 h-4 mr-2" /> Ingerir Programas de Agenda</>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Summary */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold">{coverageStats.total}</p>
+                  <p className="text-xs text-muted-foreground">Programas na Agenda</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-success/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-success">{coverageStats.withTeste}</p>
+                  <p className="text-xs text-muted-foreground">Com dados TESTE</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-chart-4/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-chart-4">{coverageStats.newOnly}</p>
+                  <p className="text-xs text-muted-foreground">Novos (sem keyword)</p>
+                </CardContent>
+              </Card>
+              <Card className="border-l-4 border-l-destructive/60">
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className="text-2xl font-bold text-destructive">{coverageStats.missing}</p>
+                  <p className="text-xs text-muted-foreground">Sem dados TESTE</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Program-by-program table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Cobertura por Programa</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Código</TableHead>
+                      <TableHead>Programa</TableHead>
+                      <TableHead>Agenda</TableHead>
+                      <TableHead>Órgão</TableHead>
+                      <TableHead className="text-center">Dados TESTE</TableHead>
+                      <TableHead className="text-center">Dados Keyword</TableHead>
+                      <TableHead className="text-right">Registros</TableHead>
+                      <TableHead className="text-center">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {allAgendaPrograms.map(prog => {
+                      const info = coverageMap.get(prog.codigo);
+                      const isNew = info?.hasTesteData && !info?.hasRegularData;
+                      return (
+                        <TableRow key={prog.codigo} className={isNew ? 'bg-chart-4/5' : ''}>
+                          <TableCell className="font-mono text-xs">{prog.codigo}</TableCell>
+                          <TableCell className="text-xs max-w-[200px] truncate">{prog.nome}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px]">{prog.agenda}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs">{prog.orgao_nome}</TableCell>
+                          <TableCell className="text-center">
+                            {info?.hasTesteData ? (
+                              <CheckCircle2 className="w-4 h-4 text-success mx-auto" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-destructive/50 mx-auto" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {info?.hasRegularData ? (
+                              <CheckCircle2 className="w-4 h-4 text-primary mx-auto" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-muted-foreground/30 mx-auto" />
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-mono text-xs">
+                            {info?.testeCount || 0}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {isNew ? (
+                              <Badge className="text-[10px] bg-chart-4/20 text-chart-4 border-chart-4/30">NOVO</Badge>
+                            ) : info?.hasTesteData ? (
+                              <Badge variant="secondary" className="text-[10px]">OK</Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] text-muted-foreground">Pendente</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {testeRecords.length > 0 && (
+              <Card className="bg-success/5 border-success/20">
+                <CardContent className="pt-4 pb-3">
+                  <p className="text-sm font-medium text-success">
+                    ✓ {testeRecords.length} registros TESTE já ingeridos
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Liquidado total TESTE: {formatCurrency(testeRecords.reduce((s, r) => s + (Number(r.liquidado) || 0), 0))}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+
         <TabsContent value="comparativo">
           <div className="space-y-6">
             <Card>
