@@ -63,19 +63,80 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
   const [filters, setFilters] = useState<Record<DisplayFilter, boolean>>({
     racial: true, indigena: true, quilombola: true, ciganos: true, sesai: true,
   });
+  const [isIngesting, setIsIngesting] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Classify all records using TESTE methodology
+  // Separate TESTE records (from agenda ingestion) from regular ones
+  const testeRecords = useMemo(() => 
+    allRecords.filter(r => r.fonte_dados === 'Agenda Transversal TESTE'),
+    [allRecords]
+  );
+
+  const regularRecords = useMemo(() =>
+    allRecords.filter(r => r.fonte_dados !== 'Agenda Transversal TESTE'),
+    [allRecords]
+  );
+
+  // Coverage analysis: which agenda programs have TESTE data?
+  const allAgendaPrograms = useMemo(() => {
+    const combined = [
+      ...AGENDA_RACIAL_PROGRAMAS.map(p => ({ ...p, agenda: 'racial' as const })),
+      ...AGENDA_INDIGENA_PROGRAMAS.map(p => ({ ...p, agenda: 'indigena' as const })),
+    ];
+    // Deduplicate by codigo
+    const seen = new Set<string>();
+    return combined.filter(p => {
+      if (seen.has(p.codigo)) return false;
+      seen.add(p.codigo);
+      return true;
+    });
+  }, []);
+
+  const coverageMap = useMemo(() => {
+    const map = new Map<string, { hasTesteData: boolean; hasRegularData: boolean; testeCount: number; regularCount: number; totalLiquidado: number }>();
+    for (const prog of allAgendaPrograms) {
+      const testeMatches = testeRecords.filter(r => r.programa.startsWith(prog.codigo));
+      const regularMatches = regularRecords.filter(r => r.programa.startsWith(prog.codigo));
+      map.set(prog.codigo, {
+        hasTesteData: testeMatches.length > 0,
+        hasRegularData: regularMatches.length > 0,
+        testeCount: testeMatches.length,
+        regularCount: regularMatches.length,
+        totalLiquidado: testeMatches.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+      });
+    }
+    return map;
+  }, [allAgendaPrograms, testeRecords, regularRecords]);
+
+  const coverageStats = useMemo(() => {
+    let withTeste = 0, withRegular = 0, newOnly = 0, missing = 0;
+    for (const [codigo, info] of coverageMap) {
+      if (info.hasTesteData) withTeste++;
+      if (info.hasRegularData) withRegular++;
+      if (info.hasTesteData && !info.hasRegularData) newOnly++;
+      if (!info.hasTesteData) missing++;
+    }
+    return { withTeste, withRegular, newOnly, missing, total: allAgendaPrograms.length };
+  }, [coverageMap, allAgendaPrograms]);
+
+  // Classify ALL records (TESTE + regular for keyword fallback) using TESTE methodology
   const classified = useMemo(() => {
     const result: Record<DisplayFilter, DadoOrcamentario[]> = {
       racial: [], indigena: [], quilombola: [], ciganos: [], sesai: [],
     };
     const matched: DadoOrcamentario[] = [];
     const unmatched: DadoOrcamentario[] = [];
-    const agendaMatched: DadoOrcamentario[] = []; // Matched via agenda (2024+)
-    const keywordMatched: DadoOrcamentario[] = []; // Matched via keywords
+    const agendaMatched: DadoOrcamentario[] = [];
+    const keywordMatched: DadoOrcamentario[] = [];
 
-    // Only federal records for this TESTE
-    const federal = allRecords.filter(r => r.esfera !== 'estadual' && r.esfera !== 'municipal');
+    // Use TESTE records for 2024+ and regular records for pre-2024
+    const recordsToClassify = [
+      ...testeRecords,
+      ...regularRecords.filter(r => r.ano < 2024),
+    ];
+
+    const federal = recordsToClassify.filter(r => r.esfera !== 'estadual' && r.esfera !== 'municipal');
 
     for (const r of federal) {
       const cat = classifyTesteThematic(r as any);
@@ -95,7 +156,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
     }
 
     return { byGroup: result, matched, unmatched, agendaMatched, keywordMatched, total: federal.length };
-  }, [allRecords]);
+  }, [testeRecords, regularRecords]);
 
   const filteredRecords = useMemo(() => {
     const result: DadoOrcamentario[] = [];
