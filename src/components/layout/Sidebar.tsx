@@ -20,7 +20,8 @@ import {
   Scale,
   Upload,
   FolderOpen,
-  Settings
+  Settings,
+  FlaskConical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -79,6 +80,7 @@ const escopoSubsections: NavSection[] = [
     defaultOpen: false,
     items: [
       { title: 'Orçamento', href: '/orcamento', icon: DollarSign },
+      { title: 'TESTE', href: '/orcamento-teste', icon: FlaskConical },
     ]
   },
   {
