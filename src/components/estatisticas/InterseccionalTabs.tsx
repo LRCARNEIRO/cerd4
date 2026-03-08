@@ -215,7 +215,7 @@ export function RacaGeneroTab() {
               Saúde Materna por Raça
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              RASEAM 2024 + Nascer no Brasil II (Fiocruz, 2020-2023)
+              RASEAM 2025 (SIM {saudeMaternaRaca.anoReferencia}) + IEPS Jul/2025 (série até 2023) + Fiocruz
               <EstimativaBadge tipo="cruzamento" metodologia={saudeMaternaRaca.metodologia} />
             </CardDescription>
           </CardHeader>
@@ -224,13 +224,22 @@ export function RacaGeneroTab() {
               <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Mortes maternas negras</p>
                 <p className="text-2xl font-bold text-destructive">{saudeMaternaRaca.mortalidadeMaternaNegraPercentual}%</p>
-                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+                <p className="text-xs text-muted-foreground">(SIM {saudeMaternaRaca.anoReferencia})</p>
               </div>
               <div className="p-3 bg-muted rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Mortes maternas brancas</p>
                 <p className="text-2xl font-bold">{saudeMaternaRaca.mortalidadeMaternaBrancaPercentual}%</p>
-                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+                <p className="text-xs text-muted-foreground">(SIM {saudeMaternaRaca.anoReferencia})</p>
               </div>
+            </div>
+            {/* IEPS — dado mais recente disponível (série até 2023) */}
+            <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg mb-3">
+              <p className="text-xs flex items-start gap-1">
+                <AlertTriangle className="w-3 h-3 text-destructive flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>IEPS Boletim Jul/2025 ({saudeMaternaRaca.periodoIEPS}):</strong> Razão de mortalidade materna pretas/brancas = <strong>{saudeMaternaRaca.razaoMortalidadePretasBrancas}×</strong> ({saudeMaternaRaca.taxaPretasPor100milNV} vs {saudeMaternaRaca.taxaBrancasPor100milNV} por 100 mil NV). Pardas: {saudeMaternaRaca.taxaPardasPor100milNV}/100 mil NV.
+                </span>
+              </p>
             </div>
             <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-3">
               <p className="text-xs flex items-start gap-1">
@@ -263,12 +272,13 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Mulheres negras constituem <strong>68%</strong> das mortes maternas, apesar de representarem 55,5% da 
-            população feminina. O estudo Nascer no Brasil II (Fiocruz) documenta <strong>menor acesso a pré-natal adequado, 
-            peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. O dado configura 
-            <strong> violação direta do direito à saúde</strong> com componente racial mensurável.
+            Mulheres negras constituem <strong>68%</strong> das mortes maternas (SIM 2022), apesar de representarem 55,5% da 
+            população feminina. O Boletim IEPS (jul/2025) confirma que a razão de mortalidade materna entre pretas e brancas é de 
+            <strong>2,3×</strong> na série 2010-2023 (108,6 vs 46,9 por 100 mil NV). O estudo Nascer no Brasil II (Fiocruz) documenta 
+            <strong>menor acesso a pré-natal adequado, peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. 
+            Nota: o dado mais recente consolidado do SIM é 2022; o RASEAM 2025 mantém esse recorte.
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2024 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
+          <p className="text-[10px] text-muted-foreground mt-1 italic">Fontes: RASEAM 2025 + IEPS Jul/2025 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
         </div>
       </div>
 
