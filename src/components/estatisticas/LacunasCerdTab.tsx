@@ -541,7 +541,7 @@ export function LacunasCerdTab() {
                 <TrendingDown className="w-5 h-5" style={{ color: 'hsl(280, 60%, 50%)' }} />
                 Titulação de Territórios Quilombolas (2018-2023)
               </CardTitle>
-              <CardDescription>⚠️ Dados locais — pendente migração para StatisticsData.ts com deep links INCRA</CardDescription>
+              <CardDescription>Fonte: INCRA + Fundação Cultural Palmares (2018-2025)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
