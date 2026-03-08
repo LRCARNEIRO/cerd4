@@ -679,14 +679,18 @@ export const educacaoInterseccionalFontes = [
 ];
 
 // Saúde interseccional
-// Fonte: SIM/DataSUS (mortalidade materna por raça) + SINASC (pré-natal por raça)
-// NOTA: Cruzamento raça × classe (renda) NÃO é publicado diretamente pelo DataSUS.
-// Os valores "Negra Pobre" e "Negra Média" são ESTIMATIVAS derivadas do cruzamento
-// de indicadores do DataSUS (raça) com faixas de renda do CadÚnico.
+// AUDITORIA FASE 3:
+// O DataSUS (SIM/SINASC) publica mortalidade materna por raça, MAS NÃO por renda.
+// "Morte de mães negras é duas vezes maior que de brancas" — VERIFICADO (Pesquisa Nascer no Brasil II, Nov/2023, Ministério da Saúde).
+// Os valores numéricos EXATOS por faixa de renda (mulherNegraPobre, mulherNegraMedia) são FABRICADOS.
+// DataSUS × CadÚnico = cruzamento conceitualmente válido, mas os números específicos não são publicados.
+// Status: 🔴 VALORES NUMÉRICOS NÃO VERIFICÁVEIS — marcados estimativa: true
+// Fato verificado: mortalidade materna negra é ~2x maior que branca (Pesquisa Nascer no Brasil II, 2023)
+//   Fonte: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa
 export const saudeInterseccional = [
-  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: óbitos maternos por raça (SIM/DataSUS) × faixas de renda familiar (CadÚnico). DataSUS não publica mortalidade materna por renda.' },
-  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: consultas pré-natal por raça (SINASC/DataSUS) × faixas de renda familiar (CadÚnico). SINASC não publica pré-natal por renda.' },
-  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: tipo de parto por raça (SINASC/DataSUS) × faixas de renda familiar (CadÚnico). SINASC não publica tipo de parto por renda.' }
+  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'Pesquisa Nascer no Brasil II (Nov/2023)', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' }], metodologiaCruzamento: 'Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023). Valores numéricos exatos por faixa de renda NÃO publicados — estimativas do cruzamento DataSUS × CadÚnico.' },
+  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica consultas pré-natal por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' },
+  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica tipo de parto por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' }
 ];
 
 // Radar: Vulnerabilidades por grupo
