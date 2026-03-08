@@ -752,7 +752,7 @@ export const chefiaFamiliarRacaGenero = {
   cadUnicoMulheresBrancas: 17.0,
   fontes: [
     { nome: 'RASEAM 2024 — Chefia familiar monoparental (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
-    { nome: 'II VIGISAN 2022 — Insegurança Alimentar', url: 'https://olheparaafome.com.br/' },
+    { nome: 'II VIGISAN 2022 — Insegurança Alimentar (PDF)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
     { nome: 'Fiocruz/MIR — Informe Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
     { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
   ],
