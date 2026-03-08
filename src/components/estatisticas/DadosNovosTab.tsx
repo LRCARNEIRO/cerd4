@@ -175,7 +175,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap reduziu de 12,4 p.p. para 13,5 p.p. Anos 2020-2021 sem coleta (pandemia).',
+    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap aumentou de 12,4 p.p. para 13,5 p.p. apesar do avanço absoluto. Anos 2020-2021 sem coleta (pandemia).',
     prioridade: 'alta'
   },
   {
