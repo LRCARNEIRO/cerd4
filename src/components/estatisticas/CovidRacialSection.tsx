@@ -293,9 +293,15 @@ export function CovidRacialSection() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
-            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <p className="text-xs text-muted-foreground">
+                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
+              </p>
+              <EstimativaBadge 
+                tipo="cruzamento" 
+                metodologia="Valores ano-a-ano para 'negra' (pretas+pardas) são cruzamento indireto DataSUS/SIM + IEPS Boletim Çarê. Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV." 
+              />
+            </div>
             <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
           </CardContent>
         </Card>
