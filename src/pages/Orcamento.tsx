@@ -1249,7 +1249,7 @@ export default function Orcamento() {
                   stats={stats}
                   formatCurrency={formatCurrency}
                   formatCurrencyFull={formatCurrencyFull}
-                  includeExcludedInCalc={includeExcludedInCalc}
+                  
                 />
               ) : (
                 <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />

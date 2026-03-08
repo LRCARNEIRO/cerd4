@@ -638,7 +638,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO (integra Seção 8 — ICERD) ═══ */}
       {(() => {
         // Compute ICERD data inline for integration into verdict
-        const allRecs = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+        const allRecs = [...records, ...sesaiRecords];
         const icerdByArtigo = ARTIGOS_CONVENCAO.map(art => {
           const matched = allRecs.filter(r => inferArtigosOrcamento(r).includes(art.numero));
           const liq = matched.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
