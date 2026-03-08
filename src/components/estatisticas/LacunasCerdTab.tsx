@@ -124,17 +124,11 @@ const dadosTerrasQuilombolasHistorico = [
 ];
 
 const dadosLetalidadePolicial = [
-  { ano: 2013, total: 2212, negros: 1790, percentual: 80.9, fonte: 'Fórum Seg. Pública' },
-  { ano: 2014, total: 3022, negros: 2478, percentual: 82.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2015, total: 3345, negros: 2776, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2016, total: 4222, negros: 3505, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2017, total: 5159, negros: 4282, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2018, total: 6220, negros: 5162, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2019, total: 6357, negros: 5276, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2020, total: 6416, negros: 5325, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2021, total: 6145, negros: 5100, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2022, total: 6429, negros: 5336, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  // PROIBIDO: Projeções removidas (2023-2026). Série encerrada no último ano com dado real.
 ];
 
 export function LacunasCerdTab() {
