@@ -316,18 +316,18 @@ function gerarFiosCondutores(
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (negra: 55,5 vs branca: 54,2 por 100 mil NV — DataSUS 2024; razão convergindo para ~1,0x, porém com subnotificação racial reconhecida pelo MS), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (68% dos óbitos maternos são de mulheres negras — RASEAM 2025/SIM 2022; razão pretas/brancas: 2,3× — IEPS Jul/2025), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
       evidencias: [
         { texto: 'Feminicídio: 63,6% das vítimas são mulheres negras (2024)', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
         { texto: 'Violência doméstica: 59,8% vítimas negras', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: 'Mortalidade materna: negra 55,5 vs branca 54,2 por 100 mil NV (razão ~1,0x)', fonte: 'DataSUS/SIM 2024', tipo: 'quantitativa' as const },
+        { texto: 'Mortalidade materna: 68% dos óbitos são de mulheres negras; razão pretas/brancas: 2,3× (108,6 vs 46,9 por 100 mil NV)', fonte: 'RASEAM 2025 (SIM 2022) + IEPS Jul/2025', tipo: 'quantitativa' as const },
         { texto: 'Informalidade mulher negra 18-29: 51,2%', fonte: 'PNAD Contínua 2024', tipo: 'quantitativa' as const },
         ...evidMulheres.slice(0, 4),
       ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna negra: 60,1 → 55,5 por 100 mil NV (melhoria absoluta; razão negra/branca caiu de 1,2x para ~1,0x — subnotificação racial pode distorcer séries). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
+      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna: 68% dos óbitos são de negras (RASEAM 2025/SIM 2022); razão pretas/brancas: 2,3× (IEPS Jul/2025, série 2010-2023). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
     });
   }
 
