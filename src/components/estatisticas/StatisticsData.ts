@@ -63,8 +63,8 @@ export const evolucaoComposicaoRacial = [
   { ano: 2021, branca: 43.4, negra: 55.6, fonte: 'PNAD Contínua Trimestral 2021 (SIDRA 6403)' },
   { ano: 2022, branca: 43.1, negra: 55.8, fonte: 'PNAD Contínua Trimestral 2022 (SIDRA 6403)' },
   { ano: 2023, branca: 42.7, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2023 (SIDRA 6403)' },
-  { ano: 2024, branca: 42.4, negra: 56.6, fonte: 'PNAD Contínua Trimestral 2024 (SIDRA 6403)' },
-  // NOTA: Para 2025, dados apenas dos 3 primeiros trimestres disponíveis
+  // DIEESE Q2 2024: população negra = 56,7% (SINESP/DIEESE Nov/2024)
+  { ano: 2024, branca: 42.3, negra: 56.7, fonte: 'PNAD Contínua Q2 2024 (DIEESE/SINESP Nov/2024)' },
 ];
 
 // =============================================
