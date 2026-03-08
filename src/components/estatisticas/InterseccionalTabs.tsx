@@ -195,7 +195,7 @@ export function RacaGeneroTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               RASEAM 2024 + Nascer no Brasil II (Fiocruz, 2020-2023)
-              <EstimativaBadge tipo="cruzamento" tooltip={saudeMaternaRaca.metodologia} />
+              <EstimativaBadge tipo="cruzamento" metodologia={saudeMaternaRaca.metodologia} />
             </CardDescription>
           </CardHeader>
           <CardContent>
