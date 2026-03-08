@@ -357,32 +357,35 @@ export function AdmPublicaSection() {
             <CardDescription>Estrutura de políticas de igualdade racial nos municípios brasileiros</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {[
-                { label: 'Municípios com estrutura de igualdade racial', value: municData.municipiosComEstruturaIgualdade, percent: ((municData.municipiosComEstruturaIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com legislação racial', value: municData.municipiosComLegislacaoRacial, percent: ((municData.municipiosComLegislacaoRacial / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com órgão específico', value: municData.municipiosComOrgaoEspecifico, percent: ((municData.municipiosComOrgaoEspecifico / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com Conselho de Igualdade Racial', value: municData.municipiosComConselhoIgualdade, percent: ((municData.municipiosComConselhoIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com Plano de Igualdade Racial', value: municData.municipiosComPlanoIgualdade, percent: ((municData.municipiosComPlanoIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-              ].map(item => (
-                <div key={item.label} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>{item.label}</span>
-                    <span className="font-medium">{item.value.toLocaleString('pt-BR')} ({item.percent}%)</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all" 
-                      style={{ width: `${item.percent}%` }}
-                    />
-                  </div>
+            <div className="p-4 rounded-lg border border-warning/30 bg-warning/5 space-y-3">
+              <div className="flex items-start gap-2">
+                <Info className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-warning">Microdados Municipais Pendentes</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Os microdados da MUNIC 2024 referentes ao bloco de Igualdade Racial ainda não foram 
+                    disponibilizados no SIDRA/IBGE para tabulação detalhada. As informações qualitativas 
+                    abaixo são extraídas da divulgação oficial (31/10/2025), mas os quantitativos por município 
+                    ainda aguardam publicação.
+                  </p>
+                  <EstimativaBadge 
+                    tipo="simples" 
+                    metodologia="Microdados MUNIC 2024 (bloco igualdade racial) ainda não disponíveis no SIDRA. Valores quantitativos municipais pendentes de consolidação." 
+                  />
                 </div>
-              ))}
+              </div>
+              <div className="space-y-2 mt-2">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Informações confirmadas (Agência IBGE, 31/10/2025):</strong>
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li>Primeira vez que a MUNIC investiga o bloco de Igualdade Racial em seus mais de 20 anos de existência</li>
+                  <li>A política de igualdade racial é recente na maioria dos municípios</li>
+                  <li>"Os números são modestos da existência de estruturas" — Vânia Pacheco (IBGE)</li>
+                  <li>SINAPIR registra 255 municípios aderidos (4,6% do total de 5.570)</li>
+                </ul>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 italic">
-              A política de igualdade racial é recente na maioria dos municípios. Conforme a política é estruturada 
-              pelo governo federal, estados e municípios tendem a replicá-la.
-            </p>
             <AuditFooter fontes={MUNIC_FONTES} documentos={['MUNIC 2024']} compact />
           </CardContent>
         </Card>
