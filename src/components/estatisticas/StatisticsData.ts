@@ -622,6 +622,29 @@ export const mulheresChefeFamiliaFontes = [
   { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
 ];
 
+// Violência interseccional - 19º Anuário FBSP 2025 (dados 2024)
+// Comparativo 2018 → 2024:
+//   Feminicídio: 61% → 63,6% mulheres negras (CONFIRMADO — ponte.org, contrafcut, Agência Brasil)
+//   Estupro: registro recorde em 2024: 87.545 (FBSP 2025) — CONFIRMADO
+//   Total MVI 2024: 44.127 (queda 5,4%)
+// AUDITORIA FASE 2:
+//   Feminicídio 63.6%: CONFIRMADO (múltiplas fontes jornalísticas + FBSP direto)
+//   Violência doméstica 59.8%: 🟡 PENDENTE verificação no PDF do 19º Anuário. O FBSP publica mas o valor exato precisa ser conferido.
+//   Estupro 54.2%: 🟡 PENDENTE verificação no PDF do 19º Anuário.
+export const violenciaInterseccional = [
+  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 59,8% pendente de verificação no PDF do 19º Anuário FBSP' },
+  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 54,2% pendente de verificação no PDF do 19º Anuário FBSP' },
+];
+
+// Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
+export const juventudeNegra = [
+  { indicador: 'Taxa de homicídio negros (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia' },
+  { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
+  { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
+  { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
+];
+
 // =============================================
 // CRUZAMENTOS INDIRETOS — RAÇA × GÊNERO
 // Fontes auditáveis com deep links para dados reais
