@@ -430,8 +430,8 @@ export function ClassePorRacaChart() {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Distribuição por Classe e Raça</CardTitle>
-        <CardDescription className="text-xs">Fonte: PNAD Contínua / SIS-IBGE 2024</CardDescription>
+        <CardTitle className="text-sm">Pobreza por Raça/Cor (SIS/IBGE 2024)</CardTitle>
+        <CardDescription className="text-xs">Fonte: SIS/IBGE 2024 (dados 2023) — Linhas Banco Mundial</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-48">
@@ -443,8 +443,8 @@ export function ClassePorRacaChart() {
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => `${v}%`} />
               <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Bar dataKey="branca" name="Branca" fill="hsl(var(--muted-foreground))" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="negra" name="Negra" fill="hsl(var(--primary))" radius={[2, 2, 0, 0]} />
-              <Bar dataKey="indigena" name="Indígena" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="parda" name="Parda" fill="hsl(var(--primary))" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="preta" name="Preta" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
