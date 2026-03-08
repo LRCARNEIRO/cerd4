@@ -32,7 +32,7 @@ export default function Estatisticas() {
   return (
     <DashboardLayout
       title="Estatísticas e Indicadores"
-      subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2026)"
+      subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2025)"
     >
       {/* Alerta Metodológico */}
       <Card className="mb-6 border-l-4 border-l-primary">
