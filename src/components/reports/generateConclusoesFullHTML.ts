@@ -536,7 +536,7 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 <!-- Gráfico 7: Renda -->
 <div class="chart-container">
   <div class="chart-title">Renda Média Mensal por Raça: 2018→2024</div>
-  <div class="chart-subtitle">Fonte: PNAD Contínua (SIDRA 6800)</div>
+  <div class="chart-subtitle">Fonte: PNAD Contínua (SIDRA 6405)</div>
   <div class="stat-card-row">
     <div class="stat-card"><div class="lbl">Renda negra 2024</div><div class="val">R$ ${eco2024.rendaMediaNegra.toLocaleString('pt-BR')}</div><div class="sub">+${((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}% vs 2018</div></div>
     <div class="stat-card"><div class="lbl">Renda branca 2024</div><div class="val">R$ ${eco2024.rendaMediaBranca.toLocaleString('pt-BR')}</div><div class="sub">+${((eco2024.rendaMediaBranca/eco2018.rendaMediaBranca-1)*100).toFixed(0)}% vs 2018</div></div>
