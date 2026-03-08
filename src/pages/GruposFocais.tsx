@@ -216,14 +216,11 @@ const dadosTerritoriais = {
       fonte: 'FUNAI - Relatórios Anuais / DOU (portarias e decretos)',
       linkISA: 'https://terrasindigenas.org.br/',
     },
+    // AUDITORIA: Valores intermediários (2019-2024) com incremento regular (+1/+2 por ano) 
+    // indicam interpolação artificial. Mantemos apenas pontos verificáveis.
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
-      { ano: 2019, homologadas: 488, total: 628, emEstudo: 140, areaMilHa: 116.0 },
-      { ano: 2020, homologadas: 489, total: 630, emEstudo: 141, areaMilHa: 116.2 },
-      { ano: 2021, homologadas: 490, total: 632, emEstudo: 142, areaMilHa: 116.4 },
-      { ano: 2022, homologadas: 491, total: 634, emEstudo: 143, areaMilHa: 116.6 },
-      { ano: 2023, homologadas: 493, total: 638, emEstudo: 145, areaMilHa: 116.9 },
-      { ano: 2024, homologadas: 495, total: 641, emEstudo: 146, areaMilHa: 117.1 },
+      // 2019-2024: REMOVIDOS — progressão artificial (+1 a +2 por ano sem fonte individual)
       { ano: 2025, homologadas: 496, total: 644, emEstudo: 148, areaMilHa: 117.4 },
     ],
   },
