@@ -751,7 +751,7 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
     <h2>II. Marco Geral de Proteção e Promoção dos Direitos Humanos</h2>
     
     <div class="section">
-      <h3>A. Marco Institucional (2018-2026)</h3>
+      <h3>A. Marco Institucional (2018-2025)</h3>
       
       <p>O período 2018-2025 registrou mudanças institucionais significativas no marco brasileiro 
       de promoção da igualdade racial:</p>
