@@ -148,7 +148,7 @@ export function RacaGeneroTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               RASEAM 2023 + II VIGISAN 2022 + CadÚnico 2023
-              <EstimativaBadge tipo="cruzamento" tooltip={chefiaFamiliarRacaGenero.metodologia} />
+              <EstimativaBadge tipo="cruzamento" metodologia={chefiaFamiliarRacaGenero.metodologia} />
             </CardDescription>
           </CardHeader>
           <CardContent>
