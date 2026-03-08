@@ -327,7 +327,7 @@ function gerarFiosCondutores(
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna negra: 60,1 → 55,5 por 100 mil NV (melhoria absoluta; razão negra/branca caiu de 1,2x para ~1,0x — subnotificação racial pode distorcer séries). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
+      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna: 68% dos óbitos são de negras (RASEAM 2025/SIM 2022); razão pretas/brancas: 2,3× (IEPS Jul/2025, série 2010-2023). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
     });
   }
 
