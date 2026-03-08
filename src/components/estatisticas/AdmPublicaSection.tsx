@@ -272,7 +272,8 @@ export function AdmPublicaSection() {
               </p>
               <p className="text-xs flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3 text-warning" />
-                <strong>Reserva de vagas em concursos:</strong> 8 estados sem previsão
+                <strong>Reserva de vagas em concursos:</strong> 8 estados sem previsão (AM, RR, PA, TO, PE, MG, SC, GO); 
+                5 não realizaram concurso ou não responderam (CE, RO, MA, RN, PB)
               </p>
             </div>
             <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024']} compact />
