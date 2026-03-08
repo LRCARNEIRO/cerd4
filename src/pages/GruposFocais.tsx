@@ -846,7 +846,10 @@ export default function GruposFocais() {
                         <td className="text-center py-2 px-3">82,9%</td>
                         <td className="text-center py-2 px-3 text-primary">88,1%</td>
                         <td className="text-center py-2 px-3 text-warning font-medium">78,2%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">56,3%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">
+                          56,3%
+                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        </td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">34,8%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">33,6%</td>
                       </tr>
