@@ -324,8 +324,11 @@ export function CovidRacialSection() {
                   <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
                   <TableCell className="text-right font-medium">{item.negros}%</TableCell>
                   <TableCell className="text-right">{item.brancos}%</TableCell>
-                  <TableCell className="text-right text-destructive font-medium">
+                  <TableCell className={`text-right font-medium ${
+                    (item.negros / item.brancos) >= 1 ? 'text-destructive' : 'text-chart-1'
+                  }`}>
                     {(item.negros / item.brancos).toFixed(1)}x
+                    {(item.negros / item.brancos) < 1 && ' ✓'}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{item.fonte}</TableCell>
                 </TableRow>
