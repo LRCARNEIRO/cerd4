@@ -302,6 +302,16 @@ export const analfabetismoGeral2024 = {
 // SAÚDE - DataSUS/SINAN
 // =============================================
 
+export const mortalidadeMaternaMetodologia = {
+  tipo: 'cruzamento' as const,
+  componentes: [
+    { nome: 'SIM — Óbitos maternos por raça/cor', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+    { nome: 'SINASC — Nascidos vivos por raça/cor da mãe', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+  ],
+  formula: '(Óbitos maternos por raça ÷ Nascidos vivos por raça da mãe) × 100.000',
+  nota: 'Ambos os sistemas usam autodeclaração da mãe, reduzindo viés de classificação racial (diferente da mortalidade infantil).',
+};
+
 export const saudeSerieHistorica = [
   // AUDITADO: Valores corrigidos conforme cálculo manual a partir do DataSUS
   // Mortalidade materna: (Óbitos maternos / Nascidos vivos) × 100.000
