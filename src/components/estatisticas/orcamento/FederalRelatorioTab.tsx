@@ -633,7 +633,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       )}
 
       {/* ═══ 8. CRUZAMENTO ARTIGOS ICERD ═══ */}
-      <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} includeExcludedInCalc={includeExcludedInCalc} sectionNumber={8} />
+      <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} sectionNumber={8} />
 
       {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO (integra Seção 8 — ICERD) ═══ */}
       {(() => {
