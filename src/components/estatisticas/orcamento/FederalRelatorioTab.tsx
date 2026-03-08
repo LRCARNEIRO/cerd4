@@ -386,7 +386,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 1 — Programas Temáticos PPA</p>
-              <p>Códigos finalísticos: 2034 (SEPPIR), 5034 (MDHC — filtrado), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
+              <p>Códigos finalísticos: 2034 (SEPPIR), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Subfunção 422</p>
@@ -402,6 +402,21 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             </div>
           </div>
 
+          <div className="bg-destructive/10 rounded p-3 border border-destructive/30 mt-2">
+            <p className="text-xs font-semibold text-foreground mb-1">⚠️ Tratamento de Programas Genéricos / Universais</p>
+            <p className="text-xs">
+              Programas de grande escala como <strong>Minha Casa Minha Vida</strong> (R$ 100+ bi/ano), <strong>Bolsa Família</strong> (R$ 160+ bi/ano), 
+              <strong> SUS</strong>, <strong>SUAS</strong> e similares <strong>não são incluídos</strong>, mesmo que beneficiem populações negras e indígenas proporcionalmente.
+              Incluí-los inflaria artificialmente os totais, mascarando o investimento efetivamente <em>finalístico</em> em política racial.
+            </p>
+            <p className="text-xs mt-2">
+              Para programas como o antigo <strong>5034 (MDHC)</strong>, que reunia ações de direitos humanos genéricas junto com ações raciais, 
+              <strong> somente ações cujos campos programa/descritivo contêm palavras-chave raciais/étnicas</strong> foram retidas na base 
+              (ex: "igualdade racial", "quilombola", "indígena", "capoeira", "terreiro"). Ações sem esse recorte — tipicamente administrativas 
+              ou de direitos humanos gerais reclassificadas retroativamente pela API — foram <strong>excluídas definitivamente</strong>.
+            </p>
+          </div>
+
           <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
             <p className="text-xs font-semibold text-foreground mb-1">📌 Diferença para a seção TESTE</p>
             <p className="text-xs">
@@ -413,13 +428,13 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
           </div>
 
           <div className="flex flex-wrap gap-1.5 mt-2">
-            <span className="text-[10px] font-medium text-foreground mr-1">Radicais:</span>
-            {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
+            <span className="text-[10px] font-medium text-foreground mr-1">Radicais de busca:</span>
+            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana'].map(r => (
               <Badge key={r} variant="secondary" className="text-[10px] font-mono">{r}*</Badge>
             ))}
           </div>
           <p className="text-[10px] mt-1">
-            <strong>Exclusões:</strong> Bolsa Família, MCMV, SUS, SUAS e ações 5034/MDHC sem palavras-chave raciais no campo programa/descritivo.
+            <strong>Exclusões definitivas:</strong> Bolsa Família, MCMV, SUS, SUAS e todas as ações de programas genéricos (ex: 5034/MDHC) sem palavras-chave raciais/étnicas no campo programa/descritivo.
           </p>
         </CardContent>
       </Card>
