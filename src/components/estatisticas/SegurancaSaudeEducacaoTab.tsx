@@ -319,7 +319,13 @@ export function SegurancaSaudeEducacaoTab() {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3">Mortalidade Infantil (por mil nascidos vivos)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                Mortalidade Infantil (por mil nascidos vivos)
+                <EstimativaBadge 
+                  tipo="cruzamento" 
+                  metodologia={`${mortalidadeInfantilMetodologia.formula}. ${mortalidadeInfantilMetodologia.viesConhecido}`}
+                />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={saudeSerieHistorica}>
@@ -339,6 +345,33 @@ export function SegurancaSaudeEducacaoTab() {
                     <Line type="monotone" dataKey="mortalidadeInfantilBranca" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+              {/* Caixa metodológica — cruzamento SIM × SINASC */}
+              <div className="mt-2 p-3 bg-destructive/5 border border-destructive/20 rounded-lg space-y-2">
+                <p className="text-xs font-semibold flex items-center gap-1 text-destructive">
+                  <AlertTriangle className="w-3 h-3" /> Metodologia: Cruzamento indireto SIM × SINASC
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Fórmula:</strong> {mortalidadeInfantilMetodologia.formula}
+                </p>
+                <div className="text-xs text-muted-foreground">
+                  <strong>Fontes componentes:</strong>
+                  <ul className="list-disc list-inside ml-2 mt-1 space-y-0.5">
+                    {mortalidadeInfantilMetodologia.componentes.map((c, i) => (
+                      <li key={i}>
+                        <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          {c.nome} <ExternalLink className="w-2.5 h-2.5 inline" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className="text-xs text-destructive/80 italic">
+                  ⚠ Viés: {mortalidadeInfantilMetodologia.viesConhecido}
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Ref.: {mortalidadeInfantilMetodologia.referencia}
+                </p>
               </div>
             </div>
           </div>
