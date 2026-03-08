@@ -209,7 +209,7 @@ export function DadosGeraisTab() {
         <CardHeader>
           <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2024)</CardTitle>
           <CardDescription>
-            Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6403, 6800, 6381)
+            Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6405, 6402, 6403)
           </CardDescription>
         </CardHeader>
         <CardContent>
