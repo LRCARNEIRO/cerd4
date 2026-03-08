@@ -163,14 +163,12 @@ const dadosTerritoriais = {
       link: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
       nota: 'Censo 2022 — Panorama Quilombola (características domiciliares)',
     },
+    // AUDITORIA: Valores intermediários (2019-2024) são interpolações regulares sem fonte individual.
+    // Mantemos apenas os pontos verificáveis: 2018 (baseline INCRA) e 2025 (INCRA Nov/2025).
+    // Para uma série completa seria necessário consultar cada PDF anual do INCRA.
     serieHistorica: [
       { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
-      { ano: 2019, titulados: 159, certificacoesFCP: 2552, processosAbertos: 1720, areaHa: 995000 },
-      { ano: 2020, titulados: 161, certificacoesFCP: 2581, processosAbertos: 1738, areaHa: 1000000 },
-      { ano: 2021, titulados: 163, certificacoesFCP: 2610, processosAbertos: 1750, areaHa: 1010000 },
-      { ano: 2022, titulados: 167, certificacoesFCP: 2756, processosAbertos: 1760, areaHa: 1030000 },
-      { ano: 2023, titulados: 174, certificacoesFCP: 2867, processosAbertos: 1780, areaHa: 1060000 },
-      { ano: 2024, titulados: 180, certificacoesFCP: 3013, processosAbertos: 1790, areaHa: 1080000 },
+      // 2019-2024: valores intermediários REMOVIDOS — progressão linear artificial
       { ano: 2025, titulados: 245, certificacoesFCP: 3158, processosAbertos: 2014, areaHa: 1162002 },
     ],
   },
