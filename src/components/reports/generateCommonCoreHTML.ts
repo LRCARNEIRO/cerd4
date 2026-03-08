@@ -256,9 +256,9 @@ export function generateCommonCoreHTML(
 
   <h2>II. Marco Geral de Proteção e Promoção dos Direitos Humanos</h2>
   <div class="section">
-    <h3>A. Marco Institucional (2018-2026)</h3>
+    <h3>A. Marco Institucional (2018-2025)</h3>
     <div class="highlight-box">
-      <h4>🏛️ Período 2023-2026: Reconstrução Institucional</h4>
+      <h4>🏛️ Período 2023-2025: Reconstrução Institucional</h4>
       <ul>
         <li><strong>Ministério da Igualdade Racial (MIR)</strong> - Criado em janeiro de 2023</li>
         <li><strong>Ministério dos Povos Indígenas (MPI)</strong> - Criado em janeiro de 2023</li>

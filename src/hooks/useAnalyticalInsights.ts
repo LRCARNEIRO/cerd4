@@ -997,7 +997,7 @@ function gerarInsightsCruzamento(
       descricao: `O orçamento para políticas raciais variou ${orcStats.variacao.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
       dados: [
         `Orçamento 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)}`,
-        `Orçamento 2023-2026: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
+        `Orçamento 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
         `Lacunas críticas não resolvidas: ${criticasNaoCumpridas.length}`
       ],
       tipo: 'contradição'
