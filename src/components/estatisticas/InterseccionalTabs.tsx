@@ -830,14 +830,13 @@ export function ClasseSocialTab() {
                   />
                   <Legend />
                   <Bar dataKey="branca" name="Branca" fill="hsl(var(--chart-1))" />
-                  <Bar dataKey="negra" name="Negra" fill="hsl(var(--chart-2))" />
-                  <Bar dataKey="indigena" name="Indígena" fill="hsl(var(--chart-3))" />
+                  <Bar dataKey="parda" name="Parda" fill="hsl(var(--chart-2))" />
+                  <Bar dataKey="preta" name="Preta" fill="hsl(var(--chart-3))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-2 flex items-center gap-2">
-              <EstimativaBadge tipo="cruzamento" metodologia="Dados 'Indígena' derivados do cruzamento Censo 2022 (pop. indígena) × SIS/IBGE 2024. O SIS não publica faixas de renda para indígenas com essa granularidade." />
-              <span className="text-[10px] text-muted-foreground">Coluna Indígena: Censo 2022 × SIS/IBGE 2024</span>
+            <div className="mt-2 text-[10px] text-muted-foreground">
+              Fonte verificada: SIS/IBGE 2024 (dados 2023). Linhas de pobreza Banco Mundial (US$2,15/dia e US$6,85/dia).
             </div>
             <AuditFooter
               fontes={[

@@ -520,12 +520,12 @@ function generateConsolidatedHTML(data: {
     ${evolucaoDesigualdade.map(r => `<tr><td>${r.ano}</td><td>${indicadoresSocioeconomicos.find(i => i.ano === r.ano)?.rendaMediaNegra || '—'}</td><td>${indicadoresSocioeconomicos.find(i => i.ano === r.ano)?.rendaMediaBranca || '—'}</td><td>${r.razaoRenda}x</td><td>${r.razaoDesemprego}x</td><td>${r.razaoHomicidio}x</td></tr>`).join('')}
   </table>
 
-  <h4>Classe Social por Raça</h4>
+  <h4>Pobreza por Raça/Cor (SIS/IBGE 2024)</h4>
   <table>
-    <tr><th>Faixa</th><th>Branca (%)</th><th>Negra (%)</th><th>Indígena (%)</th></tr>
-    ${classePorRaca.map(r => `<tr><td>${r.faixa}</td><td>${r.branca}%</td><td>${r.negra}%</td><td>${r.indigena}%</td></tr>`).join('')}
+    <tr><th>Faixa</th><th>Branca (%)</th><th>Parda (%)</th><th>Preta (%)</th><th>Total (%)</th></tr>
+    ${classePorRaca.map(r => `<tr><td>${r.faixa}</td><td>${r.branca}%</td><td>${r.parda}%</td><td>${r.preta}%</td><td>${r.total}%</td></tr>`).join('')}
   </table>
-  <p class="source">Fontes: PNAD Contínua 2024, Censo 2022, SIS/IBGE.</p>
+  <p class="source">Fonte: SIS/IBGE 2024 (dados 2023) — Linhas do Banco Mundial.</p>
 
   <!-- 4.3 TABELA SÍNTESE COMPARATIVA -->
   <h3 id="concl-tabsint">4.3 — Tabela Síntese Comparativa (2018→2024)</h3>

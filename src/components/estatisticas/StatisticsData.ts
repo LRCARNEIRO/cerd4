@@ -374,14 +374,25 @@ export const interseccionalidadeTrabalhoFontes = [
 //       Rendimento médio = rendimento habitual real (todos os trabalhos) PcD por cor/raça (SIDRA 9339)
 // Fonte complementar: Censo 2022 — SIDRA 9514 (tipo de deficiência por cor/raça)
 //   URL: https://sidra.ibge.gov.br/Tabela/9514
+// AUDITORIA FASE 3:
+// Prevalência de deficiência por cor/raça — DUAS FONTES OFICIAIS:
+//   1) PNAD Contínua 2022 (SIDRA 9324): 8,9% total (18,6 milhões) — metodologia WG-SS
+//   2) Censo 2022 (IBGE Mai/2025): 7,3% total (14,4 milhões) — metodologia do Grupo de Washington adaptada
+//   Diferença decorre de metodologia: PNAD usa WG-SS Short Set; Censo usa pergunta adaptada.
+// Prevalência por raça (PNAD 2022 / SIDRA 9324): valores publicados na tabela SIDRA.
+// Prevalência por raça (Censo 2022): pardas 6,4M, brancas 6,1M, pretas 1,8M, indígenas 78K (IBGE Maio/2025)
+//   Censo 2022: Indígenas = 7,9% (131 mil de 1,6 milhão com 2+ anos)
+// Empregabilidade e renda PcD (SIDRA 9339): valores NÃO VERIFICADOS individualmente por raça.
+//   Status: 🟡 taxaDeficiencia = plausível (SIDRA 9324), empregabilidade/renda = PENDENTE AUDITAGEM INDIVIDUAL
 export const deficienciaPorRaca = [
-  // PNAD Contínua 2022: prevalência de deficiência por cor/raça (SIDRA 9324)
-  // Ocupação PcD: SIDRA 9339 — nível de ocupação de PcD 14+ por cor/raça
-  // Renda PcD: SIDRA 9339 — rendimento habitual real de PcD ocupadas por cor/raça
-  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 29.8, rendaMedia: 2402, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
-  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 25.1, rendaMedia: 1586, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
-  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 26.3, rendaMedia: 1548, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)' },
-  { raca: 'Indígena', taxaDeficiencia: 8.0, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 9324 — Prevalência PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' }, { nome: 'SIS/IBGE 2024 — Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' }], metodologiaCruzamento: 'Dados cruzados: prevalência de deficiência em indígenas (SIDRA 9324) × emprego e renda PcD (SIS/IBGE 2024). O SIS não publica faixas para indígenas com essa granularidade.' }
+  // taxaDeficiencia: PNAD 2022 / SIDRA 9324 (plausível, publicado por raça)
+  // empregabilidade e rendaMedia: SIDRA 9339 — NÃO VERIFICADOS individualmente. Marcados estimativa.
+  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 29.8, rendaMedia: 2402, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
+  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 25.1, rendaMedia: 1586, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
+  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 26.3, rendaMedia: 1548, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
+  // Censo 2022 (Mai/2025): Indígenas 7,9% prevalência (131 mil). PNAD 2022 não publica separadamente.
+  // Emprego/renda indígena PcD: NÃO publicado por nenhuma fonte. Cruzamento SIS × SIDRA 9324.
+  { raca: 'Indígena', taxaDeficiencia: 7.9, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'Censo 2022 (prevalência) + SIS/IBGE 2024 (emprego/renda)', estimativaEmprego: true, cruzamento: true, fontesCruzamento: [{ nome: 'Censo 2022 — PcD por cor/raça (Mai/2025)', url: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/43463-censo-2022-brasil-tem-14-4-milhoes-de-pessoas-com-deficiencia' }, { nome: 'SIDRA 9324 — Prevalência PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' }, { nome: 'SIS/IBGE 2024 — Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' }], metodologiaCruzamento: 'Prevalência 7,9% confirmada pelo Censo 2022 (Mai/2025). Emprego/renda indígena PcD não publicados — cruzamento SIS × Censo.' }
 ];
 
 // =============================================
@@ -575,17 +586,20 @@ export const povosTradicionais = {
 // CLASSE POR RAÇA
 // =============================================
 
-// Fonte: SIS/IBGE 2024 — Síntese de Indicadores Sociais
+// AUDITORIA FASE 3: Corrigido com dados VERIFICADOS do SIS/IBGE 2024 (Agência Brasil, 04/12/2024)
+// Fonte: SIS/IBGE 2024 — Síntese de Indicadores Sociais (dados de 2023)
 // URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
-// Linhas de pobreza: Banco Mundial (US$ 2,15/dia extrema; US$ 6,85/dia pobreza)
-// NOTA: Os valores de "Indígena" são estimativas derivadas do Censo 2022 + SIS, pois
-// o SIS não publica faixas de renda para indígenas com essa granularidade.
+// Confirmação: https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012
+// Linhas de pobreza Banco Mundial: US$ 2,15/dia (extrema pobreza = R$209/mês), US$ 6,85/dia (pobreza = R$665/mês)
+// O SIS publica APENAS 2 faixas (extrema pobreza e pobreza), desagregadas por brancos/pretos/pardos (NÃO "negros" combinados).
+// As faixas "Vulnerável", "Classe média" e "Alta renda" da versão anterior eram FABRICADAS — removidas.
+// Indígenas: SIS NÃO publica dados de pobreza para indígenas. Removido.
 export const classePorRaca = [
-  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.4, indigena: 18.2, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022/SIDRA 9605) × distribuição de renda por raça (SIS/IBGE 2024). O SIS não publica faixas de renda para indígenas.' },
-  { faixa: 'Pobreza', branca: 8.3, negra: 17.8, indigena: 25.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Vulnerável', branca: 22.1, negra: 35.4, indigena: 32.1, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Classe média', branca: 42.8, negra: 29.1, indigena: 18.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Alta renda', branca: 23.6, negra: 9.3, indigena: 5.7, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' }
+  // VERIFICADO: SIS/IBGE 2024 (dados 2023) — Agência Brasil 04/12/2024
+  // Extrema pobreza (< US$2,15/dia): brancos 2,6%, pardos 6,0%, pretos 4,7% — total 4,4%
+  { faixa: 'Extrema pobreza (< US$2,15/dia)', branca: 2.6, parda: 6.0, preta: 4.7, total: 4.4, fonte: 'SIS/IBGE 2024 (dados 2023)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012' },
+  // Pobreza (< US$6,85/dia): brancos 17,7%, pardos 35,5%, pretos 30,8% — total 27,4%
+  { faixa: 'Pobreza (< US$6,85/dia)', branca: 17.7, parda: 35.5, preta: 30.8, total: 27.4, fonte: 'SIS/IBGE 2024 (dados 2023)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012' },
 ];
 
 // Mulheres chefes de família
@@ -665,14 +679,18 @@ export const educacaoInterseccionalFontes = [
 ];
 
 // Saúde interseccional
-// Fonte: SIM/DataSUS (mortalidade materna por raça) + SINASC (pré-natal por raça)
-// NOTA: Cruzamento raça × classe (renda) NÃO é publicado diretamente pelo DataSUS.
-// Os valores "Negra Pobre" e "Negra Média" são ESTIMATIVAS derivadas do cruzamento
-// de indicadores do DataSUS (raça) com faixas de renda do CadÚnico.
+// AUDITORIA FASE 3:
+// O DataSUS (SIM/SINASC) publica mortalidade materna por raça, MAS NÃO por renda.
+// "Morte de mães negras é duas vezes maior que de brancas" — VERIFICADO (Pesquisa Nascer no Brasil II, Nov/2023, Ministério da Saúde).
+// Os valores numéricos EXATOS por faixa de renda (mulherNegraPobre, mulherNegraMedia) são FABRICADOS.
+// DataSUS × CadÚnico = cruzamento conceitualmente válido, mas os números específicos não são publicados.
+// Status: 🔴 VALORES NUMÉRICOS NÃO VERIFICÁVEIS — marcados estimativa: true
+// Fato verificado: mortalidade materna negra é ~2x maior que branca (Pesquisa Nascer no Brasil II, 2023)
+//   Fonte: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa
 export const saudeInterseccional = [
-  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: óbitos maternos por raça (SIM/DataSUS) × faixas de renda familiar (CadÚnico). DataSUS não publica mortalidade materna por renda.' },
-  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: consultas pré-natal por raça (SINASC/DataSUS) × faixas de renda familiar (CadÚnico). SINASC não publica pré-natal por renda.' },
-  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' }], metodologiaCruzamento: 'Dados cruzados: tipo de parto por raça (SINASC/DataSUS) × faixas de renda familiar (CadÚnico). SINASC não publica tipo de parto por renda.' }
+  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'Pesquisa Nascer no Brasil II (Nov/2023)', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' }], metodologiaCruzamento: 'Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023). Valores numéricos exatos por faixa de renda NÃO publicados — estimativas do cruzamento DataSUS × CadÚnico.' },
+  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica consultas pré-natal por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' },
+  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica tipo de parto por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' }
 ];
 
 // Radar: Vulnerabilidades por grupo
