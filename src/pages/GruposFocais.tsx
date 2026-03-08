@@ -1042,10 +1042,10 @@ export default function GruposFocais() {
                     </div>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
-                    <p className="font-medium text-muted-foreground">Evolução (Atlas 2025):</p>
+                    <p className="font-medium text-muted-foreground">Evolução 2018→2022 (Atlas 2025):</p>
                     <p className="flex items-center gap-1">
                       <TrendingUp className="w-3 h-3 text-destructive" />
-                      <span>73,1% (2013) → 76,5% (2022) — concentração aumentou</span>
+                      <span>75,7% (2018) → 76,5% (2022) — concentração aumentou</span>
                     </p>
                   </div>
                   <FonteInfo
