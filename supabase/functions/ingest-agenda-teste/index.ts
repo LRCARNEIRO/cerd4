@@ -315,7 +315,7 @@ Deno.serve(async (req) => {
               grupo_focal: grupoFocal,
               descritivo: nomeAcao || nomeProg || null,
               publico_alvo: null,
-              razao_selecao: `Agenda Transversal PPA 2024-2027: ${prog.agenda} | Programa ${prog.codigo} (${prog.nome})`,
+              razao_selecao: `Agenda Transversal PPA 2024-2027: ${prog.agenda} | Programa ${prog.codigo} (${prog.nome})${isFocal ? ' [focal]' : ' [ação filtrada por keyword]'}`,
             });
             count++;
           }
