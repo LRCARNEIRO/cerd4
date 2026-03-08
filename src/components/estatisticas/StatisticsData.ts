@@ -69,13 +69,13 @@ export const evolucaoComposicaoRacial = [
 
 // =============================================
 // INDICADORES SOCIOECONÔMICOS - PNAD Contínua
-// Fontes SIDRA/IBGE:
-// - Tabela 6800: Rendimento médio real por cor/raça
-//   URL: https://sidra.ibge.gov.br/Tabela/6800
-//   API: https://apisidra.ibge.gov.br/values/t/6800/n1/1/v/5929/p/all/c86/all
-// - Tabela 6381: Taxa de desocupação por cor/raça
-//   URL: https://sidra.ibge.gov.br/Tabela/6381
-//   API: https://apisidra.ibge.gov.br/values/t/6381/n1/1/v/4099/p/all/c86/all
+// Fontes SIDRA/IBGE (PNAD Contínua Trimestral):
+// - Tabela 6405: Rendimento médio mensal real por cor ou raça
+//   URL: https://sidra.ibge.gov.br/tabela/6405
+//   API: https://apisidra.ibge.gov.br/values/t/6405/n1/1/v/5929/p/all/c86/all
+// - Tabela 6402: Força de trabalho (desocupação) por cor ou raça
+//   URL: https://sidra.ibge.gov.br/tabela/6402
+//   API: https://apisidra.ibge.gov.br/values/t/6402/n1/1/v/4099/p/all/c86/all
 // - Pobreza: Síntese de Indicadores Sociais (SIS) - IBGE
 //   URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
 // NOTA: Anos 2025-2026 são projeções baseadas em tendência
@@ -118,12 +118,12 @@ export const indicadoresSocioeconomicos = [
     fonte: 'PNAD Contínua 2022'
   },
   { 
-    // Dados PNAD 2023 - SIDRA Tabela 6800: renda negra R$2.199, branca R$3.729
+    // Dados PNAD 2023 - SIDRA Tabela 6405: renda negra R$2.199, branca R$3.729
     ano: 2023, 
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
     pobreza_negra: 24.8, pobreza_branca: 12.1,
-    fonte: 'PNAD Contínua 2023 (SIDRA 6800)'
+    fonte: 'PNAD Contínua 2023 (SIDRA 6405)'
   },
   { 
     // PNAD Contínua Q2 2024 — DIEESE Boletim Especial Nov/2024
@@ -140,11 +140,11 @@ export const indicadoresSocioeconomicos = [
 ];
 // NOTA AUDITORIA — RENDA E DESEMPREGO:
 // Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
-// Ano 2023: renda verificada via SIDRA 6800 (R$2.199 negros, R$3.730 brancos).
+// Ano 2023: renda verificada via SIDRA 6405 (R$2.199 negros, R$3.730 brancos).
 // Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
 // POBREZA 2020-2024: NÃO VERIFICADA. SIS/IBGE publica pobreza por cor/raça anualmente — conferir.
 
-// Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
+// Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6405)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
 export const razaoRendaRacial = 0.589;
 
@@ -363,8 +363,8 @@ export const interseccionalidadeTrabalho = [
 ];
 export const interseccionalidadeTrabalhoFontes = [
   { nome: 'DIEESE — Boletim Trabalho e Raça Q2/2024', url: 'https://www.dieese.org.br/outraspublicacoes/2024/trabalhoeRaca.html' },
-  { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
-  { nome: 'SIDRA 6381 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+  { nome: 'SIDRA 6405 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6405' },
+  { nome: 'SIDRA 6402 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6402' },
   { nome: 'SIDRA 6403 — Características gerais', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
 ];
 
@@ -718,18 +718,18 @@ export const radarVulnerabilidades = [
   { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
 ];
 export const radarVulnerabilidadesFontes = [
-  { nome: 'SIDRA 6800 — Rendimento', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
-  { nome: 'SIDRA 6381 — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+  { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
+  { nome: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/tabela/6402' },
   { nome: 'TabNet/DataSUS — Mortalidade', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
   { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
 ];
 
 // Evolução temporal das desigualdades (2018-2024)
-// Fontes: PNAD Contínua/SIDRA 6800, 6381 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
+// Fontes: PNAD Contínua/SIDRA 6405, 6402 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
 // URLs:
-//   Renda: https://sidra.ibge.gov.br/Tabela/6800
-//   Desemprego: https://sidra.ibge.gov.br/Tabela/6381
+//   Renda: https://sidra.ibge.gov.br/tabela/6405
+//   Desemprego: https://sidra.ibge.gov.br/tabela/6402
 //   Homicídio: https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/
 //   Atlas: https://www.ipea.gov.br/atlasviolencia
 export const evolucaoDesigualdade = [

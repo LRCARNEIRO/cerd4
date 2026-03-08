@@ -81,12 +81,12 @@ const SOURCES = {
     { label: 'Pesquisa Nascer no Brasil II', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa', detail: 'Fiocruz/MS Nov/2023 — mortalidade materna por raça' },
   ] as SourceLink[],
   renda: [
-    { label: 'SIDRA 6800 — Rendimento por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'PNAD Contínua — Rendimento médio mensal por cor/raça' },
+    { label: 'SIDRA 6405 — Rendimento por raça', url: 'https://sidra.ibge.gov.br/tabela/6405', detail: 'PNAD Contínua — Rendimento médio mensal por cor/raça' },
     { label: 'DIEESE — Boletim Racial Q2/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial01.html', detail: 'Rendimento e desemprego por raça — 2º trimestre 2024' },
     { label: 'Censo 2022 — Rendimentos', url: 'https://sidra.ibge.gov.br/Tabela/9605', detail: 'Rendimento médio por cor/raça — Censo Demográfico 2022' },
   ] as SourceLink[],
   desigualdade: [
-    { label: 'SIDRA 6800 — Renda por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'Razão de renda branca/negra' },
+    { label: 'SIDRA 6405 — Renda por raça', url: 'https://sidra.ibge.gov.br/tabela/6405', detail: 'Razão de renda branca/negra' },
     { label: 'PNAD Contínua — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6402', detail: 'Taxa de desocupação por cor/raça' },
     { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Razão de homicídio negro/branco' },
     { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Letalidade policial e vítimas por raça' },
@@ -428,7 +428,7 @@ export function TabelaSinteseComparativa() {
   const sourceUrls: Record<string, string> = {
     'FBSP 2025': 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/',
     'Atlas 2025': 'https://www.ipea.gov.br/atlasviolencia/',
-    'PNAD 2024': 'https://sidra.ibge.gov.br/Tabela/6800',
+    'PNAD 2024': 'https://sidra.ibge.gov.br/tabela/6405',
     'PNAD Edu 2024': 'https://sidra.ibge.gov.br/Tabela/7129',
     'DataSUS': 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def',
   };

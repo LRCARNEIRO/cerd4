@@ -209,7 +209,7 @@ export function DadosGeraisTab() {
         <CardHeader>
           <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2024)</CardTitle>
           <CardDescription>
-            Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6403, 6800, 6381)
+            Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6405, 6402, 6403)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -236,7 +236,11 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6800 - Rendimento médio</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  SIDRA Tabela 6405 — Rendimento médio por cor/raça
+                </a>
+              </p>
             </div>
 
             {/* Desemprego */}
@@ -261,7 +265,11 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6381 - Taxa de desocupação</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  SIDRA Tabela 6402 — Desocupação por cor/raça
+                </a>
+              </p>
             </div>
 
             {/* Pobreza */}
@@ -322,17 +330,17 @@ export function DadosGeraisTab() {
               <strong>Fontes SIDRA/IBGE:</strong>
             </p>
             <p className="ml-4">
-              <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                Tabela 6800 - Rendimento médio por cor/raça
+              <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                Tabela 6405 — Rendimento médio por cor/raça
               </a> | 
-              <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
-                Tabela 6381 - Taxa de desocupação
+              <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6402 — Desocupação por cor/raça
               </a> | 
-              <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
-                Tabela 6403 - Características gerais
+              <a href="https://sidra.ibge.gov.br/tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6403 — População por cor/raça
               </a>
             </p>
-            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2024). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
+            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 — SIDRA 6405). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
           </div>
         </CardContent>
       </Card>

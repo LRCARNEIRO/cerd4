@@ -110,8 +110,8 @@ export function VulnerabilidadesTab() {
                 <strong>Fontes oficiais:</strong>
               </p>
               <div className="flex flex-wrap gap-3 text-xs">
-                <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> SIDRA 6800 — Renda por cor/raça
+                <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA 6405 — Renda por cor/raça
                 </a>
                 <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                   <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
