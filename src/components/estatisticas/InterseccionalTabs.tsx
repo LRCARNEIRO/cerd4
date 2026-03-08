@@ -375,19 +375,37 @@ export function PovosTradicionaisTab() {
                 <p className="text-xl font-bold text-success">{povosTradicionais.indigenas.terrasHomologadas2023_2025}</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Mortalidade infantil (‰)</span>
-                <span className="font-semibold text-destructive">{povosTradicionais.indigenas.mortalidadeInfantil}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Acesso regular à saúde</span>
-                <span className="font-semibold">{povosTradicionais.indigenas.acessoSaude}%</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Educação bilíngue</span>
-                <span className="font-semibold text-warning">{povosTradicionais.indigenas.educacaoBilingue}%</span>
-              </div>
+             <div className="space-y-2">
+              {povosTradicionais.indigenas.mortalidadeInfantil != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Mortalidade infantil (‰)</span>
+                  <span className="font-semibold text-destructive">{povosTradicionais.indigenas.mortalidadeInfantil}</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Mortalidade infantil:</strong> Dado removido — sem fonte auditável (SESAI não publica taxa consolidada desagregada)
+                </div>
+              )}
+              {povosTradicionais.indigenas.acessoSaude != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Acesso regular à saúde</span>
+                  <span className="font-semibold">{povosTradicionais.indigenas.acessoSaude}%</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Acesso à saúde:</strong> Dado removido — sem fonte auditável
+                </div>
+              )}
+              {povosTradicionais.indigenas.educacaoBilingue != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Educação bilíngue</span>
+                  <span className="font-semibold text-warning">{povosTradicionais.indigenas.educacaoBilingue}%</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Educação bilíngue:</strong> Dado removido — sem fonte auditável
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -430,13 +448,14 @@ export function PovosTradicionaisTab() {
         <Card className="border-t-4 border-t-warning">
           <CardHeader>
             <CardTitle className="text-base">Povos Ciganos (Rom, Calon, Sinti)</CardTitle>
-            <CardDescription>Estimativa: {povosTradicionais.ciganos.populacaoEstimada.toLocaleString('pt-BR')} pessoas</CardDescription>
+            <CardDescription>Sem dados censitários desagregados</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
-              <p className="text-xs font-medium text-warning">⚠️ Dados Precários</p>
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+              <p className="text-xs font-medium text-destructive">⚠️ Dados Removidos — Regra de Ouro</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Primeiro levantamento sistemático apenas em 2024 (MUNIC/IBGE)
+                Os dados anteriores (população 800 mil, educação 12,5%, documentação 35,2%, saúde 28,5%) 
+                <strong> não possuíam fonte auditável</strong>. Foram removidos.
               </p>
             </div>
             <div className="space-y-2">
@@ -444,14 +463,13 @@ export function PovosTradicionaisTab() {
                 <span>Acampamentos identificados</span>
                 <span className="font-semibold">{povosTradicionais.ciganos.acampamentosIdentificados}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>Ensino médio completo</span>
-                <span className="font-semibold text-destructive">{povosTradicionais.ciganos.acessoEducacao}%</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Documentação completa</span>
-                <span className="font-semibold text-destructive">{povosTradicionais.ciganos.documentacao}%</span>
-              </div>
+              <p className="text-[10px] text-muted-foreground">Fonte: MUNIC/IBGE 2019</p>
+            </div>
+            <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
+              <p className="text-xs font-medium text-warning">Lacuna Crítica</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {povosTradicionais.ciganos.lacunaDocumentada}
+              </p>
             </div>
           </CardContent>
         </Card>

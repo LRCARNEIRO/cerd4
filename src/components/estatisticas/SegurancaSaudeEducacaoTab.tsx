@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar 
 } from 'recharts';
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
-import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia } from './StatisticsData';
+import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia } from './StatisticsData';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
@@ -289,14 +289,20 @@ export function SegurancaSaudeEducacaoTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />
-            Saúde - Indicadores por Raça (2018-2024)
+            Saúde - Indicadores por Raça (2018-2023)
           </CardTitle>
-          <CardDescription>Mortalidade materna e infantil por 100 mil nascidos vivos</CardDescription>
+          <CardDescription>Mortalidade materna e infantil — Cruzamento SIM × SINASC (DataSUS)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium mb-3">Mortalidade Materna (por 100 mil)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                Mortalidade Materna (por 100 mil NV)
+                <EstimativaBadge 
+                  tipo="cruzamento" 
+                  metodologia={`${mortalidadeMaternaMetodologia.formula}. ${mortalidadeMaternaMetodologia.nota}`}
+                />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={saudeSerieHistorica}>
@@ -316,6 +322,16 @@ export function SegurancaSaudeEducacaoTab() {
                     <Line type="monotone" dataKey="mortalidadeMaternaBranca" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+              <div className="mt-2 p-2 bg-muted/60 rounded text-xs text-muted-foreground">
+                <strong>Cruzamento:</strong> {mortalidadeMaternaMetodologia.formula}
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {mortalidadeMaternaMetodologia.componentes.map((c, i) => (
+                    <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                      <ExternalLink className="w-2.5 h-2.5" /> {c.nome}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
             <div>

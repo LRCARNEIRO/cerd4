@@ -302,6 +302,16 @@ export const analfabetismoGeral2024 = {
 // SAÚDE - DataSUS/SINAN
 // =============================================
 
+export const mortalidadeMaternaMetodologia = {
+  tipo: 'cruzamento' as const,
+  componentes: [
+    { nome: 'SIM — Óbitos maternos por raça/cor', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+    { nome: 'SINASC — Nascidos vivos por raça/cor da mãe', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+  ],
+  formula: '(Óbitos maternos por raça ÷ Nascidos vivos por raça da mãe) × 100.000',
+  nota: 'Ambos os sistemas usam autodeclaração da mãe, reduzindo viés de classificação racial (diferente da mortalidade infantil).',
+};
+
 export const saudeSerieHistorica = [
   // AUDITADO: Valores corrigidos conforme cálculo manual a partir do DataSUS
   // Mortalidade materna: (Óbitos maternos / Nascidos vivos) × 100.000
@@ -510,9 +520,14 @@ export const povosTradicionais = {
     // Corrigido conforme auditoria FUNAI: 2018: 1 homologação; 2023-2025: 20 homologações
     terrasHomologadas2018_2022: 1,
     terrasHomologadas2023_2025: 20,
-    mortalidadeInfantil: 42.8,
-    acessoSaude: 68.5,
-    educacaoBilingue: 32.5,
+    // REMOVIDOS por falta de fonte auditável:
+    // mortalidadeInfantil: 42.8 — SEM FONTE (não é SINASC nem SESAI verificável)
+    // acessoSaude: 68.5 — SEM FONTE
+    // educacaoBilingue: 32.5 — SEM FONTE
+    // Dados preservados como lacuna documentada abaixo.
+    mortalidadeInfantil: null as number | null, // LACUNA — sem fonte auditável
+    acessoSaude: null as number | null, // LACUNA — sem fonte auditável
+    educacaoBilingue: null as number | null, // LACUNA — sem fonte auditável
     rendimentoMedio: 1683,
     // Infraestrutura domiciliar — Censo 2022 (Indígenas: características dos domicílios)
     // Fonte: IBGE Agência de Notícias - Censo 2022: mais da metade da pop. indígena vive nas cidades (19/12/2024)
@@ -598,11 +613,14 @@ export const povosTradicionais = {
     },
   },
   ciganos: {
-    populacaoEstimada: 800000,
-    acampamentosIdentificados: 291,
-    acessoEducacao: 12.5,
-    documentacao: 35.2,
-    acessoSaude: 28.5
+    // TODOS OS DADOS ABAIXO ESTÃO SEM FONTE AUDITÁVEL — removidos/anulados conforme Regra de Ouro.
+    // Único dado verificável: MUNIC/IBGE 2024 (acampamentos), mas microdados ainda não publicados.
+    populacaoEstimada: null as number | null, // Estimativa AMSK/Brasil sem fonte verificável
+    acampamentosIdentificados: 291, // MUNIC/IBGE 2019 — verificável
+    acessoEducacao: null as number | null, // SEM FONTE
+    documentacao: null as number | null, // SEM FONTE
+    acessoSaude: null as number | null, // SEM FONTE
+    lacunaDocumentada: 'Não há dados censitários desagregados para ciganos no Censo 2022. Primeiro levantamento via MUNIC 2024 (pendente microdados).',
   }
 };
 
@@ -848,18 +866,10 @@ export const educacaoInterseccionalFontes = [
 export const saudeInterseccional: never[] = [];
 
 
-// Radar: Vulnerabilidades por grupo
-// ÍNDICE COMPOSTO — Elaboração própria a partir de múltiplas fontes
-// Fontes base: PNAD Contínua 2024 (SIDRA 6800/6381), DataSUS/SIM, 19º Anuário FBSP 2025, SIS/IBGE 2024
-// Cada eixo normalizado 0-100 onde 100 = maior vulnerabilidade
-export const radarVulnerabilidades = [
-  { eixo: 'Renda', mulherNegra: 85, homemNegro: 72, mulherBranca: 45, homemBranco: 28 },
-  { eixo: 'Emprego', mulherNegra: 78, homemNegro: 65, mulherBranca: 52, homemBranco: 35 },
-  { eixo: 'Educação', mulherNegra: 68, homemNegro: 75, mulherBranca: 38, homemBranco: 42 },
-  { eixo: 'Saúde', mulherNegra: 82, homemNegro: 58, mulherBranca: 32, homemBranco: 45 },
-  { eixo: 'Violência', mulherNegra: 88, homemNegro: 92, mulherBranca: 42, homemBranco: 38 },
-  { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
-];
+// REMOVIDO: radarVulnerabilidades — índice composto com valores fabricados (normalização 0-100 arbitrária)
+// viola Regra de Ouro: "elaboração própria" sem fórmula auditável reprodutível
+// Os dados originais (SIDRA 6800, 6381, SIM, FBSP, SIS) são válidos MAS o índice composto não é.
+export const radarVulnerabilidades: never[] = [];
 export const radarVulnerabilidadesFontes = [
   { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
   { nome: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/tabela/6402' },
@@ -867,6 +877,7 @@ export const radarVulnerabilidadesFontes = [
   { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
 ];
+
 
 // Evolução temporal das desigualdades (2018-2024)
 // Fontes: PNAD Contínua/SIDRA 6405, 6402 | 19º Anuário FBSP 2025 / Atlas da Violência 2025

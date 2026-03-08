@@ -496,11 +496,8 @@ function generateConsolidatedHTML(data: {
   </table>
 
   <h4>Radar de Vulnerabilidades por Grupo</h4>
-  <table>
-    <tr><th>Eixo</th><th>Mulher Negra</th><th>Homem Negro</th><th>Mulher Branca</th><th>Homem Branco</th></tr>
-    ${radarVulnerabilidades.map(r => `<tr><td>${r.eixo}</td><td>${r.mulherNegra}</td><td>${r.homemNegro}</td><td>${r.mulherBranca}</td><td>${r.homemBranco}</td></tr>`).join('')}
-  </table>
-  <p class="source">Índice de vulnerabilidade: 0 = menor, 100 = maior. Fontes: PNAD 2024, FBSP 2025, DataSUS.</p>
+  <p class="alert"><strong>⚠️ Removido:</strong> Índice composto com normalização arbitrária (0-100) — viola Regra de Ouro. Os dados subjacentes (PNAD, FBSP, DataSUS) são válidos e estão disponíveis nas seções individuais.</p>
+
 
   <h4>Educação Comparativa</h4>
   <table>
