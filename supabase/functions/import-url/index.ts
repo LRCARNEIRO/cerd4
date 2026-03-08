@@ -144,7 +144,7 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
         dados: {
           titulo: String(conc.titulo).substring(0, 255),
           tipo: String(conc.tipo || 'legislacao').substring(0, 100),
-          periodo: String(conc.periodo || '2018-2026').substring(0, 50),
+          periodo: String(conc.periodo || '2018-2025').substring(0, 50),
           argumento_central: String(conc.argumento_central).substring(0, 5000),
           evidencias: Array.isArray(conc.evidencias) ? conc.evidencias.slice(0, 10) : null,
         },
