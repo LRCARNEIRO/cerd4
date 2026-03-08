@@ -343,19 +343,14 @@ export function LacunasCerdTab() {
         </TabsContent>
 
         <TabsContent value="series-historicas" className="space-y-6">
-          {/* Educação */}
+          {/* Educação — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-success" />
-                Taxa de Escolarização Líquida - Ensino Médio (2010-2026)
+                Ensino Superior e Analfabetismo por Raça (2018-2024)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: SIDRA/IBGE - PNAD Contínua e Censo Demográfico
-                <a href="https://sidra.ibge.gov.br/tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Acessar SIDRA
-                </a>
-              </CardDescription>
+              <CardDescription>Fonte única: PNAD Contínua / SIDRA 7129 + 7125</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -363,7 +358,7 @@ export function LacunasCerdTab() {
                   <LineChart data={dadosEducacaoHistorico}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} domain={[30, 90]} unit="%" />
+                    <YAxis tick={{ fontSize: 11 }} unit="%" />
                     <Tooltip 
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -373,18 +368,27 @@ export function LacunasCerdTab() {
                       formatter={(value: number) => [`${value}%`, '']}
                     />
                     <Legend />
-                    <Line type="monotone" dataKey="brancos" name="Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="negros" name="Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="indigenas" name="Indígenas" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="superiorBranco" name="Superior — Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="superiorNegro" name="Superior — Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoNegro" name="Analfabetismo — Negros" stroke="hsl(var(--destructive))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Brancos" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §19:</strong> Gap racial na educação reduziu de 25pp (2010) para 13pp (2022), mas persiste. 
-                  Ações afirmativas (Lei 12.711/2012) contribuíram para avanços, porém evasão escolar continua maior entre jovens negros.
+                  <strong>Análise §19:</strong> Gap no ensino superior: {dadosEducacaoHistorico[0]?.gapSuperior}pp em 2018 → {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.gapSuperior}pp em {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.ano}. 
+                  Analfabetismo negro recuou de 8,4% para 6,9%, mas segue 2x maior que o branco.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+                  { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
+                ]}
+                documentos={['CERD 2022 §19', 'Common Core']}
+                compact
+              />
             </CardContent>
           </Card>
 
