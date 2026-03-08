@@ -358,6 +358,22 @@ export default function Conclusoes() {
                   </div>
                 </div>
               )}
+
+              {/* Bloco de auditoria — Deep links */}
+              <div className="p-3 bg-muted/30 border border-border/50 rounded-md">
+                <p className="text-[10px] font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> Fontes para auditoria dos dados acima:
+                </p>
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+                  <a href="https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">19º Anuário FBSP 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="https://www.ipea.gov.br/atlasviolencia/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Atlas da Violência 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">SIDRA 7129 — Educação Superior <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">SIDRA 6800 — Rendimento <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Censo 2022 (SIDRA 9605) <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">DataSUS/SIM <ExternalLink className="w-2.5 h-2.5" /></a>
+                  <a href="https://www.dieese.org.br/boletimespecial/2024/boletimEspecial01.html" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">DIEESE Racial 2024 <ExternalLink className="w-2.5 h-2.5" /></a>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
