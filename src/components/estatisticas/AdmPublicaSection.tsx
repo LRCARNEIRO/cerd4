@@ -72,11 +72,15 @@ const estadicData = {
 
 const municData = {
   totalMunicipios: 5570,
-  municipiosComEstruturaIgualdade: 1245,
-  municipiosComConselhoIgualdade: 487,
-  municipiosComPlanoIgualdade: 312,
-  municipiosComLegislacaoRacial: 892,
-  municipiosComOrgaoEspecifico: 678,
+  // NOTA: Os microdados da MUNIC 2024 sobre igualdade racial ainda não foram
+  // publicados no SIDRA/IBGE. Os valores abaixo são PENDENTES de consolidação
+  // oficial e não devem ser citados em relatórios CERD.
+  pendenteSidra: true,
+  municipiosComEstruturaIgualdade: null as number | null,
+  municipiosComConselhoIgualdade: null as number | null,
+  municipiosComPlanoIgualdade: null as number | null,
+  municipiosComLegislacaoRacial: null as number | null,
+  municipiosComOrgaoEspecifico: null as number | null,
 };
 
 const sinapirData = {
