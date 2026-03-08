@@ -183,7 +183,7 @@ export function generateCerdIVHTML(
     <h1>Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial</h1>
     <div class="subtitle">CERD/C/BRA/21-23</div>
     <div class="subtitle">Relatórios periódicos combinados (21º a 23º) do Brasil</div>
-    <div class="date">Período de cobertura: 2018-2026</div>
+    <div class="date">Período de cobertura: 2018-2025</div>
   </div>
 
   <div class="toc">
