@@ -215,7 +215,7 @@ export function RacaGeneroTab() {
               Saúde Materna por Raça
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              RASEAM 2024 + Nascer no Brasil II (Fiocruz, 2020-2023)
+              RASEAM 2025 (SIM {saudeMaternaRaca.anoReferencia}) + IEPS Jul/2025 (série até 2023) + Fiocruz
               <EstimativaBadge tipo="cruzamento" metodologia={saudeMaternaRaca.metodologia} />
             </CardDescription>
           </CardHeader>
@@ -224,13 +224,22 @@ export function RacaGeneroTab() {
               <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Mortes maternas negras</p>
                 <p className="text-2xl font-bold text-destructive">{saudeMaternaRaca.mortalidadeMaternaNegraPercentual}%</p>
-                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+                <p className="text-xs text-muted-foreground">(SIM {saudeMaternaRaca.anoReferencia})</p>
               </div>
               <div className="p-3 bg-muted rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Mortes maternas brancas</p>
                 <p className="text-2xl font-bold">{saudeMaternaRaca.mortalidadeMaternaBrancaPercentual}%</p>
-                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+                <p className="text-xs text-muted-foreground">(SIM {saudeMaternaRaca.anoReferencia})</p>
               </div>
+            </div>
+            {/* IEPS — dado mais recente disponível (série até 2023) */}
+            <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg mb-3">
+              <p className="text-xs flex items-start gap-1">
+                <AlertTriangle className="w-3 h-3 text-destructive flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>IEPS Boletim Jul/2025 ({saudeMaternaRaca.periodoIEPS}):</strong> Razão de mortalidade materna pretas/brancas = <strong>{saudeMaternaRaca.razaoMortalidadePretasBrancas}×</strong> ({saudeMaternaRaca.taxaPretasPor100milNV} vs {saudeMaternaRaca.taxaBrancasPor100milNV} por 100 mil NV). Pardas: {saudeMaternaRaca.taxaPardasPor100milNV}/100 mil NV.
+                </span>
+              </p>
             </div>
             <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-3">
               <p className="text-xs flex items-start gap-1">
