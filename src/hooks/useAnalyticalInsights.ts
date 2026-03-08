@@ -343,7 +343,7 @@ function gerarFiosCondutores(
         valor2018: formatBRL(orcStats.totalPeriodo1)
       });
       evidOrc.push({
-        texto: `Período 2023-2026: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
+        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
         valorAtual: formatBRL(orcStats.totalPeriodo2)
