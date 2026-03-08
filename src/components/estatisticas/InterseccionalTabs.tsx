@@ -821,52 +821,38 @@ export function ClasseSocialTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* LACUNA: Saúde Interseccional — dados fabricados removidos */}
+        <Card className="border-l-4 border-l-warning">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-warning" />
               Saúde × Raça × Classe
-              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento DataSUS (raça) × CadÚnico (renda). O DataSUS não publica mortalidade materna por faixa de renda." />
             </CardTitle>
-            <CardDescription>Cruzamento raça × classe não é publicado diretamente pelo DataSUS</CardDescription>
+            <CardDescription>LACUNA DOCUMENTADA — Valores numéricos removidos</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Indicador</TableHead>
-                  <TableHead className="text-right">Negra Pobre</TableHead>
-                  <TableHead className="text-right">Negra Média</TableHead>
-                  <TableHead className="text-right">Branca</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {saudeInterseccional.map(item => (
-                  <TableRow key={item.indicador}>
-                    <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
-                    <TableCell className={cn("text-right", item.mulherNegraPobre > 100 && "text-destructive font-semibold")}>
-                      {item.mulherNegraPobre}
-                    </TableCell>
-                    <TableCell className="text-right">{item.mulherNegraMedia}</TableCell>
-                    <TableCell className="text-right">{item.mulherBranca}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="mt-2 flex items-center gap-2">
-              <EstimativaBadge tipo="cruzamento" metodologia="Valores 'Negra Pobre' e 'Negra Média' derivados do cruzamento DataSUS (mortalidade por raça) × CadÚnico (faixas de renda). O DataSUS NÃO publica mortalidade materna por faixa de renda." />
-              <span className="text-[10px] text-muted-foreground">DataSUS × CadÚnico</span>
-            </div>
-            <div className="mt-4 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <p className="text-xs">
-                <strong>Intersecção crítica:</strong> Mulheres negras têm mortalidade materna 2,7x maior que mulheres brancas (SIM/DataSUS 2024), 
-                evidenciando como raça se combina com determinantes sociais.
+            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
+              <p className="text-sm font-medium text-warning">⚠️ Valores numéricos por faixa de renda inexistentes em publicação oficial</p>
+              <p className="text-xs text-muted-foreground">
+                {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.descricao}
               </p>
+              <p className="text-xs text-muted-foreground">
+                <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.dadoRemovido}
+              </p>
+            </div>
+            <div className="mt-4 p-3 bg-accent/10 border border-accent/30 rounded-lg">
+              <p className="text-xs font-medium">✅ Fato verificado (Pesquisa Nascer no Brasil II, Nov/2023):</p>
+              <p className="text-xs text-muted-foreground">
+                Mortalidade materna de mulheres negras é <strong>~2x maior</strong> que de mulheres brancas.
+              </p>
+              <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-1">
+                <ExternalLink className="w-3 h-3" /> Pesquisa Nascer no Brasil II — Ministério da Saúde (Nov/2023)
+              </a>
             </div>
             <AuditFooter
               fontes={[
                 { nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
                 { nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-                { nome: 'CadÚnico — Faixas de renda', url: 'https://cecad.cidadania.gov.br/painel03.php' },
               ]}
               documentos={['CERD 2022']}
             />

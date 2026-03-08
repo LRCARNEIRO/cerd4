@@ -180,14 +180,8 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       fonte: 'DataSUS/SIM',
       interpretacao: 'menor_melhor',
     },
-    {
-      nome: 'Chefia de família negra (%)',
-      grupo: 'mulheres_negras',
-      dados: mulheresChefeFamilia.map(s => ({ ano: s.ano, valor: s.negras })),
-      unidade: '%',
-      fonte: 'PNAD Contínua',
-      interpretacao: 'maior_melhor',
-    },
+    // REMOVIDO: Chefia de família negra — dados fabricados eliminados (Regra de Ouro)
+    // Lacuna documentada em lacunasDocumentadas[0] — SIDRA 6403 não publica série temporal por raça
   ];
 
   // Povos Indígenas: séries com dados reais SESAI/DataSUS e Censo 2022

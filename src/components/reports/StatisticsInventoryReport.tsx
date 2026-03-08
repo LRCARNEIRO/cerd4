@@ -257,7 +257,7 @@ ${arrayToHTMLTable(saudeSerieHistorica, '')}
 ${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
 
 <h3>3.2. Mulheres Chefes de Família</h3>
-${arrayToHTMLTable(mulheresChefeFamilia, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça. Requer processamento de microdados PNAD.</div>
 
 <h3>3.3. Violência Interseccional</h3>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
@@ -267,10 +267,10 @@ ${arrayToHTMLTable(juventudeNegra, '')}
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
-${arrayToHTMLTable(educacaoInterseccional, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
 
 <h3>3.6. Saúde Interseccional</h3>
-${arrayToHTMLTable(saudeInterseccional, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023).</div>
 
 <h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
 ${arrayToHTMLTable(serieAntraTrans, '')}
