@@ -877,13 +877,7 @@ export const radarVulnerabilidadesFontes = [
   { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
 ];
-export const radarVulnerabilidadesFontes = [
-  { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
-  { nome: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/tabela/6402' },
-  { nome: 'TabNet/DataSUS — Mortalidade', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
-];
+
 
 // Evolução temporal das desigualdades (2018-2024)
 // Fontes: PNAD Contínua/SIDRA 6405, 6402 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
