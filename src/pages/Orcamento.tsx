@@ -511,7 +511,7 @@ export default function Orcamento() {
   return (
     <DashboardLayout
       title="Orçamento"
-      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018-2026)"
+      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018–2025)"
     >
       {/* Alerta + Ingestão */}
       <Card className="mb-6 border-l-4 border-l-warning">
