@@ -378,7 +378,7 @@ export function CovidRacialSection() {
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
-                metodologia="SI-PNI possui ~30% de registros sem preenchimento de raça/cor. Percentuais calculados apenas sobre registros com raça/cor informada, o que pode superestimar coberturas reais." 
+                metodologia="Cálculo: doses aplicadas por raça/cor ÷ população por raça/cor (IBGE). Fonte: SI-PNI/DataSUS (sipni.datasus.gov.br) — registros de vacinação COVID-19 por raça/cor. Limitação: ~30% dos registros sem raça/cor informada — percentuais calculados apenas sobre registros preenchidos, podendo superestimar coberturas reais. Populações: Censo 2022 (sidra.ibge.gov.br/Tabela/9605)." 
               />
             </div>
           <AuditFooter fontes={FONTE_VACINACAO} documentos={['CERD 2022 §24']} compact />

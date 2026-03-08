@@ -1049,7 +1049,7 @@ export function ClasseSocialTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
-              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento: IEPS (mortalidade materna por raça, série até 2023) + RASEAM 2025 (% por raça, SIM 2022) + Fiocruz (amostra hospitalar)" />
+              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento de 3 fontes: (1) IEPS Boletim Jul/2025 — série mortalidade materna por raça 2010-2023, razão pretas/brancas 2,3× (ieps.org.br/pesquisas/boletim-care); (2) RASEAM 2025 — 68% dos óbitos maternos são de mulheres negras, SIM 2022 (gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam); (3) Nascer no Brasil II (Fiocruz) — near miss obstétrico 2× maior em negras (portal.fiocruz.br/pesquisa/nascer-no-brasil-ii). Nenhuma fonte consolida mortalidade + near miss + cobertura pré-natal por raça." />
             </CardDescription>
           </CardHeader>
           <CardContent>
