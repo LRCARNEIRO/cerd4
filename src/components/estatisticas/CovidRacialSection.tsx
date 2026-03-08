@@ -23,6 +23,7 @@ const FONTE_SIVEP_NOIS = [
 
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — Mortalidade Materna', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+  { nome: 'IEPS — Mortalidade Materna por Raça (2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
 ];
 
 const FONTE_PNAD_COVID = [
