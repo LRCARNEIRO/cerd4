@@ -378,18 +378,20 @@ function generateConsolidatedHTML(data: {
   <hr class="divider">
   <h2 id="orc">PARTE II — BASE ORÇAMENTÁRIA</h2>
 
-  <h3 id="orc-evo">2.1 — Evolução Orçamentária Federal (2018-2025)</h3>
+  <h3 id="orc-evo">2.1 — Evolução Orçamentária (dados do banco)</h3>
+  ${budgetHistorical.length > 0 ? `
   <div class="kpi-grid">
-    <div class="kpi"><div class="value">${fmtCurrency(545000000)}</div><div class="label">Federal 2025</div></div>
-    <div class="kpi"><div class="value">${fmtCurrency(215000000)}</div><div class="label">Estadual (8 UFs)</div></div>
-    <div class="kpi"><div class="value">${fmtCurrency(123200000)}</div><div class="label">Municipal (8 cap.)</div></div>
-    <div class="kpi"><div class="value" style="color:green">+${orcStats?.variacao ? orcStats.variacao.toFixed(0) : '304'}%</div><div class="label">Crescimento 2023-25 vs 18-22</div></div>
+    <div class="kpi"><div class="value">${budgetHistorical.length}</div><div class="label">Anos com dados</div></div>
+    <div class="kpi"><div class="value">${fmtCurrency(budgetHistorical[budgetHistorical.length - 1]?.autorizado || 0)}</div><div class="label">Último ano (${budgetHistorical[budgetHistorical.length - 1]?.ano})</div></div>
+    <div class="kpi"><div class="value">${orcStats?.totalRegistros || 0}</div><div class="label">Registros no BD</div></div>
+    <div class="kpi"><div class="value" style="color:green">${orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}%` : 'N/D'}</div><div class="label">Variação entre períodos</div></div>
   </div>
   <table>
     <tr><th>Ano</th><th>Autorizado</th><th>Pago</th><th>Execução (%)</th></tr>
     ${budgetHistorical.map(r => `<tr><td>${r.ano}</td><td>${fmtCurrencyFull(r.autorizado)}</td><td>${fmtCurrencyFull(r.pago)}</td><td>${r.execucao}%</td></tr>`).join('')}
   </table>
-  <p class="source">Fonte: SIOP / Portal da Transparência. Valores de programas federais com recorte racial (MIR, FUNAI, INCRA, MEC-cotas, MDS-quilombos).</p>
+  <p class="source">Fonte: Dados agregados a partir de ${orcamentarios?.length || 0} registros do banco de dados (dados_orcamentarios). Origem: SIOP / Portal da Transparência / SICONFI.</p>
+  ` : '<p class="note">⚠️ Nenhum dado orçamentário no banco. Importe dados via painel de ingestão.</p>'}
 
   <h3 id="orc-db">2.2 — Dados Orçamentários do Banco (${orcamentarios?.length || 0} registros)</h3>
   ${orcamentarios && orcamentarios.length > 0 ? `
