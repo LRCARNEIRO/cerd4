@@ -296,7 +296,13 @@ export function SegurancaSaudeEducacaoTab() {
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium mb-3">Mortalidade Materna (por 100 mil)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                Mortalidade Materna (por 100 mil NV)
+                <EstimativaBadge 
+                  tipo="cruzamento" 
+                  metodologia={`${mortalidadeMaternaMetodologia.formula}. ${mortalidadeMaternaMetodologia.nota}`}
+                />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={saudeSerieHistorica}>
@@ -316,6 +322,16 @@ export function SegurancaSaudeEducacaoTab() {
                     <Line type="monotone" dataKey="mortalidadeMaternaBranca" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+              <div className="mt-2 p-2 bg-muted/60 rounded text-xs text-muted-foreground">
+                <strong>Cruzamento:</strong> {mortalidadeMaternaMetodologia.formula}
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {mortalidadeMaternaMetodologia.componentes.map((c, i) => (
+                    <a key={i} href={c.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                      <ExternalLink className="w-2.5 h-2.5" /> {c.nome}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
             <div>
