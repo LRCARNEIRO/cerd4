@@ -983,7 +983,7 @@ function generateFullHTML(
           <li>Sistema Integrado de Planejamento e Orçamento (SIOP)</li>
           <li>Portal da Transparência do Governo Federal</li>
           <li>Secretarias Estaduais de Promoção da Igualdade Racial</li>
-          <li>Lei Orçamentária Anual (LOA) 2018-2026</li>
+          <li>Lei Orçamentária Anual (LOA) 2018-2025</li>
         </ul>
       </div>
     </div>
