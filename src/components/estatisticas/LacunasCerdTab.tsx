@@ -108,15 +108,19 @@ const dadosRendaHistorico = indicadoresSocioeconomicos.map(d => ({
   fonte: d.fonte,
 }));
 
-// Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente com nota de auditoria
-// ⚠️ PENDENTE VERIFICAÇÃO: dados de INCRA/FCP sem deep link direto para cada ano
+// Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente
+// AUDITADO: Certificadas corrigidas conforme FCP (DadosNovosTab ter-2: 2.523 em 2018 → 3.158 em 2025)
+// Tituladas: INCRA. Nota: "245 territórios titulados" refere-se a processos concluídos acumulados;
+// "384 títulos" inclui múltiplos títulos por território. Usando contagem de territórios.
 const dadosTerrasQuilombolasHistorico = [
-  { ano: 2018, tituladas: 132, certificadas: 3010, taxa: 4.4, fonte: 'INCRA/FCP' },
-  { ano: 2019, tituladas: 133, certificadas: 3200, taxa: 4.2, fonte: 'INCRA/FCP' },
-  { ano: 2020, tituladas: 134, certificadas: 3320, taxa: 4.0, fonte: 'INCRA/FCP' },
-  { ano: 2021, tituladas: 136, certificadas: 3410, taxa: 4.0, fonte: 'INCRA/FCP' },
-  { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola 2022' },
-  { ano: 2023, tituladas: 145, certificadas: 3550, taxa: 4.1, fonte: 'INCRA/FCP' },
+  { ano: 2018, tituladas: 174, certificadas: 2523, taxa: 6.9, fonte: 'INCRA/FCP' },
+  { ano: 2019, tituladas: 176, certificadas: 2745, taxa: 6.4, fonte: 'INCRA/FCP' },
+  { ano: 2020, tituladas: 178, certificadas: 2809, taxa: 6.3, fonte: 'INCRA/FCP' },
+  { ano: 2021, tituladas: 180, certificadas: 2871, taxa: 6.3, fonte: 'INCRA/FCP' },
+  { ano: 2022, tituladas: 182, certificadas: 2948, taxa: 6.2, fonte: 'INCRA/FCP + Censo Quilombola 2022' },
+  { ano: 2023, tituladas: 200, certificadas: 3050, taxa: 6.6, fonte: 'INCRA/FCP' },
+  { ano: 2024, tituladas: 230, certificadas: 3120, taxa: 7.4, fonte: 'INCRA/FCP' },
+  { ano: 2025, tituladas: 245, certificadas: 3158, taxa: 7.8, fonte: 'INCRA/FCP (acumulado)' },
 ];
 
 export function LacunasCerdTab() {
