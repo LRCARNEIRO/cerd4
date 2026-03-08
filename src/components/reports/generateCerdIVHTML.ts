@@ -225,7 +225,7 @@ export function generateCerdIVHTML(
     ${respostasHTML}
   </div>
 
-  <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2026)</h2>
+  <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2025)</h2>
   <div class="section">
     <h3>A. Principais Avanços Legislativos</h3>
     <table>
