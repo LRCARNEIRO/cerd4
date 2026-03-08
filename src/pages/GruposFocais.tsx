@@ -1179,59 +1179,86 @@ export default function GruposFocais() {
               </Card>
             </div>
 
-            {/* Indicadores Sociais — Povos Tradicionais */}
+            {/* Indicadores Sociais — Povos Indígenas */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <Users className="w-5 h-5 text-accent" />
                   Indicadores Sociais — Povos Indígenas
                 </CardTitle>
-                <CardDescription>SESAI/DataSUS, IBGE Censo 2022, Censo Escolar/INEP</CardDescription>
+                <CardDescription className="flex items-center gap-2">
+                  🔀 Cruzamento: NCPI/DataSUS (2024) + INEP Censo Escolar (2022) + SESAI (2024)
+                  <EstimativaBadge
+                    tipo="cruzamento"
+                    metodologia="Cruzamento de 3 fontes: NCPI Working Paper (dados SIM/DataSUS 2018-2022) + INEP Censo Escolar 2022 (escolas em terra indígena) + SESAI/MS (34 DSEIs). Nenhuma fonte consolida todos os indicadores conjuntamente."
+                  />
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  {/* Mortalidade Infantil — NCPI/DataSUS 2022 */}
                   <div className="p-4 bg-destructive/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-destructive">—</p>
-                    <p className="text-sm text-muted-foreground">Mortalidade Infantil</p>
-                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">SESAI não publica taxa consolidada desagregada verificável</p>
+                    <p className="text-3xl font-bold text-destructive">34,7‰</p>
+                    <p className="text-sm text-muted-foreground">Mortalidade infantil indígena</p>
+                    <p className="text-xs text-muted-foreground mt-1">vs 14,2‰ não-indígenas (2022)</p>
+                    <p className="text-xs font-semibold text-destructive mt-1">Razão: 2,44×</p>
+                    <a href="https://ncpi.org.br/wp-content/uploads/2024/07/Desigualdades-em-saude-de-criancas-indigenas.pdf" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center justify-center gap-0.5 mt-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> NCPI/DataSUS (PDF)
+                    </a>
                   </div>
-                  <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">—</p>
-                    <p className="text-sm text-muted-foreground">Acesso Regular à Saúde</p>
-                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">SESAI Relatórios de Gestão não publicam cobertura consolidada verificável</p>
+                  {/* Educação em Terras Indígenas — INEP 2022 */}
+                  <div className="p-4 bg-primary/10 rounded-lg text-center">
+                    <p className="text-3xl font-bold text-primary">3.541</p>
+                    <p className="text-sm text-muted-foreground">Escolas em terra indígena</p>
+                    <p className="text-xs text-muted-foreground mt-1">1,9% das 178,3 mil escolas do país</p>
+                    <p className="text-xs text-muted-foreground">3.597 oferecem educação indígena</p>
+                    <a href="https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center justify-center gap-0.5 mt-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> INEP — Censo Escolar 2022
+                    </a>
                   </div>
+                  {/* Cobertura de Saúde — SESAI (estrutura) */}
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">—</p>
-                    <p className="text-sm text-muted-foreground">Educação Bilíngue/Intercultural</p>
-                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">INEP Censo Escolar não publica % consolidado verificável</p>
+                    <p className="text-3xl font-bold text-warning">34</p>
+                    <p className="text-sm text-muted-foreground">DSEIs em operação</p>
+                    <p className="text-xs text-muted-foreground mt-1">Cobertura em todos os estados</p>
+                    <p className="text-[10px] text-warning mt-1">% cobertura consolidada não publicada pela SESAI</p>
+                    <a href="https://www.gov.br/saude/pt-br/composicao/sesai/estrutura/dsei" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center justify-center gap-0.5 mt-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> SESAI — DSEIs
+                    </a>
                   </div>
                 </div>
-                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg mb-3">
-                  <p className="text-xs font-semibold text-destructive flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" /> Regra de Ouro — Dados Removidos
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Os valores anteriores (42,8‰ mortalidade, 68,5% acesso saúde, 32,5% educação bilíngue) 
-                    <strong> não possuíam deep links para dados brutos verificáveis</strong>. Embora SESAI e INEP publiquem 
-                    relatórios, os valores específicos não foram localizados em publicações oficiais acessíveis.
-                  </p>
+
+                {/* Interpretação */}
+                <div className="p-3 bg-muted rounded-lg mb-3">
+                  <p className="text-xs font-medium">Interpretação (NCPI 2024, INEP 2022, SESAI 2024):</p>
+                  <ul className="text-xs text-muted-foreground mt-1 space-y-1">
+                    <li>• <strong>Mortalidade:</strong> Crianças indígenas (0-4 anos) morrem 2,44× mais que não-indígenas; meta ODS (&lt;25‰) não alcançada (NCPI/DataSUS, série 2018-2022)</li>
+                    <li>• <strong>Causas:</strong> Doenças respiratórias (18%), infecciosas (14%) e nutricionais (6%) — taxas 2-6× maiores que não-indígenas</li>
+                    <li>• <strong>Educação:</strong> 3.541 escolas em TI, mas apenas ~1% dos alunos se declaram indígenas no Censo Escolar</li>
+                    <li>• <strong>Saúde:</strong> 34 DSEIs operam em todos os estados; SESAI não publica taxa de cobertura consolidada verificável</li>
+                  </ul>
                 </div>
+
+                {/* Fontes */}
                 <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> <strong>Fontes institucionais (dados pendentes de publicação desagregada):</strong>
+                    <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
                   </p>
                   <div className="flex flex-wrap gap-3 text-xs">
-                    <a href="https://sage.saude.gov.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Painel de Indicadores
+                    <a href="https://ncpi.org.br/wp-content/uploads/2024/07/Desigualdades-em-saude-de-criancas-indigenas.pdf" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> NCPI — Desigualdades em Saúde Indígena (PDF)
                     </a>
-                    <a href="https://www.gov.br/saude/pt-br/composicao/sesai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI — Portal Institucional
+                    <a href="https://agenciabrasil.ebc.com.br/direitos-humanos/noticia/2024-04/mortalidade-de-criancas-indigenas-e-mais-que-o-dobro-das-nao-indigenas" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> Agência Brasil — Mortalidade Infantil Indígena
                     </a>
-                    <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar
+                    <a href="https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> INEP — Educação em Terras Indígenas
+                    </a>
+                    <a href="https://www.gov.br/saude/pt-br/composicao/sesai/estrutura/dsei" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> SESAI — Estrutura DSEIs
+                    </a>
+                    <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> DataSUS/SIM — Mortalidade Infantil
                     </a>
                   </div>
                 </div>
