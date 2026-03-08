@@ -160,9 +160,11 @@ export const razaoRendaRacial = 0.589;
 //   • 76,5% das vítimas de homicídio são negras (2022)
 //   • 47,8% das vítimas tinham 15-29 anos (2023), 79% jovens negros masculinos
 //   • IVJ-N: risco 2x maior para jovens negros (2021, subiu de 1,9x em 2017)
-// Comparativo 2018 → 2024:
-//   • Homicídios totais caíram, mas a proporção de negros entre vítimas aumentou (75,4% → 82%)
-//   • Letalidade policial contra negros manteve-se acima de 75% em todo o período
+// NOTA AUDITORIA: A comparação de taxas de homicídio é Negros vs NÃO NEGROS (Atlas/IPEA),
+//   e NÃO Negros vs Brancos. O campo 'homicidioBranco' refere-se a 'não negros'.
+// Comparativo 2018 → 2023 (Atlas):
+//   • Taxa de homicídio de negros caiu de 37,6 para 28,9 (mas risco relativo subiu)
+//   • Letalidade policial contra negros: 75,4% (2018) → 82% (2024)
 //   • Feminicídio de mulheres negras: subiu de 61% (2018) para 63,6% (2024)
 // =============================================
 
