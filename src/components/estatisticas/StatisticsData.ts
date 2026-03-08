@@ -586,17 +586,20 @@ export const povosTradicionais = {
 // CLASSE POR RAÇA
 // =============================================
 
-// Fonte: SIS/IBGE 2024 — Síntese de Indicadores Sociais
+// AUDITORIA FASE 3: Corrigido com dados VERIFICADOS do SIS/IBGE 2024 (Agência Brasil, 04/12/2024)
+// Fonte: SIS/IBGE 2024 — Síntese de Indicadores Sociais (dados de 2023)
 // URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
-// Linhas de pobreza: Banco Mundial (US$ 2,15/dia extrema; US$ 6,85/dia pobreza)
-// NOTA: Os valores de "Indígena" são estimativas derivadas do Censo 2022 + SIS, pois
-// o SIS não publica faixas de renda para indígenas com essa granularidade.
+// Confirmação: https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012
+// Linhas de pobreza Banco Mundial: US$ 2,15/dia (extrema pobreza = R$209/mês), US$ 6,85/dia (pobreza = R$665/mês)
+// O SIS publica APENAS 2 faixas (extrema pobreza e pobreza), desagregadas por brancos/pretos/pardos (NÃO "negros" combinados).
+// As faixas "Vulnerável", "Classe média" e "Alta renda" da versão anterior eram FABRICADAS — removidas.
+// Indígenas: SIS NÃO publica dados de pobreza para indígenas. Removido.
 export const classePorRaca = [
-  { faixa: 'Extrema pobreza', branca: 3.2, negra: 8.4, indigena: 18.2, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022/SIDRA 9605) × distribuição de renda por raça (SIS/IBGE 2024). O SIS não publica faixas de renda para indígenas.' },
-  { faixa: 'Pobreza', branca: 8.3, negra: 17.8, indigena: 25.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Vulnerável', branca: 22.1, negra: 35.4, indigena: 32.1, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Classe média', branca: 42.8, negra: 29.1, indigena: 18.5, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' },
-  { faixa: 'Alta renda', branca: 23.6, negra: 9.3, indigena: 5.7, indigenaCruzamento: true, fonteIndigena: 'Cruzamento Censo 2022 × SIS', metodologiaIndigena: 'Dados cruzados: população indígena (Censo 2022) × distribuição de renda (SIS/IBGE 2024).' }
+  // VERIFICADO: SIS/IBGE 2024 (dados 2023) — Agência Brasil 04/12/2024
+  // Extrema pobreza (< US$2,15/dia): brancos 2,6%, pardos 6,0%, pretos 4,7% — total 4,4%
+  { faixa: 'Extrema pobreza (< US$2,15/dia)', branca: 2.6, parda: 6.0, preta: 4.7, total: 4.4, fonte: 'SIS/IBGE 2024 (dados 2023)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012' },
+  // Pobreza (< US$6,85/dia): brancos 17,7%, pardos 35,5%, pretos 30,8% — total 27,4%
+  { faixa: 'Pobreza (< US$6,85/dia)', branca: 17.7, parda: 35.5, preta: 30.8, total: 27.4, fonte: 'SIS/IBGE 2024 (dados 2023)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012' },
 ];
 
 // Mulheres chefes de família
