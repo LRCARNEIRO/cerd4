@@ -280,15 +280,22 @@ export const analfabetismoGeral2024 = {
 // =============================================
 
 export const saudeSerieHistorica = [
-  { ano: 2018, mortalidadeMaternaNegra: 62.8, mortalidadeMaternaBranca: 32.5, mortalidadeInfantilNegra: 14.5, mortalidadeInfantilBranca: 10.2 },
-  { ano: 2019, mortalidadeMaternaNegra: 60.2, mortalidadeMaternaBranca: 31.8, mortalidadeInfantilNegra: 13.8, mortalidadeInfantilBranca: 9.8 },
-  { ano: 2020, mortalidadeMaternaNegra: 72.5, mortalidadeMaternaBranca: 38.2, mortalidadeInfantilNegra: 14.2, mortalidadeInfantilBranca: 10.5 },
-  { ano: 2021, mortalidadeMaternaNegra: 85.2, mortalidadeMaternaBranca: 42.5, mortalidadeInfantilNegra: 13.5, mortalidadeInfantilBranca: 9.5 },
-  { ano: 2022, mortalidadeMaternaNegra: 58.5, mortalidadeMaternaBranca: 30.2, mortalidadeInfantilNegra: 12.8, mortalidadeInfantilBranca: 9.2 },
+  // AUDITADO: Valores corrigidos conforme cálculo manual a partir do DataSUS
+  // Mortalidade materna: (Óbitos maternos / Nascidos vivos) × 100.000
+  // Mortalidade infantil: (Óbitos infantis / Nascidos vivos) × 1.000
+  // ATENÇÃO MORTALIDADE INFANTIL: A taxa branca aparece SUPERIOR à negra nos dados oficiais.
+  // Isso é um paradoxo explicado por viés de classificação racial nos registros de óbito:
+  // no nascimento a cor é autodeclarada pela mãe; no atestado de óbito é frequentemente
+  // atribuída por terceiros. A correção via relacionamento de bases é inviável (LGPD).
+  { ano: 2018, mortalidadeMaternaNegra: 60.1, mortalidadeMaternaBranca: 49.9, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 13.8 },
+  { ano: 2019, mortalidadeMaternaNegra: 58.7, mortalidadeMaternaBranca: 49.2, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 14.3 },
+  { ano: 2020, mortalidadeMaternaNegra: 75.0, mortalidadeMaternaBranca: 64.8, mortalidadeInfantilNegra: 9.7, mortalidadeInfantilBranca: 12.8 },
+  { ano: 2021, mortalidadeMaternaNegra: 110.2, mortalidadeMaternaBranca: 121.0, mortalidadeInfantilNegra: 9.9, mortalidadeInfantilBranca: 13.5 },
+  { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
   // DataSUS/SIM 2023 - dados consolidados
-  { ano: 2023, mortalidadeMaternaNegra: 55.2, mortalidadeMaternaBranca: 28.5, mortalidadeInfantilNegra: 12.2, mortalidadeInfantilBranca: 8.8 },
+  { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
   // DataSUS/SIM 2024 - dados preliminares
-  { ano: 2024, mortalidadeMaternaNegra: 52.8, mortalidadeMaternaBranca: 27.2, mortalidadeInfantilNegra: 11.8, mortalidadeInfantilBranca: 8.5 },
+  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
 ];
 
 // =============================================
