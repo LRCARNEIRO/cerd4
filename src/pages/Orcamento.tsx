@@ -339,7 +339,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [includeExcludedInCalc, setIncludeExcludedInCalc] = useState(false);
+  
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
   const handleResetEsfera = async (esferaKey: string, label: string) => {
