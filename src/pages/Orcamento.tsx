@@ -600,7 +600,7 @@ export default function Orcamento() {
             <div className="mt-6 space-y-6">
               {/* Infográfico: Programas e Ações por Grupo Focal */}
               {(() => {
-                const allFederal = classified.federal.all.filter(r => !is5034NonRacial(r));
+                const allFederal = classified.federal.all;
                 const groups: { key: string; label: string; icon: React.ReactNode; color: string }[] = [
                   { key: 'racial', label: 'Negros / Racial', icon: <Users className="w-4 h-4" />, color: 'hsl(var(--primary))' },
                   { key: 'indigena', label: 'Indígenas', icon: <TreePine className="w-4 h-4" />, color: 'hsl(var(--success))' },
