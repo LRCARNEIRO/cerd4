@@ -483,7 +483,7 @@ function OrcamentoResumoSection() {
             <p className="text-lg font-bold">{formatCurrencyCompact(activeStats.totalPeriodo1)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center">
-            <p className="text-xs text-muted-foreground">2023-2026</p>
+            <p className="text-xs text-muted-foreground">2023–2025</p>
             <p className="text-lg font-bold text-success">{formatCurrencyCompact(activeStats.totalPeriodo2)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center flex items-center justify-center gap-2">

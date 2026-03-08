@@ -699,10 +699,10 @@ function gerarFiosEmergentes(
     });
   });
 
-  // EMERGENTE 5: Execução orçamentária como evidência de fortalecimento (2023-2026)
+  // EMERGENTE 5: Execução orçamentária como evidência de fortalecimento (2023-2025)
   if (orcDados.length > 0) {
-    const dados2023_26 = orcDados.filter(d => d.ano >= 2023);
-    const altaExecucao = dados2023_26.filter(d => (d.percentual_execucao || 0) >= 90);
+    const dados2023_25 = orcDados.filter(d => d.ano >= 2023 && d.ano <= 2025);
+    const altaExecucao = dados2023_25.filter(d => (d.percentual_execucao || 0) >= 90);
     if (altaExecucao.length >= 3 && !titulosFiosExistentes.some(t => t.includes('execução'))) {
       const programas = [...new Set(altaExecucao.map(d => d.programa))];
       novos.push({
