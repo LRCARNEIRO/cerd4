@@ -718,8 +718,8 @@ export const radarVulnerabilidades = [
   { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
 ];
 export const radarVulnerabilidadesFontes = [
-  { nome: 'SIDRA 6800 — Rendimento', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
-  { nome: 'SIDRA 6381 — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+  { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
+  { nome: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/tabela/6402' },
   { nome: 'TabNet/DataSUS — Mortalidade', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
   { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
