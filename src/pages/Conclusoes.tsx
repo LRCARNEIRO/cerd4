@@ -561,11 +561,21 @@ export default function Conclusoes() {
                     </div>
 
                     <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-xs text-muted-foreground italic">
+                      <p className="text-xs text-muted-foreground italic mb-2">
                         <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} lacunas ONU (CERD/C/BRA/CO/18-20), 
                         {respostas?.length || 0} respostas CERD III, {indicadores?.length || 0} indicadores interseccionais, 
                         {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
                       </p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+                        <a href="https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">FBSP 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://www.ipea.gov.br/atlasviolencia/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Atlas Violência <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">SIDRA 6800 <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">SIDRA 7129 <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">DataSUS/SIM <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Censo 2022 <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://portaldatransparencia.gov.br/despesas" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Portal Transparência <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">MUNIC/ESTADIC 2024 <ExternalLink className="w-2.5 h-2.5" /></a>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
