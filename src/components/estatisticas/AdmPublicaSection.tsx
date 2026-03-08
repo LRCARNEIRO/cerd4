@@ -42,6 +42,7 @@ const estadicData = {
   ufsNenhumaExecucao100: true,
   ufsComReservaVagas: 14,
   ufsSemReservaVagas: 8,
+  ufsSemConcursoOuResposta: 5, // CE não respondeu; RO, MA, RN, PB não realizaram concurso
   ufsComLegislacaoEspecifica: 25,
   ufsSemLegislacao: ['Rondônia', 'Santa Catarina'],
   ufsComPlanoIgualdade: 9,
