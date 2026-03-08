@@ -14,7 +14,6 @@ interface Props {
   stats: any; // useOrcamentoStats result
   formatCurrency: (v: number) => string;
   formatCurrencyFull: (v: number) => string;
-  includeExcludedInCalc: boolean;
 }
 
 /** Classify thematic category — mirrors Orcamento page logic */
