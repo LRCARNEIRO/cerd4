@@ -289,9 +289,9 @@ export function SegurancaSaudeEducacaoTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />
-            Saúde - Indicadores por Raça (2018-2024)
+            Saúde - Indicadores por Raça (2018-2023)
           </CardTitle>
-          <CardDescription>Mortalidade materna e infantil por 100 mil nascidos vivos</CardDescription>
+          <CardDescription>Mortalidade materna e infantil — Cruzamento SIM × SINASC (DataSUS)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
