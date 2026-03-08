@@ -267,6 +267,90 @@ export function RacaGeneroTab() {
           <AuditFooter fontes={educacaoRacaGeneroFontes} documentos={['CERD 2022 §25-26', 'Common Core']} />
         </CardContent>
       </Card>
+      {/* ── Quadro-Resumo Analítico ── */}
+      <Card className="border-l-4 border-l-destructive">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Info className="w-5 h-5 text-destructive" />
+            Quadro-Resumo: Conclusões Raça × Gênero
+          </CardTitle>
+          <CardDescription>Síntese analítica por subtema — baseada exclusivamente nos cruzamentos acima</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Violência */}
+            <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+              <h4 className="text-sm font-semibold text-destructive mb-1">1. Violência de Gênero Racializada</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Mulheres negras representam <strong>63,6%</strong> das vítimas de feminicídio (2024), proporção que cresceu em relação a 2018 (61%). 
+                A sobreposição raça + gênero configura <strong>risco desproporcional e crescente</strong>, evidenciando falha 
+                na efetividade das políticas de proteção para esse grupo. A CERD (§29-30) recomenda ações afirmativas específicas.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: 19º Anuário FBSP 2025 · Art. 5(b) ICERD</p>
+            </div>
+
+            {/* Mercado de Trabalho */}
+            <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+              <h4 className="text-sm font-semibold text-primary mb-1">2. Dupla Penalidade no Mercado de Trabalho</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                A mulher negra recebe <strong>43,9%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
+                operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,9%) é 
+                1,8× superior à masculina branca (5,9%), e a informalidade negra feminina (44,5%) inviabiliza proteção social. 
+                O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
+            </div>
+
+            {/* Chefia Familiar */}
+            <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+              <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>3. Feminização e Racialização da Pobreza</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong>65,8%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
+                por <strong>73%</strong> das inscritas no CadÚnico. A insegurança alimentar atinge 64% desses domicílios, 
+                com 23% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
+                gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
+            </div>
+
+            {/* Saúde Materna */}
+            <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+              <h4 className="text-sm font-semibold text-destructive mb-1">4. Racismo Obstétrico e Mortalidade Materna</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Mulheres negras constituem <strong>68%</strong> das mortes maternas, apesar de representarem 55,5% da 
+                população feminina. O estudo Nascer no Brasil II (Fiocruz) documenta <strong>menor acesso a pré-natal adequado, 
+                peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. O dado configura 
+                <strong> violação direta do direito à saúde</strong> com componente racial mensurável.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2024 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
+            </div>
+
+            {/* Educação */}
+            <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+              <h4 className="text-sm font-semibold text-primary mb-1">5. Educação: Avanço Insuficiente com Gap Persistente</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                A conclusão do ensino superior entre mulheres negras (<strong>14,7%</strong>) é metade da taxa de mulheres brancas (29%), 
+                apesar dos avanços com cotas (Lei 12.711/2012). Mulheres negras abandonam mais a escola por necessidade de trabalho 
+                e cuidado. O cruzamento indica que <strong>políticas universais de expansão do ensino superior não eliminam a 
+                desigualdade racial-de-gênero</strong> sem ações afirmativas complementares.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: MIR 2023 + PNAD Educação 2023 · Art. 5(e)(v) ICERD</p>
+            </div>
+
+            {/* Conclusão Geral */}
+            <div className="p-4 bg-foreground/5 border-2 border-foreground/20 rounded-lg">
+              <h4 className="text-sm font-bold mb-2">⚖️ Conclusão Transversal</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Os cinco subtemas convergem para uma conclusão central: <strong>a interseção raça × gênero produz desvantagens 
+                que não são capturadas por análises unidimensionais</strong>. Mulheres negras ocupam sistematicamente a posição 
+                mais vulnerável em todos os indicadores analisados — violência, renda, moradia, saúde e educação. 
+                Essa convergência sustenta a recomendação de que o CERD IV adote uma <strong>abordagem explicitamente 
+                interseccional</strong> em todas as seções, conforme Recomendação Geral nº 25 e §21 das Observações Finais 2022.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
