@@ -887,7 +887,7 @@ function gerarConclusoesDinamicas(
 
       const evidencias: string[] = [];
       if (orc.count > 0) evidencias.push(`${orc.count} registros orçamentários · Liquidado total: ${formatBRL(orc.liq)}`);
-      if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-26): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
+      if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-25): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
       if (lac.total > 0) evidencias.push(`${lac.total} lacunas ONU: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s)`);
       if (orc.count === 0 && lac.total > 0) evidencias.push('⚠ Nenhum registro orçamentário identificado para este compromisso');
 
