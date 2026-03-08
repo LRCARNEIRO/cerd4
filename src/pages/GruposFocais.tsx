@@ -1149,7 +1149,7 @@ export default function GruposFocais() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
-                    <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento SIM (óbitos maternos por raça) × SINASC (nascidos vivos por raça) = razão de mortalidade materna por 100 mil NV" />
+                    <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: (Óbitos maternos por raça ÷ Nascidos vivos por raça) × 100.000. Fontes: SIM/DataSUS (tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def) para óbitos maternos por cor/raça + SINASC/DataSUS (tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def) para nascidos vivos por cor/raça. Resultado 2022: negras 57,3/100mil NV vs brancas 46,6/100mil NV = razão 1,2×. DataSUS não publica razão direta — requer cruzamento das duas bases." />
                   </CardTitle>
                   <CardDescription>DataSUS — Cruzamento SIM × SINASC | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>

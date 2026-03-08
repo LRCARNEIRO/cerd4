@@ -92,7 +92,7 @@ export function RacaGeneroTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               DIEESE/PNAD Q2 2024
-              <EstimativaBadge tipo="cruzamento" metodologia="Dados DIEESE Boletim Consciência Negra Nov/2024 — cruzamento raça × gênero verificado" />
+              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Boletim DIEESE 'Consciência Negra' (Nov/2024, p.5-12, dados PNAD Contínua Q2/2024). O IBGE/PNAD não publica tabela única com os 3 indicadores cruzados por raça e sexo. DIEESE consolida a partir de microdados. Link: dieese.org.br/boletimespecial/2024/boletimEspecial02.html" />
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -291,7 +291,7 @@ export function RacaGeneroTab() {
           </CardTitle>
           <CardDescription className="flex items-center gap-2">
             Informe MIR 2023 + PNAD Educação 2023 + Fiocruz
-            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento indireto: dados MIR (raça × gênero) + PNAD Educação (raça geral) + INEP. Deep links para cada fonte." />
+            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento de 3 fontes: (1) Informe MIR/Fiocruz 2023 — analfabetismo e escolaridade por raça × gênero (fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf); (2) PNAD Educação 2023 — taxa analfabetismo geral por raça (sidra.ibge.gov.br/Tabela/7113); (3) INEP Censo Escolar 2022 — matrículas por cor/raça (inep.gov.br/censo-escolar). Nenhuma fonte publica todos os indicadores educacionais cruzados por raça × gênero conjuntamente." />
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -890,7 +890,7 @@ export function JuventudeTab() {
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-sm font-medium">{item.indicador}</p>
                     {(item as any).cruzamento && (
-                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'Cruzamento de 2+ fontes distintas'} />
+                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'ERRO: metodologia de cruzamento não documentada — verificar fonte'} />
                     )}
                     {/* REMOVIDO: EstimativaBadge tipo="simples" — estimativas/proxies PROIBIDOS pela Regra de Ouro */}
                   </div>
@@ -1049,7 +1049,7 @@ export function ClasseSocialTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
-              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento: IEPS (mortalidade materna por raça, série até 2023) + RASEAM 2025 (% por raça, SIM 2022) + Fiocruz (amostra hospitalar)" />
+              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento de 3 fontes: (1) IEPS Boletim Jul/2025 — série mortalidade materna por raça 2010-2023, razão pretas/brancas 2,3× (ieps.org.br/pesquisas/boletim-care); (2) RASEAM 2025 — 68% dos óbitos maternos são de mulheres negras, SIM 2022 (gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam); (3) Nascer no Brasil II (Fiocruz) — near miss obstétrico 2× maior em negras (portal.fiocruz.br/pesquisa/nascer-no-brasil-ii). Nenhuma fonte consolida mortalidade + near miss + cobertura pré-natal por raça." />
             </CardDescription>
           </CardHeader>
           <CardContent>
