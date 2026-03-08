@@ -105,6 +105,9 @@ const mortalidadeMaternaCovid = [
 ];
 
 // Vacinação por raça - diferenças de cobertura
+// NOTA: SI-PNI possui ~30% de registros sem informação de raça/cor,
+// o que compromete a precisão das taxas desagregadas. Valores são estimativas
+// baseadas na parcela com informação de raça/cor preenchida.
 const vacinacaoRaca = [
   { grupo: 'Brancos', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
   { grupo: 'Pardos', cobertura1Dose: 84.2, coberturaCompleta: 74.8 },
