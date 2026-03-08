@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ExternalLink } from 'lucide-react';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell
@@ -24,6 +25,90 @@ const tooltipStyle = {
   border: '1px solid hsl(var(--border))',
   borderRadius: '8px',
   fontSize: '12px',
+};
+
+// ====== BLOCO DE AUDITORIA REUTILIZÁVEL ======
+interface SourceLink {
+  label: string;
+  url: string;
+  detail?: string;
+}
+
+function AuditSourceBlock({ sources, className = '' }: { sources: SourceLink[]; className?: string }) {
+  return (
+    <div className={`mt-2 p-2 bg-muted/30 border border-border/50 rounded-md ${className}`}>
+      <p className="text-[10px] font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+        <ExternalLink className="w-3 h-3" /> Fontes para auditoria:
+      </p>
+      <div className="flex flex-wrap gap-x-3 gap-y-0.5">
+        {sources.map((s, i) => (
+          <a
+            key={i}
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
+            title={s.detail || s.label}
+          >
+            {s.label} <ExternalLink className="w-2.5 h-2.5 inline" />
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Deep link sources by theme
+const SOURCES = {
+  seguranca: [
+    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Dados de letalidade policial e homicídios por raça (2024)' },
+    { label: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Taxas de homicídio por raça/100 mil hab' },
+    { label: 'Repositório FBSP', url: 'https://forumseguranca.org.br/estatisticas/painel-de-dados/', detail: 'Painel interativo de dados — séries históricas' },
+  ] as SourceLink[],
+  feminicidio: [
+    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Feminicídios por raça — série 2018-2024' },
+    { label: 'Agência Brasil (FBSP 2025)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2025-07/brasil-registra-recorde-de-feminicidios-em-2024', detail: '1.492 feminicídios em 2024 — recorde histórico' },
+    { label: 'SINPAF (Anuário 2025)', url: 'https://sinpaf.org.br/violencia-mulher-anuario-2025/', detail: '63,6% das vítimas são mulheres negras' },
+  ] as SourceLink[],
+  educacao: [
+    { label: 'SIDRA 7129 — Ensino Superior por raça', url: 'https://sidra.ibge.gov.br/Tabela/7129', detail: 'PNAD Contínua Educação — Ensino superior completo por cor/raça' },
+    { label: 'SIDRA 7125 — Analfabetismo por raça', url: 'https://sidra.ibge.gov.br/Tabela/7125', detail: 'PNAD Contínua Educação — Taxa de analfabetismo por cor/raça' },
+    { label: 'IBGE — PNAD Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao/17270-pnad-continua.html', detail: 'Publicação oficial da PNAD Contínua Educação' },
+  ] as SourceLink[],
+  saude: [
+    { label: 'DataSUS/SIM — Mortalidade Materna', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def', detail: 'Sistema de Informações sobre Mortalidade — óbitos maternos por raça' },
+    { label: 'DataSUS/SINASC — Nascidos Vivos', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sinasc/cnv/nvuf.def', detail: 'Sistema de Informações sobre Nascidos Vivos (denominador RMM)' },
+    { label: 'Pesquisa Nascer no Brasil II', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa', detail: 'Fiocruz/MS Nov/2023 — mortalidade materna por raça' },
+  ] as SourceLink[],
+  renda: [
+    { label: 'SIDRA 6800 — Rendimento por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'PNAD Contínua — Rendimento médio mensal por cor/raça' },
+    { label: 'DIEESE — Boletim Racial Q2/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial01.html', detail: 'Rendimento e desemprego por raça — 2º trimestre 2024' },
+    { label: 'Censo 2022 — Rendimentos', url: 'https://sidra.ibge.gov.br/Tabela/9605', detail: 'Rendimento médio por cor/raça — Censo Demográfico 2022' },
+  ] as SourceLink[],
+  desigualdade: [
+    { label: 'SIDRA 6800 — Renda por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'Razão de renda branca/negra' },
+    { label: 'PNAD Contínua — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6402', detail: 'Taxa de desocupação por cor/raça' },
+    { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Razão de homicídio negro/branco' },
+    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Letalidade policial e vítimas por raça' },
+  ] as SourceLink[],
+  violenciaInterseccional: [
+    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência contra mulheres negras — feminicídio, estupro, lesão corporal' },
+    { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Homicídios femininos por raça' },
+  ] as SourceLink[],
+  radar: [
+    { label: 'PNAD Contínua 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html', detail: 'Renda, emprego e educação por raça/gênero' },
+    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência por raça/gênero' },
+    { label: 'DataSUS/SIM 2024', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def', detail: 'Mortalidade por raça/gênero' },
+    { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Pobreza e desigualdade por raça' },
+  ] as SourceLink[],
+  classe: [
+    { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Síntese de Indicadores Sociais 2024 — pobreza por raça' },
+    { label: 'Banco Mundial — Linhas de Pobreza', url: 'https://www.worldbank.org/en/topic/poverty', detail: 'Definição das linhas de pobreza US$ 2,15/6,85/dia' },
+  ] as SourceLink[],
+  trabalho: [
+    { label: 'DIEESE — Boletim Racial 2024', url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial01.html', detail: 'Rendimento e emprego por raça e gênero — Q2 2024' },
+    { label: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6402', detail: 'Taxa de desocupação por cor/raça e sexo' },
+  ] as SourceLink[],
 };
 
 // ============== SEGURANÇA PÚBLICA ==============
@@ -72,6 +157,7 @@ export function ViolenciaRacialChart() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.seguranca} />
       </CardContent>
     </Card>
   );
@@ -114,6 +200,7 @@ export function FeminicidioChart() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.feminicidio} />
       </CardContent>
     </Card>
   );
@@ -158,6 +245,7 @@ export function EducacaoComparativaChart() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.educacao} />
       </CardContent>
     </Card>
   );
@@ -202,6 +290,7 @@ export function SaudeComparativaChart() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.saude} />
       </CardContent>
     </Card>
   );
@@ -251,6 +340,7 @@ export function RendaComparativaChart() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.renda} />
       </CardContent>
     </Card>
   );
@@ -288,6 +378,7 @@ export function DesigualdadeEvolucaoChart() {
             mesmo com políticas afirmativas — demonstrando o caráter sistêmico da discriminação racial.
           </p>
         </div>
+        <AuditSourceBlock sources={SOURCES.desigualdade} />
       </CardContent>
     </Card>
   );
@@ -315,6 +406,7 @@ export function ViolenciaInterseccionalChart() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.violenciaInterseccional} />
       </CardContent>
     </Card>
   );
@@ -332,6 +424,14 @@ export function TabelaSinteseComparativa() {
   const dado2024Eco = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const dado2018Fem = feminicidioSerie[0];
   const dado2024Fem = feminicidioSerie[feminicidioSerie.length - 1];
+
+  const sourceUrls: Record<string, string> = {
+    'FBSP 2025': 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/',
+    'Atlas 2025': 'https://www.ipea.gov.br/atlasviolencia/',
+    'PNAD 2024': 'https://sidra.ibge.gov.br/Tabela/6800',
+    'PNAD Edu 2024': 'https://sidra.ibge.gov.br/Tabela/7129',
+    'DataSUS': 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def',
+  };
 
   const dados = [
     { indicador: 'Vítimas de homicídio negras', v2018: `${dado2018Seg.percentualVitimasNegras}%`, v2024: `${dado2024Seg.percentualVitimasNegras}%`, variacao: `+${(dado2024Seg.percentualVitimasNegras - dado2018Seg.percentualVitimasNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
@@ -378,7 +478,15 @@ export function TabelaSinteseComparativa() {
                       {d.tendencia === 'melhora' ? '↑ Melhora' : '↓ Piora'}
                     </Badge>
                   </td>
-                  <td className="text-center p-2 text-muted-foreground">{d.fonte}</td>
+                  <td className="text-center p-2">
+                    {sourceUrls[d.fonte] ? (
+                      <a href={sourceUrls[d.fonte]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center justify-center gap-0.5">
+                        {d.fonte} <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">{d.fonte}</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -391,6 +499,7 @@ export function TabelaSinteseComparativa() {
             A desigualdade de renda persiste estruturalmente (razão ~1,6x) e a mortalidade materna negra permanece {(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x maior que a branca ({dado2024Sau.mortalidadeMaternaNegra} vs {dado2024Sau.mortalidadeMaternaBranca} por 100 mil NV em {dado2024Sau.ano}).
           </p>
         </div>
+        <AuditSourceBlock sources={[...SOURCES.seguranca, ...SOURCES.renda, ...SOURCES.educacao, ...SOURCES.saude]} className="mt-2" />
       </CardContent>
     </Card>
   );
@@ -420,6 +529,7 @@ export function RadarVulnerabilidadesChart() {
             </RadarChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.radar} />
       </CardContent>
     </Card>
   );
@@ -448,6 +558,7 @@ export function ClassePorRacaChart() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <AuditSourceBlock sources={SOURCES.classe} />
       </CardContent>
     </Card>
   );
