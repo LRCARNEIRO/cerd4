@@ -1184,34 +1184,47 @@ export default function GruposFocais() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="p-4 bg-destructive/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-destructive">42,8‰</p>
+                    <p className="text-3xl font-bold text-destructive">—</p>
                     <p className="text-sm text-muted-foreground">Mortalidade Infantil</p>
-                    <p className="text-xs text-muted-foreground mt-1">vs 11,6‰ média nacional</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">SESAI não publica taxa consolidada desagregada verificável</p>
                   </div>
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">68,5%</p>
+                    <p className="text-3xl font-bold text-warning">—</p>
                     <p className="text-sm text-muted-foreground">Acesso Regular à Saúde</p>
-                    <p className="text-xs text-muted-foreground mt-1">SESAI — cobertura DSEI</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">SESAI Relatórios de Gestão não publicam cobertura consolidada verificável</p>
                   </div>
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">32,5%</p>
+                    <p className="text-3xl font-bold text-warning">—</p>
                     <p className="text-sm text-muted-foreground">Educação Bilíngue/Intercultural</p>
-                    <p className="text-xs text-muted-foreground mt-1">Escolas indígenas c/ currículo diferenciado</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">INEP Censo Escolar não publica % consolidado verificável</p>
                   </div>
+                </div>
+                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg mb-3">
+                  <p className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Regra de Ouro — Dados Removidos
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Os valores anteriores (42,8‰ mortalidade, 68,5% acesso saúde, 32,5% educação bilíngue) 
+                    <strong> não possuíam deep links para dados brutos verificáveis</strong>. Embora SESAI e INEP publiquem 
+                    relatórios, os valores específicos não foram localizados em publicações oficiais acessíveis.
+                  </p>
                 </div>
                 <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+                    <FileText className="w-3 h-3" /> <strong>Fontes institucionais (dados pendentes de publicação desagregada):</strong>
                   </p>
                   <div className="flex flex-wrap gap-3 text-xs">
                     <a href="https://sage.saude.gov.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Mortalidade Infantil Indígena
+                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Painel de Indicadores
                     </a>
                     <a href="https://www.gov.br/saude/pt-br/composicao/sesai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI — Cobertura DSEI
+                      <ExternalLink className="w-3 h-3" /> SESAI — Portal Institucional
                     </a>
                     <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar (Educação Indígena)
+                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar
                     </a>
                   </div>
                 </div>
