@@ -114,7 +114,9 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Pobreza negra (%)',
       grupo: 'populacao_negra',
-      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.pobreza_negra })),
+      dados: indicadoresSocioeconomicos
+        .filter(s => s.pobreza_negra != null)
+        .map(s => ({ ano: s.ano, valor: s.pobreza_negra as number })),
       unidade: '%',
       fonte: 'IBGE/SIS',
       interpretacao: 'menor_melhor',
