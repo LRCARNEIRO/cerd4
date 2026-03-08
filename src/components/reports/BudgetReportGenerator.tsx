@@ -113,7 +113,7 @@ export function BudgetReportGenerator() {
                   <p className="text-lg font-bold text-emerald-600">
                     {isLoading ? '...' : formatCurrency(stats?.totalPeriodo2 || 0)}
                   </p>
-                  <p className="text-xs text-muted-foreground">2023-2026</p>
+                  <p className="text-xs text-muted-foreground">2023–2025</p>
                 </div>
               </div>
             </Card>
