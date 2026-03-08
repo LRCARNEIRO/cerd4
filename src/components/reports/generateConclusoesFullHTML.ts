@@ -347,13 +347,13 @@ export function generateConclusoesFullHTML(params: GenerateParams): string {
     { name: 'Homem branco', color: '#94a3b8', values: radarVulnerabilidades.map(r => r.homemBranco) },
   ]);
 
-  // 9. Classe por raça bar chart
+  // 9. Classe por raça bar chart (SIS/IBGE 2024 — apenas brancos/pardos/pretos)
   const classeChart = svgBarChart(
     classePorRaca.map(c => c.faixa),
     [
       { name: 'Branca', color: '#94a3b8', values: classePorRaca.map(c => c.branca) },
-      { name: 'Negra', color: '#2563eb', values: classePorRaca.map(c => c.negra) },
-      { name: 'Indígena', color: '#f59e0b', values: classePorRaca.map(c => c.indigena) },
+      { name: 'Parda', color: '#2563eb', values: classePorRaca.map(c => c.parda) },
+      { name: 'Preta', color: '#1e3a5f', values: classePorRaca.map(c => c.preta) },
     ],
     620, 220, 0, undefined, v => `${v.toFixed(0)}%`
   );
