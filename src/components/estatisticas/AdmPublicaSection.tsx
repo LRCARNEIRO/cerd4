@@ -371,10 +371,9 @@ export function AdmPublicaSection() {
                     abaixo são extraídas da divulgação oficial (31/10/2025), mas os quantitativos por município 
                     ainda aguardam publicação.
                   </p>
-                  <EstimativaBadge 
-                    tipo="simples" 
-                    metodologia="Microdados MUNIC 2024 (bloco igualdade racial) ainda não disponíveis no SIDRA. Valores quantitativos municipais pendentes de consolidação." 
-                  />
+                  <span className="inline-flex items-center rounded-full border px-1.5 py-0 text-[9px] font-semibold bg-warning/10 text-warning border-warning/30 gap-0.5">
+                    ⏳ Dados pendentes de publicação
+                  </span>
                 </div>
               </div>
               <div className="space-y-2 mt-2">

@@ -312,15 +312,12 @@ export function VulnerabilidadesTab() {
                 <TableRow key={item.grupo}>
                   <TableCell className="font-medium text-sm">
                     {item.grupo}
-                    {item.grupo === 'Homem Negro' && (
-                      <EstimativaBadge
-                        tipo="simples"
-                        metodologia="Renda estimada: (total negros R$2.392 × 2 − mulher negra R$2.079) ≈ R$2.676. Proporção inferida do DIEESE Q2 2024."
-                        className="ml-1"
-                      />
-                    )}
                   </TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.renda)}</TableCell>
+                  <TableCell className="text-right">
+                    {item.grupo === 'Homem Negro' ? (
+                      <span className="text-muted-foreground text-xs" title="DIEESE Q2 2024 publica apenas total negros (R$2.392), sem desagregação por sexo">N/D ¹</span>
+                    ) : formatCurrency(item.renda)}
+                  </TableCell>
                   <TableCell className={cn("text-right", item.desemprego > 15 && "text-destructive font-semibold")}>
                     {item.desemprego}%
                   </TableCell>
@@ -331,10 +328,11 @@ export function VulnerabilidadesTab() {
               ))}
             </TableBody>
           </Table>
+          <p className="text-[10px] text-muted-foreground mt-2">¹ DIEESE Q2 2024 publica renda média total de negros (R$2.392) sem desagregação por sexo. Valor removido — Regra de Ouro.</p>
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"
-              metodologia="Cruzamento de 3 tabelas SIDRA/IBGE: rendimento por cor/raça (6800) × desocupação por cor/raça (6381) × informalidade e características gerais (6403). O IBGE não publica tabela única com renda × desemprego × informalidade por raça × sexo × faixa etária."
+              metodologia="Cruzamento de 3 tabelas SIDRA/IBGE: rendimento por cor/raça (6800) × desocupação por cor/raça (6381) × informalidade e características gerais (6403). O IBGE não publica tabela única com renda × desemprego × informalidade por raça × sexo."
             />
             <span className="text-[10px] text-muted-foreground">SIDRA 6800 × 6381 × 6403</span>
           </div>
