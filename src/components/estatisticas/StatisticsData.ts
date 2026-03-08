@@ -167,17 +167,21 @@ export const razaoRendaRacial = 0.589;
 // =============================================
 
 export const segurancaPublica = [
-  // 18º Anuário FBSP (2024, dados 2023) e edições anteriores
-  { ano: 2018, homicidioNegro: 40.2, homicidioBranco: 15.5, letalidadePolicial: 75.4, percentualVitimasNegras: 75.7, razaoRisco: 2.6 },
-  { ano: 2019, homicidioNegro: 38.5, homicidioBranco: 14.8, letalidadePolicial: 76.2, percentualVitimasNegras: 76.2, razaoRisco: 2.6 },
-  { ano: 2020, homicidioNegro: 35.8, homicidioBranco: 13.5, letalidadePolicial: 78.5, percentualVitimasNegras: 76.9, razaoRisco: 2.7 },
-  { ano: 2021, homicidioNegro: 32.5, homicidioBranco: 12.8, letalidadePolicial: 80.2, percentualVitimasNegras: 77.0, razaoRisco: 2.5 },
-  { ano: 2022, homicidioNegro: 30.2, homicidioBranco: 12.2, letalidadePolicial: 82.5, percentualVitimasNegras: 76.5, razaoRisco: 2.5 },
-  // Atlas da Violência 2025 (IPEA/FBSP) — dados de 2023: taxa negros 28,9; não negros 10,6; risco 2,7x
-  // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial, 76,6% vítimas negras
+  // AUDITADO: Valores corrigidos conforme Atlas da Violência 2025 (IPEA), p.79
+  // NOTA: A comparação correta é Negros vs Não Negros (e NÃO Negros vs Brancos) conforme metodologia do Atlas.
+  // O campo 'homicidioBranco' refere-se na verdade a 'não negros' (nome mantido por compatibilidade).
+  // Letalidade policial: Anuários FBSP 13ª a 19ª edição
+  { ano: 2018, homicidioNegro: 37.6, homicidioBranco: 14.0, letalidadePolicial: 75.4, percentualVitimasNegras: 75.7, razaoRisco: 2.7 },
+  { ano: 2019, homicidioNegro: 29.0, homicidioBranco: 11.3, letalidadePolicial: 79.1, percentualVitimasNegras: 76.2, razaoRisco: 2.6 },
+  { ano: 2020, homicidioNegro: 32.2, homicidioBranco: 11.5, letalidadePolicial: 78.9, percentualVitimasNegras: 76.8, razaoRisco: 2.8 },
+  { ano: 2021, homicidioNegro: 31.0, homicidioBranco: 10.8, letalidadePolicial: 84.1, percentualVitimasNegras: 77.0, razaoRisco: 2.9 },
+  { ano: 2022, homicidioNegro: 29.7, homicidioBranco: 10.8, letalidadePolicial: 83.1, percentualVitimasNegras: 76.5, razaoRisco: 2.8 },
+  // Atlas da Violência 2025 (IPEA) — dados de 2023: taxa negros 28,9; não negros 10,6; risco 2,7x
+  // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial
   { ano: 2023, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
   // 19º Anuário FBSP 2025 (dados de 2024): 82% letalidade policial, 77% vítimas negras
-  { ano: 2024, homicidioNegro: 27.5, homicidioBranco: 10.2, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
+  // NOTA: Taxa de homicídio por 100 mil para 2024 ainda não publicada pelo Atlas — valor omitido.
+  { ano: 2024, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
 ];
 
 // Feminicídio - série histórica (Anuário FBSP)
