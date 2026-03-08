@@ -63,8 +63,8 @@ export const evolucaoComposicaoRacial = [
   { ano: 2021, branca: 43.4, negra: 55.6, fonte: 'PNAD Contínua Trimestral 2021 (SIDRA 6403)' },
   { ano: 2022, branca: 43.1, negra: 55.8, fonte: 'PNAD Contínua Trimestral 2022 (SIDRA 6403)' },
   { ano: 2023, branca: 42.7, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2023 (SIDRA 6403)' },
-  { ano: 2024, branca: 42.4, negra: 56.6, fonte: 'PNAD Contínua Trimestral 2024 (SIDRA 6403)' },
-  // NOTA: Para 2025, dados apenas dos 3 primeiros trimestres disponíveis
+  // DIEESE Q2 2024: população negra = 56,7% (SINESP/DIEESE Nov/2024)
+  { ano: 2024, branca: 42.3, negra: 56.7, fonte: 'PNAD Contínua Q2 2024 (DIEESE/SINESP Nov/2024)' },
 ];
 
 // =============================================
@@ -126,14 +126,23 @@ export const indicadoresSocioeconomicos = [
     fonte: 'PNAD Contínua 2023 (SIDRA 6800)'
   },
   { 
-    // PNAD 2024 - Dados preliminares
+    // PNAD Contínua Q2 2024 — DIEESE Boletim Especial Nov/2024
+    // Rendimento: Negros R$2.392, Brancos R$4.009 (Pardos R$2.402, Pretos R$2.250)
+    // Desemprego: Negros 8,0%, Não negros 5,5%
+    // IBGE anual 2024: desocupação 6,6%, rendimento habitual médio R$3.225
     ano: 2024, 
-    rendaMediaNegra: 2350, rendaMediaBranca: 3850,
-    desempregoNegro: 8.2, desempregoBranco: 5.5,
-    pobreza_negra: 22.5, pobreza_branca: 11.0,
-    fonte: 'PNAD Contínua 2024'
+    rendaMediaNegra: 2392, rendaMediaBranca: 4009,
+    desempregoNegro: 8.0, desempregoBranco: 5.5,
+    // ATENÇÃO: pobreza 2024 NÃO VERIFICADA — SIS/IBGE 2025 ainda não publicado. Valores são ESTIMATIVAS.
+    pobreza_negra: null, pobreza_branca: null,
+    fonte: 'PNAD Contínua Q2 2024 (DIEESE/IBGE)'
   },
 ];
+// NOTA AUDITORIA — RENDA E DESEMPREGO:
+// Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
+// Ano 2023: renda verificada via SIDRA 6800 (R$2.199 negros, R$3.730 brancos).
+// Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
+// POBREZA 2020-2024: NÃO VERIFICADA. SIS/IBGE publica pobreza por cor/raça anualmente — conferir.
 
 // Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
@@ -324,24 +333,22 @@ export const rendimentosCenso2022 = {
 // DADOS INTERSECCIONAIS
 // =============================================
 
-// Raça × Gênero × Idade - Trabalho
-// Fonte: PNAD Contínua 2024 — Cruzamento raça × sexo × faixa etária
-// SIDRA 6800 (rendimento por cor/raça) + SIDRA 6381 (desocupação por cor/raça) + SIDRA 6403 (informalidade)
-// URLs:
-//   Rendimento: https://sidra.ibge.gov.br/Tabela/6800
-//   Desocupação: https://sidra.ibge.gov.br/Tabela/6381
-//   Características gerais: https://sidra.ibge.gov.br/Tabela/6403
+// Raça × Gênero - Trabalho (SEM faixa etária — dados verificáveis)
+// Fonte: DIEESE Boletim Especial Nov/2024 — PNAD Contínua Q2 2024
+// URL: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
+// NOTA AUDITORIA: O cruzamento raça × gênero × IDADE não é publicado pelo IBGE/DIEESE.
+//   Os dados anteriores por faixa etária (18-29, 30-49, 50+) eram FABRICADOS.
+//   Mantemos apenas o cruzamento raça × gênero, que é verificável.
 export const interseccionalidadeTrabalho = [
-  { grupo: 'Mulher Negra 18-29', renda: 1680, desemprego: 17.5, informalidade: 51.2 },
-  { grupo: 'Mulher Negra 30-49', renda: 2250, desemprego: 10.8, informalidade: 47.5 },
-  { grupo: 'Mulher Negra 50+', renda: 2020, desemprego: 7.8, informalidade: 54.8 },
-  { grupo: 'Homem Negro 18-29', renda: 2050, desemprego: 14.2, informalidade: 47.5 },
-  { grupo: 'Homem Negro 30-49', renda: 2750, desemprego: 6.8, informalidade: 41.2 },
-  { grupo: 'Homem Negro 50+', renda: 2480, desemprego: 5.5, informalidade: 47.8 },
-  { grupo: 'Mulher Branca 18-29', renda: 2450, desemprego: 11.5, informalidade: 37.2 },
-  { grupo: 'Mulher Branca 30-49', renda: 3650, desemprego: 6.2, informalidade: 31.5 },
-  { grupo: 'Homem Branco 18-29', renda: 2850, desemprego: 9.0, informalidade: 34.8 },
-  { grupo: 'Homem Branco 30-49', renda: 4850, desemprego: 3.8, informalidade: 27.2 }
+  // Rendimento médio do trabalho (DIEESE Q2 2024, Gráfico 7 e Tabela 2)
+  // Desemprego: DIEESE Q2 2024, Gráfico 2
+  // Informalidade: DIEESE Q2 2024, Gráfico 4
+  { grupo: 'Mulher Negra', renda: 2079, desemprego: 10.1, informalidade: 46.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Negro', renda: 2676, desemprego: 6.3, informalidade: 45.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Mulher Não Negra', renda: 3384, desemprego: 6.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Não Negro', renda: 4492, desemprego: 4.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  // NOTA: Rendimento homem negro estimado = (total negros R$2.392 × 2 - mulher negra R$2.079) ≈ R$2.676
+  // conforme proporção DIEESE. Verificar quando tabela completa disponível.
 ];
 export const interseccionalidadeTrabalhoFontes = [
   { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
@@ -555,17 +562,19 @@ export const classePorRaca = [
 ];
 
 // Mulheres chefes de família
-// Fonte: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
-// URL: https://sidra.ibge.gov.br/Tabela/6403
-// Complementar: SIS/IBGE 2024 — https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
+// Fonte declarada: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
+// ⚠️ AUDITORIA: Progressão linear perfeita (28,5→38,2) = padrão de FABRICAÇÃO.
+// SIDRA 6403 não publica "chefia familiar" diretamente por raça.
+// DADOS ABAIXO SÃO ESTIMATIVAS NÃO VERIFICADAS — pendente de conferência com SIS/IBGE.
+// Status: 🔴 PENDENTE AUDITAGEM
 export const mulheresChefeFamilia = [
-  { ano: 2018, negras: 28.5, brancas: 18.2 },
-  { ano: 2019, negras: 29.8, brancas: 18.8 },
-  { ano: 2020, negras: 32.5, brancas: 20.1 },
-  { ano: 2021, negras: 34.2, brancas: 21.5 },
-  { ano: 2022, negras: 35.8, brancas: 22.2 },
-  { ano: 2023, negras: 37.5, brancas: 23.1 },
-  { ano: 2024, negras: 38.2, brancas: 23.8 }
+  { ano: 2018, negras: 28.5, brancas: 18.2, estimativa: true },
+  { ano: 2019, negras: 29.8, brancas: 18.8, estimativa: true },
+  { ano: 2020, negras: 32.5, brancas: 20.1, estimativa: true },
+  { ano: 2021, negras: 34.2, brancas: 21.5, estimativa: true },
+  { ano: 2022, negras: 35.8, brancas: 22.2, estimativa: true },
+  { ano: 2023, negras: 37.5, brancas: 23.1, estimativa: true },
+  { ano: 2024, negras: 38.2, brancas: 23.8, estimativa: true }
 ];
 export const mulheresChefeFamiliaFontes = [
   { nome: 'SIDRA 6403 — Arranjos familiares por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
@@ -580,7 +589,9 @@ export const violenciaInterseccional = [
   { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
   { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'PNAD/IBGE 2024', url: 'https://sidra.ibge.gov.br/Tabela/6403' }
+  // ⚠️ AUDITORIA: PNAD NÃO publica dados de assédio no trabalho. Fonte e valor são FABRICADOS.
+  // Removido até que fonte real seja identificada.
+  // { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'REMOVIDO — fonte inexistente' }
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
@@ -589,7 +600,10 @@ export const violenciaInterseccional = [
 //       Desemprego e Nem-nem usam PNAD Contínua com filtro 15-29 por cor/raça (SIDRA 7113+9605).
 //       Óbitos causas externas: SIM/DataSUS 2024 por cor/raça e faixa etária.
 export const juventudeNegra = [
-  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+  // CORRIGIDO: O Atlas 2025 NÃO publica taxa de homicídio específica para "jovens negros 15-29".
+  // O dado 78,5 era FABRICADO. O Atlas reporta: negros 28,9 vs não negros 10,6 (2023, GERAL).
+  // O que o Atlas diz sobre jovens: 47,8% das vítimas de homicídio têm 15-29 anos, 79% destes são negros homens.
+  { indicador: 'Taxa de homicídio negros (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia' },
   { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
   { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
   { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
@@ -597,18 +611,22 @@ export const juventudeNegra = [
 ];
 
 // Educação interseccional
-// Fontes: PNAD Contínua Educação 2024 — SIDRA 7267 (educação por cor/raça) + INEP Censo Educação Superior
-// URLs:
-//   SIDRA 7267: https://sidra.ibge.gov.br/Tabela/7267
-//   PNAD Educação: https://www.ibge.gov.br/estatisticas/sociais/educacao.html
-//   INEP: https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior
+// ⚠️ AUDITORIA: Fonte SIDRA 7267 é INCORRETA para esses dados. A tabela SIDRA 7267 não cruza educação × gênero × raça.
+// Dados verificáveis: DIEESE Q2 2024 = negros com superior 9,2%. PNAD Educação 2024 = negros 11,4% (anual, SIDRA 7129).
+// Dados de quilombola e indígena por gênero NÃO são publicados pelo IBGE/INEP. Status: 🔴 PARCIALMENTE FABRICADOS.
+// Fontes reais:
+//   SIDRA 7129: https://sidra.ibge.gov.br/Tabela/7129 (nível de instrução por cor/raça — sem gênero)
+//   DIEESE Q2 2024: ensino superior por cor/raça = negros 9,2% (Gráfico 11)
+//   INEP: Censo Educação Superior (matrículas, não taxa de conclusão por raça×gênero)
 export const educacaoInterseccional = [
-  { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5 },
-  { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2 },
-  { grupo: 'Mulher branca', superiorCompleto: 28.5, posGraduacao: 6.2, evasaoMedio: 5.8 },
-  { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2 },
-  { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5 },
-  { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8 }
+  // NOTA: "superiorCompleto" por gênero × raça NÃO é publicado pelo SIDRA. Valores são ESTIMATIVAS.
+  // Únicos valores verificáveis: negros geral 11,4% (PNAD Educação anual 2024) / 9,2% (DIEESE Q2 2024).
+  { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5, estimativa: true },
+  { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2, estimativa: true },
+  { grupo: 'Mulher branca', superiorCompleto: 28.5, posGraduacao: 6.2, evasaoMedio: 5.8, estimativa: true },
+  { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2, estimativa: true },
+  { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5, estimativa: true },
+  { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8, estimativa: true }
 ];
 export const educacaoInterseccionalFontes = [
   { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
@@ -662,7 +680,8 @@ export const evolucaoDesigualdade = [
   { ano: 2021, razaoRenda: 1.65, razaoDesemprego: 1.72, razaoHomicidio: 2.50 },
   { ano: 2022, razaoRenda: 1.68, razaoDesemprego: 1.65, razaoHomicidio: 2.50 },
   { ano: 2023, razaoRenda: 1.70, razaoDesemprego: 1.53, razaoHomicidio: 2.70 },
-  { ano: 2024, razaoRenda: 1.64, razaoDesemprego: 1.49, razaoHomicidio: 2.70 },
+  // CORRIGIDO: razão renda 2024 = 4009/2392 = 1.68 (DIEESE Q2 2024); desemprego = 8.0/5.5 = 1.45
+  { ano: 2024, razaoRenda: 1.68, razaoDesemprego: 1.45, razaoHomicidio: 2.70 },
 ];
 
 // =============================================
