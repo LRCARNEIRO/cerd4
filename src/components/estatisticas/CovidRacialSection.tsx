@@ -299,7 +299,7 @@ export function CovidRacialSection() {
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
-                metodologia="Valores ano-a-ano para 'negra' (pretas+pardas) são cruzamento indireto DataSUS/SIM + IEPS Boletim Çarê. Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV." 
+                metodologia="Cálculo: série mortalidade materna por raça (pretas+pardas agregadas como 'negra') a partir de: (1) SIM/DataSUS — óbitos maternos por cor/raça (tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def); (2) IEPS Boletim Çarê Jul/2025 — taxas calculadas e série temporal validada (ieps.org.br/pesquisas/boletim-care). Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV. Pico 2021 (COVID): negra 85,2/100mil NV." 
               />
             </div>
             <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
