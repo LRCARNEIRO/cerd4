@@ -265,7 +265,11 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6381 - Taxa de desocupação</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  SIDRA Tabela 6402 — Desocupação por cor/raça
+                </a>
+              </p>
             </div>
 
             {/* Pobreza */}
