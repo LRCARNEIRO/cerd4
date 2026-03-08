@@ -585,21 +585,6 @@ export default function Orcamento() {
           </div>
 
           {/* Federal-specific: 5034 toggle */}
-          {esfera === 'federal' && (
-            <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
-              <div className="flex items-center gap-2">
-                <EyeOff className="w-4 h-4 flex-shrink-0" />
-                <span>Ações 5034/MDHC sem palavras-chave raciais são marcadas como <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge>.</span>
-              </div>
-              <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium shrink-0">
-                <Checkbox
-                  checked={includeExcludedInCalc}
-                  onCheckedChange={(checked) => setIncludeExcludedInCalc(!!checked)}
-                />
-                Incluir 5034 não-racial no cálculo
-              </label>
-            </div>
-          )}
 
           {/* Data listing — filtered by article */}
           <EsferaContent
