@@ -521,7 +521,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> 83% das vítimas de letalidade policial são negras - proporção constante desde 2013.
+                  <strong>Análise §36:</strong> 83% das vítimas de letalidade policial são negras — proporção persistente no período 2018-2022.
                   Brasil lidera ranking mundial de mortes por polícia. ADPF 635 (STF) busca restringir operações em favelas.
                 </p>
               </div>
