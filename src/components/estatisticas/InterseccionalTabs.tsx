@@ -1072,7 +1072,7 @@ export function ClasseSocialTab() {
             <AuditFooter
               fontes={[
                 { nome: 'IEPS — Mortalidade materna por raça (Jul/2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
-                { nome: 'RASEAM 2025 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view' },
+                { nome: 'RASEAM 2025 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf' },
                 { nome: 'Nascer no Brasil II — Fiocruz', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' },
               ]}
               documentos={['CERD 2022 §27-28']}

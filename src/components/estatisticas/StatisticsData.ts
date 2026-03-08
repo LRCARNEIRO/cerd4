@@ -830,7 +830,7 @@ export const saudeMaternaRaca = {
   nascerBrasil2Nota: 'Pesquisa Nascer no Brasil II (Fiocruz, 2020-2023): morte de mães negras é 2× maior que de brancas (amostra hospitalar, 24 mil mulheres, 465 maternidades)',
   violenciaObstetricaGrupoRisco: 'Adolescentes ou >35 anos, negras, SUS, baixa escolaridade',
   fontes: [
-    { nome: 'RASEAM 2025 — Mortalidade materna por raça (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view' },
+    { nome: 'RASEAM 2025 — Mortalidade materna por raça (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf' },
     { nome: 'IEPS — Mortalidade materna por raça (Boletim Jul/2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
     { nome: 'DataSUS/SIM — Mortalidade materna', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def' },
     { nome: 'Nascer no Brasil II — Fiocruz (2023)', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' },

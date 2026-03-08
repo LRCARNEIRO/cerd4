@@ -276,7 +276,7 @@ export function VulnerabilidadesTab() {
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'RASEAM 2023', url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/politicas-para-mulheres/publicacoes-1/raseam' },
+                { nome: 'RASEAM 2024 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
                 { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
                 { nome: 'Censo 2022 — Arranjos', url: 'https://sidra.ibge.gov.br/tabela/6403' },
               ]}
