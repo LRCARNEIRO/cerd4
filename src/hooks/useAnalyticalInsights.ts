@@ -316,18 +316,18 @@ function gerarFiosCondutores(
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (2x maior que branca — DataSUS), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (negra: 55,5 vs branca: 54,2 por 100 mil NV — DataSUS 2024; razão convergindo para ~1,0x, porém com subnotificação racial reconhecida pelo MS), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
       evidencias: [
         { texto: 'Feminicídio: 63,6% das vítimas são mulheres negras (2024)', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
         { texto: 'Violência doméstica: 59,8% vítimas negras', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: 'Mortalidade materna negra: 52,8 vs branca 27,2 por 100 mil NV', fonte: 'DataSUS/SIM 2024', tipo: 'quantitativa' as const },
+        { texto: 'Mortalidade materna: negra 55,5 vs branca 54,2 por 100 mil NV (razão ~1,0x)', fonte: 'DataSUS/SIM 2024', tipo: 'quantitativa' as const },
         { texto: 'Informalidade mulher negra 18-29: 51,2%', fonte: 'PNAD Contínua 2024', tipo: 'quantitativa' as const },
         ...evidMulheres.slice(0, 4),
       ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna negra: 62,8 → 52,8 por 100 mil NV (melhoria absoluta, mas razão negra/branca permanece ~2x). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
+      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna negra: 60,1 → 55,5 por 100 mil NV (melhoria absoluta; razão negra/branca caiu de 1,2x para ~1,0x — subnotificação racial pode distorcer séries). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
     });
   }
 
@@ -887,7 +887,7 @@ function gerarConclusoesDinamicas(
 
       const evidencias: string[] = [];
       if (orc.count > 0) evidencias.push(`${orc.count} registros orçamentários · Liquidado total: ${formatBRL(orc.liq)}`);
-      if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-26): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
+      if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-25): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
       if (lac.total > 0) evidencias.push(`${lac.total} lacunas ONU: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s)`);
       if (orc.count === 0 && lac.total > 0) evidencias.push('⚠ Nenhum registro orçamentário identificado para este compromisso');
 
@@ -899,7 +899,7 @@ function gerarConclusoesDinamicas(
         id: `conclusao-icerd-art-${art.numero}`,
         tipo,
         titulo: `Art. ${art.numero} — ${art.titulo}: ${tipo === 'avanco' ? 'Avanços Identificados' : tipo === 'retrocesso' ? 'Retrocesso' : 'Lacuna Persistente'}`,
-        periodo: '2018-2026',
+        periodo: '2018-2025',
         argumento_central: `O Artigo ${art.numero} da Convenção (${art.titulo}) possui ${lac.total} observações ONU e ${orc.count} registros orçamentários (${formatBRL(orc.liq)} liquidados). ${lac.total > 0 ? `Grau de cumprimento: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s).` : ''} ${varOrc !== 0 ? `Variação orçamentária entre períodos: ${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%.` : ''}${contradicao}`,
         evidencias,
         eixos: [],
