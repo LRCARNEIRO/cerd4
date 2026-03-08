@@ -12,6 +12,14 @@ import { useLacunasStats, useLacunasIdentificadas, useRespostasLacunasCerdIII } 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
+import { AuditFooter } from '@/components/ui/audit-footer';
+
+// FONTE ÚNICA: StatisticsData.ts — elimina duplicidade de séries hardcoded
+import {
+  indicadoresSocioeconomicos,
+  segurancaPublica,
+  educacaoSerieHistorica,
+} from '@/components/estatisticas/StatisticsData';
 
 const statusColors: Record<string, string> = {
   cumprido: 'hsl(var(--success))',
@@ -49,86 +57,66 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
-// Dados históricos SIDRA/IBGE - séries até último ano com dado real
-// REGRA DE OURO: PROIBIDO adicionar projeções (fonte: 'Projeção') ou estimativas com proxies multiplicadores.
-// Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
-const dadosEducacaoHistorico = [
-  { ano: 2010, brancos: 69.1, negros: 44.2, indigenas: 35.8, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 71.5, negros: 48.1, indigenas: 38.2, fonte: 'PNAD' },
-  { ano: 2014, brancos: 73.8, negros: 52.4, indigenas: 41.5, fonte: 'PNAD' },
-  { ano: 2016, brancos: 76.2, negros: 56.8, indigenas: 44.8, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 78.5, negros: 61.2, indigenas: 48.1, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 79.8, negros: 63.5, indigenas: 49.8, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 80.2, negros: 64.8, indigenas: 50.5, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 81.5, negros: 67.2, indigenas: 52.8, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 82.8, negros: 69.8, indigenas: 55.2, fonte: 'Censo 2022' },
-  { ano: 2023, brancos: 83.5, negros: 71.5, indigenas: 57.0, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// =============================================
+// SÉRIES DERIVADAS de StatisticsData.ts (fonte única)
+// Eliminam a duplicidade anterior que causava inconsistências
+// =============================================
 
-const dadosDesempregoHistorico = [
-  { ano: 2010, brancos: 6.8, negros: 9.2, diferenca: 2.4, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 5.5, negros: 8.1, diferenca: 2.6, fonte: 'PNAD' },
-  { ano: 2014, brancos: 5.2, negros: 7.8, diferenca: 2.6, fonte: 'PNAD' },
-  { ano: 2016, brancos: 9.8, negros: 14.2, diferenca: 4.4, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 9.2, negros: 13.8, diferenca: 4.6, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 8.8, negros: 13.2, diferenca: 4.4, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 11.5, negros: 16.8, diferenca: 5.3, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 10.2, negros: 15.5, diferenca: 5.3, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 8.5, negros: 12.8, diferenca: 4.3, fonte: 'PNAD Contínua' },
-  { ano: 2023, brancos: 6.8, negros: 10.5, diferenca: 3.7, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Educação: ensino superior e analfabetismo por raça (PNAD Contínua / SIDRA 7129 + 7125)
+const dadosEducacaoHistorico = educacaoSerieHistorica.map(d => ({
+  ano: d.ano,
+  superiorNegro: d.superiorNegroPercent,
+  superiorBranco: d.superiorBrancoPercent,
+  analfabetismoNegro: d.analfabetismoNegro,
+  analfabetismoBranco: d.analfabetismoBranco,
+  gapSuperior: +(d.superiorBrancoPercent - d.superiorNegroPercent).toFixed(1),
+}));
 
-const dadosHomicidioHistorico = [
-  { ano: 2010, negros: 34.5, brancos: 15.2, razao: 2.27, fonte: 'DataSUS/SIM' },
-  { ano: 2012, negros: 37.2, brancos: 14.8, razao: 2.51, fonte: 'DataSUS/SIM' },
-  { ano: 2014, negros: 38.8, brancos: 14.2, razao: 2.73, fonte: 'DataSUS/SIM' },
-  { ano: 2016, negros: 40.2, brancos: 13.8, razao: 2.91, fonte: 'DataSUS/SIM' },
-  { ano: 2017, negros: 43.1, brancos: 13.5, razao: 3.19, fonte: 'Atlas da Violência' },
-  { ano: 2018, negros: 37.8, brancos: 11.8, razao: 3.20, fonte: 'Atlas da Violência' },
-  { ano: 2019, negros: 29.2, brancos: 9.5, razao: 3.07, fonte: 'Atlas da Violência' },
-  { ano: 2020, negros: 27.8, brancos: 8.8, razao: 3.16, fonte: 'Atlas da Violência' },
-  { ano: 2021, negros: 25.5, brancos: 8.2, razao: 3.11, fonte: 'Fórum Seg. Pública' },
-  { ano: 2022, negros: 23.8, brancos: 7.8, razao: 3.05, fonte: 'Fórum Seg. Pública' },
-  { ano: 2023, negros: 22.5, brancos: 7.5, razao: 3.00, fonte: 'Fórum Seg. Pública' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Desemprego: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6381)
+const dadosDesempregoHistorico = indicadoresSocioeconomicos.map(d => ({
+  ano: d.ano,
+  negros: d.desempregoNegro,
+  brancos: d.desempregoBranco,
+  diferenca: +(d.desempregoNegro - d.desempregoBranco).toFixed(1),
+  fonte: d.fonte,
+}));
 
-const dadosRendaHistorico = [
-  { ano: 2010, brancos: 1538, negros: 834, razao: 0.54, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 1850, negros: 1020, razao: 0.55, fonte: 'PNAD' },
-  { ano: 2014, brancos: 2150, negros: 1205, razao: 0.56, fonte: 'PNAD' },
-  { ano: 2016, brancos: 2350, negros: 1295, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 2580, negros: 1420, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 2720, negros: 1508, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 2650, negros: 1462, razao: 0.55, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 2850, negros: 1582, razao: 0.56, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 3100, negros: 1736, razao: 0.56, fonte: 'Censo 2022' },
-  { ano: 2023, brancos: 3350, negros: 1910, razao: 0.57, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Homicídio: derivado de segurancaPublica (Atlas da Violência / FBSP)
+// NOTA: "brancos" na verdade = "não negros" (metodologia Atlas/IPEA)
+const dadosHomicidioHistorico = segurancaPublica.map(d => ({
+  ano: d.ano,
+  negros: d.homicidioNegro,
+  naoNegros: d.homicidioBranco, // campo renomeado para clareza
+  razao: d.razaoRisco,
+  fonte: d.ano <= 2023 ? 'Atlas da Violência 2025' : '19º Anuário FBSP 2025',
+}));
 
+// Letalidade policial: derivado de segurancaPublica (Anuário FBSP)
+const dadosLetalidadePolicial = segurancaPublica.map(d => ({
+  ano: d.ano,
+  percentualNegros: d.letalidadePolicial,
+  percentualVitimasNegras: d.percentualVitimasNegras,
+  fonte: 'Anuário FBSP',
+}));
+
+// Renda: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6800)
+const dadosRendaHistorico = indicadoresSocioeconomicos.map(d => ({
+  ano: d.ano,
+  brancos: d.rendaMediaBranca,
+  negros: d.rendaMediaNegra,
+  razao: +(d.rendaMediaNegra / d.rendaMediaBranca).toFixed(2),
+  fonte: d.fonte,
+}));
+
+// Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente com nota de auditoria
+// ⚠️ PENDENTE VERIFICAÇÃO: dados de INCRA/FCP sem deep link direto para cada ano
 const dadosTerrasQuilombolasHistorico = [
-  { ano: 2010, tituladas: 98, certificadas: 1523, taxa: 6.4, fonte: 'INCRA/FCP' },
-  { ano: 2012, tituladas: 105, certificadas: 1834, taxa: 5.7, fonte: 'INCRA/FCP' },
-  { ano: 2014, tituladas: 118, certificadas: 2148, taxa: 5.5, fonte: 'INCRA/FCP' },
-  { ano: 2016, tituladas: 127, certificadas: 2648, taxa: 4.8, fonte: 'INCRA/FCP' },
   { ano: 2018, tituladas: 132, certificadas: 3010, taxa: 4.4, fonte: 'INCRA/FCP' },
   { ano: 2019, tituladas: 133, certificadas: 3200, taxa: 4.2, fonte: 'INCRA/FCP' },
   { ano: 2020, tituladas: 134, certificadas: 3320, taxa: 4.0, fonte: 'INCRA/FCP' },
   { ano: 2021, tituladas: 136, certificadas: 3410, taxa: 4.0, fonte: 'INCRA/FCP' },
-  { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola' },
+  { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola 2022' },
   { ano: 2023, tituladas: 145, certificadas: 3550, taxa: 4.1, fonte: 'INCRA/FCP' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
-
-const dadosLetalidadePolicial = [
-  { ano: 2018, total: 6220, negros: 5162, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2019, total: 6357, negros: 5276, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2020, total: 6416, negros: 5325, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2021, total: 6145, negros: 5100, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2022, total: 6429, negros: 5336, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
 ];
 
 export function LacunasCerdTab() {
