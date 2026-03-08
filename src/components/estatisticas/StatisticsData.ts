@@ -197,15 +197,24 @@ export const segurancaPublica = [
 
 // Feminicídio - série histórica (Anuário FBSP)
 // Comparativo: 2018: 61% mulheres negras → 2024: 63,6% mulheres negras
+// AUDITORIA FASE 2: total 2024 corrigido de 1.589 para 1.492 conforme FBSP 19º Anuário.
+//   Confirmação: sinpaf.org.br, MPRS, Agência Brasil citam 1.492 feminicídios em 2024.
+//   O Raseam 2025 (Ministério das Mulheres, Mar/2026) cita 1.450 — diferença metodológica.
+//   Usamos o FBSP por consistência com a série.
+// ⚠️ NOTA: FBSP reportou "19% de aumento" em feminicídios 2024, mas 1.492/1.467 = +1,7%.
+//   A discrepância sugere que os totais 2018-2023 podem usar contagem diferente.
+//   Status anos anteriores (2018-2022): 🟡 PENDENTE VERIFICAÇÃO com Anuários FBSP originais.
 export const feminicidioSerie = [
-  { ano: 2018, totalFeminicidios: 1206, percentualNegras: 61.0, fonte: 'FBSP 2019 (dados 2018)' },
-  { ano: 2019, totalFeminicidios: 1326, percentualNegras: 66.6, fonte: 'FBSP 2020 (dados 2019)' },
-  { ano: 2020, totalFeminicidios: 1350, percentualNegras: 62.0, fonte: 'FBSP 2021 (dados 2020)' },
-  { ano: 2021, totalFeminicidios: 1341, percentualNegras: 62.0, fonte: 'FBSP 2022 (dados 2021)' },
-  { ano: 2022, totalFeminicidios: 1437, percentualNegras: 61.1, fonte: 'FBSP 2023 (dados 2022)' },
-  { ano: 2023, totalFeminicidios: 1467, percentualNegras: 62.8, fonte: 'FBSP 2024 (dados 2023)' },
-  // 19º Anuário FBSP 2025 (dados 2024): 63,6% mulheres negras vítimas de feminicídio
-  { ano: 2024, totalFeminicidios: 1589, percentualNegras: 63.6, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
+  { ano: 2018, totalFeminicidios: 1206, percentualNegras: 61.0, fonte: 'FBSP 2019 (dados 2018)', estimativa: true },
+  { ano: 2019, totalFeminicidios: 1326, percentualNegras: 66.6, fonte: 'FBSP 2020 (dados 2019)', estimativa: true },
+  { ano: 2020, totalFeminicidios: 1350, percentualNegras: 62.0, fonte: 'FBSP 2021 (dados 2020)', estimativa: true },
+  { ano: 2021, totalFeminicidios: 1341, percentualNegras: 62.0, fonte: 'FBSP 2022 (dados 2021)', estimativa: true },
+  { ano: 2022, totalFeminicidios: 1437, percentualNegras: 61.1, fonte: 'FBSP 2023 (dados 2022)', estimativa: true },
+  { ano: 2023, totalFeminicidios: 1467, percentualNegras: 62.8, fonte: 'FBSP 2024 (dados 2023)', estimativa: true },
+  // 19º Anuário FBSP 2025 (dados 2024): 1.492 feminicídios, recorde histórico.
+  // 63,6% mulheres negras vítimas de feminicídio. Aumento de 19% (base FBSP).
+  // Fonte confirmada: sinpaf.org.br/violencia-mulher-anuario-2025/, agenciabrasil.ebc.com.br
+  { ano: 2024, totalFeminicidios: 1492, percentualNegras: 63.6, fonte: '19º Anuário FBSP 2025 (dados 2024)' },
 ];
 
 // =============================================
