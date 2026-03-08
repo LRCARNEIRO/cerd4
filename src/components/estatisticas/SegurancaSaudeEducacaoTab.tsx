@@ -415,10 +415,13 @@ export function SegurancaSaudeEducacaoTab() {
             </p>
             <div className="flex flex-wrap gap-3 text-xs">
               <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Mortalidade
+                <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Portal
               </a>
               <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> SIM — Mortalidade materna por raça/cor
+              </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIM — Mortalidade infantil por raça/cor
               </a>
               <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> SINASC — Nascidos vivos
