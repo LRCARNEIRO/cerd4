@@ -291,7 +291,7 @@ export function RacaGeneroTab() {
           </CardTitle>
           <CardDescription className="flex items-center gap-2">
             Informe MIR 2023 + PNAD Educação 2023 + Fiocruz
-            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento indireto: dados MIR (raça × gênero) + PNAD Educação (raça geral) + INEP. Deep links para cada fonte." />
+            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento de 3 fontes: (1) Informe MIR/Fiocruz 2023 — analfabetismo e escolaridade por raça × gênero (fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf); (2) PNAD Educação 2023 — taxa analfabetismo geral por raça (sidra.ibge.gov.br/Tabela/7113); (3) INEP Censo Escolar 2022 — matrículas por cor/raça (inep.gov.br/censo-escolar). Nenhuma fonte publica todos os indicadores educacionais cruzados por raça × gênero conjuntamente." />
           </CardDescription>
         </CardHeader>
         <CardContent>
