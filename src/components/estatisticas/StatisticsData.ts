@@ -165,7 +165,7 @@ export const razaoRendaRacial = 0.589;
 //   • População carcerária: 68,2% negra
 // DADOS-CHAVE do Atlas da Violência 2025 (IPEA/FBSP) (ano-referência 2023):
 //   • Taxa de homicídio negros: 28,9/100 mil vs não negros: 10,6/100 mil
-//   • Risco relativo: 2,7x (subiu de 2,4x em 2013)
+//   • Risco relativo: 2,7x (estável desde 2018; Atlas cita 2,4x em 2013 — fora do recorte)
 //   • 76,5% das vítimas de homicídio são negras (2022)
 //   • 47,8% das vítimas tinham 15-29 anos (2023), 79% jovens negros masculinos
 //   • IVJ-N: risco 2x maior para jovens negros (2021, subiu de 1,9x em 2017)
