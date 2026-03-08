@@ -841,9 +841,11 @@ export function ClasseSocialTab() {
               </p>
             </div>
             <div className="mt-4 p-3 bg-accent/10 border border-accent/30 rounded-lg">
-              <p className="text-xs font-medium">✅ Fato verificado (Pesquisa Nascer no Brasil II, Nov/2023):</p>
+              <p className="text-xs font-medium">⚠️ Divergência metodológica:</p>
               <p className="text-xs text-muted-foreground">
-                Mortalidade materna de mulheres negras é <strong>~2x maior</strong> que de mulheres brancas.
+                <strong>DataSUS/SIM (série oficial):</strong> razão mortalidade materna negra/branca = ~1,0x em 2024 (55,5 vs 54,2 por 100 mil NV). 
+                <strong>Pesquisa Nascer no Brasil II (Nov/2023, MS):</strong> reporta ~2x com metodologia própria (amostra hospitalar, near-miss materno). 
+                A discrepância pode refletir subnotificação racial no SIM.
               </p>
               <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-1">
                 <ExternalLink className="w-3 h-3" /> Pesquisa Nascer no Brasil II — Ministério da Saúde (Nov/2023)
