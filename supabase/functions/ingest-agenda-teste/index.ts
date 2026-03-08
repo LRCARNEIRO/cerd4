@@ -152,6 +152,37 @@ async function fetchPaginated(
   return all;
 }
 
+/**
+ * Programas focais: todo o orçamento é destinado ao público-alvo.
+ * Para esses, todas as ações são incluídas sem filtro de keyword.
+ */
+const PROGRAMAS_FOCAIS = new Set([
+  "5802", // Enfrentamento ao Racismo (MIR)
+  "5803", // Juventude Negra Viva (MIR)
+  "5804", // Promoção da Igualdade Étnico-Racial (MIR)
+  "1617", // Demarcação Territórios Indígenas (MPI)
+  "5136", // Proteção Povos Indígenas (MPI)
+]);
+
+/**
+ * Keywords para filtrar ações dentro de programas universais.
+ * Apenas ações cujo nome/descritivo contenha esses termos são incluídas.
+ */
+const ACAO_KEYWORDS = [
+  "indígen", "indigen", "quilombol", "racial", "racismo", "negro", "negra",
+  "afro", "étnic", "etnic", "palmares", "igualdade racial", "terreiro",
+  "matriz africana", "capoeira", "candomblé", "umbanda", "afrodescendente",
+  "cigano", "romani", "povo cigano", "comunidades tradicionais",
+  "povos tradicionais", "remanescentes", "funai", "sesai",
+  "saúde indígen", "educação indígen", "escolar indígen",
+];
+
+/** Check if an action text matches any target-population keyword */
+function acaoMatchesKeyword(nomeAcao: string, descritivo: string): boolean {
+  const text = `${nomeAcao} ${descritivo}`.toLowerCase();
+  return ACAO_KEYWORDS.some(kw => text.includes(kw));
+}
+
 function resolveGrupoFocal(agenda: "racial" | "indigena", orgao: string, texto: string): string | null {
   const t = texto.toLowerCase();
   if (t.includes("quilombol")) return "quilombolas";
