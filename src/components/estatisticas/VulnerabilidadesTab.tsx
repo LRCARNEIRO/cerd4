@@ -65,7 +65,7 @@ const vulnerabilidadeMultidimensional = [
     referencia: null,
     unidade: '%',
     fonte: 'II VIGISAN 2022',
-    url: 'https://olheparaafome.com.br/',
+    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
     icone: AlertTriangle,
   },
 ];
