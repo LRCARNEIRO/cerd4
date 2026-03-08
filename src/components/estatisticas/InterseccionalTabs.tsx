@@ -236,7 +236,7 @@ export function RacaGeneroTab() {
           </CardTitle>
           <CardDescription className="flex items-center gap-2">
             Informe MIR 2023 + PNAD Educação 2023 + Fiocruz
-            <EstimativaBadge tipo="cruzamento" tooltip="Cruzamento indireto: dados MIR (raça × gênero) + PNAD Educação (raça geral) + INEP. Deep links para cada fonte." />
+            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento indireto: dados MIR (raça × gênero) + PNAD Educação (raça geral) + INEP. Deep links para cada fonte." />
           </CardDescription>
         </CardHeader>
         <CardContent>
