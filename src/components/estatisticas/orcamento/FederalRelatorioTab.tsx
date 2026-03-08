@@ -319,7 +319,6 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
               </p>
               <p className="text-[10px] text-muted-foreground mt-1 italic">
                 Relatório dinâmico — dados atualizados automaticamente a partir da base orçamentária.
-                {!includeExcludedInCalc && ' Exclui ações 5034/MDHC sem palavras-chave raciais.'}
               </p>
             </div>
           </div>
