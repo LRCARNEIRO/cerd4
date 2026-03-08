@@ -707,7 +707,7 @@ function generateFullHTML(
       
       <div class="chart-container">
         <div class="chart-header">
-          <div class="chart-title">Execução Orçamentária por Esfera (2018-2026)</div>
+          <div class="chart-title">Execução Orçamentária por Esfera (2018-2025)</div>
           <div class="chart-subtitle">Valores em milhões de reais - Federal, Estadual e Municipal</div>
         </div>
         <div class="chart-wrapper">
