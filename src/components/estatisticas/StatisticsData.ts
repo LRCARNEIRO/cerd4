@@ -123,7 +123,7 @@ export const indicadoresSocioeconomicos = [
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
     pobreza_negra: 24.8, pobreza_branca: 12.1,
-    fonte: 'PNAD Contínua 2023 (SIDRA 6800)'
+    fonte: 'PNAD Contínua 2023 (SIDRA 6405)'
   },
   { 
     // PNAD Contínua Q2 2024 — DIEESE Boletim Especial Nov/2024
