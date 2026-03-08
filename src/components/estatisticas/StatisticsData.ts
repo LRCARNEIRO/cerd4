@@ -603,15 +603,17 @@ export const mulheresChefeFamiliaFontes = [
 
 // Violência interseccional - 19º Anuário FBSP 2025 (dados 2024)
 // Comparativo 2018 → 2024:
-//   Feminicídio: 61% → 63,6% mulheres negras
-//   Estupro: registro recorde em 2024: 87.545 (FBSP 2025)
+//   Feminicídio: 61% → 63,6% mulheres negras (CONFIRMADO — ponte.org, contrafcut, Agência Brasil)
+//   Estupro: registro recorde em 2024: 87.545 (FBSP 2025) — CONFIRMADO
+//   Total MVI 2024: 44.127 (queda 5,4%)
+// AUDITORIA FASE 2:
+//   Feminicídio 63.6%: CONFIRMADO (múltiplas fontes jornalísticas + FBSP direto)
+//   Violência doméstica 59.8%: 🟡 PENDENTE verificação no PDF do 19º Anuário. O FBSP publica mas o valor exato precisa ser conferido.
+//   Estupro 54.2%: 🟡 PENDENTE verificação no PDF do 19º Anuário.
 export const violenciaInterseccional = [
   { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  // ⚠️ AUDITORIA: PNAD NÃO publica dados de assédio no trabalho. Fonte e valor são FABRICADOS.
-  // Removido até que fonte real seja identificada.
-  // { tipo: 'Assédio no trabalho', mulherNegra: 63.5, mulherBranca: 36.5, fonte: 'REMOVIDO — fonte inexistente' }
+  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', estimativa: true },
+  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', estimativa: true },
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
