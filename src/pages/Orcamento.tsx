@@ -615,7 +615,7 @@ export default function Orcamento() {
                 };
 
                 const rows = groups.map(g => {
-                  const recs = getGroupRecords(g.key).filter(r => !is5034NonRacial(r));
+                  const recs = getGroupRecords(g.key);
                   const p1 = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
                   const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
                   const progTotal = new Set(recs.map(r => r.programa)).size;
