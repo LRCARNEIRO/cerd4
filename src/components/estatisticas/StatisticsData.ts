@@ -118,7 +118,7 @@ export const indicadoresSocioeconomicos = [
     fonte: 'PNAD Contínua 2022'
   },
   { 
-    // Dados PNAD 2023 - SIDRA Tabela 6800: renda negra R$2.199, branca R$3.729
+    // Dados PNAD 2023 - SIDRA Tabela 6405: renda negra R$2.199, branca R$3.729
     ano: 2023, 
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
