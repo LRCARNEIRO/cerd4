@@ -2453,7 +2453,7 @@ export const CommonCoreTab = () => {
             <div>
               <h2 className="text-xl font-bold">HRI/CORE/BRA - Documento Base Comum</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Atualização do período 2018-2026 | {totalTables} tabelas estatísticas oficiais
+                Atualização do período 2018-2025 | {totalTables} tabelas estatísticas oficiais
               </p>
               <div className="flex gap-2 mt-3">
                 <Badge className="bg-primary text-primary-foreground">Common Core 2020</Badge>
