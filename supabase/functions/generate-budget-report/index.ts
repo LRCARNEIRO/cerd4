@@ -842,7 +842,7 @@ function generateFullHTML(
         <div class="chart-container">
           <div class="chart-header">
             <div class="chart-title">Distribuição por Grupo Focal</div>
-            <div class="chart-subtitle">Total executado (2018-2026)</div>
+            <div class="chart-subtitle">Total executado (2018-2025)</div>
           </div>
           <div class="chart-wrapper">
             <canvas id="grupoChart"></canvas>
