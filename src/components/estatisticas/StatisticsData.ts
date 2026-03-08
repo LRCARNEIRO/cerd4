@@ -219,7 +219,7 @@ export const feminicidioSerie = [
 
 // =============================================
 // ATLAS DA VIOLÊNCIA 2025 (IPEA/FBSP) — Dados específicos
-// URL: https://www.ipea.gov.br/atlasviolencia
+// URL: https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf
 // =============================================
 export const atlasViolencia2025 = {
   // Taxa de homicídio por 100 mil — negros vs não negros (2023)
