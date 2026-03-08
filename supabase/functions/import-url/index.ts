@@ -81,7 +81,7 @@ Retorne um JSON válido:
   "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "${url}", "dados": {}, "tendencia": "" }],
   "orcamento": [{ "programa": "", "orgao": "", "esfera": "federal|estadual|municipal", "ano": 0, "fonte_dados": "", "url_fonte": "${url}" }],
   "lacunas": [{ "paragrafo": "", "tema": "", "descricao_lacuna": "", "eixo_tematico": "", "grupo_focal": "geral", "status_cumprimento": "em_andamento", "prioridade": "media" }],
-  "conclusoes": [{ "titulo": "", "tipo": "legislacao|analise|evidencia", "periodo": "2018-2026", "argumento_central": "", "evidencias": [] }],
+  "conclusoes": [{ "titulo": "", "tipo": "legislacao|analise|evidencia", "periodo": "2018-2025", "argumento_central": "", "evidencias": [] }],
   "relevancia_cerd": "alta|media|baixa",
   "secoes_impactadas": ["estatisticas", "orcamento", "conclusoes", "relatorios", "metas"]
 }
