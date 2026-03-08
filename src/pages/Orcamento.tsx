@@ -431,11 +431,9 @@ export default function Orcamento() {
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
-    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean) => {
+    const compute = (records: DadoOrcamentario[]) => {
       const valorLiquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
-      const clean = exclude5034Only
-        ? records.filter(r => !is5034NonRacial(r))
-        : records;
+      const clean = records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
       const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
