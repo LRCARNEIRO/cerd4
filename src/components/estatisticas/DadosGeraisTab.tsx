@@ -330,14 +330,14 @@ export function DadosGeraisTab() {
               <strong>Fontes SIDRA/IBGE:</strong>
             </p>
             <p className="ml-4">
-              <a href="https://sidra.ibge.gov.br/Tabela/6800" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                Tabela 6800 - Rendimento médio por cor/raça
+              <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                Tabela 6405 — Rendimento médio por cor/raça
               </a> | 
-              <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
-                Tabela 6381 - Taxa de desocupação
+              <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6402 — Desocupação por cor/raça
               </a> | 
-              <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
-                Tabela 6403 - Características gerais
+              <a href="https://sidra.ibge.gov.br/tabela/6403" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1">
+                Tabela 6403 — População por cor/raça
               </a>
             </p>
             <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2024). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>

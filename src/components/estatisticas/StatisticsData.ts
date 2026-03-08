@@ -69,13 +69,13 @@ export const evolucaoComposicaoRacial = [
 
 // =============================================
 // INDICADORES SOCIOECONÔMICOS - PNAD Contínua
-// Fontes SIDRA/IBGE:
-// - Tabela 6800: Rendimento médio real por cor/raça
-//   URL: https://sidra.ibge.gov.br/Tabela/6800
-//   API: https://apisidra.ibge.gov.br/values/t/6800/n1/1/v/5929/p/all/c86/all
-// - Tabela 6381: Taxa de desocupação por cor/raça
-//   URL: https://sidra.ibge.gov.br/Tabela/6381
-//   API: https://apisidra.ibge.gov.br/values/t/6381/n1/1/v/4099/p/all/c86/all
+// Fontes SIDRA/IBGE (PNAD Contínua Trimestral):
+// - Tabela 6405: Rendimento médio mensal real por cor ou raça
+//   URL: https://sidra.ibge.gov.br/tabela/6405
+//   API: https://apisidra.ibge.gov.br/values/t/6405/n1/1/v/5929/p/all/c86/all
+// - Tabela 6402: Força de trabalho (desocupação) por cor ou raça
+//   URL: https://sidra.ibge.gov.br/tabela/6402
+//   API: https://apisidra.ibge.gov.br/values/t/6402/n1/1/v/4099/p/all/c86/all
 // - Pobreza: Síntese de Indicadores Sociais (SIS) - IBGE
 //   URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
 // NOTA: Anos 2025-2026 são projeções baseadas em tendência
