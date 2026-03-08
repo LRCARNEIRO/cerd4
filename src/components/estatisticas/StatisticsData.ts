@@ -680,7 +680,8 @@ export const evolucaoDesigualdade = [
   { ano: 2021, razaoRenda: 1.65, razaoDesemprego: 1.72, razaoHomicidio: 2.50 },
   { ano: 2022, razaoRenda: 1.68, razaoDesemprego: 1.65, razaoHomicidio: 2.50 },
   { ano: 2023, razaoRenda: 1.70, razaoDesemprego: 1.53, razaoHomicidio: 2.70 },
-  { ano: 2024, razaoRenda: 1.64, razaoDesemprego: 1.49, razaoHomicidio: 2.70 },
+  // CORRIGIDO: razão renda 2024 = 4009/2392 = 1.68 (DIEESE Q2 2024); desemprego = 8.0/5.5 = 1.45
+  { ano: 2024, razaoRenda: 1.68, razaoDesemprego: 1.45, razaoHomicidio: 2.70 },
 ];
 
 // =============================================
