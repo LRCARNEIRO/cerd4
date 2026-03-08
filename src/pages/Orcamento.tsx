@@ -451,11 +451,11 @@ export default function Orcamento() {
       };
     };
     return {
-      federal: compute(classified.federal.all, !includeExcludedInCalc),
-      estadual: compute(classified.estadual.all, false),
-      municipal: compute(classified.municipal.all, false),
+      federal: compute(classified.federal.all),
+      estadual: compute(classified.estadual.all),
+      municipal: compute(classified.municipal.all),
     };
-  }, [classified, includeExcludedInCalc]);
+  }, [classified]);
 
   // Dynamic stats based on toggle
   const dynamicStats = useMemo(() => {
