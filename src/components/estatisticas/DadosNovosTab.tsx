@@ -39,7 +39,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 40,2 (2018) → 27,5 (2024); brancos 15,5 → 10,2.',
+    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 37,6 (2018) → 28,9 (2023, Atlas); não negros 14,0 → 10,6.',
     prioridade: 'alta'
   },
   {
@@ -52,7 +52,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,4% das vítimas de letalidade policial eram negras → 2024: 82% (19º Anuário FBSP 2025). 6.393 mortes por intervenção policial em 2024.',
+    relevanciaRacial: '2018: 75,4% das vítimas de letalidade policial eram negras → 2024: 82% (19º Anuário FBSP 2025). 6.429 mortes por intervenção policial em 2022 (dado mais recente consolidado).',
     prioridade: 'alta'
   },
   {
@@ -65,7 +65,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.589 casos). Aumento absoluto de 32% no total de feminicídios no período (19º Anuário FBSP 2025).',
+    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.492 casos). Aumento de 19% no total de feminicídios no período (19º Anuário FBSP 2025).',
     prioridade: 'alta'
   },
   {
@@ -175,7 +175,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap reduziu de 12,4 p.p. para 13,5 p.p. Anos 2020-2021 sem coleta (pandemia).',
+    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap aumentou de 12,4 p.p. para 13,5 p.p. apesar do avanço absoluto. Anos 2020-2021 sem coleta (pandemia).',
     prioridade: 'alta'
   },
   {
