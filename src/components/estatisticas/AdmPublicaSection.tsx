@@ -5,8 +5,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin } from 'lucide-react';
+import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin, Info } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
@@ -41,6 +42,7 @@ const estadicData = {
   ufsNenhumaExecucao100: true,
   ufsComReservaVagas: 14,
   ufsSemReservaVagas: 8,
+  ufsSemConcursoOuResposta: 5, // CE não respondeu; RO, MA, RN, PB não realizaram concurso
   ufsComLegislacaoEspecifica: 25,
   ufsSemLegislacao: ['Rondônia', 'Santa Catarina'],
   ufsComPlanoIgualdade: 9,
@@ -70,11 +72,15 @@ const estadicData = {
 
 const municData = {
   totalMunicipios: 5570,
-  municipiosComEstruturaIgualdade: 1245,
-  municipiosComConselhoIgualdade: 487,
-  municipiosComPlanoIgualdade: 312,
-  municipiosComLegislacaoRacial: 892,
-  municipiosComOrgaoEspecifico: 678,
+  // NOTA: Os microdados da MUNIC 2024 sobre igualdade racial ainda não foram
+  // publicados no SIDRA/IBGE. Os valores abaixo são PENDENTES de consolidação
+  // oficial e não devem ser citados em relatórios CERD.
+  pendenteSidra: true,
+  municipiosComEstruturaIgualdade: null as number | null,
+  municipiosComConselhoIgualdade: null as number | null,
+  municipiosComPlanoIgualdade: null as number | null,
+  municipiosComLegislacaoRacial: null as number | null,
+  municipiosComOrgaoEspecifico: null as number | null,
 };
 
 const sinapirData = {
@@ -223,8 +229,10 @@ export function AdmPublicaSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              <strong>Destaque interseccional:</strong> 88,9% dos gestores são mulheres (24 de 27), contraste com 
-              outras áreas onde homens predominam (ex: Transporte 96,2% homens).
+              <strong>Destaque interseccional:</strong> 88,9% dos gestores são mulheres (24 de 27), 
+              exceto SP, RS e GO. Contraste com outras áreas: Transporte 96,2% homens.
+              <br />
+              <span className="italic">Obs.: MG não informou cor/raça do gestor (26 respondentes).</span>
             </p>
             <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024', 'CERD 2022 §19']} compact />
           </CardContent>
@@ -264,7 +272,8 @@ export function AdmPublicaSection() {
               </p>
               <p className="text-xs flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3 text-warning" />
-                <strong>Reserva de vagas em concursos:</strong> 8 estados sem previsão
+                <strong>Reserva de vagas em concursos:</strong> 8 estados sem previsão (AM, RR, PA, TO, PE, MG, SC, GO); 
+                5 não realizaram concurso ou não responderam (CE, RO, MA, RN, PB)
               </p>
             </div>
             <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024']} compact />
@@ -351,32 +360,35 @@ export function AdmPublicaSection() {
             <CardDescription>Estrutura de políticas de igualdade racial nos municípios brasileiros</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {[
-                { label: 'Municípios com estrutura de igualdade racial', value: municData.municipiosComEstruturaIgualdade, percent: ((municData.municipiosComEstruturaIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com legislação racial', value: municData.municipiosComLegislacaoRacial, percent: ((municData.municipiosComLegislacaoRacial / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com órgão específico', value: municData.municipiosComOrgaoEspecifico, percent: ((municData.municipiosComOrgaoEspecifico / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com Conselho de Igualdade Racial', value: municData.municipiosComConselhoIgualdade, percent: ((municData.municipiosComConselhoIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-                { label: 'Municípios com Plano de Igualdade Racial', value: municData.municipiosComPlanoIgualdade, percent: ((municData.municipiosComPlanoIgualdade / municData.totalMunicipios) * 100).toFixed(1) },
-              ].map(item => (
-                <div key={item.label} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>{item.label}</span>
-                    <span className="font-medium">{item.value.toLocaleString('pt-BR')} ({item.percent}%)</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all" 
-                      style={{ width: `${item.percent}%` }}
-                    />
-                  </div>
+            <div className="p-4 rounded-lg border border-warning/30 bg-warning/5 space-y-3">
+              <div className="flex items-start gap-2">
+                <Info className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-warning">Microdados Municipais Pendentes</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Os microdados da MUNIC 2024 referentes ao bloco de Igualdade Racial ainda não foram 
+                    disponibilizados no SIDRA/IBGE para tabulação detalhada. As informações qualitativas 
+                    abaixo são extraídas da divulgação oficial (31/10/2025), mas os quantitativos por município 
+                    ainda aguardam publicação.
+                  </p>
+                  <EstimativaBadge 
+                    tipo="simples" 
+                    metodologia="Microdados MUNIC 2024 (bloco igualdade racial) ainda não disponíveis no SIDRA. Valores quantitativos municipais pendentes de consolidação." 
+                  />
                 </div>
-              ))}
+              </div>
+              <div className="space-y-2 mt-2">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Informações confirmadas (Agência IBGE, 31/10/2025):</strong>
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
+                  <li>Primeira vez que a MUNIC investiga o bloco de Igualdade Racial em seus mais de 20 anos de existência</li>
+                  <li>A política de igualdade racial é recente na maioria dos municípios</li>
+                  <li>"Os números são modestos da existência de estruturas" — Vânia Pacheco (IBGE)</li>
+                  <li>SINAPIR registra 255 municípios aderidos (4,6% do total de 5.570)</li>
+                </ul>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 italic">
-              A política de igualdade racial é recente na maioria dos municípios. Conforme a política é estruturada 
-              pelo governo federal, estados e municípios tendem a replicá-la.
-            </p>
             <AuditFooter fontes={MUNIC_FONTES} documentos={['MUNIC 2024']} compact />
           </CardContent>
         </Card>
