@@ -469,7 +469,7 @@ function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
   @page { margin: 1.5cm; }
 </style></head><body>
 <h1>Inventário de Indicadores Interseccionais</h1>
-<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2026) — Gerado em ${now}</p>
+<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2025) — Gerado em ${now}</p>
 <p class="meta">${indicadores.length} indicadores em ${categorias.length} categorias temáticas</p>
 
 <div class="summary">

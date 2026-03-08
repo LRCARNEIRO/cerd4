@@ -69,7 +69,7 @@ export function VulnerabilidadesTab() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Evolução das Razões de Desigualdade Racial (2018-2026)</CardTitle>
+            <CardTitle className="text-base">Evolução das Razões de Desigualdade Racial (2018-2025)</CardTitle>
             <CardDescription>
               Razão entre indicadores de negros e brancos (1.0 = igualdade)
             </CardDescription>

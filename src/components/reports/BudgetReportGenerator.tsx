@@ -78,7 +78,7 @@ export function BudgetReportGenerator() {
             <div className="flex-1">
               <h3 className="text-lg font-semibold mb-1">Relatório Orçamentário</h3>
               <p className="text-sm text-muted-foreground">
-                Análise comparativa da execução orçamentária dos programas de políticas raciais (2018-2026), 
+                Análise comparativa da execução orçamentária dos programas de políticas raciais (2018-2025), 
                 com cruzamento de dados estatísticos para identificar correlações e insights.
               </p>
             </div>

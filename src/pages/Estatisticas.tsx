@@ -50,7 +50,7 @@ export default function Estatisticas() {
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="bg-primary/10 text-primary">Common Core</Badge>
                 <Badge className="bg-primary/10 text-primary">CERD IV</Badge>
-                <Badge className="bg-primary/10 text-primary">2018-2026</Badge>
+                <Badge className="bg-primary/10 text-primary">2018-2025</Badge>
                 <Badge className="bg-accent text-accent-foreground">Interseccional</Badge>
                 <Badge variant="outline">Orçamentário</Badge>
               </div>

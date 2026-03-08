@@ -94,7 +94,7 @@ const documentos: DocumentoBalizador[] = [
     tipo: 'Common Core',
     data: '2020',
     sigla: 'HRI/CORE/BRA/2020',
-    descricao: 'Versão mais recente do documento base do Brasil com 77 tabelas estatísticas cobrindo demografia, economia, indicadores sociais, educação, saúde e sistema de justiça. Base para atualização do período 2018-2026.',
+    descricao: 'Versão mais recente do documento base do Brasil com 77 tabelas estatísticas cobrindo demografia, economia, indicadores sociais, educação, saúde e sistema de justiça. Base para atualização do período 2018-2025.',
     arquivo: '/documentos/CCD-Brasil-2020.pdf',
     icon: FileText,
     cor: 'text-primary',
