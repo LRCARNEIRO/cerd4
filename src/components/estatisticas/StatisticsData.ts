@@ -510,9 +510,14 @@ export const povosTradicionais = {
     // Corrigido conforme auditoria FUNAI: 2018: 1 homologação; 2023-2025: 20 homologações
     terrasHomologadas2018_2022: 1,
     terrasHomologadas2023_2025: 20,
-    mortalidadeInfantil: 42.8,
-    acessoSaude: 68.5,
-    educacaoBilingue: 32.5,
+    // REMOVIDOS por falta de fonte auditável:
+    // mortalidadeInfantil: 42.8 — SEM FONTE (não é SINASC nem SESAI verificável)
+    // acessoSaude: 68.5 — SEM FONTE
+    // educacaoBilingue: 32.5 — SEM FONTE
+    // Dados preservados como lacuna documentada abaixo.
+    mortalidadeInfantil: null as number | null, // LACUNA — sem fonte auditável
+    acessoSaude: null as number | null, // LACUNA — sem fonte auditável
+    educacaoBilingue: null as number | null, // LACUNA — sem fonte auditável
     rendimentoMedio: 1683,
     // Infraestrutura domiciliar — Censo 2022 (Indígenas: características dos domicílios)
     // Fonte: IBGE Agência de Notícias - Censo 2022: mais da metade da pop. indígena vive nas cidades (19/12/2024)
