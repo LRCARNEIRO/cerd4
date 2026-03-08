@@ -295,7 +295,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
     };
-  }, [records, sesaiRecords, includeExcludedInCalc]);
+  }, [records, sesaiRecords]);
 
   if (!analysis) return null;
 
