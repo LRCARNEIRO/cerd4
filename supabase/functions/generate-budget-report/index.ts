@@ -991,7 +991,7 @@ function generateFullHTML(
 
   <footer class="footer">
     <div class="container footer-content">
-      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2026)</strong></p>
+      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2025)</strong></p>
       <p>Gerado automaticamente pelo Sistema de Monitoramento CERD Brasil</p>
       <p style="margin-top: 12px;">
         <strong>CDG/UFF</strong> • Grupo de Pesquisa sobre Tratados de Direitos Humanos<br>
