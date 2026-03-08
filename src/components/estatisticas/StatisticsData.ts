@@ -611,18 +611,22 @@ export const juventudeNegra = [
 ];
 
 // Educação interseccional
-// Fontes: PNAD Contínua Educação 2024 — SIDRA 7267 (educação por cor/raça) + INEP Censo Educação Superior
-// URLs:
-//   SIDRA 7267: https://sidra.ibge.gov.br/Tabela/7267
-//   PNAD Educação: https://www.ibge.gov.br/estatisticas/sociais/educacao.html
-//   INEP: https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior
+// ⚠️ AUDITORIA: Fonte SIDRA 7267 é INCORRETA para esses dados. A tabela SIDRA 7267 não cruza educação × gênero × raça.
+// Dados verificáveis: DIEESE Q2 2024 = negros com superior 9,2%. PNAD Educação 2024 = negros 11,4% (anual, SIDRA 7129).
+// Dados de quilombola e indígena por gênero NÃO são publicados pelo IBGE/INEP. Status: 🔴 PARCIALMENTE FABRICADOS.
+// Fontes reais:
+//   SIDRA 7129: https://sidra.ibge.gov.br/Tabela/7129 (nível de instrução por cor/raça — sem gênero)
+//   DIEESE Q2 2024: ensino superior por cor/raça = negros 9,2% (Gráfico 11)
+//   INEP: Censo Educação Superior (matrículas, não taxa de conclusão por raça×gênero)
 export const educacaoInterseccional = [
-  { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5 },
-  { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2 },
-  { grupo: 'Mulher branca', superiorCompleto: 28.5, posGraduacao: 6.2, evasaoMedio: 5.8 },
-  { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2 },
-  { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5 },
-  { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8 }
+  // NOTA: "superiorCompleto" por gênero × raça NÃO é publicado pelo SIDRA. Valores são ESTIMATIVAS.
+  // Únicos valores verificáveis: negros geral 11,4% (PNAD Educação anual 2024) / 9,2% (DIEESE Q2 2024).
+  { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5, estimativa: true },
+  { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2, estimativa: true },
+  { grupo: 'Mulher branca', superiorCompleto: 28.5, posGraduacao: 6.2, evasaoMedio: 5.8, estimativa: true },
+  { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2, estimativa: true },
+  { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5, estimativa: true },
+  { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8, estimativa: true }
 ];
 export const educacaoInterseccionalFontes = [
   { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
