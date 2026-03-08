@@ -340,7 +340,7 @@ export function DadosGeraisTab() {
                 Tabela 6403 — População por cor/raça
               </a>
             </p>
-            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2024). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
+            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 — SIDRA 6405). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
           </div>
         </CardContent>
       </Card>

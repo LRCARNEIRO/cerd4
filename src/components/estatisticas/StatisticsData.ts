@@ -140,11 +140,11 @@ export const indicadoresSocioeconomicos = [
 ];
 // NOTA AUDITORIA — RENDA E DESEMPREGO:
 // Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
-// Ano 2023: renda verificada via SIDRA 6800 (R$2.199 negros, R$3.730 brancos).
+// Ano 2023: renda verificada via SIDRA 6405 (R$2.199 negros, R$3.730 brancos).
 // Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
 // POBREZA 2020-2024: NÃO VERIFICADA. SIS/IBGE publica pobreza por cor/raça anualmente — conferir.
 
-// Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
+// Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6405)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
 export const razaoRendaRacial = 0.589;
 
