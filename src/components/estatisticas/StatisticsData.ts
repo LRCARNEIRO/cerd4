@@ -726,10 +726,10 @@ export const radarVulnerabilidadesFontes = [
 ];
 
 // Evolução temporal das desigualdades (2018-2024)
-// Fontes: PNAD Contínua/SIDRA 6800, 6381 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
+// Fontes: PNAD Contínua/SIDRA 6405, 6402 | 19º Anuário FBSP 2025 / Atlas da Violência 2025
 // URLs:
-//   Renda: https://sidra.ibge.gov.br/Tabela/6800
-//   Desemprego: https://sidra.ibge.gov.br/Tabela/6381
+//   Renda: https://sidra.ibge.gov.br/tabela/6405
+//   Desemprego: https://sidra.ibge.gov.br/tabela/6402
 //   Homicídio: https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/
 //   Atlas: https://www.ipea.gov.br/atlasviolencia
 export const evolucaoDesigualdade = [

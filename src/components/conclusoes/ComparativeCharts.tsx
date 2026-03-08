@@ -428,7 +428,7 @@ export function TabelaSinteseComparativa() {
   const sourceUrls: Record<string, string> = {
     'FBSP 2025': 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/',
     'Atlas 2025': 'https://www.ipea.gov.br/atlasviolencia/',
-    'PNAD 2024': 'https://sidra.ibge.gov.br/Tabela/6800',
+    'PNAD 2024': 'https://sidra.ibge.gov.br/tabela/6405',
     'PNAD Edu 2024': 'https://sidra.ibge.gov.br/Tabela/7129',
     'DataSUS': 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def',
   };

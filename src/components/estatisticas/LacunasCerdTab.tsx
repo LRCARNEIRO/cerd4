@@ -625,7 +625,7 @@ export function LacunasCerdTab() {
               </div>
               <AuditFooter 
                 fontes={[
-                  { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
+                  { nome: 'SIDRA 6405 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6405' },
                   { nome: 'DIEESE — Boletim Consciência Negra Nov/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf' },
                 ]}
                 documentos={['CERD 2022 §23']}
