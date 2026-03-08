@@ -65,7 +65,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.589 casos). Aumento absoluto de 32% no total de feminicídios no período (19º Anuário FBSP 2025).',
+    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.492 casos). Aumento de 19% no total de feminicídios no período (19º Anuário FBSP 2025).',
     prioridade: 'alta'
   },
   {
