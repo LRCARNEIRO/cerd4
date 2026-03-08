@@ -774,21 +774,30 @@ export const educacaoRacaGeneroFontes = [
 ];
 
 // SAÚDE MATERNA: Raça
-// Fontes: RASEAM 2024 + DataSUS/SIM + Nascer no Brasil II (Fiocruz)
+// Fontes: RASEAM 2025 (dados SIM/DataSUS até 2022) + IEPS Boletim Jul/2025 (dados até 2023) + Nascer no Brasil II (Fiocruz)
+// Nota: O RASEAM (2024 e 2025) utiliza dados do SIM/DataSUS cujo último ano consolidado é 2022.
+// O Boletim IEPS (jul/2025) apresenta dados até 2023 com razão de mortalidade materna por raça.
 export const saudeMaternaRaca = {
-  mortalidadeMaternaNegraPercentual: 68.0,
-  mortalidadeMaternaBrancaPercentual: 29.7,
-  anoReferencia: 2022,
+  mortalidadeMaternaNegraPercentual: 68.0, // RASEAM 2025 — proporção de óbitos maternos de mulheres negras (pretas+pardas), dado SIM 2022
+  mortalidadeMaternaBrancaPercentual: 29.7, // idem
+  anoReferencia: 2022, // último ano consolidado SIM/DataSUS; RASEAM 2025 mantém esse recorte
+  // IEPS Boletim jul/2025 — série até 2023: razão mortalidade materna pretas/brancas = 2,3× (108,6 vs 46,9 por 100 mil NV)
+  razaoMortalidadePretasBrancas: 2.3,
+  taxaPretasPor100milNV: 108.6,
+  taxaBrancasPor100milNV: 46.9,
+  taxaPardasPor100milNV: 56.6,
+  periodoIEPS: '2010-2023',
   nascerBrasil2RazaoNegraBranca: 2.0,
-  nascerBrasil2Nota: 'Pesquisa Nascer no Brasil II (Fiocruz, 2020-2023): morte de mães negras é 2x maior que de brancas (amostra hospitalar, 24 mil mulheres, 465 maternidades)',
+  nascerBrasil2Nota: 'Pesquisa Nascer no Brasil II (Fiocruz, 2020-2023): morte de mães negras é 2× maior que de brancas (amostra hospitalar, 24 mil mulheres, 465 maternidades)',
   violenciaObstetricaGrupoRisco: 'Adolescentes ou >35 anos, negras, SUS, baixa escolaridade',
   fontes: [
-    { nome: 'RASEAM 2024 — Mortalidade materna por raça', url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/politicas-para-mulheres/publicacoes-1/raseam' },
+    { nome: 'RASEAM 2025 — Mortalidade materna por raça (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view' },
+    { nome: 'IEPS — Mortalidade materna por raça (Boletim Jul/2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
     { nome: 'DataSUS/SIM — Mortalidade materna', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def' },
     { nome: 'Nascer no Brasil II — Fiocruz (2023)', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' },
     { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
   ],
-  metodologia: '🔀 Cruzamento: RASEAM 2024 (% mortes maternas por raça) + Nascer no Brasil II/Fiocruz (razão de risco com metodologia hospitalar). DataSUS/SIM utilizado como fonte primária de óbitos.',
+  metodologia: '🔀 Cruzamento: RASEAM 2025 (% mortes maternas por raça, SIM 2022) + IEPS Boletim Jul/2025 (razão de mortalidade materna pretas 2,3× brancas, série 2010-2023) + Nascer no Brasil II/Fiocruz (razão de risco hospitalar).',
 };
 
 // Legacy export mantido para compatibilidade
