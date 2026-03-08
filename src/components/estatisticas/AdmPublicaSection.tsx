@@ -229,8 +229,10 @@ export function AdmPublicaSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              <strong>Destaque interseccional:</strong> 88,9% dos gestores são mulheres (24 de 27), contraste com 
-              outras áreas onde homens predominam (ex: Transporte 96,2% homens).
+              <strong>Destaque interseccional:</strong> 88,9% dos gestores são mulheres (24 de 27), 
+              exceto SP, RS e GO. Contraste com outras áreas: Transporte 96,2% homens.
+              <br />
+              <span className="italic">Obs.: MG não informou cor/raça do gestor (26 respondentes).</span>
             </p>
             <AuditFooter fontes={ESTADIC_FONTES} documentos={['ESTADIC 2024', 'CERD 2022 §19']} compact />
           </CardContent>
