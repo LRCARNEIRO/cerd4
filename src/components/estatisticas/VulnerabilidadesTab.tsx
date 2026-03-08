@@ -25,7 +25,7 @@ const vulnerabilidadeMultidimensional = [
     referencia: 34.2, // brancas
     unidade: '%',
     fonte: 'RASEAM 2023',
-    url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/politicas-para-mulheres/publicacoes-1/raseam',
+    url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
     icone: Home,
   },
   {
