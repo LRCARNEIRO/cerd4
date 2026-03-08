@@ -254,7 +254,7 @@ Deno.serve(async (req) => {
           );
 
           const aggregated = aggregateApiRows(dados);
-          console.log(`  Brutos: ${dados.length}, Agregados: ${aggregated.length}`);
+          console.log(`  Brutos: ${dados.length}, Agregados: ${aggregated.length}, Focal: ${PROGRAMAS_FOCAIS.has(prog.codigo)}`);
 
           if (aggregated.length === 0) {
             cobertura[chave] = { encontrado: false, registros: 0 };
