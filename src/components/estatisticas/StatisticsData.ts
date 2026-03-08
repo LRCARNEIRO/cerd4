@@ -252,7 +252,8 @@ export const atlasViolencia2025 = {
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
   },
   fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
-  link: 'https://www.ipea.gov.br/atlasviolencia',
+  link: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf',
+  pagina: 'p. 79',
 };
 
 // Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
