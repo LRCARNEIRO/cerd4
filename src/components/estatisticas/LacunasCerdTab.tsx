@@ -477,8 +477,8 @@ export function LacunasCerdTab() {
               </div>
               <AuditFooter 
                 fontes={[
-                  { nome: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia' },
-                  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+                  { nome: 'Atlas da Violência 2025 (IPEA) — p. 79', url: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf' },
+                  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
                 ]}
                 documentos={['CERD 2022 §36', 'Durban §32-36']}
                 compact
