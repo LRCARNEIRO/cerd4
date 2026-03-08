@@ -950,10 +950,6 @@ export function JuventudeTab() {
                   <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,2% dos presos são negros</a>{' '}
                   (SISDEPEN 2024)
                 </li>
-                <li className="flex items-center gap-1">
-                  • Evasão escolar 2x maior
-                  <EstimativaBadge tipo="simples" metodologia="Estimativa baseada em proxy etário: INEP publica evasão por raça, mas o recorte jovens negros 15-17 vs brancos requer filtro adicional." className="ml-1" />
-                </li>
               </ul>
             </div>
             <AuditFooter
@@ -1026,109 +1022,93 @@ export function ClasseSocialTab() {
           </CardContent>
         </Card>
 
-        {/* LACUNA: Saúde Interseccional — dados fabricados removidos */}
+        {/* Saúde × Raça × Classe — dados auditáveis */}
         <Card className="border-l-4 border-l-warning">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warning" />
               Saúde × Raça × Classe
             </CardTitle>
-            <CardDescription>LACUNA DOCUMENTADA — Valores numéricos removidos</CardDescription>
+            <CardDescription className="flex items-center gap-2">
+              IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
+              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento: IEPS (mortalidade materna por raça, série até 2023) + RASEAM 2025 (% por raça, SIM 2022) + Fiocruz (amostra hospitalar)" />
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-warning">⚠️ Valores numéricos por faixa de renda inexistentes em publicação oficial</p>
-              <p className="text-xs text-muted-foreground">
-                {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.descricao}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.dadoRemovido}
-              </p>
-            </div>
-            <div className="mt-4 p-3 bg-accent/10 border border-accent/30 rounded-lg">
-              <p className="text-xs font-medium">⚠️ Divergência metodológica:</p>
-              <p className="text-xs text-muted-foreground">
-                <strong>DataSUS/SIM (série oficial):</strong> razão mortalidade materna negra/branca = ~1,0x em 2024 (55,5 vs 54,2 por 100 mil NV). 
-                <strong>Pesquisa Nascer no Brasil II (Nov/2023, MS):</strong> reporta ~2x com metodologia própria (amostra hospitalar, near-miss materno). 
-                A discrepância pode refletir subnotificação racial no SIM.
-              </p>
-              <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-1">
-                <ExternalLink className="w-3 h-3" /> Pesquisa Nascer no Brasil II — Ministério da Saúde (Nov/2023)
-              </a>
+            <div className="space-y-3">
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm font-medium text-destructive mb-1">Mortalidade Materna por Raça</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>IEPS (jul/2025, série 2010-2023):</strong> razão mortalidade materna pretas/brancas = <strong>2,3×</strong> (108,6 vs 46,9 por 100 mil NV). Pardas: 56,6/100 mil NV.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <strong>RASEAM 2025 (SIM 2022):</strong> mulheres negras = 68% das mortes maternas.
+                </p>
+              </div>
+              <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                <p className="text-xs">
+                  <strong>Nascer no Brasil II (Fiocruz, 2023):</strong> razão ~2× entre negras e brancas em amostra hospitalar (24 mil mulheres, 465 maternidades). Diferenças com SIM decorrem de subnotificação racial no sistema de vigilância.
+                </p>
+              </div>
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-                { nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+                { nome: 'IEPS — Mortalidade materna por raça (Jul/2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
+                { nome: 'RASEAM 2025 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view' },
+                { nome: 'Nascer no Brasil II — Fiocruz', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' },
               ]}
-              documentos={['CERD 2022']}
+              documentos={['CERD 2022 §27-28']}
             />
           </CardContent>
         </Card>
       </div>
 
+      {/* Mobilidade Social — OCDE 2018 (dado geral, sem desagregação racial auditável) */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            Mobilidade Social Intergeracional por Raça
-            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento PNAD Contínua (renda × raça) com dados de escolaridade dos pais" />
+            Mobilidade Social Intergeracional
           </CardTitle>
           <CardDescription>
-            Dados derivados de estudos do IPEA e Banco Mundial. Não há publicação oficial com esses valores exatos em formato tabular.
+            OCDE — "A Broken Social Elevator?" (2018) + SIS/IBGE 2024 + Min. Fazenda (Dez/2024)
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Chance de filho de pais pobres ser classe média</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">28%</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">12%</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">Gerações para família pobre alcançar renda média</p>
+              <p className="text-3xl font-bold text-destructive">9</p>
+              <p className="text-xs text-muted-foreground">OCDE 2018 — Brasil geral</p>
+              <p className="text-[10px] text-muted-foreground">(2º pior entre 30 países)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Gerações para sair da pobreza</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">4</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">9</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
+              <p className="text-3xl font-bold text-destructive">40%</p>
+              <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
+              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">% no 1% mais rico</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">82%</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">18%</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">1% mais rico detém</p>
+              <p className="text-3xl font-bold text-destructive">37%</p>
+              <p className="text-xs text-muted-foreground">da riqueza brasileira</p>
+              <p className="text-[10px] text-muted-foreground">Min. Fazenda (Dez/2024)</p>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-2">
-            <EstimativaBadge tipo="cruzamento" metodologia="Valores derivados de estudos acadêmicos que cruzam PNAD Contínua (renda × raça) com dados de escolaridade dos pais. Não há publicação oficial brasileira com esses indicadores exatos em formato tabular." />
-            <span className="text-[10px] text-muted-foreground">IPEA/Retrato × Banco Mundial</span>
+          <div className="mt-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral — não há desagregação por raça na publicação original. 
+              A desigualdade racial no topo da distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, Dez/2024), 
+              mas nenhum deles publica a composição racial exata do 1% mais rico em formato desagregado por cor/raça.
+            </p>
           </div>
           <AuditFooter
             fontes={[
-              { nome: 'IPEA — Retrato das Desigualdades', url: 'https://www.ipea.gov.br/retrato/' },
-              { nome: 'SIS/IBGE — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+              { nome: 'OCDE — A Broken Social Elevator? (2018)', url: 'https://www.oecd.org/en/publications/a-broken-social-elevator-how-to-promote-social-mobility_9789264301085-en.html' },
+              { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+              { nome: 'Min. Fazenda — Distribuição da Renda e Riqueza (Dez/2024)', url: 'https://www.gov.br/fazenda/pt-br/centrais-de-conteudo/publicacoes/relatorio-da-distribuicao-pessoal-da-renda-e-da-riqueza' },
+              { nome: 'Agência Brasil — OCDE mobilidade social', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2018-06/pobres-do-pais-levam-nove-geracoes-para-alcancar-renda-media-diz-ocde' },
             ]}
-            documentos={['CERD 2022']}
+            documentos={['CERD 2022', 'Common Core']}
           />
         </CardContent>
       </Card>
