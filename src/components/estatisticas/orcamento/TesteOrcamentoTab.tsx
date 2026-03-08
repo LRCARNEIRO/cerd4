@@ -178,7 +178,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
   const stats = useMemo(() => {
     const valorLiq = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
     const p1 = filteredRecords.filter(r => r.ano >= 2018 && r.ano <= 2022);
-    const p2 = filteredRecords.filter(r => r.ano >= 2023);
+    const p2 = filteredRecords.filter(r => r.ano >= 2023 && r.ano <= 2025);
     const t1 = p1.reduce((s, r) => s + valorLiq(r), 0);
     const t2 = p2.reduce((s, r) => s + valorLiq(r), 0);
     const anos = new Set(filteredRecords.map(r => r.ano));
@@ -309,7 +309,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
             </Card>
             <Card className="border-l-4 border-l-success/60">
               <CardContent className="pt-4 pb-3">
-                <p className="text-xs text-muted-foreground mb-1">2023–2026</p>
+                <p className="text-xs text-muted-foreground mb-1">2023–2025</p>
                 <p className="text-lg font-bold text-success">{formatCurrency(stats.totalP2)}</p>
                 <p className="text-[10px] text-muted-foreground">Liquidado · TESTE</p>
               </CardContent>

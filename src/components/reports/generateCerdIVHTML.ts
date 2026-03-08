@@ -275,7 +275,7 @@ export function generateCerdIVHTML(
   <div class="section">
     <div class="highlight-box">
       <h4>Síntese</h4>
-      <p>O Brasil reconhece avanços significativos no período 2023-2026, com a recriação de institucionalidade 
+      <p>O Brasil reconhece avanços significativos no período 2023-2025, com a recriação de institucionalidade 
       e novos marcos legais. Porém, ${naoCumpridas + retrocessos} de ${total} recomendações permanecem não cumpridas ou 
       em retrocesso, evidenciando que a desigualdade racial estrutural persiste apesar dos esforços normativos.</p>
     </div>

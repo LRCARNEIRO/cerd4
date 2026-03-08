@@ -343,7 +343,7 @@ function gerarFiosCondutores(
         valor2018: formatBRL(orcStats.totalPeriodo1)
       });
       evidOrc.push({
-        texto: `Período 2023-2026: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
+        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
         valorAtual: formatBRL(orcStats.totalPeriodo2)
@@ -378,7 +378,7 @@ function gerarFiosCondutores(
       id: 'orcamento-vs-resultados',
       titulo: 'Investimento vs. Resultados: A Lacuna Orçamentária',
       tipo: 'correlacao',
-      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2026 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
+      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2025 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
       evidencias: evidOrc,
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
@@ -699,17 +699,17 @@ function gerarFiosEmergentes(
     });
   });
 
-  // EMERGENTE 5: Execução orçamentária como evidência de fortalecimento (2023-2026)
+  // EMERGENTE 5: Execução orçamentária como evidência de fortalecimento (2023-2025)
   if (orcDados.length > 0) {
-    const dados2023_26 = orcDados.filter(d => d.ano >= 2023);
-    const altaExecucao = dados2023_26.filter(d => (d.percentual_execucao || 0) >= 90);
+    const dados2023_25 = orcDados.filter(d => d.ano >= 2023 && d.ano <= 2025);
+    const altaExecucao = dados2023_25.filter(d => (d.percentual_execucao || 0) >= 90);
     if (altaExecucao.length >= 3 && !titulosFiosExistentes.some(t => t.includes('execução'))) {
       const programas = [...new Set(altaExecucao.map(d => d.programa))];
       novos.push({
         id: 'emergente-execucao-recorde',
         titulo: 'Execução Orçamentária Recorde: Evidência de Fortalecimento',
         tipo: 'avanco',
-        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2026 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
         evidencias: altaExecucao.slice(0, 6).map(d => ({
           texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
           fonte: d.fonte_dados,
@@ -997,7 +997,7 @@ function gerarInsightsCruzamento(
       descricao: `O orçamento para políticas raciais variou ${orcStats.variacao.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
       dados: [
         `Orçamento 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)}`,
-        `Orçamento 2023-2026: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
+        `Orçamento 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
         `Lacunas críticas não resolvidas: ${criticasNaoCumpridas.length}`
       ],
       tipo: 'contradição'

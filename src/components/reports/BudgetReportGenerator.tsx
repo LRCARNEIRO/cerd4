@@ -113,7 +113,7 @@ export function BudgetReportGenerator() {
                   <p className="text-lg font-bold text-emerald-600">
                     {isLoading ? '...' : formatCurrency(stats?.totalPeriodo2 || 0)}
                   </p>
-                  <p className="text-xs text-muted-foreground">2023-2026</p>
+                  <p className="text-xs text-muted-foreground">2023–2025</p>
                 </div>
               </div>
             </Card>
@@ -185,8 +185,8 @@ export function BudgetReportGenerator() {
             <div className="p-4 bg-muted/50 rounded-lg space-y-2">
               <h4 className="text-sm font-medium">O relatório incluirá:</h4>
               <ul className="text-sm space-y-1 text-muted-foreground">
-                <li>✓ Evolução ano a ano (2018-2026)</li>
-                <li>✓ Comparativo 2018-2022 vs 2023-2026</li>
+                 <li>✓ Evolução ano a ano (2018–2025)</li>
+                <li>✓ Comparativo 2018–2022 vs 2023–2025</li>
                 <li>✓ Análise por programa</li>
                 <li>✓ Análise por grupo focal</li>
                 <li>✓ Cruzamento com indicadores sociais</li>

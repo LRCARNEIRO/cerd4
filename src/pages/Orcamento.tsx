@@ -301,7 +301,7 @@ function EsferaSummaryCards({
       </Card>
       <Card className="border-l-4 border-l-success/60">
         <CardContent className="pt-4 pb-3">
-          <p className="text-xs text-muted-foreground mb-1">2023–2026</p>
+          <p className="text-xs text-muted-foreground mb-1">2023–2025</p>
           <p className="text-lg font-bold text-success">{formatCurrency(stats.totalPeriodo2)}</p>
           <p className="text-[10px] text-muted-foreground">{esferaLabel} · {metrica}</p>
         </CardContent>
@@ -447,7 +447,7 @@ export default function Orcamento() {
         ? records.filter(r => !is5034NonRacial(r))
         : records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
       const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
       const t2 = p2.reduce((s, r) => s + valorLiquidado(r), 0);
       const anos = new Set(clean.map(r => r.ano));
@@ -484,7 +484,7 @@ export default function Orcamento() {
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
     const allExcluded = dadosOrcamentarios?.filter(r => is5034NonRacial(r)) || [];
     const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
-    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2026).reduce((s, r) => s + valorEfetivo(r), 0);
+    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2025).reduce((s, r) => s + valorEfetivo(r), 0);
     const t1 = stats.totalPeriodo1 + excl1;
     const t2 = stats.totalPeriodo2 + excl2;
     return {
@@ -511,7 +511,7 @@ export default function Orcamento() {
   return (
     <DashboardLayout
       title="Orçamento"
-      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018-2026)"
+      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018–2025)"
     >
       {/* Alerta + Ingestão */}
       <Card className="mb-6 border-l-4 border-l-warning">

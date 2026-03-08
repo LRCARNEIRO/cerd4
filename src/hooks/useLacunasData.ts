@@ -349,7 +349,7 @@ export function useOrcamentoStats() {
         Number(r.pago) || Number(r.dotacao_autorizada) || 0;
 
       const periodo1 = registrosLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const periodo2 = registrosLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const periodo2 = registrosLimpos.filter(r => r.ano >= 2023 && r.ano <= 2025);
 
       const totalPeriodo1 = periodo1.reduce((acc, r) => acc + valorEfetivo(r), 0);
       const totalPeriodo2 = periodo2.reduce((acc, r) => acc + valorEfetivo(r), 0);

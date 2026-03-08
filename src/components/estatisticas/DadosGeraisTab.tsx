@@ -368,7 +368,7 @@ function OrcamentoResumoSection() {
     if (dadosFiltrados.length === 0) return null;
 
     const periodo1 = dadosFiltrados.filter(r => r.ano >= 2018 && r.ano <= 2022);
-    const periodo2 = dadosFiltrados.filter(r => r.ano >= 2023 && r.ano <= 2026);
+    const periodo2 = dadosFiltrados.filter(r => r.ano >= 2023 && r.ano <= 2025);
     const totalPeriodo1 = periodo1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
     const totalPeriodo2 = periodo2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
 
@@ -443,7 +443,7 @@ function OrcamentoResumoSection() {
           Orçamento de Políticas Raciais (Dados do Banco)
         </CardTitle>
         <CardDescription>
-          {activeStats.totalRegistros} registros{esferaFiltro ? ` — Esfera: ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''} | Períodos 2018-2022 vs 2023-2026 | Fonte: SIOP/Portal da Transparência
+          {activeStats.totalRegistros} registros{esferaFiltro ? ` — Esfera: ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''} | Períodos 2018–2022 vs 2023–2025 | Fonte: SIOP/Portal da Transparência
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -483,7 +483,7 @@ function OrcamentoResumoSection() {
             <p className="text-lg font-bold">{formatCurrencyCompact(activeStats.totalPeriodo1)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center">
-            <p className="text-xs text-muted-foreground">2023-2026</p>
+            <p className="text-xs text-muted-foreground">2023–2025</p>
             <p className="text-lg font-bold text-success">{formatCurrencyCompact(activeStats.totalPeriodo2)}</p>
           </div>
           <div className="p-3 bg-muted rounded-lg text-center flex items-center justify-center gap-2">
