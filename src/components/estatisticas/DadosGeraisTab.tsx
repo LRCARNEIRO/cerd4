@@ -443,7 +443,7 @@ function OrcamentoResumoSection() {
           Orçamento de Políticas Raciais (Dados do Banco)
         </CardTitle>
         <CardDescription>
-          {activeStats.totalRegistros} registros{esferaFiltro ? ` — Esfera: ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''} | Períodos 2018-2022 vs 2023-2026 | Fonte: SIOP/Portal da Transparência
+          {activeStats.totalRegistros} registros{esferaFiltro ? ` — Esfera: ${esferaFiltro.charAt(0).toUpperCase() + esferaFiltro.slice(1)}` : ''} | Períodos 2018–2022 vs 2023–2025 | Fonte: SIOP/Portal da Transparência
         </CardDescription>
       </CardHeader>
       <CardContent>
