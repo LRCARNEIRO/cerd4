@@ -81,7 +81,7 @@ const SOURCES = {
     { label: 'Pesquisa Nascer no Brasil II', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa', detail: 'Fiocruz/MS Nov/2023 — mortalidade materna por raça' },
   ] as SourceLink[],
   renda: [
-    { label: 'SIDRA 6800 — Rendimento por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'PNAD Contínua — Rendimento médio mensal por cor/raça' },
+    { label: 'SIDRA 6405 — Rendimento por raça', url: 'https://sidra.ibge.gov.br/tabela/6405', detail: 'PNAD Contínua — Rendimento médio mensal por cor/raça' },
     { label: 'DIEESE — Boletim Racial Q2/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial01.html', detail: 'Rendimento e desemprego por raça — 2º trimestre 2024' },
     { label: 'Censo 2022 — Rendimentos', url: 'https://sidra.ibge.gov.br/Tabela/9605', detail: 'Rendimento médio por cor/raça — Censo Demográfico 2022' },
   ] as SourceLink[],
