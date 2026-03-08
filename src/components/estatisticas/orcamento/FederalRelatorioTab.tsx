@@ -32,15 +32,14 @@ function classifyThematic(r: DadoOrcamentario): 'racial' | 'indigena' | 'quilomb
 
 const ARTIGO_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--primary))', 'hsl(var(--chart-2))'];
 
-function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, includeExcludedInCalc, sectionNumber }: {
+function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNumber }: {
   records: DadoOrcamentario[];
   sesaiRecords: DadoOrcamentario[];
   formatCurrency: (v: number) => string;
-  includeExcludedInCalc: boolean;
   sectionNumber: number;
 }) {
   const icerdData = useMemo(() => {
-    const allRecords = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+    const allRecords = [...records, ...sesaiRecords];
     
     const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; liquidado: number; pago: number; programas: Set<string> }>();
     for (const art of ARTIGOS_CONVENCAO) {
