@@ -1022,42 +1022,42 @@ export function ClasseSocialTab() {
           </CardContent>
         </Card>
 
-        {/* LACUNA: Saúde Interseccional — dados fabricados removidos */}
+        {/* Saúde × Raça × Classe — dados auditáveis */}
         <Card className="border-l-4 border-l-warning">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warning" />
               Saúde × Raça × Classe
             </CardTitle>
-            <CardDescription>LACUNA DOCUMENTADA — Valores numéricos removidos</CardDescription>
+            <CardDescription className="flex items-center gap-2">
+              IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
+              <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento: IEPS (mortalidade materna por raça, série até 2023) + RASEAM 2025 (% por raça, SIM 2022) + Fiocruz (amostra hospitalar)" />
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-warning">⚠️ Valores numéricos por faixa de renda inexistentes em publicação oficial</p>
-              <p className="text-xs text-muted-foreground">
-                {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.descricao}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-SAUDE-INTERSECCIONAL')?.dadoRemovido}
-              </p>
-            </div>
-            <div className="mt-4 p-3 bg-accent/10 border border-accent/30 rounded-lg">
-              <p className="text-xs font-medium">⚠️ Divergência metodológica:</p>
-              <p className="text-xs text-muted-foreground">
-                <strong>DataSUS/SIM (série oficial):</strong> razão mortalidade materna negra/branca = ~1,0x em 2024 (55,5 vs 54,2 por 100 mil NV). 
-                <strong>Pesquisa Nascer no Brasil II (Nov/2023, MS):</strong> reporta ~2x com metodologia própria (amostra hospitalar, near-miss materno). 
-                A discrepância pode refletir subnotificação racial no SIM.
-              </p>
-              <a href="https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 mt-1">
-                <ExternalLink className="w-3 h-3" /> Pesquisa Nascer no Brasil II — Ministério da Saúde (Nov/2023)
-              </a>
+            <div className="space-y-3">
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm font-medium text-destructive mb-1">Mortalidade Materna por Raça</p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>IEPS (jul/2025, série 2010-2023):</strong> razão mortalidade materna pretas/brancas = <strong>2,3×</strong> (108,6 vs 46,9 por 100 mil NV). Pardas: 56,6/100 mil NV.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  <strong>RASEAM 2025 (SIM 2022):</strong> mulheres negras = 68% das mortes maternas.
+                </p>
+              </div>
+              <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                <p className="text-xs">
+                  <strong>Nascer no Brasil II (Fiocruz, 2023):</strong> razão ~2× entre negras e brancas em amostra hospitalar (24 mil mulheres, 465 maternidades). Diferenças com SIM decorrem de subnotificação racial no sistema de vigilância.
+                </p>
+              </div>
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-                { nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+                { nome: 'IEPS — Mortalidade materna por raça (Jul/2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
+                { nome: 'RASEAM 2025 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view' },
+                { nome: 'Nascer no Brasil II — Fiocruz', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' },
               ]}
-              documentos={['CERD 2022']}
+              documentos={['CERD 2022 §27-28']}
             />
           </CardContent>
         </Card>
