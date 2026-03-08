@@ -116,11 +116,11 @@ export function VulnerabilidadesTab() {
                 <a href="https://sidra.ibge.gov.br/Tabela/6381" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                   <ExternalLink className="w-3 h-3" /> SIDRA 6381 — Desocupação
                 </a>
-                <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
+                <a href="https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025 (PDF)
                 </a>
-                <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Atlas da Violência 2025
+                <a href="https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> Atlas da Violência 2025 (PDF)
                 </a>
               </div>
             </div>

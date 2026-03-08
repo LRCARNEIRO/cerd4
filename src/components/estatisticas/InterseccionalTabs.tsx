@@ -70,8 +70,8 @@ export function RacaGeneroTab() {
                 <FileText className="w-3 h-3 inline mr-1" />
                 Mulheres negras são 63,6% das vítimas de feminicídio (19º Anuário FBSP 2025, dados 2024). Em 2018: 61%.
               </p>
-              <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025
+              <a href="https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025 (PDF)
               </a>
             </div>
           </CardContent>
