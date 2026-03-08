@@ -484,7 +484,7 @@ export default function Orcamento() {
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
     const allExcluded = dadosOrcamentarios?.filter(r => is5034NonRacial(r)) || [];
     const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
-    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2026).reduce((s, r) => s + valorEfetivo(r), 0);
+    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2025).reduce((s, r) => s + valorEfetivo(r), 0);
     const t1 = stats.totalPeriodo1 + excl1;
     const t2 = stats.totalPeriodo2 + excl2;
     return {
