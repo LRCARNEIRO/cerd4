@@ -457,32 +457,17 @@ export default function Orcamento() {
     };
   }, [classified]);
 
-  // Dynamic stats based on toggle
+  // Stats label
   const dynamicStats = useMemo(() => {
     if (!stats) return null;
-    if (!includeExcludedInCalc) {
-      return {
-        totalPeriodo1: stats.totalPeriodo1,
-        totalPeriodo2: stats.totalPeriodo2,
-        variacao: stats.variacao,
-        totalRegistros: stats.totalRegistros,
-        label: 'Inclui SESAI · Exclui 5034 não-racial',
-      };
-    }
-    const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
-    const allExcluded = dadosOrcamentarios?.filter(r => is5034NonRacial(r)) || [];
-    const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
-    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2025).reduce((s, r) => s + valorEfetivo(r), 0);
-    const t1 = stats.totalPeriodo1 + excl1;
-    const t2 = stats.totalPeriodo2 + excl2;
     return {
-      totalPeriodo1: t1,
-      totalPeriodo2: t2,
-      variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
-      totalRegistros: stats.totalRegistros + allExcluded.length,
-      label: 'Inclui todos os registros',
+      totalPeriodo1: stats.totalPeriodo1,
+      totalPeriodo2: stats.totalPeriodo2,
+      variacao: stats.variacao,
+      totalRegistros: stats.totalRegistros,
+      label: 'Inclui SESAI · Apenas ações com recorte racial/étnico',
     };
-  }, [stats, includeExcludedInCalc, dadosOrcamentarios]);
+  }, [stats]);
 
   // Chart data
   const evolucaoPorAno = stats?.porAno
