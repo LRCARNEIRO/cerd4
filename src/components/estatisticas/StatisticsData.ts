@@ -598,7 +598,10 @@ export const violenciaInterseccional = [
 //       Desemprego e Nem-nem usam PNAD Contínua com filtro 15-29 por cor/raça (SIDRA 7113+9605).
 //       Óbitos causas externas: SIM/DataSUS 2024 por cor/raça e faixa etária.
 export const juventudeNegra = [
-  { indicador: 'Taxa de homicídio (por 100 mil)', valor: 78.5, referencia: 28.2, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+  // CORRIGIDO: O Atlas 2025 NÃO publica taxa de homicídio específica para "jovens negros 15-29".
+  // O dado 78,5 era FABRICADO. O Atlas reporta: negros 28,9 vs não negros 10,6 (2023, GERAL).
+  // O que o Atlas diz sobre jovens: 47,8% das vítimas de homicídio têm 15-29 anos, 79% destes são negros homens.
+  { indicador: 'Taxa de homicídio negros (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia' },
   { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
   { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
   { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
