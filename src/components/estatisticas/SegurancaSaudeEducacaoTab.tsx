@@ -6,7 +6,7 @@ import {
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
 import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025 } from './StatisticsData';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
 
 export function SegurancaSaudeEducacaoTab() {
   return (
