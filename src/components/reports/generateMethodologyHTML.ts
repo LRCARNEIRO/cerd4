@@ -92,7 +92,7 @@ export function generateMethodologyHTML(): string {
           nome: 'Vulnerabilidades (Cruzadas)',
           icone: '🔗',
           origem: 'Recomendações CERD + Análise interseccional',
-          motivacao: `Apresenta os <strong>indicadores de vulnerabilidade com cruzamento raça × outras dimensões</strong>: homicídios por raça (FBSP), letalidade policial (82% negros — FBSP 2025), mortalidade materna (2,2x maior para negras — DataSUS), feminicídio (63,6% negras — FBSP 2025). Responde à demanda interseccional do Comitê e às Recomendações Gerais nº 25 (dimensões de gênero) e nº 32 (medidas especiais). Cada indicador possui badge de auditoria e deep link.`,
+          motivacao: `Apresenta os <strong>indicadores de vulnerabilidade com cruzamento raça × outras dimensões</strong>: homicídios por raça (FBSP), letalidade policial (82% negros — FBSP 2025), mortalidade materna (1,2x maior para negras em 2022 — DataSUS; pico de 2,3x em 2021/COVID), feminicídio (63,6% negras — FBSP 2025). Responde à demanda interseccional do Comitê e às Recomendações Gerais nº 25 (dimensões de gênero) e nº 32 (medidas especiais). Cada indicador possui badge de auditoria e deep link.`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'Recomendacoes-Gerais-Paragrafos-NOVA.pdf'],
           promptOrigem: 'Consolidar indicadores de vulnerabilidade interseccional (raça × gênero × idade) usando séries temporais reais do FBSP, Atlas da Violência e DataSUS.',
           artigos: ['Art. V.b (Segurança)', 'Art. V.e.iv (Saúde)', 'Art. I e II (Discriminação interseccional)'],
