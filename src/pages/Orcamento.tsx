@@ -339,7 +339,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [includeExcludedInCalc, setIncludeExcludedInCalc] = useState(false);
+  
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
   const handleResetEsfera = async (esferaKey: string, label: string) => {
@@ -428,24 +428,12 @@ export default function Orcamento() {
 
   const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
 
-  /** Check if a record is a non-racial 5034 action */
-  const is5034NonRacial = (r: DadoOrcamentario): boolean => {
-    if (!r.programa.toLowerCase().includes('5034')) return false;
-    const orgUpper = (r.orgao || '').toUpperCase();
-    if (orgUpper === 'SEPPIR') return false;
-    if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) && r.ano >= 2023) return false;
-    const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
-    const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-    return !racialKws.some(kw => texto.includes(kw));
-  };
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
-    const compute = (records: DadoOrcamentario[], exclude5034Only: boolean) => {
+    const compute = (records: DadoOrcamentario[]) => {
       const valorLiquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
-      const clean = exclude5034Only
-        ? records.filter(r => !is5034NonRacial(r))
-        : records;
+      const clean = records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
       const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
@@ -463,38 +451,23 @@ export default function Orcamento() {
       };
     };
     return {
-      federal: compute(classified.federal.all, !includeExcludedInCalc),
-      estadual: compute(classified.estadual.all, false),
-      municipal: compute(classified.municipal.all, false),
+      federal: compute(classified.federal.all),
+      estadual: compute(classified.estadual.all),
+      municipal: compute(classified.municipal.all),
     };
-  }, [classified, includeExcludedInCalc]);
+  }, [classified]);
 
-  // Dynamic stats based on toggle
+  // Stats label
   const dynamicStats = useMemo(() => {
     if (!stats) return null;
-    if (!includeExcludedInCalc) {
-      return {
-        totalPeriodo1: stats.totalPeriodo1,
-        totalPeriodo2: stats.totalPeriodo2,
-        variacao: stats.variacao,
-        totalRegistros: stats.totalRegistros,
-        label: 'Inclui SESAI · Exclui 5034 não-racial',
-      };
-    }
-    const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
-    const allExcluded = dadosOrcamentarios?.filter(r => is5034NonRacial(r)) || [];
-    const excl1 = allExcluded.filter(r => r.ano >= 2018 && r.ano <= 2022).reduce((s, r) => s + valorEfetivo(r), 0);
-    const excl2 = allExcluded.filter(r => r.ano >= 2023 && r.ano <= 2025).reduce((s, r) => s + valorEfetivo(r), 0);
-    const t1 = stats.totalPeriodo1 + excl1;
-    const t2 = stats.totalPeriodo2 + excl2;
     return {
-      totalPeriodo1: t1,
-      totalPeriodo2: t2,
-      variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
-      totalRegistros: stats.totalRegistros + allExcluded.length,
-      label: 'Inclui todos os registros',
+      totalPeriodo1: stats.totalPeriodo1,
+      totalPeriodo2: stats.totalPeriodo2,
+      variacao: stats.variacao,
+      totalRegistros: stats.totalRegistros,
+      label: 'Inclui SESAI · Apenas ações com recorte racial/étnico',
     };
-  }, [stats, includeExcludedInCalc, dadosOrcamentarios]);
+  }, [stats]);
 
   // Chart data
   const evolucaoPorAno = stats?.porAno
@@ -612,21 +585,6 @@ export default function Orcamento() {
           </div>
 
           {/* Federal-specific: 5034 toggle */}
-          {esfera === 'federal' && (
-            <div className="mb-4 p-3 bg-muted/40 rounded-lg border border-dashed flex items-center gap-2 text-xs text-muted-foreground justify-between">
-              <div className="flex items-center gap-2">
-                <EyeOff className="w-4 h-4 flex-shrink-0" />
-                <span>Ações 5034/MDHC sem palavras-chave raciais são marcadas como <Badge variant="outline" className="text-[10px] border-warning text-warning mx-1">Excluído do cálculo</Badge>.</span>
-              </div>
-              <label className="flex items-center gap-2 cursor-pointer whitespace-nowrap text-sm font-medium shrink-0">
-                <Checkbox
-                  checked={includeExcludedInCalc}
-                  onCheckedChange={(checked) => setIncludeExcludedInCalc(!!checked)}
-                />
-                Incluir 5034 não-racial no cálculo
-              </label>
-            </div>
-          )}
 
           {/* Data listing — filtered by article */}
           <EsferaContent
@@ -642,7 +600,7 @@ export default function Orcamento() {
             <div className="mt-6 space-y-6">
               {/* Infográfico: Programas e Ações por Grupo Focal */}
               {(() => {
-                const allFederal = classified.federal.all.filter(r => !is5034NonRacial(r));
+                const allFederal = classified.federal.all;
                 const groups: { key: string; label: string; icon: React.ReactNode; color: string }[] = [
                   { key: 'racial', label: 'Negros / Racial', icon: <Users className="w-4 h-4" />, color: 'hsl(var(--primary))' },
                   { key: 'indigena', label: 'Indígenas', icon: <TreePine className="w-4 h-4" />, color: 'hsl(var(--success))' },
@@ -657,7 +615,7 @@ export default function Orcamento() {
                 };
 
                 const rows = groups.map(g => {
-                  const recs = getGroupRecords(g.key).filter(r => !is5034NonRacial(r));
+                  const recs = getGroupRecords(g.key);
                   const p1 = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
                   const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
                   const progTotal = new Set(recs.map(r => r.programa)).size;
@@ -1291,7 +1249,7 @@ export default function Orcamento() {
                   stats={stats}
                   formatCurrency={formatCurrency}
                   formatCurrencyFull={formatCurrencyFull}
-                  includeExcludedInCalc={includeExcludedInCalc}
+                  
                 />
               ) : (
                 <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />

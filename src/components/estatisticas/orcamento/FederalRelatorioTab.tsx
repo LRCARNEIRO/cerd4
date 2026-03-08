@@ -14,7 +14,6 @@ interface Props {
   stats: any; // useOrcamentoStats result
   formatCurrency: (v: number) => string;
   formatCurrencyFull: (v: number) => string;
-  includeExcludedInCalc: boolean;
 }
 
 /** Classify thematic category — mirrors Orcamento page logic */
@@ -30,27 +29,17 @@ function classifyThematic(r: DadoOrcamentario): 'racial' | 'indigena' | 'quilomb
   return 'racial';
 }
 
-function is5034NonRacial(r: DadoOrcamentario): boolean {
-  if (!r.programa.toLowerCase().includes('5034')) return false;
-  const orgUpper = (r.orgao || '').toUpperCase();
-  if (orgUpper === 'SEPPIR') return false;
-  if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL')) && r.ano >= 2023) return false;
-  const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
-  const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-  return !racialKws.some(kw => texto.includes(kw));
-}
 
 const ARTIGO_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--primary))', 'hsl(var(--chart-2))'];
 
-function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, includeExcludedInCalc, sectionNumber }: {
+function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNumber }: {
   records: DadoOrcamentario[];
   sesaiRecords: DadoOrcamentario[];
   formatCurrency: (v: number) => string;
-  includeExcludedInCalc: boolean;
   sectionNumber: number;
 }) {
   const icerdData = useMemo(() => {
-    const allRecords = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+    const allRecords = [...records, ...sesaiRecords];
     
     const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; liquidado: number; pago: number; programas: Set<string> }>();
     for (const art of ARTIGOS_CONVENCAO) {
@@ -88,7 +77,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, includeExc
     }).filter(d => d.registros > 0);
 
     return { chartData, byArtigo, unmappedCount, totalRecords: allRecords.length, totalLiq };
-  }, [records, sesaiRecords, includeExcludedInCalc]);
+  }, [records, sesaiRecords]);
 
   if (icerdData.chartData.length === 0) return null;
 
@@ -202,11 +191,11 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, includeExc
   );
 }
 
-export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull, includeExcludedInCalc }: Props) {
+export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull }: Props) {
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
-    const allRecords = records.filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+    const allRecords = records;
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
@@ -306,7 +295,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
     };
-  }, [records, sesaiRecords, includeExcludedInCalc]);
+  }, [records, sesaiRecords]);
 
   if (!analysis) return null;
 
@@ -330,7 +319,6 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
               </p>
               <p className="text-[10px] text-muted-foreground mt-1 italic">
                 Relatório dinâmico — dados atualizados automaticamente a partir da base orçamentária.
-                {!includeExcludedInCalc && ' Exclui ações 5034/MDHC sem palavras-chave raciais.'}
               </p>
             </div>
           </div>
@@ -398,7 +386,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 1 — Programas Temáticos PPA</p>
-              <p>Códigos finalísticos: 2034 (SEPPIR), 5034 (MDHC — filtrado), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
+              <p>Códigos finalísticos: 2034 (SEPPIR), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Subfunção 422</p>
@@ -414,6 +402,21 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             </div>
           </div>
 
+          <div className="bg-destructive/10 rounded p-3 border border-destructive/30 mt-2">
+            <p className="text-xs font-semibold text-foreground mb-1">⚠️ Tratamento de Programas Genéricos / Universais</p>
+            <p className="text-xs">
+              Programas de grande escala como <strong>Minha Casa Minha Vida</strong> (R$ 100+ bi/ano), <strong>Bolsa Família</strong> (R$ 160+ bi/ano), 
+              <strong> SUS</strong>, <strong>SUAS</strong> e similares <strong>não são incluídos</strong>, mesmo que beneficiem populações negras e indígenas proporcionalmente.
+              Incluí-los inflaria artificialmente os totais, mascarando o investimento efetivamente <em>finalístico</em> em política racial.
+            </p>
+            <p className="text-xs mt-2">
+              Para programas como o antigo <strong>5034 (MDHC)</strong>, que reunia ações de direitos humanos genéricas junto com ações raciais, 
+              <strong> somente ações cujos campos programa/descritivo contêm palavras-chave raciais/étnicas</strong> foram retidas na base 
+              (ex: "igualdade racial", "quilombola", "indígena", "capoeira", "terreiro"). Ações sem esse recorte — tipicamente administrativas 
+              ou de direitos humanos gerais reclassificadas retroativamente pela API — foram <strong>excluídas definitivamente</strong>.
+            </p>
+          </div>
+
           <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
             <p className="text-xs font-semibold text-foreground mb-1">📌 Diferença para a seção TESTE</p>
             <p className="text-xs">
@@ -425,13 +428,13 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
           </div>
 
           <div className="flex flex-wrap gap-1.5 mt-2">
-            <span className="text-[10px] font-medium text-foreground mr-1">Radicais:</span>
-            {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
+            <span className="text-[10px] font-medium text-foreground mr-1">Radicais de busca:</span>
+            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana'].map(r => (
               <Badge key={r} variant="secondary" className="text-[10px] font-mono">{r}*</Badge>
             ))}
           </div>
           <p className="text-[10px] mt-1">
-            <strong>Exclusões:</strong> Bolsa Família, MCMV, SUS, SUAS e ações 5034/MDHC sem palavras-chave raciais no campo programa/descritivo.
+            <strong>Exclusões definitivas:</strong> Bolsa Família, MCMV, SUS, SUAS e todas as ações de programas genéricos (ex: 5034/MDHC) sem palavras-chave raciais/étnicas no campo programa/descritivo.
           </p>
         </CardContent>
       </Card>
@@ -630,12 +633,12 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       )}
 
       {/* ═══ 8. CRUZAMENTO ARTIGOS ICERD ═══ */}
-      <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} includeExcludedInCalc={includeExcludedInCalc} sectionNumber={8} />
+      <IcerdArtigosSection records={records} sesaiRecords={sesaiRecords} formatCurrency={formatCurrency} sectionNumber={8} />
 
       {/* ═══ 9. CONCLUSÃO E VEREDITO TÉCNICO (integra Seção 8 — ICERD) ═══ */}
       {(() => {
         // Compute ICERD data inline for integration into verdict
-        const allRecs = [...records, ...sesaiRecords].filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+        const allRecs = [...records, ...sesaiRecords];
         const icerdByArtigo = ARTIGOS_CONVENCAO.map(art => {
           const matched = allRecs.filter(r => inferArtigosOrcamento(r).includes(art.numero));
           const liq = matched.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
