@@ -92,7 +92,7 @@ export function RacaGeneroTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               DIEESE/PNAD Q2 2024
-              <EstimativaBadge tipo="cruzamento" metodologia="Dados DIEESE Boletim Consciência Negra Nov/2024 — cruzamento raça × gênero verificado" />
+              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Boletim DIEESE 'Consciência Negra' (Nov/2024, p.5-12, dados PNAD Contínua Q2/2024). O IBGE/PNAD não publica tabela única com os 3 indicadores cruzados por raça e sexo. DIEESE consolida a partir de microdados. Link: dieese.org.br/boletimespecial/2024/boletimEspecial02.html" />
             </CardDescription>
           </CardHeader>
           <CardContent>
