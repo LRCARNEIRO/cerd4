@@ -152,6 +152,37 @@ async function fetchPaginated(
   return all;
 }
 
+/**
+ * Programas focais: todo o orçamento é destinado ao público-alvo.
+ * Para esses, todas as ações são incluídas sem filtro de keyword.
+ */
+const PROGRAMAS_FOCAIS = new Set([
+  "5802", // Enfrentamento ao Racismo (MIR)
+  "5803", // Juventude Negra Viva (MIR)
+  "5804", // Promoção da Igualdade Étnico-Racial (MIR)
+  "1617", // Demarcação Territórios Indígenas (MPI)
+  "5136", // Proteção Povos Indígenas (MPI)
+]);
+
+/**
+ * Keywords para filtrar ações dentro de programas universais.
+ * Apenas ações cujo nome/descritivo contenha esses termos são incluídas.
+ */
+const ACAO_KEYWORDS = [
+  "indígen", "indigen", "quilombol", "racial", "racismo", "negro", "negra",
+  "afro", "étnic", "etnic", "palmares", "igualdade racial", "terreiro",
+  "matriz africana", "capoeira", "candomblé", "umbanda", "afrodescendente",
+  "cigano", "romani", "povo cigano", "comunidades tradicionais",
+  "povos tradicionais", "remanescentes", "funai", "sesai",
+  "saúde indígen", "educação indígen", "escolar indígen",
+];
+
+/** Check if an action text matches any target-population keyword */
+function acaoMatchesKeyword(nomeAcao: string, descritivo: string): boolean {
+  const text = `${nomeAcao} ${descritivo}`.toLowerCase();
+  return ACAO_KEYWORDS.some(kw => text.includes(kw));
+}
+
 function resolveGrupoFocal(agenda: "racial" | "indigena", orgao: string, texto: string): string | null {
   const t = texto.toLowerCase();
   if (t.includes("quilombol")) return "quilombolas";
@@ -223,7 +254,7 @@ Deno.serve(async (req) => {
           );
 
           const aggregated = aggregateApiRows(dados);
-          console.log(`  Brutos: ${dados.length}, Agregados: ${aggregated.length}`);
+          console.log(`  Brutos: ${dados.length}, Agregados: ${aggregated.length}, Focal: ${PROGRAMAS_FOCAIS.has(prog.codigo)}`);
 
           if (aggregated.length === 0) {
             cobertura[chave] = { encontrado: false, registros: 0 };
@@ -231,11 +262,21 @@ Deno.serve(async (req) => {
           }
 
           let count = 0;
+          let skippedUniversal = 0;
+          const isFocal = PROGRAMAS_FOCAIS.has(prog.codigo);
+
           for (const item of aggregated) {
             const codProg = item.codigoPrograma || prog.codigo;
             const nomeProg = item.programa || item.nomePrograma || prog.nome;
             const codAcao = item.codigoAcao || "";
             const nomeAcao = item.acao || item.nomeAcao || "";
+            const descritivo = item.descricao || item.descritivo || "";
+
+            // For universal programs, filter by action-level keywords
+            if (!isFocal && !acaoMatchesKeyword(nomeAcao, descritivo)) {
+              skippedUniversal++;
+              continue;
+            }
 
             const orgao = resolveOrgao(item, prog.orgao_nome);
 
@@ -274,11 +315,15 @@ Deno.serve(async (req) => {
               grupo_focal: grupoFocal,
               descritivo: nomeAcao || nomeProg || null,
               publico_alvo: null,
-              razao_selecao: `Agenda Transversal PPA 2024-2027: ${prog.agenda} | Programa ${prog.codigo} (${prog.nome})`,
+              razao_selecao: `Agenda Transversal PPA 2024-2027: ${prog.agenda} | Programa ${prog.codigo} (${prog.nome})${isFocal ? ' [focal]' : ' [ação filtrada por keyword]'}`,
             });
             count++;
           }
 
+          if (skippedUniversal > 0) {
+            console.log(`  Filtradas ${skippedUniversal} ações universais (sem keyword de público-alvo)`);
+          }
+          console.log(`  Incluídas: ${count} ações`);
           cobertura[chave] = { encontrado: true, registros: count };
         } catch (e) {
           console.error(`  Erro ${prog.codigo} ${ano}:`, e);
