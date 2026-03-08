@@ -890,7 +890,7 @@ export function JuventudeTab() {
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-sm font-medium">{item.indicador}</p>
                     {(item as any).cruzamento && (
-                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'Cruzamento de 2+ fontes distintas'} />
+                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'ERRO: metodologia de cruzamento não documentada — verificar fonte'} />
                     )}
                     {/* REMOVIDO: EstimativaBadge tipo="simples" — estimativas/proxies PROIBIDOS pela Regra de Ouro */}
                   </div>
