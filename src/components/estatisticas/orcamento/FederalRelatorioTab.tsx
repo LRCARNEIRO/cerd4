@@ -77,7 +77,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
     }).filter(d => d.registros > 0);
 
     return { chartData, byArtigo, unmappedCount, totalRecords: allRecords.length, totalLiq };
-  }, [records, sesaiRecords, includeExcludedInCalc]);
+  }, [records, sesaiRecords]);
 
   if (icerdData.chartData.length === 0) return null;
 
