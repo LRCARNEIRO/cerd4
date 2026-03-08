@@ -273,7 +273,8 @@ export const analfabetismoGeral2024 = {
   taxaIdosos60Mais: 14.9,
   taxaIdososNegros60Mais: 21.8,
   taxaIdososBrancos60Mais: 8.1,
-  fonte: 'PNAD Contínua Educação 2024',
+  fonte: 'PNAD Contínua / SIDRA 7125',
+  urlFonte: 'https://sidra.ibge.gov.br/tabela/7125',
   dataReferencia: 'Junho/2025'
 };
 
