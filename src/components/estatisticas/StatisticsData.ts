@@ -126,14 +126,23 @@ export const indicadoresSocioeconomicos = [
     fonte: 'PNAD Contínua 2023 (SIDRA 6800)'
   },
   { 
-    // PNAD 2024 - Dados preliminares
+    // PNAD Contínua Q2 2024 — DIEESE Boletim Especial Nov/2024
+    // Rendimento: Negros R$2.392, Brancos R$4.009 (Pardos R$2.402, Pretos R$2.250)
+    // Desemprego: Negros 8,0%, Não negros 5,5%
+    // IBGE anual 2024: desocupação 6,6%, rendimento habitual médio R$3.225
     ano: 2024, 
-    rendaMediaNegra: 2350, rendaMediaBranca: 3850,
-    desempregoNegro: 8.2, desempregoBranco: 5.5,
-    pobreza_negra: 22.5, pobreza_branca: 11.0,
-    fonte: 'PNAD Contínua 2024'
+    rendaMediaNegra: 2392, rendaMediaBranca: 4009,
+    desempregoNegro: 8.0, desempregoBranco: 5.5,
+    // ATENÇÃO: pobreza 2024 NÃO VERIFICADA — SIS/IBGE 2025 ainda não publicado. Valores são ESTIMATIVAS.
+    pobreza_negra: null, pobreza_branca: null,
+    fonte: 'PNAD Contínua Q2 2024 (DIEESE/IBGE)'
   },
 ];
+// NOTA AUDITORIA — RENDA E DESEMPREGO:
+// Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
+// Ano 2023: renda verificada via SIDRA 6800 (R$2.199 negros, R$3.730 brancos).
+// Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
+// POBREZA 2020-2024: NÃO VERIFICADA. SIS/IBGE publica pobreza por cor/raça anualmente — conferir.
 
 // Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6800)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
