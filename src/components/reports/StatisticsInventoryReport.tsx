@@ -257,7 +257,7 @@ ${arrayToHTMLTable(saudeSerieHistorica, '')}
 ${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
 
 <h3>3.2. Mulheres Chefes de Família</h3>
-${arrayToHTMLTable(mulheresChefeFamilia, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça. Requer processamento de microdados PNAD.</div>
 
 <h3>3.3. Violência Interseccional</h3>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
@@ -267,10 +267,10 @@ ${arrayToHTMLTable(juventudeNegra, '')}
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
-${arrayToHTMLTable(educacaoInterseccional, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
 
 <h3>3.6. Saúde Interseccional</h3>
-${arrayToHTMLTable(saudeInterseccional, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023).</div>
 
 <h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
 ${arrayToHTMLTable(serieAntraTrans, '')}
@@ -379,13 +379,9 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <h4>Violência contra Mulheres Negras</h4>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 <h4>Saúde Interseccional (Raça × Classe)</h4>
-<table>
-  <tr><th>Indicador</th><th>Negra Pobre</th><th>Negra Média</th><th>Branca</th></tr>
-  ${saudeInterseccional.map(s => '<tr><td>' + s.indicador + '</td><td>' + s.mulherNegraPobre + '</td><td>' + s.mulherNegraMedia + '</td><td>' + s.mulherBranca + '</td></tr>').join('')}
-</table>
-<p class="meta">Fontes: 19º Anuário FBSP 2025, DataSUS/SIM, SINASC, CadÚnico (cruzamentos). <span class="badge badge-amber">🔀 Cruzamento indireto</span></p>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Fato verificado: mortalidade materna de mulheres negras é ~2x maior que de brancas (Pesquisa Nascer no Brasil II, Nov/2023).</div>
 <h4>Mulheres Chefes de Família — Série Histórica</h4>
-${arrayToHTMLTable(mulheresChefeFamilia, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça.</div>
 
 <h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
@@ -462,11 +458,11 @@ function generateInventoryHTML(indicadoresBD: any[]) {
     { nome: 'LGBTQIA+ — ANTRA/Trans', registros: serieAntraTrans.length, fonte: 'ANTRA / FBSP', periodo: '2018-2024' },
     { nome: 'LGBTQIA+ × Raça', registros: lgbtqiaPorRaca.length, fonte: 'Pesquisa Sexualidade IBGE', periodo: '2022' },
     { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
-    { nome: 'Mulheres Chefes de Família', registros: mulheresChefeFamilia.length, fonte: 'PNAD / Censo 2022', periodo: '2010-2024' },
+    { nome: 'Mulheres Chefes de Família', registros: 0, fonte: '🔴 LACUNA — SIDRA 6403 não publica por raça', periodo: 'N/A' },
     { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
     { nome: 'Juventude Negra', registros: juventudeNegra.length, fonte: 'FBSP / PNAD', periodo: '2018-2024' },
-    { nome: 'Educação Interseccional', registros: educacaoInterseccional.length, fonte: 'INEP', periodo: '2018-2024' },
-    { nome: 'Saúde Interseccional', registros: saudeInterseccional.length, fonte: 'DataSUS', periodo: '2018-2024' },
+    { nome: 'Educação Interseccional', registros: 0, fonte: '🔴 LACUNA — IBGE/INEP não publica raça×gênero', periodo: 'N/A' },
+    { nome: 'Saúde Interseccional', registros: 0, fonte: '🔴 LACUNA — DataSUS não cruza raça×renda', periodo: 'N/A' },
     { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
     { nome: 'Evolução da Desigualdade', registros: evolucaoDesigualdade.length, fonte: 'IBGE / PNAD', periodo: '2018-2024' },
   ];

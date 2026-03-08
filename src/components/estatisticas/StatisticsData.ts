@@ -602,24 +602,66 @@ export const classePorRaca = [
   { faixa: 'Pobreza (< US$6,85/dia)', branca: 17.7, parda: 35.5, preta: 30.8, total: 27.4, fonte: 'SIS/IBGE 2024 (dados 2023)', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2024-12/ibge-pobreza-e-extrema-pobreza-atingem-menor-nivel-no-pais-desde-2012' },
 ];
 
-// Mulheres chefes de família
-// Fonte declarada: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
-// ⚠️ AUDITORIA: Progressão linear perfeita (28,5→38,2) = padrão de FABRICAÇÃO.
-// SIDRA 6403 não publica "chefia familiar" diretamente por raça.
-// DADOS ABAIXO SÃO ESTIMATIVAS NÃO VERIFICADAS — pendente de conferência com SIS/IBGE.
-// Status: 🔴 PENDENTE AUDITAGEM
-export const mulheresChefeFamilia = [
-  { ano: 2018, negras: 28.5, brancas: 18.2, estimativa: true },
-  { ano: 2019, negras: 29.8, brancas: 18.8, estimativa: true },
-  { ano: 2020, negras: 32.5, brancas: 20.1, estimativa: true },
-  { ano: 2021, negras: 34.2, brancas: 21.5, estimativa: true },
-  { ano: 2022, negras: 35.8, brancas: 22.2, estimativa: true },
-  { ano: 2023, negras: 37.5, brancas: 23.1, estimativa: true },
-  { ano: 2024, negras: 38.2, brancas: 23.8, estimativa: true }
-];
+// =============================================
+// LACUNAS DOCUMENTADAS — Dados removidos por violação da Regra de Ouro
+// Estes dados eram FABRICADOS pela IA e foram eliminados.
+// Cada lacuna documenta: o que faltava, a fonte esperada, e o status.
+// =============================================
+
+// LACUNA 1: Mulheres chefes de família por raça — série temporal
+// Removido: 7 registros com progressão linear perfeita (28,5→38,2%) = padrão de fabricação.
+// SIDRA 6403 não publica "chefia familiar monoparental" diretamente por raça em série temporal.
+// Fonte esperada: SIS/IBGE (publica dado pontual, não série) ou processamento de microdados PNAD.
+// Status: 🔴 DADO INEXISTENTE em publicação oficial. Requer processamento de microdados.
+export const mulheresChefeFamilia: never[] = [];
 export const mulheresChefeFamiliaFontes = [
   { nome: 'SIDRA 6403 — Arranjos familiares por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
   { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+];
+
+export const lacunasDocumentadas = [
+  {
+    id: 'LACUNA-MULHERES-CHEFE',
+    nome: 'Mulheres Chefes de Família por Raça — Série Temporal',
+    descricao: 'O IBGE não publica série temporal de chefia familiar monoparental desagregada por raça. A SIDRA 6403 contém arranjos familiares, mas não a combinação direta "chefia monoparental × raça × ano" necessária.',
+    fonteEsperada: 'PNAD Contínua — microdados (requer processamento)',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/6403',
+    status: 'indisponivel' as const,
+    relevancia: ['CERD 2022 §21', 'Common Core'],
+    dadoRemovido: '7 registros fabricados (2018-2024) com progressão linear artificial',
+  },
+  {
+    id: 'LACUNA-EDUCACAO-INTERSECCIONAL',
+    nome: 'Educação por Raça × Gênero (Superior, Pós, Evasão)',
+    descricao: 'O IBGE/INEP não publica taxa de conclusão de ensino superior desagregada simultaneamente por raça e gênero. SIDRA 7129 publica por raça (sem gênero). INEP publica matrículas, não taxa de conclusão. Dados para indígenas e quilombolas inexistentes neste formato.',
+    fonteEsperada: 'SIDRA 7129 (por raça, sem gênero) + INEP Censo Educação Superior (matrículas)',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/7129',
+    status: 'indisponivel' as const,
+    relevancia: ['CERD 2022 §25-26', 'Common Core'],
+    dadoRemovido: '6 registros fabricados (superiorCompleto, pósGraduação, evasãoMédio por raça×gênero)',
+    dadoRealDisponivel: 'Negros com superior completo: 11,4% (PNAD Educação 2024) / 9,2% (DIEESE Q2 2024). Dado GERAL por raça, sem cruzamento gênero.',
+  },
+  {
+    id: 'LACUNA-SAUDE-INTERSECCIONAL',
+    nome: 'Saúde Materna por Raça × Classe (Renda)',
+    descricao: 'O DataSUS (SIM/SINASC) publica mortalidade materna por raça, mas NÃO por faixa de renda. O cruzamento DataSUS × CadÚnico é conceitualmente válido, mas os valores numéricos específicos (185,2 / 128,5 / 68,2) eram fabricados.',
+    fonteEsperada: 'SIM/DataSUS (raça) — cruzamento com CadÚnico requer processamento de microdados',
+    urlFonte: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    status: 'indisponivel' as const,
+    relevancia: ['CERD 2022 §27-28', 'Common Core'],
+    dadoRemovido: '3 registros fabricados (mortalidade, pré-natal, cesárea por raça×renda)',
+    dadoRealDisponivel: 'Fato verificado: mortalidade materna de mulheres negras é ~2x maior que de brancas (Pesquisa Nascer no Brasil II, Nov/2023, Ministério da Saúde). URL: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa',
+  },
+  {
+    id: 'LACUNA-PCD-EMPREGO-RENDA',
+    nome: 'Empregabilidade e Renda de PcD por Raça',
+    descricao: 'A SIDRA 9339 publica nível de ocupação e rendimento de PcD, mas os valores exatos por raça (empregabilidade 29,8% / 25,1% / 26,3% e renda R$2.402 / R$1.586 / R$1.548) não foram verificados individualmente na tabela SIDRA.',
+    fonteEsperada: 'SIDRA 9339 — Ocupação e rendimento PcD por cor/raça',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9339',
+    status: 'pendente_verificacao' as const,
+    relevancia: ['CERD 2022 §29', 'Common Core'],
+    dadoRemovido: 'Valores mantidos mas sinalizados como pendentes de verificação individual na SIDRA 9339',
+  },
 ];
 
 // Violência interseccional - 19º Anuário FBSP 2025 (dados 2024)
@@ -633,44 +675,21 @@ export const mulheresChefeFamiliaFontes = [
 //   Estupro 54.2%: 🟡 PENDENTE verificação no PDF do 19º Anuário.
 export const violenciaInterseccional = [
   { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', estimativa: true },
-  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', estimativa: true },
+  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 59,8% pendente de verificação no PDF do 19º Anuário FBSP' },
+  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 54,2% pendente de verificação no PDF do 19º Anuário FBSP' },
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
-// Comparativo: coluna 'valor' = dado mais recente (2024); 'referencia' = dado de brancos para contraste
-// NOTA: Homicídio e Encarceramento são dados oficiais diretos.
-//       Desemprego e Nem-nem usam PNAD Contínua com filtro 15-29 por cor/raça (SIDRA 7113+9605).
-//       Óbitos causas externas: SIM/DataSUS 2024 por cor/raça e faixa etária.
 export const juventudeNegra = [
-  // CORRIGIDO: O Atlas 2025 NÃO publica taxa de homicídio específica para "jovens negros 15-29".
-  // O dado 78,5 era FABRICADO. O Atlas reporta: negros 28,9 vs não negros 10,6 (2023, GERAL).
-  // O que o Atlas diz sobre jovens: 47,8% das vítimas de homicídio têm 15-29 anos, 79% destes são negros homens.
   { indicador: 'Taxa de homicídio negros (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia' },
   { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
   { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
   { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
-  // REMOVIDO: 'Óbitos causas externas (%)' — era proxy (Fiocruz processou microdados, não publicação direta). PROIBIDO pela Regra de Ouro.
 ];
 
-// Educação interseccional
-// ⚠️ AUDITORIA: Fonte SIDRA 7267 é INCORRETA para esses dados. A tabela SIDRA 7267 não cruza educação × gênero × raça.
-// Dados verificáveis: DIEESE Q2 2024 = negros com superior 9,2%. PNAD Educação 2024 = negros 11,4% (anual, SIDRA 7129).
-// Dados de quilombola e indígena por gênero NÃO são publicados pelo IBGE/INEP. Status: 🔴 PARCIALMENTE FABRICADOS.
-// Fontes reais:
-//   SIDRA 7129: https://sidra.ibge.gov.br/Tabela/7129 (nível de instrução por cor/raça — sem gênero)
-//   DIEESE Q2 2024: ensino superior por cor/raça = negros 9,2% (Gráfico 11)
-//   INEP: Censo Educação Superior (matrículas, não taxa de conclusão por raça×gênero)
-export const educacaoInterseccional = [
-  // NOTA: "superiorCompleto" por gênero × raça NÃO é publicado pelo SIDRA. Valores são ESTIMATIVAS.
-  // Únicos valores verificáveis: negros geral 11,4% (PNAD Educação anual 2024) / 9,2% (DIEESE Q2 2024).
-  { grupo: 'Mulher negra', superiorCompleto: 15.2, posGraduacao: 2.8, evasaoMedio: 12.5, estimativa: true },
-  { grupo: 'Homem negro', superiorCompleto: 11.8, posGraduacao: 1.9, evasaoMedio: 18.2, estimativa: true },
-  { grupo: 'Mulher branca', superiorCompleto: 28.5, posGraduacao: 6.2, evasaoMedio: 5.8, estimativa: true },
-  { grupo: 'Homem branco', superiorCompleto: 22.8, posGraduacao: 4.5, evasaoMedio: 8.2, estimativa: true },
-  { grupo: 'Indígena', superiorCompleto: 5.2, posGraduacao: 0.8, evasaoMedio: 25.5, estimativa: true },
-  { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8, estimativa: true }
-];
+// REMOVIDO: educacaoInterseccional — 6 registros fabricados. Ver lacunasDocumentadas[1].
+// Exportação vazia para manter compatibilidade de imports.
+export const educacaoInterseccional: never[] = [];
 export const educacaoInterseccionalFontes = [
   { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
   { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
@@ -678,20 +697,10 @@ export const educacaoInterseccionalFontes = [
   { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior' },
 ];
 
-// Saúde interseccional
-// AUDITORIA FASE 3:
-// O DataSUS (SIM/SINASC) publica mortalidade materna por raça, MAS NÃO por renda.
-// "Morte de mães negras é duas vezes maior que de brancas" — VERIFICADO (Pesquisa Nascer no Brasil II, Nov/2023, Ministério da Saúde).
-// Os valores numéricos EXATOS por faixa de renda (mulherNegraPobre, mulherNegraMedia) são FABRICADOS.
-// DataSUS × CadÚnico = cruzamento conceitualmente válido, mas os números específicos não são publicados.
-// Status: 🔴 VALORES NUMÉRICOS NÃO VERIFICÁVEIS — marcados estimativa: true
-// Fato verificado: mortalidade materna negra é ~2x maior que branca (Pesquisa Nascer no Brasil II, 2023)
-//   Fonte: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa
-export const saudeInterseccional = [
-  { indicador: 'Mortalidade materna (por 100 mil NV)', mulherNegraPobre: 185.2, mulherNegraMedia: 128.5, mulherBranca: 68.2, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SIM/DataSUS — Mortalidade materna por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }, { nome: 'Pesquisa Nascer no Brasil II (Nov/2023)', url: 'https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa' }], metodologiaCruzamento: 'Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023). Valores numéricos exatos por faixa de renda NÃO publicados — estimativas do cruzamento DataSUS × CadÚnico.' },
-  { indicador: 'Pré-natal adequado (%)', mulherNegraPobre: 38.5, mulherNegraMedia: 62.5, mulherBranca: 82.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Pré-natal por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica consultas pré-natal por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' },
-  { indicador: 'Cesárea eletiva (%)', mulherNegraPobre: 28.5, mulherNegraMedia: 45.2, mulherBranca: 72.5, estimativa: true, cruzamento: true, fontesCruzamento: [{ nome: 'SINASC/DataSUS — Partos por raça', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' }], metodologiaCruzamento: 'SINASC publica tipo de parto por raça, mas NÃO por renda. Valores por faixa de renda são estimativas.' }
-];
+// REMOVIDO: saudeInterseccional — 3 registros fabricados. Ver lacunasDocumentadas[2].
+// Exportação vazia para manter compatibilidade de imports.
+export const saudeInterseccional: never[] = [];
+
 
 // Radar: Vulnerabilidades por grupo
 // ÍNDICE COMPOSTO — Elaboração própria a partir de múltiplas fontes
