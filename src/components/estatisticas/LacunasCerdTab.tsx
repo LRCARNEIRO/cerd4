@@ -173,7 +173,7 @@ export function LacunasCerdTab() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Lacunas CERD - Análise de Cumprimento</h2>
-          <p className="text-sm text-muted-foreground">CERD/C/BRA/CO/18-20 (2022) • Período: 2018-2026</p>
+          <p className="text-sm text-muted-foreground">CERD/C/BRA/CO/18-20 (2022) • Período: 2018-2025</p>
         </div>
         <Button variant="outline" size="sm" onClick={handleRefresh} className="gap-2">
           <RefreshCw className="w-4 h-4" />
