@@ -312,15 +312,12 @@ export function VulnerabilidadesTab() {
                 <TableRow key={item.grupo}>
                   <TableCell className="font-medium text-sm">
                     {item.grupo}
-                    {item.grupo === 'Homem Negro' && (
-                      <EstimativaBadge
-                        tipo="simples"
-                        metodologia="Renda estimada: (total negros R$2.392 × 2 − mulher negra R$2.079) ≈ R$2.676. Proporção inferida do DIEESE Q2 2024."
-                        className="ml-1"
-                      />
-                    )}
                   </TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.renda)}</TableCell>
+                  <TableCell className="text-right">
+                    {item.grupo === 'Homem Negro' ? (
+                      <span className="text-muted-foreground text-xs" title="DIEESE Q2 2024 publica apenas total negros (R$2.392), sem desagregação por sexo">N/D ¹</span>
+                    ) : formatCurrency(item.renda)}
+                  </TableCell>
                   <TableCell className={cn("text-right", item.desemprego > 15 && "text-destructive font-semibold")}>
                     {item.desemprego}%
                   </TableCell>
