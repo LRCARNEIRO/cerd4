@@ -77,91 +77,68 @@ export function RacaGeneroTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* LACUNA: Mulheres Chefes de Família — dados fabricados removidos */}
+        <Card className="border-l-4 border-l-warning">
           <CardHeader>
-            <CardTitle className="text-base">Mulheres Chefes de Família Monoparental (%)</CardTitle>
-            <CardDescription>Evolução 2018-2024</CardDescription>
+            <CardTitle className="text-base flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-warning" />
+              Mulheres Chefes de Família por Raça
+            </CardTitle>
+            <CardDescription>LACUNA DOCUMENTADA — Dados removidos</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mulheresChefeFamilia}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip 
-                    formatter={(value: number) => [`${value}%`, '']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Line type="monotone" dataKey="negras" name="Negras" stroke="hsl(var(--destructive))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="brancas" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
+              <p className="text-sm font-medium text-warning">⚠️ Dado inexistente em publicação oficial</p>
+              <p className="text-xs text-muted-foreground">
+                {lacunasDocumentadas.find(l => l.id === 'LACUNA-MULHERES-CHEFE')?.descricao}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-MULHERES-CHEFE')?.dadoRemovido}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA 6403
+                </a>
+                <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIS/IBGE 2024
+                </a>
+              </div>
             </div>
-            <div className="mt-2 flex items-center gap-2">
-              <EstimativaBadge
-                tipo="cruzamento"
-                metodologia="Cruzamento SIDRA 6403 (arranjos familiares por cor/raça) × SIS/IBGE 2024 (síntese de indicadores sociais). O IBGE não publica série temporal de chefia monoparental por raça em tabela única."
-              />
-              <span className="text-[10px] text-muted-foreground">SIDRA 6403 × SIS/IBGE 2024</span>
-            </div>
-            <AuditFooterComponent
-              fontes={mulheresChefeFamiliaFontes}
-              documentos={['CERD 2022']}
-            />
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      {/* LACUNA: Educação Interseccional — dados fabricados removidos */}
+      <Card className="border-l-4 border-l-warning">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-primary" />
-            Educação por Raça × Gênero (%)
+            <GraduationCap className="w-5 h-5 text-warning" />
+            Educação por Raça × Gênero
           </CardTitle>
-          <CardDescription>INEP/Censo da Educação Superior 2023 e PNAD Contínua 2024</CardDescription>
+          <CardDescription>LACUNA DOCUMENTADA — Dados removidos</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Grupo</TableHead>
-                <TableHead className="text-right">Ensino Superior</TableHead>
-                <TableHead className="text-right">Pós-graduação</TableHead>
-                <TableHead className="text-right">Evasão Ens. Médio</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {educacaoInterseccional.map(item => (
-                <TableRow key={item.grupo}>
-                  <TableCell className="font-medium">
-                    {item.grupo}
-                    {(item.grupo === 'Indígena' || item.grupo === 'Quilombola') && (
-                      <EstimativaBadge
-                        tipo="cruzamento"
-                        metodologia={`Cruzamento SIDRA 7267 (educação por cor/raça) × INEP Censo Educação Superior × PNAD Contínua 2024. O IBGE/INEP não publica ensino superior e evasão específicos para ${item.grupo.toLowerCase()}s em tabela direta.`}
-                        className="ml-1"
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">{item.superiorCompleto}%</TableCell>
-                  <TableCell className="text-right">{item.posGraduacao}%</TableCell>
-                  <TableCell className={cn("text-right", item.evasaoMedio > 15 && "text-destructive font-semibold")}>
-                    {item.evasaoMedio}%
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <AuditFooterComponent
-            fontes={educacaoInterseccionalFontes}
-            documentos={['CERD 2022', 'Common Core']}
-          />
+          <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
+            <p className="text-sm font-medium text-warning">⚠️ Dado inexistente no formato raça × gênero</p>
+            <p className="text-xs text-muted-foreground">
+              {lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.descricao}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.dadoRemovido}
+            </p>
+            <div className="p-3 bg-accent/10 rounded-lg mt-2">
+              <p className="text-xs font-medium">✅ Dado real disponível (sem cruzamento gênero):</p>
+              <p className="text-xs text-muted-foreground">{lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.dadoRealDisponivel}</p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 7129
+              </a>
+              <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> PNAD Educação 2024
+              </a>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
