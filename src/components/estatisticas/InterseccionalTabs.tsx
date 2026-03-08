@@ -14,16 +14,12 @@ import { AuditFooter as AuditFooterComponent } from '@/components/ui/audit-foote
 import { atlasViolencia2025 } from './StatisticsData';
 import { 
   violenciaInterseccional, 
-  mulheresChefeFamilia, 
-  educacaoInterseccional,
-  educacaoInterseccionalFontes,
-  saudeInterseccional,
+  lacunasDocumentadas,
   lgbtqiaPorRaca,
   serieAntraTrans,
   deficienciaPorRaca,
   juventudeNegra,
   classePorRaca,
-  mulheresChefeFamiliaFontes,
   povosTradicionais,
   fonteDados
 } from './StatisticsData';
