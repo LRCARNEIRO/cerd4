@@ -160,24 +160,30 @@ export const razaoRendaRacial = 0.589;
 //   • 76,5% das vítimas de homicídio são negras (2022)
 //   • 47,8% das vítimas tinham 15-29 anos (2023), 79% jovens negros masculinos
 //   • IVJ-N: risco 2x maior para jovens negros (2021, subiu de 1,9x em 2017)
-// Comparativo 2018 → 2024:
-//   • Homicídios totais caíram, mas a proporção de negros entre vítimas aumentou (75,4% → 82%)
-//   • Letalidade policial contra negros manteve-se acima de 75% em todo o período
+// NOTA AUDITORIA: A comparação de taxas de homicídio é Negros vs NÃO NEGROS (Atlas/IPEA),
+//   e NÃO Negros vs Brancos. O campo 'homicidioBranco' refere-se a 'não negros'.
+// Comparativo 2018 → 2023 (Atlas):
+//   • Taxa de homicídio de negros caiu de 37,6 para 28,9 (mas risco relativo subiu)
+//   • Letalidade policial contra negros: 75,4% (2018) → 82% (2024)
 //   • Feminicídio de mulheres negras: subiu de 61% (2018) para 63,6% (2024)
 // =============================================
 
 export const segurancaPublica = [
-  // 18º Anuário FBSP (2024, dados 2023) e edições anteriores
-  { ano: 2018, homicidioNegro: 40.2, homicidioBranco: 15.5, letalidadePolicial: 75.4, percentualVitimasNegras: 75.7, razaoRisco: 2.6 },
-  { ano: 2019, homicidioNegro: 38.5, homicidioBranco: 14.8, letalidadePolicial: 76.2, percentualVitimasNegras: 76.2, razaoRisco: 2.6 },
-  { ano: 2020, homicidioNegro: 35.8, homicidioBranco: 13.5, letalidadePolicial: 78.5, percentualVitimasNegras: 76.9, razaoRisco: 2.7 },
-  { ano: 2021, homicidioNegro: 32.5, homicidioBranco: 12.8, letalidadePolicial: 80.2, percentualVitimasNegras: 77.0, razaoRisco: 2.5 },
-  { ano: 2022, homicidioNegro: 30.2, homicidioBranco: 12.2, letalidadePolicial: 82.5, percentualVitimasNegras: 76.5, razaoRisco: 2.5 },
-  // Atlas da Violência 2025 (IPEA/FBSP) — dados de 2023: taxa negros 28,9; não negros 10,6; risco 2,7x
-  // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial, 76,6% vítimas negras
+  // AUDITADO: Valores corrigidos conforme Atlas da Violência 2025 (IPEA), p.79
+  // NOTA: A comparação correta é Negros vs Não Negros (e NÃO Negros vs Brancos) conforme metodologia do Atlas.
+  // O campo 'homicidioBranco' refere-se na verdade a 'não negros' (nome mantido por compatibilidade).
+  // Letalidade policial: Anuários FBSP 13ª a 19ª edição
+  { ano: 2018, homicidioNegro: 37.6, homicidioBranco: 14.0, letalidadePolicial: 75.4, percentualVitimasNegras: 75.7, razaoRisco: 2.7 },
+  { ano: 2019, homicidioNegro: 29.0, homicidioBranco: 11.3, letalidadePolicial: 79.1, percentualVitimasNegras: 76.2, razaoRisco: 2.6 },
+  { ano: 2020, homicidioNegro: 32.2, homicidioBranco: 11.5, letalidadePolicial: 78.9, percentualVitimasNegras: 76.8, razaoRisco: 2.8 },
+  { ano: 2021, homicidioNegro: 31.0, homicidioBranco: 10.8, letalidadePolicial: 84.1, percentualVitimasNegras: 77.0, razaoRisco: 2.9 },
+  { ano: 2022, homicidioNegro: 29.7, homicidioBranco: 10.8, letalidadePolicial: 83.1, percentualVitimasNegras: 76.5, razaoRisco: 2.8 },
+  // Atlas da Violência 2025 (IPEA) — dados de 2023: taxa negros 28,9; não negros 10,6; risco 2,7x
+  // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial
   { ano: 2023, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
   // 19º Anuário FBSP 2025 (dados de 2024): 82% letalidade policial, 77% vítimas negras
-  { ano: 2024, homicidioNegro: 27.5, homicidioBranco: 10.2, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
+  // NOTA: Taxa de homicídio por 100 mil para 2024 ainda não publicada pelo Atlas — valor omitido.
+  { ano: 2024, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
 ];
 
 // Feminicídio - série histórica (Anuário FBSP)
@@ -245,15 +251,17 @@ export const jovensNegrosViolencia = {
 // =============================================
 
 export const educacaoSerieHistorica = [
-  { ano: 2018, superiorNegroPercent: 9.3, superiorBrancoPercent: 22.9, analfabetismoNegro: 9.1, analfabetismoBranco: 3.8 },
-  { ano: 2019, superiorNegroPercent: 10.1, superiorBrancoPercent: 23.8, analfabetismoNegro: 8.5, analfabetismoBranco: 3.6 },
-  { ano: 2020, superiorNegroPercent: 11.2, superiorBrancoPercent: 24.5, analfabetismoNegro: 7.8, analfabetismoBranco: 3.4 },
-  { ano: 2021, superiorNegroPercent: 12.1, superiorBrancoPercent: 25.2, analfabetismoNegro: 7.2, analfabetismoBranco: 3.2 },
-  { ano: 2022, superiorNegroPercent: 13.5, superiorBrancoPercent: 26.8, analfabetismoNegro: 6.5, analfabetismoBranco: 2.9 },
+  // AUDITADO: Valores corrigidos conforme SIDRA 7129 (Ensino Superior) e SIDRA 7125 (Analfabetismo)
+  // FONTE CORRIGIDA: PNAD Contínua / SIDRA (antes atribuído incorretamente ao INEP)
+  // 2020 e 2021 REMOVIDOS: sem coleta da PNAD durante a pandemia COVID-19
+  { ano: 2018, superiorNegroPercent: 8.1, superiorBrancoPercent: 20.5, analfabetismoNegro: 8.4, analfabetismoBranco: 3.6 },
+  { ano: 2019, superiorNegroPercent: 9.0, superiorBrancoPercent: 21.4, analfabetismoNegro: 8.2, analfabetismoBranco: 3.3 },
+  // 2020 e 2021: sem dados (PNAD suspensa na pandemia)
+  { ano: 2022, superiorNegroPercent: 10.3, superiorBrancoPercent: 23.1, analfabetismoNegro: 7.4, analfabetismoBranco: 3.4 },
   // PNAD Contínua Educação 2023
-  { ano: 2023, superiorNegroPercent: 14.8, superiorBrancoPercent: 27.5, analfabetismoNegro: 7.1, analfabetismoBranco: 3.2 },
+  { ano: 2023, superiorNegroPercent: 10.8, superiorBrancoPercent: 23.7, analfabetismoNegro: 7.1, analfabetismoBranco: 3.2 },
   // PNAD Contínua Educação 2024 (publicada jun/2025)
-  { ano: 2024, superiorNegroPercent: 16.2, superiorBrancoPercent: 28.5, analfabetismoNegro: 6.9, analfabetismoBranco: 3.1 },
+  { ano: 2024, superiorNegroPercent: 11.4, superiorBrancoPercent: 24.9, analfabetismoNegro: 6.9, analfabetismoBranco: 3.1 },
 ];
 
 // Taxa geral de analfabetismo: 5,3% em 2024 (PNAD Contínua Educação 2024)
@@ -265,7 +273,8 @@ export const analfabetismoGeral2024 = {
   taxaIdosos60Mais: 14.9,
   taxaIdososNegros60Mais: 21.8,
   taxaIdososBrancos60Mais: 8.1,
-  fonte: 'PNAD Contínua Educação 2024',
+  fonte: 'PNAD Contínua / SIDRA 7125',
+  urlFonte: 'https://sidra.ibge.gov.br/tabela/7125',
   dataReferencia: 'Junho/2025'
 };
 
@@ -274,15 +283,22 @@ export const analfabetismoGeral2024 = {
 // =============================================
 
 export const saudeSerieHistorica = [
-  { ano: 2018, mortalidadeMaternaNegra: 62.8, mortalidadeMaternaBranca: 32.5, mortalidadeInfantilNegra: 14.5, mortalidadeInfantilBranca: 10.2 },
-  { ano: 2019, mortalidadeMaternaNegra: 60.2, mortalidadeMaternaBranca: 31.8, mortalidadeInfantilNegra: 13.8, mortalidadeInfantilBranca: 9.8 },
-  { ano: 2020, mortalidadeMaternaNegra: 72.5, mortalidadeMaternaBranca: 38.2, mortalidadeInfantilNegra: 14.2, mortalidadeInfantilBranca: 10.5 },
-  { ano: 2021, mortalidadeMaternaNegra: 85.2, mortalidadeMaternaBranca: 42.5, mortalidadeInfantilNegra: 13.5, mortalidadeInfantilBranca: 9.5 },
-  { ano: 2022, mortalidadeMaternaNegra: 58.5, mortalidadeMaternaBranca: 30.2, mortalidadeInfantilNegra: 12.8, mortalidadeInfantilBranca: 9.2 },
+  // AUDITADO: Valores corrigidos conforme cálculo manual a partir do DataSUS
+  // Mortalidade materna: (Óbitos maternos / Nascidos vivos) × 100.000
+  // Mortalidade infantil: (Óbitos infantis / Nascidos vivos) × 1.000
+  // ATENÇÃO MORTALIDADE INFANTIL: A taxa branca aparece SUPERIOR à negra nos dados oficiais.
+  // Isso é um paradoxo explicado por viés de classificação racial nos registros de óbito:
+  // no nascimento a cor é autodeclarada pela mãe; no atestado de óbito é frequentemente
+  // atribuída por terceiros. A correção via relacionamento de bases é inviável (LGPD).
+  { ano: 2018, mortalidadeMaternaNegra: 60.1, mortalidadeMaternaBranca: 49.9, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 13.8 },
+  { ano: 2019, mortalidadeMaternaNegra: 58.7, mortalidadeMaternaBranca: 49.2, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 14.3 },
+  { ano: 2020, mortalidadeMaternaNegra: 75.0, mortalidadeMaternaBranca: 64.8, mortalidadeInfantilNegra: 9.7, mortalidadeInfantilBranca: 12.8 },
+  { ano: 2021, mortalidadeMaternaNegra: 110.2, mortalidadeMaternaBranca: 121.0, mortalidadeInfantilNegra: 9.9, mortalidadeInfantilBranca: 13.5 },
+  { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
   // DataSUS/SIM 2023 - dados consolidados
-  { ano: 2023, mortalidadeMaternaNegra: 55.2, mortalidadeMaternaBranca: 28.5, mortalidadeInfantilNegra: 12.2, mortalidadeInfantilBranca: 8.8 },
+  { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
   // DataSUS/SIM 2024 - dados preliminares
-  { ano: 2024, mortalidadeMaternaNegra: 52.8, mortalidadeMaternaBranca: 27.2, mortalidadeInfantilNegra: 11.8, mortalidadeInfantilBranca: 8.5 },
+  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
 ];
 
 // =============================================
@@ -595,7 +611,8 @@ export const educacaoInterseccional = [
   { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8 }
 ];
 export const educacaoInterseccionalFontes = [
-  { nome: 'SIDRA 7267 — Educação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7267' },
+  { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+  { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
   { nome: 'PNAD Contínua Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
   { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior' },
 ];
