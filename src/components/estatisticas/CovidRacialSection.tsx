@@ -372,9 +372,15 @@ export function CovidRacialSection() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Indígenas apresentaram a menor cobertura vacinal completa (68,2%), seguidos por pretos (71,5%) e pardos (74,8%).
-          </p>
+            <div className="flex items-center gap-2 mt-2">
+              <p className="text-xs text-muted-foreground">
+                Indígenas apresentaram a menor cobertura vacinal completa (68,2%), seguidos por pretos (71,5%) e pardos (74,8%).
+              </p>
+              <EstimativaBadge 
+                tipo="cruzamento" 
+                metodologia="SI-PNI possui ~30% de registros sem preenchimento de raça/cor. Percentuais calculados apenas sobre registros com raça/cor informada, o que pode superestimar coberturas reais." 
+              />
+            </div>
           <AuditFooter fontes={FONTE_VACINACAO} documentos={['CERD 2022 §24']} compact />
         </CardContent>
       </Card>
