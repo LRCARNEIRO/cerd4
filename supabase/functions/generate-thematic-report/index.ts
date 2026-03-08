@@ -130,7 +130,7 @@ serve(async (req) => {
 
     // Determine report title
     let reportTitle = titulo_personalizado || 'Relatório Temático';
-    let reportSubtitle = 'Análise de Políticas Raciais no Brasil (2018-2026)';
+    let reportSubtitle = 'Análise de Políticas Raciais no Brasil (2018-2025)';
     
     if (eixo_tematico && eixo_tematico !== 'todos') {
       reportTitle = `Dossiê: ${eixoLabels[eixo_tematico] || eixo_tematico}`;
