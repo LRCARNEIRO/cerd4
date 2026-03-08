@@ -31,39 +31,22 @@ export function VulnerabilidadesTab() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <Layers className="w-5 h-5 text-primary" />
-              Índice de Vulnerabilidade por Grupo (0-100)
+              <Layers className="w-5 h-5 text-destructive" />
+              Índice de Vulnerabilidade — Removido
             </CardTitle>
-            <CardDescription>
-              Quanto maior o valor, maior a vulnerabilidade em cada eixo
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarVulnerabilidades}>
-                  <PolarGrid stroke="hsl(var(--border))" />
-                  <PolarAngleAxis dataKey="eixo" tick={{ fontSize: 11 }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
-                  <Radar name="Mulher Negra" dataKey="mulherNegra" stroke="hsl(var(--destructive))" fill="hsl(var(--destructive))" fillOpacity={0.3} />
-                  <Radar name="Homem Negro" dataKey="homemNegro" stroke="hsl(var(--warning))" fill="hsl(var(--warning))" fillOpacity={0.3} />
-                  <Radar name="Mulher Branca" dataKey="mulherBranca" stroke="hsl(var(--chart-1))" fill="hsl(var(--chart-1))" fillOpacity={0.3} />
-                  <Radar name="Homem Branco" dataKey="homemBranco" stroke="hsl(var(--chart-2))" fill="hsl(var(--chart-2))" fillOpacity={0.3} />
-                  <Legend />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
+              <p className="text-sm font-medium text-destructive mb-2">⚠️ Índice composto removido — Regra de Ouro</p>
+              <p className="text-xs text-muted-foreground">
+                O gráfico radar de vulnerabilidades utilizava um <strong>índice composto fabricado</strong> com 
+                normalização arbitrária (0-100), sem fórmula reprodutível. Embora as fontes subjacentes 
+                sejam válidas (PNAD, FBSP, DataSUS, SIS), o índice combinado não é auditável.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Os dados reais estão disponíveis nas abas temáticas individuais (Raça × Gênero, Segurança, Saúde, etc.).
+              </p>
             </div>
-            <div className="mt-2 flex items-center gap-2">
-              <EstimativaBadge
-                tipo="cruzamento"
-                metodologia="Índice composto (0-100) elaborado a partir do cruzamento de 5 fontes: SIDRA 6800 (renda por raça), SIDRA 6381 (desocupação por raça), SIM/DataSUS (mortalidade por raça), 19º Anuário FBSP 2025 (violência por raça) e SIS/IBGE 2024 (condições de moradia). Cada eixo normalizado onde 100 = maior vulnerabilidade."
-              />
-              <span className="text-[10px] text-muted-foreground">Índice composto: 5 fontes cruzadas</span>
-            </div>
-            <AuditFooter
-              fontes={radarVulnerabilidadesFontes}
-              documentos={['CERD 2022', 'Common Core']}
-            />
           </CardContent>
         </Card>
 
