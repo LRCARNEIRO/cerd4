@@ -603,11 +603,14 @@ export const povosTradicionais = {
     },
   },
   ciganos: {
-    populacaoEstimada: 800000,
-    acampamentosIdentificados: 291,
-    acessoEducacao: 12.5,
-    documentacao: 35.2,
-    acessoSaude: 28.5
+    // TODOS OS DADOS ABAIXO ESTÃO SEM FONTE AUDITÁVEL — removidos/anulados conforme Regra de Ouro.
+    // Único dado verificável: MUNIC/IBGE 2024 (acampamentos), mas microdados ainda não publicados.
+    populacaoEstimada: null as number | null, // Estimativa AMSK/Brasil sem fonte verificável
+    acampamentosIdentificados: 291, // MUNIC/IBGE 2019 — verificável
+    acessoEducacao: null as number | null, // SEM FONTE
+    documentacao: null as number | null, // SEM FONTE
+    acessoSaude: null as number | null, // SEM FONTE
+    lacunaDocumentada: 'Não há dados censitários desagregados para ciganos no Censo 2022. Primeiro levantamento via MUNIC 2024 (pendente microdados).',
   }
 };
 
