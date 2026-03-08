@@ -723,7 +723,7 @@ function generateFullHTML(
       <!-- Tabela de Evolução Anual -->
       <div class="table-container">
         <div class="table-header">
-          <h3>Tabela 1: Evolução da Execução Orçamentária por Ano e Esfera (2018-2026)</h3>
+          <h3>Tabela 1: Evolução da Execução Orçamentária por Ano e Esfera (2018-2025)</h3>
           <p>Valores em reais - Consolidação de todos os programas de políticas raciais</p>
         </div>
         <table>
