@@ -527,7 +527,7 @@ export function LacunasCerdTab() {
                 </p>
               </div>
               <AuditFooter 
-                fontes={[{ nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' }]}
+                fontes={[{ nome: '19º Anuário FBSP 2025', url: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444' }]}
                 documentos={['CERD 2022 §36', 'ADPF 635']}
                 compact
               />
