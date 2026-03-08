@@ -398,7 +398,7 @@ export function useOrcamentoStats() {
       // === SEM SESAI: perspectiva de políticas raciais stricto sensu ===
       const semSesaiLimpos = registrosLimpos.filter(r => !isSesaiRecord(r));
       const semSesaiP1 = semSesaiLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const semSesaiP2 = semSesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const semSesaiP2 = semSesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2025);
 
       const semSesai = {
         dotacaoP1: semSesaiP1.reduce((acc, r) => acc + (Number(r.dotacao_autorizada) || 0), 0),
