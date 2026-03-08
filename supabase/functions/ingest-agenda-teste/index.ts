@@ -320,6 +320,10 @@ Deno.serve(async (req) => {
             count++;
           }
 
+          if (skippedUniversal > 0) {
+            console.log(`  Filtradas ${skippedUniversal} ações universais (sem keyword de público-alvo)`);
+          }
+          console.log(`  Incluídas: ${count} ações`);
           cobertura[chave] = { encontrado: true, registros: count };
         } catch (e) {
           console.error(`  Erro ${prog.codigo} ${ano}:`, e);
