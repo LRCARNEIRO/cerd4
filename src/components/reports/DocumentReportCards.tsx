@@ -278,6 +278,68 @@ export function DocumentReportCards() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Metodologia do Escopo */}
+      <Card className="border-l-4 border-l-chart-4">
+        <CardContent className="pt-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <Compass className="w-6 h-6 text-chart-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold">Metodologia do Escopo</h3>
+              <p className="text-sm text-muted-foreground">Lógica de cada aba explicada</p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-muted/50 rounded-lg">
+            <p className="text-xs">
+              <strong>Conteúdo:</strong>{' '}
+              19 abas documentadas — origem, prompt, documentos-fonte e artigos ICERD vinculados
+            </p>
+          </div>
+
+          <div className="flex justify-between text-sm">
+            <div>
+              <p className="text-muted-foreground">Estatísticas:</p>
+              <p className="font-medium">15 abas</p>
+            </div>
+            <div className="text-right">
+              <p className="text-muted-foreground">Grupos Focais:</p>
+              <p className="font-medium">4 abas</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className="gap-2"
+              onClick={() => {
+                setGeneratingMethodology(true);
+                try {
+                  const html = generateMethodologyHTML();
+                  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                  window.open(URL.createObjectURL(blob), '_blank');
+                } finally {
+                  setGeneratingMethodology(false);
+                }
+              }}
+              disabled={generatingMethodology}
+            >
+              {generatingMethodology ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              PDF / HTML
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => {
+                const html = generateMethodologyHTML();
+                downloadAsDocx(html, 'Metodologia-Escopo-Projeto');
+              }}
+            >
+              <Download className="w-4 h-4" />
+              DOCX
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
