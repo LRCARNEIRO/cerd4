@@ -309,7 +309,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
             </Card>
             <Card className="border-l-4 border-l-success/60">
               <CardContent className="pt-4 pb-3">
-                <p className="text-xs text-muted-foreground mb-1">2023–2026</p>
+                <p className="text-xs text-muted-foreground mb-1">2023–2025</p>
                 <p className="text-lg font-bold text-success">{formatCurrency(stats.totalP2)}</p>
                 <p className="text-[10px] text-muted-foreground">Liquidado · TESTE</p>
               </CardContent>
