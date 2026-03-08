@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 // ============================================
 // COMMON CORE DOCUMENT - 77 TABELAS COMPLETAS
-// HRI/CORE/BRA/2020 - Atualização 2018-2026
+// HRI/CORE/BRA/2020 - Atualização 2018-2025
 // ============================================
 
 // Status de atualização das tabelas
