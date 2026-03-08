@@ -93,7 +93,7 @@ export function RacaGeneroTab() {
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               DIEESE/PNAD Q2 2024
-              <EstimativaBadge tipo="cruzamento" tooltip="Dados DIEESE Boletim Consciência Negra Nov/2024 — cruzamento raça × gênero verificado" />
+              <EstimativaBadge tipo="cruzamento" metodologia="Dados DIEESE Boletim Consciência Negra Nov/2024 — cruzamento raça × gênero verificado" />
             </CardDescription>
           </CardHeader>
           <CardContent>
