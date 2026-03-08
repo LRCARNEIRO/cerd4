@@ -447,7 +447,7 @@ export default function Orcamento() {
         ? records.filter(r => !is5034NonRacial(r))
         : records;
       const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
       const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
       const t2 = p2.reduce((s, r) => s + valorLiquidado(r), 0);
       const anos = new Set(clean.map(r => r.ano));
