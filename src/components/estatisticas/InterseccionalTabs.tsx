@@ -272,12 +272,13 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Mulheres negras constituem <strong>68%</strong> das mortes maternas, apesar de representarem 55,5% da 
-            população feminina. O estudo Nascer no Brasil II (Fiocruz) documenta <strong>menor acesso a pré-natal adequado, 
-            peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. O dado configura 
-            <strong> violação direta do direito à saúde</strong> com componente racial mensurável.
+            Mulheres negras constituem <strong>68%</strong> das mortes maternas (SIM 2022), apesar de representarem 55,5% da 
+            população feminina. O Boletim IEPS (jul/2025) confirma que a razão de mortalidade materna entre pretas e brancas é de 
+            <strong>2,3×</strong> na série 2010-2023 (108,6 vs 46,9 por 100 mil NV). O estudo Nascer no Brasil II (Fiocruz) documenta 
+            <strong>menor acesso a pré-natal adequado, peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. 
+            Nota: o dado mais recente consolidado do SIM é 2022; o RASEAM 2025 mantém esse recorte.
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2024 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
+          <p className="text-[10px] text-muted-foreground mt-1 italic">Fontes: RASEAM 2025 + IEPS Jul/2025 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
         </div>
       </div>
 
