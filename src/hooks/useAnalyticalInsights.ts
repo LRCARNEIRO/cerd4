@@ -709,7 +709,7 @@ function gerarFiosEmergentes(
         id: 'emergente-execucao-recorde',
         titulo: 'Execução Orçamentária Recorde: Evidência de Fortalecimento',
         tipo: 'avanco',
-        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2026 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
         evidencias: altaExecucao.slice(0, 6).map(d => ({
           texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
           fonte: d.fonte_dados,
