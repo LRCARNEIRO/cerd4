@@ -186,63 +186,24 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     // Lacuna documentada em lacunasDocumentadas[0] — SIDRA 6403 não publica série temporal por raça
   ];
 
-  // Povos Indígenas: séries com dados reais SESAI/DataSUS e Censo 2022
-  // Mortalidade infantil indígena é publicada anualmente pelo SESAI (DSEI)
-  // Fonte: Relatórios SESAI/MS + IBGE Censo 2022 Indígenas
+  // Povos Indígenas: REMOVIDOS indicadores sem fonte auditável
+  // Mortalidade infantil: SESAI não publica série consolidada desagregada verificável com deep link
+  // Acesso à saúde: SESAI Relatórios de Gestão sem valor consolidado verificável
+  // Mantido apenas: Terras Indígenas (FUNAI - dados verificáveis)
   const indigenas: IndicadorTemporal[] = [
-    {
-      nome: 'Mortalidade infantil indígena (por mil NV)',
-      grupo: 'indigenas',
-      dados: [
-        { ano: 2018, valor: 44.0 },
-        { ano: 2019, valor: 41.4 },
-        { ano: 2020, valor: 47.3 },
-        { ano: 2021, valor: 43.5 },
-        { ano: 2022, valor: 42.8 },
-        { ano: 2023, valor: 38.2 },
-        { ano: 2024, valor: 36.5 },
-      ],
-      unidade: 'por mil NV',
-      fonte: 'SESAI/DataSUS — Relatórios anuais DSEI',
-      interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: 'Dados SESAI; nacional geral é ~12/mil NV — disparidade de 3x persiste',
-    },
     {
       nome: 'Terras Indígenas homologadas (acumulado)',
       grupo: 'indigenas',
       dados: [
+        // FUNAI Geoprocessamento — único dado verificável com deep link
+        // Valores intermediários (488-495) removidos — FUNAI não publica relatório anual com acumulado
+        // Mantemos apenas pontos verificáveis: 2018 (baseline) e 2025 (atual)
         { ano: 2018, valor: 487 },
-        { ano: 2019, valor: 487 },
-        { ano: 2020, valor: 487 },
-        { ano: 2021, valor: 487 },
-        { ano: 2022, valor: 487 },
-        { ano: 2023, valor: 496 },
-        { ano: 2024, valor: 502 },
+        { ano: 2025, valor: 496 },
       ],
       unidade: 'TIs',
-      fonte: 'FUNAI — Terras Indígenas no Brasil',
+      fonte: 'FUNAI — Coordenação de Geoprocessamento',
       interpretacao: 'maior_melhor',
-      estimativa: true,
-      metodologia: 'Acumulado de TIs homologadas; 2019-2022 sem novas homologações (paralisia)',
-    },
-    {
-      nome: 'Acesso à saúde — cobertura SESAI (%)',
-      grupo: 'indigenas',
-      dados: [
-        { ano: 2018, valor: 62.0 },
-        { ano: 2019, valor: 64.5 },
-        { ano: 2020, valor: 58.0 },
-        { ano: 2021, valor: 60.2 },
-        { ano: 2022, valor: 68.5 },
-        { ano: 2023, valor: 72.0 },
-        { ano: 2024, valor: 74.5 },
-      ],
-      unidade: '%',
-      fonte: 'SESAI/MS — Relatório de Gestão',
-      interpretacao: 'maior_melhor',
-      estimativa: true,
-      metodologia: 'Cobertura dos 34 DSEI; queda em 2020 reflete impacto COVID-19',
     },
   ];
 

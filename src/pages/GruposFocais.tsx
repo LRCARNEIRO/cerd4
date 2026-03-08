@@ -163,14 +163,12 @@ const dadosTerritoriais = {
       link: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
       nota: 'Censo 2022 — Panorama Quilombola (características domiciliares)',
     },
+    // AUDITORIA: Valores intermediários (2019-2024) são interpolações regulares sem fonte individual.
+    // Mantemos apenas os pontos verificáveis: 2018 (baseline INCRA) e 2025 (INCRA Nov/2025).
+    // Para uma série completa seria necessário consultar cada PDF anual do INCRA.
     serieHistorica: [
       { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
-      { ano: 2019, titulados: 159, certificacoesFCP: 2552, processosAbertos: 1720, areaHa: 995000 },
-      { ano: 2020, titulados: 161, certificacoesFCP: 2581, processosAbertos: 1738, areaHa: 1000000 },
-      { ano: 2021, titulados: 163, certificacoesFCP: 2610, processosAbertos: 1750, areaHa: 1010000 },
-      { ano: 2022, titulados: 167, certificacoesFCP: 2756, processosAbertos: 1760, areaHa: 1030000 },
-      { ano: 2023, titulados: 174, certificacoesFCP: 2867, processosAbertos: 1780, areaHa: 1060000 },
-      { ano: 2024, titulados: 180, certificacoesFCP: 3013, processosAbertos: 1790, areaHa: 1080000 },
+      // 2019-2024: valores intermediários REMOVIDOS — progressão linear artificial
       { ano: 2025, titulados: 245, certificacoesFCP: 3158, processosAbertos: 2014, areaHa: 1162002 },
     ],
   },
@@ -218,14 +216,11 @@ const dadosTerritoriais = {
       fonte: 'FUNAI - Relatórios Anuais / DOU (portarias e decretos)',
       linkISA: 'https://terrasindigenas.org.br/',
     },
+    // AUDITORIA: Valores intermediários (2019-2024) com incremento regular (+1/+2 por ano) 
+    // indicam interpolação artificial. Mantemos apenas pontos verificáveis.
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
-      { ano: 2019, homologadas: 488, total: 628, emEstudo: 140, areaMilHa: 116.0 },
-      { ano: 2020, homologadas: 489, total: 630, emEstudo: 141, areaMilHa: 116.2 },
-      { ano: 2021, homologadas: 490, total: 632, emEstudo: 142, areaMilHa: 116.4 },
-      { ano: 2022, homologadas: 491, total: 634, emEstudo: 143, areaMilHa: 116.6 },
-      { ano: 2023, homologadas: 493, total: 638, emEstudo: 145, areaMilHa: 116.9 },
-      { ano: 2024, homologadas: 495, total: 641, emEstudo: 146, areaMilHa: 117.1 },
+      // 2019-2024: REMOVIDOS — progressão artificial (+1 a +2 por ano sem fonte individual)
       { ano: 2025, homologadas: 496, total: 644, emEstudo: 148, areaMilHa: 117.4 },
     ],
   },
@@ -851,7 +846,10 @@ export default function GruposFocais() {
                         <td className="text-center py-2 px-3">82,9%</td>
                         <td className="text-center py-2 px-3 text-primary">88,1%</td>
                         <td className="text-center py-2 px-3 text-warning font-medium">78,2%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">56,3%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">
+                          56,3%
+                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        </td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">34,8%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">33,6%</td>
                       </tr>
@@ -860,7 +858,10 @@ export default function GruposFocais() {
                         <td className="text-center py-2 px-3">75,7%</td>
                         <td className="text-center py-2 px-3 text-primary">83,2%</td>
                         <td className="text-center py-2 px-3 text-warning font-medium">68,6%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">39,8%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">
+                          39,8%
+                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        </td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
                       </tr>
@@ -869,7 +870,10 @@ export default function GruposFocais() {
                         <td className="text-center py-2 px-3">90,9%</td>
                         <td className="text-center py-2 px-3 text-primary">94,1%</td>
                         <td className="text-center py-2 px-3 text-warning font-medium">88,4%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">69,5%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">
+                          69,5%
+                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        </td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">30,2%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">50,4%</td>
                       </tr>
@@ -1143,8 +1147,11 @@ export default function GruposFocais() {
               {/* Mortalidade Materna */}
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
-                  <CardDescription>DataSUS | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
+                    <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento SIM (óbitos maternos por raça) × SINASC (nascidos vivos por raça) = razão de mortalidade materna por 100 mil NV" />
+                  </CardTitle>
+                  <CardDescription>DataSUS — Cruzamento SIM × SINASC | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-end mb-4">
@@ -1184,34 +1191,47 @@ export default function GruposFocais() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="p-4 bg-destructive/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-destructive">42,8‰</p>
+                    <p className="text-3xl font-bold text-destructive">—</p>
                     <p className="text-sm text-muted-foreground">Mortalidade Infantil</p>
-                    <p className="text-xs text-muted-foreground mt-1">vs 11,6‰ média nacional</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">SESAI não publica taxa consolidada desagregada verificável</p>
                   </div>
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">68,5%</p>
+                    <p className="text-3xl font-bold text-warning">—</p>
                     <p className="text-sm text-muted-foreground">Acesso Regular à Saúde</p>
-                    <p className="text-xs text-muted-foreground mt-1">SESAI — cobertura DSEI</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">SESAI Relatórios de Gestão não publicam cobertura consolidada verificável</p>
                   </div>
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-warning">32,5%</p>
+                    <p className="text-3xl font-bold text-warning">—</p>
                     <p className="text-sm text-muted-foreground">Educação Bilíngue/Intercultural</p>
-                    <p className="text-xs text-muted-foreground mt-1">Escolas indígenas c/ currículo diferenciado</p>
+                    <p className="text-xs text-destructive mt-1">Dado removido — sem fonte auditável</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">INEP Censo Escolar não publica % consolidado verificável</p>
                   </div>
+                </div>
+                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg mb-3">
+                  <p className="text-xs font-semibold text-destructive flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Regra de Ouro — Dados Removidos
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Os valores anteriores (42,8‰ mortalidade, 68,5% acesso saúde, 32,5% educação bilíngue) 
+                    <strong> não possuíam deep links para dados brutos verificáveis</strong>. Embora SESAI e INEP publiquem 
+                    relatórios, os valores específicos não foram localizados em publicações oficiais acessíveis.
+                  </p>
                 </div>
                 <div className="p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
+                    <FileText className="w-3 h-3" /> <strong>Fontes institucionais (dados pendentes de publicação desagregada):</strong>
                   </p>
                   <div className="flex flex-wrap gap-3 text-xs">
                     <a href="https://sage.saude.gov.br/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Mortalidade Infantil Indígena
+                      <ExternalLink className="w-3 h-3" /> SESAI/SAGE — Painel de Indicadores
                     </a>
                     <a href="https://www.gov.br/saude/pt-br/composicao/sesai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> SESAI — Cobertura DSEI
+                      <ExternalLink className="w-3 h-3" /> SESAI — Portal Institucional
                     </a>
                     <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar (Educação Indígena)
+                      <ExternalLink className="w-3 h-3" /> INEP — Censo Escolar
                     </a>
                   </div>
                 </div>
