@@ -86,7 +86,7 @@ const SOURCES = {
     { label: 'Censo 2022 — Rendimentos', url: 'https://sidra.ibge.gov.br/Tabela/9605', detail: 'Rendimento médio por cor/raça — Censo Demográfico 2022' },
   ] as SourceLink[],
   desigualdade: [
-    { label: 'SIDRA 6800 — Renda por raça', url: 'https://sidra.ibge.gov.br/Tabela/6800', detail: 'Razão de renda branca/negra' },
+    { label: 'SIDRA 6405 — Renda por raça', url: 'https://sidra.ibge.gov.br/tabela/6405', detail: 'Razão de renda branca/negra' },
     { label: 'PNAD Contínua — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6402', detail: 'Taxa de desocupação por cor/raça' },
     { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Razão de homicídio negro/branco' },
     { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Letalidade policial e vítimas por raça' },
