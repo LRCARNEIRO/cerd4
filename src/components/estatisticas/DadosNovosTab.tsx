@@ -335,9 +335,9 @@ const indicadoresOrcamento: NovoIndicador[] = [
     siglaFonte: 'MUNIC/IBGE',
     urlFonte: 'https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html',
     periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
+    ultimaAtualizacao: '2025 (MUNIC 2024)',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Apenas 5,3% dos municípios têm órgão específico de igualdade racial (MUNIC 2023). Norte e Nordeste: 3,8%. Queda de 8,2% (2018) para 5,3% (2023) — desmonte institucional local.',
+    relevanciaRacial: '2018: 8,2% dos municípios com órgão específico → 2023: 5,3% (desmonte local) → 2024: 9,2% (512 municípios, MUNIC 2024). Recuperação parcial após criação do MIR. Norte e Nordeste: cobertura inferior à média.',
     prioridade: 'alta'
   },
   {
