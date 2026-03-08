@@ -298,9 +298,11 @@ const indicadoresVulnerabilidade = {
   },
   mortalidadeMaterna: {
     nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
-    valorNegras: 107.2,
-    valorBrancas: 47.8,
-    razaoDesigualdade: 2.2,
+    // CORRIGIDO FASE 4: valor anterior 107.2 era de 2021 (pico COVID), não 2022.
+    // Banco de dados e StatisticsData.ts concordam: negras=57.3, brancas=46.6 (2022).
+    valorNegras: 57.3,
+    valorBrancas: 46.6,
+    razaoDesigualdade: 1.2,
     ano: 2022,
     fonte: 'DataSUS - SIM (Óbitos Maternos) / SINASC (Nascidos Vivos)',
     link: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
