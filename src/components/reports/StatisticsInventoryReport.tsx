@@ -19,11 +19,8 @@ import {
   serieAntraTrans,
   lgbtqiaPorRaca,
   classePorRaca,
-  mulheresChefeFamilia,
   violenciaInterseccional,
   juventudeNegra,
-  educacaoInterseccional,
-  saudeInterseccional,
   radarVulnerabilidades,
   evolucaoDesigualdade,
   atlasViolencia2025,
@@ -270,7 +267,7 @@ ${arrayToHTMLTable(juventudeNegra, '')}
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
 
 <h3>3.6. Saúde Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Fato verificado: mortalidade materna negra ~2x maior que branca (Nascer no Brasil II, 2023).</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
 
 <h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
 ${arrayToHTMLTable(serieAntraTrans, '')}
@@ -379,7 +376,7 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <h4>Violência contra Mulheres Negras</h4>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 <h4>Saúde Interseccional (Raça × Classe)</h4>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Fato verificado: mortalidade materna de mulheres negras é ~2x maior que de brancas (Pesquisa Nascer no Brasil II, Nov/2023).</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Dado verificado: mortalidade materna negra ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra} vs branca ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca} por 100 mil NV (${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}), razão ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x (DataSUS/SIM).</div>
 <h4>Mulheres Chefes de Família — Série Histórica</h4>
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça.</div>
 

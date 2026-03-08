@@ -388,7 +388,7 @@ export function TabelaSinteseComparativa() {
           <p className="text-xs text-muted-foreground">
             <strong>Fio Condutor:</strong> Os dados revelam um padrão claro: houve avanços em educação e emprego (resultado de políticas afirmativas), 
             mas a violência racial (homicídio, letalidade policial, feminicídio) <strong>piorou em termos relativos</strong>. 
-            A desigualdade de renda persiste estruturalmente (razão ~1,6x) e a mortalidade materna negra permanece 2x maior que a branca.
+            A desigualdade de renda persiste estruturalmente (razão ~1,6x) e a mortalidade materna negra permanece {(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x maior que a branca ({dado2024Sau.mortalidadeMaternaNegra} vs {dado2024Sau.mortalidadeMaternaBranca} por 100 mil NV em {dado2024Sau.ano}).
           </p>
         </div>
       </CardContent>
