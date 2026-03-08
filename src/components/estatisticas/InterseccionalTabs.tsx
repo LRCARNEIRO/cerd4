@@ -1063,68 +1063,52 @@ export function ClasseSocialTab() {
         </Card>
       </div>
 
+      {/* Mobilidade Social — OCDE 2018 (dado geral, sem desagregação racial auditável) */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            Mobilidade Social Intergeracional por Raça
-            <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento PNAD Contínua (renda × raça) com dados de escolaridade dos pais" />
+            Mobilidade Social Intergeracional
           </CardTitle>
           <CardDescription>
-            Dados derivados de estudos do IPEA e Banco Mundial. Não há publicação oficial com esses valores exatos em formato tabular.
+            OCDE — "A Broken Social Elevator?" (2018) + SIS/IBGE 2024 + Min. Fazenda (Dez/2024)
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Chance de filho de pais pobres ser classe média</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">28%</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">12%</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">Gerações para família pobre alcançar renda média</p>
+              <p className="text-3xl font-bold text-destructive">9</p>
+              <p className="text-xs text-muted-foreground">OCDE 2018 — Brasil geral</p>
+              <p className="text-[10px] text-muted-foreground">(2º pior entre 30 países)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Gerações para sair da pobreza</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">4</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">9</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
+              <p className="text-3xl font-bold text-destructive">40%</p>
+              <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
+              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">% no 1% mais rico</p>
-              <div className="flex justify-center gap-6 mt-2">
-                <div>
-                  <p className="text-2xl font-bold text-primary">82%</p>
-                  <p className="text-xs text-muted-foreground">Branco</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-destructive">18%</p>
-                  <p className="text-xs text-muted-foreground">Negro</p>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mb-1">1% mais rico detém</p>
+              <p className="text-3xl font-bold text-destructive">37%</p>
+              <p className="text-xs text-muted-foreground">da riqueza brasileira</p>
+              <p className="text-[10px] text-muted-foreground">Min. Fazenda (Dez/2024)</p>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-2">
-            <EstimativaBadge tipo="cruzamento" metodologia="Valores derivados de estudos acadêmicos que cruzam PNAD Contínua (renda × raça) com dados de escolaridade dos pais. Não há publicação oficial brasileira com esses indicadores exatos em formato tabular." />
-            <span className="text-[10px] text-muted-foreground">IPEA/Retrato × Banco Mundial</span>
+          <div className="mt-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral — não há desagregação por raça na publicação original. 
+              A desigualdade racial no topo da distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, Dez/2024), 
+              mas nenhum deles publica a composição racial exata do 1% mais rico em formato desagregado por cor/raça.
+            </p>
           </div>
           <AuditFooter
             fontes={[
-              { nome: 'IPEA — Retrato das Desigualdades', url: 'https://www.ipea.gov.br/retrato/' },
-              { nome: 'SIS/IBGE — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+              { nome: 'OCDE — A Broken Social Elevator? (2018)', url: 'https://www.oecd.org/en/publications/a-broken-social-elevator-how-to-promote-social-mobility_9789264301085-en.html' },
+              { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
+              { nome: 'Min. Fazenda — Distribuição da Renda e Riqueza (Dez/2024)', url: 'https://www.gov.br/fazenda/pt-br/centrais-de-conteudo/publicacoes/relatorio-da-distribuicao-pessoal-da-renda-e-da-riqueza' },
+              { nome: 'Agência Brasil — OCDE mobilidade social', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2018-06/pobres-do-pais-levam-nove-geracoes-para-alcancar-renda-media-diz-ocde' },
             ]}
-            documentos={['CERD 2022']}
+            documentos={['CERD 2022', 'Common Core']}
           />
         </CardContent>
       </Card>
