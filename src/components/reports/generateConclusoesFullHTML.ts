@@ -338,14 +338,8 @@ export function generateConclusoesFullHTML(params: GenerateParams): string {
     })), 580
   );
 
-  // 8. Radar vulnerabilidades
-  const radarAxes = radarVulnerabilidades.map(r => r.eixo);
-  const radarChart = svgRadarChart(radarAxes, [
-    { name: 'Mulher negra', color: '#dc2626', values: radarVulnerabilidades.map(r => r.mulherNegra) },
-    { name: 'Homem negro', color: '#f59e0b', values: radarVulnerabilidades.map(r => r.homemNegro) },
-    { name: 'Mulher branca', color: '#16a34a', values: radarVulnerabilidades.map(r => r.mulherBranca) },
-    { name: 'Homem branco', color: '#94a3b8', values: radarVulnerabilidades.map(r => r.homemBranco) },
-  ]);
+  // 8. Radar vulnerabilidades — REMOVIDO (índice fabricado)
+  const radarChart = '<p><em>Índice de vulnerabilidade removido — normalização arbitrária viola Regra de Ouro.</em></p>';
 
   // 9. Classe por raça bar chart (SIS/IBGE 2024 — apenas brancos/pardos/pretos)
   const classeChart = svgBarChart(
