@@ -249,15 +249,17 @@ export const jovensNegrosViolencia = {
 // =============================================
 
 export const educacaoSerieHistorica = [
-  { ano: 2018, superiorNegroPercent: 9.3, superiorBrancoPercent: 22.9, analfabetismoNegro: 9.1, analfabetismoBranco: 3.8 },
-  { ano: 2019, superiorNegroPercent: 10.1, superiorBrancoPercent: 23.8, analfabetismoNegro: 8.5, analfabetismoBranco: 3.6 },
-  { ano: 2020, superiorNegroPercent: 11.2, superiorBrancoPercent: 24.5, analfabetismoNegro: 7.8, analfabetismoBranco: 3.4 },
-  { ano: 2021, superiorNegroPercent: 12.1, superiorBrancoPercent: 25.2, analfabetismoNegro: 7.2, analfabetismoBranco: 3.2 },
-  { ano: 2022, superiorNegroPercent: 13.5, superiorBrancoPercent: 26.8, analfabetismoNegro: 6.5, analfabetismoBranco: 2.9 },
+  // AUDITADO: Valores corrigidos conforme SIDRA 7129 (Ensino Superior) e SIDRA 7125 (Analfabetismo)
+  // FONTE CORRIGIDA: PNAD Contínua / SIDRA (antes atribuído incorretamente ao INEP)
+  // 2020 e 2021 REMOVIDOS: sem coleta da PNAD durante a pandemia COVID-19
+  { ano: 2018, superiorNegroPercent: 8.1, superiorBrancoPercent: 20.5, analfabetismoNegro: 8.4, analfabetismoBranco: 3.6 },
+  { ano: 2019, superiorNegroPercent: 9.0, superiorBrancoPercent: 21.4, analfabetismoNegro: 8.2, analfabetismoBranco: 3.3 },
+  // 2020 e 2021: sem dados (PNAD suspensa na pandemia)
+  { ano: 2022, superiorNegroPercent: 10.3, superiorBrancoPercent: 23.1, analfabetismoNegro: 7.4, analfabetismoBranco: 3.4 },
   // PNAD Contínua Educação 2023
-  { ano: 2023, superiorNegroPercent: 14.8, superiorBrancoPercent: 27.5, analfabetismoNegro: 7.1, analfabetismoBranco: 3.2 },
+  { ano: 2023, superiorNegroPercent: 10.8, superiorBrancoPercent: 23.7, analfabetismoNegro: 7.1, analfabetismoBranco: 3.2 },
   // PNAD Contínua Educação 2024 (publicada jun/2025)
-  { ano: 2024, superiorNegroPercent: 16.2, superiorBrancoPercent: 28.5, analfabetismoNegro: 6.9, analfabetismoBranco: 3.1 },
+  { ano: 2024, superiorNegroPercent: 11.4, superiorBrancoPercent: 24.9, analfabetismoNegro: 6.9, analfabetismoBranco: 3.1 },
 ];
 
 // Taxa geral de analfabetismo: 5,3% em 2024 (PNAD Contínua Educação 2024)
