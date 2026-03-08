@@ -317,9 +317,30 @@ export const saudeSerieHistorica = [
   { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
   // DataSUS/SIM 2023 - dados consolidados
   { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
-  // DataSUS/SIM 2024 - dados preliminares
-  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
+  // DataSUS/SIM 2024 — dados PRELIMINARES, removidos conforme Regra de Ouro (proibição de dados não consolidados)
 ];
+
+// Metodologia de cálculo — Mortalidade infantil por raça/cor
+// CRUZAMENTO INDIRETO entre 2 sistemas distintos do DataSUS:
+//   Componente 1: SIM (Sistema de Informações sobre Mortalidade) — óbitos infantis (< 1 ano) por cor/raça
+//     Deep link: http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def
+//   Componente 2: SINASC (Sistema de Informações sobre Nascidos Vivos) — nascimentos por cor/raça da mãe
+//     Deep link: http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def
+//   Fórmula: (Óbitos infantis por raça ÷ Nascidos vivos por raça) × 1.000
+// VIÉS CONHECIDO: No SIM, a cor/raça é atribuída por terceiros (médico/cartório);
+//   no SINASC, é autodeclarada pela mãe. Isso gera sub-registro de óbitos de crianças negras
+//   e pode inverter a razão (branca > negra), como observado nos dados oficiais.
+//   Referência: Chor & Lima (2005); IPEA Nota Técnica 2013.
+export const mortalidadeInfantilMetodologia = {
+  tipo: 'cruzamento' as const,
+  componentes: [
+    { nome: 'SIM — Óbitos infantis por raça/cor', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def' },
+    { nome: 'SINASC — Nascidos vivos por raça/cor da mãe', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+  ],
+  formula: '(Óbitos infantis < 1 ano por raça ÷ Nascidos vivos por raça da mãe) × 1.000',
+  viesConhecido: 'No SIM a cor/raça é atribuída por terceiros (médico/cartório); no SINASC é autodeclarada pela mãe. Isso gera sub-registro de óbitos negros e pode inverter a razão racial (branca aparecendo > negra).',
+  referencia: 'Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013',
+};
 
 // =============================================
 // RENDIMENTOS POR RAÇA - Censo 2022 preliminar

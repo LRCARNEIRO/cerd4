@@ -4,7 +4,8 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar 
 } from 'recharts';
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
-import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025 } from './StatisticsData';
+import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia } from './StatisticsData';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
 
@@ -318,7 +319,13 @@ export function SegurancaSaudeEducacaoTab() {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3">Mortalidade Infantil (por mil nascidos vivos)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                Mortalidade Infantil (por mil nascidos vivos)
+                <EstimativaBadge 
+                  tipo="cruzamento" 
+                  metodologia={`${mortalidadeInfantilMetodologia.formula}. ${mortalidadeInfantilMetodologia.viesConhecido}`}
+                />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={saudeSerieHistorica}>
@@ -338,6 +345,33 @@ export function SegurancaSaudeEducacaoTab() {
                     <Line type="monotone" dataKey="mortalidadeInfantilBranca" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+              {/* Caixa metodológica — cruzamento SIM × SINASC */}
+              <div className="mt-2 p-3 bg-destructive/5 border border-destructive/20 rounded-lg space-y-2">
+                <p className="text-xs font-semibold flex items-center gap-1 text-destructive">
+                  <AlertTriangle className="w-3 h-3" /> Metodologia: Cruzamento indireto SIM × SINASC
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Fórmula:</strong> {mortalidadeInfantilMetodologia.formula}
+                </p>
+                <div className="text-xs text-muted-foreground">
+                  <strong>Fontes componentes:</strong>
+                  <ul className="list-disc list-inside ml-2 mt-1 space-y-0.5">
+                    {mortalidadeInfantilMetodologia.componentes.map((c, i) => (
+                      <li key={i}>
+                        <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          {c.nome} <ExternalLink className="w-2.5 h-2.5 inline" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className="text-xs text-destructive/80 italic">
+                  ⚠ Viés: {mortalidadeInfantilMetodologia.viesConhecido}
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Ref.: {mortalidadeInfantilMetodologia.referencia}
+                </p>
               </div>
             </div>
           </div>
@@ -381,10 +415,13 @@ export function SegurancaSaudeEducacaoTab() {
             </p>
             <div className="flex flex-wrap gap-3 text-xs">
               <a href="https://datasus.saude.gov.br/informacoes-de-saude-tabnet/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Mortalidade
+                <ExternalLink className="w-3 h-3" /> TabNet/DataSUS — Portal
               </a>
               <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> SIM — Mortalidade materna por raça/cor
+              </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIM — Mortalidade infantil por raça/cor
               </a>
               <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> SINASC — Nascidos vivos
