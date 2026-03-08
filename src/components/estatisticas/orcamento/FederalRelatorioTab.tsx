@@ -191,11 +191,11 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
   );
 }
 
-export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull, includeExcludedInCalc }: Props) {
+export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull }: Props) {
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
-    const allRecords = records.filter(r => !is5034NonRacial(r) || includeExcludedInCalc);
+    const allRecords = records;
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
