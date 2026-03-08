@@ -1147,8 +1147,11 @@ export default function GruposFocais() {
               {/* Mortalidade Materna */}
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{indicadoresVulnerabilidade.mortalidadeMaterna.nome}</CardTitle>
-                  <CardDescription>DataSUS | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
+                    <EstimativaBadge tipo="cruzamento" metodologia="Cruzamento SIM (óbitos maternos por raça) × SINASC (nascidos vivos por raça) = razão de mortalidade materna por 100 mil NV" />
+                  </CardTitle>
+                  <CardDescription>DataSUS — Cruzamento SIM × SINASC | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-end mb-4">
