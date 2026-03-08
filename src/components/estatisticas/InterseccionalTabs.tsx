@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { 
-  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info
+  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
@@ -21,7 +21,13 @@ import {
   juventudeNegra,
   classePorRaca,
   povosTradicionais,
-  fonteDados
+  fonteDados,
+  trabalhoRacaGenero,
+  trabalhoRacaGeneroFontes,
+  chefiaFamiliarRacaGenero,
+  educacaoRacaGenero,
+  educacaoRacaGeneroFontes,
+  saudeMaternaRaca,
 } from './StatisticsData';
 
 export function RacaGeneroTab() {
@@ -35,6 +41,7 @@ export function RacaGeneroTab() {
 
   return (
     <div className="space-y-6">
+      {/* Card 1: Violência contra Mulheres (mantido) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -77,68 +84,187 @@ export function RacaGeneroTab() {
           </CardContent>
         </Card>
 
-        {/* LACUNA: Mulheres Chefes de Família — dados fabricados removidos */}
-        <Card className="border-l-4 border-l-warning">
+        {/* Card 2: Mercado de Trabalho — Raça × Gênero (SUBSTITUIU LACUNA) */}
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-warning" />
-              Mulheres Chefes de Família por Raça
+              <Briefcase className="w-5 h-5 text-primary" />
+              Mercado de Trabalho por Raça × Gênero
             </CardTitle>
-            <CardDescription>LACUNA DOCUMENTADA — Dados removidos</CardDescription>
+            <CardDescription className="flex items-center gap-2">
+              DIEESE/PNAD Q2 2024
+              <EstimativaBadge tipo="cruzamento" tooltip="Dados DIEESE Boletim Consciência Negra Nov/2024 — cruzamento raça × gênero verificado" />
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-warning">⚠️ Dado inexistente em publicação oficial</p>
-              <p className="text-xs text-muted-foreground">
-                {lacunasDocumentadas.find(l => l.id === 'LACUNA-MULHERES-CHEFE')?.descricao}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-MULHERES-CHEFE')?.dadoRemovido}
-              </p>
-              <div className="flex gap-2 mt-2">
-                <a href="https://sidra.ibge.gov.br/Tabela/6403" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> SIDRA 6403
-                </a>
-                <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> SIS/IBGE 2024
-                </a>
-              </div>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Indicador</TableHead>
+                  <TableHead className="text-right">H. Branco</TableHead>
+                  <TableHead className="text-right">M. Branca</TableHead>
+                  <TableHead className="text-right">H. Negro</TableHead>
+                  <TableHead className="text-right text-destructive">M. Negra</TableHead>
+                  <TableHead className="text-right">Razão M.N/H.B</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {trabalhoRacaGenero.map((item, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
+                    <TableCell className="text-right text-sm">
+                      {item.unidade === 'R$' ? formatCurrency(item.homemBranco) : `${item.homemBranco}%`}
+                    </TableCell>
+                    <TableCell className="text-right text-sm">
+                      {item.unidade === 'R$' ? formatCurrency(item.mulherBranca) : `${item.mulherBranca}%`}
+                    </TableCell>
+                    <TableCell className="text-right text-sm">
+                      {item.unidade === 'R$' ? formatCurrency(item.homemNegro) : `${item.homemNegro}%`}
+                    </TableCell>
+                    <TableCell className="text-right text-sm font-semibold text-destructive">
+                      {item.unidade === 'R$' ? formatCurrency(item.mulherNegra) : `${item.mulherNegra}%`}
+                    </TableCell>
+                    <TableCell className="text-right text-sm font-bold text-destructive">
+                      {item.razaoMulherNegraHomemBranco < 1
+                        ? `${(item.razaoMulherNegraHomemBranco * 100).toFixed(0)}%`
+                        : `${item.razaoMulherNegraHomemBranco.toFixed(1)}x`}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <AuditFooter fontes={trabalhoRacaGeneroFontes} documentos={['CERD 2022 §21', 'Common Core']} />
           </CardContent>
         </Card>
       </div>
 
-      {/* LACUNA: Educação Interseccional — dados fabricados removidos */}
-      <Card className="border-l-4 border-l-warning">
+      {/* Card 3: Chefia Familiar × Raça × Gênero (SUBSTITUIU LACUNA) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Home className="w-5 h-5 text-warning" />
+              Chefia Familiar e Vulnerabilidade por Raça × Gênero
+            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              RASEAM 2023 + II VIGISAN 2022 + CadÚnico 2023
+              <EstimativaBadge tipo="cruzamento" tooltip={chefiaFamiliarRacaGenero.metodologia} />
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 bg-muted rounded-lg text-center">
+                <p className="text-xs text-muted-foreground">Mulheres chefes monoparentais</p>
+                <p className="text-xl font-bold">{(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / 1_000_000).toFixed(1)} mi</p>
+                <p className="text-xs font-medium text-destructive">{chefiaFamiliarRacaGenero.percentualNegras}% negras</p>
+              </div>
+              <div className="p-3 bg-muted rounded-lg text-center">
+                <p className="text-xs text-muted-foreground">Homens chefes monoparentais</p>
+                <p className="text-xl font-bold">{(chefiaFamiliarRacaGenero.homensChefesMonoparentais / 1_000).toFixed(0)} mil</p>
+                <p className="text-xs text-muted-foreground">8,6× menor</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                <span className="text-sm">Domicílios femininos c/ insegurança alimentar</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.domiciliosFemininosIA}%</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                <span className="text-sm">Destes, em situação de fome</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.domiciliosFemininosFome}%</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                <span className="text-sm">Mulheres negras no CadÚnico</span>
+                <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}%</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                <span className="text-sm">Mulheres brancas no CadÚnico</span>
+                <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}%</span>
+              </div>
+            </div>
+            <AuditFooter fontes={chefiaFamiliarRacaGenero.fontes} documentos={['CERD 2022 §21', 'Common Core']} />
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Saúde Materna × Raça (SUBSTITUIU LACUNA) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Stethoscope className="w-5 h-5 text-destructive" />
+              Saúde Materna por Raça
+            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              RASEAM 2024 + Nascer no Brasil II (Fiocruz, 2020-2023)
+              <EstimativaBadge tipo="cruzamento" tooltip={saudeMaternaRaca.metodologia} />
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-center">
+                <p className="text-xs text-muted-foreground">Mortes maternas negras</p>
+                <p className="text-2xl font-bold text-destructive">{saudeMaternaRaca.mortalidadeMaternaNegraPercentual}%</p>
+                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+              </div>
+              <div className="p-3 bg-muted rounded-lg text-center">
+                <p className="text-xs text-muted-foreground">Mortes maternas brancas</p>
+                <p className="text-2xl font-bold">{saudeMaternaRaca.mortalidadeMaternaBrancaPercentual}%</p>
+                <p className="text-xs text-muted-foreground">({saudeMaternaRaca.anoReferencia})</p>
+              </div>
+            </div>
+            <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg mb-3">
+              <p className="text-xs flex items-start gap-1">
+                <Info className="w-3 h-3 text-warning flex-shrink-0 mt-0.5" />
+                <span><strong>Nascer no Brasil II (Fiocruz):</strong> {saudeMaternaRaca.nascerBrasil2Nota}</span>
+              </p>
+            </div>
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <p className="text-xs">
+                <strong>Grupo de risco ampliado:</strong> {saudeMaternaRaca.violenciaObstetricaGrupoRisco}
+              </p>
+            </div>
+            <AuditFooter fontes={saudeMaternaRaca.fontes} documentos={['CERD 2022 §27-28', 'Common Core']} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Card 5: Educação × Raça × Gênero (SUBSTITUIU LACUNA) */}
+      <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-warning" />
+            <GraduationCap className="w-5 h-5 text-primary" />
             Educação por Raça × Gênero
           </CardTitle>
-          <CardDescription>LACUNA DOCUMENTADA — Dados removidos</CardDescription>
+          <CardDescription className="flex items-center gap-2">
+            Informe MIR 2023 + PNAD Educação 2023 + Fiocruz
+            <EstimativaBadge tipo="cruzamento" tooltip="Cruzamento indireto: dados MIR (raça × gênero) + PNAD Educação (raça geral) + INEP. Deep links para cada fonte." />
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg space-y-2">
-            <p className="text-sm font-medium text-warning">⚠️ Dado inexistente no formato raça × gênero</p>
-            <p className="text-xs text-muted-foreground">
-              {lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.descricao}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              <strong>Dado removido:</strong> {lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.dadoRemovido}
-            </p>
-            <div className="p-3 bg-accent/10 rounded-lg mt-2">
-              <p className="text-xs font-medium">✅ Dado real disponível (sem cruzamento gênero):</p>
-              <p className="text-xs text-muted-foreground">{lacunasDocumentadas.find(l => l.id === 'LACUNA-EDUCACAO-INTERSECCIONAL')?.dadoRealDisponivel}</p>
-            </div>
-            <div className="flex gap-2 mt-2">
-              <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 7129
-              </a>
-              <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> PNAD Educação 2024
-              </a>
-            </div>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Indicador</TableHead>
+                <TableHead className="text-right">M. Negra</TableHead>
+                <TableHead className="text-right">M. Branca</TableHead>
+                <TableHead className="text-right">H. Negro</TableHead>
+                <TableHead className="text-right">H. Branco</TableHead>
+                <TableHead>Nota</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {educacaoRacaGenero.map((item, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
+                  <TableCell className="text-right text-sm font-semibold text-destructive">{item.mulherNegra}%</TableCell>
+                  <TableCell className="text-right text-sm">{item.mulherBranca}%</TableCell>
+                  <TableCell className="text-right text-sm">{item.homemNegro}%</TableCell>
+                  <TableCell className="text-right text-sm">{item.homemBranco}%</TableCell>
+                  <TableCell className="text-xs text-muted-foreground max-w-[200px]">{item.nota}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <AuditFooter fontes={educacaoRacaGeneroFontes} documentos={['CERD 2022 §25-26', 'Common Core']} />
         </CardContent>
       </Card>
     </div>
