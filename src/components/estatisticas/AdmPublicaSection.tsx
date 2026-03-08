@@ -5,8 +5,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
-import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin } from 'lucide-react';
+import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin, Info } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
