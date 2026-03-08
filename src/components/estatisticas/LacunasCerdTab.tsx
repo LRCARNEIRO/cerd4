@@ -12,6 +12,14 @@ import { useLacunasStats, useLacunasIdentificadas, useRespostasLacunasCerdIII } 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
+import { AuditFooter } from '@/components/ui/audit-footer';
+
+// FONTE ÚNICA: StatisticsData.ts — elimina duplicidade de séries hardcoded
+import {
+  indicadoresSocioeconomicos,
+  segurancaPublica,
+  educacaoSerieHistorica,
+} from '@/components/estatisticas/StatisticsData';
 
 const statusColors: Record<string, string> = {
   cumprido: 'hsl(var(--success))',
@@ -49,86 +57,66 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
-// Dados históricos SIDRA/IBGE - séries até último ano com dado real
-// REGRA DE OURO: PROIBIDO adicionar projeções (fonte: 'Projeção') ou estimativas com proxies multiplicadores.
-// Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
-const dadosEducacaoHistorico = [
-  { ano: 2010, brancos: 69.1, negros: 44.2, indigenas: 35.8, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 71.5, negros: 48.1, indigenas: 38.2, fonte: 'PNAD' },
-  { ano: 2014, brancos: 73.8, negros: 52.4, indigenas: 41.5, fonte: 'PNAD' },
-  { ano: 2016, brancos: 76.2, negros: 56.8, indigenas: 44.8, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 78.5, negros: 61.2, indigenas: 48.1, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 79.8, negros: 63.5, indigenas: 49.8, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 80.2, negros: 64.8, indigenas: 50.5, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 81.5, negros: 67.2, indigenas: 52.8, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 82.8, negros: 69.8, indigenas: 55.2, fonte: 'Censo 2022' },
-  { ano: 2023, brancos: 83.5, negros: 71.5, indigenas: 57.0, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// =============================================
+// SÉRIES DERIVADAS de StatisticsData.ts (fonte única)
+// Eliminam a duplicidade anterior que causava inconsistências
+// =============================================
 
-const dadosDesempregoHistorico = [
-  { ano: 2010, brancos: 6.8, negros: 9.2, diferenca: 2.4, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 5.5, negros: 8.1, diferenca: 2.6, fonte: 'PNAD' },
-  { ano: 2014, brancos: 5.2, negros: 7.8, diferenca: 2.6, fonte: 'PNAD' },
-  { ano: 2016, brancos: 9.8, negros: 14.2, diferenca: 4.4, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 9.2, negros: 13.8, diferenca: 4.6, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 8.8, negros: 13.2, diferenca: 4.4, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 11.5, negros: 16.8, diferenca: 5.3, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 10.2, negros: 15.5, diferenca: 5.3, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 8.5, negros: 12.8, diferenca: 4.3, fonte: 'PNAD Contínua' },
-  { ano: 2023, brancos: 6.8, negros: 10.5, diferenca: 3.7, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Educação: ensino superior e analfabetismo por raça (PNAD Contínua / SIDRA 7129 + 7125)
+const dadosEducacaoHistorico = educacaoSerieHistorica.map(d => ({
+  ano: d.ano,
+  superiorNegro: d.superiorNegroPercent,
+  superiorBranco: d.superiorBrancoPercent,
+  analfabetismoNegro: d.analfabetismoNegro,
+  analfabetismoBranco: d.analfabetismoBranco,
+  gapSuperior: +(d.superiorBrancoPercent - d.superiorNegroPercent).toFixed(1),
+}));
 
-const dadosHomicidioHistorico = [
-  { ano: 2010, negros: 34.5, brancos: 15.2, razao: 2.27, fonte: 'DataSUS/SIM' },
-  { ano: 2012, negros: 37.2, brancos: 14.8, razao: 2.51, fonte: 'DataSUS/SIM' },
-  { ano: 2014, negros: 38.8, brancos: 14.2, razao: 2.73, fonte: 'DataSUS/SIM' },
-  { ano: 2016, negros: 40.2, brancos: 13.8, razao: 2.91, fonte: 'DataSUS/SIM' },
-  { ano: 2017, negros: 43.1, brancos: 13.5, razao: 3.19, fonte: 'Atlas da Violência' },
-  { ano: 2018, negros: 37.8, brancos: 11.8, razao: 3.20, fonte: 'Atlas da Violência' },
-  { ano: 2019, negros: 29.2, brancos: 9.5, razao: 3.07, fonte: 'Atlas da Violência' },
-  { ano: 2020, negros: 27.8, brancos: 8.8, razao: 3.16, fonte: 'Atlas da Violência' },
-  { ano: 2021, negros: 25.5, brancos: 8.2, razao: 3.11, fonte: 'Fórum Seg. Pública' },
-  { ano: 2022, negros: 23.8, brancos: 7.8, razao: 3.05, fonte: 'Fórum Seg. Pública' },
-  { ano: 2023, negros: 22.5, brancos: 7.5, razao: 3.00, fonte: 'Fórum Seg. Pública' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Desemprego: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6381)
+const dadosDesempregoHistorico = indicadoresSocioeconomicos.map(d => ({
+  ano: d.ano,
+  negros: d.desempregoNegro,
+  brancos: d.desempregoBranco,
+  diferenca: +(d.desempregoNegro - d.desempregoBranco).toFixed(1),
+  fonte: d.fonte,
+}));
 
-const dadosRendaHistorico = [
-  { ano: 2010, brancos: 1538, negros: 834, razao: 0.54, fonte: 'Censo 2010' },
-  { ano: 2012, brancos: 1850, negros: 1020, razao: 0.55, fonte: 'PNAD' },
-  { ano: 2014, brancos: 2150, negros: 1205, razao: 0.56, fonte: 'PNAD' },
-  { ano: 2016, brancos: 2350, negros: 1295, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2018, brancos: 2580, negros: 1420, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2019, brancos: 2720, negros: 1508, razao: 0.55, fonte: 'PNAD Contínua' },
-  { ano: 2020, brancos: 2650, negros: 1462, razao: 0.55, fonte: 'PNAD COVID' },
-  { ano: 2021, brancos: 2850, negros: 1582, razao: 0.56, fonte: 'PNAD Contínua' },
-  { ano: 2022, brancos: 3100, negros: 1736, razao: 0.56, fonte: 'Censo 2022' },
-  { ano: 2023, brancos: 3350, negros: 1910, razao: 0.57, fonte: 'PNAD Contínua' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
+// Homicídio: derivado de segurancaPublica (Atlas da Violência / FBSP)
+// NOTA: "brancos" na verdade = "não negros" (metodologia Atlas/IPEA)
+const dadosHomicidioHistorico = segurancaPublica.map(d => ({
+  ano: d.ano,
+  negros: d.homicidioNegro,
+  naoNegros: d.homicidioBranco, // campo renomeado para clareza
+  razao: d.razaoRisco,
+  fonte: d.ano <= 2023 ? 'Atlas da Violência 2025' : '19º Anuário FBSP 2025',
+}));
 
+// Letalidade policial: derivado de segurancaPublica (Anuário FBSP)
+const dadosLetalidadePolicial = segurancaPublica.map(d => ({
+  ano: d.ano,
+  percentualNegros: d.letalidadePolicial,
+  percentualVitimasNegras: d.percentualVitimasNegras,
+  fonte: 'Anuário FBSP',
+}));
+
+// Renda: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6800)
+const dadosRendaHistorico = indicadoresSocioeconomicos.map(d => ({
+  ano: d.ano,
+  brancos: d.rendaMediaBranca,
+  negros: d.rendaMediaNegra,
+  razao: +(d.rendaMediaNegra / d.rendaMediaBranca).toFixed(2),
+  fonte: d.fonte,
+}));
+
+// Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente com nota de auditoria
+// ⚠️ PENDENTE VERIFICAÇÃO: dados de INCRA/FCP sem deep link direto para cada ano
 const dadosTerrasQuilombolasHistorico = [
-  { ano: 2010, tituladas: 98, certificadas: 1523, taxa: 6.4, fonte: 'INCRA/FCP' },
-  { ano: 2012, tituladas: 105, certificadas: 1834, taxa: 5.7, fonte: 'INCRA/FCP' },
-  { ano: 2014, tituladas: 118, certificadas: 2148, taxa: 5.5, fonte: 'INCRA/FCP' },
-  { ano: 2016, tituladas: 127, certificadas: 2648, taxa: 4.8, fonte: 'INCRA/FCP' },
   { ano: 2018, tituladas: 132, certificadas: 3010, taxa: 4.4, fonte: 'INCRA/FCP' },
   { ano: 2019, tituladas: 133, certificadas: 3200, taxa: 4.2, fonte: 'INCRA/FCP' },
   { ano: 2020, tituladas: 134, certificadas: 3320, taxa: 4.0, fonte: 'INCRA/FCP' },
   { ano: 2021, tituladas: 136, certificadas: 3410, taxa: 4.0, fonte: 'INCRA/FCP' },
-  { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola' },
+  { ano: 2022, tituladas: 138, certificadas: 3432, taxa: 4.0, fonte: 'Censo Quilombola 2022' },
   { ano: 2023, tituladas: 145, certificadas: 3550, taxa: 4.1, fonte: 'INCRA/FCP' },
-  // PROIBIDO: Projeções removidas (2024-2026). Série encerrada no último ano com dado real.
-];
-
-const dadosLetalidadePolicial = [
-  { ano: 2018, total: 6220, negros: 5162, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2019, total: 6357, negros: 5276, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2020, total: 6416, negros: 5325, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2021, total: 6145, negros: 5100, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2022, total: 6429, negros: 5336, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
 ];
 
 export function LacunasCerdTab() {
@@ -185,7 +173,7 @@ export function LacunasCerdTab() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Lacunas CERD - Análise de Cumprimento</h2>
-          <p className="text-sm text-muted-foreground">CERD/C/BRA/CO/18-20 (2022) • Período: 2018-2026</p>
+          <p className="text-sm text-muted-foreground">CERD/C/BRA/CO/18-20 (2022) • Período: 2018-2025</p>
         </div>
         <Button variant="outline" size="sm" onClick={handleRefresh} className="gap-2">
           <RefreshCw className="w-4 h-4" />
@@ -355,19 +343,14 @@ export function LacunasCerdTab() {
         </TabsContent>
 
         <TabsContent value="series-historicas" className="space-y-6">
-          {/* Educação */}
+          {/* Educação — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-success" />
-                Taxa de Escolarização Líquida - Ensino Médio (2010-2026)
+                Ensino Superior e Analfabetismo por Raça (2018-2024)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: SIDRA/IBGE - PNAD Contínua e Censo Demográfico
-                <a href="https://sidra.ibge.gov.br/tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Acessar SIDRA
-                </a>
-              </CardDescription>
+              <CardDescription>Fonte única: PNAD Contínua / SIDRA 7129 + 7125</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -375,7 +358,7 @@ export function LacunasCerdTab() {
                   <LineChart data={dadosEducacaoHistorico}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} domain={[30, 90]} unit="%" />
+                    <YAxis tick={{ fontSize: 11 }} unit="%" />
                     <Tooltip 
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -385,34 +368,38 @@ export function LacunasCerdTab() {
                       formatter={(value: number) => [`${value}%`, '']}
                     />
                     <Legend />
-                    <Line type="monotone" dataKey="brancos" name="Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="negros" name="Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="indigenas" name="Indígenas" stroke="hsl(var(--chart-3))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="superiorBranco" name="Superior — Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="superiorNegro" name="Superior — Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoNegro" name="Analfabetismo — Negros" stroke="hsl(var(--destructive))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Brancos" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §19:</strong> Gap racial na educação reduziu de 25pp (2010) para 13pp (2022), mas persiste. 
-                  Ações afirmativas (Lei 12.711/2012) contribuíram para avanços, porém evasão escolar continua maior entre jovens negros.
+                  <strong>Análise §19:</strong> Gap no ensino superior: {dadosEducacaoHistorico[0]?.gapSuperior}pp em 2018 → {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.gapSuperior}pp em {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.ano}. 
+                  Analfabetismo negro recuou de 8,4% para 6,9%, mas segue 2x maior que o branco.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+                  { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
+                ]}
+                documentos={['CERD 2022 §19', 'Common Core']}
+                compact
+              />
             </CardContent>
           </Card>
 
-          {/* Desemprego */}
+          {/* Desemprego — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-warning" />
-                Taxa de Desocupação por Raça/Cor (2010-2026)
+                Taxa de Desocupação por Raça/Cor (2018-2024)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: SIDRA/IBGE - PNAD Contínua Trimestral
-                <a href="https://sidra.ibge.gov.br/tabela/6403" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Acessar SIDRA
-                </a>
-              </CardDescription>
+              <CardDescription>Fonte única: PNAD Contínua / SIDRA 6381 + DIEESE 2024</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -437,26 +424,29 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §23:</strong> Diferença no desemprego entre negros e brancos permanece estrutural (3-5pp).
-                  Pandemia agravou disparidades. Renda média de negros segue em 57% da renda de brancos.
+                  <strong>Análise §23:</strong> Diferença desemprego negros vs brancos: {dadosDesempregoHistorico[0]?.diferenca}pp (2018) → {dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.diferenca}pp ({dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.ano}).
+                  Pandemia agravou disparidades. Razão de renda negra/branca ≈ 59%.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'SIDRA 6381 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
+                  { nome: 'DIEESE — Boletim Consciência Negra Nov/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf' },
+                ]}
+                documentos={['CERD 2022 §23']}
+                compact
+              />
             </CardContent>
           </Card>
 
-          {/* Homicídio */}
+          {/* Homicídio — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <XCircle className="w-5 h-5 text-destructive" />
-                Taxa de Homicídio por 100 mil habitantes (2010-2026)
+                Taxa de Homicídio por 100 mil — Negros vs Não Negros (2018-2024)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: DataSUS/SIM, Atlas da Violência, Fórum Brasileiro de Segurança Pública
-                <a href="https://www.ipea.gov.br/atlasviolencia/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Atlas da Violência
-                </a>
-              </CardDescription>
+              <CardDescription>Fonte única: Atlas da Violência 2025 (IPEA) + 19º Anuário FBSP 2025</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -474,30 +464,36 @@ export function LacunasCerdTab() {
                     />
                     <Legend />
                     <Line type="monotone" dataKey="negros" name="Negros (por 100 mil)" stroke="hsl(var(--destructive))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="brancos" name="Brancos (por 100 mil)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="razao" name="Razão (Negros/Brancos)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="naoNegros" name="Não Negros (por 100 mil)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="razao" name="Risco Relativo (×)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> Razão de homicídios negros/brancos permanece próxima a 3x.
-                  Redução absoluta nos homicídios (2017-2022), mas disparidade racial não diminuiu proporcionalmente.
+                  <strong>Análise §36:</strong> Risco relativo estável em 2,7× (2018→2023). Taxa negros caiu de 37,6 para 28,9, 
+                  mas disparidade racial não reduziu. NOTA: comparação é Negros vs Não Negros (metodologia Atlas/IPEA).
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia' },
+                  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+                ]}
+                documentos={['CERD 2022 §36', 'Durban §32-36']}
+                compact
+              />
             </CardContent>
           </Card>
 
-          {/* Letalidade Policial */}
+          {/* Letalidade Policial — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-destructive" />
-                Mortes por Intervenção Policial (2018-2022)
+                Letalidade Policial — % Vítimas Negras (2018-2024)
               </CardTitle>
-              <CardDescription>
-                Fonte: Anuário Brasileiro de Segurança Pública
-              </CardDescription>
+              <CardDescription>Fonte única: Anuário Brasileiro de Segurança Pública (13ª a 19ª edição)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -505,42 +501,43 @@ export function LacunasCerdTab() {
                   <BarChart data={dadosLetalidadePolicial}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} unit="%" domain={[70, 90]} />
                     <Tooltip 
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
+                      formatter={(value: number) => [`${value}%`, '']}
                     />
                     <Legend />
-                    <Bar dataKey="total" name="Total de Mortes" fill="hsl(var(--muted-foreground))" />
-                    <Bar dataKey="negros" name="Vítimas Negras" fill="hsl(var(--destructive))" />
+                    <Bar dataKey="percentualNegros" name="% Vítimas Negras — Letalidade Policial" fill="hsl(var(--destructive))" />
+                    <Bar dataKey="percentualVitimasNegras" name="% Vítimas Negras — Homicídio Total" fill="hsl(var(--muted-foreground))" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> 83% das vítimas de letalidade policial são negras — proporção persistente no período 2018-2022.
-                  Brasil lidera ranking mundial de mortes por polícia. ADPF 635 (STF) busca restringir operações em favelas.
+                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de 75,4% (2018) para 82% (2024).
+                  ADPF 635 (STF) busca restringir operações em favelas. Brasil lidera ranking mundial.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[{ nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' }]}
+                documentos={['CERD 2022 §36', 'ADPF 635']}
+                compact
+              />
             </CardContent>
           </Card>
 
-          {/* Territórios Quilombolas */}
+          {/* Territórios Quilombolas — dados locais (sem equivalente em StatisticsData.ts) */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <TrendingDown className="w-5 h-5" style={{ color: 'hsl(280, 60%, 50%)' }} />
-                Titulação de Territórios Quilombolas (2010-2026)
+                Titulação de Territórios Quilombolas (2018-2023)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: INCRA e Fundação Cultural Palmares
-                <a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> INCRA
-                </a>
-              </CardDescription>
+              <CardDescription>⚠️ Dados locais — pendente migração para StatisticsData.ts com deep links INCRA</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -570,22 +567,25 @@ export function LacunasCerdTab() {
                   Período 2019-2022 marcado por paralisia quase total. Retomada a partir de 2023 com PNGTAQ.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'INCRA — Quilombolas', url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas' },
+                  { nome: 'Fundação Cultural Palmares', url: 'https://www.palmares.gov.br/' },
+                ]}
+                documentos={['CERD 2022 §25', 'Durban']}
+                compact
+              />
             </CardContent>
           </Card>
 
-          {/* Renda */}
+          {/* Renda — fonte única: StatisticsData.ts */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Database className="w-5 h-5 text-primary" />
-                Rendimento Médio Mensal por Raça/Cor (2010-2026)
+                Rendimento Médio Mensal por Raça/Cor (2018-2024)
               </CardTitle>
-              <CardDescription className="flex items-center gap-2">
-                Fonte: SIDRA/IBGE - PNAD Contínua
-                <a href="https://sidra.ibge.gov.br/tabela/6807" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> Acessar SIDRA
-                </a>
-              </CardDescription>
+              <CardDescription>Fonte única: PNAD Contínua / SIDRA 6800 + DIEESE 2024</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-72">
@@ -594,7 +594,7 @@ export function LacunasCerdTab() {
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
                     <YAxis yAxisId="left" tick={{ fontSize: 11 }} />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} domain={[0.5, 0.7]} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} domain={[0.4, 0.7]} />
                     <Tooltip 
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -615,10 +615,18 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §23:</strong> Renda de negros permanece em torno de 55-60% da renda de brancos - estagnação estrutural.
-                  Crescimento absoluto de ambos os grupos, mas gap proporcional não se reduz significativamente.
+                  <strong>Análise §23:</strong> Razão renda negra/branca: {dadosRendaHistorico[0]?.razao} (2018) → {dadosRendaHistorico[dadosRendaHistorico.length - 1]?.razao} ({dadosRendaHistorico[dadosRendaHistorico.length - 1]?.ano}).
+                  Renda negra cresceu de R${dadosRendaHistorico[0]?.negros} para R${dadosRendaHistorico[dadosRendaHistorico.length - 1]?.negros}, mas gap proporcional não se reduz.
                 </p>
               </div>
+              <AuditFooter 
+                fontes={[
+                  { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
+                  { nome: 'DIEESE — Boletim Consciência Negra Nov/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf' },
+                ]}
+                documentos={['CERD 2022 §23']}
+                compact
+              />
             </CardContent>
           </Card>
         </TabsContent>
