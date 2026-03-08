@@ -96,7 +96,7 @@ export function FontesDadosTab() {
               <Check className="w-5 h-5 text-success" />
               <div>
                 <p className="text-xs text-muted-foreground">Fontes Integradas</p>
-                <p className="text-2xl font-bold">16</p>
+                <p className="text-2xl font-bold">19</p>
               </div>
             </div>
           </CardContent>
