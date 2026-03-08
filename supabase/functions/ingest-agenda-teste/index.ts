@@ -262,11 +262,21 @@ Deno.serve(async (req) => {
           }
 
           let count = 0;
+          let skippedUniversal = 0;
+          const isFocal = PROGRAMAS_FOCAIS.has(prog.codigo);
+
           for (const item of aggregated) {
             const codProg = item.codigoPrograma || prog.codigo;
             const nomeProg = item.programa || item.nomePrograma || prog.nome;
             const codAcao = item.codigoAcao || "";
             const nomeAcao = item.acao || item.nomeAcao || "";
+            const descritivo = item.descricao || item.descritivo || "";
+
+            // For universal programs, filter by action-level keywords
+            if (!isFocal && !acaoMatchesKeyword(nomeAcao, descritivo)) {
+              skippedUniversal++;
+              continue;
+            }
 
             const orgao = resolveOrgao(item, prog.orgao_nome);
 
