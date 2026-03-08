@@ -428,16 +428,6 @@ export default function Orcamento() {
 
   const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
 
-  /** Check if a record is a non-racial 5034 action */
-  const is5034NonRacial = (r: DadoOrcamentario): boolean => {
-    if (!r.programa.toLowerCase().includes('5034')) return false;
-    const orgUpper = (r.orgao || '').toUpperCase();
-    if (orgUpper === 'SEPPIR') return false;
-    if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL') || orgUpper.includes('MIR/')) && r.ano >= 2023) return false;
-    const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
-    const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-    return !racialKws.some(kw => texto.includes(kw));
-  };
 
   /** Compute per-esfera summary stats */
   const esferaStats = useMemo(() => {
