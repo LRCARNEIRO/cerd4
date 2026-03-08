@@ -950,10 +950,6 @@ export function JuventudeTab() {
                   <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,2% dos presos são negros</a>{' '}
                   (SISDEPEN 2024)
                 </li>
-                <li className="flex items-center gap-1">
-                  • Evasão escolar 2x maior
-                  <EstimativaBadge tipo="simples" metodologia="Estimativa baseada em proxy etário: INEP publica evasão por raça, mas o recorte jovens negros 15-17 vs brancos requer filtro adicional." className="ml-1" />
-                </li>
               </ul>
             </div>
             <AuditFooter
