@@ -493,7 +493,7 @@ export function LacunasCerdTab() {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-destructive" />
-                Mortes por Intervenção Policial (2013-2026)
+                Mortes por Intervenção Policial (2018-2022)
               </CardTitle>
               <CardDescription>
                 Fonte: Anuário Brasileiro de Segurança Pública
