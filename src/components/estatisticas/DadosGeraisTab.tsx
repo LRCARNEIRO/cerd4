@@ -236,7 +236,11 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">SIDRA Tabela 6800 - Rendimento médio</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  SIDRA Tabela 6405 — Rendimento médio por cor/raça
+                </a>
+              </p>
             </div>
 
             {/* Desemprego */}
