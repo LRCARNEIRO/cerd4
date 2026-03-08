@@ -8,8 +8,6 @@ import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
-  radarVulnerabilidades, 
-  radarVulnerabilidadesFontes,
   evolucaoDesigualdade, 
   interseccionalidadeTrabalho,
   interseccionalidadeTrabalhoFontes
