@@ -6,7 +6,7 @@ import {
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
 import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025 } from './StatisticsData';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
 
 export function SegurancaSaudeEducacaoTab() {
   return (
@@ -132,31 +132,31 @@ export function SegurancaSaudeEducacaoTab() {
                   <p className="text-xs font-medium text-muted-foreground mb-1">Vulnerabilidade Letal (Risco Relativo)</p>
                   <p className="text-3xl font-bold text-destructive">{atlasViolencia2025.riscoRelativo}x</p>
                   <p className="text-xs text-muted-foreground mb-3">chance de assassinato para negros vs não negros</p>
-                  <div className="flex items-center gap-1 text-xs text-destructive">
-                    <TrendingUp className="w-3 h-3" />
-                    <span>{atlasViolencia2025.riscoRelativo2013}x (2013) → {atlasViolencia2025.riscoRelativo}x (2023)</span>
+                  <div className="flex items-center gap-1 text-xs text-warning">
+                    <Minus className="w-3 h-3" />
+                    <span>{atlasViolencia2025.riscoRelativo2018}x (2018) → {atlasViolencia2025.riscoRelativo}x (2023)</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Desigualdade <strong>aumentou</strong> em 10 anos</p>
+                  <p className="text-xs text-muted-foreground mt-1">Risco relativo <strong>estável</strong> no período 2018→2023</p>
                 </CardContent>
               </Card>
 
               {/* 2. Queda Diferencial */}
               <Card className="border-l-4 border-l-warning">
                 <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Queda Diferencial de Homicídios (2013→2023)</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1">Queda de Homicídios (2018→2023)</p>
                   <div className="flex gap-3 items-end mb-3">
                     <div>
-                      <p className="text-2xl font-bold text-warning">-{atlasViolencia2025.quedaNegros2013_2023}%</p>
+                      <p className="text-2xl font-bold text-warning">-{atlasViolencia2025.quedaNegros2018_2023}%</p>
                       <p className="text-xs text-muted-foreground">Negros</p>
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-success">-{atlasViolencia2025.quedaNaoNegros2013_2023}%</p>
+                      <p className="text-2xl font-bold text-success">-{atlasViolencia2025.quedaNaoNegros2018_2023}%</p>
                       <p className="text-xs text-muted-foreground">Não negros</p>
                     </div>
                   </div>
-                  <p className="text-xs text-destructive flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />
-                    Políticas beneficiaram mais não negros (+10,6 p.p.)
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Info className="w-3 h-3" />
+                    Quedas proporcionais similares no período (-1,2 p.p.)
                   </p>
                 </CardContent>
               </Card>

@@ -124,17 +124,11 @@ const dadosTerrasQuilombolasHistorico = [
 ];
 
 const dadosLetalidadePolicial = [
-  { ano: 2013, total: 2212, negros: 1790, percentual: 80.9, fonte: 'Fórum Seg. Pública' },
-  { ano: 2014, total: 3022, negros: 2478, percentual: 82.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2015, total: 3345, negros: 2776, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2016, total: 4222, negros: 3505, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  { ano: 2017, total: 5159, negros: 4282, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2018, total: 6220, negros: 5162, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2019, total: 6357, negros: 5276, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2020, total: 6416, negros: 5325, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2021, total: 6145, negros: 5100, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
   { ano: 2022, total: 6429, negros: 5336, percentual: 83.0, fonte: 'Fórum Seg. Pública' },
-  // PROIBIDO: Projeções removidas (2023-2026). Série encerrada no último ano com dado real.
 ];
 
 export function LacunasCerdTab() {
@@ -499,7 +493,7 @@ export function LacunasCerdTab() {
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5 text-destructive" />
-                Mortes por Intervenção Policial (2013-2026)
+                Mortes por Intervenção Policial (2018-2022)
               </CardTitle>
               <CardDescription>
                 Fonte: Anuário Brasileiro de Segurança Pública
@@ -527,7 +521,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> 83% das vítimas de letalidade policial são negras - proporção constante desde 2013.
+                  <strong>Análise §36:</strong> 83% das vítimas de letalidade policial são negras — proporção persistente no período 2018-2022.
                   Brasil lidera ranking mundial de mortes por polícia. ADPF 635 (STF) busca restringir operações em favelas.
                 </p>
               </div>

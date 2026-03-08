@@ -165,7 +165,7 @@ export const razaoRendaRacial = 0.589;
 //   • População carcerária: 68,2% negra
 // DADOS-CHAVE do Atlas da Violência 2025 (IPEA/FBSP) (ano-referência 2023):
 //   • Taxa de homicídio negros: 28,9/100 mil vs não negros: 10,6/100 mil
-//   • Risco relativo: 2,7x (subiu de 2,4x em 2013)
+//   • Risco relativo: 2,7x (estável desde 2018; Atlas cita 2,4x em 2013 — fora do recorte)
 //   • 76,5% das vítimas de homicídio são negras (2022)
 //   • 47,8% das vítimas tinham 15-29 anos (2023), 79% jovens negros masculinos
 //   • IVJ-N: risco 2x maior para jovens negros (2021, subiu de 1,9x em 2017)
@@ -226,15 +226,16 @@ export const atlasViolencia2025 = {
   taxaHomicidioNegros: 28.9,
   taxaHomicidioNaoNegros: 10.6,
   anoTaxa: 2023,
-  // Evolução: queda menor entre negros (21,5%) vs não negros (32,1%) entre 2013-2023
-  quedaNegros2013_2023: 21.5,
-  quedaNaoNegros2013_2023: 32.1,
-  // Risco relativo: 2,7x em 2023 (era 2,4x em 2013)
+  // Evolução 2018→2023 (recorte temporal do projeto):
+  // Taxa negros: 37,6 → 28,9 = queda de 23,1%; não negros: 14,0 → 10,6 = queda de 24,3%
+  quedaNegros2018_2023: 23.1,
+  quedaNaoNegros2018_2023: 24.3,
+  // Risco relativo: 2,7x em 2018 → 2,7x em 2023 (estável no período)
   riscoRelativo: 2.7,
-  riscoRelativo2013: 2.4,
-  // Concentração racial: 76,5% vítimas negras em 2022
+  riscoRelativo2018: 2.7,
+  // Concentração racial: 75,7% vítimas negras em 2018 → 76,5% em 2022
   concentracaoRacial2022: 76.5,
-  concentracaoRacial2013: 73.1,
+  concentracaoRacial2018: 75.7,
   // Violência letal na juventude 15-29: 47,8% das vítimas em 2023, 79% jovens negros masculinos
   juventude15_29: {
     percentualVitimas: 47.8,
