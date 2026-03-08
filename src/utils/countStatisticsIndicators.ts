@@ -48,11 +48,8 @@ const seriesEstatisticas = [
   serieAntraTrans,
   lgbtqiaPorRaca,
   classePorRaca,
-  mulheresChefeFamilia,
   violenciaInterseccional,
   juventudeNegra,
-  educacaoInterseccional,
-  saudeInterseccional,
   radarVulnerabilidades,
   evolucaoDesigualdade,
 ];

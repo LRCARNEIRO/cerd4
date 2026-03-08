@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-rea
 import { cn } from '@/lib/utils';
 import {
   segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, feminicidioSerie, mulheresChefeFamilia,
+  indicadoresSocioeconomicos, feminicidioSerie,
   povosTradicionais
 } from '@/components/estatisticas/StatisticsData';
 
