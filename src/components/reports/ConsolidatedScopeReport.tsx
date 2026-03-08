@@ -73,17 +73,26 @@ function generateConsolidatedHTML(data: {
   const fmtCurrency = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 1 }).format(n);
   const fmtCurrencyFull = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
 
-  // Budget historical from Orcamento page
-  const budgetHistorical = [
-    { ano: 2018, autorizado: 145000000, pago: 72000000, execucao: 49.7 },
-    { ano: 2019, autorizado: 152000000, pago: 108000000, execucao: 71.1 },
-    { ano: 2020, autorizado: 138000000, pago: 68000000, execucao: 49.3 },
-    { ano: 2021, autorizado: 112000000, pago: 55000000, execucao: 49.1 },
-    { ano: 2022, autorizado: 98000000, pago: 52000000, execucao: 53.1 },
-    { ano: 2023, autorizado: 285000000, pago: 198000000, execucao: 69.5 },
-    { ano: 2024, autorizado: 420000000, pago: 295000000, execucao: 70.2 },
-    { ano: 2025, autorizado: 545000000, pago: 385000000, execucao: 70.6 },
-  ];
+  // Budget historical — agregação dinâmica a partir dos dados reais do banco (dados_orcamentarios)
+  // REGRA DE OURO: Zero dados fabricados — usar exclusivamente dados do BD
+  const budgetHistorical = (() => {
+    if (!orcamentarios || orcamentarios.length === 0) return [];
+    const byYear = new Map<number, { autorizado: number; pago: number }>();
+    orcamentarios.forEach((o: any) => {
+      const entry = byYear.get(o.ano) || { autorizado: 0, pago: 0 };
+      entry.autorizado += Number(o.dotacao_autorizada || 0);
+      entry.pago += Number(o.pago || 0);
+      byYear.set(o.ano, entry);
+    });
+    return Array.from(byYear.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([ano, v]) => ({
+        ano,
+        autorizado: v.autorizado,
+        pago: v.pago,
+        execucao: v.autorizado > 0 ? Math.round((v.pago / v.autorizado) * 1000) / 10 : 0,
+      }));
+  })();
 
   const catNorm: Record<string, string> = {
     legislacao: 'Legislação',
