@@ -219,7 +219,7 @@ export const feminicidioSerie = [
 
 // =============================================
 // ATLAS DA VIOLÊNCIA 2025 (IPEA/FBSP) — Dados específicos
-// URL: https://www.ipea.gov.br/atlasviolencia
+// URL: https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf
 // =============================================
 export const atlasViolencia2025 = {
   // Taxa de homicídio por 100 mil — negros vs não negros (2023)
@@ -252,7 +252,8 @@ export const atlasViolencia2025 = {
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
   },
   fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
-  link: 'https://www.ipea.gov.br/atlasviolencia',
+  link: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf',
+  pagina: 'p. 79',
 };
 
 // Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
@@ -781,10 +782,21 @@ export const fonteDados = {
   pnad: { nome: 'PNAD Contínua', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
   pnadEducacao: { nome: 'PNAD Contínua - Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
   desigualdadesRaciais: { nome: 'Desigualdades Sociais por Cor ou Raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/25844-desigualdades-sociais-por-cor-ou-raca.html' },
-  datasus: { nome: 'DataSUS/SINAN', url: 'https://datasus.saude.gov.br' },
+  datasus: { nome: 'DataSUS/SIM', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+  datasusNascidosVivos: { nome: 'DataSUS/SINASC — Nascidos Vivos', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+  datasusObitosInfantis: { nome: 'DataSUS/SIM — Óbitos Infantis', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def' },
   ipea: { nome: 'IPEA/Retrato das Desigualdades', url: 'https://www.ipea.gov.br' },
-  atlasViolencia: { nome: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia' },
-  fbsp: { nome: '19º Anuário Brasileiro de Segurança Pública (FBSP 2025)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  atlasViolencia: { nome: 'Atlas da Violência 2025 (IPEA)', url: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf', pagina: 'p. 79' },
+  fbsp: { nome: '19º Anuário Brasileiro de Segurança Pública (FBSP 2025)', url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
+  fbspEdicoes: {
+    '13': 'https://publicacoes.forumseguranca.org.br/items/de3ac14f-56ea-416c-a850-37bab76f91b0',
+    '14': 'https://publicacoes.forumseguranca.org.br/items/6ff530e4-8b9f-4e9f-b5d1-237093813356',
+    '15': 'https://publicacoes.forumseguranca.org.br/items/2c290f1f-6b52-4ba2-b1de-5bb33f7245fb',
+    '16': 'https://publicacoes.forumseguranca.org.br/items/4f923d12-3cb2-40f7-b280-7419c8eb3b39',
+    '17': 'https://publicacoes.forumseguranca.org.br/items/6b3e3a1b-3bd2-40f7-b280-7419c8eb3b39',
+    '18': 'https://publicacoes.forumseguranca.org.br/items/f62c4196-561d-452d-a2a8-9d33d1163af0',
+    '19': 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf',
+  },
   fbspEstatisticas: { nome: 'FBSP - Estatísticas', url: 'https://forumseguranca.org.br/estatisticas/' },
   inep: { nome: 'INEP/Censo da Educação', url: 'https://www.gov.br/inep' },
   stn: { nome: 'STN/SICONFI', url: 'https://siconfi.tesouro.gov.br' },

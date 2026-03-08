@@ -269,8 +269,8 @@ export function SegurancaSaudeEducacaoTab() {
               <FileText className="w-3 h-3" /> <strong>Fontes oficiais:</strong>
             </p>
             <div className="flex flex-wrap gap-3 text-xs">
-              <a href="https://sidra.ibge.gov.br/Tabela/7267" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> SIDRA 7267 — Educação por cor/raça
+              <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> SIDRA 7129 — Ensino superior por cor/raça
               </a>
               <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> PNAD Contínua Educação 2024

@@ -272,7 +272,7 @@ export const dataSources: DataSource[] = [
     urlAcesso: 'https://sidra.ibge.gov.br/pesquisa/pnadct',
     tipoAcesso: 'api',
     descricao: 'Pesquisa amostral trimestral sobre mercado de trabalho e condições de vida',
-    indicadoresDisponiveis: ['Desemprego (Tab. 6403)', 'Renda (Tab. 6807)', 'Escolarização (Tab. 7267)'],
+    indicadoresDisponiveis: ['Desemprego (Tab. 6403)', 'Renda (Tab. 6807)', 'Escolarização (Tab. 7129)'],
     desagregacoes: ['Raça/cor', 'Sexo', 'Idade', 'UF', 'Escolaridade'],
     periodicidade: 'Trimestral',
     ultimaAtualizacao: '2025-09-01'
