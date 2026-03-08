@@ -611,7 +611,8 @@ export const educacaoInterseccional = [
   { grupo: 'Quilombola', superiorCompleto: 6.8, posGraduacao: 1.1, evasaoMedio: 22.8 }
 ];
 export const educacaoInterseccionalFontes = [
-  { nome: 'SIDRA 7267 — Educação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7267' },
+  { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+  { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
   { nome: 'PNAD Contínua Educação 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
   { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior' },
 ];
