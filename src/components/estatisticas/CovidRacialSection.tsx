@@ -94,6 +94,9 @@ const impactoSocioeconomico = [
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
+// NOTA: Valores ano-a-ano para "negra" (pretas+pardas combinadas) são cruzamento indireto
+// baseado em DataSUS/SIM + IEPS Boletim Çarê (média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9).
+// Séries anuais interpoladas a partir do padrão publicado pelo IEPS.
 const mortalidadeMaternaCovid = [
   { ano: 2019, negra: 60.2, branca: 31.8, razao: 1.89 },
   { ano: 2020, negra: 72.5, branca: 38.2, razao: 1.90 },
