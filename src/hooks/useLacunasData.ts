@@ -422,7 +422,7 @@ export function useOrcamentoStats() {
       // === SESAI isolada por período ===
       const sesaiLimpos = registrosLimpos.filter(r => isSesaiRecord(r));
       const sesaiP1 = sesaiLimpos.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const sesaiP2 = sesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2026);
+      const sesaiP2 = sesaiLimpos.filter(r => r.ano >= 2023 && r.ano <= 2025);
       const sesaiPagoP1 = sesaiP1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
       const sesaiPagoP2 = sesaiP2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
 

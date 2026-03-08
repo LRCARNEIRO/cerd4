@@ -345,7 +345,7 @@ export function SegurancaSaudeEducacaoTab() {
           <div className="mt-4 p-3 bg-warning/10 border border-warning/30 rounded-lg">
             <p className="text-xs">
               <strong>Atenção:</strong> A pandemia COVID-19 (2020-2021) causou pico de mortalidade materna, 
-              afetando desproporcionalmente mulheres negras. Razão de mortalidade materna negra/branca: 1,9x (persistente).
+              afetando ambos os grupos. Razão negra/branca varia de 1,2x (2018) a ~1,0x (2024) na série DataSUS/SIM. Pesquisa Nascer no Brasil II (2023) reporta ~2x com metodologia própria.
             </p>
           </div>
 

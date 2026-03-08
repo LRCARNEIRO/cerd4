@@ -753,11 +753,11 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
     <div class="section">
       <h3>A. Marco Institucional (2018-2026)</h3>
       
-      <p>O período 2018-2026 registrou mudanças institucionais significativas no marco brasileiro 
+      <p>O período 2018-2025 registrou mudanças institucionais significativas no marco brasileiro 
       de promoção da igualdade racial:</p>
       
       <div class="highlight-box">
-        <h4>🏛️ Período 2023-2026: Reconstrução Institucional</h4>
+        <h4>🏛️ Período 2023-2025: Reconstrução Institucional</h4>
         <ul>
           <li><strong>Ministério da Igualdade Racial (MIR)</strong> - Criado em janeiro de 2023</li>
           <li><strong>Ministério dos Povos Indígenas (MPI)</strong> - Criado em janeiro de 2023</li>

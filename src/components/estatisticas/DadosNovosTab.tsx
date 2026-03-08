@@ -107,7 +107,7 @@ const indicadoresSaude: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: mort. materna negras 62,8/100mil NV → 2023: 55,2. Brancas: 32,5 → 28,5. Razão persistente: negras 2x mais chance de morte materna que brancas.',
+    relevanciaRacial: '2018: mort. materna negras 60,1/100mil NV → 2024: 55,5. Brancas: 49,9 → 54,2. Razão negra/branca: 1,2x (2018) → ~1,0x (2024). Pesquisa Nascer no Brasil II (2023) reporta ~2x com metodologia própria.',
     prioridade: 'alta'
   },
   {

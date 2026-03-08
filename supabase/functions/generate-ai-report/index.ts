@@ -404,7 +404,7 @@ ESPECÍFICO PARA RELATÓRIO CERD IV:
     return basePrompt + `
 
 ESPECÍFICO PARA ANÁLISE ORÇAMENTÁRIA:
-- Compare períodos: 2018-2022 (desmonte) vs 2023-2026 (reconstrução)
+- Compare períodos: 2018-2022 (desmonte) vs 2023-2025 (reconstrução)
 - Taxas de execução por programa e esfera (federal, estadual, municipal)
 - CRUZAMENTO CENTRAL: investimento orçamentário × resultados dos indicadores
 - Destaque: MIR com ~99% de execução em 2024/2025 como evidência de fortalecimento
