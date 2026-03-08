@@ -856,17 +856,16 @@ export const educacaoInterseccionalFontes = [
 export const saudeInterseccional: never[] = [];
 
 
-// Radar: Vulnerabilidades por grupo
-// ÍNDICE COMPOSTO — Elaboração própria a partir de múltiplas fontes
-// Fontes base: PNAD Contínua 2024 (SIDRA 6800/6381), DataSUS/SIM, 19º Anuário FBSP 2025, SIS/IBGE 2024
-// Cada eixo normalizado 0-100 onde 100 = maior vulnerabilidade
-export const radarVulnerabilidades = [
-  { eixo: 'Renda', mulherNegra: 85, homemNegro: 72, mulherBranca: 45, homemBranco: 28 },
-  { eixo: 'Emprego', mulherNegra: 78, homemNegro: 65, mulherBranca: 52, homemBranco: 35 },
-  { eixo: 'Educação', mulherNegra: 68, homemNegro: 75, mulherBranca: 38, homemBranco: 42 },
-  { eixo: 'Saúde', mulherNegra: 82, homemNegro: 58, mulherBranca: 32, homemBranco: 45 },
-  { eixo: 'Violência', mulherNegra: 88, homemNegro: 92, mulherBranca: 42, homemBranco: 38 },
-  { eixo: 'Moradia', mulherNegra: 72, homemNegro: 68, mulherBranca: 35, homemBranco: 32 }
+// REMOVIDO: radarVulnerabilidades — índice composto com valores fabricados (normalização 0-100 arbitrária)
+// viola Regra de Ouro: "elaboração própria" sem fórmula auditável reprodutível
+// Os dados originais (SIDRA 6800, 6381, SIM, FBSP, SIS) são válidos MAS o índice composto não é.
+export const radarVulnerabilidades: never[] = [];
+export const radarVulnerabilidadesFontes = [
+  { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
+  { nome: 'SIDRA 6402 — Desocupação', url: 'https://sidra.ibge.gov.br/tabela/6402' },
+  { nome: 'TabNet/DataSUS — Mortalidade', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+  { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
+  { nome: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
 ];
 export const radarVulnerabilidadesFontes = [
   { nome: 'SIDRA 6405 — Rendimento', url: 'https://sidra.ibge.gov.br/tabela/6405' },
