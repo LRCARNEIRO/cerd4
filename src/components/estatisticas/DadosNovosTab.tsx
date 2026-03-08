@@ -39,7 +39,7 @@ const indicadoresSeguranca: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 40,2 (2018) → 27,5 (2024); brancos 15,5 → 10,2.',
+    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 37,6 (2018) → 28,9 (2023, Atlas); não negros 14,0 → 10,6.',
     prioridade: 'alta'
   },
   {
