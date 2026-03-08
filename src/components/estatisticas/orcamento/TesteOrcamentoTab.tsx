@@ -632,14 +632,27 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                   </p>
                   <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                      <div>
-                      <h5 className="font-semibold text-foreground">Período 2024–2025 — Marcadores Oficiais do PPA</h5>
+                      <h5 className="font-semibold text-foreground">Período 2024–2025 — Marcadores Oficiais do PPA (nível de ação orçamentária)</h5>
                       <p>
-                        A lista de ações dos PDFs de Agendas Transversais de
+                        Os PDFs de Agendas Transversais de
                         <em> Igualdade Racial</em> e <em>Povos Indígenas</em> (PPA 2024-2027,
-                        Espelho do Monitoramento do MPO) baliza a coleta de <strong>dotação inicial</strong> e
-                        <strong> liquidado</strong> de cada ação listada. Apenas essas métricas são extraídas
-                        para os programas marcados.
+                        Espelho do Monitoramento do MPO) identificam os <strong>programas</strong> marcados.
+                        A coleta via API do Portal da Transparência opera no nível de <strong>ação orçamentária</strong>,
+                        aplicando dois critérios distintos:
                       </p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1 text-xs">
+                        <li>
+                          <strong>Programas focais</strong> (ex: 5802, 5803, 5804 do MIR; 1617, 5136 do MPI):
+                          todas as ações são incluídas integralmente, pois o orçamento total é destinado ao público-alvo.
+                        </li>
+                        <li>
+                          <strong>Programas universais</strong> (ex: 5128 Bolsa Família, 5111 Educação Básica, 5126 Esporte):
+                          apenas ações cujo <strong>nome ou descritivo</strong> contenha termos específicos do público-alvo
+                          são incluídas (ex: <code>indígen*</code>, <code>quilombol*</code>, <code>racial</code>,
+                          <code> cigano</code>, <code>afrodescendente</code>, <code>sesai</code>, <code>funai</code>, etc.).
+                          Ações genéricas são descartadas para evitar inflação orçamentária.
+                        </li>
+                      </ul>
                     </div>
                     <div>
                       <h5 className="font-semibold text-foreground">Período 2018–2023 — Palavras-chave + SIOP (mesma da metodologia vigente)</h5>
@@ -660,7 +673,36 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                 </section>
 
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">2. Programas da Agenda "Igualdade Racial"</h4>
+                  <h4 className="font-semibold text-foreground text-base">2. Filtro por Ação Orçamentária (programas universais)</h4>
+                  <p>
+                    Programas da agenda transversal que atendem populações amplas (ex: Bolsa Família, Educação Básica)
+                    têm orçamentos globais de dezenas a centenas de bilhões. Para evitar atribuir esses valores
+                    integrais à política racial/indígena, o sistema filtra no nível de <strong>ação orçamentária</strong>,
+                    incluindo apenas as ações que mencionam explicitamente o público-alvo.
+                  </p>
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h5 className="font-semibold text-foreground text-sm mb-2">Programas focais (inclusão integral)</h5>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {['5802 – Enfrentamento ao Racismo (MIR)', '5803 – Juventude Negra Viva (MIR)',
+                        '5804 – Igualdade Étnico-Racial (MIR)', '1617 – Demarcação Territórios (MPI)',
+                        '5136 – Proteção Povos Indígenas (MPI)'].map(p => (
+                        <Badge key={p} variant="secondary" className="text-[10px]">{p}</Badge>
+                      ))}
+                    </div>
+                    <h5 className="font-semibold text-foreground text-sm mb-2">Keywords de filtragem (programas universais)</h5>
+                    <div className="flex flex-wrap gap-1">
+                      {['indígen*', 'quilombol*', 'racial', 'racismo', 'negro/a', 'afro*', 'étnic*',
+                        'palmares', 'terreiro', 'matriz africana', 'capoeira', 'candomblé', 'umbanda',
+                        'afrodescendente', 'cigano', 'romani', 'comunidades tradicionais',
+                        'funai', 'sesai', 'saúde indígen*', 'educação indígen*'].map(kw => (
+                        <Badge key={kw} variant="outline" className="text-[10px] font-mono">{kw}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                <section className="space-y-2">
+                  <h4 className="font-semibold text-foreground text-base">3. Programas da Agenda "Igualdade Racial"</h4>
                   <p className="text-xs">
                     Fonte: <code>agenda-racial-completa.pdf</code> — Espelho do PPA 2024-2027
                   </p>
@@ -689,7 +731,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                 </section>
 
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">3. Programas da Agenda "Povos Indígenas"</h4>
+                  <h4 className="font-semibold text-foreground text-base">4. Programas da Agenda "Povos Indígenas"</h4>
                   <p className="text-xs">
                     Fonte: <code>agenda_indigenas-completa.pdf</code> — Espelho do PPA 2024-2027
                   </p>
@@ -718,13 +760,14 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
                 </section>
 
                 <section className="space-y-2">
-                  <h4 className="font-semibold text-foreground text-base">4. Limitações e Próximos Passos</h4>
+                  <h4 className="font-semibold text-foreground text-base">5. Limitações e Próximos Passos</h4>
                   <div className="bg-warning/5 rounded-lg p-4 border border-warning/20">
                     <ul className="text-xs space-y-1 list-disc pl-4">
                       <li>Esta é uma visualização <strong>experimental</strong> — os resultados não alimentam as demais seções do sistema.</li>
-                      <li>A agenda transversal pode incluir programas de alcance muito amplo (ex: Bolsa Família, Esporte) cuja relação com igualdade racial é indireta.</li>
+                      <li>Programas universais da agenda (ex: Bolsa Família, Educação Básica, Esporte) são filtrados por ação: apenas ações com menção explícita ao público-alvo são incluídas. Se nenhuma ação é encontrada, o programa aparece na aba Cobertura como "sem dados TESTE" — isso é esperado e não indica erro.</li>
                       <li>A ausência de agenda específica para povos ciganos é uma lacuna do PPA.</li>
                       <li>A comparação com a metodologia atual permite avaliar ganhos e perdas de cobertura antes de uma eventual substituição.</li>
+                      <li>A granularidade de ação orçamentária garante que os totais reflitam apenas o orçamento efetivamente direcionado ao público-alvo, evitando a inflação por inclusão de programas universais inteiros.</li>
                     </ul>
                   </div>
                 </section>
