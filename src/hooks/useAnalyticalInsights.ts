@@ -899,7 +899,7 @@ function gerarConclusoesDinamicas(
         id: `conclusao-icerd-art-${art.numero}`,
         tipo,
         titulo: `Art. ${art.numero} — ${art.titulo}: ${tipo === 'avanco' ? 'Avanços Identificados' : tipo === 'retrocesso' ? 'Retrocesso' : 'Lacuna Persistente'}`,
-        periodo: '2018-2026',
+        periodo: '2018-2025',
         argumento_central: `O Artigo ${art.numero} da Convenção (${art.titulo}) possui ${lac.total} observações ONU e ${orc.count} registros orçamentários (${formatBRL(orc.liq)} liquidados). ${lac.total > 0 ? `Grau de cumprimento: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s).` : ''} ${varOrc !== 0 ? `Variação orçamentária entre períodos: ${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%.` : ''}${contradicao}`,
         evidencias,
         eixos: [],
