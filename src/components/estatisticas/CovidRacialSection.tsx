@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 
 // =============================================
 // Fontes agrupadas por tema
@@ -22,6 +23,7 @@ const FONTE_SIVEP_NOIS = [
 
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — Mortalidade Materna', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
+  { nome: 'IEPS — Mortalidade Materna por Raça (2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
 ];
 
 const FONTE_PNAD_COVID = [
@@ -92,6 +94,9 @@ const impactoSocioeconomico = [
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
+// NOTA: Valores ano-a-ano para "negra" (pretas+pardas combinadas) são cruzamento indireto
+// baseado em DataSUS/SIM + IEPS Boletim Çarê (média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9).
+// Séries anuais interpoladas a partir do padrão publicado pelo IEPS.
 const mortalidadeMaternaCovid = [
   { ano: 2019, negra: 60.2, branca: 31.8, razao: 1.89 },
   { ano: 2020, negra: 72.5, branca: 38.2, razao: 1.90 },
@@ -100,6 +105,9 @@ const mortalidadeMaternaCovid = [
 ];
 
 // Vacinação por raça - diferenças de cobertura
+// NOTA: SI-PNI possui ~30% de registros sem informação de raça/cor,
+// o que compromete a precisão das taxas desagregadas. Valores são estimativas
+// baseadas na parcela com informação de raça/cor preenchida.
 const vacinacaoRaca = [
   { grupo: 'Brancos', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
   { grupo: 'Pardos', cobertura1Dose: 84.2, coberturaCompleta: 74.8 },
@@ -285,9 +293,15 @@ export function CovidRacialSection() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
-            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <p className="text-xs text-muted-foreground">
+                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
+              </p>
+              <EstimativaBadge 
+                tipo="cruzamento" 
+                metodologia="Valores ano-a-ano para 'negra' (pretas+pardas) são cruzamento indireto DataSUS/SIM + IEPS Boletim Çarê. Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV." 
+              />
+            </div>
             <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
           </CardContent>
         </Card>
@@ -316,8 +330,11 @@ export function CovidRacialSection() {
                   <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
                   <TableCell className="text-right font-medium">{item.negros}%</TableCell>
                   <TableCell className="text-right">{item.brancos}%</TableCell>
-                  <TableCell className="text-right text-destructive font-medium">
+                  <TableCell className={`text-right font-medium ${
+                    (item.negros / item.brancos) >= 1 ? 'text-destructive' : 'text-chart-1'
+                  }`}>
                     {(item.negros / item.brancos).toFixed(1)}x
+                    {(item.negros / item.brancos) < 1 && ' ✓'}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{item.fonte}</TableCell>
                 </TableRow>
@@ -355,9 +372,15 @@ export function CovidRacialSection() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Indígenas apresentaram a menor cobertura vacinal completa (68,2%), seguidos por pretos (71,5%) e pardos (74,8%).
-          </p>
+            <div className="flex items-center gap-2 mt-2">
+              <p className="text-xs text-muted-foreground">
+                Indígenas apresentaram a menor cobertura vacinal completa (68,2%), seguidos por pretos (71,5%) e pardos (74,8%).
+              </p>
+              <EstimativaBadge 
+                tipo="cruzamento" 
+                metodologia="SI-PNI possui ~30% de registros sem preenchimento de raça/cor. Percentuais calculados apenas sobre registros com raça/cor informada, o que pode superestimar coberturas reais." 
+              />
+            </div>
           <AuditFooter fontes={FONTE_VACINACAO} documentos={['CERD 2022 §24']} compact />
         </CardContent>
       </Card>
