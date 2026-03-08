@@ -965,7 +965,7 @@ function generateFullHTML(
         </table>
         <div class="table-footer">
           <strong>Fontes:</strong> IBGE/PNAD Contínua, IPEA, DataSUS/SIM, INEP/Censo Escolar, MDS/CadÚnico | 
-          <strong>Período:</strong> 2018-2026 | 
+          <strong>Período:</strong> 2018-2025 | 
           <strong>Nota:</strong> Valores percentuais referentes às taxas oficiais publicadas pelos órgãos de origem
         </div>
       </div>
