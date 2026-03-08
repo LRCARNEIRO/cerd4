@@ -155,7 +155,7 @@ serve(async (req) => {
     // Calculate statistics
     const anos = Object.keys(byAno).map(Number).sort();
     const periodo1 = orcamento.filter(o => o.ano >= 2018 && o.ano <= 2022);
-    const periodo2 = orcamento.filter(o => o.ano >= 2023 && o.ano <= 2026);
+    const periodo2 = orcamento.filter(o => o.ano >= 2023 && o.ano <= 2025);
 
     const stats: {
       totalGeral: number;

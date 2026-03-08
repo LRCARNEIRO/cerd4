@@ -257,7 +257,7 @@ Fonte: PNAD Contínua 2023/2024 (IBGE)
 ## VIOLÊNCIA E SEGURANÇA (19º Anuário FBSP 2025 / Atlas da Violência 2025)
 - Vítimas de homicídio negras: 77% (2024) — 2018: 75,7% (+1,3pp)
 - Risco de homicídio negro: 2,7x maior
-- Letalidade policial: 83,5% das vítimas são negras (2024) — 2018: 75,4%
+- Letalidade policial: 82% das vítimas são negras (2024) — 2018: 75,4%
 - Feminicídio mulheres negras: 63,6% (2024) — 2018: 61%
 - Violência doméstica: 59,8% vítimas negras (FBSP 2025)
 Fontes: IPEA/FBSP Atlas da Violência 2025, 19º Anuário FBSP 2025
@@ -404,7 +404,7 @@ ESPECÍFICO PARA RELATÓRIO CERD IV:
     return basePrompt + `
 
 ESPECÍFICO PARA ANÁLISE ORÇAMENTÁRIA:
-- Compare períodos: 2018-2022 (desmonte) vs 2023-2026 (reconstrução)
+- Compare períodos: 2018-2022 (desmonte) vs 2023-2025 (reconstrução)
 - Taxas de execução por programa e esfera (federal, estadual, municipal)
 - CRUZAMENTO CENTRAL: investimento orçamentário × resultados dos indicadores
 - Destaque: MIR com ~99% de execução em 2024/2025 como evidência de fortalecimento

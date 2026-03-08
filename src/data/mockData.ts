@@ -392,7 +392,7 @@ export const commonCoreSections: CommonCoreSection[] = [
     tituloIngles: 'Demographic, economic, social and cultural characteristics',
     statusAtualizacao: 'atualizado',
     ultimaVersao: 2022,
-    periodoCobertura: '2018-2026',
+    periodoCobertura: '2018-2025',
     subsecoes: [
       {
         id: 'ccd-1-1',
@@ -422,7 +422,7 @@ export const commonCoreSections: CommonCoreSection[] = [
     tituloIngles: 'Constitutional, political and legal structure',
     statusAtualizacao: 'parcial',
     ultimaVersao: 2020,
-    periodoCobertura: '1988-2026',
+    periodoCobertura: '1988-2025',
     subsecoes: [
       {
         id: 'ccd-2-1',

@@ -651,7 +651,7 @@ export const lacunasDocumentadas = [
     status: 'indisponivel' as const,
     relevancia: ['CERD 2022 §27-28', 'Common Core'],
     dadoRemovido: '3 registros fabricados (mortalidade, pré-natal, cesárea por raça×renda)',
-    dadoRealDisponivel: 'Fato verificado: mortalidade materna de mulheres negras é ~2x maior que de brancas (Pesquisa Nascer no Brasil II, Nov/2023, Ministério da Saúde). URL: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa',
+    dadoRealDisponivel: 'Série DataSUS/SIM: razão negra/branca = ~1,0x em 2024 (55,5 vs 54,2). Pesquisa Nascer no Brasil II (Nov/2023, MS) reporta ~2x com metodologia própria (amostra hospitalar). Divergência pode refletir subnotificação racial no SIM. URL: https://www.gov.br/saude/pt-br/assuntos/noticias/2023/novembro/morte-de-maes-negras-e-duas-vezes-maior-que-de-brancas-aponta-pesquisa',
   },
   {
     id: 'LACUNA-PCD-EMPREGO-RENDA',
