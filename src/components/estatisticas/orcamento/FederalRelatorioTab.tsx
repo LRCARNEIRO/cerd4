@@ -29,15 +29,6 @@ function classifyThematic(r: DadoOrcamentario): 'racial' | 'indigena' | 'quilomb
   return 'racial';
 }
 
-function is5034NonRacial(r: DadoOrcamentario): boolean {
-  if (!r.programa.toLowerCase().includes('5034')) return false;
-  const orgUpper = (r.orgao || '').toUpperCase();
-  if (orgUpper === 'SEPPIR') return false;
-  if ((orgUpper === 'MIR' || orgUpper.includes('IGUALDADE RACIAL')) && r.ano >= 2023) return false;
-  const racialKws = ['racial', 'racismo', 'negro', 'negra', 'afro', 'quilomb', 'indigen', 'cigan', 'romani', 'terreiro', 'matriz africana', 'igualdade racial', 'palmares', 'capoeira', 'candomblé', 'umbanda'];
-  const texto = [r.programa, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-  return !racialKws.some(kw => texto.includes(kw));
-}
 
 const ARTIGO_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))', 'hsl(var(--primary))', 'hsl(var(--chart-2))'];
 
