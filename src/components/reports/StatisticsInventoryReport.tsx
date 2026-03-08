@@ -379,13 +379,9 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <h4>Violência contra Mulheres Negras</h4>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 <h4>Saúde Interseccional (Raça × Classe)</h4>
-<table>
-  <tr><th>Indicador</th><th>Negra Pobre</th><th>Negra Média</th><th>Branca</th></tr>
-  ${saudeInterseccional.map(s => '<tr><td>' + s.indicador + '</td><td>' + s.mulherNegraPobre + '</td><td>' + s.mulherNegraMedia + '</td><td>' + s.mulherBranca + '</td></tr>').join('')}
-</table>
-<p class="meta">Fontes: 19º Anuário FBSP 2025, DataSUS/SIM, SINASC, CadÚnico (cruzamentos). <span class="badge badge-amber">🔀 Cruzamento indireto</span></p>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Fato verificado: mortalidade materna de mulheres negras é ~2x maior que de brancas (Pesquisa Nascer no Brasil II, Nov/2023).</div>
 <h4>Mulheres Chefes de Família — Série Histórica</h4>
-${arrayToHTMLTable(mulheresChefeFamilia, '')}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça.</div>
 
 <h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
