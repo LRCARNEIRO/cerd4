@@ -21,7 +21,6 @@ export function DocumentReportCards() {
   const [generatingCERD, setGeneratingCERD] = useState(false);
   const [generatingConclusoes, setGeneratingConclusoes] = useState(false);
   const [generatingMethodology, setGeneratingMethodology] = useState(false);
-  const [generatingConclusoes, setGeneratingConclusoes] = useState(false);
 
   const {
     fiosCondutores, conclusoesDinamicas, insightsCruzamento,
