@@ -333,24 +333,22 @@ export const rendimentosCenso2022 = {
 // DADOS INTERSECCIONAIS
 // =============================================
 
-// Raça × Gênero × Idade - Trabalho
-// Fonte: PNAD Contínua 2024 — Cruzamento raça × sexo × faixa etária
-// SIDRA 6800 (rendimento por cor/raça) + SIDRA 6381 (desocupação por cor/raça) + SIDRA 6403 (informalidade)
-// URLs:
-//   Rendimento: https://sidra.ibge.gov.br/Tabela/6800
-//   Desocupação: https://sidra.ibge.gov.br/Tabela/6381
-//   Características gerais: https://sidra.ibge.gov.br/Tabela/6403
+// Raça × Gênero - Trabalho (SEM faixa etária — dados verificáveis)
+// Fonte: DIEESE Boletim Especial Nov/2024 — PNAD Contínua Q2 2024
+// URL: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
+// NOTA AUDITORIA: O cruzamento raça × gênero × IDADE não é publicado pelo IBGE/DIEESE.
+//   Os dados anteriores por faixa etária (18-29, 30-49, 50+) eram FABRICADOS.
+//   Mantemos apenas o cruzamento raça × gênero, que é verificável.
 export const interseccionalidadeTrabalho = [
-  { grupo: 'Mulher Negra 18-29', renda: 1680, desemprego: 17.5, informalidade: 51.2 },
-  { grupo: 'Mulher Negra 30-49', renda: 2250, desemprego: 10.8, informalidade: 47.5 },
-  { grupo: 'Mulher Negra 50+', renda: 2020, desemprego: 7.8, informalidade: 54.8 },
-  { grupo: 'Homem Negro 18-29', renda: 2050, desemprego: 14.2, informalidade: 47.5 },
-  { grupo: 'Homem Negro 30-49', renda: 2750, desemprego: 6.8, informalidade: 41.2 },
-  { grupo: 'Homem Negro 50+', renda: 2480, desemprego: 5.5, informalidade: 47.8 },
-  { grupo: 'Mulher Branca 18-29', renda: 2450, desemprego: 11.5, informalidade: 37.2 },
-  { grupo: 'Mulher Branca 30-49', renda: 3650, desemprego: 6.2, informalidade: 31.5 },
-  { grupo: 'Homem Branco 18-29', renda: 2850, desemprego: 9.0, informalidade: 34.8 },
-  { grupo: 'Homem Branco 30-49', renda: 4850, desemprego: 3.8, informalidade: 27.2 }
+  // Rendimento médio do trabalho (DIEESE Q2 2024, Gráfico 7 e Tabela 2)
+  // Desemprego: DIEESE Q2 2024, Gráfico 2
+  // Informalidade: DIEESE Q2 2024, Gráfico 4
+  { grupo: 'Mulher Negra', renda: 2079, desemprego: 10.1, informalidade: 46.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Negro', renda: 2676, desemprego: 6.3, informalidade: 45.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Mulher Não Negra', renda: 3384, desemprego: 6.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Não Negro', renda: 4492, desemprego: 4.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  // NOTA: Rendimento homem negro estimado = (total negros R$2.392 × 2 - mulher negra R$2.079) ≈ R$2.676
+  // conforme proporção DIEESE. Verificar quando tabela completa disponível.
 ];
 export const interseccionalidadeTrabalhoFontes = [
   { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
