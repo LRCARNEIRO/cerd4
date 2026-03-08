@@ -362,6 +362,7 @@ export const interseccionalidadeTrabalho = [
   // conforme proporção DIEESE. Verificar quando tabela completa disponível.
 ];
 export const interseccionalidadeTrabalhoFontes = [
+  { nome: 'DIEESE — Boletim Trabalho e Raça Q2/2024', url: 'https://www.dieese.org.br/outraspublicacoes/2024/trabalhoeRaca.html' },
   { nome: 'SIDRA 6800 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6800' },
   { nome: 'SIDRA 6381 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6381' },
   { nome: 'SIDRA 6403 — Características gerais', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
