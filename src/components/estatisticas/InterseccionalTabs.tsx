@@ -375,19 +375,37 @@ export function PovosTradicionaisTab() {
                 <p className="text-xl font-bold text-success">{povosTradicionais.indigenas.terrasHomologadas2023_2025}</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Mortalidade infantil (‰)</span>
-                <span className="font-semibold text-destructive">{povosTradicionais.indigenas.mortalidadeInfantil}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Acesso regular à saúde</span>
-                <span className="font-semibold">{povosTradicionais.indigenas.acessoSaude}%</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Educação bilíngue</span>
-                <span className="font-semibold text-warning">{povosTradicionais.indigenas.educacaoBilingue}%</span>
-              </div>
+             <div className="space-y-2">
+              {povosTradicionais.indigenas.mortalidadeInfantil != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Mortalidade infantil (‰)</span>
+                  <span className="font-semibold text-destructive">{povosTradicionais.indigenas.mortalidadeInfantil}</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Mortalidade infantil:</strong> Dado removido — sem fonte auditável (SESAI não publica taxa consolidada desagregada)
+                </div>
+              )}
+              {povosTradicionais.indigenas.acessoSaude != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Acesso regular à saúde</span>
+                  <span className="font-semibold">{povosTradicionais.indigenas.acessoSaude}%</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Acesso à saúde:</strong> Dado removido — sem fonte auditável
+                </div>
+              )}
+              {povosTradicionais.indigenas.educacaoBilingue != null ? (
+                <div className="flex justify-between text-sm">
+                  <span>Educação bilíngue</span>
+                  <span className="font-semibold text-warning">{povosTradicionais.indigenas.educacaoBilingue}%</span>
+                </div>
+              ) : (
+                <div className="p-2 bg-destructive/5 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">Educação bilíngue:</strong> Dado removido — sem fonte auditável
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
