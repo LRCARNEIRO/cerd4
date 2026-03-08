@@ -562,17 +562,19 @@ export const classePorRaca = [
 ];
 
 // Mulheres chefes de família
-// Fonte: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
-// URL: https://sidra.ibge.gov.br/Tabela/6403
-// Complementar: SIS/IBGE 2024 — https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html
+// Fonte declarada: PNAD Contínua — SIDRA Tabela 6403 (arranjos familiares por cor/raça)
+// ⚠️ AUDITORIA: Progressão linear perfeita (28,5→38,2) = padrão de FABRICAÇÃO.
+// SIDRA 6403 não publica "chefia familiar" diretamente por raça.
+// DADOS ABAIXO SÃO ESTIMATIVAS NÃO VERIFICADAS — pendente de conferência com SIS/IBGE.
+// Status: 🔴 PENDENTE AUDITAGEM
 export const mulheresChefeFamilia = [
-  { ano: 2018, negras: 28.5, brancas: 18.2 },
-  { ano: 2019, negras: 29.8, brancas: 18.8 },
-  { ano: 2020, negras: 32.5, brancas: 20.1 },
-  { ano: 2021, negras: 34.2, brancas: 21.5 },
-  { ano: 2022, negras: 35.8, brancas: 22.2 },
-  { ano: 2023, negras: 37.5, brancas: 23.1 },
-  { ano: 2024, negras: 38.2, brancas: 23.8 }
+  { ano: 2018, negras: 28.5, brancas: 18.2, estimativa: true },
+  { ano: 2019, negras: 29.8, brancas: 18.8, estimativa: true },
+  { ano: 2020, negras: 32.5, brancas: 20.1, estimativa: true },
+  { ano: 2021, negras: 34.2, brancas: 21.5, estimativa: true },
+  { ano: 2022, negras: 35.8, brancas: 22.2, estimativa: true },
+  { ano: 2023, negras: 37.5, brancas: 23.1, estimativa: true },
+  { ano: 2024, negras: 38.2, brancas: 23.8, estimativa: true }
 ];
 export const mulheresChefeFamiliaFontes = [
   { nome: 'SIDRA 6403 — Arranjos familiares por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
