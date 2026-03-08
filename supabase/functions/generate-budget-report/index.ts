@@ -631,7 +631,7 @@ function generateFullHTML(
     <div class="container hero-content">
       <span class="hero-badge">💰 Análise Orçamentária Integrada</span>
       <h1>Orçamento das Políticas de Igualdade Racial</h1>
-      <p>Análise consolidada da execução orçamentária dos programas de promoção da igualdade racial nas esferas federal, estadual e municipal, com evolução ano a ano (2018-2026) e cruzamento com indicadores socioeconômicos.</p>
+      <p>Análise consolidada da execução orçamentária dos programas de promoção da igualdade racial nas esferas federal, estadual e municipal, com evolução ano a ano (2018-2025) e cruzamento com indicadores socioeconômicos.</p>
       
       <div class="hero-stats">
         <div class="hero-stat">
