@@ -128,7 +128,7 @@ export function ThematicReportGenerator() {
               <p className="text-sm text-muted-foreground">
                 Gere dossiês visuais focados em eixos temáticos ou grupos focais específicos. 
                 Os relatórios agregam dados, indicadores e conclusões para contar a história 
-                das políticas raciais no Brasil (2018-2026).
+                das políticas raciais no Brasil (2018-2025).
               </p>
             </div>
           </div>

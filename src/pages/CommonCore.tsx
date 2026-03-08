@@ -206,7 +206,7 @@ export default function CommonCore() {
   return (
     <DashboardLayout
       title="Common Core Document - 77 Tabelas"
-      subtitle="HRI/CORE/BRA/2020 - Gerenciamento e Atualização 2018-2026"
+      subtitle="HRI/CORE/BRA/2020 - Gerenciamento e Atualização 2018-2025"
     >
       {/* Header com link do documento */}
       <Card className="mb-6 header-gradient text-primary-foreground">

@@ -17,21 +17,24 @@ const fontesOficiais = [
   {
     categoria: 'Segurança Pública',
     fontes: [
-      { nome: 'Anuário Brasileiro de Segurança Pública', orgao: 'FBSP', status: 'integrado', indicadores: ['Homicídios por raça', 'Letalidade policial', 'Encarceramento'], url: 'https://forumseguranca.org.br' },
+      { nome: '19º Anuário Brasileiro de Segurança Pública', orgao: 'FBSP', status: 'integrado', indicadores: ['Homicídios por raça', 'Letalidade policial', 'Encarceramento'], url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
+      { nome: 'Atlas da Violência 2025', orgao: 'IPEA/FBSP', status: 'integrado', indicadores: ['Taxa homicídio por raça', 'Risco relativo', 'IVJ-N'], url: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf' },
       { nome: 'SINESP', orgao: 'MJSP', status: 'parcial', indicadores: ['Ocorrências policiais', 'Prisões'], url: 'https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/sinesp-1' },
     ]
   },
   {
     categoria: 'Saúde',
     fontes: [
-      { nome: 'SIM - Mortalidade', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Mortalidade materna', 'Homicídios', 'Causas externas'], url: 'https://datasus.saude.gov.br' },
-      { nome: 'SINASC - Nascidos Vivos', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Pré-natal', 'Mortalidade infantil'], url: 'https://datasus.saude.gov.br' },
+      { nome: 'SIM - Mortalidade Materna', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Mortalidade materna por raça', 'Óbitos por causas externas'], url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+      { nome: 'SINASC - Nascidos Vivos', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Pré-natal', 'Mortalidade infantil'], url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
       { nome: 'SESAI', orgao: 'MS', status: 'parcial', indicadores: ['Saúde indígena', 'Mortalidade indígena'], url: 'https://www.gov.br/saude/pt-br/composicao/sesai' },
     ]
   },
   {
     categoria: 'Educação',
     fontes: [
+      { nome: 'SIDRA 7129 - Ensino Superior por Cor/Raça', orgao: 'IBGE/PNAD', status: 'integrado', indicadores: ['Nível de instrução por raça', 'Ensino superior completo'], url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+      { nome: 'SIDRA 7125 - Analfabetismo por Cor/Raça', orgao: 'IBGE/PNAD', status: 'integrado', indicadores: ['Taxa de analfabetismo por raça e idade'], url: 'https://sidra.ibge.gov.br/Tabela/7125' },
       { nome: 'Censo Escolar', orgao: 'INEP', status: 'integrado', indicadores: ['Matrículas por raça', 'Evasão', 'Distorção idade-série'], url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar' },
       { nome: 'Censo Superior', orgao: 'INEP', status: 'integrado', indicadores: ['Ingressantes cotas', 'Concluintes por raça'], url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-da-educacao-superior' },
     ]
@@ -93,7 +96,7 @@ export function FontesDadosTab() {
               <Check className="w-5 h-5 text-success" />
               <div>
                 <p className="text-xs text-muted-foreground">Fontes Integradas</p>
-                <p className="text-2xl font-bold">16</p>
+                <p className="text-2xl font-bold">19</p>
               </div>
             </div>
           </CardContent>

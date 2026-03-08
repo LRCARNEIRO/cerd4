@@ -187,9 +187,9 @@ export function generateCommonCoreHTML(
   <div class="header">
     <div class="un-logo">🇺🇳</div>
     <h1>Documento Básico Comum</h1>
-    <div class="subtitle">HRI/CORE/BRA/2026</div>
+    <div class="subtitle">HRI/CORE/BRA/2025</div>
     <div class="subtitle">Parte integrante dos relatórios dos Estados-partes</div>
-    <div class="date">Brasil - Atualização 2018-2026</div>
+    <div class="date">Brasil - Atualização 2018-2025</div>
   </div>
 
   <div class="toc">

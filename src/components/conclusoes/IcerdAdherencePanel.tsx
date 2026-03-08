@@ -597,7 +597,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
               balanço de conclusões analíticas (15%), cobertura normativa/institucional (15%), respostas CERD III (10%),
               amplitude de fontes de evidência (10%) e séries estatísticas oficiais IBGE/FBSP/DataSUS (5%).
               Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais.
-              Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2026).
+              Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
           </div>
         </CardContent>

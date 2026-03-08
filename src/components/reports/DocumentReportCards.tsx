@@ -98,7 +98,7 @@ export function DocumentReportCards() {
             <BookOpen className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold">Common Core Document (HRI/CORE/BRA)</h3>
-              <p className="text-sm text-muted-foreground">Período: 2018-2026</p>
+              <p className="text-sm text-muted-foreground">Período: 2018-2025</p>
             </div>
           </div>
 
@@ -159,7 +159,7 @@ export function DocumentReportCards() {
             <Globe className="w-6 h-6 text-success flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold">CERD IV - Relatório Periódico</h3>
-              <p className="text-sm text-muted-foreground">Período: 2018-2026</p>
+              <p className="text-sm text-muted-foreground">Período: 2018-2025</p>
             </div>
           </div>
 

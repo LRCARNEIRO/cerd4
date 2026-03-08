@@ -77,7 +77,7 @@ export default function Index() {
   return (
     <DashboardLayout 
       title="Painel de Monitoramento CERD" 
-      subtitle="IV Relatório do Brasil à Convenção sobre Eliminação de Discriminação Racial (2018-2026)"
+      subtitle="IV Relatório do Brasil à Convenção sobre Eliminação de Discriminação Racial (2018-2025)"
     >
       {/* Hero Section */}
       <div className="header-gradient rounded-lg p-6 mb-6 animate-fade-in">

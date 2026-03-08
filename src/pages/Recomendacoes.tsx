@@ -87,7 +87,7 @@ export default function Recomendacoes() {
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2026"
+      subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2025"
     >
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">

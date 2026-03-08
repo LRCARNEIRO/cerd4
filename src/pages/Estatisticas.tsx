@@ -32,7 +32,7 @@ export default function Estatisticas() {
   return (
     <DashboardLayout
       title="Estatísticas e Indicadores"
-      subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2026)"
+      subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2025)"
     >
       {/* Alerta Metodológico */}
       <Card className="mb-6 border-l-4 border-l-primary">
@@ -50,7 +50,7 @@ export default function Estatisticas() {
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="bg-primary/10 text-primary">Common Core</Badge>
                 <Badge className="bg-primary/10 text-primary">CERD IV</Badge>
-                <Badge className="bg-primary/10 text-primary">2018-2026</Badge>
+                <Badge className="bg-primary/10 text-primary">2018-2025</Badge>
                 <Badge className="bg-accent text-accent-foreground">Interseccional</Badge>
                 <Badge variant="outline">Orçamentário</Badge>
               </div>

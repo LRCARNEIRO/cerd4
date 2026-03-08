@@ -635,9 +635,9 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
     <div class="header">
       <div class="un-logo">🇺🇳</div>
       <h1>Documento Básico Comum</h1>
-      <div class="subtitle">HRI/CORE/BRA/2026</div>
+      <div class="subtitle">HRI/CORE/BRA/2025</div>
       <div class="subtitle">Parte integrante dos relatórios dos Estados-partes</div>
-      <div class="date">Brasil - Atualização 2018-2026</div>
+      <div class="date">Brasil - Atualização 2018-2025</div>
     </div>
 
     <div class="toc">
@@ -751,7 +751,7 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
     <h2>II. Marco Geral de Proteção e Promoção dos Direitos Humanos</h2>
     
     <div class="section">
-      <h3>A. Marco Institucional (2018-2026)</h3>
+      <h3>A. Marco Institucional (2018-2025)</h3>
       
       <p>O período 2018-2025 registrou mudanças institucionais significativas no marco brasileiro 
       de promoção da igualdade racial:</p>
@@ -1021,7 +1021,7 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
       <h1>Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial</h1>
       <div class="subtitle">CERD/C/BRA/21-23</div>
       <div class="subtitle">Relatórios periódicos combinados (21º a 23º) do Brasil</div>
-      <div class="date">Período de cobertura: 2018-2026</div>
+      <div class="date">Período de cobertura: 2018-2025</div>
     </div>
 
     <div class="toc">
@@ -1104,7 +1104,7 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
       `).join('')}
     </div>
 
-    <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2026)</h2>
+    <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2025)</h2>
     
     <div class="section">
       <h3>A. Principais Avanços Legislativos</h3>

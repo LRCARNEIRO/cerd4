@@ -294,7 +294,7 @@ function generateFullHTML(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2026)</title>
+  <title>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2025)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -631,7 +631,7 @@ function generateFullHTML(
     <div class="container hero-content">
       <span class="hero-badge">💰 Análise Orçamentária Integrada</span>
       <h1>Orçamento das Políticas de Igualdade Racial</h1>
-      <p>Análise consolidada da execução orçamentária dos programas de promoção da igualdade racial nas esferas federal, estadual e municipal, com evolução ano a ano (2018-2026) e cruzamento com indicadores socioeconômicos.</p>
+      <p>Análise consolidada da execução orçamentária dos programas de promoção da igualdade racial nas esferas federal, estadual e municipal, com evolução ano a ano (2018-2025) e cruzamento com indicadores socioeconômicos.</p>
       
       <div class="hero-stats">
         <div class="hero-stat">
@@ -707,7 +707,7 @@ function generateFullHTML(
       
       <div class="chart-container">
         <div class="chart-header">
-          <div class="chart-title">Execução Orçamentária por Esfera (2018-2026)</div>
+          <div class="chart-title">Execução Orçamentária por Esfera (2018-2025)</div>
           <div class="chart-subtitle">Valores em milhões de reais - Federal, Estadual e Municipal</div>
         </div>
         <div class="chart-wrapper">
@@ -723,7 +723,7 @@ function generateFullHTML(
       <!-- Tabela de Evolução Anual -->
       <div class="table-container">
         <div class="table-header">
-          <h3>Tabela 1: Evolução da Execução Orçamentária por Ano e Esfera (2018-2026)</h3>
+          <h3>Tabela 1: Evolução da Execução Orçamentária por Ano e Esfera (2018-2025)</h3>
           <p>Valores em reais - Consolidação de todos os programas de políticas raciais</p>
         </div>
         <table>
@@ -842,7 +842,7 @@ function generateFullHTML(
         <div class="chart-container">
           <div class="chart-header">
             <div class="chart-title">Distribuição por Grupo Focal</div>
-            <div class="chart-subtitle">Total executado (2018-2026)</div>
+            <div class="chart-subtitle">Total executado (2018-2025)</div>
           </div>
           <div class="chart-wrapper">
             <canvas id="grupoChart"></canvas>
@@ -965,7 +965,7 @@ function generateFullHTML(
         </table>
         <div class="table-footer">
           <strong>Fontes:</strong> IBGE/PNAD Contínua, IPEA, DataSUS/SIM, INEP/Censo Escolar, MDS/CadÚnico | 
-          <strong>Período:</strong> 2018-2026 | 
+          <strong>Período:</strong> 2018-2025 | 
           <strong>Nota:</strong> Valores percentuais referentes às taxas oficiais publicadas pelos órgãos de origem
         </div>
       </div>
@@ -983,7 +983,7 @@ function generateFullHTML(
           <li>Sistema Integrado de Planejamento e Orçamento (SIOP)</li>
           <li>Portal da Transparência do Governo Federal</li>
           <li>Secretarias Estaduais de Promoção da Igualdade Racial</li>
-          <li>Lei Orçamentária Anual (LOA) 2018-2026</li>
+          <li>Lei Orçamentária Anual (LOA) 2018-2025</li>
         </ul>
       </div>
     </div>
@@ -991,7 +991,7 @@ function generateFullHTML(
 
   <footer class="footer">
     <div class="container footer-content">
-      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2026)</strong></p>
+      <p><strong>Relatório Orçamentário - Políticas de Igualdade Racial (2018-2025)</strong></p>
       <p>Gerado automaticamente pelo Sistema de Monitoramento CERD Brasil</p>
       <p style="margin-top: 12px;">
         <strong>CDG/UFF</strong> • Grupo de Pesquisa sobre Tratados de Direitos Humanos<br>

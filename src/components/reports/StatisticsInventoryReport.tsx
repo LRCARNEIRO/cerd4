@@ -206,7 +206,7 @@ function generateFullStatisticsHTML(indicadoresBD: any[]) {
 ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 
 <h1>📊 Relatório Completo — Base Estatística</h1>
-<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2026) — Gerado em ${now}</p>
+<p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2025) — Gerado em ${now}</p>
 
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${totalGeral.toLocaleString('pt-BR')}</div><div class="label">TOTAL GERAL</div></div>
