@@ -1325,19 +1325,19 @@ export default function Orcamento() {
                     {/* 1. Estratégia de Coleta em 4 Camadas */}
                     <section className="space-y-2">
                       <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta em 4 Camadas</h4>
-                      <p>A base orçamentária federal (2018–2025) utiliza uma estratégia híbrida de coleta:</p>
+                      <p>A base orçamentária federal (2018–2025) utiliza uma estratégia de <strong>4 camadas complementares</strong>, capturando ~R$ 9 bi pagos em 2023–2025:</p>
                       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 1 — Programas Temáticos do PPA</h5>
-                          <p>Consulta direta por código de programa finalístico: <code>2034</code> (SEPPIR), <code>5034</code> (MDHC), <code>0617</code>/<code>2065</code>/<code>5136</code> (indígenas), <code>5802</code>/<code>5803</code>/<code>5804</code> (MIR 2024+).</p>
+                          <p>Consulta direta por código de programa finalístico: <code>2034</code> (SEPPIR), <code>5034</code> (MDHC — filtrado por palavras-chave), <code>0617</code>/<code>2065</code>/<code>5136</code> (indígenas), <code>5802</code>/<code>5803</code>/<code>5804</code> (MIR 2024+).</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 2 — Órgãos com Mandato Direto</h5>
-                          <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. Para 2018–2022: órgãos predecessores.</p>
+                          <h5 className="font-semibold text-foreground">Camada 2 — Subfunção 422</h5>
+                          <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais não cobertos pelas demais camadas.</p>
                         </div>
                         <div>
-                          <h5 className="font-semibold text-foreground">Camada 3 — Ações Estratégicas</h5>
-                          <p>SESAI (<code>20YP</code> e <code>7684</code>), Quilombolas (<code>20G7</code>, <code>0859</code>, <code>6440</code>), Subfunção 422.</p>
+                          <h5 className="font-semibold text-foreground">Camada 3 — Órgãos MIR/MPI + SESAI</h5>
+                          <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. SESAI (<code>20YP</code> e <code>7684</code>) contabilizada com dupla perspectiva (com/sem saúde indígena). Quilombolas: <code>20G7</code>, <code>0859</code>, <code>6440</code>.</p>
                         </div>
                         <div>
                           <h5 className="font-semibold text-foreground">Camada 4 — Dotação via Dados Abertos</h5>
@@ -1345,6 +1345,11 @@ export default function Orcamento() {
                         </div>
                       </div>
                       <p className="text-xs mt-2">A mesclagem ocorre por par <strong>Programa–Ação × Ano</strong>, consolidando valores de execução (API) e dotação (LOA) em um único registro.</p>
+                      
+                      <div className="bg-primary/10 rounded-lg p-4 border border-primary/30 mt-3">
+                        <p className="font-semibold text-foreground text-sm mb-1">📌 Diferença para a seção TESTE</p>
+                        <p>Esta seção utiliza a metodologia de <strong>4 camadas</strong> (programas temáticos + subfunção 422 + órgãos MIR/MPI + SESAI), capturando ~R$ 9 bi pagos em 2023–2025. A seção <strong>TESTE</strong> utiliza exclusivamente os 18 códigos de programas da <em>Agenda Transversal PPA 2024–2027</em> (programas focais incluídos integralmente + ações filtradas por palavras-chave em programas universais), resultando em ~R$ 4,5 bi — uma cobertura deliberadamente mais restrita, focada apenas nos marcadores oficiais do PPA.</p>
+                      </div>
                     </section>
 
                     {/* 2. Classificação por Campos Reais */}

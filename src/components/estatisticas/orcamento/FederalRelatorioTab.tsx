@@ -394,25 +394,36 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       <Card>
         <CardHeader><CardTitle className="text-sm">2. Fundamentação Metodológica</CardTitle></CardHeader>
         <CardContent className="text-xs text-muted-foreground space-y-3">
-          <p>A base foi construída através de uma estratégia híbrida de 4 camadas:</p>
+          <p>A base foi construída através de uma estratégia de <strong>4 camadas complementares</strong>, capturando ~R$ 9 bi pagos em 2023–2025:</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 1 — Programas Temáticos PPA</p>
-              <p>Consulta por códigos finalísticos: 2034 (SEPPIR), 5034 (MDHC), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
+              <p>Códigos finalísticos: 2034 (SEPPIR), 5034 (MDHC — filtrado), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
-              <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Órgãos com Mandato Direto</p>
-              <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. Para 2018–2022: órgãos predecessores.</p>
+              <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Subfunção 422</p>
+              <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais.</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
-              <p className="font-semibold text-foreground text-xs mb-1">Camada 3 — Ações Estratégicas</p>
-              <p>SESAI (20YP, 7684), Quilombolas (20G7, 0859, 6440), Subfunção 422.</p>
+              <p className="font-semibold text-foreground text-xs mb-1">Camada 3 — Órgãos MIR/MPI + SESAI</p>
+              <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. SESAI (20YP, 7684) contabilizada com dupla perspectiva.</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 4 — Dotação via Dados Abertos</p>
               <p>Arquivos LOA (dados.gov.br) complementam dotação inicial e autorizada.</p>
             </div>
           </div>
+
+          <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
+            <p className="text-xs font-semibold text-foreground mb-1">📌 Diferença para a seção TESTE</p>
+            <p className="text-xs">
+              Esta seção utiliza a metodologia de <strong>4 camadas</strong> (programas temáticos + subfunção 422 + órgãos MIR/MPI + SESAI), 
+              capturando ~R$ 9 bi pagos em 2023–2025. A seção <strong>TESTE</strong> utiliza exclusivamente os 18 códigos de programas da 
+              <em> Agenda Transversal PPA 2024–2027</em> (programas focais + ações filtradas por palavras-chave em programas universais), 
+              resultando em ~R$ 4,5 bi — uma cobertura mais restrita por design.
+            </p>
+          </div>
+
           <div className="flex flex-wrap gap-1.5 mt-2">
             <span className="text-[10px] font-medium text-foreground mr-1">Radicais:</span>
             {['indígen', 'quilombol', 'cigan', 'étnic', 'palmares', 'funai', 'sesai'].map(r => (
