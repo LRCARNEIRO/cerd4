@@ -15,7 +15,7 @@ import {
   ViolenciaRacialChart, FeminicidioChart, EducacaoComparativaChart,
   SaudeComparativaChart, RendaComparativaChart, DesigualdadeEvolucaoChart,
   ViolenciaInterseccionalChart, TabelaSinteseComparativa,
-  RadarVulnerabilidadesChart, ClassePorRacaChart
+  ClassePorRacaChart
 } from '@/components/conclusoes/ComparativeCharts';
 import {
   dadosDemograficos, resumoExecutivo, segurancaPublica, feminicidioSerie,
