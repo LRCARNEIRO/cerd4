@@ -20,6 +20,7 @@ import {
   segurancaPublica,
   educacaoSerieHistorica,
 } from '@/components/estatisticas/StatisticsData';
+import { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas, fmt } from '@/utils/narrativeHelpers';
 
 const statusColors: Record<string, string> = {
   cumprido: 'hsl(var(--success))',
