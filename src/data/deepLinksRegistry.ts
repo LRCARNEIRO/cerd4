@@ -199,9 +199,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Mercado de trabalho raça × gênero',
     secao: 'Interseccionalidade',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial02.html',
+    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.html',
     fonte: 'DIEESE',
-    descricao: 'Boletim Consciência Negra Nov/2024 — rendimento, desemprego, informalidade',
+    descricao: 'Boletim Consciência Negra Nov/2024 — desigualdade racial de rendimentos',
   },
   {
     indicador: 'Educação raça × gênero',
