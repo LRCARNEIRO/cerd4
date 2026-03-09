@@ -536,7 +536,7 @@ export function LgbtqiaTab() {
               <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça — Dados de Pessoas Trans e Travestis</h3>
               <p className="text-sm text-muted-foreground">
                 Os dados desta aba referem-se exclusivamente a <strong>pessoas trans e travestis assassinadas</strong>, conforme documentado pelo Dossiê ANTRA. 
-                Em 2025, 70% das vítimas eram negras. O Brasil segue líder mundial nesta violência, com mulheres trans negras sendo as mais vulneráveis.
+                Em 2025, {narrativaLGBTQIA.vitimasNegras2025}% das vítimas eram negras. O Brasil segue líder mundial nesta violência, com mulheres trans negras sendo as mais vulneráveis.
               </p>
             </div>
           </div>
