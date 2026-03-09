@@ -326,9 +326,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Insegurança alimentar negra',
     secao: 'Vulnerabilidades',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    fonte: 'II VIGISAN',
-    descricao: 'II VIGISAN 2022 — Insegurança Alimentar (PDF)',
+    url: 'https://olheparaafome.com.br/VIGISAN_Inseguranca_alimentar.pdf',
+    fonte: 'II VIGISAN / Rede PENSSAN',
+    descricao: 'VIGISAN — Insegurança Alimentar no contexto da Covid-19 (PDF alternativo)',
   },
   {
     indicador: 'Desocupação por cor/raça',
