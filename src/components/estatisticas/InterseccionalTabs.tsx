@@ -263,8 +263,8 @@ export function RacaGeneroTab() {
           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong>65,8%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
-            por <strong>73%</strong> das inscritas no CadÚnico. A insegurança alimentar atinge 64% desses domicílios, 
-            com 23% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
+            por <strong>38,5%</strong> das inscritas no CadÚnico (vs 17% das brancas — razão 2,3×). A insegurança alimentar atinge 63% desses domicílios, 
+            com 18,8% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
             gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
