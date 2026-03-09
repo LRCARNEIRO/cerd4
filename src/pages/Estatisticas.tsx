@@ -114,9 +114,6 @@ export default function Estatisticas() {
           <TabsTrigger value="classe" className="gap-1">
             <Briefcase className="w-4 h-4" /> Classe Social
           </TabsTrigger>
-          <TabsTrigger value="inventario-cruzado" className="gap-1 bg-chart-1/10">
-            <GitCompare className="w-4 h-4" /> Inventário Cruzado
-          </TabsTrigger>
         </TabsList>
 
         {/* Common Core - 77 Tabelas */}
