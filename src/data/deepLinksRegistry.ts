@@ -436,9 +436,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Sistema prisional — painéis',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    fonte: 'SISDEPEN',
-    descricao: 'SISDEPEN — painéis de análise de dados',
+    url: 'https://www.gov.br/senappen/pt-br/assuntos/noticias/senappen-divulga-levantamento-de-informacoes-penitenciarias-referente-ao-segundo-semestre-de-2024',
+    fonte: 'SISDEPEN/SENAPPEN',
+    descricao: 'SENAPPEN — Levantamento de Informações Penitenciárias 2º semestre 2024',
   },
   {
     indicador: 'Déficit habitacional',
