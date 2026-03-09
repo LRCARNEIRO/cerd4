@@ -436,9 +436,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Sistema prisional — painéis',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    fonte: 'SISDEPEN',
-    descricao: 'SISDEPEN — painéis de análise de dados',
+    url: 'https://www.gov.br/senappen/pt-br/assuntos/noticias/senappen-divulga-levantamento-de-informacoes-penitenciarias-referente-ao-segundo-semestre-de-2024',
+    fonte: 'SISDEPEN/SENAPPEN',
+    descricao: 'SENAPPEN — Levantamento de Informações Penitenciárias 2º semestre 2024',
   },
   {
     indicador: 'Déficit habitacional',
@@ -450,16 +450,16 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SINASE — socioeducativo',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/sinase',
-    fonte: 'SINASE/MDH',
-    descricao: 'SINASE — Sistema Nacional de Atendimento Socioeducativo',
+    url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/acoes-e-programas/sistema-nacional-de-atendimento-socioeducativo-sinase',
+    fonte: 'SINASE/MDHC',
+    descricao: 'SINASE — Sistema Nacional de Atendimento Socioeducativo (página atualizada)',
   },
   {
     indicador: 'VIGITEL — doenças crônicas',
     secao: 'Dados Novos',
-    url: 'https://svs.aids.gov.br/daent/cgdant/vigitel/publicacoes/',
-    fonte: 'VIGITEL/DataSUS',
-    descricao: 'VIGITEL — publicações sobre fatores de risco e doenças crônicas',
+    url: 'https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/vigitel/vigitel-brasil-2006-2024.pdf/view',
+    fonte: 'VIGITEL/MS',
+    descricao: 'VIGITEL Brasil 2006-2024 — fatores de risco e doenças crônicas (PDF)',
   },
   {
     indicador: 'Distorção idade-série',
@@ -499,9 +499,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Certidões Palmares',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/palmares/pt-br/servicos/certidoes-expedidas',
+    url: 'https://www.gov.br/palmares/pt-br/acesso-a-informacao/copy6_of___Download_do_PDF_das_Comunidades_certificadas__Certidoes_expedidas_____Posicao_14.04.2025.pdf/view',
     fonte: 'Palmares',
-    descricao: 'Fundação Cultural Palmares — certidões expedidas',
+    descricao: 'Fundação Cultural Palmares — PDF comunidades certificadas (atualizado 04/2025)',
   },
   {
     indicador: 'Conflitos no campo',
