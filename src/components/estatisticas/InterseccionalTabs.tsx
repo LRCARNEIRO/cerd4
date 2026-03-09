@@ -636,26 +636,26 @@ export function LgbtqiaTab() {
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/30">
                 <p className="text-xs text-muted-foreground">Assassinatos (2025)</p>
-                <p className="text-2xl font-bold text-destructive">80</p>
-                <p className="text-xs text-muted-foreground">–34% vs 2024</p>
+                <p className="text-2xl font-bold text-destructive">{narrativaLGBTQIA.assassinatos2025}</p>
+                <p className="text-xs text-muted-foreground">{narrativaLGBTQIA.variacaoVs2024}% vs 2024</p>
               </div>
               <div className="p-3 bg-chart-1/10 rounded-lg border border-chart-1/30">
                 <p className="text-xs text-muted-foreground">Vítimas negras</p>
-                <p className="text-2xl font-bold" style={{ color: 'hsl(var(--chart-1))' }}>70%</p>
-                <p className="text-xs text-muted-foreground">Média série: 77%</p>
+                <p className="text-2xl font-bold" style={{ color: 'hsl(var(--chart-1))' }}>{narrativaLGBTQIA.vitimasNegras2025}%</p>
+                <p className="text-xs text-muted-foreground">Média série: {narrativaLGBTQIA.mediaSerieNegros}%</p>
               </div>
               <div className="p-3 bg-accent/10 rounded-lg border border-accent/30">
                 <p className="text-xs text-muted-foreground">Vítimas indígenas</p>
-                <p className="text-2xl font-bold text-accent-foreground">2%</p>
+                <p className="text-2xl font-bold text-accent-foreground">{narrativaLGBTQIA.vitimasIndigenas2025}%</p>
                 <p className="text-xs text-muted-foreground">Maior % da série</p>
               </div>
             </div>
             <div className="p-4 bg-destructive/5 rounded-lg border border-destructive/20">
               <p className="text-sm font-medium mb-1">Tendência 2017→2025</p>
               <p className="text-xs text-muted-foreground">
-                Assassinatos: 179 → 80 (–55%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
-                Vítimas negras: mantiveram-se acima de 70% em toda a série (média 77%). 
-                Vítimas indígenas: de 0% (2017-2020) para 2% em 2025, revelando vulnerabilidade crescente.
+                Assassinatos: {narrativaLGBTQIA.assassinatos2017} → {narrativaLGBTQIA.assassinatos2025} ({narrativaLGBTQIA.reducaoSerie}%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
+                Vítimas negras: mantiveram-se acima de 70% em toda a série (média {narrativaLGBTQIA.mediaSerieNegros}%). 
+                Vítimas indígenas: de 0% (2017-2020) para {narrativaLGBTQIA.vitimasIndigenas2025}% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
             <div className="p-4 bg-chart-4/10 rounded-lg border border-chart-4/30">
