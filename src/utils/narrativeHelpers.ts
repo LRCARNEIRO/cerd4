@@ -24,6 +24,10 @@ import {
   feminicidioSerie,
   atlasViolencia2025,
   dadosDemograficos,
+  segurancaPublica,
+  jovensNegrosViolencia,
+  educacaoSerieHistorica,
+  povosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 
 // ═══════════════════════════════════════════
