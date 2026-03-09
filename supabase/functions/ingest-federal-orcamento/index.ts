@@ -76,7 +76,12 @@ const corsHeaders = {
  */
 
 // ===== CAMADA 1: Programas temáticos do PPA =====
+// Inclui programas historicamente mapeados E programas das Agendas Transversais
+// do PPA 2024-2027 (Igualdade Racial e Povos Indígenas). Programas universais
+// (Bolsa Família, MCMV, etc.) exigem validação por keywords; programas focais
+// do MIR/MPI/SESAI são incluídos integralmente.
 const PROGRAMAS_TEMATICOS = [
+  // === Programas historicamente mapeados (metodologia original) ===
   // 5034 existia desde 2020 como guarda-chuva MDHC. Orgao fallback = "MDHC" para evitar
   // que a API retroativamente rotule como MIR. O buildRecord aplica bypass temporal.
   { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MDHC", desde: 2020 },
@@ -91,6 +96,25 @@ const PROGRAMAS_TEMATICOS = [
   { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
   { codigo: "2034", nome: "Promoção da Igualdade Racial e Superação do Racismo (PPA 2016-2019)", orgao: "SEPPIR", desde: 2016 },
+
+  // === Programas das Agendas Transversais PPA 2024-2027 (descobertos pela TESTE) ===
+  // Estes programas constam oficialmente nas Agendas "Igualdade Racial" e/ou "Povos Indígenas"
+  // do Espelho do Monitoramento do PPA. Suas ações passam pelo filtro de keywords para
+  // garantir que apenas ações com recorte racial/étnico explícito sejam incluídas.
+  { codigo: "1617", nome: "Demarcação e Gestão dos Territórios Indígenas", orgao: "MPI", desde: 2024 },
+  { codigo: "1189", nome: "Bioeconomia para um Novo Ciclo de Prosperidade", orgao: "MMA", desde: 2024 },
+  { codigo: "2224", nome: "Planejamento e Orçamento para o Desenvolvimento Sustentável e Inclusivo", orgao: "MPO", desde: 2024 },
+  { codigo: "2301", nome: "Transformação do Estado para a Cidadania e o Desenvolvimento", orgao: "MGI", desde: 2024 },
+  { codigo: "2304", nome: "Ciência, Tecnologia e Inovação para o Desenvolvimento Social", orgao: "MCTI", desde: 2024 },
+  { codigo: "2308", nome: "Consolidação do SNCTI", orgao: "MCTI", desde: 2024 },
+  { codigo: "2310", nome: "Promoção do Trabalho Decente, Emprego e Renda", orgao: "MTE", desde: 2024 },
+  { codigo: "2316", nome: "Relações Internacionais e Assistência a Brasileiros no Exterior", orgao: "MRE", desde: 2024 },
+  { codigo: "5111", nome: "Educação Básica Democrática, com Qualidade e Equidade", orgao: "MEC", desde: 2024 },
+  { codigo: "5121", nome: "Gestão, Trabalho, Educação e Transformação Digital na Saúde", orgao: "MS", desde: 2024 },
+  { codigo: "5123", nome: "Vigilância em Saúde e Ambiente", orgao: "MS", desde: 2024 },
+  { codigo: "5126", nome: "Esporte para a Vida", orgao: "ME", desde: 2024 },
+  { codigo: "5128", nome: "Bolsa Família", orgao: "MDS", desde: 2024 },
+  { codigo: "5129", nome: "Inclusão de Famílias em Situação de Vulnerabilidade no Cadastro Único", orgao: "MDS", desde: 2024 },
 ];
 
 // ===== CAMADA 2: Subfunção 422 =====
@@ -121,7 +145,7 @@ const KEYWORDS_RELEVANCIA = [
 
 // Programas transversais a excluir (falsos positivos)
 const PROGRAMAS_EXCLUIDOS = [
-  "2068", // Bolsa Família / Cadastro Único
+  "2068", // Bolsa Família / Cadastro Único (legado)
   "2049", // Moradia Digna / MCMV
   "2012", // Fortalecimento SUS
   "2015", // Fortalecimento SUAS
@@ -129,12 +153,33 @@ const PROGRAMAS_EXCLUIDOS = [
   "5029", // Fundo Amazônia
 ];
 
+// Programas das Agendas Transversais que são universais e exigem filtro por keywords
+// ao nível de ação para evitar inflação dos totais. Sem keywords raciais/étnicas
+// na ação, o registro é descartado.
+const PROGRAMAS_UNIVERSAIS_AGENDA = new Set([
+  "5128", // Bolsa Família (PPA 2024+)
+  "5129", // Cadastro Único (PPA 2024+)
+  "5126", // Esporte para a Vida
+  "5111", // Educação Básica
+  "5121", // Gestão e Transformação Digital na Saúde
+  "5123", // Vigilância em Saúde
+  "2224", // Planejamento e Orçamento
+  "2301", // Transformação do Estado
+  "2304", // CT&I para Desenvolvimento Social
+  "2308", // Consolidação SNCTI
+  "2310", // Trabalho Decente
+  "2316", // Relações Internacionais
+  "1189", // Bioeconomia
+]);
+
 // Mapeamento de órgão superior para sigla
 const SIGLA_MAP: Record<string, string> = {
   "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
-  "55000": "MDS", "30000": "MJSP", "44000": "MDHC", "47000": "MDHC",
+  "55000": "MDS", "30000": "MJSP", "44000": "MDHC", "47000": "MPO",
   "37000": "FUNAI/MJ", "22000": "INCRA", "36901": "SESAI",
   "20000": "Presidência", "52000": "MDIC", "54000": "MTE",
+  "24000": "MCTI", "35000": "MRE", "46000": "MGI", "51000": "ME",
+  "84000": "MPI",
 };
 
 // Mapeamento de ações específicas para órgão executor
@@ -212,16 +257,25 @@ function isRelevant(item: any): boolean {
   const codProg = item.codigoPrograma || "";
   if (PROGRAMAS_EXCLUIDOS.includes(codProg)) return false;
 
-  // Items from Camada 1 (programa temático) are always relevant
-  if (PROGRAMAS_TEMATICOS.some(p => p.codigo === codProg)) return true;
-
-  // For Camada 2/3 results, check keywords
+  // Build full text for keyword search
   const text = [
     item.programa, item.nomePrograma, item.acao, item.nomeAcao,
     item.nomeOrgaoSuperior, item.nomeFuncao, item.nomeSubfuncao,
   ].filter(Boolean).join(" ").toLowerCase();
 
-  return KEYWORDS_RELEVANCIA.some(kw => text.includes(kw));
+  const hasKeyword = KEYWORDS_RELEVANCIA.some(kw => text.includes(kw));
+
+  // Programas universais das Agendas Transversais: exigem keyword racial/étnica
+  // ao nível de ação para evitar incluir ações genéricas (ex: ação genérica do Bolsa Família)
+  if (PROGRAMAS_UNIVERSAIS_AGENDA.has(codProg)) {
+    return hasKeyword;
+  }
+
+  // Programas focais (MIR, MPI, SESAI, etc.): sempre relevantes
+  if (PROGRAMAS_TEMATICOS.some(p => p.codigo === codProg)) return true;
+
+  // Para Camada 2/3 results, check keywords
+  return hasKeyword;
 }
 
 function resolveDescritivo(item: any): string | null {
