@@ -15,7 +15,7 @@ import {
   ViolenciaRacialChart, FeminicidioChart, EducacaoComparativaChart,
   SaudeComparativaChart, RendaComparativaChart, DesigualdadeEvolucaoChart,
   ViolenciaInterseccionalChart, TabelaSinteseComparativa,
-  RadarVulnerabilidadesChart, ClassePorRacaChart
+  ClassePorRacaChart
 } from '@/components/conclusoes/ComparativeCharts';
 import {
   dadosDemograficos, resumoExecutivo, segurancaPublica, feminicidioSerie,
@@ -408,10 +408,7 @@ export default function Conclusoes() {
                 </div>
 
                 {/* Violência interseccional + Radar */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <ViolenciaInterseccionalChart />
-                  <RadarVulnerabilidadesChart />
-                </div>
+                <ViolenciaInterseccionalChart />
 
                 {/* Educação + Saúde */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
