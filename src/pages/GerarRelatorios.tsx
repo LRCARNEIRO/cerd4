@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
@@ -15,6 +15,7 @@ import { StatisticsInventoryReport } from '@/components/reports/StatisticsInvent
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
+import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
@@ -315,6 +316,9 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="balanco" className="gap-1 bg-accent/20">
             <GitCompare className="w-4 h-4" /> Balanço Comparativo
           </TabsTrigger>
+          <TabsTrigger value="health-check" className="gap-1">
+            <Activity className="w-4 h-4" /> Health Check
+          </TabsTrigger>
         </TabsList>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
@@ -588,6 +592,11 @@ ${(respostasCerd || []).map(r => {
             orcStats={orcStats}
             stats={stats}
           />
+        </TabsContent>
+
+        {/* ABA: HEALTH CHECK */}
+        <TabsContent value="health-check">
+          <DeepLinkHealthCheck />
         </TabsContent>
       </Tabs>
     </DashboardLayout>
