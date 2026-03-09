@@ -73,7 +73,7 @@ export function SnapshotManager() {
         
         while (true) {
           const { data, error } = await supabase
-            .from(table)
+            .from(table as any)
             .select('*')
             .range(from, from + pageSize - 1);
           if (error) throw error;
