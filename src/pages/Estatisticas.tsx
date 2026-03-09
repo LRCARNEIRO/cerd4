@@ -27,7 +27,7 @@ import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
-import { InventarioCruzadoTab } from '@/components/estatisticas/InventarioCruzadoTab';
+
 
 export default function Estatisticas() {
   return (
