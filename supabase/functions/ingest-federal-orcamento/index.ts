@@ -76,7 +76,12 @@ const corsHeaders = {
  */
 
 // ===== CAMADA 1: Programas temáticos do PPA =====
+// Inclui programas historicamente mapeados E programas das Agendas Transversais
+// do PPA 2024-2027 (Igualdade Racial e Povos Indígenas). Programas universais
+// (Bolsa Família, MCMV, etc.) exigem validação por keywords; programas focais
+// do MIR/MPI/SESAI são incluídos integralmente.
 const PROGRAMAS_TEMATICOS = [
+  // === Programas historicamente mapeados (metodologia original) ===
   // 5034 existia desde 2020 como guarda-chuva MDHC. Orgao fallback = "MDHC" para evitar
   // que a API retroativamente rotule como MIR. O buildRecord aplica bypass temporal.
   { codigo: "5034", nome: "Igualdade Racial e Superação do Racismo", orgao: "MDHC", desde: 2020 },
@@ -91,6 +96,25 @@ const PROGRAMAS_TEMATICOS = [
   { codigo: "2065", nome: "Proteção e Promoção dos Direitos dos Povos Indígenas", orgao: "MPI", desde: 2012 },
   { codigo: "0153", nome: "Promoção e Defesa dos Direitos da Criança e do Adolescente", orgao: "MDHC", desde: 2004 },
   { codigo: "2034", nome: "Promoção da Igualdade Racial e Superação do Racismo (PPA 2016-2019)", orgao: "SEPPIR", desde: 2016 },
+
+  // === Programas das Agendas Transversais PPA 2024-2027 (descobertos pela TESTE) ===
+  // Estes programas constam oficialmente nas Agendas "Igualdade Racial" e/ou "Povos Indígenas"
+  // do Espelho do Monitoramento do PPA. Suas ações passam pelo filtro de keywords para
+  // garantir que apenas ações com recorte racial/étnico explícito sejam incluídas.
+  { codigo: "1617", nome: "Demarcação e Gestão dos Territórios Indígenas", orgao: "MPI", desde: 2024 },
+  { codigo: "1189", nome: "Bioeconomia para um Novo Ciclo de Prosperidade", orgao: "MMA", desde: 2024 },
+  { codigo: "2224", nome: "Planejamento e Orçamento para o Desenvolvimento Sustentável e Inclusivo", orgao: "MPO", desde: 2024 },
+  { codigo: "2301", nome: "Transformação do Estado para a Cidadania e o Desenvolvimento", orgao: "MGI", desde: 2024 },
+  { codigo: "2304", nome: "Ciência, Tecnologia e Inovação para o Desenvolvimento Social", orgao: "MCTI", desde: 2024 },
+  { codigo: "2308", nome: "Consolidação do SNCTI", orgao: "MCTI", desde: 2024 },
+  { codigo: "2310", nome: "Promoção do Trabalho Decente, Emprego e Renda", orgao: "MTE", desde: 2024 },
+  { codigo: "2316", nome: "Relações Internacionais e Assistência a Brasileiros no Exterior", orgao: "MRE", desde: 2024 },
+  { codigo: "5111", nome: "Educação Básica Democrática, com Qualidade e Equidade", orgao: "MEC", desde: 2024 },
+  { codigo: "5121", nome: "Gestão, Trabalho, Educação e Transformação Digital na Saúde", orgao: "MS", desde: 2024 },
+  { codigo: "5123", nome: "Vigilância em Saúde e Ambiente", orgao: "MS", desde: 2024 },
+  { codigo: "5126", nome: "Esporte para a Vida", orgao: "ME", desde: 2024 },
+  { codigo: "5128", nome: "Bolsa Família", orgao: "MDS", desde: 2024 },
+  { codigo: "5129", nome: "Inclusão de Famílias em Situação de Vulnerabilidade no Cadastro Único", orgao: "MDS", desde: 2024 },
 ];
 
 // ===== CAMADA 2: Subfunção 422 =====
