@@ -152,8 +152,8 @@ export function RacaGeneroTab() {
           <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Dupla Penalidade no Mercado de Trabalho</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             A mulher negra recebe <strong>43,9%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
-            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,9%) é 
-            1,8× superior à masculina branca (5,9%), e a informalidade negra feminina (44,5%) inviabiliza proteção social. 
+            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,2%) é 
+            2,3× superior à masculina branca (4,5%), e a informalidade negra feminina (46,8%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
