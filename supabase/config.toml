@@ -41,3 +41,9 @@ verify_jwt = false
 
 [functions.ingest-municipal-siconfi]
 verify_jwt = false
+
+[functions.suggest-link-replacement]
+verify_jwt = false
+
+[functions.check-deep-links]
+verify_jwt = false
