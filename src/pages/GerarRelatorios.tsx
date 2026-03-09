@@ -593,6 +593,11 @@ ${(respostasCerd || []).map(r => {
             stats={stats}
           />
         </TabsContent>
+
+        {/* ABA: HEALTH CHECK */}
+        <TabsContent value="health-check">
+          <DeepLinkHealthCheck />
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );
