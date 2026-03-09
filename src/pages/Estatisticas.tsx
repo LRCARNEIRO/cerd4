@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
   FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
-  Landmark, HeartPulse, GitCompare
+  Landmark, HeartPulse
 } from 'lucide-react';
 
 // Componentes de abas
@@ -27,7 +27,7 @@ import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
-import { InventarioCruzadoTab } from '@/components/estatisticas/InventarioCruzadoTab';
+
 
 export default function Estatisticas() {
   return (
@@ -114,9 +114,6 @@ export default function Estatisticas() {
           <TabsTrigger value="classe" className="gap-1">
             <Briefcase className="w-4 h-4" /> Classe Social
           </TabsTrigger>
-          <TabsTrigger value="inventario-cruzado" className="gap-1 bg-chart-1/10">
-            <GitCompare className="w-4 h-4" /> Inventário Cruzado
-          </TabsTrigger>
         </TabsList>
 
         {/* Common Core - 77 Tabelas */}
@@ -196,10 +193,6 @@ export default function Estatisticas() {
           <ClasseSocialTab />
         </TabsContent>
 
-        {/* Inventário Cruzado */}
-        <TabsContent value="inventario-cruzado">
-          <InventarioCruzadoTab />
-        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );
