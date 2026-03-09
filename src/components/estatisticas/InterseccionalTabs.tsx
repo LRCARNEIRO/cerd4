@@ -331,7 +331,7 @@ export function RacaGeneroTab() {
       <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
         <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Educação — Avanço Insuficiente com Gap Persistente</h4>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          A conclusão do ensino superior entre mulheres negras (<strong>14,7%</strong>) é metade da taxa de mulheres brancas (29%), 
+          A conclusão do ensino superior entre mulheres negras (<strong>{fmt(narrativaEducacao.superiorMulherNegra)}%</strong>) é metade da taxa de mulheres brancas ({fmt(narrativaEducacao.superiorMulherBranca, 0)}%), 
           apesar dos avanços com cotas (Lei 12.711/2012). Mulheres negras abandonam mais a escola por necessidade de trabalho 
           e cuidado. O cruzamento indica que <strong>políticas universais de expansão do ensino superior não eliminam a 
           desigualdade racial-de-gênero</strong> sem ações afirmativas complementares.
