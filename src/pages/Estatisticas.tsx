@@ -195,6 +195,11 @@ export default function Estatisticas() {
         <TabsContent value="classe">
           <ClasseSocialTab />
         </TabsContent>
+
+        {/* Inventário Cruzado */}
+        <TabsContent value="inventario-cruzado">
+          <InventarioCruzadoTab />
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );
