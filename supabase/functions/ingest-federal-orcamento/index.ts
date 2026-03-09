@@ -255,16 +255,25 @@ function isRelevant(item: any): boolean {
   const codProg = item.codigoPrograma || "";
   if (PROGRAMAS_EXCLUIDOS.includes(codProg)) return false;
 
-  // Items from Camada 1 (programa temático) are always relevant
-  if (PROGRAMAS_TEMATICOS.some(p => p.codigo === codProg)) return true;
-
-  // For Camada 2/3 results, check keywords
+  // Build full text for keyword search
   const text = [
     item.programa, item.nomePrograma, item.acao, item.nomeAcao,
     item.nomeOrgaoSuperior, item.nomeFuncao, item.nomeSubfuncao,
   ].filter(Boolean).join(" ").toLowerCase();
 
-  return KEYWORDS_RELEVANCIA.some(kw => text.includes(kw));
+  const hasKeyword = KEYWORDS_RELEVANCIA.some(kw => text.includes(kw));
+
+  // Programas universais das Agendas Transversais: exigem keyword racial/étnica
+  // ao nível de ação para evitar incluir ações genéricas (ex: ação genérica do Bolsa Família)
+  if (PROGRAMAS_UNIVERSAIS_AGENDA.has(codProg)) {
+    return hasKeyword;
+  }
+
+  // Programas focais (MIR, MPI, SESAI, etc.): sempre relevantes
+  if (PROGRAMAS_TEMATICOS.some(p => p.codigo === codProg)) return true;
+
+  // Para Camada 2/3 results, check keywords
+  return hasKeyword;
 }
 
 function resolveDescritivo(item: any): string | null {
