@@ -136,7 +136,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
       estimativa: true,
-      metodologia: 'Taxa geral; 47,8% das vítimas têm 15-29 anos (Atlas 2025)',
+      metodologia: `Taxa geral; ${narrativaJuventude.percentualVitimas}% das vítimas têm 15-29 anos (Atlas 2025)`,
     },
     {
       nome: 'Vítimas negras de homicídio (%)',
