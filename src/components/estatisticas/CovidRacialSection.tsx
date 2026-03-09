@@ -8,6 +8,8 @@ import {
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
+import { povosTradicionais } from './StatisticsData';
+import { narrativaCovid } from '@/utils/narrativeHelpers';
 
 // =============================================
 // Fontes agrupadas por tema
