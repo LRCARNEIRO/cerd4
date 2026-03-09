@@ -146,7 +146,7 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Violência de Gênero Racializada</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Mulheres negras representam <strong>63,6%</strong> das vítimas de feminicídio (2024), proporção que cresceu em relação a 2018 (61%). 
+            Mulheres negras representam <strong>{fmt(narrativaViolencia.feminicidioNegrasPct)}%</strong> das vítimas de feminicídio (2024), proporção que cresceu em relação a 2018 ({fmt(narrativaViolencia.feminicidio2018Pct, 0)}%). 
             A sobreposição raça + gênero configura <strong>risco desproporcional e crescente</strong>, evidenciando falha 
             na efetividade das políticas de proteção para esse grupo. A CERD (§29-30) recomenda ações afirmativas específicas.
           </p>
