@@ -175,9 +175,11 @@ const PROGRAMAS_UNIVERSAIS_AGENDA = new Set([
 // Mapeamento de órgão superior para sigla
 const SIGLA_MAP: Record<string, string> = {
   "67000": "MIR", "92000": "MPI", "26000": "MEC", "36000": "MS",
-  "55000": "MDS", "30000": "MJSP", "44000": "MDHC", "47000": "MDHC",
+  "55000": "MDS", "30000": "MJSP", "44000": "MDHC", "47000": "MPO",
   "37000": "FUNAI/MJ", "22000": "INCRA", "36901": "SESAI",
   "20000": "Presidência", "52000": "MDIC", "54000": "MTE",
+  "24000": "MCTI", "35000": "MRE", "46000": "MGI", "51000": "ME",
+  "84000": "MPI",
 };
 
 // Mapeamento de ações específicas para órgão executor
