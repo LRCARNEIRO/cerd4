@@ -499,9 +499,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Certidões Palmares',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/palmares/pt-br/servicos/certidoes-expedidas',
+    url: 'https://www.gov.br/palmares/pt-br/acesso-a-informacao/copy6_of___Download_do_PDF_das_Comunidades_certificadas__Certidoes_expedidas_____Posicao_14.04.2025.pdf/view',
     fonte: 'Palmares',
-    descricao: 'Fundação Cultural Palmares — certidões expedidas',
+    descricao: 'Fundação Cultural Palmares — PDF comunidades certificadas (atualizado 04/2025)',
   },
   {
     indicador: 'Conflitos no campo',
