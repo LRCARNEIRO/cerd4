@@ -220,9 +220,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://ieps.org.br/wp-content/uploads/2025/07/IEPS_Boletim51.pdf',
+    url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/',
     fonte: 'IEPS',
-    descricao: 'Boletim IEPS Jul/2025 — mortalidade materna por raça (série até 2023)',
+    descricao: 'IEPS Jul/2025 — mortalidade materna por raça: pretas 2,3× maior que brancas (2010-2023)',
   },
   {
     indicador: 'Saúde materna raça × classe',
