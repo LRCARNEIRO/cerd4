@@ -457,9 +457,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'VIGITEL — doenças crônicas',
     secao: 'Dados Novos',
-    url: 'https://svs.aids.gov.br/daent/cgdant/vigitel/publicacoes/',
-    fonte: 'VIGITEL/DataSUS',
-    descricao: 'VIGITEL — publicações sobre fatores de risco e doenças crônicas',
+    url: 'https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/vigitel/vigitel-brasil-2006-2024.pdf/view',
+    fonte: 'VIGITEL/MS',
+    descricao: 'VIGITEL Brasil 2006-2024 — fatores de risco e doenças crônicas (PDF)',
   },
   {
     indicador: 'Distorção idade-série',
