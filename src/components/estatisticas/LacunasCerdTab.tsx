@@ -523,7 +523,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de 75,4% (2018) para 82% (2024).
+                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de {narrativaSeguranca.letalidadePolicial2018}% (2018) para {narrativaSeguranca.letalidadePolicial2024}% (2024).
                   ADPF 635 (STF) busca restringir operações em favelas. Brasil lidera ranking mundial.
                 </p>
               </div>
