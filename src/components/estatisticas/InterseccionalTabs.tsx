@@ -10,8 +10,12 @@ import {
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
-import { AuditFooter as AuditFooterComponent } from '@/components/ui/audit-footer';
 import { atlasViolencia2025 } from './StatisticsData';
+import {
+  narrativaViolencia, narrativaTrabalho, narrativaChefia,
+  narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
+  fmt,
+} from '@/utils/narrativeHelpers';
 import { 
   violenciaInterseccional, 
   lacunasDocumentadas,
