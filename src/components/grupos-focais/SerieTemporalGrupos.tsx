@@ -193,17 +193,17 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
   // Mantido apenas: Terras Indígenas (FUNAI - dados verificáveis)
   const indigenas: IndicadorTemporal[] = [
     {
-      nome: 'Terras Indígenas homologadas (acumulado)',
+      nome: 'TIs homologadas + reservadas (acumulado)',
       grupo: 'indigenas',
       dados: [
-        // FUNAI Geoprocessamento — único dado verificável com deep link
-        // Valores intermediários (488-495) removidos — FUNAI não publica relatório anual com acumulado
-        // Mantemos apenas pontos verificáveis: 2018 (baseline) e 2025 (atual)
-        { ano: 2018, valor: 487 },
-        { ano: 2025, valor: 496 },
+        // ISA/terrasindigenas.org.br — total acumulado derivado de StatisticsData
+        // Baseline 2018: total atual (536) - novas homologações no período (21) = 515
+        // Total 2025: 536 (ISA Mar/2026)
+        { ano: 2018, valor: povosTradicionais.indigenas.totalTIsHomologadasReservadas2018 },
+        { ano: 2025, valor: povosTradicionais.indigenas.totalTIsHomologadasReservadas2025 },
       ],
       unidade: 'TIs',
-      fonte: 'FUNAI — Coordenação de Geoprocessamento',
+      fonte: 'ISA/terrasindigenas.org.br + FUNAI (homologações)',
       interpretacao: 'maior_melhor',
     },
   ];

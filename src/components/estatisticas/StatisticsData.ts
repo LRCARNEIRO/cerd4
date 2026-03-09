@@ -520,6 +520,14 @@ export const povosTradicionais = {
     // Corrigido conforme auditoria FUNAI: 2018: 1 homologação; 2023-2025: 20 homologações
     terrasHomologadas2018_2022: 1,
     terrasHomologadas2023_2025: 20,
+    // TOTAL ACUMULADO: Homologadas + Reservadas (ISA/terrasindigenas.org.br, Mar/2026)
+    // Fonte: https://terrasindigenas.org.br/pt-br/brasil — 536 "Homologadas e Reservadas"
+    // Cálculo do baseline 2018: 536 (atual) - 20 (Lula 2023-2025) - 1 (Bolsonaro 2018-2022) = 515
+    // NOTA: inclui "reservadas" (criadas por decreto, sem processo demarcatório completo)
+    totalTIsHomologadasReservadas2025: 536,
+    totalTIsHomologadasReservadas2018: 515, // 536 - 21 novas homologações no período
+    fonteTotalTIs: 'ISA/terrasindigenas.org.br — Terras Indígenas no Brasil',
+    urlFonteTotalTIs: 'https://terrasindigenas.org.br/pt-br/brasil',
     // REMOVIDOS por falta de fonte auditável:
     // mortalidadeInfantil: 42.8 — SEM FONTE (não é SINASC nem SESAI verificável)
     // acessoSaude: 68.5 — SEM FONTE
