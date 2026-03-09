@@ -4,8 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { History, RotateCcw, Clock, Database, FileText, Loader2, AlertTriangle } from 'lucide-react';
+import { History, RotateCcw, Clock, Database, FileText, Loader2, AlertTriangle, Plus, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -29,9 +30,19 @@ const TABLE_LABELS: Record<string, string> = {
   conclusoes_analiticas: 'Conclusões',
 };
 
+const TABLES_TO_SNAPSHOT = [
+  'dados_orcamentarios',
+  'lacunas_identificadas',
+  'conclusoes_analiticas',
+  'indicadores_interseccionais',
+];
+
 export function SnapshotManager() {
   const [confirmRestore, setConfirmRestore] = useState<Snapshot | null>(null);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [snapshotName, setSnapshotName] = useState('');
   const queryClient = useQueryClient();
 
   const { data: snapshots, isLoading } = useQuery({
@@ -46,6 +57,65 @@ export function SnapshotManager() {
       return data as Snapshot[];
     },
   });
+
+  const handleCreateSnapshot = async () => {
+    const nome = snapshotName.trim() || `Backup manual — ${format(new Date(), "dd/MM/yyyy HH:mm")}`;
+    setIsCreating(true);
+    try {
+      // Fetch all tables data
+      const snapshotData: Record<string, any[]> = {};
+      let totalRegistros = 0;
+
+      for (const table of TABLES_TO_SNAPSHOT) {
+        let allRows: any[] = [];
+        let from = 0;
+        const pageSize = 1000;
+        
+        while (true) {
+          const { data, error } = await supabase
+            .from(table)
+            .select('*')
+            .range(from, from + pageSize - 1);
+          if (error) throw error;
+          if (!data || data.length === 0) break;
+          allRows = allRows.concat(data);
+          if (data.length < pageSize) break;
+          from += pageSize;
+        }
+
+        snapshotData[table] = allRows;
+        totalRegistros += allRows.length;
+      }
+
+      // Insert snapshot via edge function (RLS blocks direct insert)
+      const { data, error } = await supabase.functions.invoke('confirm-import', {
+        body: {
+          action: 'create-snapshot-only',
+          snapshot_nome: nome,
+          snapshot_descricao: 'Backup manual criado pelo usuário',
+          snapshot_data: snapshotData,
+          tabelas_afetadas: TABLES_TO_SNAPSHOT,
+          total_registros: totalRegistros,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success('Snapshot criado com sucesso!', {
+        description: `"${nome}" — ${totalRegistros} registros salvos.`,
+      });
+      setShowCreateForm(false);
+      setSnapshotName('');
+      queryClient.invalidateQueries({ queryKey: ['data-snapshots'] });
+    } catch (error) {
+      console.error('Create snapshot error:', error);
+      toast.error('Erro ao criar snapshot', {
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+      });
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleRestore = async (snapshot: Snapshot) => {
     setIsRestoring(true);
@@ -86,35 +156,33 @@ export function SnapshotManager() {
     );
   }
 
-  if (!snapshots || snapshots.length === 0) {
-    return (
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <History className="w-4 h-4" />
-            Histórico de Versões
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Nenhum snapshot disponível. Os snapshots são criados automaticamente antes de cada importação de dados.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <>
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <History className="w-4 h-4" />
-            Histórico de Versões ({snapshots.length})
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <History className="w-4 h-4" />
+              Histórico de Versões ({snapshots?.length || 0})
+            </CardTitle>
+            <Button
+              size="sm"
+              variant="default"
+              className="gap-1.5"
+              onClick={() => setShowCreateForm(true)}
+            >
+              <Plus className="w-4 h-4" />
+              Criar Snapshot
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {snapshots.map((snap) => (
+          {(!snapshots || snapshots.length === 0) && (
+            <p className="text-sm text-muted-foreground">
+              Nenhum snapshot disponível. Clique em "Criar Snapshot" para salvar o estado atual dos dados.
+            </p>
+          )}
+          {snapshots?.map((snap) => (
             <div
               key={snap.id}
               className="border rounded-lg p-3 hover:bg-muted/30 transition-colors"
@@ -159,6 +227,48 @@ export function SnapshotManager() {
         </CardContent>
       </Card>
 
+      {/* Dialog: Criar Snapshot */}
+      <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Save className="w-5 h-5 text-primary" />
+              Criar Snapshot de Backup
+            </DialogTitle>
+            <DialogDescription>
+              Salva o estado atual de todas as tabelas (Orçamento, Lacunas, Conclusões, Indicadores).
+              Você poderá restaurar este snapshot a qualquer momento.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              placeholder="Nome do snapshot (ex: Backup pré-ingestão)"
+              value={snapshotName}
+              onChange={(e) => setSnapshotName(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateForm(false)} disabled={isCreating}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateSnapshot} disabled={isCreating} className="gap-2">
+              {isCreating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Criar Snapshot
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: Confirmar Restauração */}
       <Dialog open={!!confirmRestore} onOpenChange={() => setConfirmRestore(null)}>
         <DialogContent>
           <DialogHeader>
