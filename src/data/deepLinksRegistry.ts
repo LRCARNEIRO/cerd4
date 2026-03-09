@@ -199,9 +199,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Mercado de trabalho raça × gênero',
     secao: 'Interseccionalidade',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/boletimEspecial02.html',
+    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.html',
     fonte: 'DIEESE',
-    descricao: 'Boletim Consciência Negra Nov/2024 — rendimento, desemprego, informalidade',
+    descricao: 'Boletim Consciência Negra Nov/2024 — desigualdade racial de rendimentos',
   },
   {
     indicador: 'Educação raça × gênero',
@@ -220,16 +220,16 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://ieps.org.br/wp-content/uploads/2025/07/IEPS_Boletim51.pdf',
+    url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/',
     fonte: 'IEPS',
-    descricao: 'Boletim IEPS Jul/2025 — mortalidade materna por raça (série até 2023)',
+    descricao: 'IEPS Jul/2025 — mortalidade materna por raça: pretas 2,3× maior que brancas (2010-2023)',
   },
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://www.gov.br/mdh/pt-br/assuntos/noticias/2025/marco/governo-federal-lanca-relatorio-anual-socioeconomico-da-mulher',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2025 — mortalidade materna negra (dado SIM 2022)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF)',
   },
   {
     indicador: 'Dados Disque 100 — LGBTQIA+',
@@ -326,9 +326,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Insegurança alimentar negra',
     secao: 'Vulnerabilidades',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    fonte: 'II VIGISAN',
-    descricao: 'II VIGISAN 2022 — Insegurança Alimentar (PDF)',
+    url: 'https://olheparaafome.com.br/VIGISAN_Inseguranca_alimentar.pdf',
+    fonte: 'II VIGISAN / Rede PENSSAN',
+    descricao: 'VIGISAN — Insegurança Alimentar no contexto da Covid-19 (PDF alternativo)',
   },
   {
     indicador: 'Desocupação por cor/raça',
