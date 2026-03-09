@@ -152,8 +152,8 @@ export function RacaGeneroTab() {
           <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Dupla Penalidade no Mercado de Trabalho</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             A mulher negra recebe <strong>43,9%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
-            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,9%) é 
-            1,8× superior à masculina branca (5,9%), e a informalidade negra feminina (44,5%) inviabiliza proteção social. 
+            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,2%) é 
+            2,3× superior à masculina branca (4,5%), e a informalidade negra feminina (46,8%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
@@ -263,8 +263,8 @@ export function RacaGeneroTab() {
           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong>65,8%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
-            por <strong>73%</strong> das inscritas no CadÚnico. A insegurança alimentar atinge 64% desses domicílios, 
-            com 23% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
+            por <strong>38,5%</strong> das inscritas no CadÚnico (vs 17% das brancas — razão 2,3×). A insegurança alimentar atinge 63% desses domicílios, 
+            com 18,8% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
             gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
@@ -642,7 +642,7 @@ export function LgbtqiaTab() {
               </div>
               <div className="p-3 bg-accent/10 rounded-lg border border-accent/30">
                 <p className="text-xs text-muted-foreground">Vítimas indígenas</p>
-                <p className="text-2xl font-bold text-accent-foreground">4%</p>
+                <p className="text-2xl font-bold text-accent-foreground">2%</p>
                 <p className="text-xs text-muted-foreground">Maior % da série</p>
               </div>
             </div>
@@ -651,7 +651,7 @@ export function LgbtqiaTab() {
               <p className="text-xs text-muted-foreground">
                 Assassinatos: 179 → 80 (–55%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
                 Vítimas negras: mantiveram-se acima de 70% em toda a série (média 77%). 
-                Vítimas indígenas: de 0% (2017-2020) para 4% em 2025, revelando vulnerabilidade crescente.
+                Vítimas indígenas: de 0% (2017-2020) para 2% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
             <div className="p-4 bg-chart-4/10 rounded-lg border border-chart-4/30">

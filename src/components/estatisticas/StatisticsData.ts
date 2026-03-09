@@ -385,12 +385,12 @@ export const interseccionalidadeTrabalho = [
   // Rendimento médio do trabalho (DIEESE Q2 2024, Gráfico 7 e Tabela 2)
   // Desemprego: DIEESE Q2 2024, Gráfico 2
   // Informalidade: DIEESE Q2 2024, Gráfico 4
-  { grupo: 'Mulher Negra', renda: 2079, desemprego: 10.1, informalidade: 46.0, fonte: 'DIEESE/PNAD Q2 2024' },
-  { grupo: 'Homem Negro', renda: 0, desemprego: 6.3, informalidade: 45.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Mulher Negra', renda: 2003, desemprego: 10.2, informalidade: 46.8, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Negro', renda: 0, desemprego: 6.1, informalidade: 46.6, fonte: 'DIEESE/PNAD Q2 2024' },
   // NOTA: Renda homem negro REMOVIDA (Regra de Ouro). DIEESE publica apenas total negros (R$2.392), sem desagregação sexo.
   // O valor anterior (R$2.676) era estimativa aritmética: (total×2 − mulher). Renda=0 → exibido como "N/D" na UI.
-  { grupo: 'Mulher Não Negra', renda: 3384, desemprego: 6.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
-  { grupo: 'Homem Não Negro', renda: 4492, desemprego: 4.6, informalidade: 34.0, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Mulher Não Negra', renda: 3222, desemprego: 6.3, informalidade: 34.5, fonte: 'DIEESE/PNAD Q2 2024' },
+  { grupo: 'Homem Não Negro', renda: 4568, desemprego: 4.5, informalidade: 33.3, fonte: 'DIEESE/PNAD Q2 2024' },
 ];
 export const interseccionalidadeTrabalhoFontes = [
   { nome: 'DIEESE — Boletim Trabalho e Raça Q2/2024', url: 'https://www.dieese.org.br/outraspublicacoes/2024/trabalhoeRaca.html' },
