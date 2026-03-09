@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
   FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
-  Landmark, HeartPulse, GitCompare
+  Landmark, HeartPulse
 } from 'lucide-react';
 
 // Componentes de abas
