@@ -20,6 +20,7 @@ import {
   segurancaPublica,
   educacaoSerieHistorica,
 } from '@/components/estatisticas/StatisticsData';
+import { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas, fmt } from '@/utils/narrativeHelpers';
 
 const statusColors: Record<string, string> = {
   cumprido: 'hsl(var(--success))',
@@ -382,7 +383,7 @@ export function LacunasCerdTab() {
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
                   <strong>Análise §19:</strong> Gap no ensino superior: {dadosEducacaoHistorico[0]?.gapSuperior}pp em 2018 → {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.gapSuperior}pp em {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.ano}. 
-                  Analfabetismo negro recuou de 8,4% para 6,9%, mas segue 2x maior que o branco.
+                  Analfabetismo negro recuou de {narrativaEducacaoSerie.analfabetismoNegro2018}% para {narrativaEducacaoSerie.analfabetismoNegroUltimo}%, mas segue {narrativaEducacaoSerie.razaoAnalfabetismo}x maior que o branco.
                 </p>
               </div>
               <AuditFooter 
@@ -522,7 +523,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de 75,4% (2018) para 82% (2024).
+                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de {narrativaSeguranca.letalidadePolicial2018}% (2018) para {narrativaSeguranca.letalidadePolicial2024}% (2024).
                   ADPF 635 (STF) busca restringir operações em favelas. Brasil lidera ranking mundial.
                 </p>
               </div>
@@ -567,7 +568,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §25:</strong> Apenas 7,8% dos territórios quilombolas estão titulados (245 de ~3.158 comunidades certificadas).
+                  <strong>Análise §25:</strong> Apenas {narrativaQuilombolas.taxaTitulacao}% dos territórios quilombolas estão titulados ({narrativaQuilombolas.territoriosTitulados} de ~{narrativaQuilombolas.comunidadesCertificadas.toLocaleString('pt-BR')} comunidades certificadas).
                   Período 2019-2022 marcado por paralisia quase total. Retomada a partir de 2023 com PNGTAQ (Dec. 11.786/2023).
                 </p>
               </div>

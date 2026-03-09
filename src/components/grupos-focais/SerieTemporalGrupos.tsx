@@ -7,6 +7,7 @@ import {
   indicadoresSocioeconomicos, feminicidioSerie,
   povosTradicionais
 } from '@/components/estatisticas/StatisticsData';
+import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
 
 interface IndicadorTemporal {
   nome: string;
@@ -124,7 +125,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
   ];
 
   // Juventude Negra: séries temporais existentes que afetam desproporcionalmente jovens 15-29
-  // Atlas 2025: 47,8% vítimas homicídio têm 15-29 anos; 79% jovens negros masculinos
+  // Atlas 2025: {narrativaJuventude.percentualVitimas}% vítimas homicídio têm 15-29 anos; {narrativaJuventude.percentualNegrosHomens}% jovens negros masculinos
   // Não usa multiplicadores — usa as séries reais de segurança/emprego como indicadores correlatos
   const juventudeNegra: IndicadorTemporal[] = [
     {
@@ -135,7 +136,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
       estimativa: true,
-      metodologia: 'Taxa geral; 47,8% das vítimas têm 15-29 anos (Atlas 2025)',
+      metodologia: `Taxa geral; ${narrativaJuventude.percentualVitimas}% das vítimas têm 15-29 anos (Atlas 2025)`,
     },
     {
       nome: 'Vítimas negras de homicídio (%)',
@@ -375,8 +376,8 @@ export function SerieTemporalGrupos() {
           <div>
             <p className="font-medium">Quilombolas — Série Temporal Limitada</p>
             <p className="text-sm text-muted-foreground">
-              Primeira contagem oficial apenas no Censo 2022 (1.330.186). Sem dados anteriores para comparação direta. 
-              Indicadores indiretos: 245 territórios titulados (de 2.014 em processo ≈ 12%); rede de água 33,6%; esgotamento adequado 25,1%.
+              Primeira contagem oficial apenas no Censo 2022 ({narrativaQuilombolas.populacao.toLocaleString('pt-BR')}). Sem dados anteriores para comparação direta. 
+              Indicadores indiretos: {narrativaQuilombolas.territoriosTitulados} territórios titulados (de {narrativaQuilombolas.processosAbertosIncra.toLocaleString('pt-BR')} em processo ≈ {Math.round(narrativaQuilombolas.territoriosTitulados / narrativaQuilombolas.processosAbertosIncra * 100)}%); rede de água {narrativaQuilombolas.aguaRedeGeral}%; esgotamento adequado {narrativaQuilombolas.esgotamentoAdequado}%.
             </p>
             <Badge variant="outline" className="mt-2 text-xs border-warning text-warning">Dados Parciais</Badge>
           </div>

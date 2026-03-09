@@ -24,6 +24,10 @@ import {
   feminicidioSerie,
   atlasViolencia2025,
   dadosDemograficos,
+  segurancaPublica,
+  jovensNegrosViolencia,
+  educacaoSerieHistorica,
+  povosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 
 // ═══════════════════════════════════════════
@@ -164,26 +168,104 @@ export const narrativaJuventude = {
 } as const;
 
 // ═══════════════════════════════════════════
+// SEGURANÇA PÚBLICA — narrativa geral
+// ═══════════════════════════════════════════
+
+const seg2018 = segurancaPublica.find(s => s.ano === 2018)!;
+const seg2024 = segurancaPublica.find(s => s.ano === 2024)!;
+
+export const narrativaSeguranca = {
+  riscoRelativo: atlasViolencia2025.riscoRelativo,
+  vitimasNegras2024: seg2024.percentualVitimasNegras,
+  vitimasNegras2018: seg2018.percentualVitimasNegras,
+  letalidadePolicial2024: seg2024.letalidadePolicial,
+  letalidadePolicial2018: seg2018.letalidadePolicial,
+  jovensObitosExternos: jovensNegrosViolencia.percentualObitosExternos,
+} as const;
+
+// ═══════════════════════════════════════════
+// EDUCAÇÃO — série histórica (Lacunas CERD)
+// ═══════════════════════════════════════════
+
+const edu2018 = educacaoSerieHistorica.find(e => e.ano === 2018)!;
+const eduUltimo = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+
+export const narrativaEducacaoSerie = {
+  analfabetismoNegro2018: edu2018.analfabetismoNegro,
+  analfabetismoNegroUltimo: eduUltimo.analfabetismoNegro,
+  analfabetismoBrancoUltimo: eduUltimo.analfabetismoBranco,
+  anoUltimo: eduUltimo.ano,
+  razaoAnalfabetismo: +(eduUltimo.analfabetismoNegro / eduUltimo.analfabetismoBranco).toFixed(1),
+} as const;
+
+// ═══════════════════════════════════════════
+// QUILOMBOLAS — territórios
+// ═══════════════════════════════════════════
+
+export const narrativaQuilombolas = {
+  populacao: povosTradicionais.quilombolas.populacao,
+  territoriosTitulados: povosTradicionais.quilombolas.territoriosTitulados,
+  comunidadesCertificadas: povosTradicionais.quilombolas.comunidadesCertificadas,
+  taxaTitulacao: +((povosTradicionais.quilombolas.territoriosTitulados / povosTradicionais.quilombolas.comunidadesCertificadas) * 100).toFixed(1),
+  aguaRedeGeral: povosTradicionais.quilombolas.acessoRedeAgua,
+  esgotamentoAdequado: povosTradicionais.quilombolas.esgotamentoAdequado,
+  processosAbertosIncra: povosTradicionais.quilombolas.processosAbertosIncra,
+} as const;
+
+// ═══════════════════════════════════════════
+// COVID — dados interseccionais
+// ═══════════════════════════════════════════
+
+export const narrativaCovid = {
+  quilombolaAgua: povosTradicionais.quilombolas.acessoRedeAgua,
+  quilombolaEsgoto: povosTradicionais.quilombolas.esgotamentoAdequado,
+} as const;
+
+// ═══════════════════════════════════════════
 // MAPA DE VALIDAÇÃO — para testes automatizados
 // Associa cada valor narrativo ao dado-fonte correspondente
 // ═══════════════════════════════════════════
 
 export const NARRATIVE_DATA_MAP = [
+  // Interseccional — Violência
   { label: 'Feminicídio negras 2024', narrativeValue: narrativaViolencia.feminicidioNegrasPct, sourceValue: feminicidioData.mulherNegra, source: 'violenciaInterseccional[Feminicídio].mulherNegra' },
   { label: 'Feminicídio negras 2018', narrativeValue: narrativaViolencia.feminicidio2018Pct, sourceValue: feminicidio2018.percentualNegras, source: 'feminicidioSerie[2018].percentualNegras' },
+  // Interseccional — Trabalho
   { label: 'Razão renda MN/HB', narrativeValue: narrativaTrabalho.razaoRendaPct, sourceValue: tRenda.razaoMulherNegraHomemBranco * 100, source: 'trabalhoRacaGenero[Renda].razaoMulherNegraHomemBranco × 100' },
   { label: 'Desemprego MN', narrativeValue: narrativaTrabalho.desempregoMulherNegra, sourceValue: tDesemprego.mulherNegra, source: 'trabalhoRacaGenero[Desocupação].mulherNegra' },
   { label: 'Desemprego HB', narrativeValue: narrativaTrabalho.desempregoHomemBranco, sourceValue: tDesemprego.homemBranco, source: 'trabalhoRacaGenero[Desocupação].homemBranco' },
   { label: 'Informalidade MN', narrativeValue: narrativaTrabalho.informalidadeMulherNegra, sourceValue: tInformalidade.mulherNegra, source: 'trabalhoRacaGenero[Informalidade].mulherNegra' },
+  // Interseccional — Chefia Familiar
   { label: 'Chefia negras %', narrativeValue: narrativaChefia.percentualNegras, sourceValue: chefiaFamiliarRacaGenero.percentualNegras, source: 'chefiaFamiliarRacaGenero.percentualNegras' },
   { label: 'CadÚnico negras %', narrativeValue: narrativaChefia.cadUnicoNegras, sourceValue: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras, source: 'chefiaFamiliarRacaGenero.cadUnicoMulheresNegras' },
   { label: 'IA domicílios femininos', narrativeValue: narrativaChefia.domiciliosIA, sourceValue: chefiaFamiliarRacaGenero.domiciliosFemininosIA, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosIA' },
   { label: 'Fome domicílios femininos', narrativeValue: narrativaChefia.domiciliosFome, sourceValue: chefiaFamiliarRacaGenero.domiciliosFemininosFome, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosFome' },
+  // Interseccional — Saúde Materna
   { label: 'Mortes maternas negras %', narrativeValue: narrativaSaudeMaterna.mortesNegrasPct, sourceValue: saudeMaternaRaca.mortalidadeMaternaNegraPercentual, source: 'saudeMaternaRaca.mortalidadeMaternaNegraPercentual' },
   { label: 'Razão IEPS pretas/brancas', narrativeValue: narrativaSaudeMaterna.razaoIEPS, sourceValue: saudeMaternaRaca.razaoMortalidadePretasBrancas, source: 'saudeMaternaRaca.razaoMortalidadePretasBrancas' },
+  // Interseccional — Educação
   { label: 'Superior mulher negra', narrativeValue: narrativaEducacao.superiorMulherNegra, sourceValue: eduSuperior.mulherNegra, source: 'educacaoRacaGenero[Superior].mulherNegra' },
   { label: 'Superior mulher branca', narrativeValue: narrativaEducacao.superiorMulherBranca, sourceValue: eduSuperior.mulherBranca, source: 'educacaoRacaGenero[Superior].mulherBranca' },
+  // LGBTQIA+
   { label: 'ANTRA assassinatos 2025', narrativeValue: narrativaLGBTQIA.assassinatos2025, sourceValue: antra2025.totalAssassinatos, source: 'serieAntraTrans[2025].totalAssassinatos' },
   { label: 'ANTRA vítimas negras 2025', narrativeValue: narrativaLGBTQIA.vitimasNegras2025, sourceValue: antra2025.negros, source: 'serieAntraTrans[2025].negros' },
   { label: 'ANTRA vítimas indígenas 2025', narrativeValue: narrativaLGBTQIA.vitimasIndigenas2025, sourceValue: antra2025.indigenas, source: 'serieAntraTrans[2025].indigenas' },
+  // Segurança Pública
+  { label: 'Risco relativo homicídio', narrativeValue: narrativaSeguranca.riscoRelativo, sourceValue: atlasViolencia2025.riscoRelativo, source: 'atlasViolencia2025.riscoRelativo' },
+  { label: 'Vítimas negras 2024', narrativeValue: narrativaSeguranca.vitimasNegras2024, sourceValue: seg2024.percentualVitimasNegras, source: 'segurancaPublica[2024].percentualVitimasNegras' },
+  { label: 'Vítimas negras 2018', narrativeValue: narrativaSeguranca.vitimasNegras2018, sourceValue: seg2018.percentualVitimasNegras, source: 'segurancaPublica[2018].percentualVitimasNegras' },
+  { label: 'Letalidade policial 2024', narrativeValue: narrativaSeguranca.letalidadePolicial2024, sourceValue: seg2024.letalidadePolicial, source: 'segurancaPublica[2024].letalidadePolicial' },
+  { label: 'Letalidade policial 2018', narrativeValue: narrativaSeguranca.letalidadePolicial2018, sourceValue: seg2018.letalidadePolicial, source: 'segurancaPublica[2018].letalidadePolicial' },
+  { label: 'Jovens óbitos causas externas', narrativeValue: narrativaSeguranca.jovensObitosExternos, sourceValue: jovensNegrosViolencia.percentualObitosExternos, source: 'jovensNegrosViolencia.percentualObitosExternos' },
+  // Educação série
+  { label: 'Analfabetismo negro 2018', narrativeValue: narrativaEducacaoSerie.analfabetismoNegro2018, sourceValue: edu2018.analfabetismoNegro, source: 'educacaoSerieHistorica[2018].analfabetismoNegro' },
+  { label: 'Analfabetismo negro último', narrativeValue: narrativaEducacaoSerie.analfabetismoNegroUltimo, sourceValue: eduUltimo.analfabetismoNegro, source: 'educacaoSerieHistorica[último].analfabetismoNegro' },
+  // Quilombolas
+  { label: 'Quilombolas titulados', narrativeValue: narrativaQuilombolas.territoriosTitulados, sourceValue: povosTradicionais.quilombolas.territoriosTitulados, source: 'povosTradicionais.quilombolas.territoriosTitulados' },
+  { label: 'Quilombolas certificadas', narrativeValue: narrativaQuilombolas.comunidadesCertificadas, sourceValue: povosTradicionais.quilombolas.comunidadesCertificadas, source: 'povosTradicionais.quilombolas.comunidadesCertificadas' },
+  { label: 'Quilombolas água', narrativeValue: narrativaQuilombolas.aguaRedeGeral, sourceValue: povosTradicionais.quilombolas.acessoRedeAgua, source: 'povosTradicionais.quilombolas.acessoRedeAgua' },
+  { label: 'Quilombolas esgoto', narrativeValue: narrativaQuilombolas.esgotamentoAdequado, sourceValue: povosTradicionais.quilombolas.esgotamentoAdequado, source: 'povosTradicionais.quilombolas.esgotamentoAdequado' },
+  // COVID
+  { label: 'COVID quilombola água', narrativeValue: narrativaCovid.quilombolaAgua, sourceValue: povosTradicionais.quilombolas.acessoRedeAgua, source: 'povosTradicionais.quilombolas.acessoRedeAgua' },
+  { label: 'COVID quilombola esgoto', narrativeValue: narrativaCovid.quilombolaEsgoto, sourceValue: povosTradicionais.quilombolas.esgotamentoAdequado, source: 'povosTradicionais.quilombolas.esgotamentoAdequado' },
 ] as const;

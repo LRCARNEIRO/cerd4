@@ -38,8 +38,8 @@ describe('Consistência Narrativa × Dados Oficiais', () => {
     expect(failures).toHaveLength(0);
   });
 
-  it('o mapa de validação deve conter pelo menos 15 entradas', () => {
-    expect(NARRATIVE_DATA_MAP.length).toBeGreaterThanOrEqual(15);
+  it('o mapa de validação deve conter pelo menos 28 entradas (cobertura completa)', () => {
+    expect(NARRATIVE_DATA_MAP.length).toBeGreaterThanOrEqual(28);
   });
 
   it('nenhum valor narrativo deve ser NaN ou undefined', () => {

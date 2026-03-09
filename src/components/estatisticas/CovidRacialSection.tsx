@@ -8,6 +8,8 @@ import {
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
+import { povosTradicionais } from './StatisticsData';
+import { narrativaCovid } from '@/utils/narrativeHelpers';
 
 // =============================================
 // Fontes agrupadas por tema
@@ -154,7 +156,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Quilombolas', 
-    impacto: 'Comunidades com pouco acesso à rede de água (33,6%) e esgotamento adequado (25,1%); dificuldade de higienização',
+    impacto: `Comunidades com pouco acesso à rede de água (${narrativaCovid.quilombolaAgua}%) e esgotamento adequado (${narrativaCovid.quilombolaEsgoto}%); dificuldade de higienização`,
     fonte: 'IBGE Censo 2022; CONAQ'
   },
 ];
