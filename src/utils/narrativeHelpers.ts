@@ -268,4 +268,7 @@ export const NARRATIVE_DATA_MAP = [
   // COVID
   { label: 'COVID quilombola água', narrativeValue: narrativaCovid.quilombolaAgua, sourceValue: povosTradicionais.quilombolas.acessoRedeAgua, source: 'povosTradicionais.quilombolas.acessoRedeAgua' },
   { label: 'COVID quilombola esgoto', narrativeValue: narrativaCovid.quilombolaEsgoto, sourceValue: povosTradicionais.quilombolas.esgotamentoAdequado, source: 'povosTradicionais.quilombolas.esgotamentoAdequado' },
+  // Indígenas — TIs
+  { label: 'TIs total 2025', narrativeValue: povosTradicionais.indigenas.totalTIsHomologadasReservadas2025, sourceValue: 536, source: 'ISA/terrasindigenas.org.br (Mar/2026)' },
+  { label: 'TIs baseline 2018', narrativeValue: povosTradicionais.indigenas.totalTIsHomologadasReservadas2018, sourceValue: 536 - 21, source: 'ISA total - (FUNAI 1+20 novas homologações)' },
 ] as const;
