@@ -316,6 +316,9 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="balanco" className="gap-1 bg-accent/20">
             <GitCompare className="w-4 h-4" /> Balanço Comparativo
           </TabsTrigger>
+          <TabsTrigger value="health-check" className="gap-1">
+            <Activity className="w-4 h-4" /> Health Check
+          </TabsTrigger>
         </TabsList>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
