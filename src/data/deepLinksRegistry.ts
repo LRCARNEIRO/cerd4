@@ -450,9 +450,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SINASE — socioeducativo',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/sinase',
-    fonte: 'SINASE/MDH',
-    descricao: 'SINASE — Sistema Nacional de Atendimento Socioeducativo',
+    url: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/acoes-e-programas/sistema-nacional-de-atendimento-socioeducativo-sinase',
+    fonte: 'SINASE/MDHC',
+    descricao: 'SINASE — Sistema Nacional de Atendimento Socioeducativo (página atualizada)',
   },
   {
     indicador: 'VIGITEL — doenças crônicas',
