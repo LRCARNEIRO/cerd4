@@ -266,9 +266,9 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong>65,8%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
-            por <strong>38,5%</strong> das inscritas no CadÚnico (vs 17% das brancas — razão 2,3×). A insegurança alimentar atinge 63% desses domicílios, 
-            com 18,8% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
+            <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
+            por <strong>{fmt(narrativaChefia.cadUnicoNegras)}%</strong> das inscritas no CadÚnico (vs {fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas — razão {fmt(narrativaChefia.razaoCadUnico)}×). A insegurança alimentar atinge {fmt(narrativaChefia.domiciliosIA, 0)}% desses domicílios, 
+            com {fmt(narrativaChefia.domiciliosFome)}% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
             gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
