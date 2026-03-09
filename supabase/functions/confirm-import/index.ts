@@ -16,7 +16,34 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { items, file_name } = await req.json();
+    const body = await req.json();
+    const { action } = body;
+
+    // === Create snapshot only (manual backup) ===
+    if (action === 'create-snapshot-only') {
+      const { snapshot_nome, snapshot_descricao, snapshot_data, tabelas_afetadas, total_registros } = body;
+      const { data: snapResult, error: snapErr } = await supabase.from('data_snapshots').insert({
+        nome: snapshot_nome || 'Backup manual',
+        descricao: snapshot_descricao || null,
+        usuario_id: 'user',
+        snapshot_data: snapshot_data,
+        tabelas_afetadas: tabelas_afetadas,
+        total_registros: total_registros || 0,
+      }).select('id').single();
+
+      if (snapErr) throw snapErr;
+
+      return new Response(JSON.stringify({
+        success: true,
+        snapshot_id: snapResult?.id,
+        message: `Snapshot "${snapshot_nome}" criado com ${total_registros} registros.`,
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // === Standard import flow ===
+    const { items, file_name } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: 'Nenhum item para confirmar' }), {
