@@ -651,7 +651,7 @@ export function LgbtqiaTab() {
               <p className="text-xs text-muted-foreground">
                 Assassinatos: 179 → 80 (–55%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
                 Vítimas negras: mantiveram-se acima de 70% em toda a série (média 77%). 
-                Vítimas indígenas: de 0% (2017-2020) para 4% em 2025, revelando vulnerabilidade crescente.
+                Vítimas indígenas: de 0% (2017-2020) para 2% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
             <div className="p-4 bg-chart-4/10 rounded-lg border border-chart-4/30">
