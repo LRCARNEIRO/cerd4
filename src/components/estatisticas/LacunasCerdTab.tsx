@@ -383,7 +383,7 @@ export function LacunasCerdTab() {
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
                   <strong>Análise §19:</strong> Gap no ensino superior: {dadosEducacaoHistorico[0]?.gapSuperior}pp em 2018 → {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.gapSuperior}pp em {dadosEducacaoHistorico[dadosEducacaoHistorico.length - 1]?.ano}. 
-                  Analfabetismo negro recuou de 8,4% para 6,9%, mas segue 2x maior que o branco.
+                  Analfabetismo negro recuou de {narrativaEducacaoSerie.analfabetismoNegro2018}% para {narrativaEducacaoSerie.analfabetismoNegroUltimo}%, mas segue {narrativaEducacaoSerie.razaoAnalfabetismo}x maior que o branco.
                 </p>
               </div>
               <AuditFooter 
