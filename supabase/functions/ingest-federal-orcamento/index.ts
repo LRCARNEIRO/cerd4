@@ -145,13 +145,32 @@ const KEYWORDS_RELEVANCIA = [
 
 // Programas transversais a excluir (falsos positivos)
 const PROGRAMAS_EXCLUIDOS = [
-  "2068", // Bolsa Família / Cadastro Único
+  "2068", // Bolsa Família / Cadastro Único (legado)
   "2049", // Moradia Digna / MCMV
   "2012", // Fortalecimento SUS
   "2015", // Fortalecimento SUAS
   "6012", // Fundo Eleitoral
   "5029", // Fundo Amazônia
 ];
+
+// Programas das Agendas Transversais que são universais e exigem filtro por keywords
+// ao nível de ação para evitar inflação dos totais. Sem keywords raciais/étnicas
+// na ação, o registro é descartado.
+const PROGRAMAS_UNIVERSAIS_AGENDA = new Set([
+  "5128", // Bolsa Família (PPA 2024+)
+  "5129", // Cadastro Único (PPA 2024+)
+  "5126", // Esporte para a Vida
+  "5111", // Educação Básica
+  "5121", // Gestão e Transformação Digital na Saúde
+  "5123", // Vigilância em Saúde
+  "2224", // Planejamento e Orçamento
+  "2301", // Transformação do Estado
+  "2304", // CT&I para Desenvolvimento Social
+  "2308", // Consolidação SNCTI
+  "2310", // Trabalho Decente
+  "2316", // Relações Internacionais
+  "1189", // Bioeconomia
+]);
 
 // Mapeamento de órgão superior para sigla
 const SIGLA_MAP: Record<string, string> = {
