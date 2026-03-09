@@ -15,14 +15,14 @@ import {
   chefiaFamiliarRacaGenero
 } from './StatisticsData';
 
-// Dados de vulnerabilidade multidimensional — cruzamento indireto auditável
+// Dados de vulnerabilidade multidimensional — DERIVADOS de chefiaFamiliarRacaGenero (single source of truth)
 // Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022 + SIS/IBGE 2024
 const vulnerabilidadeMultidimensional = [
   {
     dimensao: 'Chefia monoparental feminina negra',
-    indicador: '65,8% das famílias monoparentais femininas são chefiadas por mulheres negras',
-    valor: 65.8,
-    referencia: 34.2, // brancas
+    indicador: `${chefiaFamiliarRacaGenero.percentualNegras}% das famílias monoparentais femininas são chefiadas por mulheres negras`,
+    valor: chefiaFamiliarRacaGenero.percentualNegras,
+    referencia: chefiaFamiliarRacaGenero.percentualBrancas,
     unidade: '%',
     fonte: 'RASEAM 2023',
     url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
@@ -30,8 +30,8 @@ const vulnerabilidadeMultidimensional = [
   },
   {
     dimensao: 'Insegurança alimentar (domicílios femininos)',
-    indicador: '63% dos domicílios chefiados por mulheres vivem com insegurança alimentar',
-    valor: 63.0,
+    indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosIA}% dos domicílios chefiados por mulheres vivem com insegurança alimentar`,
+    valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
     referencia: null,
     unidade: '%',
     fonte: 'II VIGISAN 2022',
@@ -40,8 +40,8 @@ const vulnerabilidadeMultidimensional = [
   },
   {
     dimensao: 'Inseg. alimentar (domicílios negros)',
-    indicador: '60% dos domicílios com pessoa negra de referência estão em insegurança alimentar',
-    valor: 60.0,
+    indicador: `${chefiaFamiliarRacaGenero.domiciliosNegrosIA}% dos domicílios com pessoa negra de referência estão em insegurança alimentar`,
+    valor: chefiaFamiliarRacaGenero.domiciliosNegrosIA,
     referencia: null,
     unidade: '%',
     fonte: 'II VIGISAN 2022',
@@ -50,9 +50,9 @@ const vulnerabilidadeMultidimensional = [
   },
   {
     dimensao: 'CadÚnico — mulheres negras',
-    indicador: '38,5% das mulheres negras estão no CadÚnico vs 17% das brancas',
-    valor: 38.5,
-    referencia: 17.0, // brancas
+    indicador: `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`,
+    valor: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
+    referencia: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
     unidade: '%',
     fonte: 'Fiocruz/MIR 2023',
     url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf',
@@ -60,8 +60,8 @@ const vulnerabilidadeMultidimensional = [
   },
   {
     dimensao: 'Fome (domicílios femininos)',
-    indicador: '18,8% dos domicílios chefiados por mulheres vivem em situação de fome',
-    valor: 18.8,
+    indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosFome}% dos domicílios chefiados por mulheres vivem em situação de fome`,
+    valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
     referencia: null,
     unidade: '%',
     fonte: 'II VIGISAN 2022',
@@ -71,10 +71,10 @@ const vulnerabilidadeMultidimensional = [
 ];
 
 const vulnerabilidadeBarData = [
-  { nome: 'Chefia monop.\n(negras)', negras: 65.8, brancas: 34.2 },
-  { nome: 'CadÚnico\n(mulheres)', negras: 38.5, brancas: 17.0 },
-  { nome: 'IA domicílios\n(negros)', negros: 60.0, naoNegros: 40.0 },
-  { nome: 'Fome\n(dom. femininos)', valor: 18.8 },
+  { nome: 'Chefia monop.\n(negras)', negras: chefiaFamiliarRacaGenero.percentualNegras, brancas: chefiaFamiliarRacaGenero.percentualBrancas },
+  { nome: 'CadÚnico\n(mulheres)', negras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras, brancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas },
+  { nome: 'IA domicílios\n(negros)', negros: chefiaFamiliarRacaGenero.domiciliosNegrosIA, naoNegros: 100 - chefiaFamiliarRacaGenero.domiciliosNegrosIA },
+  { nome: 'Fome\n(dom. femininos)', valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome },
 ];
 
 const vulnerabilidadeFontes = [
