@@ -76,10 +76,10 @@ export function SegurancaSaudeEducacaoTab() {
               <div>
                 <p className="text-sm font-medium">19º Anuário FBSP 2025 (dados 2024) + Atlas da Violência 2025</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Pessoa negra tem <strong>risco 2,7x maior</strong> de ser vítima de homicídio (Atlas da Violência 2025/IPEA). 
-                  <strong>77% das vítimas</strong> de homicídio em 2024 são negras (FBSP 2025). Em 2018, eram 75,7%.
-                  Letalidade policial: <strong>82% das vítimas são negras</strong> (FBSP 2025). Em 2018: 75,4%.
-                  Jovens negros: <strong>73% dos óbitos por causas externas</strong> (Fiocruz 2025).
+                  Pessoa negra tem <strong>risco {fmt(narrativaSeguranca.riscoRelativo)}x maior</strong> de ser vítima de homicídio (Atlas da Violência 2025/IPEA). 
+                  <strong>{narrativaSeguranca.vitimasNegras2024}% das vítimas</strong> de homicídio em 2024 são negras (FBSP 2025). Em 2018, eram {narrativaSeguranca.vitimasNegras2018}%.
+                  Letalidade policial: <strong>{narrativaSeguranca.letalidadePolicial2024}% das vítimas são negras</strong> (FBSP 2025). Em 2018: {narrativaSeguranca.letalidadePolicial2018}%.
+                  Jovens negros: <strong>{narrativaSeguranca.jovensObitosExternos}% dos óbitos por causas externas</strong> (Fiocruz 2025).
                 </p>
               </div>
             </div>

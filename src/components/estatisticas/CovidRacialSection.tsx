@@ -156,7 +156,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Quilombolas', 
-    impacto: 'Comunidades com pouco acesso à rede de água (33,6%) e esgotamento adequado (25,1%); dificuldade de higienização',
+    impacto: `Comunidades com pouco acesso à rede de água (${narrativaCovid.quilombolaAgua}%) e esgotamento adequado (${narrativaCovid.quilombolaEsgoto}%); dificuldade de higienização`,
     fonte: 'IBGE Censo 2022; CONAQ'
   },
 ];

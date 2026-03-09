@@ -568,7 +568,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §25:</strong> Apenas 7,8% dos territórios quilombolas estão titulados (245 de ~3.158 comunidades certificadas).
+                  <strong>Análise §25:</strong> Apenas {narrativaQuilombolas.taxaTitulacao}% dos territórios quilombolas estão titulados ({narrativaQuilombolas.territoriosTitulados} de ~{narrativaQuilombolas.comunidadesCertificadas.toLocaleString('pt-BR')} comunidades certificadas).
                   Período 2019-2022 marcado por paralisia quase total. Retomada a partir de 2023 com PNGTAQ (Dec. 11.786/2023).
                 </p>
               </div>

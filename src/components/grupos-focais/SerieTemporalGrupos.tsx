@@ -376,8 +376,8 @@ export function SerieTemporalGrupos() {
           <div>
             <p className="font-medium">Quilombolas — Série Temporal Limitada</p>
             <p className="text-sm text-muted-foreground">
-              Primeira contagem oficial apenas no Censo 2022 (1.330.186). Sem dados anteriores para comparação direta. 
-              Indicadores indiretos: 245 territórios titulados (de 2.014 em processo ≈ 12%); rede de água 33,6%; esgotamento adequado 25,1%.
+              Primeira contagem oficial apenas no Censo 2022 ({narrativaQuilombolas.populacao.toLocaleString('pt-BR')}). Sem dados anteriores para comparação direta. 
+              Indicadores indiretos: {narrativaQuilombolas.territoriosTitulados} territórios titulados (de {narrativaQuilombolas.processosAbertosIncra.toLocaleString('pt-BR')} em processo ≈ {Math.round(narrativaQuilombolas.territoriosTitulados / narrativaQuilombolas.processosAbertosIncra * 100)}%); rede de água {narrativaQuilombolas.aguaRedeGeral}%; esgotamento adequado {narrativaQuilombolas.esgotamentoAdequado}%.
             </p>
             <Badge variant="outline" className="mt-2 text-xs border-warning text-warning">Dados Parciais</Badge>
           </div>
