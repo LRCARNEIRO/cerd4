@@ -227,9 +227,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://www.gov.br/mdh/pt-br/assuntos/noticias/2025/marco/governo-federal-lanca-relatorio-anual-socioeconomico-da-mulher',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2025 — mortalidade materna negra (dado SIM 2022)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF)',
   },
   {
     indicador: 'Dados Disque 100 — LGBTQIA+',
