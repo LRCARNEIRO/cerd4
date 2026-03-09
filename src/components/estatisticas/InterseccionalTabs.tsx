@@ -10,8 +10,12 @@ import {
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
-import { AuditFooter as AuditFooterComponent } from '@/components/ui/audit-footer';
 import { atlasViolencia2025 } from './StatisticsData';
+import {
+  narrativaViolencia, narrativaTrabalho, narrativaChefia,
+  narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
+  fmt,
+} from '@/utils/narrativeHelpers';
 import { 
   violenciaInterseccional, 
   lacunasDocumentadas,
@@ -142,7 +146,7 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Violência de Gênero Racializada</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Mulheres negras representam <strong>63,6%</strong> das vítimas de feminicídio (2024), proporção que cresceu em relação a 2018 (61%). 
+            Mulheres negras representam <strong>{fmt(narrativaViolencia.feminicidioNegrasPct)}%</strong> das vítimas de feminicídio (2024), proporção que cresceu em relação a 2018 ({fmt(narrativaViolencia.feminicidio2018Pct, 0)}%). 
             A sobreposição raça + gênero configura <strong>risco desproporcional e crescente</strong>, evidenciando falha 
             na efetividade das políticas de proteção para esse grupo. A CERD (§29-30) recomenda ações afirmativas específicas.
           </p>
@@ -151,9 +155,9 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
           <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Dupla Penalidade no Mercado de Trabalho</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            A mulher negra recebe <strong>43,9%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
-            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra (10,2%) é 
-            2,3× superior à masculina branca (4,5%), e a informalidade negra feminina (46,8%) inviabiliza proteção social. 
+            A mulher negra recebe <strong>{fmt(narrativaTrabalho.razaoRendaPct)}%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
+            operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra ({fmt(narrativaTrabalho.desempregoMulherNegra)}%) é 
+            {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina branca ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
@@ -262,9 +266,9 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong>65,8%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
-            por <strong>38,5%</strong> das inscritas no CadÚnico (vs 17% das brancas — razão 2,3×). A insegurança alimentar atinge 63% desses domicílios, 
-            com 18,8% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
+            <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
+            por <strong>{fmt(narrativaChefia.cadUnicoNegras)}%</strong> das inscritas no CadÚnico (vs {fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas — razão {fmt(narrativaChefia.razaoCadUnico)}×). A insegurança alimentar atinge {fmt(narrativaChefia.domiciliosIA, 0)}% desses domicílios, 
+            com {fmt(narrativaChefia.domiciliosFome)}% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
             gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
@@ -272,11 +276,11 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Mulheres negras constituem <strong>68%</strong> das mortes maternas (SIM 2022), apesar de representarem 55,5% da 
+            Mulheres negras constituem <strong>{fmt(narrativaSaudeMaterna.mortesNegrasPct, 0)}%</strong> das mortes maternas (SIM {narrativaSaudeMaterna.anoSIM}), apesar de representarem {fmt(narrativaSaudeMaterna.popFemininaNegraPct)}% da 
             população feminina. O Boletim IEPS (jul/2025) confirma que a razão de mortalidade materna entre pretas e brancas é de 
-            <strong>2,3×</strong> na série 2010-2023 (108,6 vs 46,9 por 100 mil NV). O estudo Nascer no Brasil II (Fiocruz) documenta 
+            <strong>{fmt(narrativaSaudeMaterna.razaoIEPS)}×</strong> na série 2010-2023 ({fmt(narrativaSaudeMaterna.taxaPretasIEPS)} vs {fmt(narrativaSaudeMaterna.taxaBrancasIEPS)} por 100 mil NV). O estudo Nascer no Brasil II (Fiocruz) documenta 
             <strong>menor acesso a pré-natal adequado, peregrinação hospitalar</strong> e menor uso de analgesia no parto entre negras. 
-            Nota: o dado mais recente consolidado do SIM é 2022; o RASEAM 2025 mantém esse recorte.
+            Nota: o dado mais recente consolidado do SIM é {narrativaSaudeMaterna.anoSIM}; o RASEAM 2025 mantém esse recorte.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fontes: RASEAM 2025 + IEPS Jul/2025 + Fiocruz 2023 · Art. 5(e)(iv) ICERD</p>
         </div>
@@ -327,7 +331,7 @@ export function RacaGeneroTab() {
       <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
         <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Educação — Avanço Insuficiente com Gap Persistente</h4>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          A conclusão do ensino superior entre mulheres negras (<strong>14,7%</strong>) é metade da taxa de mulheres brancas (29%), 
+          A conclusão do ensino superior entre mulheres negras (<strong>{fmt(narrativaEducacao.superiorMulherNegra)}%</strong>) é metade da taxa de mulheres brancas ({fmt(narrativaEducacao.superiorMulherBranca, 0)}%), 
           apesar dos avanços com cotas (Lei 12.711/2012). Mulheres negras abandonam mais a escola por necessidade de trabalho 
           e cuidado. O cruzamento indica que <strong>políticas universais de expansão do ensino superior não eliminam a 
           desigualdade racial-de-gênero</strong> sem ações afirmativas complementares.
@@ -532,7 +536,7 @@ export function LgbtqiaTab() {
               <h3 className="font-semibold text-foreground mb-1">Intersecção LGBTQIA+ × Raça — Dados de Pessoas Trans e Travestis</h3>
               <p className="text-sm text-muted-foreground">
                 Os dados desta aba referem-se exclusivamente a <strong>pessoas trans e travestis assassinadas</strong>, conforme documentado pelo Dossiê ANTRA. 
-                Em 2025, 70% das vítimas eram negras. O Brasil segue líder mundial nesta violência, com mulheres trans negras sendo as mais vulneráveis.
+                Em 2025, {narrativaLGBTQIA.vitimasNegras2025}% das vítimas eram negras. O Brasil segue líder mundial nesta violência, com mulheres trans negras sendo as mais vulneráveis.
               </p>
             </div>
           </div>
@@ -546,7 +550,7 @@ export function LgbtqiaTab() {
             <Rainbow className="w-5 h-5 text-primary" />
             Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)
           </CardTitle>
-          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros 77%, Brancos 22%, Indígenas 1%</CardDescription>
+          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Brancos {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -632,26 +636,26 @@ export function LgbtqiaTab() {
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/30">
                 <p className="text-xs text-muted-foreground">Assassinatos (2025)</p>
-                <p className="text-2xl font-bold text-destructive">80</p>
-                <p className="text-xs text-muted-foreground">–34% vs 2024</p>
+                <p className="text-2xl font-bold text-destructive">{narrativaLGBTQIA.assassinatos2025}</p>
+                <p className="text-xs text-muted-foreground">{narrativaLGBTQIA.variacaoVs2024}% vs 2024</p>
               </div>
               <div className="p-3 bg-chart-1/10 rounded-lg border border-chart-1/30">
                 <p className="text-xs text-muted-foreground">Vítimas negras</p>
-                <p className="text-2xl font-bold" style={{ color: 'hsl(var(--chart-1))' }}>70%</p>
-                <p className="text-xs text-muted-foreground">Média série: 77%</p>
+                <p className="text-2xl font-bold" style={{ color: 'hsl(var(--chart-1))' }}>{narrativaLGBTQIA.vitimasNegras2025}%</p>
+                <p className="text-xs text-muted-foreground">Média série: {narrativaLGBTQIA.mediaSerieNegros}%</p>
               </div>
               <div className="p-3 bg-accent/10 rounded-lg border border-accent/30">
                 <p className="text-xs text-muted-foreground">Vítimas indígenas</p>
-                <p className="text-2xl font-bold text-accent-foreground">2%</p>
+                <p className="text-2xl font-bold text-accent-foreground">{narrativaLGBTQIA.vitimasIndigenas2025}%</p>
                 <p className="text-xs text-muted-foreground">Maior % da série</p>
               </div>
             </div>
             <div className="p-4 bg-destructive/5 rounded-lg border border-destructive/20">
               <p className="text-sm font-medium mb-1">Tendência 2017→2025</p>
               <p className="text-xs text-muted-foreground">
-                Assassinatos: 179 → 80 (–55%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
-                Vítimas negras: mantiveram-se acima de 70% em toda a série (média 77%). 
-                Vítimas indígenas: de 0% (2017-2020) para 2% em 2025, revelando vulnerabilidade crescente.
+                Assassinatos: {narrativaLGBTQIA.assassinatos2017} → {narrativaLGBTQIA.assassinatos2025} ({narrativaLGBTQIA.reducaoSerie}%), porém aumento de 45% em tentativas de homicídio (2024→2025). 
+                Vítimas negras: mantiveram-se acima de 70% em toda a série (média {narrativaLGBTQIA.mediaSerieNegros}%). 
+                Vítimas indígenas: de 0% (2017-2020) para {narrativaLGBTQIA.vitimasIndigenas2025}% em 2025, revelando vulnerabilidade crescente.
               </p>
             </div>
             <div className="p-4 bg-chart-4/10 rounded-lg border border-chart-4/30">
