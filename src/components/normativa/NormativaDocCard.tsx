@@ -103,6 +103,11 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
           ))}
         </div>
 
+        {/* Brief institutional summary */}
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {buildBriefSummary(doc)}
+        </p>
+
         {/* Racial focus summary */}
         {resumoRacial && (
           <div className="bg-muted/50 rounded-md p-2.5 text-xs text-muted-foreground leading-relaxed">
