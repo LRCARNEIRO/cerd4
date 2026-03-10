@@ -90,7 +90,7 @@ export function NormativaBalizadorFilter({
     });
   }
 
-  const orderedKeys = ['cerd-co', 'hrc', 'ddpa', 'other'].filter(k => groups[k]);
+  const orderedKeys = ['cerd-co', 'hrc', 'upr', 'sombra', 'ddpa', 'other'].filter(k => groups[k]);
 
   if (recomendacoes.length === 0) {
     return (
