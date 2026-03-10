@@ -890,7 +890,7 @@ export default function Orcamento() {
               {/* Tabela Ano a Ano — Federal */}
               {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Pago, R$)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Liquidado, R$)</CardTitle></CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
