@@ -194,6 +194,10 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
                     </Badge>
                   )}
                 </div>
+                {/* Year summary */}
+                <p className="text-xs text-muted-foreground mt-1 md:ml-15">
+                  {getYearSummary(items, year)}
+                </p>
               </div>
 
               {/* Items */}
