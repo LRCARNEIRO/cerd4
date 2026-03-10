@@ -936,28 +936,58 @@ export default function Orcamento() {
                 </Card>
               )}
 
-              {/* Conclusão Interpretativa Federal */}
-              <Card className="border-l-4 border-l-primary">
-                <CardContent className="pt-4 pb-3">
-                  <h4 className="font-semibold text-sm mb-3">📊 Conclusão Interpretativa — Federal</h4>
-                  <div className="text-xs text-muted-foreground space-y-3">
-                    <div>
-                      <p className="font-semibold text-foreground mb-1">A divisão em dois períodos é válida?</p>
-                      <p><strong>Sim, mas com ressalvas fundamentais.</strong> A fronteira 2022→2023 marca a criação do MIR e o reinício da política racial institucional.</p>
-                    </div>
-                    <ul className="list-disc pl-4 space-y-1.5">
-                      <li><strong>2018–2019:</strong> A SEPPIR operou com R$ 5–20 mi/ano de execução real.</li>
-                      <li><strong>2021–2022:</strong> O investimento racial (sem SESAI) caiu para R$ 60–63 mi.</li>
-                      <li><strong>2023:</strong> Criação do MIR. Sem SESAI, o pago subiu para ~R$ 107 mi.</li>
-                      <li><strong>2024–2025:</strong> MPI explodiu para R$ 307 mi (2024) e R$ 1,4 bi (2025). <strong>Pela primeira vez, as políticas raciais sem SESAI superam R$ 1 bilhão.</strong></li>
-                    </ul>
-                    <div className="bg-muted/50 rounded p-3 mt-3">
-                      <p className="font-semibold text-foreground mb-1">🔑 Achado Central</p>
-                      <p>A SESAI representou <strong>~95% do total em 2018–2019</strong> e <strong>~56% em 2025</strong>. A queda percentual da SESAI reflete o <em>crescimento exponencial das demais políticas</em>.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Conclusão Interpretativa Federal — DINÂMICA */}
+              {(() => {
+                const fc = formatCurrency;
+                const semS = esferaStats.federal.semSesai;
+                const comS = esferaStats.federal;
+                const pad = semS?.porAnoDetalhado || {};
+                const padTotal = comS.porAnoDetalhado || {};
+
+                const val = (ano: number) => pad[ano]?.pago || 0;
+                const valTotal = (ano: number) => padTotal[ano]?.pago || 0;
+                const pctSesai = (ano: number) => {
+                  const t = valTotal(ano);
+                  return t > 0 ? (((t - val(ano)) / t) * 100).toFixed(0) : '0';
+                };
+
+                // Identify year where non-SESAI first exceeds 1 bi
+                const anos = Object.keys(pad).map(Number).sort();
+                const anoPrimeiroBi = anos.find(a => val(a) >= 1_000_000_000);
+
+                // P1 non-SESAI range
+                const p1Anos = anos.filter(a => a >= 2018 && a <= 2022);
+                const p1Min = p1Anos.length > 0 ? Math.min(...p1Anos.map(val)) : 0;
+                const p1Max = p1Anos.length > 0 ? Math.max(...p1Anos.map(val)) : 0;
+
+                // First & last year SESAI %
+                const firstYear = anos[0] || 2018;
+                const lastYear = anos[anos.length - 1] || 2025;
+
+                return (
+                  <Card className="border-l-4 border-l-primary">
+                    <CardContent className="pt-4 pb-3">
+                      <h4 className="font-semibold text-sm mb-3">📊 Conclusão Interpretativa — Federal</h4>
+                      <div className="text-xs text-muted-foreground space-y-3">
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">A divisão em dois períodos é válida?</p>
+                          <p><strong>Sim, mas com ressalvas fundamentais.</strong> A fronteira 2022→2023 marca a criação do MIR e o reinício da política racial institucional.</p>
+                        </div>
+                        <ul className="list-disc pl-4 space-y-1.5">
+                          <li><strong>2018–2022:</strong> O investimento racial (sem SESAI) oscilou entre {fc(p1Min)} e {fc(p1Max)}/ano.</li>
+                          <li><strong>2023:</strong> Criação do MIR. Sem SESAI, o pago subiu para {fc(val(2023))}.</li>
+                          <li><strong>2024:</strong> Expansão significativa: sem SESAI, o pago atingiu {fc(val(2024))}.</li>
+                          <li><strong>2025:</strong> Sem SESAI, o pago alcançou {fc(val(2025))}.{anoPrimeiroBi ? <strong> Pela primeira vez ({anoPrimeiroBi}), as políticas raciais sem SESAI superam R$ 1 bilhão.</strong> : null}</li>
+                        </ul>
+                        <div className="bg-muted/50 rounded p-3 mt-3">
+                          <p className="font-semibold text-foreground mb-1">🔑 Achado Central</p>
+                          <p>A SESAI representou <strong>~{pctSesai(firstYear)}% do total em {firstYear}</strong> e <strong>~{pctSesai(lastYear)}% em {lastYear}</strong>. A queda percentual da SESAI reflete o <em>crescimento exponencial das demais políticas</em>.</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
               {/* RANKING: Gastos por Programa (Não-Saúde) */}
               {(() => {
