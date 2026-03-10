@@ -40,6 +40,7 @@ export default function Normativa() {
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState('acervo');
   const queryClient = useQueryClient();
 
   // Fetch documents from DB
