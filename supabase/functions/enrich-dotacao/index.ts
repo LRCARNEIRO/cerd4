@@ -169,12 +169,12 @@ Deno.serve(async (req) => {
     for (const [key, group] of queryGroups) {
       const [codProg, codAcao] = key.split("|");
 
-      // Build API URL with programa filter
+      // Build API URL — the API uses "programa" and "acao" as param names (NOT "codigoPrograma")
       const params: Record<string, string> = {
         ano: String(ano),
-        codigoPrograma: codProg,
+        programa: codProg,
       };
-      if (codAcao) params.codigoAcao = codAcao;
+      if (codAcao) params.acao = codAcao;
 
       const url = new URL(`${API_BASE}/despesas/por-funcional-programatica`);
       for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
