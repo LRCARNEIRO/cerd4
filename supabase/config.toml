@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.check-deep-links]
 verify_jwt = false
+
+[functions.ingest-federal-keywords]
+verify_jwt = false
