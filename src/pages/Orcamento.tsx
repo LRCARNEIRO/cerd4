@@ -909,16 +909,17 @@ export default function Orcamento() {
                           const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
-                          const interpretacoes: Record<number, string> = {
-                            2018: 'Base: SEPPIR ativa + FUNAI com 5 ações.',
-                            2019: 'Queda real sem SESAI: extinção da SEPPIR.',
-                            2020: 'Programa 5034 genérico (filtrado).',
-                            2021: 'Vale do desmonte.',
-                            2022: 'Ponto mais baixo relativo.',
-                            2023: 'Reconstrução: criação do MIR.',
-                            2024: 'Expansão: MPI R$ 307 mi + MIR recorde.',
-                            2025: 'Explosão: MPI R$ 1,4 bi + MIR R$ 103 mi.',
-                          };
+                          // Interpretações dinâmicas baseadas nos dados
+                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
+                          const varPct = prevSemS > 0 ? ((semSVal - prevSemS) / prevSemS * 100) : 0;
+                          const interpretacao = ano === 2018
+                            ? `Base: sem SESAI = ${formatCurrency(semSVal)}.`
+                            : ano <= 2022
+                              ? `Sem SESAI: ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}% vs. ${ano - 1}).`
+                              : ano === 2023
+                                ? `Reconstrução: criação do MIR. Sem SESAI: ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}%).`
+                                : `Expansão: sem SESAI = ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}% vs. ${ano - 1}).`;
                           return (
                             <TableRow key={ano} className={ano === 2023 ? 'border-t-2 border-t-chart-2' : ''}>
                               <TableCell className="font-bold">{ano}</TableCell>
