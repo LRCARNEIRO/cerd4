@@ -700,8 +700,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 </p>
                 <ul className="list-disc pl-4 space-y-1">
                   <li>
-                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.liqP1NoSesai)} liquidados sem SESAI em 5 anos
-                    — média anual de {formatCurrency(analysis.liqP1NoSesai / 5)}.
+                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.pagoP1NoSesai)} pagos sem SESAI em 5 anos
+                    — média anual de {formatCurrency(analysis.pagoP1NoSesai / 5)}.
                   </li>
                   <li>
                     <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
