@@ -203,7 +203,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
   );
 }
 
-export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull }: Props) {
+export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
