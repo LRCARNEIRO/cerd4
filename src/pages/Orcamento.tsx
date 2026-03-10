@@ -431,25 +431,80 @@ export default function Orcamento() {
   const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
 
 
-  /** Compute per-esfera summary stats */
+  /** Compute per-esfera summary stats — single source of truth for all tabs */
   const esferaStats = useMemo(() => {
     const compute = (records: DadoOrcamentario[]) => {
-      const valorLiquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
-      const clean = records;
-      const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
-      const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
-      const t2 = p2.reduce((s, r) => s + valorLiquidado(r), 0);
-      const anos = new Set(clean.map(r => r.ano));
-      const programas = new Set(clean.map(r => r.programa));
+      const p1 = records.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const p2 = records.filter(r => r.ano >= 2023 && r.ano <= 2025);
+
+      const liqP1 = p1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const liqP2 = p2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const dotP1 = p1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+      const dotP2 = p2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+      const pagoP1 = p1.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+      const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+
+      const anos = new Set(records.map(r => r.ano));
+      const programas = new Set(records.map(r => r.programa));
+
+      // Sem SESAI
+      const nonSesai = records.filter(r => classifyThematic(r) !== 'sesai');
+      const nsP1 = nonSesai.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const nsP2 = nonSesai.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const semSesai = {
+        dotacaoP1: nsP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotacaoP2: nsP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liquidadoP1: nsP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liquidadoP2: nsP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        pagoP1: nsP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: nsP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        variacaoDotacao: 0, variacaoLiquidado: 0, variacaoPago: 0,
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+      };
+      semSesai.variacaoDotacao = semSesai.dotacaoP1 > 0 ? ((semSesai.dotacaoP2 - semSesai.dotacaoP1) / semSesai.dotacaoP1 * 100) : 0;
+      semSesai.variacaoLiquidado = semSesai.liquidadoP1 > 0 ? ((semSesai.liquidadoP2 - semSesai.liquidadoP1) / semSesai.liquidadoP1 * 100) : 0;
+      semSesai.variacaoPago = semSesai.pagoP1 > 0 ? ((semSesai.pagoP2 - semSesai.pagoP1) / semSesai.pagoP1 * 100) : 0;
+      nonSesai.forEach(r => {
+        if (!semSesai.porAnoDetalhado[r.ano]) semSesai.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        semSesai.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        semSesai.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        semSesai.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+
+      // Por ano detalhado (com SESAI)
+      const porAnoDetalhado: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
+      records.forEach(r => {
+        if (!porAnoDetalhado[r.ano]) porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+
       return {
-        totalPeriodo1: t1,
-        totalPeriodo2: t2,
-        variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
-        totalRegistros: clean.length,
+        // Liquidado (backward compat)
+        totalPeriodo1: liqP1,
+        totalPeriodo2: liqP2,
+        variacao: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
+        // Dotação
+        dotacaoPeriodo1: dotP1,
+        dotacaoPeriodo2: dotP2,
+        variacaoDotacao: dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0,
+        // Liquidado explicit
+        liquidadoPeriodo1: liqP1,
+        liquidadoPeriodo2: liqP2,
+        variacaoLiquidado: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
+        // Pago
+        pagoPeriodo1: pagoP1,
+        pagoPeriodo2: pagoP2,
+        variacaoPago: pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0,
+        // Meta
+        totalRegistros: records.length,
         totalProgramas: programas.size,
         anosCobertura: Array.from(anos).sort(),
         metricaLabel: 'Liquidado',
+        // Detalhado
+        porAnoDetalhado,
+        semSesai,
       };
     };
     return {
@@ -896,10 +951,10 @@ export default function Orcamento() {
               </Card>
 
               {/* INFOGRÁFICO: EFEITO MASCARAMENTO SESAI */}
-              {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <SesaiMaskingInfographic
-                  porAnoDetalhado={stats.porAnoDetalhado}
-                  semSesaiPorAnoDetalhado={stats.semSesai.porAnoDetalhado}
+                  porAnoDetalhado={esferaStats.federal.porAnoDetalhado}
+                  semSesaiPorAnoDetalhado={esferaStats.federal.semSesai.porAnoDetalhado}
                   formatCurrency={formatCurrency}
                   formatCurrencyFull={formatCurrencyFull}
                 />
@@ -919,11 +974,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Dotação Autorizada</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022 (5 anos)</p><p className="text-lg font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025 (3 anos)</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022 (5 anos)</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.dotacaoPeriodo1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025 (3 anos)</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.dotacaoPeriodo2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoDotacao >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.variacaoDotacao >= 0 ? '+' : ''}{esferaStats.federal.variacaoDotacao.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -931,11 +986,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.liquidadoPeriodo1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.liquidadoPeriodo2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.liquidadoPeriodo1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.liquidadoPeriodo2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.variacaoLiquidado || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.variacaoLiquidado.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -943,11 +998,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.pagoPeriodo1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.pagoPeriodo2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.pagoPeriodo1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.pagoPeriodo2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.variacaoPago || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoPago >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.variacaoPago >= 0 ? '+' : ''}{esferaStats.federal.variacaoPago.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -975,11 +1030,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Dotação (sem SESAI)</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.dotacaoP1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.dotacaoP2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.semSesai.dotacaoP1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.semSesai.dotacaoP2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.semSesai?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoDotacao || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoDotacao >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.semSesai.variacaoDotacao >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoDotacao.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -987,11 +1042,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado (sem SESAI)</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.liquidadoP1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.liquidadoP2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.semSesai.liquidadoP1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.semSesai.liquidadoP2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoLiquidado || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.semSesai?.variacaoLiquidado || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoLiquidado || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoLiquidado.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -999,11 +1054,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago (sem SESAI)</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(stats?.semSesai?.pagoP1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.semSesai?.pagoP2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.semSesai.pagoP1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.semSesai.pagoP2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.semSesai?.variacaoPago || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.semSesai?.variacaoPago || 0) >= 0 ? '+' : ''}{(stats?.semSesai?.variacaoPago || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoPago >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.semSesai.variacaoPago >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoPago.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
@@ -1017,7 +1072,7 @@ export default function Orcamento() {
               {/* Detalhamento por Grupo Focal Federal — omitted if stats unavailable */}
 
               {/* Tabela Ano a Ano — Federal */}
-              {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <Card>
                   <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Pago, R$)</CardTitle></CardHeader>
                   <CardContent>
@@ -1034,8 +1089,8 @@ export default function Orcamento() {
                       </TableHeader>
                       <TableBody>
                         {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
-                          const total = stats.porAnoDetalhado[ano]?.pago || 0;
-                          const semSesaiVal = stats.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const total = esferaStats.federal.porAnoDetalhado[ano]?.pago || 0;
+                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
                           const interpretacoes: Record<number, string> = {
