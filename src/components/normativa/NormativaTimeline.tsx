@@ -314,15 +314,6 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
           );
         })}
 
-        {/* Show all years button */}
-        {!showAll && timelineData.years.length > 5 && (
-          <div className="text-center pt-4">
-            <Button variant="outline" onClick={() => setShowAll(true)} className="gap-2">
-              <Calendar className="w-4 h-4" />
-              Ver todos os {timelineData.years.length} anos
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Conclusive analysis */}
