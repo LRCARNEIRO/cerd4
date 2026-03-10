@@ -330,12 +330,8 @@ export default function Orcamento() {
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
   const queryClient = useQueryClient();
 
-  const [esfera, setEsfera] = useState<Esfera>('federal');
-
-  // Thematic filters per esfera
+  // Thematic filters
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
