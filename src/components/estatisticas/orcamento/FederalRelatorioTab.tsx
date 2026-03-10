@@ -700,16 +700,16 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 </p>
                 <ul className="list-disc pl-4 space-y-1">
                   <li>
-                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.pagoP1NoSesai)} pagos sem SESAI em 5 anos
-                    — média anual de {formatCurrency(analysis.pagoP1NoSesai / 5)}.
+                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.liqP1NoSesai)} liquidados sem SESAI em 5 anos
+                    — média anual de {formatCurrency(analysis.liqP1NoSesai / 5)}.
                   </li>
                   <li>
                     <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
-                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento.
+                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento na liquidação.
                   </li>
                   <li>
-                    <strong>Prova de capacidade:</strong> A SESAI manteve execução &gt;80% em todo o período, demonstrando que
-                    a máquina estatal <em>sabe e consegue gastar</em> — a baixa execução nas demais políticas é <strong>escolha de gestão</strong>.
+                    <strong>Evidência central:</strong> A SESAI concentrou {analysis.sesaiPctP1.toFixed(0)}% da liquidação em 2018–2022 e {analysis.sesaiPctP2.toFixed(0)}% em 2023–2025,
+                    tornando visível o subfinanciamento relativo das demais políticas quando analisadas sem esse efeito de mascaramento.
                   </li>
                 </ul>
               </div>
