@@ -242,7 +242,7 @@ function EsferaSummaryCards({
   const anosRange = stats.anosCobertura.length > 0
     ? `${stats.anosCobertura[0]}–${stats.anosCobertura[stats.anosCobertura.length - 1]}`
     : '—';
-  const metrica = stats.metricaLabel || 'Pago/Dotação Autorizada';
+  const metrica = stats.metricaLabel || 'Pago';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
