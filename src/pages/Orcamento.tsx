@@ -29,6 +29,7 @@ import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
 import { MunicipalIngestionPanel } from '@/components/dashboard/MunicipalIngestionPanel';
+import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
@@ -501,6 +502,7 @@ export default function Orcamento() {
             </div>
             <div className="flex gap-2 flex-wrap items-center">
               {/* FederalIngestionPanel e Reset Federal ocultados — base já organizada. Reativar se necessário. */}
+              <KeywordIngestionPanel />
               <EstadualIngestionPanel />
               <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('estadual', 'Estadual')}>
                 <Trash2 className="w-3.5 h-3.5" /> Reset Estadual
