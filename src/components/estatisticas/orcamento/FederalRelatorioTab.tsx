@@ -725,8 +725,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 <ul className="list-disc pl-4 space-y-1">
                   {topArt && (
                     <li>
-                      <strong>Art. {topArt.numero} ({topArt.titulo})</strong> concentra <strong>{topPct}%</strong> do liquidado total
-                      ({formatCurrency(topArt.liquidado)}), com {topArt.programas} programa(s) mapeado(s)
+                      <strong>Art. {topArt.numero} ({topArt.titulo})</strong> concentra <strong>{topPct}%</strong> do total pago
+                      ({formatCurrency(topArt.pago)}), com {topArt.programas} programa(s) mapeado(s)
                       — reflete a predominância temática do eixo saúde/indígena.
                     </li>
                   )}
