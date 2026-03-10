@@ -174,16 +174,16 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
           </p>
           <p className="text-xs text-muted-foreground">
             {(() => {
-              const sorted = [...icerdData.chartData].sort((a, b) => b.liquidado - a.liquidado);
+              const sorted = [...icerdData.chartData].sort((a, b) => b.pago - a.pago);
               const top = sorted[0];
-              const bottom = sorted.filter(d => d.liquidado > 0).pop();
+              const bottom = sorted.filter(d => d.pago > 0).pop();
               const zeroArts = ARTIGOS_CONVENCAO.filter(a => {
                 const entry = icerdData.byArtigo.get(a.numero);
                 return !entry || entry.records.length === 0;
               });
               return (
                 <>
-                  O <strong>{top?.name} ({top?.titulo})</strong> concentra {top?.pct.toFixed(1)}% do liquidado total,
+                  O <strong>{top?.name} ({top?.titulo})</strong> concentra {top?.pct.toFixed(1)}% do total pago,
                   refletindo a predominância de ações em seu escopo temático.
                   {bottom && bottom.name !== top?.name && (
                     <> O <strong>{bottom.name} ({bottom.titulo})</strong> recebe apenas {bottom.pct.toFixed(1)}%, sinalizando subfinanciamento relativo.</>
