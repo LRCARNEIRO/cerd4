@@ -651,7 +651,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                             {execRate.toFixed(0)}% exec.
                           </Badge>
                         )}
-                        <span className="text-xs font-mono font-semibold">{formatCurrency(liquidado)}</span>
+                        <span className="text-xs font-mono font-semibold">{formatCurrency(pago)}</span>
                       </div>
                     </div>
                     <div className="ml-7 h-2 bg-muted rounded-full overflow-hidden">
