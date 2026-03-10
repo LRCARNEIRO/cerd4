@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { unzipSync } from "https://esm.sh/fflate@0.8.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,34 +9,45 @@ const corsHeaders = {
 
 /**
  * ================================================================
- * ENRIQUECIMENTO DE DOTAÇÃO — OPÇÃO A
+ * ENRIQUECIMENTO DE DOTAÇÃO — VIA CSV/LOA (Dados Abertos)
  * ================================================================
- * 
- * Para registros federais que possuem valores de execução (pago, liquidado)
- * mas NÃO possuem dotação (inicial ou autorizada), esta função:
- * 
- * 1. Busca todos os registros sem dotação na base
- * 2. Extrai codigoPrograma e codigoAcao do campo "programa"
- * 3. Re-consulta a API do Portal da Transparência filtrando por
- *    programa + ação (que sabemos retornar campos de dotação)
- * 4. Atualiza os registros com dotação_inicial e dotacao_autorizada
- * 
+ *
+ * O endpoint API `despesas/por-funcional-programatica` NÃO retorna
+ * campos de dotação. A única fonte é o CSV/ZIP da LOA dos Dados Abertos.
+ *
+ * Esta função melhora o matching do ingest-dotacao-loa original:
+ * 1. Baixa o ZIP da LOA do ano
+ * 2. Indexa TODAS as linhas por codPrograma|codAcao
+ * 3. Para cada registro sem dotação na base, busca match direto
+ * 4. Atualiza dotacao_inicial, dotacao_autorizada e percentual_execucao
+ *
  * Processa UM ANO por chamada para evitar timeouts.
  * ================================================================
  */
 
-const API_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
-
-function parseBRL(val: any): number | null {
-  if (val === null || val === undefined) return null;
-  if (typeof val === "number") return val || null;
-  const s = String(val).trim();
-  if (!s || s === "0" || s === "0,00") return null;
+function parseBRL(val: string): number | null {
+  if (!val) return null;
+  const s = val.replace(/"/g, "").trim();
+  if (!s || s === "0" || s === "0.00" || s === "0,00") return null;
   const num = Number(s.replace(/\./g, "").replace(",", "."));
   return isNaN(num) || num === 0 ? null : num;
 }
 
-/** Extract program code (first 4 digits) from "5804 – NOME..." */
+function parseCSVLine(line: string): string[] {
+  const result: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQuotes = !inQuotes; }
+    else if (c === ";" && !inQuotes) { result.push(current); current = ""; }
+    else { current += c; }
+  }
+  result.push(current);
+  return result;
+}
+
+/** Extract programa code from "5804 – NOME..." */
 function extractCodPrograma(programa: string): string {
   const m = programa.match(/^(\d{4})/);
   return m ? m[1] : "";
@@ -47,37 +59,6 @@ function extractCodAcao(programa: string): string {
   return m ? m[1] : "";
 }
 
-async function fetchWithRetry(
-  url: string,
-  apiKey: string,
-  maxRetries = 2,
-): Promise<any[]> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(url, {
-        headers: { "chave-api-dados": apiKey, Accept: "application/json" },
-      });
-
-      if (res.status === 429) {
-        console.log(`  Rate limited, waiting 30s...`);
-        await new Promise(r => setTimeout(r, 30000));
-        continue;
-      }
-      if (!res.ok) {
-        console.error(`  API ${res.status}: ${(await res.text()).substring(0, 200)}`);
-        return [];
-      }
-
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch (e) {
-      console.error(`  Fetch error (attempt ${attempt}):`, e);
-      if (attempt < maxRetries) await new Promise(r => setTimeout(r, 2000));
-    }
-  }
-  return [];
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -85,37 +66,26 @@ Deno.serve(async (req) => {
 
   try {
     let ano = 2024;
-    let limit = 50; // max records per call
     try {
       const body = await req.json();
       if (body.ano) ano = body.ano;
-      if (body.limit) limit = Math.min(body.limit, 100);
     } catch { /* defaults */ }
-
-    const apiKey = Deno.env.get("PORTAL_TRANSPARENCIA_API_KEY");
-    if (!apiKey) {
-      return new Response(
-        JSON.stringify({ success: false, error: "PORTAL_TRANSPARENCIA_API_KEY não configurada" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    console.log(`\n=== ENRIQUECIMENTO DE DOTAÇÃO — ANO ${ano} ===`);
+    console.log(`\n=== ENRIQUECIMENTO DOTAÇÃO LOA — ANO ${ano} ===`);
 
     // Step 1: Fetch records missing dotação
     const { data: records, error: qErr } = await supabase
       .from("dados_orcamentarios")
-      .select("id, programa, orgao, pago, liquidado")
+      .select("id, programa, pago")
       .eq("esfera", "federal")
       .eq("ano", ano)
       .is("dotacao_inicial", null)
-      .is("dotacao_autorizada", null)
-      .limit(limit);
+      .is("dotacao_autorizada", null);
 
     if (qErr) {
       return new Response(
@@ -125,136 +95,191 @@ Deno.serve(async (req) => {
     }
 
     if (!records || records.length === 0) {
-      console.log(`  Nenhum registro sem dotação para ${ano}`);
       return new Response(
         JSON.stringify({ success: true, ano, total_sem_dotacao: 0, atualizados: 0, message: "Todos os registros já possuem dotação" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    console.log(`  ${records.length} registros sem dotação encontrados`);
+    console.log(`  ${records.length} registros sem dotação`);
 
-    // Step 2: Group by programa code only (API doesn't support ação as filter)
-    // We query by programa, get all ações, then match locally
-    const programGroups = new Map<string, { acao: string; ids: string[]; pago: number }[]>();
+    // Step 2: Download ZIP from Portal de Dados Abertos
+    const url = `https://portaldatransparencia.gov.br/download-de-dados/orcamento-despesa/${ano}`;
+    console.log(`  Baixando ZIP: ${url}`);
+
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; CERD-IV/1.0)", Accept: "*/*" },
+      redirect: "follow",
+    });
+
+    if (!res.ok) {
+      return new Response(
+        JSON.stringify({ success: false, error: `HTTP ${res.status} ao baixar ZIP` }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const zipBytes = new Uint8Array(await res.arrayBuffer());
+    console.log(`  ZIP: ${(zipBytes.length / 1024 / 1024).toFixed(2)} MB`);
+
+    const unzipped = unzipSync(zipBytes);
+    const csvFile = Object.keys(unzipped).find(f => f.toLowerCase().endsWith(".csv"));
+    if (!csvFile) {
+      return new Response(
+        JSON.stringify({ success: false, error: "No CSV in ZIP" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Decode CSV
+    const csvBytes = unzipped[csvFile];
+    let csvText = new TextDecoder("utf-8").decode(csvBytes);
+    if (csvText.includes("�")) {
+      csvText = new TextDecoder("latin1").decode(csvBytes);
+    }
+
+    const lines = csvText.split("\n");
+    if (lines.length < 2) {
+      return new Response(
+        JSON.stringify({ success: false, error: "CSV vazio" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Step 3: Parse header and find column indices
+    const headerCols = parseCSVLine(lines[0]);
+    const h: Record<string, number> = {};
+    for (let i = 0; i < headerCols.length; i++) {
+      h[headerCols[i].replace(/"/g, "").trim().toUpperCase()] = i;
+    }
+
+    const dotInicialCol = h["ORÇAMENTO INICIAL (R$)"] ?? h["ORCAMENTO INICIAL (R$)"] ?? h["DOTAÇÃO INICIAL (R$)"] ?? h["DOTACAO INICIAL (R$)"] ?? -1;
+    const dotAtualizadaCol = h["ORÇAMENTO ATUALIZADO (R$)"] ?? h["ORCAMENTO ATUALIZADO (R$)"] ?? h["DOTAÇÃO ATUALIZADA (R$)"] ?? h["DOTACAO ATUALIZADA (R$)"] ?? h["CRÉDITO DISPONÍVEL (R$)"] ?? -1;
+    const codProgCol = h["CÓDIGO PROGRAMA ORÇAMENTÁRIO"] ?? h["CODIGO PROGRAMA ORÇAMENTÁRIO"] ?? h["CODIGO PROGRAMA ORCAMENTARIO"] ?? h["CÓDIGO PROGRAMA"] ?? h["CODIGO PROGRAMA"] ?? -1;
+    const codAcaoCol = h["CÓDIGO AÇÃO"] ?? h["CODIGO AÇÃO"] ?? h["CODIGO ACAO"] ?? -1;
+
+    console.log(`  Columns: dotInicial=${dotInicialCol}, dotAtualizada=${dotAtualizadaCol}, codProg=${codProgCol}, codAcao=${codAcaoCol}`);
+    console.log(`  Headers sample: ${headerCols.slice(0, 20).map(c => c.replace(/"/g, "").trim()).join(" | ")}`);
+
+    if (dotInicialCol === -1 && dotAtualizadaCol === -1) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Colunas de dotação não encontradas no CSV", headers: headerCols.map(c => c.replace(/"/g, "").trim()) }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    if (codProgCol === -1) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Coluna de código programa não encontrada", headers: headerCols.map(c => c.replace(/"/g, "").trim()) }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Step 4: Build dotação index from CSV — key: codProg|codAcao → aggregated dotação
+    const dotIndex = new Map<string, { dotInicial: number; dotAtualizada: number }>();
+
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cols = parseCSVLine(lines[i]);
+
+      const codProg = codProgCol >= 0 ? cols[codProgCol]?.replace(/"/g, "").trim() : "";
+      const codAcao = codAcaoCol >= 0 ? cols[codAcaoCol]?.replace(/"/g, "").trim() : "";
+      if (!codProg) continue;
+
+      const dotI = dotInicialCol >= 0 ? parseBRL(cols[dotInicialCol] || "") : null;
+      const dotA = dotAtualizadaCol >= 0 ? parseBRL(cols[dotAtualizadaCol] || "") : null;
+
+      // Index by exact key (prog|acao) AND by prog-only key (prog|)
+      for (const key of [`${codProg}|${codAcao}`, `${codProg}|`]) {
+        const existing = dotIndex.get(key);
+        if (existing) {
+          // SUM dotação across localizadores for same prog|acao
+          if (dotI) existing.dotInicial += dotI;
+          if (dotA) existing.dotAtualizada += dotA;
+        } else {
+          dotIndex.set(key, {
+            dotInicial: dotI || 0,
+            dotAtualizada: dotA || 0,
+          });
+        }
+      }
+    }
+
+    console.log(`  CSV indexado: ${dotIndex.size} chaves (prog|acao + prog-only)`);
+
+    // Step 5: Match records against CSV index
+    let updated = 0;
+    let noMatch = 0;
+    const erros: string[] = [];
+    const matchLog: string[] = [];
+
     for (const rec of records) {
       const codProg = extractCodPrograma(rec.programa);
       const codAcao = extractCodAcao(rec.programa);
+
       if (!codProg) {
-        console.log(`  Skipping (no codProg): ${rec.programa.substring(0, 60)}`);
-        continue;
-      }
-      if (!programGroups.has(codProg)) programGroups.set(codProg, []);
-      programGroups.get(codProg)!.push({
-        acao: codAcao,
-        ids: [rec.id],
-        pago: Number(rec.pago) || 0,
-      });
-    }
-
-    console.log(`  ${programGroups.size} programas únicos para consultar na API`);
-
-    // Step 3: Query API for each programa (without ação filter — API doesn't support it)
-    let updated = 0;
-    let apiCalls = 0;
-    let noData = 0;
-    const erros: string[] = [];
-
-    for (const [codProg, acaoGroups] of programGroups) {
-      const url = new URL(`${API_BASE}/despesas/por-funcional-programatica`);
-      url.searchParams.set("ano", String(ano));
-      url.searchParams.set("programa", codProg);
-      url.searchParams.set("pagina", "1");
-
-      console.log(`  API programa=${codProg} (${acaoGroups.length} ações)`);
-      apiCalls++;
-
-      const data = await fetchWithRetry(url.toString(), apiKey);
-
-      if (data.length === 0) {
-        noData++;
-        console.log(`    → Sem dados da API`);
+        noMatch++;
         continue;
       }
 
-      // Log field names for first few calls
-      if (apiCalls <= 2) {
-        const keys = Object.keys(data[0]);
-        console.log(`    → ${data.length} items. Keys: ${keys.join(", ")}`);
-        const dotFields = keys.filter(k => k.toLowerCase().includes("dot") || k.toLowerCase().includes("valor"));
-        console.log(`    → Dot fields: ${dotFields.map(f => `${f}=${data[0][f]}`).join(", ") || "NONE"}`);
+      // Try exact match first, then prog-only
+      let dot = dotIndex.get(`${codProg}|${codAcao}`);
+      let matchType = "exact";
+      if (!dot || (dot.dotInicial === 0 && dot.dotAtualizada === 0)) {
+        dot = dotIndex.get(`${codProg}|`);
+        matchType = "prog-only";
       }
 
-      // Build dotação map by ação code from API response
-      const dotByAcao = new Map<string, { dotInicial: number; dotAutorizada: number }>();
-      for (const item of data) {
-        const itemAcao = item.codigoAcao || "";
-        const di = parseBRL(item.dotacaoInicial || item.valorDotacaoInicial) || 0;
-        const da = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada) || 0;
-
-        const existing = dotByAcao.get(itemAcao);
-        if (existing) {
-          existing.dotInicial = Math.max(existing.dotInicial, di);
-          existing.dotAutorizada = Math.max(existing.dotAutorizada, da);
-        } else {
-          dotByAcao.set(itemAcao, { dotInicial: di, dotAutorizada: da });
-        }
+      if (!dot || (dot.dotInicial === 0 && dot.dotAtualizada === 0)) {
+        noMatch++;
+        if (noMatch <= 5) console.log(`    No match: ${codProg}|${codAcao} (${rec.programa.substring(0, 50)})`);
+        continue;
       }
 
-      // Match each record's ação against API results
-      for (const acaoGroup of acaoGroups) {
-        const dot = dotByAcao.get(acaoGroup.acao);
-        if (!dot || (dot.dotInicial === 0 && dot.dotAutorizada === 0)) {
-          console.log(`    → Ação ${acaoGroup.acao}: sem dotação na API`);
-          continue;
-        }
+      const updateData: Record<string, number | null> = {};
+      if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
+      if (dot.dotAtualizada > 0) updateData.dotacao_autorizada = dot.dotAtualizada;
 
-        console.log(`    → Ação ${acaoGroup.acao}: Dot.Ini=${(dot.dotInicial/1e6).toFixed(2)}mi Dot.Aut=${(dot.dotAutorizada/1e6).toFixed(2)}mi`);
-
-        for (const id of acaoGroup.ids) {
-          const updateData: Record<string, number | null> = {};
-          if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
-          if (dot.dotAutorizada > 0) updateData.dotacao_autorizada = dot.dotAutorizada;
-
-          const dotRef = dot.dotAutorizada || dot.dotInicial;
-          if (dotRef > 0 && acaoGroup.pago > 0) {
-            updateData.percentual_execucao = Math.min(
-              Math.round((acaoGroup.pago / dotRef) * 10000) / 100,
-              99999.99,
-            );
-          }
-
-          if (Object.keys(updateData).length === 0) continue;
-
-          const { error: uErr } = await supabase
-            .from("dados_orcamentarios")
-            .update(updateData)
-            .eq("id", id);
-
-          if (uErr) {
-            erros.push(`Update ${id}: ${uErr.message}`);
-          } else {
-            updated++;
-          }
-        }
+      // Recalculate percentual_execucao
+      const pago = Number(rec.pago) || 0;
+      const dotRef = dot.dotAtualizada || dot.dotInicial;
+      if (dotRef > 0 && pago > 0) {
+        updateData.percentual_execucao = Math.min(
+          Math.round((pago / dotRef) * 10000) / 100,
+          99999.99,
+        );
       }
 
-      // Rate limit
-      await new Promise(r => setTimeout(r, 350));
+      if (Object.keys(updateData).length === 0) continue;
+
+      const { error: uErr } = await supabase
+        .from("dados_orcamentarios")
+        .update(updateData)
+        .eq("id", rec.id);
+
+      if (uErr) {
+        erros.push(`Update ${rec.id}: ${uErr.message}`);
+      } else {
+        updated++;
+        if (matchLog.length < 5) {
+          matchLog.push(`${codProg}|${codAcao} (${matchType}): R$ ${(dot.dotInicial/1e6).toFixed(2)}mi ini / R$ ${(dot.dotAtualizada/1e6).toFixed(2)}mi aut`);
+        }
+      }
     }
 
-    console.log(`\n=== CONCLUÍDO ${ano}: ${updated} atualizados, ${noData} sem dados na API, ${erros.length} erros ===`);
+    console.log(`\n=== CONCLUÍDO ${ano}: ${updated} atualizados, ${noMatch} sem match, ${erros.length} erros ===`);
+    if (matchLog.length > 0) console.log(`  Exemplos: ${matchLog.join(" | ")}`);
 
     return new Response(
       JSON.stringify({
         success: true,
         ano,
         total_sem_dotacao: records.length,
-        consultas_api: apiCalls,
-        sem_dados_api: noData,
         atualizados: updated,
+        sem_match: noMatch,
         erros: erros.slice(0, 20),
-        message: `Enriquecimento ${ano}: ${updated}/${records.length} registros atualizados com dotação`,
+        exemplos_match: matchLog,
+        message: `Enriquecimento ${ano}: ${updated}/${records.length} registros atualizados com dotação LOA`,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
