@@ -108,7 +108,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Bar chart */}
           <div>
-            <p className="text-xs font-medium text-center mb-2">Liquidado por Artigo da Convenção</p>
+            <p className="text-xs font-medium text-center mb-2">Pago por Artigo da Convenção</p>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={icerdData.chartData} layout="vertical">
