@@ -530,7 +530,7 @@ export default function Orcamento() {
             <div className="flex gap-2 flex-wrap items-center">
               <KeywordIngestionPanel />
             </div>
-            </div>
+          </div>
           </div>
         </CardContent>
       </Card>
