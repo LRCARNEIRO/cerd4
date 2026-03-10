@@ -240,8 +240,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const sesaiPagoP2 = sesaiP2.reduce((s, r) => s + valorEfetivo(r), 0);
     const sesaiLiqP1 = totalLiqP1 - liqP1NoSesai;
     const sesaiLiqP2 = totalLiqP2 - liqP2NoSesai;
-    const sesaiPctP1 = totalLiqP1 > 0 ? (sesaiLiqP1 / totalLiqP1 * 100) : 0;
-    const sesaiPctP2 = totalLiqP2 > 0 ? (sesaiLiqP2 / totalLiqP2 * 100) : 0;
+    const sesaiPctP1 = totalPagoP1 > 0 ? (sesaiPagoP1 / totalPagoP1 * 100) : 0;
+    const sesaiPctP2 = totalPagoP2 > 0 ? (sesaiPagoP2 / totalPagoP2 * 100) : 0;
 
     // Thematic breakdown
     type ThemeKey = 'racial' | 'indigena' | 'quilombola' | 'ciganos' | 'sesai';
