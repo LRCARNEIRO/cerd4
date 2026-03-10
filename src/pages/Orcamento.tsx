@@ -335,17 +335,17 @@ export default function Orcamento() {
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
-  const handleResetEsfera = async (esferaKey: string, label: string) => {
-    if (!confirm(`Apagar todos os dados orçamentários da esfera "${label}"? Esta ação não pode ser desfeita.`)) return;
+  const handleResetFederal = async () => {
+    if (!confirm('Apagar todos os dados orçamentários federais? Esta ação não pode ser desfeita.')) return;
     try {
       const { data, error } = await supabase.functions.invoke('reset-orcamento', {
-        body: { esfera: esferaKey },
+        body: { esfera: 'federal' },
       });
       if (error) throw error;
-      toast.success(data?.message || `Dados ${label} apagados com sucesso.`);
+      toast.success(data?.message || 'Dados federais apagados com sucesso.');
       queryClient.invalidateQueries();
     } catch {
-      toast.error(`Erro ao apagar dados ${label}.`);
+      toast.error('Erro ao apagar dados federais.');
     }
   };
 
@@ -362,64 +362,49 @@ export default function Orcamento() {
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Classify all records by esfera + thematic
+  // Classify federal records by thematic
   const classified = useMemo(() => {
-    const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> & { sesai: DadoOrcamentario[] } = {
+    const result: { federal: { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }; sesai: DadoOrcamentario[] } = {
       federal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
-      estadual: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
-      municipal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
       sesai: [],
     };
 
     if (!dadosOrcamentarios) return result;
 
     for (const item of dadosOrcamentarios) {
+      // Skip non-federal records
+      if (item.esfera === 'estadual' || item.esfera === 'municipal') continue;
+
       const theme = classifyThematic(item);
       
       if (theme === 'sesai') {
         result.sesai.push(item);
-        if (item.esfera !== 'estadual' && item.esfera !== 'municipal') {
-          result.federal.all.push(item);
-          result.federal.byTheme.indigena.push(item);
-        }
+        result.federal.all.push(item);
+        result.federal.byTheme.indigena.push(item);
         continue;
       }
 
-      let esferaKey: 'federal' | 'estadual' | 'municipal' = 'federal';
-      if (item.esfera === 'estadual') esferaKey = 'estadual';
-      else if (item.esfera === 'municipal') esferaKey = 'municipal';
-
-      result[esferaKey].all.push(item);
-      result[esferaKey].byTheme[theme].push(item);
+      result.federal.all.push(item);
+      result.federal.byTheme[theme].push(item);
     }
 
     return result;
   }, [dadosOrcamentarios]);
 
-  // Apply filters to get visible records per esfera
-  const getFilteredRecords = (esferaKey: Esfera, filters: Record<ThematicFilter, boolean>) => {
-    const data = classified[esferaKey];
+  const getThemeCounts = () => ({
+    racial: classified.federal.byTheme.racial.length,
+    indigena: classified.federal.byTheme.indigena.length,
+    quilombola: classified.federal.byTheme.quilombola.length,
+    ciganos: classified.federal.byTheme.ciganos.length,
+  });
+
+  const currentRecords = useMemo(() => {
     const result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
-      if (filters[key]) result.push(...data.byTheme[key]);
+      if (federalFilters[key]) result.push(...classified.federal.byTheme[key]);
     }
     return result;
-  };
-
-  const getThemeCounts = (esferaKey: Esfera) => {
-    const data = classified[esferaKey];
-    return {
-      racial: data.byTheme.racial.length,
-      indigena: data.byTheme.indigena.length,
-      quilombola: data.byTheme.quilombola.length,
-      ciganos: data.byTheme.ciganos.length,
-    };
-  };
-
-  const currentFilters = esfera === 'federal' ? federalFilters : esfera === 'estadual' ? estadualFilters : municipalFilters;
-  const currentToggle = esfera === 'federal' ? toggleFilter(setFederalFilters) : esfera === 'estadual' ? toggleFilter(setEstadualFilters) : toggleFilter(setMunicipalFilters);
-
-  const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
+  }, [classified, federalFilters]);
 
 
   /** Compute per-esfera summary stats — single source of truth for all tabs */
