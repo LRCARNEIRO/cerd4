@@ -29,10 +29,12 @@ type ResultData = {
 export function FederalIngestionPanel() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [enriching, setEnriching] = useState(false);
   const [selectedAnos, setSelectedAnos] = useState<number[]>([2023, 2024, 2025]);
   const [selectedCamadas, setSelectedCamadas] = useState<string[]>(['programas', 'subfuncao', 'orgaos']);
   const [result, setResult] = useState<ResultData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [enrichResult, setEnrichResult] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -79,6 +81,25 @@ export function FederalIngestionPanel() {
           }
         } catch (dotE) {
           console.warn('Dotação LOA complementar falhou:', dotE);
+        }
+
+        // Etapa 3: Enriquecimento de dotação via re-consulta API (Opção A)
+        toast({ title: 'Enriquecendo registros sem dotação...' });
+        let totalEnriched = 0;
+        for (const ano of selectedAnos) {
+          try {
+            const { data: enrichData } = await supabase.functions.invoke('enrich-dotacao', {
+              body: { ano, limit: 100 },
+            });
+            if (enrichData?.success) {
+              totalEnriched += enrichData.atualizados || 0;
+            }
+          } catch (enrichErr) {
+            console.warn(`Enriquecimento ${ano} falhou:`, enrichErr);
+          }
+        }
+        if (totalEnriched > 0) {
+          toast({ title: `Dotação enriquecida: ${totalEnriched} registros atualizados via API` });
         }
 
         queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
@@ -187,19 +208,56 @@ export function FederalIngestionPanel() {
         </div>
 
         {/* Executar */}
-        <Button onClick={handleIngest} disabled={loading} className="w-full gap-2">
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Coletando dados... (pode levar alguns minutos)
-            </>
-          ) : (
-            <>
-              <Download className="w-4 h-4" />
-              Iniciar Ingestão ({selectedAnos.length} anos × {selectedCamadas.length} camadas)
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleIngest} disabled={loading || enriching} className="flex-1 gap-2">
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Coletando dados...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                Ingestão Completa ({selectedAnos.length} anos)
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              setEnriching(true);
+              setEnrichResult(null);
+              let total = 0;
+              for (const ano of selectedAnos) {
+                try {
+                  const { data } = await supabase.functions.invoke('enrich-dotacao', {
+                    body: { ano, limit: 100 },
+                  });
+                  if (data?.success) total += data.atualizados || 0;
+                } catch {}
+              }
+              setEnriching(false);
+              setEnrichResult(`${total} registros enriquecidos com dotação`);
+              if (total > 0) {
+                queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
+                queryClient.invalidateQueries({ queryKey: ['orcamento-stats'] });
+              }
+              toast({ title: `Enriquecimento: ${total} registros atualizados com dotação` });
+            }}
+            disabled={loading || enriching || selectedAnos.length === 0}
+            className="gap-2"
+          >
+            {enriching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
+            Enriquecer Dotação
+          </Button>
+        </div>
+
+        {enrichResult && (
+          <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-400">
+            <CheckCircle className="w-4 h-4" />
+            {enrichResult}
+          </div>
+        )}
 
         {/* Resultado */}
         {result && (
