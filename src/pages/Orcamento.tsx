@@ -414,19 +414,19 @@ export default function Orcamento() {
       });
 
       return {
-        // Liquidado (backward compat)
-        totalPeriodo1: liqP1,
-        totalPeriodo2: liqP2,
-        variacao: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
-        // Dotação
+        // Pago (métrica principal — mede entrega real)
+        totalPeriodo1: pagoP1,
+        totalPeriodo2: pagoP2,
+        variacao: pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0,
+        // Dotação Inicial
         dotacaoPeriodo1: dotP1,
         dotacaoPeriodo2: dotP2,
         variacaoDotacao: dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0,
-        // Liquidado explicit
+        // Liquidado (secondary)
         liquidadoPeriodo1: liqP1,
         liquidadoPeriodo2: liqP2,
         variacaoLiquidado: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
-        // Pago
+        // Pago explicit
         pagoPeriodo1: pagoP1,
         pagoPeriodo2: pagoP2,
         variacaoPago: pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0,
@@ -434,7 +434,7 @@ export default function Orcamento() {
         totalRegistros: records.length,
         totalProgramas: programas.size,
         anosCobertura: Array.from(anos).sort(),
-        metricaLabel: 'Liquidado',
+        metricaLabel: 'Pago',
         // Detalhado
         porAnoDetalhado,
         semSesai,
