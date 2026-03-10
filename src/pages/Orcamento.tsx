@@ -911,8 +911,8 @@ export default function Orcamento() {
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
                           // Interpretações dinâmicas baseadas nos dados
-                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.liquidado || 0;
-                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.liquidado || 0) : 0;
+                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
                           const varPct = prevSemS > 0 ? ((semSVal - prevSemS) / prevSemS * 100) : 0;
                           const interpretacao = ano === 2018
                             ? `Base: sem SESAI = ${formatCurrency(semSVal)}.`
