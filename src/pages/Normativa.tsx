@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   Upload, FileText, Scale, Building2, FileCheck, AlertCircle,
-  CheckCircle2, Clock, Search, FolderOpen, RotateCcw, Globe, Trash2, Loader2,
+  CheckCircle2, Clock, Search, FolderOpen, RotateCcw, Globe, Trash2, Loader2, Calendar,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
