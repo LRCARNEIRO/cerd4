@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import {
   Scale, Building2, FileCheck, FileText, BookOpen, ExternalLink,
   TrendingUp, TrendingDown, Minus, Star, Calendar, ChevronDown, ChevronUp,
+  BarChart3,
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { format, parseISO, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ArtigoConvencao } from '@/utils/artigosConvencao';
