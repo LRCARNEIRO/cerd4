@@ -171,8 +171,12 @@ function buildRacialSummary(doc: any): string | null {
   return parts.length > 0 ? parts.join(' ') + '.' : null;
 }
 
-/** Derive ICERD articles from document's thematic axes (secoes_impactadas) */
-function deriveArtigosFromDoc(doc: any): ArtigoConvencao[] {
+/** Get ICERD articles: prefer DB field, fallback to derivation from eixos */
+function getDocArticles(doc: any): ArtigoConvencao[] {
+  if (doc.artigos_convencao && doc.artigos_convencao.length > 0) {
+    return (doc.artigos_convencao as ArtigoConvencao[]).sort();
+  }
+  // Fallback: derive from secoes_impactadas
   const eixos: string[] = doc.secoes_impactadas || [];
   const artigos = new Set<ArtigoConvencao>();
   eixos.forEach(eixo => {
