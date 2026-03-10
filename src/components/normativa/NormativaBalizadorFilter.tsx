@@ -18,6 +18,8 @@ interface BalizadorGroup {
 const BALIZADOR_LABELS: Record<string, { sigla: string; titulo: string }> = {
   'cerd-co': { sigla: 'CERD/C/BRA/CO/18-20', titulo: 'Observações Finais ao Brasil' },
   'hrc': { sigla: 'HRC Compilation', titulo: 'Compilação HRC — Brasil 2022' },
+  'upr': { sigla: 'A/HRC/WG.6/41/BRA/2', titulo: 'Compilação OHCHR — UPR Brasil 2022' },
+  'sombra': { sigla: 'Relatório Sombra 2022', titulo: 'Relatório Sombra — Criola, Geledés, Coalizão Negra, Bahá\'í' },
   'ddpa': { sigla: 'DDPA', titulo: 'Declaração e Plano de Ação de Durban' },
   'other': { sigla: 'Outros', titulo: 'Outras fontes balizadoras' },
 };
@@ -88,7 +90,7 @@ export function NormativaBalizadorFilter({
     });
   }
 
-  const orderedKeys = ['cerd-co', 'hrc', 'ddpa', 'other'].filter(k => groups[k]);
+  const orderedKeys = ['cerd-co', 'hrc', 'upr', 'sombra', 'ddpa', 'other'].filter(k => groups[k]);
 
   if (recomendacoes.length === 0) {
     return (

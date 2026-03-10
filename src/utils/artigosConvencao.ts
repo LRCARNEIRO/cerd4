@@ -137,7 +137,7 @@ export function getEixosParaArtigo(artigo: ArtigoConvencao): ThematicAxis[] {
 }
 
 /**
- * Siglas dos 20 Documentos Balizadores.
+ * Siglas dos 22 Documentos Balizadores.
  * REGRA DE OURO: Somente estes documentos podem gerar recomendações/parâmetros de pesquisa.
  */
 export const DOCUMENTOS_BALIZADORES_SIGLAS: readonly string[] = [
@@ -161,6 +161,8 @@ export const DOCUMENTOS_BALIZADORES_SIGLAS: readonly string[] = [
   'Guidelines Anotações',
   'HRC National Report',
   'RG Guidelines',
+  'A/HRC/WG.6/41/BRA/2',
+  'Relatório Sombra 2022',
 ] as const;
 
 /**
@@ -192,7 +194,7 @@ export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; 
 
 /**
  * Valida se um documento é Balizador (regra de ouro normativa).
- * Retorna true se a sigla consta entre os 20 documentos oficiais.
+ * Retorna true se a sigla consta entre os 22 documentos oficiais.
  */
 export function isDocumentoBalizador(sigla: string): boolean {
   return DOCUMENTOS_BALIZADORES_SIGLAS.includes(sigla);
