@@ -171,11 +171,15 @@ async function enrichViaCSV(
 
   console.log(`  [CSV] Indexado: ${dotIndex.size} chaves`);
 
-  // Diagnostic: check if target programs exist in CSV
+  // Diagnostic: check if target programs exist in CSV and their values
   const targetProgs = new Set(records.map(r => extractCodPrograma(r.programa)).filter(Boolean));
   for (const tp of targetProgs) {
     const exactKeys = Array.from(dotIndex.keys()).filter(k => k.startsWith(`${tp}|`));
-    console.log(`  [CSV-DIAG] Programa ${tp}: ${exactKeys.length} chaves no CSV (ex: ${exactKeys.slice(0, 3).join(", ")})`);
+    const sampleValues = exactKeys.slice(0, 5).map(k => {
+      const v = dotIndex.get(k)!;
+      return `${k}→ini:${v.dotInicial},aut:${v.dotAtualizada}`;
+    });
+    console.log(`  [CSV-DIAG] Programa ${tp}: ${exactKeys.length} chaves. Valores: ${sampleValues.join(" | ")}`);
   }
 
   // Match
