@@ -770,7 +770,7 @@ export default function Orcamento() {
 
         {/* ===== RESUMO COMPARATIVO ===== */}
         <TabsContent value="resumo">
-          {esfera === 'federal' && (
+          <div className="space-y-6">
             <div className="space-y-6">
               {/* Nota Explicativa Federal */}
               <Card className="border-l-4 border-l-warning">
