@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   Upload, FileText, Scale, Building2, FileCheck, AlertCircle,
-  CheckCircle2, Clock, Search, FolderOpen, RotateCcw, Globe, Trash2, Loader2,
+  CheckCircle2, Clock, Search, FolderOpen, RotateCcw, Globe, Trash2, Loader2, Calendar,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
@@ -19,6 +19,7 @@ import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
 import { NormativaBalizadorFilter } from '@/components/normativa/NormativaBalizadorFilter';
 import { ArtigoEngagementPanel } from '@/components/normativa/ArtigoEngagementPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { NormativaTimeline } from '@/components/normativa/NormativaTimeline';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -39,6 +40,7 @@ export default function Normativa() {
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState('acervo');
   const queryClient = useQueryClient();
 
   // Fetch documents from DB
@@ -148,6 +150,20 @@ export default function Normativa() {
           GoBack / Restaurar Versão
         </Button>
       </div>
+      {/* Main tabs: Acervo vs Linha do Tempo */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="w-full md:w-auto">
+          <TabsTrigger value="acervo" className="gap-1.5">
+            <FolderOpen className="w-4 h-4" />
+            Acervo Normativo
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="gap-1.5">
+            <Calendar className="w-4 h-4" />
+            Linha do Tempo
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="acervo" className="space-y-6 mt-0">
       {/* Alert */}
       <Card className="mb-6 border-l-4 border-l-amber-500">
         <CardContent className="pt-6">
@@ -339,6 +355,13 @@ export default function Normativa() {
           </Tabs>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        {/* ===== TAB: LINHA DO TEMPO ===== */}
+        <TabsContent value="timeline" className="mt-0">
+          <NormativaTimeline documentos={documentos} />
+        </TabsContent>
+      </Tabs>
 
       {/* Restore dialog */}
       <Dialog open={showRestore} onOpenChange={setShowRestore}>
