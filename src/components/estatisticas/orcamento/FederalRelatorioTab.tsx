@@ -231,8 +231,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const pagoP2NoSesai = p2NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const dotP1NoSesai = p1NoSesai.reduce((s, r) => s + dotacao(r), 0);
     const dotP2NoSesai = p2NoSesai.reduce((s, r) => s + dotacao(r), 0);
-    const liqP1NoSesai = summaryStats?.semSesai?.liquidadoP1 ?? p1NoSesai.reduce((s, r) => s + liquidado(r), 0);
-    const liqP2NoSesai = summaryStats?.semSesai?.liquidadoP2 ?? p2NoSesai.reduce((s, r) => s + liquidado(r), 0);
+    const liqP1NoSesai = p1NoSesai.reduce((s, r) => s + liquidado(r), 0);
+    const liqP2NoSesai = p2NoSesai.reduce((s, r) => s + liquidado(r), 0);
 
     const sesaiP1 = sesaiRecords.filter(r => r.ano >= 2018 && r.ano <= 2022);
     const sesaiP2 = sesaiRecords.filter(r => r.ano >= 2023 && r.ano <= 2025);
