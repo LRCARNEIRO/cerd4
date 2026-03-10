@@ -534,42 +534,20 @@ export default function Orcamento() {
         </CardContent>
       </Card>
 
-      {/* ===== SELETOR DE ESFERA ===== */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm font-medium text-muted-foreground mr-2">Esfera:</span>
-        {([
-          { key: 'federal' as Esfera, label: 'Federal', icon: Building, count: classified.federal.all.length },
-          { key: 'estadual' as Esfera, label: 'Estadual', icon: Building2, count: classified.estadual.all.length },
-          { key: 'municipal' as Esfera, label: 'Municipal', icon: MapPin, count: classified.municipal.all.length },
-        ]).map(e => (
-          <Button
-            key={e.key}
-            variant={esfera === e.key ? 'default' : 'outline'}
-            size="sm"
-            className="gap-1.5"
-            onClick={() => setEsfera(e.key)}
-          >
-            <e.icon className="w-4 h-4" />
-            {e.label}
-            {e.count > 0 && <Badge variant={esfera === e.key ? 'secondary' : 'outline'} className="ml-1 text-xs">{e.count}</Badge>}
-          </Button>
-        ))}
-      </div>
-
-      {/* Key Metrics for selected esfera */}
+      {/* Key Metrics */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
         </div>
       ) : (
-        <EsferaSummaryCards stats={esferaStats[esfera]} esferaLabel={esferaLabel} formatCurrency={formatCurrency} />
+        <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
       )}
 
-      {/* ===== SUB-ABAS filtradas pela esfera selecionada ===== */}
+      {/* ===== SUB-ABAS ===== */}
       <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="visao-geral">
-            <EsferaIcon className="w-4 h-4 mr-1" />
+            <Building className="w-4 h-4 mr-1" />
             Visão Geral
           </TabsTrigger>
           <TabsTrigger value="fontes">
@@ -597,26 +575,24 @@ export default function Orcamento() {
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
           {/* Thematic filter bar */}
-          <ThematicFilterBar filters={currentFilters} counts={getThemeCounts(esfera)} onToggle={currentToggle} />
+          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
 
           {/* Article filter */}
           <div className="mb-4">
             <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
           </div>
 
-          {/* Federal-specific: 5034 toggle */}
-
           {/* Data listing — filtered by article */}
           <EsferaContent
             records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
             isLoading={isLoading}
-            emptyMessage={`Nenhum programa ${esferaLabel.toLowerCase()} encontrado com os filtros selecionados.`}
-            useOrgaoSection={esfera === 'federal'}
-            showExclusions={esfera === 'federal'}
+            emptyMessage="Nenhum programa federal encontrado com os filtros selecionados."
+            useOrgaoSection={true}
+            showExclusions={true}
           />
 
-          {/* Federal-specific: charts */}
-          {esfera === 'federal' && hasData && !isLoading && (
+          {/* Charts */}
+          {hasData && !isLoading && (
             <div className="mt-6 space-y-6">
               {/* Infográfico: Programas e Ações por Grupo Focal */}
               {(() => {
