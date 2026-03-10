@@ -746,9 +746,9 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   {artigosComDados.length >= 3 && (
                     <li>
                       <strong>Índice de concentração:</strong> Os 2 artigos mais financiados absorvem{' '}
-                      {totalLiqIcerd > 0
-                        ? ((artigosComDados[0].liquidado + artigosComDados[1].liquidado) / totalLiqIcerd * 100).toFixed(0)
-                        : 0}% do liquidado total, indicando <em>desequilíbrio na cobertura</em> dos compromissos assumidos pelo Estado.
+                      {totalPagoIcerd > 0
+                        ? ((artigosComDados[0].pago + artigosComDados[1].pago) / totalPagoIcerd * 100).toFixed(0)
+                        : 0}% do total pago, indicando <em>desequilíbrio na cobertura</em> dos compromissos assumidos pelo Estado.
                     </li>
                   )}
                 </ul>
