@@ -445,8 +445,8 @@ async function enrichViaAPI(
     }
   }
 
-  // Count final noMatch
-  noMatch += records.filter(r => !updatedIds.has(r.id)).length - noMatch;
+  // Final noMatch = records not updated
+  noMatch = records.filter(r => !updatedIds.has(r.id)).length;
 
   console.log(`  [API] ${updated} atualizados, ${noMatch} sem match`);
   return { updated, noMatch, erros, matchLog };
