@@ -22,6 +22,30 @@ type ResultData = {
   subfuncoes_varridas: number;
 };
 
+const EMPTY_RESULT: ResultData = {
+  success: true,
+  total_brutos: 0,
+  total_com_keyword: 0,
+  total_unicos: 0,
+  total_duplicados: 0,
+  total_inseridos: 0,
+  erros: [],
+  subfuncoes_varridas: 0,
+};
+
+function mergeResults(results: ResultData[]): ResultData {
+  return results.reduce((acc, current) => ({
+    success: acc.success && current.success,
+    total_brutos: acc.total_brutos + current.total_brutos,
+    total_com_keyword: acc.total_com_keyword + current.total_com_keyword,
+    total_unicos: acc.total_unicos + current.total_unicos,
+    total_duplicados: acc.total_duplicados + current.total_duplicados,
+    total_inseridos: acc.total_inseridos + current.total_inseridos,
+    subfuncoes_varridas: Math.max(acc.subfuncoes_varridas, current.subfuncoes_varridas),
+    erros: [...acc.erros, ...current.erros],
+  }), EMPTY_RESULT);
+}
+
 export function KeywordIngestionPanel() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,13 +54,14 @@ export function KeywordIngestionPanel() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const anosOrdenados = useMemo(() => [...selectedAnos].sort((a, b) => a - b), [selectedAnos]);
 
   const toggleAno = (ano: number) => {
     setSelectedAnos(prev => prev.includes(ano) ? prev.filter(a => a !== ano) : [...prev, ano].sort());
   };
 
   const handleIngest = async () => {
-    if (selectedAnos.length === 0) {
+    if (anosOrdenados.length === 0) {
       toast({ title: 'Selecione ao menos 1 ano', variant: 'destructive' });
       return;
     }
@@ -46,20 +71,29 @@ export function KeywordIngestionPanel() {
     setError(null);
 
     try {
-      const { data, error: fnErr } = await supabase.functions.invoke('ingest-federal-keywords', {
-        body: { anos: selectedAnos },
-      });
+      const resultados: ResultData[] = [];
 
-      if (fnErr) throw fnErr;
+      for (const ano of anosOrdenados) {
+        const { data, error: fnErr } = await supabase.functions.invoke('ingest-federal-keywords', {
+          body: { anos: [ano] },
+        });
 
-      if (data?.success) {
-        setResult(data);
-        toast({ title: `${data.total_inseridos} novos registros inseridos (${data.total_duplicados} duplicados ignorados)` });
-        queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
-        queryClient.invalidateQueries({ queryKey: ['orcamento-stats'] });
-      } else {
-        setError(data?.error || 'Erro desconhecido');
+        if (fnErr) {
+          throw new Error(`Falha ao processar ${ano}: ${fnErr.message}`);
+        }
+
+        if (!data?.success) {
+          throw new Error(data?.error || `Erro desconhecido ao processar ${ano}`);
+        }
+
+        resultados.push(data as ResultData);
       }
+
+      const merged = mergeResults(resultados);
+      setResult(merged);
+      toast({ title: `${merged.total_inseridos} novos registros inseridos (${merged.total_duplicados} duplicados ignorados)` });
+      queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
+      queryClient.invalidateQueries({ queryKey: ['orcamento-stats'] });
     } catch (e: any) {
       setError(e.message || 'Falha na ingestão');
     } finally {
