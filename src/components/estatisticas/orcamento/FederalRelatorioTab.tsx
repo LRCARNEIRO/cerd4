@@ -12,16 +12,16 @@ interface Props {
   records: DadoOrcamentario[];
   sesaiRecords: DadoOrcamentario[];
   summaryStats: {
-    liquidadoPeriodo1: number;
-    liquidadoPeriodo2: number;
-    variacaoLiquidado: number;
+    pagoPeriodo1: number;
+    pagoPeriodo2: number;
+    variacaoPago: number;
     totalRegistros: number;
     totalProgramas: number;
     anosCobertura: number[];
     semSesai?: {
-      liquidadoP1: number;
-      liquidadoP2: number;
-      variacaoLiquidado: number;
+      pagoP1: number;
+      pagoP2: number;
+      variacaoPago: number;
     };
   };
   formatCurrency: (v: number) => string;
