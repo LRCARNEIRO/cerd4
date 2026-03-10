@@ -739,111 +739,32 @@ export default function Orcamento() {
         {/* ===== FONTES ===== */}
         <TabsContent value="fontes">
           <div className="space-y-6">
-            {esfera === 'federal' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
-                <div className="space-y-4">
-                  {estruturaFederal.map((cat) => (
-                    <Card key={cat.categoria}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base flex items-center gap-2">
-                            <Building className="w-5 h-5 text-primary" />
-                            {cat.categoria}
-                          </CardTitle>
-                          <Badge variant="outline">{cat.orgao}</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-3">
-                          {cat.fontes.map((fonte, idx) => (
-                            <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
-                              className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
-                              <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
-                            </a>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {esfera === 'estadual' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><Building2 className="w-4 h-4 text-success" /> Fontes Estaduais</h3>
-                <Card>
-                  <CardContent className="pt-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>UF</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Órgão Responsável</TableHead>
-                          <TableHead>Portal</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {estruturaEstadual.map((est) => (
-                          <TableRow key={est.uf}>
-                            <TableCell><Badge variant="outline">{est.uf}</Badge></TableCell>
-                            <TableCell className="font-medium">{est.estado}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{est.orgao}</TableCell>
-                            <TableCell>
-                              <a href={est.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
-                                <ExternalLink className="w-3.5 h-3.5" /> Acessar
-                              </a>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+            <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
+            <div className="space-y-4">
+              {estruturaFederal.map((cat) => (
+                <Card key={cat.categoria}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Building className="w-5 h-5 text-primary" />
+                        {cat.categoria}
+                      </CardTitle>
+                      <Badge variant="outline">{cat.orgao}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-3">
+                      {cat.fontes.map((fonte, idx) => (
+                        <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
+                          <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
+                        </a>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-chart-2">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>Fonte principal estadual:</strong> Matriz de Saldos Contábeis (MSC) via SICONFI/Tesouro Nacional. A API SICONFI (RREO/DCA) retorna apenas dados agregados por função/subfunção. Os dados granulares por ação PPA foram mapeados manualmente a partir dos códigos de ação estaduais.
-                    </p>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {esfera === 'municipal' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><MapPin className="w-4 h-4 text-chart-1" /> Fontes Municipais</h3>
-                <Card>
-                  <CardContent className="pt-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Município</TableHead>
-                          <TableHead>UF</TableHead>
-                          <TableHead>Órgão Responsável</TableHead>
-                          <TableHead>Portal</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {estruturaMunicipal.map((mun) => (
-                          <TableRow key={mun.municipio}>
-                            <TableCell className="font-medium">{mun.municipio}</TableCell>
-                            <TableCell><Badge variant="outline">{mun.uf}</Badge></TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{mun.orgao}</TableCell>
-                            <TableCell>
-                              <a href={mun.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
-                                <ExternalLink className="w-3.5 h-3.5" /> Acessar
-                              </a>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+              ))}
+            </div>
           </div>
         </TabsContent>
 
