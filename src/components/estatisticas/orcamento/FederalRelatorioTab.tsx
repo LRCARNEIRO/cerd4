@@ -509,7 +509,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
             <p className="text-xs">
               <strong>🔑 Insight:</strong> A queda da participação da SESAI ({analysis.sesaiPctP1.toFixed(0)}% → {analysis.sesaiPctP2.toFixed(0)}%)
               reflete o <em>crescimento exponencial das demais políticas</em>, não a redução da saúde indígena.
-              Pela primeira vez, as políticas raciais <em>stricto sensu</em> ultrapassaram {formatCurrency(analysis.liqP2NoSesai)} em apenas 3 anos de liquidação acumulada.
+              Pela primeira vez, as políticas raciais <em>stricto sensu</em> ultrapassaram {formatCurrency(analysis.pagoP2NoSesai)} em apenas 3 anos de pagamento acumulado.
             </p>
           </div>
         </CardContent>
