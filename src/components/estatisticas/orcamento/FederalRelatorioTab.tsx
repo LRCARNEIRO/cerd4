@@ -299,8 +299,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       .sort((a, b) => a.ano - b.ano);
 
     // Execution rate
-    const execP1 = totalDotP1 > 0 ? (totalLiqP1 / totalDotP1 * 100) : 0;
-    const execP2 = totalDotP2 > 0 ? (totalLiqP2 / totalDotP2 * 100) : 0;
+    const execP1 = totalDotP1 > 0 ? (totalPagoP1 / totalDotP1 * 100) : 0;
+    const execP2 = totalDotP2 > 0 ? (totalPagoP2 / totalDotP2 * 100) : 0;
 
     const totalProgramas = new Set(allRecords.map(r => r.programa)).size;
     const anos = Array.from(new Set(allRecords.map(r => r.ano))).sort();
