@@ -131,6 +131,9 @@ function matchesKeywords(item: any): string[] {
   const text = [
     item.programa, item.nomePrograma, item.acao, item.nomeAcao,
     item.nomeOrgaoSuperior, item.nomeFuncao, item.nomeSubfuncao,
+    item.objetivo, item.descricao, item.nomeUnidadeOrcamentaria,
+    item.nomeLocalizador, item.nomeResultadoPrimario,
+    item.nomePlanoOrcamentario, item.descricaoPlanoOrcamentario,
   ].filter(Boolean).join(" ").toLowerCase();
   return KEYWORDS.filter(kw => text.includes(kw));
 }
