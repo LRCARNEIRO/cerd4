@@ -800,18 +800,6 @@ export default function Orcamento() {
                     </CardContent>
                   </Card>
                   <Card className="border-t-4 border-t-chart-2">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.liquidadoPeriodo1)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.liquidadoPeriodo2)}</p></div>
-                      </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {esferaStats.federal.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.variacaoLiquidado.toFixed(1)}%
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-t-4 border-t-chart-3">
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
@@ -820,6 +808,18 @@ export default function Orcamento() {
                       </div>
                       <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoPago >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
                         {esferaStats.federal.variacaoPago >= 0 ? '+' : ''}{esferaStats.federal.variacaoPago.toFixed(1)}%
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-t-4 border-t-chart-3">
+                    <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado</CardTitle></CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between items-end">
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.liquidadoPeriodo1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.liquidadoPeriodo2)}</p></div>
+                      </div>
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.variacaoLiquidado.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
