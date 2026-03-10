@@ -547,28 +547,28 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         <CardHeader><CardTitle className="text-sm">5. Desagregação por Grupo Focal e Período</CardTitle></CardHeader>
         <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Grupo Focal</TableHead>
-                <TableHead className="text-right">Pago 2018–2022</TableHead>
-                <TableHead className="text-right">Pago 2023–2025</TableHead>
-                <TableHead className="text-right">Dotação Total</TableHead>
-                <TableHead className="text-right">Programas</TableHead>
-                <TableHead className="text-right">Registros</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analysis.themeData.map(t => (
-                <TableRow key={t.key}>
-                  <TableCell className="font-medium text-xs">{t.icon} {t.label}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">{formatCurrency(t.pagoP1)}</TableCell>
-                  <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(t.pagoP2)}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">{formatCurrency(t.dotP1 + t.dotP2)}</TableCell>
-                  <TableCell className="text-right text-xs">{t.programas}</TableCell>
-                  <TableCell className="text-right text-xs">{t.registros}</TableCell>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Grupo Focal</TableHead>
+                  <TableHead className="text-right">Liquidado 2018–2022</TableHead>
+                  <TableHead className="text-right">Liquidado 2023–2025</TableHead>
+                  <TableHead className="text-right">Dotação Total</TableHead>
+                  <TableHead className="text-right">Programas</TableHead>
+                  <TableHead className="text-right">Registros</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
+              </TableHeader>
+              <TableBody>
+                {analysis.themeData.map(t => (
+                  <TableRow key={t.key}>
+                    <TableCell className="font-medium text-xs">{t.icon} {t.label}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(t.liqP1)}</TableCell>
+                    <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(t.liqP2)}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(t.dotP1 + t.dotP2)}</TableCell>
+                    <TableCell className="text-right text-xs">{t.programas}</TableCell>
+                    <TableCell className="text-right text-xs">{t.registros}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
           </Table>
         </CardContent>
       </Card>
