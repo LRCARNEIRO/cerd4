@@ -974,11 +974,11 @@ export default function Orcamento() {
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Dotação Autorizada</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022 (5 anos)</p><p className="text-lg font-bold">{formatCurrency(stats?.dotacaoPeriodo1 || 0)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025 (3 anos)</p><p className="text-lg font-bold text-success">{formatCurrency(stats?.dotacaoPeriodo2 || 0)}</p></div>
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022 (5 anos)</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.dotacaoPeriodo1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025 (3 anos)</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.dotacaoPeriodo2)}</p></div>
                       </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${(stats?.variacaoDotacao || 0) >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}{(stats?.variacaoDotacao || 0).toFixed(1)}%
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.variacaoDotacao >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.variacaoDotacao >= 0 ? '+' : ''}{esferaStats.federal.variacaoDotacao.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
