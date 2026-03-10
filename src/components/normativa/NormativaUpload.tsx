@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { NormativaImpactReview, type ImpactChange } from './NormativaImpactReview';
+import { inferArtigosDocumentoNormativo } from '@/utils/artigosConvencao';
 
 export function NormativaUpload() {
   const [isOpen, setIsOpen] = useState(false);
