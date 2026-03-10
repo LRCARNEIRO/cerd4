@@ -538,6 +538,30 @@ export function MetodologiaFederalSection() {
           <TrendingUp className="w-4 h-4" />
           5. Padrão da Série Histórica (2018–2025)
         </h4>
+
+        {/* NOTA METODOLÓGICA: Pago vs Liquidado */}
+        <div className="bg-primary/10 rounded-lg p-4 border border-primary/30 mb-3">
+          <p className="font-semibold text-foreground text-sm mb-2">📌 Nota Metodológica — Métrica Principal: "Pago" (vs. "Liquidado")</p>
+          <p className="text-sm text-muted-foreground mb-2">
+            O sistema adota <strong>"Pago"</strong> como métrica principal de análise, comparada à <strong>"Dotação Inicial"</strong> (previsão na LOA). 
+            A escolha é metodológica:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li><strong>Pago</strong> = transferência efetiva de recursos ao beneficiário final. Mede a <em>entrega real</em> da política pública.</li>
+            <li><strong>Liquidado</strong> = verificação de que o bem/serviço foi entregue ao Estado. Mede a <em>obrigação confirmada</em>, mas não garante que o recurso chegou à ponta.</li>
+            <li><strong>Dotação Inicial</strong> = previsão na Lei Orçamentária Anual. Mede a <em>intenção legislativa</em>.</li>
+          </ul>
+          <p className="text-sm text-muted-foreground mt-2">
+            <strong>Justificativa:</strong> Para o objetivo do projeto — avaliar se as políticas raciais <em>evoluíram ou não</em> entre 2018 e 2025 — 
+            o "Pago" é o indicador mais rigoroso: identifica "orçamentos de papel" (dotação sem entrega) e detecta represamento de recursos 
+            que o "Liquidado" pode mascarar. É também o padrão do TCU e do Portal da Transparência.
+          </p>
+          <p className="text-sm text-muted-foreground mt-1 italic">
+            <strong>⚠️ Cautela para 2025:</strong> Dados parciais (até 6º bimestre). Valores de "Pago" podem estar defasados em relação ao "Liquidado" 
+            por atrasos normais de processamento. A execução final pode diferir significativamente.
+          </p>
+        </div>
+
         <div className="space-y-3">
           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
             <h5 className="font-semibold text-foreground">2018–2019 — Base Modesta</h5>
