@@ -122,7 +122,7 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
     });
   };
 
-  const displayYears = showAll ? timelineData.years : timelineData.years.slice(0, 5);
+  const displayYears = timelineData.years;
 
   return (
     <div className="space-y-6">
