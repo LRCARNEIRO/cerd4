@@ -171,6 +171,26 @@ function buildRacialSummary(doc: any): string | null {
   return parts.length > 0 ? parts.join(' ') + '.' : null;
 }
 
+/** Build a concise institutional summary for display */
+function buildBriefSummary(doc: any): string {
+  const cat = categoriaConfig[doc.categoria]?.label || doc.categoria;
+  const artigos = getDocArticles(doc);
+  const artigoStr = artigos.length > 0 ? `Vinculado ao${artigos.length > 1 ? 's' : ''} Art. ${artigos.join(', ')} da ICERD.` : '';
+  
+  const metasCount = doc.metas_impactadas?.length || 0;
+  const recsCount = doc.recomendacoes_impactadas?.length || 0;
+  const eixos = (doc.secoes_impactadas || []).map((s: string) => formatEixo(s));
+  
+  const parts: string[] = [];
+  parts.push(`Instrumento de ${cat.toLowerCase()}.`);
+  if (artigoStr) parts.push(artigoStr);
+  if (eixos.length > 0) parts.push(`Atua nos eixos: ${eixos.slice(0, 3).join(', ')}${eixos.length > 3 ? ` (+${eixos.length - 3})` : ''}.`);
+  if (metasCount > 0) parts.push(`Impacta ${metasCount} meta${metasCount > 1 ? 's' : ''}.`);
+  if (recsCount > 0) parts.push(`Endereça ${recsCount} recomendação(ões) do Comitê.`);
+  
+  return parts.join(' ');
+}
+
 /** Get ICERD articles: prefer DB field, fallback to derivation from eixos */
 function getDocArticles(doc: any): ArtigoConvencao[] {
   if (doc.artigos_convencao && doc.artigos_convencao.length > 0) {
