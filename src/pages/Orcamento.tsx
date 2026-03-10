@@ -1072,7 +1072,7 @@ export default function Orcamento() {
               {/* Detalhamento por Grupo Focal Federal — omitted if stats unavailable */}
 
               {/* Tabela Ano a Ano — Federal */}
-              {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <Card>
                   <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Pago, R$)</CardTitle></CardHeader>
                   <CardContent>
@@ -1089,8 +1089,8 @@ export default function Orcamento() {
                       </TableHeader>
                       <TableBody>
                         {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
-                          const total = stats.porAnoDetalhado[ano]?.pago || 0;
-                          const semSesaiVal = stats.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const total = esferaStats.federal.porAnoDetalhado[ano]?.pago || 0;
+                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
                           const interpretacoes: Record<number, string> = {
