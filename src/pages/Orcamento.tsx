@@ -485,8 +485,6 @@ export default function Orcamento() {
     };
     return {
       federal: compute(classified.federal.all),
-      estadual: compute(classified.estadual.all),
-      municipal: compute(classified.municipal.all),
     };
   }, [classified]);
 
