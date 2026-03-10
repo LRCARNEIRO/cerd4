@@ -627,15 +627,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       {analysis.topPrograms.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">7. Ranking: Programas com Maior Liquidação (excl. SESAI)</CardTitle>
-            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor liquidado acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
+            <CardTitle className="text-sm">7. Ranking: Programas com Maior Pagamento (excl. SESAI)</CardTitle>
+            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor pago acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
-              {analysis.topPrograms.map(([programa, { liquidado, orgao, dot }], idx) => {
-                const maxVal = analysis.topPrograms[0]?.[1].liquidado || 1;
-                const pct = (liquidado / maxVal) * 100;
-                const execRate = dot > 0 ? (liquidado / dot * 100) : null;
+              {analysis.topPrograms.map(([programa, { pago, orgao, dot }], idx) => {
+                const maxVal = analysis.topPrograms[0]?.[1].pago || 1;
+                const pct = (pago / maxVal) * 100;
+                const execRate = dot > 0 ? (pago / dot * 100) : null;
                 const colors = ['hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
                 return (
                   <div key={programa} className="space-y-0.5">
