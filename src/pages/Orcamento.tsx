@@ -890,7 +890,7 @@ export default function Orcamento() {
               {/* Tabela Ano a Ano — Federal */}
               {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Pago, R$)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Total vs. Sem SESAI (Liquidado, R$)</CardTitle></CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
@@ -905,13 +905,13 @@ export default function Orcamento() {
                       </TableHeader>
                       <TableBody>
                         {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
-                          const total = esferaStats.federal.porAnoDetalhado[ano]?.pago || 0;
-                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const total = esferaStats.federal.porAnoDetalhado[ano]?.liquidado || 0;
+                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.liquidado || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
                           // Interpretações dinâmicas baseadas nos dados
-                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
-                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
+                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.liquidado || 0;
+                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.liquidado || 0) : 0;
                           const varPct = prevSemS > 0 ? ((semSVal - prevSemS) / prevSemS * 100) : 0;
                           const interpretacao = ano === 2018
                             ? `Base: sem SESAI = ${formatCurrency(semSVal)}.`
@@ -945,8 +945,8 @@ export default function Orcamento() {
                 const pad = semS?.porAnoDetalhado || {};
                 const padTotal = comS.porAnoDetalhado || {};
 
-                const val = (ano: number) => pad[ano]?.pago || 0;
-                const valTotal = (ano: number) => padTotal[ano]?.pago || 0;
+                const val = (ano: number) => pad[ano]?.liquidado || 0;
+                const valTotal = (ano: number) => padTotal[ano]?.liquidado || 0;
                 const pctSesai = (ano: number) => {
                   const t = valTotal(ano);
                   return t > 0 ? (((t - val(ano)) / t) * 100).toFixed(0) : '0';
