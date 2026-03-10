@@ -44,6 +44,23 @@ const trendConfig = {
   'manutenção': { icon: Minus, color: 'text-muted-foreground', bg: 'bg-muted/50 border-muted', label: 'Manutenção' },
 };
 
+/** Generate a brief dynamic summary for each year */
+function getYearSummary(items: { doc: any; trend: string; highlight: boolean }[], year: number): string {
+  const avancos = items.filter(i => i.trend === 'avanço').length;
+  const retrocessos = items.filter(i => i.trend === 'retrocesso').length;
+  const destaques = items.filter(i => i.highlight).length;
+  const cats = new Set(items.map(i => i.doc.categoria));
+
+  let parts: string[] = [];
+  if (avancos > 0) parts.push(`${avancos} avanço${avancos > 1 ? 's' : ''}`);
+  if (retrocessos > 0) parts.push(`${retrocessos} retrocesso${retrocessos > 1 ? 's' : ''}`);
+  if (destaques > 0) parts.push(`${destaques} marco${destaques > 1 ? 's' : ''} de destaque`);
+
+  const catLabels = Array.from(cats).map(c => categoriaConfig[c as string]?.label || c).join(', ');
+  const base = parts.length > 0 ? parts.join(', ') : `${items.length} instrumento${items.length > 1 ? 's' : ''}`;
+  return `${year}: ${base}. Áreas: ${catLabels}.`;
+}
+
 /** Extract a date from the document — prefer title-embedded dates, fallback to created_at */
 function extractDate(doc: any): Date {
   // Try to parse year from title like "2024", "2023", etc.
