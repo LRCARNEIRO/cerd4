@@ -193,6 +193,55 @@ export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; 
 }
 
 /**
+ * Infere artigos ICERD para um documento normativo com base em título,
+ * categoria, eixos temáticos e recomendações associadas.
+ */
+export function inferArtigosDocumentoNormativo(doc: {
+  titulo: string;
+  categoria?: string;
+  secoes_impactadas?: string[] | null;
+  recomendacoes_impactadas?: string[] | null;
+}): ArtigoConvencao[] {
+  const arts = new Set<ArtigoConvencao>();
+
+  // 1. Mapeamento por eixos temáticos (secoes_impactadas)
+  (doc.secoes_impactadas || []).forEach(eixo => {
+    const mapped = EIXO_PARA_ARTIGOS[eixo as keyof typeof EIXO_PARA_ARTIGOS];
+    if (mapped) mapped.forEach(a => arts.add(a));
+  });
+
+  // 2. Mapeamento por categoria
+  if (doc.categoria === 'legislacao') { arts.add('I'); arts.add('II'); }
+  if (doc.categoria === 'institucional') { arts.add('II'); }
+  if (doc.categoria === 'politicas') { arts.add('II'); arts.add('V'); }
+  if (doc.categoria === 'jurisprudencia') { arts.add('VI'); }
+
+  // 3. Mapeamento por palavras-chave no título
+  const t = doc.titulo.toLowerCase();
+  if (t.match(/educa|escola|ensino|formação|formacao|lei 10.639|lei 11.645/)) { arts.add('V'); arts.add('VII'); }
+  if (t.match(/saúde|saude|sus|sanitár|sanitar|sesai/)) arts.add('V');
+  if (t.match(/trabalho|emprego|renda|profissional|clt/)) arts.add('V');
+  if (t.match(/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/)) { arts.add('III'); arts.add('V'); }
+  if (t.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|tribunal|stf|stj|adpf/)) arts.add('VI');
+  if (t.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) { arts.add('V'); arts.add('VII'); }
+  if (t.match(/igualdade|discrimin|racis|racismo|antirrac|preconceito|injúria|injuria/)) { arts.add('I'); arts.add('II'); }
+  if (t.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal|genocíd|genocid/)) { arts.add('V'); arts.add('VI'); }
+  if (t.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|cota|conselho|comissão|comissao|órgão|orgao/)) arts.add('II');
+  if (t.match(/ódio|odio|propaganda|extremism|neonazi|supremaci/)) arts.add('IV');
+  if (t.match(/segregaç|segregac|apartheid|favela|periferi/)) arts.add('III');
+  if (t.match(/moradia|habitaç|habitac|urban/)) arts.add('V');
+  if (t.match(/participaç|participac|voto|eleitor|representaç|representac/)) arts.add('V');
+  if (t.match(/mulher|gênero|genero|lgbtqia|interseccion/)) arts.add('V');
+  if (t.match(/dado|estatístic|estatistic|censo|ibge|pesquisa|indicador/)) { arts.add('I'); arts.add('II'); }
+  if (t.match(/cigano|romani|povo de terreiro|comunidade tradicional/)) { arts.add('II'); arts.add('V'); }
+
+  // If no articles found, default to II (general state obligations)
+  if (arts.size === 0) arts.add('II');
+
+  return [...arts].sort();
+}
+
+/**
  * Valida se um documento é Balizador (regra de ouro normativa).
  * Retorna true se a sigla consta entre os 22 documentos oficiais.
  */
