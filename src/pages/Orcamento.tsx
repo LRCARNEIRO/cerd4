@@ -783,7 +783,7 @@ export default function Orcamento() {
                   Perspectiva 1 — Investimento Federal Total (com SESAI)
                 </h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Inclui a Saúde Indígena (SESAI), que representa <strong>~90% do total em 2018–2022</strong> e <strong>~60-85% em 2023–2025</strong>.
+                  Inclui a Saúde Indígena (SESAI), que representa a maior parcela do total — ver infográfico de mascaramento acima.
                 </p>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   <Card className="border-t-4 border-t-chart-1">
