@@ -951,10 +951,10 @@ export default function Orcamento() {
               </Card>
 
               {/* INFOGRÁFICO: EFEITO MASCARAMENTO SESAI */}
-              {stats?.porAnoDetalhado && stats?.semSesai?.porAnoDetalhado && (
+              {esferaStats.federal.porAnoDetalhado && esferaStats.federal.semSesai?.porAnoDetalhado && (
                 <SesaiMaskingInfographic
-                  porAnoDetalhado={stats.porAnoDetalhado}
-                  semSesaiPorAnoDetalhado={stats.semSesai.porAnoDetalhado}
+                  porAnoDetalhado={esferaStats.federal.porAnoDetalhado}
+                  semSesaiPorAnoDetalhado={esferaStats.federal.semSesai.porAnoDetalhado}
                   formatCurrency={formatCurrency}
                   formatCurrencyFull={formatCurrencyFull}
                 />
