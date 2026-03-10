@@ -150,6 +150,20 @@ export default function Normativa() {
           GoBack / Restaurar Versão
         </Button>
       </div>
+      {/* Main tabs: Acervo vs Linha do Tempo */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="w-full md:w-auto">
+          <TabsTrigger value="acervo" className="gap-1.5">
+            <FolderOpen className="w-4 h-4" />
+            Acervo Normativo
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="gap-1.5">
+            <Calendar className="w-4 h-4" />
+            Linha do Tempo
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="acervo" className="space-y-6 mt-0">
       {/* Alert */}
       <Card className="mb-6 border-l-4 border-l-amber-500">
         <CardContent className="pt-6">
