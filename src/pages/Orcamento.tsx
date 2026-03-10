@@ -509,13 +509,10 @@ export default function Orcamento() {
     ? Object.entries(stats.porPrograma).map(([programa, pago]) => ({ programa, pago: pago as number })).sort((a, b) => b.pago - a.pago).slice(0, 10)
     : [];
 
-  const esferaLabel = esfera === 'federal' ? 'Federal' : esfera === 'estadual' ? 'Estadual' : 'Municipal';
-  const EsferaIcon = esfera === 'federal' ? Building : esfera === 'estadual' ? Building2 : MapPin;
-
   return (
     <DashboardLayout
       title="Orçamento"
-      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018–2025)"
+      subtitle="Execução orçamentária de políticas raciais — Esfera Federal (2018–2025)"
     >
       {/* Alerta + Ingestão */}
       <Card className="mb-6 border-l-4 border-l-warning">
