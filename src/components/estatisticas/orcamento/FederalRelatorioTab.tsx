@@ -156,7 +156,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-mono text-xs">{formatCurrency(d.liquidado)}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(d.pago)}</TableCell>
                     <TableCell className="text-right text-xs">{d.pct.toFixed(1)}%</TableCell>
                     <TableCell className="text-right text-xs">{d.programas}</TableCell>
                   </TableRow>
