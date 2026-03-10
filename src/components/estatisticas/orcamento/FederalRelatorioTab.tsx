@@ -672,16 +672,16 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         const allRecs = [...records, ...sesaiRecords];
         const icerdByArtigo = ARTIGOS_CONVENCAO.map(art => {
           const matched = allRecs.filter(r => inferArtigosOrcamento(r).includes(art.numero));
-          const liq = matched.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-          return { numero: art.numero, titulo: art.titulo, liquidado: liq, programas: new Set(matched.map(r => r.programa)).size, registros: matched.length };
+          const pago = matched.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+          return { numero: art.numero, titulo: art.titulo, pago, programas: new Set(matched.map(r => r.programa)).size, registros: matched.length };
         });
-        const totalLiqIcerd = allRecs.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-        const artigosComDados = icerdByArtigo.filter(a => a.registros > 0).sort((a, b) => b.liquidado - a.liquidado);
+        const totalPagoIcerd = allRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+        const artigosComDados = icerdByArtigo.filter(a => a.registros > 0).sort((a, b) => b.pago - a.pago);
         const artigosSemDados = icerdByArtigo.filter(a => a.registros === 0);
         const topArt = artigosComDados[0];
         const bottomArt = artigosComDados.length > 1 ? artigosComDados[artigosComDados.length - 1] : null;
-        const topPct = topArt && totalLiqIcerd > 0 ? (topArt.liquidado / totalLiqIcerd * 100).toFixed(1) : '0';
-        const bottomPct = bottomArt && totalLiqIcerd > 0 ? (bottomArt.liquidado / totalLiqIcerd * 100).toFixed(1) : '0';
+        const topPct = topArt && totalPagoIcerd > 0 ? (topArt.pago / totalPagoIcerd * 100).toFixed(1) : '0';
+        const bottomPct = bottomArt && totalPagoIcerd > 0 ? (bottomArt.pago / totalPagoIcerd * 100).toFixed(1) : '0';
 
         return (
           <Card className="border-l-4 border-l-destructive">
