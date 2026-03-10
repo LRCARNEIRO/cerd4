@@ -368,7 +368,7 @@ async function enrichViaAPI(
     }
 
     for (const [codAcao, recs] of acaoGroups.entries()) {
-      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoAcao=${codAcao}&pagina=1`;
+      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&acao=${codAcao}&pagina=1`;
       console.log(`  [API-acao] ${url}`);
 
       try {
