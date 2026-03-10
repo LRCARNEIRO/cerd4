@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
-import { DollarSign, TrendingUp, Building, Building2, MapPin, ExternalLink, AlertTriangle, Database, TreePine, Tent, Users, Info, BookOpen, PieChart, EyeOff, Trash2, FileText, Scale } from 'lucide-react';
+import { Building, ExternalLink, AlertTriangle, TreePine, Tent, Users, Info, BookOpen, PieChart, FileText, Scale, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -19,17 +19,12 @@ import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
 import { AuditFooter } from '@/components/ui/audit-footer';
-import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/EstadualResumoComparativo';
 import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/MetodologiaFederalSection';
-import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/EstadualRelatorioTab';
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 
 
-import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
-import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
-import { MunicipalIngestionPanel } from '@/components/dashboard/MunicipalIngestionPanel';
 import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
@@ -62,51 +57,8 @@ const estruturaFederal = [
   ]}
 ];
 
-const estruturaEstadual = [
-  { uf: 'BA', estado: 'Bahia', orgao: 'SEPROMI', url: 'https://www.transparencia.ba.gov.br/' },
-  { uf: 'SP', estado: 'São Paulo', orgao: 'Sec. Justiça e Cidadania', url: 'https://www.fazenda.sp.gov.br/SigeoLei131/Paginas/FlexConsDespworking.aspx' },
-  { uf: 'RJ', estado: 'Rio de Janeiro', orgao: 'SEASDH', url: 'https://www.transparencia.rj.gov.br/' },
-  { uf: 'MG', estado: 'Minas Gerais', orgao: 'SEDHS', url: 'https://www.transparencia.mg.gov.br/' },
-  { uf: 'RS', estado: 'Rio Grande do Sul', orgao: 'SDH', url: 'https://transparencia.rs.gov.br/' },
-  { uf: 'PE', estado: 'Pernambuco', orgao: 'SecMulher/FUNDARPE', url: 'https://transparencia.pe.gov.br/' },
-  { uf: 'MA', estado: 'Maranhão', orgao: 'SEDIHPOP', url: 'https://www.transparencia.ma.gov.br/' },
-  { uf: 'PA', estado: 'Pará', orgao: 'SEIRDH', url: 'https://www.transparencia.pa.gov.br/' }
-];
 
-const estruturaMunicipal = [
-  // NORTE
-  { municipio: 'Porto Velho', uf: 'RO', orgao: 'SMDH', url: 'https://transparencia.portovelho.ro.gov.br/' },
-  { municipio: 'Rio Branco', uf: 'AC', orgao: 'SMDH', url: 'https://transparencia.riobranco.ac.gov.br/' },
-  { municipio: 'Manaus', uf: 'AM', orgao: 'SEMDIH', url: 'https://transparencia.manaus.am.gov.br/' },
-  { municipio: 'Boa Vista', uf: 'RR', orgao: 'SMDH', url: 'https://transparencia.boavista.rr.gov.br/' },
-  { municipio: 'Belém', uf: 'PA', orgao: 'CONEN', url: 'https://transparencia.belem.pa.gov.br/' },
-  { municipio: 'Macapá', uf: 'AP', orgao: 'SMDH', url: 'https://transparencia.macapa.ap.gov.br/' },
-  { municipio: 'Palmas', uf: 'TO', orgao: 'SMDH', url: 'https://transparencia.palmas.to.gov.br/' },
-  // NORDESTE
-  { municipio: 'São Luís', uf: 'MA', orgao: 'SEIR', url: 'https://transparencia.saoluis.ma.gov.br/' },
-  { municipio: 'Teresina', uf: 'PI', orgao: 'SEMCASPI', url: 'https://transparencia.teresina.pi.gov.br/' },
-  { municipio: 'Fortaleza', uf: 'CE', orgao: 'Coord. Igualdade Racial', url: 'https://transparencia.fortaleza.ce.gov.br/' },
-  { municipio: 'Natal', uf: 'RN', orgao: 'SEMJIDH', url: 'https://transparencia.natal.rn.gov.br/' },
-  { municipio: 'João Pessoa', uf: 'PB', orgao: 'Coord. Igualdade Racial', url: 'https://transparencia.joaopessoa.pb.gov.br/' },
-  { municipio: 'Recife', uf: 'PE', orgao: 'Ger. Igualdade Racial', url: 'https://transparencia.recife.pe.gov.br/' },
-  { municipio: 'Maceió', uf: 'AL', orgao: 'SMDH', url: 'https://transparencia.maceio.al.gov.br/' },
-  { municipio: 'Aracaju', uf: 'SE', orgao: 'SMDH', url: 'https://transparencia.aracaju.se.gov.br/' },
-  { municipio: 'Salvador', uf: 'BA', orgao: 'SEMUR', url: 'https://transparencia.salvador.ba.gov.br/' },
-  // CENTRO-OESTE
-  { municipio: 'Campo Grande', uf: 'MS', orgao: 'SMDH', url: 'https://transparencia.campogrande.ms.gov.br/' },
-  { municipio: 'Cuiabá', uf: 'MT', orgao: 'SMDH', url: 'https://transparencia.cuiaba.mt.gov.br/' },
-  { municipio: 'Goiânia', uf: 'GO', orgao: 'SMDH', url: 'https://transparencia.goiania.go.gov.br/' },
-  { municipio: 'Brasília', uf: 'DF', orgao: 'Sec. Justiça e Cidadania', url: 'https://www.transparencia.df.gov.br/' },
-  // SUDESTE
-  { municipio: 'Belo Horizonte', uf: 'MG', orgao: 'SMADC', url: 'https://prefeitura.pbh.gov.br/transparencia' },
-  { municipio: 'Vitória', uf: 'ES', orgao: 'SMDH', url: 'https://transparencia.vitoria.es.gov.br/' },
-  { municipio: 'Rio de Janeiro', uf: 'RJ', orgao: 'SMDHC', url: 'https://transparencia.prefeitura.rio/' },
-  { municipio: 'São Paulo', uf: 'SP', orgao: 'SMDHC', url: 'https://orcamento.sf.prefeitura.sp.gov.br/' },
-  // SUL
-  { municipio: 'Curitiba', uf: 'PR', orgao: 'FCC/SMDH', url: 'https://transparencia.curitiba.pr.gov.br/' },
-  { municipio: 'Florianópolis', uf: 'SC', orgao: 'SMDH', url: 'https://transparencia.florianopolis.sc.gov.br/' },
-  { municipio: 'Porto Alegre', uf: 'RS', orgao: 'SMDH', url: 'https://transparencia.portoalegre.rs.gov.br/' },
-];
+
 
 type ThematicFilter = 'racial' | 'indigena' | 'quilombola' | 'ciganos';
 
@@ -328,33 +280,29 @@ function EsferaSummaryCards({
   );
 }
 
-type Esfera = 'federal' | 'estadual' | 'municipal';
+type Esfera = 'federal';
 
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
   const queryClient = useQueryClient();
 
-  const [esfera, setEsfera] = useState<Esfera>('federal');
-
-  // Thematic filters per esfera
+  // Thematic filters
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [estadualFilters, setEstadualFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
-  const [municipalFilters, setMunicipalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
 
-  const handleResetEsfera = async (esferaKey: string, label: string) => {
-    if (!confirm(`Apagar todos os dados orçamentários da esfera "${label}"? Esta ação não pode ser desfeita.`)) return;
+  const handleResetFederal = async () => {
+    if (!confirm('Apagar todos os dados orçamentários federais? Esta ação não pode ser desfeita.')) return;
     try {
       const { data, error } = await supabase.functions.invoke('reset-orcamento', {
-        body: { esfera: esferaKey },
+        body: { esfera: 'federal' },
       });
       if (error) throw error;
-      toast.success(data?.message || `Dados ${label} apagados com sucesso.`);
+      toast.success(data?.message || 'Dados federais apagados com sucesso.');
       queryClient.invalidateQueries();
     } catch {
-      toast.error(`Erro ao apagar dados ${label}.`);
+      toast.error('Erro ao apagar dados federais.');
     }
   };
 
@@ -371,64 +319,49 @@ export default function Orcamento() {
   const isLoading = orcLoading || statsLoading;
   const hasData = dadosOrcamentarios && dadosOrcamentarios.length > 0;
 
-  // Classify all records by esfera + thematic
+  // Classify federal records by thematic
   const classified = useMemo(() => {
-    const result: Record<'federal' | 'estadual' | 'municipal', { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }> & { sesai: DadoOrcamentario[] } = {
+    const result: { federal: { all: DadoOrcamentario[]; byTheme: Record<ThematicFilter, DadoOrcamentario[]> }; sesai: DadoOrcamentario[] } = {
       federal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
-      estadual: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
-      municipal: { all: [], byTheme: { racial: [], indigena: [], quilombola: [], ciganos: [] } },
       sesai: [],
     };
 
     if (!dadosOrcamentarios) return result;
 
     for (const item of dadosOrcamentarios) {
+      // Skip non-federal records
+      if (item.esfera === 'estadual' || item.esfera === 'municipal') continue;
+
       const theme = classifyThematic(item);
       
       if (theme === 'sesai') {
         result.sesai.push(item);
-        if (item.esfera !== 'estadual' && item.esfera !== 'municipal') {
-          result.federal.all.push(item);
-          result.federal.byTheme.indigena.push(item);
-        }
+        result.federal.all.push(item);
+        result.federal.byTheme.indigena.push(item);
         continue;
       }
 
-      let esferaKey: 'federal' | 'estadual' | 'municipal' = 'federal';
-      if (item.esfera === 'estadual') esferaKey = 'estadual';
-      else if (item.esfera === 'municipal') esferaKey = 'municipal';
-
-      result[esferaKey].all.push(item);
-      result[esferaKey].byTheme[theme].push(item);
+      result.federal.all.push(item);
+      result.federal.byTheme[theme].push(item);
     }
 
     return result;
   }, [dadosOrcamentarios]);
 
-  // Apply filters to get visible records per esfera
-  const getFilteredRecords = (esferaKey: Esfera, filters: Record<ThematicFilter, boolean>) => {
-    const data = classified[esferaKey];
+  const getThemeCounts = () => ({
+    racial: classified.federal.byTheme.racial.length,
+    indigena: classified.federal.byTheme.indigena.length,
+    quilombola: classified.federal.byTheme.quilombola.length,
+    ciganos: classified.federal.byTheme.ciganos.length,
+  });
+
+  const currentRecords = useMemo(() => {
     const result: DadoOrcamentario[] = [];
     for (const key of THEMATIC_FILTERS.map(f => f.key)) {
-      if (filters[key]) result.push(...data.byTheme[key]);
+      if (federalFilters[key]) result.push(...classified.federal.byTheme[key]);
     }
     return result;
-  };
-
-  const getThemeCounts = (esferaKey: Esfera) => {
-    const data = classified[esferaKey];
-    return {
-      racial: data.byTheme.racial.length,
-      indigena: data.byTheme.indigena.length,
-      quilombola: data.byTheme.quilombola.length,
-      ciganos: data.byTheme.ciganos.length,
-    };
-  };
-
-  const currentFilters = esfera === 'federal' ? federalFilters : esfera === 'estadual' ? estadualFilters : municipalFilters;
-  const currentToggle = esfera === 'federal' ? toggleFilter(setFederalFilters) : esfera === 'estadual' ? toggleFilter(setEstadualFilters) : toggleFilter(setMunicipalFilters);
-
-  const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
+  }, [classified, federalFilters]);
 
 
   /** Compute per-esfera summary stats — single source of truth for all tabs */
@@ -509,8 +442,6 @@ export default function Orcamento() {
     };
     return {
       federal: compute(classified.federal.all),
-      estadual: compute(classified.estadual.all),
-      municipal: compute(classified.municipal.all),
     };
   }, [classified]);
 
@@ -535,13 +466,10 @@ export default function Orcamento() {
     ? Object.entries(stats.porPrograma).map(([programa, pago]) => ({ programa, pago: pago as number })).sort((a, b) => b.pago - a.pago).slice(0, 10)
     : [];
 
-  const esferaLabel = esfera === 'federal' ? 'Federal' : esfera === 'estadual' ? 'Estadual' : 'Municipal';
-  const EsferaIcon = esfera === 'federal' ? Building : esfera === 'estadual' ? Building2 : MapPin;
-
   return (
     <DashboardLayout
       title="Orçamento"
-      subtitle="Execução orçamentária de políticas raciais — Federal, Estadual e Municipal (2018–2025)"
+      subtitle="Execução orçamentária de políticas raciais — Esfera Federal (2018–2025)"
     >
       {/* Alerta + Ingestão */}
       <Card className="mb-6 border-l-4 border-l-warning">
@@ -557,57 +485,26 @@ export default function Orcamento() {
               </p>
             </div>
             <div className="flex gap-2 flex-wrap items-center">
-              {/* FederalIngestionPanel e Reset Federal ocultados — base já organizada. Reativar se necessário. */}
               <KeywordIngestionPanel />
-              <EstadualIngestionPanel />
-              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('estadual', 'Estadual')}>
-                <Trash2 className="w-3.5 h-3.5" /> Reset Estadual
-              </Button>
-              <MunicipalIngestionPanel />
-              <Button variant="ghost" size="sm" className="gap-1 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleResetEsfera('municipal', 'Municipal')}>
-                <Trash2 className="w-3.5 h-3.5" /> Reset Municipal
-              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* ===== SELETOR DE ESFERA ===== */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm font-medium text-muted-foreground mr-2">Esfera:</span>
-        {([
-          { key: 'federal' as Esfera, label: 'Federal', icon: Building, count: classified.federal.all.length },
-          { key: 'estadual' as Esfera, label: 'Estadual', icon: Building2, count: classified.estadual.all.length },
-          { key: 'municipal' as Esfera, label: 'Municipal', icon: MapPin, count: classified.municipal.all.length },
-        ]).map(e => (
-          <Button
-            key={e.key}
-            variant={esfera === e.key ? 'default' : 'outline'}
-            size="sm"
-            className="gap-1.5"
-            onClick={() => setEsfera(e.key)}
-          >
-            <e.icon className="w-4 h-4" />
-            {e.label}
-            {e.count > 0 && <Badge variant={esfera === e.key ? 'secondary' : 'outline'} className="ml-1 text-xs">{e.count}</Badge>}
-          </Button>
-        ))}
-      </div>
-
-      {/* Key Metrics for selected esfera */}
+      {/* Key Metrics */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
         </div>
       ) : (
-        <EsferaSummaryCards stats={esferaStats[esfera]} esferaLabel={esferaLabel} formatCurrency={formatCurrency} />
+        <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
       )}
 
-      {/* ===== SUB-ABAS filtradas pela esfera selecionada ===== */}
+      {/* ===== SUB-ABAS ===== */}
       <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="visao-geral">
-            <EsferaIcon className="w-4 h-4 mr-1" />
+            <Building className="w-4 h-4 mr-1" />
             Visão Geral
           </TabsTrigger>
           <TabsTrigger value="fontes">
@@ -635,26 +532,24 @@ export default function Orcamento() {
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
           {/* Thematic filter bar */}
-          <ThematicFilterBar filters={currentFilters} counts={getThemeCounts(esfera)} onToggle={currentToggle} />
+          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
 
           {/* Article filter */}
           <div className="mb-4">
             <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
           </div>
 
-          {/* Federal-specific: 5034 toggle */}
-
           {/* Data listing — filtered by article */}
           <EsferaContent
             records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
             isLoading={isLoading}
-            emptyMessage={`Nenhum programa ${esferaLabel.toLowerCase()} encontrado com os filtros selecionados.`}
-            useOrgaoSection={esfera === 'federal'}
-            showExclusions={esfera === 'federal'}
+            emptyMessage="Nenhum programa federal encontrado com os filtros selecionados."
+            useOrgaoSection={true}
+            showExclusions={true}
           />
 
-          {/* Federal-specific: charts */}
-          {esfera === 'federal' && hasData && !isLoading && (
+          {/* Charts */}
+          {hasData && !isLoading && (
             <div className="mt-6 space-y-6">
               {/* Infográfico: Programas e Ações por Grupo Focal */}
               {(() => {
@@ -801,117 +696,38 @@ export default function Orcamento() {
         {/* ===== FONTES ===== */}
         <TabsContent value="fontes">
           <div className="space-y-6">
-            {esfera === 'federal' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
-                <div className="space-y-4">
-                  {estruturaFederal.map((cat) => (
-                    <Card key={cat.categoria}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-base flex items-center gap-2">
-                            <Building className="w-5 h-5 text-primary" />
-                            {cat.categoria}
-                          </CardTitle>
-                          <Badge variant="outline">{cat.orgao}</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-wrap gap-3">
-                          {cat.fontes.map((fonte, idx) => (
-                            <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
-                              className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
-                              <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
-                            </a>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {esfera === 'estadual' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><Building2 className="w-4 h-4 text-success" /> Fontes Estaduais</h3>
-                <Card>
-                  <CardContent className="pt-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>UF</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Órgão Responsável</TableHead>
-                          <TableHead>Portal</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {estruturaEstadual.map((est) => (
-                          <TableRow key={est.uf}>
-                            <TableCell><Badge variant="outline">{est.uf}</Badge></TableCell>
-                            <TableCell className="font-medium">{est.estado}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{est.orgao}</TableCell>
-                            <TableCell>
-                              <a href={est.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
-                                <ExternalLink className="w-3.5 h-3.5" /> Acessar
-                              </a>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+            <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
+            <div className="space-y-4">
+              {estruturaFederal.map((cat) => (
+                <Card key={cat.categoria}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Building className="w-5 h-5 text-primary" />
+                        {cat.categoria}
+                      </CardTitle>
+                      <Badge variant="outline">{cat.orgao}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-3">
+                      {cat.fontes.map((fonte, idx) => (
+                        <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
+                          <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
+                        </a>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="border-l-4 border-l-chart-2">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>Fonte principal estadual:</strong> Matriz de Saldos Contábeis (MSC) via SICONFI/Tesouro Nacional. A API SICONFI (RREO/DCA) retorna apenas dados agregados por função/subfunção. Os dados granulares por ação PPA foram mapeados manualmente a partir dos códigos de ação estaduais.
-                    </p>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {esfera === 'municipal' && (
-              <>
-                <h3 className="font-semibold text-sm flex items-center gap-2"><MapPin className="w-4 h-4 text-chart-1" /> Fontes Municipais</h3>
-                <Card>
-                  <CardContent className="pt-6">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Município</TableHead>
-                          <TableHead>UF</TableHead>
-                          <TableHead>Órgão Responsável</TableHead>
-                          <TableHead>Portal</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {estruturaMunicipal.map((mun) => (
-                          <TableRow key={mun.municipio}>
-                            <TableCell className="font-medium">{mun.municipio}</TableCell>
-                            <TableCell><Badge variant="outline">{mun.uf}</Badge></TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{mun.orgao}</TableCell>
-                            <TableCell>
-                              <a href={mun.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
-                                <ExternalLink className="w-3.5 h-3.5" /> Acessar
-                              </a>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+              ))}
+            </div>
           </div>
         </TabsContent>
 
         {/* ===== RESUMO COMPARATIVO ===== */}
         <TabsContent value="resumo">
-          {esfera === 'federal' && (
+          <div className="space-y-6">
             <div className="space-y-6">
               {/* Nota Explicativa Federal */}
               <Card className="border-l-4 border-l-warning">
@@ -1168,7 +984,7 @@ export default function Orcamento() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-chart-4" />
+                        <Building className="w-5 h-5 text-chart-4" />
                         Ranking de Gastos por Programa — Políticas Não-Saúde (Pago Acumulado)
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
@@ -1261,63 +1077,24 @@ export default function Orcamento() {
                 </div>
               )}
             </div>
-          )}
-
-          {esfera === 'estadual' && (
-            <div className="space-y-6">
-              {classified.estadual.all.length > 0 ? (
-                <EstadualResumoComparativo
-                  records={classified.estadual.all}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Estadual" descricao="Dados estaduais ainda não disponíveis para o Resumo Comparativo. Insira dados via MSC/PPA." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'municipal' && (
-            <EmptyEsferaCard esfera="Municipal" descricao="Dados municipais ainda não disponíveis para o Resumo Comparativo. Utilize portais de transparência municipais." />
-          )}
+          </div>
         </TabsContent>
 
         {/* ===== RELATÓRIO ===== */}
         <TabsContent value="relatorio">
-          {esfera === 'estadual' && (
-            <div className="space-y-6">
-              {classified.estadual.all.length > 0 ? (
-                <EstadualRelatorioTab
-                  records={classified.estadual.all}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Estadual" descricao="Dados estaduais não disponíveis para o Relatório. Insira dados via MSC/PPA." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'federal' && (
-            <div className="space-y-6">
-              {classified.federal.all.length > 0 ? (
-                <FederalRelatorioTab
-                  records={classified.federal.all}
-                  sesaiRecords={classified.sesai}
-                  stats={stats}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                  
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'municipal' && (
-            <EmptyEsferaCard esfera="Municipal" descricao="Relatório Municipal em elaboração. Dados ainda insuficientes." />
-          )}
+          <div className="space-y-6">
+            {classified.federal.all.length > 0 ? (
+              <FederalRelatorioTab
+                records={classified.federal.all}
+                sesaiRecords={classified.sesai}
+                stats={stats}
+                formatCurrency={formatCurrency}
+                formatCurrencyFull={formatCurrencyFull}
+              />
+            ) : (
+              <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />
+            )}
+          </div>
         </TabsContent>
 
         {/* ===== ARTIGOS ICERD ===== */}
@@ -1332,164 +1109,11 @@ export default function Orcamento() {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-primary" />
-                  Metodologia de Levantamento Orçamentário — {esferaLabel}
+                  Metodologia de Levantamento Orçamentário — Federal
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 text-sm text-muted-foreground">
-                {esfera === 'federal' && <MetodologiaFederalSection />}
-
-                {esfera === 'estadual' && (
-                  <>
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Estadual em 4 Camadas</h4>
-                      <p>A base orçamentária estadual (2018–2025) é construída em 4 camadas obrigatórias, consultando a API SICONFI estado por estado. O período cobre <strong>3 ciclos de PPA</strong> (2016-2019, 2020-2023, 2024-2027).</p>
-                      <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                        <div>
-                          <h5 className="font-semibold text-foreground">Camada 1 — Identificação de Ações dos PPAs Estaduais</h5>
-                          <p>Busca por <strong>radicais e palavras-chave</strong> em todos os campos descritivos das ações orçamentárias (título, nome, justificativa, objetivo — campos <code>conta</code>, <code>rotulo</code>, <code>cod_conta</code> e <code>coluna</code> no SICONFI). A API SICONFI não expõe os PPAs diretamente, mas as ações do PPA se manifestam nos dados de execução orçamentária do <strong>DCA Anexo I-E</strong> (2018–2024) e <strong>RREO Anexo 02</strong> (2025+).</p>
-                          <p className="mt-1">Uma vez identificadas, capturam-se os <strong>códigos de ação</strong> e a <strong>dotação inicial</strong> de cada programa/ação selecionado.</p>
-                        </div>
-
-                        {/* Palavras-chave */}
-                        <div className="bg-muted/30 rounded-lg p-4 space-y-3 border border-border/50">
-                          <p className="font-semibold text-foreground text-sm">📋 Palavras-Chave e Radicais</p>
-                          
-                          <div>
-                            <p className="font-semibold text-foreground text-xs mb-1">Radicais Unificados (capturam variações morfológicas)</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {['indígen', 'indigen', 'quilombol', 'cigan', 'étnic', 'etnic', 'palmares', 'funai', 'sesai'].map(r => (
-                                <Badge key={r} variant="secondary" className="text-xs font-mono">{r}*</Badge>
-                              ))}
-                            </div>
-                            <p className="text-xs mt-1 italic">Ex: <code>quilombol*</code> captura: quilombola, quilombolas, quilombos.</p>
-                          </div>
-
-                          <div>
-                            <p className="font-semibold text-foreground text-xs mb-1">Palavras-Chave Específicas</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {[
-                                'igualdade racial', 'promoção da igualdade', 'racismo', 'racial',
-                                'negro', 'negra', 'afro', 'afrodescendente', 'consciência negra',
-                                'matriz africana', 'capoeira', 'candomblé', 'umbanda', 'terreiro', 'seppir',
-                                'povos originários', 'terra indígena',
-                                'povos tradicionais', 'comunidades tradicionais',
-                                'povo cigano', 'romani', 'discriminação racial'
-                              ].map(k => (
-                                <Badge key={k} variant="outline" className="text-xs">{k}</Badge>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div>
-                            <p className="font-semibold text-destructive text-xs mb-1">🚫 Termos Genéricos Excluídos</p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {[
-                                'direitos da cidadania', 'direitos individuais coletivos',
-                                'assistência comunitária', 'direitos individuais',
-                                'gestão administrativa', 'administração geral'
-                              ].map(e => (
-                                <Badge key={e} variant="destructive" className="text-xs opacity-70">{e}</Badge>
-                              ))}
-                            </div>
-                            <p className="text-xs mt-1 italic">Capturam programas universais sem relação com política racial/étnica.</p>
-                          </div>
-
-                          <div className="bg-primary/10 rounded p-3 border border-primary/30">
-                            <p className="text-xs"><strong>Campo de aplicação:</strong> Os radicais são aplicados sobre todos os campos descritivos retornados pelo SICONFI (conta, rotulo, cod_conta, coluna). O campo <code>razao_selecao</code> documenta o critério de inclusão de cada registro.</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h5 className="font-semibold text-foreground">Camada 3 — Cruzamento MSC/SICONFI (obrigatório)</h5>
-                          <p>Os <strong>códigos de ação</strong> identificados na Camada 1 são rastreados na <strong>Matriz de Saldos Contábeis</strong> (MSC Orçamentária, classe 5 — despesa, mês 12) para capturar <strong>empenho e liquidação real</strong>, mesmo que o SICONFI omita descritivos textuais nos dados contábeis. Este cruzamento é obrigatório e executado automaticamente para todos os estados (2018–2024).</p>
-                        </div>
-
-                        <div>
-                          <h5 className="font-semibold text-foreground">Camada 4 — Transição de Códigos entre PPAs</h5>
-                          <p>Quando o código de ação de um PPA anterior é diferente do código no ciclo seguinte (ex: 2016-2019 → 2020-2023 → 2024-2027), os registros são rastreados por <strong>similaridade de descrição</strong> para garantir a continuidade da série histórica. Na prática, a deduplicação por par <strong>programa × ano</strong> preserva o registro com maior dotação inicial quando há sobreposição.</p>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">2. Processamento em Lotes</h4>
-                      <div className="bg-primary/10 rounded-lg p-4 space-y-2 border border-primary/30">
-                        <p>Para evitar limites de CPU (WORKER_LIMIT), a ingestão processa <strong>1 estado por chamada</strong>. O frontend orquestra as chamadas sequencialmente com barra de progresso, permitindo processar todos os 27 estados sem timeout.</p>
-                        <p className="text-xs italic">Cada chamada executa as 4 camadas completas (DCA/RREO → MSC → deduplicação) para todos os anos selecionados de um único estado.</p>
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">3. Fontes de Dados por Período</h4>
-                      <div className="space-y-3">
-                        <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
-                          <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">DCA Anexo I-E (2018–2024)</p>
-                          <p className="text-sm">Declaração de Contas Anuais — dados consolidados anuais com dotação, empenho, liquidação e pagamento. Contém os descritivos das ações do PPA.</p>
-                        </div>
-                        <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
-                          <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">RREO Anexo 02 (2025+)</p>
-                          <p className="text-sm">Relatório Resumido de Execução Orçamentária — dados bimestrais (consulta do 6º ao 1º bimestre até encontrar dados). Valores parciais sujeitos a ajustes até o fechamento do Balanço Geral.</p>
-                        </div>
-                        <div className="p-3 rounded-md border border-blue-500/30 bg-blue-500/5">
-                          <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">MSC Orçamentária (obrigatória)</p>
-                          <p className="text-sm">Matriz de Saldos Contábeis — classe 5 (despesa), mês 12. Complementa dados de empenho/liquidação quando ausentes no DCA, usando os códigos de ação identificados na Camada 1.</p>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">4. Cobertura</h4>
-                      <div className="space-y-3">
-                        <div className="p-3 rounded-md border border-green-500/30 bg-green-500/5">
-                          <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-1">✅ 27 estados + DF</p>
-                          <p className="text-sm">Todos os estados são consultados na API SICONFI. A quantidade de registros capturados depende de cada estado possuir programas com termos raciais/étnicos nos descritivos contábeis.</p>
-                        </div>
-                        <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
-                          <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Limitação da API SICONFI</p>
-                          <p className="text-sm">O DCA/RREO retorna dados de Função/Subfunção (agregados contábeis). A identificação de programas raciais depende da presença de palavras-chave nos campos descritivos. Ações dos PPAs sem descritivos textuais no SICONFI podem não ser capturadas na Camada 1, mas o cruzamento MSC (Camada 3) mitiga essa limitação.</p>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">5. Dados de 2025</h4>
-                      <p>Os valores de 2025 refletem o acumulado do 6º Bimestre (Janeiro a Dezembro de 2025). Valores de "Liquidação" podem sofrer ajustes marginais até o fechamento definitivo do Balanço Geral em março de 2026.</p>
-                    </section>
-                  </>
-                )}
-
-                {esfera === 'municipal' && (
-                  <>
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">1. Estratégia de Coleta Municipal</h4>
-                      <p>A coleta municipal abrange potencialmente <strong>5.570 municípios</strong> via RREO/DCA do SICONFI, com os mesmos critérios de filtragem do estadual (palavras-chave + contas específicas).</p>
-                      <p>A lista de municípios é obtida dinamicamente do endpoint <code className="bg-muted px-1 rounded">/entes</code> do SICONFI.</p>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base">2. Palavras-chave de Filtragem</h4>
-                      <div className="flex flex-wrap gap-1.5">
-                        {[
-                          "racial", "racismo", "igualdade racial", "quilombola",
-                          "indígena", "cigano", "romani", "terreiro",
-                          "matriz africana", "afro", "promoção da igualdade",
-                          "cultura negra", "capoeira", "negro", "negra",
-                          "candomblé", "umbanda", "povos tradicionais",
-                        ].map(kw => (
-                          <code key={kw} className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{kw}</code>
-                        ))}
-                      </div>
-                    </section>
-
-                    <section className="space-y-2">
-                      <h4 className="font-semibold text-foreground text-base text-destructive">3. Limitações</h4>
-                      <div className="p-3 rounded-md border border-amber-500/30 bg-amber-500/5">
-                        <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Status Atual</p>
-                        <p className="text-sm">Dados municipais ainda não detalhados na base. Portais de transparência municipais exigem coleta individualizada.</p>
-                      </div>
-                    </section>
-                  </>
-                )}
+                <MetodologiaFederalSection />
               </CardContent>
             </Card>
           </div>
