@@ -81,6 +81,25 @@ export function FederalIngestionPanel() {
           console.warn('Dotação LOA complementar falhou:', dotE);
         }
 
+        // Etapa 3: Enriquecimento de dotação via re-consulta API (Opção A)
+        toast({ title: 'Enriquecendo registros sem dotação...' });
+        let totalEnriched = 0;
+        for (const ano of selectedAnos) {
+          try {
+            const { data: enrichData } = await supabase.functions.invoke('enrich-dotacao', {
+              body: { ano, limit: 100 },
+            });
+            if (enrichData?.success) {
+              totalEnriched += enrichData.atualizados || 0;
+            }
+          } catch (enrichErr) {
+            console.warn(`Enriquecimento ${ano} falhou:`, enrichErr);
+          }
+        }
+        if (totalEnriched > 0) {
+          toast({ title: `Dotação enriquecida: ${totalEnriched} registros atualizados via API` });
+        }
+
         queryClient.invalidateQueries({ queryKey: ['dados-orcamentarios'] });
         queryClient.invalidateQueries({ queryKey: ['orcamento-stats'] });
       } else {
