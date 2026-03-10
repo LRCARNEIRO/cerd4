@@ -97,7 +97,7 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
             </Badge>
           ))}
           {getDocArticles(doc).map((art) => (
-            <Badge key={art} variant="outline" className="text-[10px] font-bold border-accent bg-accent/10 text-accent-foreground">
+            <Badge key={art} variant="outline" className="text-[10px] font-bold border-primary/30 bg-primary/10 text-primary">
               Art. {art}
             </Badge>
           ))}
