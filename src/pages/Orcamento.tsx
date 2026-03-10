@@ -1027,7 +1027,7 @@ export default function Orcamento() {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-chart-4" />
+                        <Building className="w-5 h-5 text-chart-4" />
                         Ranking de Gastos por Programa — Políticas Não-Saúde (Pago Acumulado)
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">
