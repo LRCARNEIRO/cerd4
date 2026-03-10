@@ -29,10 +29,12 @@ type ResultData = {
 export function FederalIngestionPanel() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [enriching, setEnriching] = useState(false);
   const [selectedAnos, setSelectedAnos] = useState<number[]>([2023, 2024, 2025]);
   const [selectedCamadas, setSelectedCamadas] = useState<string[]>(['programas', 'subfuncao', 'orgaos']);
   const [result, setResult] = useState<ResultData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [enrichResult, setEnrichResult] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
