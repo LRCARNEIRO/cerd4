@@ -154,27 +154,19 @@ Deno.serve(async (req) => {
 
     console.log(`  ${programGroups.size} programas únicos para consultar na API`);
 
-    // Step 3: Query API for each programa+ação
+    // Step 3: Query API for each programa (without ação filter — API doesn't support it)
     let updated = 0;
     let apiCalls = 0;
     let noData = 0;
     const erros: string[] = [];
 
-    for (const [key, group] of queryGroups) {
-      const [codProg, codAcao] = key.split("|");
-
-      // Build API URL — the API uses "programa" and "acao" as param names (NOT "codigoPrograma")
-      const params: Record<string, string> = {
-        ano: String(ano),
-        programa: codProg,
-      };
-      if (codAcao) params.acao = codAcao;
-
+    for (const [codProg, acaoGroups] of programGroups) {
       const url = new URL(`${API_BASE}/despesas/por-funcional-programatica`);
-      for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+      url.searchParams.set("ano", String(ano));
+      url.searchParams.set("programa", codProg);
       url.searchParams.set("pagina", "1");
 
-      console.log(`  API: ${codProg}/${codAcao || "*"} (${group.ids.length} registros)`);
+      console.log(`  API programa=${codProg} (${acaoGroups.length} ações)`);
       apiCalls++;
 
       const data = await fetchWithRetry(url.toString(), apiKey);
@@ -185,75 +177,69 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Log first item keys to debug field names
-      if (apiCalls <= 3) {
-        const firstItem = data[0];
-        const dotFields = Object.keys(firstItem).filter(k => 
-          k.toLowerCase().includes("dot") || k.toLowerCase().includes("valor") || 
-          k.toLowerCase().includes("orc") || k.toLowerCase().includes("cred")
-        );
-        console.log(`    → ${data.length} items. Dot fields: ${dotFields.join(", ") || "NONE"}`);
-        console.log(`    → Sample values: ${dotFields.map(f => `${f}=${firstItem[f]}`).join(", ")}`);
-        console.log(`    → All keys: ${Object.keys(firstItem).join(", ")}`);
+      // Log field names for first few calls
+      if (apiCalls <= 2) {
+        const keys = Object.keys(data[0]);
+        console.log(`    → ${data.length} items. Keys: ${keys.join(", ")}`);
+        const dotFields = keys.filter(k => k.toLowerCase().includes("dot") || k.toLowerCase().includes("valor"));
+        console.log(`    → Dot fields: ${dotFields.map(f => `${f}=${data[0][f]}`).join(", ") || "NONE"}`);
       }
 
-      // Aggregate dotação across localizadores (MAX for dotação)
-      let dotInicial = 0;
-      let dotAutorizada = 0;
-
+      // Build dotação map by ação code from API response
+      const dotByAcao = new Map<string, { dotInicial: number; dotAutorizada: number }>();
       for (const item of data) {
-        const itemCodAcao = item.codigoAcao || "";
-        // If we filtered by ação, only match that ação
-        if (codAcao && itemCodAcao !== codAcao) continue;
-
+        const itemAcao = item.codigoAcao || "";
         const di = parseBRL(item.dotacaoInicial || item.valorDotacaoInicial) || 0;
         const da = parseBRL(item.dotacaoAtualizada || item.valorDotacaoAtualizada) || 0;
 
-        // For dotação: use MAX across localizadores (same value repeated)
-        dotInicial = Math.max(dotInicial, di);
-        dotAutorizada = Math.max(dotAutorizada, da);
-      }
-
-      if (dotInicial === 0 && dotAutorizada === 0) {
-        noData++;
-        console.log(`    → Dotação = 0 na API (campos ausentes)`);
-        continue;
-      }
-
-      console.log(`    → Dot.Inicial: R$ ${(dotInicial / 1e6).toFixed(2)}mi | Dot.Autorizada: R$ ${(dotAutorizada / 1e6).toFixed(2)}mi`);
-
-      // Step 4: Update all records in this group
-      for (const id of group.ids) {
-        const updateData: Record<string, number | null> = {};
-        if (dotInicial > 0) updateData.dotacao_inicial = dotInicial;
-        if (dotAutorizada > 0) updateData.dotacao_autorizada = dotAutorizada;
-
-        // Recalculate percentual_execucao
-        const rec = records.find(r => r.id === id);
-        const pago = Number(rec?.pago) || 0;
-        const dotRef = dotAutorizada || dotInicial;
-        if (dotRef > 0 && pago > 0) {
-          updateData.percentual_execucao = Math.min(
-            Math.round((pago / dotRef) * 10000) / 100,
-            99999.99,
-          );
-        }
-
-        if (Object.keys(updateData).length === 0) continue;
-
-        const { error: uErr } = await supabase
-          .from("dados_orcamentarios")
-          .update(updateData)
-          .eq("id", id);
-
-        if (uErr) {
-          erros.push(`Update ${id}: ${uErr.message}`);
+        const existing = dotByAcao.get(itemAcao);
+        if (existing) {
+          existing.dotInicial = Math.max(existing.dotInicial, di);
+          existing.dotAutorizada = Math.max(existing.dotAutorizada, da);
         } else {
-          updated++;
+          dotByAcao.set(itemAcao, { dotInicial: di, dotAutorizada: da });
         }
       }
 
-      // Rate limit: 350ms between API calls
+      // Match each record's ação against API results
+      for (const acaoGroup of acaoGroups) {
+        const dot = dotByAcao.get(acaoGroup.acao);
+        if (!dot || (dot.dotInicial === 0 && dot.dotAutorizada === 0)) {
+          console.log(`    → Ação ${acaoGroup.acao}: sem dotação na API`);
+          continue;
+        }
+
+        console.log(`    → Ação ${acaoGroup.acao}: Dot.Ini=${(dot.dotInicial/1e6).toFixed(2)}mi Dot.Aut=${(dot.dotAutorizada/1e6).toFixed(2)}mi`);
+
+        for (const id of acaoGroup.ids) {
+          const updateData: Record<string, number | null> = {};
+          if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
+          if (dot.dotAutorizada > 0) updateData.dotacao_autorizada = dot.dotAutorizada;
+
+          const dotRef = dot.dotAutorizada || dot.dotInicial;
+          if (dotRef > 0 && acaoGroup.pago > 0) {
+            updateData.percentual_execucao = Math.min(
+              Math.round((acaoGroup.pago / dotRef) * 10000) / 100,
+              99999.99,
+            );
+          }
+
+          if (Object.keys(updateData).length === 0) continue;
+
+          const { error: uErr } = await supabase
+            .from("dados_orcamentarios")
+            .update(updateData)
+            .eq("id", id);
+
+          if (uErr) {
+            erros.push(`Update ${id}: ${uErr.message}`);
+          } else {
+            updated++;
+          }
+        }
+      }
+
+      // Rate limit
       await new Promise(r => setTimeout(r, 350));
     }
 
