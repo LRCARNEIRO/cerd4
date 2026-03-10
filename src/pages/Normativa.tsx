@@ -19,6 +19,7 @@ import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
 import { NormativaBalizadorFilter } from '@/components/normativa/NormativaBalizadorFilter';
 import { ArtigoEngagementPanel } from '@/components/normativa/ArtigoEngagementPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { NormativaTimeline } from '@/components/normativa/NormativaTimeline';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
