@@ -261,6 +261,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         ...t,
         pagoP1: tp1.reduce((s, r) => s + valorEfetivo(r), 0),
         pagoP2: tp2.reduce((s, r) => s + valorEfetivo(r), 0),
+        liqP1: tp1.reduce((s, r) => s + liquidado(r), 0),
+        liqP2: tp2.reduce((s, r) => s + liquidado(r), 0),
         dotP1: tp1.reduce((s, r) => s + dotacao(r), 0),
         dotP2: tp2.reduce((s, r) => s + dotacao(r), 0),
         programas: new Set(recs.map(r => r.programa)).size,
@@ -269,15 +271,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     });
 
     // Top programs (non-SESAI)
-    const progTotals: Record<string, { pago: number; orgao: string; dot: number }> = {};
+    const progTotals: Record<string, { liquidado: number; orgao: string; dot: number }> = {};
     nonSesai.forEach(r => {
       const key = r.programa;
-      if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao, dot: 0 };
-      progTotals[key].pago += valorEfetivo(r);
+      if (!progTotals[key]) progTotals[key] = { liquidado: 0, orgao: r.orgao, dot: 0 };
+      progTotals[key].liquidado += liquidado(r);
       progTotals[key].dot += dotacao(r);
     });
     const topPrograms = Object.entries(progTotals)
-      .sort((a, b) => b[1].pago - a[1].pago)
+      .sort((a, b) => b[1].liquidado - a[1].liquidado)
       .slice(0, 10);
 
     // Annual evolution
