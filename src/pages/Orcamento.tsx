@@ -1120,63 +1120,24 @@ export default function Orcamento() {
                 </div>
               )}
             </div>
-          )}
-
-          {esfera === 'estadual' && (
-            <div className="space-y-6">
-              {classified.estadual.all.length > 0 ? (
-                <EstadualResumoComparativo
-                  records={classified.estadual.all}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Estadual" descricao="Dados estaduais ainda não disponíveis para o Resumo Comparativo. Insira dados via MSC/PPA." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'municipal' && (
-            <EmptyEsferaCard esfera="Municipal" descricao="Dados municipais ainda não disponíveis para o Resumo Comparativo. Utilize portais de transparência municipais." />
-          )}
+          </div>
         </TabsContent>
 
         {/* ===== RELATÓRIO ===== */}
         <TabsContent value="relatorio">
-          {esfera === 'estadual' && (
-            <div className="space-y-6">
-              {classified.estadual.all.length > 0 ? (
-                <EstadualRelatorioTab
-                  records={classified.estadual.all}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Estadual" descricao="Dados estaduais não disponíveis para o Relatório. Insira dados via MSC/PPA." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'federal' && (
-            <div className="space-y-6">
-              {classified.federal.all.length > 0 ? (
-                <FederalRelatorioTab
-                  records={classified.federal.all}
-                  sesaiRecords={classified.sesai}
-                  stats={stats}
-                  formatCurrency={formatCurrency}
-                  formatCurrencyFull={formatCurrencyFull}
-                  
-                />
-              ) : (
-                <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />
-              )}
-            </div>
-          )}
-
-          {esfera === 'municipal' && (
-            <EmptyEsferaCard esfera="Municipal" descricao="Relatório Municipal em elaboração. Dados ainda insuficientes." />
-          )}
+          <div className="space-y-6">
+            {classified.federal.all.length > 0 ? (
+              <FederalRelatorioTab
+                records={classified.federal.all}
+                sesaiRecords={classified.sesai}
+                stats={stats}
+                formatCurrency={formatCurrency}
+                formatCurrencyFull={formatCurrencyFull}
+              />
+            ) : (
+              <EmptyEsferaCard esfera="Federal" descricao="Dados federais não disponíveis para o Relatório. Insira dados via Portal da Transparência." />
+            )}
+          </div>
         </TabsContent>
 
         {/* ===== ARTIGOS ICERD ===== */}
