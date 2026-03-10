@@ -318,9 +318,9 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
   if (!analysis) return null;
 
-  const varLiq = analysis.totalLiqP1 > 0 ? ((analysis.totalLiqP2 - analysis.totalLiqP1) / analysis.totalLiqP1 * 100) : 0;
+  const varPago = analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 - analysis.totalPagoP1) / analysis.totalPagoP1 * 100) : 0;
   const varDot = analysis.totalDotP1 > 0 ? ((analysis.totalDotP2 - analysis.totalDotP1) / analysis.totalDotP1 * 100) : 0;
-  const varLiqNoSesai = analysis.liqP1NoSesai > 0 ? ((analysis.liqP2NoSesai - analysis.liqP1NoSesai) / analysis.liqP1NoSesai * 100) : 0;
+  const varPagoNoSesai = analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai - analysis.pagoP1NoSesai) / analysis.pagoP1NoSesai * 100) : 0;
 
   return (
     <div className="space-y-6 print:space-y-4">
