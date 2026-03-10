@@ -355,6 +355,13 @@ export default function Normativa() {
           </Tabs>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        {/* ===== TAB: LINHA DO TEMPO ===== */}
+        <TabsContent value="timeline" className="mt-0">
+          <NormativaTimeline documentos={documentos} />
+        </TabsContent>
+      </Tabs>
 
       {/* Restore dialog */}
       <Dialog open={showRestore} onOpenChange={setShowRestore}>
