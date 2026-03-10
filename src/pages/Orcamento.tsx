@@ -856,18 +856,6 @@ export default function Orcamento() {
                     </CardContent>
                   </Card>
                   <Card className="border-t-4 border-t-chart-5">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado (sem SESAI)</CardTitle></CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex justify-between items-end">
-                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.semSesai.liquidadoP1)}</p></div>
-                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.semSesai.liquidadoP2)}</p></div>
-                      </div>
-                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                        {esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoLiquidado.toFixed(1)}%
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-t-4 border-t-primary">
                     <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Pago (sem SESAI)</CardTitle></CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between items-end">
@@ -876,6 +864,18 @@ export default function Orcamento() {
                       </div>
                       <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoPago >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
                         {esferaStats.federal.semSesai.variacaoPago >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoPago.toFixed(1)}%
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-t-4 border-t-primary">
+                    <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Liquidado (sem SESAI)</CardTitle></CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between items-end">
+                        <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.semSesai.liquidadoP1)}</p></div>
+                        <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.semSesai.liquidadoP2)}</p></div>
+                      </div>
+                      <div className={`text-center py-1 rounded text-sm font-bold ${esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                        {esferaStats.federal.semSesai.variacaoLiquidado >= 0 ? '+' : ''}{esferaStats.federal.semSesai.variacaoLiquidado.toFixed(1)}%
                       </div>
                     </CardContent>
                   </Card>
