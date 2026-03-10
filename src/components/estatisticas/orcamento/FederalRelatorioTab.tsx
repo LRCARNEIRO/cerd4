@@ -627,8 +627,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       {analysis.topPrograms.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">7. Ranking: Programas com Maior Execução (excl. SESAI)</CardTitle>
-            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor pago acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
+            <CardTitle className="text-sm">7. Ranking: Programas com Maior Liquidação (excl. SESAI)</CardTitle>
+            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor liquidado acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
