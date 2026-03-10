@@ -323,7 +323,7 @@ function EsferaSummaryCards({
   );
 }
 
-type Esfera = 'federal' | 'estadual' | 'municipal';
+type Esfera = 'federal';
 
 export default function Orcamento() {
   const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
