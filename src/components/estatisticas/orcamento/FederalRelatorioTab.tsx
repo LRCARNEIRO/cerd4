@@ -732,7 +732,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   )}
                   {bottomArt && bottomArt.numero !== topArt?.numero && (
                     <li>
-                      <strong>Art. {bottomArt.numero} ({bottomArt.titulo})</strong> recebe apenas <strong>{bottomPct}%</strong> ({formatCurrency(bottomArt.liquidado)})
+                      <strong>Art. {bottomArt.numero} ({bottomArt.titulo})</strong> recebe apenas <strong>{bottomPct}%</strong> ({formatCurrency(bottomArt.pago)})
                       — evidência de <em>subfinanciamento relativo</em> deste compromisso convencional.
                     </li>
                   )}
