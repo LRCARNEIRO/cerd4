@@ -308,18 +308,19 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     return {
       totalPagoP1, totalPagoP2, totalDotP1, totalDotP2, totalLiqP1, totalLiqP2,
       pagoP1NoSesai, pagoP2NoSesai, dotP1NoSesai, dotP2NoSesai,
-      sesaiPagoP1, sesaiPagoP2, sesaiPctP1, sesaiPctP2,
+      liqP1NoSesai, liqP2NoSesai,
+      sesaiPagoP1, sesaiPagoP2, sesaiLiqP1, sesaiLiqP2, sesaiPctP1, sesaiPctP2,
       execP1, execP2,
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
     };
-  }, [records, sesaiRecords]);
+  }, [records, sesaiRecords, summaryStats]);
 
   if (!analysis) return null;
 
-  const varPago = analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 - analysis.totalPagoP1) / analysis.totalPagoP1 * 100) : 0;
+  const varLiq = analysis.totalLiqP1 > 0 ? ((analysis.totalLiqP2 - analysis.totalLiqP1) / analysis.totalLiqP1 * 100) : 0;
   const varDot = analysis.totalDotP1 > 0 ? ((analysis.totalDotP2 - analysis.totalDotP1) / analysis.totalDotP1 * 100) : 0;
-  const varPagoNoSesai = analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai - analysis.pagoP1NoSesai) / analysis.pagoP1NoSesai * 100) : 0;
+  const varLiqNoSesai = analysis.liqP1NoSesai > 0 ? ((analysis.liqP2NoSesai - analysis.liqP1NoSesai) / analysis.liqP1NoSesai * 100) : 0;
 
   return (
     <div className="space-y-6 print:space-y-4">
