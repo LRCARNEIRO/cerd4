@@ -186,6 +186,32 @@ export function MetodologiaFederalSection() {
                       ))}
                     </TableBody>
                   </Table>
+
+                  <div className="mt-3 border-t border-border/50 pt-2 space-y-1">
+                    <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <FileText className="w-3 h-3" /> <strong>Fontes da listagem:</strong>
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <a
+                        href="/documentos/agenda-racial-completa.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                      >
+                        <FileText className="w-2.5 h-2.5 shrink-0" />
+                        Agenda Transversal — Igualdade Racial (PPA 2024–2027)
+                      </a>
+                      <a
+                        href="/documentos/agenda_indigenas-completa.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                      >
+                        <FileText className="w-2.5 h-2.5 shrink-0" />
+                        Agenda Transversal — Povos Indígenas (PPA 2024–2027)
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </AccordionContent>
