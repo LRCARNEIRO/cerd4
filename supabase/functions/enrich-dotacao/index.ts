@@ -252,10 +252,17 @@ Deno.serve(async (req) => {
 
       if (Object.keys(updateData).length === 0) continue;
 
-      const { error: uErr } = await supabase
+      let { error: uErr } = await supabase
         .from("dados_orcamentarios")
         .update(updateData)
         .eq("id", rec.id);
+
+      // Retry without percentual_execucao if overflow
+      if (uErr && uErr.message.includes("numeric field overflow") && updateData.percentual_execucao != null) {
+        delete updateData.percentual_execucao;
+        const retry = await supabase.from("dados_orcamentarios").update(updateData).eq("id", rec.id);
+        uErr = retry.error;
+      }
 
       if (uErr) {
         erros.push(`Update ${rec.id}: ${uErr.message}`);
