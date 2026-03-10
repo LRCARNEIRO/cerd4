@@ -224,20 +224,24 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const totalPagoP2 = p2.reduce((s, r) => s + valorEfetivo(r), 0);
     const totalDotP1 = p1.reduce((s, r) => s + dotacao(r), 0);
     const totalDotP2 = p2.reduce((s, r) => s + dotacao(r), 0);
-    const totalLiqP1 = p1.reduce((s, r) => s + liquidado(r), 0);
-    const totalLiqP2 = p2.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP1 = summaryStats?.liquidadoPeriodo1 ?? p1.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP2 = summaryStats?.liquidadoPeriodo2 ?? p2.reduce((s, r) => s + liquidado(r), 0);
 
     const pagoP1NoSesai = p1NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const pagoP2NoSesai = p2NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const dotP1NoSesai = p1NoSesai.reduce((s, r) => s + dotacao(r), 0);
     const dotP2NoSesai = p2NoSesai.reduce((s, r) => s + dotacao(r), 0);
+    const liqP1NoSesai = summaryStats?.semSesai?.liquidadoP1 ?? p1NoSesai.reduce((s, r) => s + liquidado(r), 0);
+    const liqP2NoSesai = summaryStats?.semSesai?.liquidadoP2 ?? p2NoSesai.reduce((s, r) => s + liquidado(r), 0);
 
     const sesaiP1 = sesaiRecords.filter(r => r.ano >= 2018 && r.ano <= 2022);
     const sesaiP2 = sesaiRecords.filter(r => r.ano >= 2023 && r.ano <= 2025);
     const sesaiPagoP1 = sesaiP1.reduce((s, r) => s + valorEfetivo(r), 0);
     const sesaiPagoP2 = sesaiP2.reduce((s, r) => s + valorEfetivo(r), 0);
-    const sesaiPctP1 = totalPagoP1 > 0 ? (sesaiPagoP1 / totalPagoP1 * 100) : 0;
-    const sesaiPctP2 = totalPagoP2 > 0 ? (sesaiPagoP2 / totalPagoP2 * 100) : 0;
+    const sesaiLiqP1 = totalLiqP1 - liqP1NoSesai;
+    const sesaiLiqP2 = totalLiqP2 - liqP2NoSesai;
+    const sesaiPctP1 = totalLiqP1 > 0 ? (sesaiLiqP1 / totalLiqP1 * 100) : 0;
+    const sesaiPctP2 = totalLiqP2 > 0 ? (sesaiLiqP2 / totalLiqP2 * 100) : 0;
 
     // Thematic breakdown
     type ThemeKey = 'racial' | 'indigena' | 'quilombola' | 'ciganos' | 'sesai';
