@@ -191,6 +191,18 @@ Deno.serve(async (req) => {
         continue;
       }
 
+      // Log first item keys to debug field names
+      if (apiCalls <= 3) {
+        const firstItem = data[0];
+        const dotFields = Object.keys(firstItem).filter(k => 
+          k.toLowerCase().includes("dot") || k.toLowerCase().includes("valor") || 
+          k.toLowerCase().includes("orc") || k.toLowerCase().includes("cred")
+        );
+        console.log(`    → ${data.length} items. Dot fields: ${dotFields.join(", ") || "NONE"}`);
+        console.log(`    → Sample values: ${dotFields.map(f => `${f}=${firstItem[f]}`).join(", ")}`);
+        console.log(`    → All keys: ${Object.keys(firstItem).join(", ")}`);
+      }
+
       // Aggregate dotação across localizadores (MAX for dotação)
       let dotInicial = 0;
       let dotAutorizada = 0;
