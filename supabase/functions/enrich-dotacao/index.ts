@@ -134,8 +134,9 @@ Deno.serve(async (req) => {
 
     console.log(`  ${records.length} registros sem dotação encontrados`);
 
-    // Step 2: Group by programa+ação to avoid redundant API calls
-    const queryGroups = new Map<string, { ids: string[]; pago: number; liquidado: number }>();
+    // Step 2: Group by programa code only (API doesn't support ação as filter)
+    // We query by programa, get all ações, then match locally
+    const programGroups = new Map<string, { acao: string; ids: string[]; pago: number }[]>();
     for (const rec of records) {
       const codProg = extractCodPrograma(rec.programa);
       const codAcao = extractCodAcao(rec.programa);
@@ -143,22 +144,15 @@ Deno.serve(async (req) => {
         console.log(`  Skipping (no codProg): ${rec.programa.substring(0, 60)}`);
         continue;
       }
-      const key = `${codProg}|${codAcao}`;
-      const existing = queryGroups.get(key);
-      if (existing) {
-        existing.ids.push(rec.id);
-        existing.pago += Number(rec.pago) || 0;
-        existing.liquidado += Number(rec.liquidado) || 0;
-      } else {
-        queryGroups.set(key, {
-          ids: [rec.id],
-          pago: Number(rec.pago) || 0,
-          liquidado: Number(rec.liquidado) || 0,
-        });
-      }
+      if (!programGroups.has(codProg)) programGroups.set(codProg, []);
+      programGroups.get(codProg)!.push({
+        acao: codAcao,
+        ids: [rec.id],
+        pago: Number(rec.pago) || 0,
+      });
     }
 
-    console.log(`  ${queryGroups.size} consultas únicas à API necessárias`);
+    console.log(`  ${programGroups.size} programas únicos para consultar na API`);
 
     // Step 3: Query API for each programa+ação
     let updated = 0;
