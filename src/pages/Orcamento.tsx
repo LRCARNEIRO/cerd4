@@ -1118,7 +1118,7 @@ export default function Orcamento() {
               <FederalRelatorioTab
                 records={classified.federal.all}
                 sesaiRecords={classified.sesai}
-                stats={stats}
+                summaryStats={esferaStats.federal}
                 formatCurrency={formatCurrency}
                 formatCurrencyFull={formatCurrencyFull}
               />

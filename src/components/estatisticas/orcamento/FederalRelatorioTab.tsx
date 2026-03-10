@@ -11,7 +11,19 @@ import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '
 interface Props {
   records: DadoOrcamentario[];
   sesaiRecords: DadoOrcamentario[];
-  stats: any; // useOrcamentoStats result
+  summaryStats: {
+    liquidadoPeriodo1: number;
+    liquidadoPeriodo2: number;
+    variacaoLiquidado: number;
+    totalRegistros: number;
+    totalProgramas: number;
+    anosCobertura: number[];
+    semSesai?: {
+      liquidadoP1: number;
+      liquidadoP2: number;
+      variacaoLiquidado: number;
+    };
+  };
   formatCurrency: (v: number) => string;
   formatCurrencyFull: (v: number) => string;
 }
@@ -191,7 +203,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
   );
 }
 
-export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurrency, formatCurrencyFull }: Props) {
+export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
@@ -212,20 +224,24 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
     const totalPagoP2 = p2.reduce((s, r) => s + valorEfetivo(r), 0);
     const totalDotP1 = p1.reduce((s, r) => s + dotacao(r), 0);
     const totalDotP2 = p2.reduce((s, r) => s + dotacao(r), 0);
-    const totalLiqP1 = p1.reduce((s, r) => s + liquidado(r), 0);
-    const totalLiqP2 = p2.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP1 = summaryStats?.liquidadoPeriodo1 ?? p1.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP2 = summaryStats?.liquidadoPeriodo2 ?? p2.reduce((s, r) => s + liquidado(r), 0);
 
     const pagoP1NoSesai = p1NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const pagoP2NoSesai = p2NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const dotP1NoSesai = p1NoSesai.reduce((s, r) => s + dotacao(r), 0);
     const dotP2NoSesai = p2NoSesai.reduce((s, r) => s + dotacao(r), 0);
+    const liqP1NoSesai = summaryStats?.semSesai?.liquidadoP1 ?? p1NoSesai.reduce((s, r) => s + liquidado(r), 0);
+    const liqP2NoSesai = summaryStats?.semSesai?.liquidadoP2 ?? p2NoSesai.reduce((s, r) => s + liquidado(r), 0);
 
     const sesaiP1 = sesaiRecords.filter(r => r.ano >= 2018 && r.ano <= 2022);
     const sesaiP2 = sesaiRecords.filter(r => r.ano >= 2023 && r.ano <= 2025);
     const sesaiPagoP1 = sesaiP1.reduce((s, r) => s + valorEfetivo(r), 0);
     const sesaiPagoP2 = sesaiP2.reduce((s, r) => s + valorEfetivo(r), 0);
-    const sesaiPctP1 = totalPagoP1 > 0 ? (sesaiPagoP1 / totalPagoP1 * 100) : 0;
-    const sesaiPctP2 = totalPagoP2 > 0 ? (sesaiPagoP2 / totalPagoP2 * 100) : 0;
+    const sesaiLiqP1 = totalLiqP1 - liqP1NoSesai;
+    const sesaiLiqP2 = totalLiqP2 - liqP2NoSesai;
+    const sesaiPctP1 = totalLiqP1 > 0 ? (sesaiLiqP1 / totalLiqP1 * 100) : 0;
+    const sesaiPctP2 = totalLiqP2 > 0 ? (sesaiLiqP2 / totalLiqP2 * 100) : 0;
 
     // Thematic breakdown
     type ThemeKey = 'racial' | 'indigena' | 'quilombola' | 'ciganos' | 'sesai';
@@ -245,6 +261,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
         ...t,
         pagoP1: tp1.reduce((s, r) => s + valorEfetivo(r), 0),
         pagoP2: tp2.reduce((s, r) => s + valorEfetivo(r), 0),
+        liqP1: tp1.reduce((s, r) => s + liquidado(r), 0),
+        liqP2: tp2.reduce((s, r) => s + liquidado(r), 0),
         dotP1: tp1.reduce((s, r) => s + dotacao(r), 0),
         dotP2: tp2.reduce((s, r) => s + dotacao(r), 0),
         programas: new Set(recs.map(r => r.programa)).size,
@@ -253,15 +271,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
     });
 
     // Top programs (non-SESAI)
-    const progTotals: Record<string, { pago: number; orgao: string; dot: number }> = {};
+    const progTotals: Record<string, { liquidado: number; orgao: string; dot: number }> = {};
     nonSesai.forEach(r => {
       const key = r.programa;
-      if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao, dot: 0 };
-      progTotals[key].pago += valorEfetivo(r);
+      if (!progTotals[key]) progTotals[key] = { liquidado: 0, orgao: r.orgao, dot: 0 };
+      progTotals[key].liquidado += liquidado(r);
       progTotals[key].dot += dotacao(r);
     });
     const topPrograms = Object.entries(progTotals)
-      .sort((a, b) => b[1].pago - a[1].pago)
+      .sort((a, b) => b[1].liquidado - a[1].liquidado)
       .slice(0, 10);
 
     // Annual evolution
@@ -290,18 +308,19 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
     return {
       totalPagoP1, totalPagoP2, totalDotP1, totalDotP2, totalLiqP1, totalLiqP2,
       pagoP1NoSesai, pagoP2NoSesai, dotP1NoSesai, dotP2NoSesai,
-      sesaiPagoP1, sesaiPagoP2, sesaiPctP1, sesaiPctP2,
+      liqP1NoSesai, liqP2NoSesai,
+      sesaiPagoP1, sesaiPagoP2, sesaiLiqP1, sesaiLiqP2, sesaiPctP1, sesaiPctP2,
       execP1, execP2,
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
     };
-  }, [records, sesaiRecords]);
+  }, [records, sesaiRecords, summaryStats]);
 
   if (!analysis) return null;
 
-  const varPago = analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 - analysis.totalPagoP1) / analysis.totalPagoP1 * 100) : 0;
+  const varLiq = analysis.totalLiqP1 > 0 ? ((analysis.totalLiqP2 - analysis.totalLiqP1) / analysis.totalLiqP1 * 100) : 0;
   const varDot = analysis.totalDotP1 > 0 ? ((analysis.totalDotP2 - analysis.totalDotP1) / analysis.totalDotP1 * 100) : 0;
-  const varPagoNoSesai = analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai - analysis.pagoP1NoSesai) / analysis.pagoP1NoSesai * 100) : 0;
+  const varLiqNoSesai = analysis.liqP1NoSesai > 0 ? ((analysis.liqP2NoSesai - analysis.liqP1NoSesai) / analysis.liqP1NoSesai * 100) : 0;
 
   return (
     <div className="space-y-6 print:space-y-4">
@@ -338,23 +357,23 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Card className="border-l-4 border-l-primary/60">
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Pago 2018–2022</p>
-                <p className="text-base font-bold">{formatCurrency(analysis.totalPagoP1)}</p>
+                <p className="text-[10px] text-muted-foreground">Liquidado 2018–2022</p>
+                <p className="text-base font-bold">{formatCurrency(analysis.totalLiqP1)}</p>
                 <p className="text-[10px]">Exec.: {analysis.execP1.toFixed(1)}%</p>
               </CardContent>
             </Card>
             <Card className="border-l-4 border-l-success/60">
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Pago 2023–2025</p>
-                <p className="text-base font-bold text-success">{formatCurrency(analysis.totalPagoP2)}</p>
+                <p className="text-[10px] text-muted-foreground">Liquidado 2023–2025</p>
+                <p className="text-base font-bold text-success">{formatCurrency(analysis.totalLiqP2)}</p>
                 <p className="text-[10px]">Exec.: {analysis.execP2.toFixed(1)}%</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4" style={{ borderLeftColor: varPago >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+            <Card className="border-l-4" style={{ borderLeftColor: varLiq >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Variação Pago</p>
-                <p className={`text-base font-bold ${varPago >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {varPago >= 0 ? '+' : ''}{varPago.toFixed(1)}%
+                <p className="text-[10px] text-muted-foreground">Variação Liquidado</p>
+                <p className={`text-base font-bold ${varLiq >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {varLiq >= 0 ? '+' : ''}{varLiq.toFixed(1)}%
                 </p>
                 <p className="text-[10px]">P1 (5a) → P2 (3a)</p>
               </CardContent>
@@ -362,8 +381,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             <Card className="border-l-4 border-l-chart-4">
               <CardContent className="pt-3 pb-2">
                 <p className="text-[10px] text-muted-foreground">Sem SESAI</p>
-                <p className={`text-base font-bold ${varPagoNoSesai >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {varPagoNoSesai >= 0 ? '+' : ''}{varPagoNoSesai.toFixed(1)}%
+                <p className={`text-base font-bold ${varLiqNoSesai >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {varLiqNoSesai >= 0 ? '+' : ''}{varLiqNoSesai.toFixed(1)}%
                 </p>
                 <p className="text-[10px]">Políticas stricto sensu</p>
               </CardContent>
@@ -466,23 +485,23 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
               <CardContent className="pt-3 pb-2">
                 <p className="font-semibold text-foreground text-xs">SESAI em 2018–2022</p>
                 <p className="text-lg font-bold">{analysis.sesaiPctP1.toFixed(1)}%</p>
-                <p className="text-[10px]">{formatCurrency(analysis.sesaiPagoP1)} de {formatCurrency(analysis.totalPagoP1)}</p>
+                <p className="text-[10px]">{formatCurrency(analysis.sesaiLiqP1)} de {formatCurrency(analysis.totalLiqP1)}</p>
               </CardContent>
             </Card>
             <Card className="bg-chart-5/5 border-chart-5/30">
               <CardContent className="pt-3 pb-2">
                 <p className="font-semibold text-foreground text-xs">SESAI em 2023–2025</p>
                 <p className="text-lg font-bold">{analysis.sesaiPctP2.toFixed(1)}%</p>
-                <p className="text-[10px]">{formatCurrency(analysis.sesaiPagoP2)} de {formatCurrency(analysis.totalPagoP2)}</p>
+                <p className="text-[10px]">{formatCurrency(analysis.sesaiLiqP2)} de {formatCurrency(analysis.totalLiqP2)}</p>
               </CardContent>
             </Card>
             <Card className="bg-primary/5 border-primary/30">
               <CardContent className="pt-3 pb-2">
                 <p className="font-semibold text-foreground text-xs">Demais Políticas</p>
                 <p className="text-lg font-bold text-primary">
-                  {formatCurrency(analysis.pagoP1NoSesai)} → {formatCurrency(analysis.pagoP2NoSesai)}
+                  {formatCurrency(analysis.liqP1NoSesai)} → {formatCurrency(analysis.liqP2NoSesai)}
                 </p>
-                <p className="text-[10px]">{varPagoNoSesai >= 0 ? '+' : ''}{varPagoNoSesai.toFixed(1)}% de variação</p>
+                <p className="text-[10px]">{varLiqNoSesai >= 0 ? '+' : ''}{varLiqNoSesai.toFixed(1)}% de variação</p>
               </CardContent>
             </Card>
           </div>
@@ -490,7 +509,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             <p className="text-xs">
               <strong>🔑 Insight:</strong> A queda da participação da SESAI ({analysis.sesaiPctP1.toFixed(0)}% → {analysis.sesaiPctP2.toFixed(0)}%)
               reflete o <em>crescimento exponencial das demais políticas</em>, não a redução da saúde indígena.
-              Pela primeira vez, as políticas raciais <em>stricto sensu</em> ultrapassaram {formatCurrency(analysis.pagoP2NoSesai)} em apenas 3 anos.
+              Pela primeira vez, as políticas raciais <em>stricto sensu</em> ultrapassaram {formatCurrency(analysis.liqP2NoSesai)} em apenas 3 anos de liquidação acumulada.
             </p>
           </div>
         </CardContent>
@@ -504,17 +523,17 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             <div className="bg-destructive/5 rounded-lg p-4 border border-destructive/20">
               <p className="font-semibold text-destructive mb-1">A. "Trava Institucional" (2018–2022)</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP1)}</strong> | Pago: <strong>{formatCurrency(analysis.totalPagoP1)}</strong> | Exec.: <strong>{analysis.execP1.toFixed(1)}%</strong></li>
-                <li>Sem SESAI: <strong>{formatCurrency(analysis.pagoP1NoSesai)}</strong> pagos em 5 anos — média de {formatCurrency(analysis.pagoP1NoSesai / 5)}/ano.</li>
-                <li>SEPPIR operou com R$ 5–20 mi/ano de execução real. Dotações simbólicas com liquidação zero.</li>
+                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP1)}</strong> | Liquidado: <strong>{formatCurrency(analysis.totalLiqP1)}</strong> | Exec.: <strong>{analysis.execP1.toFixed(1)}%</strong></li>
+                <li>Sem SESAI: <strong>{formatCurrency(analysis.liqP1NoSesai)}</strong> liquidados em 5 anos — média de {formatCurrency(analysis.liqP1NoSesai / 5)}/ano.</li>
+                <li>As políticas raciais e étnicas não vinculadas à saúde permaneceram em baixa escala e com forte compressão orçamentária.</li>
                 <li>FUNAI manteve operação mínima; INCRA com regularização quilombola travada.</li>
               </ul>
             </div>
             <div className="bg-success/5 rounded-lg p-4 border border-success/20">
               <p className="font-semibold text-success mb-1">B. "Retomada sem Entrega" (2023–2025)</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP2)}</strong> | Pago: <strong>{formatCurrency(analysis.totalPagoP2)}</strong> | Exec.: <strong>{analysis.execP2.toFixed(1)}%</strong></li>
-                <li>Sem SESAI: <strong>{formatCurrency(analysis.pagoP2NoSesai)}</strong> pagos em 3 anos — média de {formatCurrency(analysis.pagoP2NoSesai / 3)}/ano.</li>
+                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP2)}</strong> | Liquidado: <strong>{formatCurrency(analysis.totalLiqP2)}</strong> | Exec.: <strong>{analysis.execP2.toFixed(1)}%</strong></li>
+                <li>Sem SESAI: <strong>{formatCurrency(analysis.liqP2NoSesai)}</strong> liquidados em 3 anos — média de {formatCurrency(analysis.liqP2NoSesai / 3)}/ano.</li>
                 <li>Criação do MIR (2023) e MPI (2023). Novos programas PPA: 5802, 5803, 5804.</li>
                 <li>"Efeito Tesoura": dotação sobe ({varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%), mas a liquidação não acompanha proporcionalmente.</li>
               </ul>
@@ -528,28 +547,28 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
         <CardHeader><CardTitle className="text-sm">5. Desagregação por Grupo Focal e Período</CardTitle></CardHeader>
         <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Grupo Focal</TableHead>
-                <TableHead className="text-right">Pago 2018–2022</TableHead>
-                <TableHead className="text-right">Pago 2023–2025</TableHead>
-                <TableHead className="text-right">Dotação Total</TableHead>
-                <TableHead className="text-right">Programas</TableHead>
-                <TableHead className="text-right">Registros</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analysis.themeData.map(t => (
-                <TableRow key={t.key}>
-                  <TableCell className="font-medium text-xs">{t.icon} {t.label}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">{formatCurrency(t.pagoP1)}</TableCell>
-                  <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(t.pagoP2)}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">{formatCurrency(t.dotP1 + t.dotP2)}</TableCell>
-                  <TableCell className="text-right text-xs">{t.programas}</TableCell>
-                  <TableCell className="text-right text-xs">{t.registros}</TableCell>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Grupo Focal</TableHead>
+                  <TableHead className="text-right">Liquidado 2018–2022</TableHead>
+                  <TableHead className="text-right">Liquidado 2023–2025</TableHead>
+                  <TableHead className="text-right">Dotação Total</TableHead>
+                  <TableHead className="text-right">Programas</TableHead>
+                  <TableHead className="text-right">Registros</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
+              </TableHeader>
+              <TableBody>
+                {analysis.themeData.map(t => (
+                  <TableRow key={t.key}>
+                    <TableCell className="font-medium text-xs">{t.icon} {t.label}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(t.liqP1)}</TableCell>
+                    <TableCell className="text-right font-mono text-xs text-success">{formatCurrency(t.liqP2)}</TableCell>
+                    <TableCell className="text-right font-mono text-xs">{formatCurrency(t.dotP1 + t.dotP2)}</TableCell>
+                    <TableCell className="text-right text-xs">{t.programas}</TableCell>
+                    <TableCell className="text-right text-xs">{t.registros}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
           </Table>
         </CardContent>
       </Card>
@@ -608,15 +627,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       {analysis.topPrograms.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">7. Ranking: Programas com Maior Execução (excl. SESAI)</CardTitle>
-            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor pago acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
+            <CardTitle className="text-sm">7. Ranking: Programas com Maior Liquidação (excl. SESAI)</CardTitle>
+            <p className="text-[10px] text-muted-foreground">Top {analysis.topPrograms.length} por valor liquidado acumulado ({analysis.anos[0]}–{analysis.anos[analysis.anos.length - 1]})</p>
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
-              {analysis.topPrograms.map(([programa, { pago, orgao, dot }], idx) => {
-                const maxVal = analysis.topPrograms[0]?.[1].pago || 1;
-                const pct = (pago / maxVal) * 100;
-                const execRate = dot > 0 ? (pago / dot * 100) : null;
+              {analysis.topPrograms.map(([programa, { liquidado, orgao, dot }], idx) => {
+                const maxVal = analysis.topPrograms[0]?.[1].liquidado || 1;
+                const pct = (liquidado / maxVal) * 100;
+                const execRate = dot > 0 ? (liquidado / dot * 100) : null;
                 const colors = ['hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
                 return (
                   <div key={programa} className="space-y-0.5">
@@ -632,7 +651,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
                             {execRate.toFixed(0)}% exec.
                           </Badge>
                         )}
-                        <span className="text-xs font-mono font-semibold">{formatCurrency(pago)}</span>
+                        <span className="text-xs font-mono font-semibold">{formatCurrency(liquidado)}</span>
                       </div>
                     </div>
                     <div className="ml-7 h-2 bg-muted rounded-full overflow-hidden">
@@ -681,16 +700,16 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
                 </p>
                 <ul className="list-disc pl-4 space-y-1">
                   <li>
-                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.pagoP1NoSesai)} pagos sem SESAI em 5 anos
-                    — média anual de {formatCurrency(analysis.pagoP1NoSesai / 5)}.
+                    <strong>Trava Institucional (2018–2022):</strong> Apenas {formatCurrency(analysis.liqP1NoSesai)} liquidados sem SESAI em 5 anos
+                    — média anual de {formatCurrency(analysis.liqP1NoSesai / 5)}.
                   </li>
                   <li>
                     <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
-                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento.
+                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento na liquidação.
                   </li>
                   <li>
-                    <strong>Prova de capacidade:</strong> A SESAI manteve execução &gt;80% em todo o período, demonstrando que
-                    a máquina estatal <em>sabe e consegue gastar</em> — a baixa execução nas demais políticas é <strong>escolha de gestão</strong>.
+                    <strong>Evidência central:</strong> A SESAI concentrou {analysis.sesaiPctP1.toFixed(0)}% da liquidação em 2018–2022 e {analysis.sesaiPctP2.toFixed(0)}% em 2023–2025,
+                    tornando visível o subfinanciamento relativo das demais políticas quando analisadas sem esse efeito de mascaramento.
                   </li>
                 </ul>
               </div>
