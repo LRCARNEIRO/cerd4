@@ -232,29 +232,40 @@ async function enrichViaAPI(
   const erros: string[] = [];
   const matchLog: string[] = [];
 
-  // Group records by codPrograma to minimize API calls
+  // Group records by codPrograma AND collect unique codAcao for fallback
   const byProgram = new Map<string, any[]>();
+  const byAcao = new Map<string, any[]>();
   for (const rec of records) {
     const codProg = extractCodPrograma(rec.programa);
-    if (!codProg) { noMatch++; continue; }
-    const existing = byProgram.get(codProg) || [];
-    existing.push(rec);
-    byProgram.set(codProg, existing);
+    const codAcao = extractCodAcao(rec.programa);
+    if (!codProg && !codAcao) { noMatch++; continue; }
+    if (codProg) {
+      const existing = byProgram.get(codProg) || [];
+      existing.push(rec);
+      byProgram.set(codProg, existing);
+    }
+    if (codAcao) {
+      const existing = byAcao.get(codAcao) || [];
+      existing.push(rec);
+      byAcao.set(codAcao, existing);
+    }
   }
 
-  console.log(`  [API] ${byProgram.size} programas únicos a consultar para ${records.length} registros`);
+  console.log(`  [API] ${byProgram.size} programas, ${byAcao.size} ações únicas para ${records.length} registros`);
 
-  // For each unique program, query API (which DOES return dotação when filtered by programa)
+  const updatedIds = new Set<string>();
+
+  // Strategy A: Query by codigoPrograma
   let progCount = 0;
   for (const [codProg, recs] of byProgram.entries()) {
     progCount++;
-    // Fetch paginated data for this program+year
     const dotMap = new Map<string, { dotInicial: number; dotAtualizada: number }>();
 
     let page = 1;
+    let apiOk = true;
     while (page <= 30) {
       const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoPrograma=${codProg}&pagina=${page}`;
-      if (page === 1 && progCount <= 5) console.log(`  [API] ${url}`);
+      if (page === 1 && progCount <= 5) console.log(`  [API-prog] ${url}`);
 
       try {
         const res = await fetch(url, {
@@ -267,7 +278,7 @@ async function enrichViaAPI(
           continue;
         }
         if (!res.ok) {
-          if (page === 1) erros.push(`API ${res.status} prog ${codProg}`);
+          if (page === 1) { erros.push(`API ${res.status} prog ${codProg}`); apiOk = false; }
           break;
         }
 
@@ -279,7 +290,6 @@ async function enrichViaAPI(
           const dotI = parseBRLApi(item.dotacaoInicial || item.valorDotacaoInicial);
           const dotA = parseBRLApi(item.dotacaoAtualizada || item.valorDotacaoAtualizada);
 
-          // Index by exact acao key and also prog-only
           for (const key of [codAcao, ""]) {
             const existing = dotMap.get(key);
             if (existing) {
@@ -300,20 +310,19 @@ async function enrichViaAPI(
       }
     }
 
-    // Now match each record in this program
+    if (!apiOk) continue; // Will try by ação below
+
     for (const rec of recs) {
+      if (updatedIds.has(rec.id)) continue;
       const codAcao = extractCodAcao(rec.programa);
 
       let dot = dotMap.get(codAcao);
-      let matchType = "api-exact";
+      let matchType = "api-prog-exact";
       if (!dot || (dot.dotInicial === 0 && dot.dotAtualizada === 0)) {
         dot = dotMap.get("");
-        matchType = "api-prog";
+        matchType = "api-prog-agg";
       }
-      if (!dot || (dot.dotInicial === 0 && dot.dotAtualizada === 0)) {
-        noMatch++;
-        continue;
-      }
+      if (!dot || (dot.dotInicial === 0 && dot.dotAtualizada === 0)) continue;
 
       const updateData: Record<string, number | null> = {};
       if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
@@ -324,7 +333,7 @@ async function enrichViaAPI(
       if (dotRef > 0 && pago > 0) {
         updateData.percentual_execucao = Math.min(Math.round((pago / dotRef) * 10000) / 100, 99999.99);
       }
-      if (Object.keys(updateData).length === 0) { noMatch++; continue; }
+      if (Object.keys(updateData).length === 0) continue;
 
       let { error: uErr } = await supabase.from("dados_orcamentarios").update(updateData).eq("id", rec.id);
       if (uErr && uErr.message.includes("numeric field overflow") && updateData.percentual_execucao != null) {
@@ -336,13 +345,108 @@ async function enrichViaAPI(
         erros.push(`API update ${rec.id}: ${uErr.message}`);
       } else {
         updated++;
+        updatedIds.add(rec.id);
         if (matchLog.length < 5) matchLog.push(`${codProg}|${codAcao} (${matchType}): R$${((dot.dotAtualizada || dot.dotInicial)/1e6).toFixed(2)}mi`);
       }
     }
 
-    // Delay between programs
     await new Promise(r => setTimeout(r, 400));
   }
+
+  // Strategy B: For records still not updated, query by codigoAcao directly
+  const stillMissing = records.filter(r => !updatedIds.has(r.id));
+  if (stillMissing.length > 0) {
+    console.log(`  [API-acao] ${stillMissing.length} registros restantes, tentando por codigoAcao`);
+
+    const acaoGroups = new Map<string, any[]>();
+    for (const rec of stillMissing) {
+      const codAcao = extractCodAcao(rec.programa);
+      if (!codAcao) { noMatch++; continue; }
+      const existing = acaoGroups.get(codAcao) || [];
+      existing.push(rec);
+      acaoGroups.set(codAcao, existing);
+    }
+
+    for (const [codAcao, recs] of acaoGroups.entries()) {
+      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoAcao=${codAcao}&pagina=1`;
+      console.log(`  [API-acao] ${url}`);
+
+      try {
+        const res = await fetch(url, {
+          headers: { "chave-api-dados": apiKey, Accept: "application/json" },
+        });
+
+        if (res.status === 429) {
+          await new Promise(r => setTimeout(r, 30000));
+          continue;
+        }
+        if (!res.ok) {
+          erros.push(`API ${res.status} acao ${codAcao}`);
+          noMatch += recs.length;
+          await new Promise(r => setTimeout(r, 400));
+          continue;
+        }
+
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          noMatch += recs.length;
+          await new Promise(r => setTimeout(r, 400));
+          continue;
+        }
+
+        // Aggregate dotação across all rows for this ação
+        let dotI = 0, dotA = 0;
+        for (const item of data) {
+          const di = parseBRLApi(item.dotacaoInicial || item.valorDotacaoInicial);
+          const da = parseBRLApi(item.dotacaoAtualizada || item.valorDotacaoAtualizada);
+          if (di) dotI = Math.max(dotI, di);
+          if (da) dotA = Math.max(dotA, da);
+        }
+
+        if (dotI === 0 && dotA === 0) {
+          noMatch += recs.length;
+          await new Promise(r => setTimeout(r, 400));
+          continue;
+        }
+
+        for (const rec of recs) {
+          if (updatedIds.has(rec.id)) continue;
+
+          const updateData: Record<string, number | null> = {};
+          if (dotI > 0) updateData.dotacao_inicial = dotI;
+          if (dotA > 0) updateData.dotacao_autorizada = dotA;
+
+          const pago = Number(rec.pago) || 0;
+          const dotRef = dotA || dotI;
+          if (dotRef > 0 && pago > 0) {
+            updateData.percentual_execucao = Math.min(Math.round((pago / dotRef) * 10000) / 100, 99999.99);
+          }
+          if (Object.keys(updateData).length === 0) { noMatch++; continue; }
+
+          let { error: uErr } = await supabase.from("dados_orcamentarios").update(updateData).eq("id", rec.id);
+          if (uErr && uErr.message.includes("numeric field overflow") && updateData.percentual_execucao != null) {
+            delete updateData.percentual_execucao;
+            const retry = await supabase.from("dados_orcamentarios").update(updateData).eq("id", rec.id);
+            uErr = retry.error;
+          }
+          if (uErr) {
+            erros.push(`API update acao ${rec.id}: ${uErr.message}`);
+          } else {
+            updated++;
+            updatedIds.add(rec.id);
+            if (matchLog.length < 5) matchLog.push(`acao:${codAcao} (api-acao): R$${((dotA || dotI)/1e6).toFixed(2)}mi`);
+          }
+        }
+      } catch (e) {
+        erros.push(`API fetch acao ${codAcao}: ${e}`);
+        noMatch += recs.length;
+      }
+      await new Promise(r => setTimeout(r, 400));
+    }
+  }
+
+  // Count final noMatch
+  noMatch += records.filter(r => !updatedIds.has(r.id)).length - noMatch;
 
   console.log(`  [API] ${updated} atualizados, ${noMatch} sem match`);
   return { updated, noMatch, erros, matchLog };
