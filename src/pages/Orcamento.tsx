@@ -927,7 +927,7 @@ export default function Orcamento() {
                               <TableCell className="text-right font-mono text-xs text-muted-foreground">{formatCurrencyFull(sesaiVal)}</TableCell>
                               <TableCell className="text-right font-mono text-xs font-semibold">{formatCurrencyFull(semSesaiVal)}</TableCell>
                               <TableCell className="text-right text-xs">{pctSesai.toFixed(0)}%</TableCell>
-                              <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacoes[ano]}</TableCell>
+                              <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacao}</TableCell>
                             </TableRow>
                           );
                         })}
