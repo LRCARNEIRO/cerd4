@@ -531,7 +531,6 @@ export default function Orcamento() {
               <KeywordIngestionPanel />
             </div>
           </div>
-          </div>
         </CardContent>
       </Card>
 
