@@ -264,7 +264,7 @@ async function enrichViaAPI(
     let page = 1;
     let apiOk = true;
     while (page <= 30) {
-      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoPrograma=${codProg}&pagina=${page}`;
+      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&programa=${codProg}&pagina=${page}`;
       if (page === 1 && progCount <= 5) console.log(`  [API-prog] ${url}`);
 
       try {
