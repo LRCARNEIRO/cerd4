@@ -783,7 +783,7 @@ export default function Orcamento() {
                   Perspectiva 1 — Investimento Federal Total (com SESAI)
                 </h3>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Inclui a Saúde Indígena (SESAI), que representa <strong>~90% do total em 2018–2022</strong> e <strong>~60-85% em 2023–2025</strong>.
+                  Inclui a Saúde Indígena (SESAI), que representa a maior parcela do total — ver infográfico de mascaramento acima.
                 </p>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   <Card className="border-t-4 border-t-chart-1">
@@ -909,16 +909,17 @@ export default function Orcamento() {
                           const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
-                          const interpretacoes: Record<number, string> = {
-                            2018: 'Base: SEPPIR ativa + FUNAI com 5 ações.',
-                            2019: 'Queda real sem SESAI: extinção da SEPPIR.',
-                            2020: 'Programa 5034 genérico (filtrado).',
-                            2021: 'Vale do desmonte.',
-                            2022: 'Ponto mais baixo relativo.',
-                            2023: 'Reconstrução: criação do MIR.',
-                            2024: 'Expansão: MPI R$ 307 mi + MIR recorde.',
-                            2025: 'Explosão: MPI R$ 1,4 bi + MIR R$ 103 mi.',
-                          };
+                          // Interpretações dinâmicas baseadas nos dados
+                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
+                          const varPct = prevSemS > 0 ? ((semSVal - prevSemS) / prevSemS * 100) : 0;
+                          const interpretacao = ano === 2018
+                            ? `Base: sem SESAI = ${formatCurrency(semSVal)}.`
+                            : ano <= 2022
+                              ? `Sem SESAI: ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}% vs. ${ano - 1}).`
+                              : ano === 2023
+                                ? `Reconstrução: criação do MIR. Sem SESAI: ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}%).`
+                                : `Expansão: sem SESAI = ${formatCurrency(semSVal)} (${varPct >= 0 ? '+' : ''}${varPct.toFixed(0)}% vs. ${ano - 1}).`;
                           return (
                             <TableRow key={ano} className={ano === 2023 ? 'border-t-2 border-t-chart-2' : ''}>
                               <TableCell className="font-bold">{ano}</TableCell>
@@ -926,7 +927,7 @@ export default function Orcamento() {
                               <TableCell className="text-right font-mono text-xs text-muted-foreground">{formatCurrencyFull(sesaiVal)}</TableCell>
                               <TableCell className="text-right font-mono text-xs font-semibold">{formatCurrencyFull(semSesaiVal)}</TableCell>
                               <TableCell className="text-right text-xs">{pctSesai.toFixed(0)}%</TableCell>
-                              <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacoes[ano]}</TableCell>
+                              <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacao}</TableCell>
                             </TableRow>
                           );
                         })}
@@ -936,28 +937,58 @@ export default function Orcamento() {
                 </Card>
               )}
 
-              {/* Conclusão Interpretativa Federal */}
-              <Card className="border-l-4 border-l-primary">
-                <CardContent className="pt-4 pb-3">
-                  <h4 className="font-semibold text-sm mb-3">📊 Conclusão Interpretativa — Federal</h4>
-                  <div className="text-xs text-muted-foreground space-y-3">
-                    <div>
-                      <p className="font-semibold text-foreground mb-1">A divisão em dois períodos é válida?</p>
-                      <p><strong>Sim, mas com ressalvas fundamentais.</strong> A fronteira 2022→2023 marca a criação do MIR e o reinício da política racial institucional.</p>
-                    </div>
-                    <ul className="list-disc pl-4 space-y-1.5">
-                      <li><strong>2018–2019:</strong> A SEPPIR operou com R$ 5–20 mi/ano de execução real.</li>
-                      <li><strong>2021–2022:</strong> O investimento racial (sem SESAI) caiu para R$ 60–63 mi.</li>
-                      <li><strong>2023:</strong> Criação do MIR. Sem SESAI, o pago subiu para ~R$ 107 mi.</li>
-                      <li><strong>2024–2025:</strong> MPI explodiu para R$ 307 mi (2024) e R$ 1,4 bi (2025). <strong>Pela primeira vez, as políticas raciais sem SESAI superam R$ 1 bilhão.</strong></li>
-                    </ul>
-                    <div className="bg-muted/50 rounded p-3 mt-3">
-                      <p className="font-semibold text-foreground mb-1">🔑 Achado Central</p>
-                      <p>A SESAI representou <strong>~95% do total em 2018–2019</strong> e <strong>~56% em 2025</strong>. A queda percentual da SESAI reflete o <em>crescimento exponencial das demais políticas</em>.</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Conclusão Interpretativa Federal — DINÂMICA */}
+              {(() => {
+                const fc = formatCurrency;
+                const semS = esferaStats.federal.semSesai;
+                const comS = esferaStats.federal;
+                const pad = semS?.porAnoDetalhado || {};
+                const padTotal = comS.porAnoDetalhado || {};
+
+                const val = (ano: number) => pad[ano]?.pago || 0;
+                const valTotal = (ano: number) => padTotal[ano]?.pago || 0;
+                const pctSesai = (ano: number) => {
+                  const t = valTotal(ano);
+                  return t > 0 ? (((t - val(ano)) / t) * 100).toFixed(0) : '0';
+                };
+
+                // Identify year where non-SESAI first exceeds 1 bi
+                const anos = Object.keys(pad).map(Number).sort();
+                const anoPrimeiroBi = anos.find(a => val(a) >= 1_000_000_000);
+
+                // P1 non-SESAI range
+                const p1Anos = anos.filter(a => a >= 2018 && a <= 2022);
+                const p1Min = p1Anos.length > 0 ? Math.min(...p1Anos.map(val)) : 0;
+                const p1Max = p1Anos.length > 0 ? Math.max(...p1Anos.map(val)) : 0;
+
+                // First & last year SESAI %
+                const firstYear = anos[0] || 2018;
+                const lastYear = anos[anos.length - 1] || 2025;
+
+                return (
+                  <Card className="border-l-4 border-l-primary">
+                    <CardContent className="pt-4 pb-3">
+                      <h4 className="font-semibold text-sm mb-3">📊 Conclusão Interpretativa — Federal</h4>
+                      <div className="text-xs text-muted-foreground space-y-3">
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">A divisão em dois períodos é válida?</p>
+                          <p><strong>Sim, mas com ressalvas fundamentais.</strong> A fronteira 2022→2023 marca a criação do MIR e o reinício da política racial institucional.</p>
+                        </div>
+                        <ul className="list-disc pl-4 space-y-1.5">
+                          <li><strong>2018–2022:</strong> O investimento racial (sem SESAI) oscilou entre {fc(p1Min)} e {fc(p1Max)}/ano.</li>
+                          <li><strong>2023:</strong> Criação do MIR. Sem SESAI, o pago subiu para {fc(val(2023))}.</li>
+                          <li><strong>2024:</strong> Expansão significativa: sem SESAI, o pago atingiu {fc(val(2024))}.</li>
+                          <li><strong>2025:</strong> Sem SESAI, o pago alcançou {fc(val(2025))}.{anoPrimeiroBi ? <strong> Pela primeira vez ({anoPrimeiroBi}), as políticas raciais sem SESAI superam R$ 1 bilhão.</strong> : null}</li>
+                        </ul>
+                        <div className="bg-muted/50 rounded p-3 mt-3">
+                          <p className="font-semibold text-foreground mb-1">🔑 Achado Central</p>
+                          <p>A SESAI representou <strong>~{pctSesai(firstYear)}% do total em {firstYear}</strong> e <strong>~{pctSesai(lastYear)}% em {lastYear}</strong>. A queda percentual da SESAI reflete o <em>crescimento exponencial das demais políticas</em>.</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
 
               {/* RANKING: Gastos por Programa (Não-Saúde) */}
               {(() => {
