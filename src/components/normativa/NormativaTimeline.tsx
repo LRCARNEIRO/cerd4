@@ -256,7 +256,7 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
                               {cat.label}
                             </Badge>
                             {artigos.map(a => (
-                              <Badge key={a} variant="outline" className="text-[10px] font-bold border-accent bg-accent/10 text-accent-foreground">
+                              <Badge key={a} variant="outline" className="text-[10px] font-bold border-primary/30 bg-primary/10 text-primary">
                                 Art. {a}
                               </Badge>
                             ))}
