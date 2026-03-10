@@ -319,23 +319,29 @@ Deno.serve(async (req) => {
     // ===== PASSO 2: Deduplica contra base existente =====
     console.log(`\n--- Deduplicação contra base existente ---`);
 
-    // Fetch existing federal records to deduplicate
-    const { data: existentes, error: fetchErr } = await supabase
-      .from("dados_orcamentarios")
-      .select("orgao, programa, ano")
-      .eq("esfera", "federal");
-
-    if (fetchErr) {
-      erros.push(`Erro ao buscar existentes: ${fetchErr.message}`);
-    }
-
+    // Fetch ALL existing federal records with pagination (default limit = 1000)
     const existingKeys = new Set<string>();
-    if (existentes) {
-      for (const e of existentes) {
+    let offset = 0;
+    const PAGE = 1000;
+    while (true) {
+      const { data: batch, error: fetchErr } = await supabase
+        .from("dados_orcamentarios")
+        .select("orgao, programa, ano")
+        .eq("esfera", "federal")
+        .range(offset, offset + PAGE - 1);
+
+      if (fetchErr) {
+        erros.push(`Erro ao buscar existentes (offset ${offset}): ${fetchErr.message}`);
+        break;
+      }
+      if (!batch || batch.length === 0) break;
+      for (const e of batch) {
         existingKeys.add(`${e.orgao}|${e.programa}|${e.ano}`);
       }
+      if (batch.length < PAGE) break;
+      offset += PAGE;
     }
-    console.log(`  ${existingKeys.size} registros federais existentes na base`);
+    console.log(`  ${existingKeys.size} registros federais existentes na base (paginados)`);
 
     // Filter out duplicates
     const novos: any[] = [];
