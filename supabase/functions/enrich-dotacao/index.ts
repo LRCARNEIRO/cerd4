@@ -171,6 +171,17 @@ async function enrichViaCSV(
 
   console.log(`  [CSV] Indexado: ${dotIndex.size} chaves`);
 
+  // Diagnostic: check if target programs exist in CSV and their values
+  const targetProgs = new Set(records.map(r => extractCodPrograma(r.programa)).filter(Boolean));
+  for (const tp of targetProgs) {
+    const exactKeys = Array.from(dotIndex.keys()).filter(k => k.startsWith(`${tp}|`));
+    const sampleValues = exactKeys.slice(0, 5).map(k => {
+      const v = dotIndex.get(k)!;
+      return `${k}→ini:${v.dotInicial},aut:${v.dotAtualizada}`;
+    });
+    console.log(`  [CSV-DIAG] Programa ${tp}: ${exactKeys.length} chaves. Valores: ${sampleValues.join(" | ")}`);
+  }
+
   // Match
   const remaining: any[] = [];
   for (const rec of records) {
@@ -264,7 +275,7 @@ async function enrichViaAPI(
     let page = 1;
     let apiOk = true;
     while (page <= 30) {
-      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoPrograma=${codProg}&pagina=${page}`;
+      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&programa=${codProg}&pagina=${page}`;
       if (page === 1 && progCount <= 5) console.log(`  [API-prog] ${url}`);
 
       try {
@@ -368,7 +379,7 @@ async function enrichViaAPI(
     }
 
     for (const [codAcao, recs] of acaoGroups.entries()) {
-      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&codigoAcao=${codAcao}&pagina=1`;
+      const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&acao=${codAcao}&pagina=1`;
       console.log(`  [API-acao] ${url}`);
 
       try {
