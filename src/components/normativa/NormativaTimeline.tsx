@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import {
   Scale, Building2, FileCheck, FileText, BookOpen, ExternalLink,
   TrendingUp, TrendingDown, Minus, Star, Calendar, ChevronDown, ChevronUp,
+  BarChart3,
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { format, parseISO, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { ArtigoConvencao } from '@/utils/artigosConvencao';
@@ -155,6 +157,64 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
               <p className="text-2xl font-bold text-amber-600">{totalDestaque}</p>
               <p className="text-xs text-amber-700 dark:text-amber-400">Marcos de destaque</p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Compact quantitative timeline */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <BarChart3 className="w-4 h-4 text-primary" />
+            Visão Rápida por Ano
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Panorama quantitativo da evolução das políticas raciais ({yearsSpan})
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {displayYears.map(year => {
+              const items = timelineData.byYear[year];
+              const avancos = items.filter(i => i.trend === 'avanço').length;
+              const retrocessos = items.filter(i => i.trend === 'retrocesso').length;
+              const manutencao = items.filter(i => i.trend === 'manutenção').length;
+              const destaques = items.filter(i => i.highlight).length;
+              const maxCount = Math.max(...displayYears.map(y => timelineData.byYear[y].length));
+              const pct = maxCount > 0 ? (items.length / maxCount) * 100 : 0;
+
+              return (
+                <div key={year} className="flex items-center gap-3 group">
+                  <span className="text-xs font-bold text-foreground w-10 text-right tabular-nums">{year}</span>
+                  <div className="flex-1 flex items-center gap-1.5">
+                    <div className="flex-1 h-5 rounded-md bg-muted/40 overflow-hidden relative">
+                      <div
+                        className="h-full rounded-md bg-gradient-to-r from-primary/70 to-primary/40 transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                      <span className="absolute inset-0 flex items-center px-2 text-[10px] font-medium text-foreground">
+                        {items.length} norma{items.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    {avancos > 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800">
+                        <TrendingUp className="w-2.5 h-2.5 mr-0.5" />{avancos}
+                      </Badge>
+                    )}
+                    {retrocessos > 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800">
+                        <TrendingDown className="w-2.5 h-2.5 mr-0.5" />{retrocessos}
+                      </Badge>
+                    )}
+                    {destaques > 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800">
+                        <Star className="w-2.5 h-2.5 mr-0.5 fill-amber-500" />{destaques}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
