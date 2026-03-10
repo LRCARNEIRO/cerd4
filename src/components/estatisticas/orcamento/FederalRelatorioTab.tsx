@@ -382,23 +382,38 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
       <Card>
         <CardHeader><CardTitle className="text-sm">2. Fundamentação Metodológica</CardTitle></CardHeader>
         <CardContent className="text-xs text-muted-foreground space-y-3">
-          <p>A base foi construída através de uma estratégia de <strong>4 camadas complementares</strong>, capturando ~R$ 9 bi pagos em 2023–2025:</p>
+          <p>A base foi construída através de uma estratégia de <strong>4 camadas de filtragem estrutural + 2 passos complementares de enriquecimento</strong>:</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 1 — Programas Temáticos PPA</p>
-              <p>Códigos finalísticos: 2034 (SEPPIR), 0617/2065/5136 (indígenas), 5802/5803/5804 (MIR 2024+).</p>
+              <p>
+                <strong>9 programas históricos</strong> (2034/SEPPIR, 0617/2065/5136 indígenas, 5802/5803/5804 MIR 2024+)
+                + <strong>14 programas das Agendas Transversais</strong> do PPA 2024–2027 (Igualdade Racial e Povos Indígenas).
+              </p>
+              <p className="mt-1">
+                <em>Filtro híbrido:</em> programas <strong>focais</strong> (MIR, MPI — ex: 1617, 5136) incluem todas as ações;
+                programas <strong>universais</strong> (Bolsa Família, Educação Básica, CT&I, etc.) exigem palavras-chave raciais/étnicas no título da ação.
+              </p>
             </div>
             <div className="bg-muted/50 rounded p-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Subfunção 422</p>
-              <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais.</p>
+              <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais, validadas por palavras-chave.</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
-              <p className="font-semibold text-foreground text-xs mb-1">Camada 3 — Órgãos MIR/MPI + SESAI</p>
-              <p>MIR (67000), MPI (92000), SEPPIR, FUNAI, INCRA. SESAI (20YP, 7684) contabilizada com dupla perspectiva.</p>
+              <p className="font-semibold text-foreground text-xs mb-1">Camada 3 — Órgãos MIR/MPI</p>
+              <p>MIR (67000) e MPI (92000) — todas as despesas desses órgãos, deduplicadas contra Camadas 1 e 2.</p>
             </div>
             <div className="bg-muted/50 rounded p-3">
-              <p className="font-semibold text-foreground text-xs mb-1">Camada 4 — Dotação via Dados Abertos</p>
-              <p>Arquivos LOA (dados.gov.br) complementam dotação inicial e autorizada.</p>
+              <p className="font-semibold text-foreground text-xs mb-1">Camada 4 — SESAI (Saúde Indígena)</p>
+              <p>Ações 20YP e 7684 capturadas por código de ação direto, necessário após migração da SESAI para programa genérico de saúde (5022).</p>
+            </div>
+            <div className="bg-amber-500/5 rounded p-3 border border-amber-500/20">
+              <p className="font-semibold text-foreground text-xs mb-1">Passo 5 — Dotação via Dados Abertos (LOA)</p>
+              <p>Arquivos ZIP/CSV do portal dados.gov.br complementam dotação inicial e autorizada, matching por chave Programa|Ação.</p>
+            </div>
+            <div className="bg-amber-500/5 rounded p-3 border border-amber-500/20">
+              <p className="font-semibold text-foreground text-xs mb-1">Passo 6 — Ingestão Keyword-First</p>
+              <p>Varredura ampla em ~40 subfunções usando 30+ palavras-chave raciais/étnicas para capturar ações dispersas não cobertas pelas 4 camadas estruturais.</p>
             </div>
           </div>
 
@@ -406,35 +421,34 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
             <p className="text-xs font-semibold text-foreground mb-1">⚠️ Tratamento de Programas Genéricos / Universais</p>
             <p className="text-xs">
               Programas de grande escala como <strong>Minha Casa Minha Vida</strong> (R$ 100+ bi/ano), <strong>Bolsa Família</strong> (R$ 160+ bi/ano), 
-              <strong> SUS</strong>, <strong>SUAS</strong> e similares <strong>não são incluídos</strong>, mesmo que beneficiem populações negras e indígenas proporcionalmente.
-              Incluí-los inflaria artificialmente os totais, mascarando o investimento efetivamente <em>finalístico</em> em política racial.
+              <strong> SUS</strong>, <strong>SUAS</strong> e similares <strong>não são incluídos integralmente</strong>.
+              Quando presentes nas Agendas Transversais (ex: programa 5128/Bolsa Família), apenas ações cujo título contenha
+              termos raciais/étnicos são retidas — evitando inflação artificial dos totais.
             </p>
             <p className="text-xs mt-2">
-              Para programas como o antigo <strong>5034 (MDHC)</strong>, que reunia ações de direitos humanos genéricas junto com ações raciais, 
-              <strong> somente ações cujos campos programa/descritivo contêm palavras-chave raciais/étnicas</strong> foram retidas na base 
-              (ex: "igualdade racial", "quilombola", "indígena", "capoeira", "terreiro"). Ações sem esse recorte — tipicamente administrativas 
-              ou de direitos humanos gerais reclassificadas retroativamente pela API — foram <strong>excluídas definitivamente</strong>.
+              Para o antigo <strong>5034 (MDHC)</strong>, que reunia ações genéricas junto com ações raciais, 
+              <strong> somente ações com palavras-chave raciais/étnicas nos campos programa/descritivo</strong> foram retidas.
+              Ações administrativas ou de direitos humanos gerais reclassificadas retroativamente pela API foram <strong>excluídas definitivamente</strong>.
             </p>
           </div>
 
           <div className="bg-primary/10 rounded p-3 border border-primary/30 mt-2">
             <p className="text-xs font-semibold text-foreground mb-1">📌 Diferença para a seção TESTE</p>
             <p className="text-xs">
-              Esta seção utiliza a metodologia de <strong>4 camadas</strong> (programas temáticos + subfunção 422 + órgãos MIR/MPI + SESAI), 
-              capturando ~R$ 9 bi pagos em 2023–2025. A seção <strong>TESTE</strong> utiliza exclusivamente os 18 códigos de programas da 
-              <em> Agenda Transversal PPA 2024–2027</em> (programas focais + ações filtradas por palavras-chave em programas universais), 
-              resultando em ~R$ 4,5 bi — uma cobertura mais restrita por design.
+              Esta seção utiliza a metodologia completa de <strong>4 camadas + 2 passos complementares</strong> (23 programas temáticos expandidos + subfunção 422 + órgãos MIR/MPI + SESAI + dotação LOA + keyword-first).
+              A seção <strong>TESTE</strong> utiliza exclusivamente os 18 códigos de programas da <em>Agenda Transversal PPA 2024–2027</em>,
+              resultando em cobertura mais restrita por design.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-1.5 mt-2">
             <span className="text-[10px] font-medium text-foreground mr-1">Radicais de busca:</span>
-            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana'].map(r => (
+            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana', 'candomblé', 'umbanda', 'juventude negra'].map(r => (
               <Badge key={r} variant="secondary" className="text-[10px] font-mono">{r}*</Badge>
             ))}
           </div>
           <p className="text-[10px] mt-1">
-            <strong>Exclusões definitivas:</strong> Bolsa Família, MCMV, SUS, SUAS e todas as ações de programas genéricos (ex: 5034/MDHC) sem palavras-chave raciais/étnicas no campo programa/descritivo.
+            <strong>Exclusões definitivas:</strong> Programas genéricos sem recorte racial (Bolsa Família integral, MCMV, SUS, SUAS) e ações genéricas do MDHC (00SN, 0E85, 14XS, 21AR-21AU).
           </p>
         </CardContent>
       </Card>
