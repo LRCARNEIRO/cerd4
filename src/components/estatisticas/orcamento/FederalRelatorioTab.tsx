@@ -705,7 +705,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   </li>
                   <li>
                     <strong>Retomada sem Entrega (2023–2025):</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%,
-                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento na liquidação.
+                    mas a taxa de execução ({analysis.execP2.toFixed(1)}%) evidencia represamento no pagamento.
                   </li>
                   <li>
                     <strong>Evidência central:</strong> A SESAI concentrou {analysis.sesaiPctP1.toFixed(0)}% da liquidação em 2018–2022 e {analysis.sesaiPctP2.toFixed(0)}% em 2023–2025,
