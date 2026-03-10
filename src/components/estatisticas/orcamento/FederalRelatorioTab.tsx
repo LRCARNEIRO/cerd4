@@ -523,17 +523,17 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
             <div className="bg-destructive/5 rounded-lg p-4 border border-destructive/20">
               <p className="font-semibold text-destructive mb-1">A. "Trava Institucional" (2018–2022)</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP1)}</strong> | Pago: <strong>{formatCurrency(analysis.totalPagoP1)}</strong> | Exec.: <strong>{analysis.execP1.toFixed(1)}%</strong></li>
-                <li>Sem SESAI: <strong>{formatCurrency(analysis.pagoP1NoSesai)}</strong> pagos em 5 anos — média de {formatCurrency(analysis.pagoP1NoSesai / 5)}/ano.</li>
-                <li>SEPPIR operou com R$ 5–20 mi/ano de execução real. Dotações simbólicas com liquidação zero.</li>
+                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP1)}</strong> | Liquidado: <strong>{formatCurrency(analysis.totalLiqP1)}</strong> | Exec.: <strong>{analysis.execP1.toFixed(1)}%</strong></li>
+                <li>Sem SESAI: <strong>{formatCurrency(analysis.liqP1NoSesai)}</strong> liquidados em 5 anos — média de {formatCurrency(analysis.liqP1NoSesai / 5)}/ano.</li>
+                <li>As políticas raciais e étnicas não vinculadas à saúde permaneceram em baixa escala e com forte compressão orçamentária.</li>
                 <li>FUNAI manteve operação mínima; INCRA com regularização quilombola travada.</li>
               </ul>
             </div>
             <div className="bg-success/5 rounded-lg p-4 border border-success/20">
               <p className="font-semibold text-success mb-1">B. "Retomada sem Entrega" (2023–2025)</p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP2)}</strong> | Pago: <strong>{formatCurrency(analysis.totalPagoP2)}</strong> | Exec.: <strong>{analysis.execP2.toFixed(1)}%</strong></li>
-                <li>Sem SESAI: <strong>{formatCurrency(analysis.pagoP2NoSesai)}</strong> pagos em 3 anos — média de {formatCurrency(analysis.pagoP2NoSesai / 3)}/ano.</li>
+                <li>Dotação total: <strong>{formatCurrency(analysis.totalDotP2)}</strong> | Liquidado: <strong>{formatCurrency(analysis.totalLiqP2)}</strong> | Exec.: <strong>{analysis.execP2.toFixed(1)}%</strong></li>
+                <li>Sem SESAI: <strong>{formatCurrency(analysis.liqP2NoSesai)}</strong> liquidados em 3 anos — média de {formatCurrency(analysis.liqP2NoSesai / 3)}/ano.</li>
                 <li>Criação do MIR (2023) e MPI (2023). Novos programas PPA: 5802, 5803, 5804.</li>
                 <li>"Efeito Tesoura": dotação sobe ({varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%), mas a liquidação não acompanha proporcionalmente.</li>
               </ul>
