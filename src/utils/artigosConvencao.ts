@@ -194,7 +194,7 @@ export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; 
 
 /**
  * Valida se um documento é Balizador (regra de ouro normativa).
- * Retorna true se a sigla consta entre os 20 documentos oficiais.
+ * Retorna true se a sigla consta entre os 22 documentos oficiais.
  */
 export function isDocumentoBalizador(sigla: string): boolean {
   return DOCUMENTOS_BALIZADORES_SIGLAS.includes(sigla);
