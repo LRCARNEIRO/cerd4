@@ -187,7 +187,7 @@ export function ArtigoEngagementPanel({ documentos }: ArtigoEngagementProps) {
                         Documentos vinculados ({docsArtigo.length})
                       </p>
                       <div className="space-y-1">
-                        {docsArtigo.slice(0, 6).map(doc => (
+                        {docsArtigo.map(doc => (
                           <div key={doc.id} className="flex items-start gap-2 p-2 rounded-md bg-muted/50 text-xs">
                             <FileText className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
                             <div className="min-w-0 flex-1">
@@ -210,11 +210,6 @@ export function ArtigoEngagementPanel({ documentos }: ArtigoEngagementProps) {
                             </div>
                           </div>
                         ))}
-                        {docsArtigo.length > 6 && (
-                          <p className="text-[10px] text-muted-foreground text-center pt-1">
-                            … e mais {docsArtigo.length - 6} documento(s)
-                          </p>
-                        )}
                       </div>
                     </div>
                   ) : (
