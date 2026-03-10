@@ -1,0 +1,1 @@
+ALTER TABLE public.documentos_normativos ADD COLUMN IF NOT EXISTS artigos_convencao text[] DEFAULT '{}'::text[];
