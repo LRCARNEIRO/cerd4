@@ -632,10 +632,10 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
-              {analysis.topPrograms.map(([programa, { pago, orgao, dot }], idx) => {
-                const maxVal = analysis.topPrograms[0]?.[1].pago || 1;
-                const pct = (pago / maxVal) * 100;
-                const execRate = dot > 0 ? (pago / dot * 100) : null;
+              {analysis.topPrograms.map(([programa, { liquidado, orgao, dot }], idx) => {
+                const maxVal = analysis.topPrograms[0]?.[1].liquidado || 1;
+                const pct = (liquidado / maxVal) * 100;
+                const execRate = dot > 0 ? (liquidado / dot * 100) : null;
                 const colors = ['hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
                 return (
                   <div key={programa} className="space-y-0.5">
@@ -651,7 +651,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                             {execRate.toFixed(0)}% exec.
                           </Badge>
                         )}
-                        <span className="text-xs font-mono font-semibold">{formatCurrency(pago)}</span>
+                        <span className="text-xs font-mono font-semibold">{formatCurrency(liquidado)}</span>
                       </div>
                     </div>
                     <div className="ml-7 h-2 bg-muted rounded-full overflow-hidden">
