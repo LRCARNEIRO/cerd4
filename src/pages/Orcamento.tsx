@@ -946,8 +946,8 @@ export default function Orcamento() {
                 const pad = semS?.porAnoDetalhado || {};
                 const padTotal = comS.porAnoDetalhado || {};
 
-                const val = (ano: number) => pad[ano]?.liquidado || 0;
-                const valTotal = (ano: number) => padTotal[ano]?.liquidado || 0;
+                const val = (ano: number) => pad[ano]?.pago || 0;
+                const valTotal = (ano: number) => padTotal[ano]?.pago || 0;
                 const pctSesai = (ano: number) => {
                   const t = valTotal(ano);
                   return t > 0 ? (((t - val(ano)) / t) * 100).toFixed(0) : '0';
