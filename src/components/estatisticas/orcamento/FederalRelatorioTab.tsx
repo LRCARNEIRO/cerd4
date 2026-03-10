@@ -198,7 +198,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, stats, formatCurren
     const allRecords = records;
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
-    const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+    const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || 0;
     const dotacao = (r: DadoOrcamentario) => Number(r.dotacao_inicial) || Number(r.dotacao_autorizada) || 0;
     const liquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
 

@@ -431,25 +431,80 @@ export default function Orcamento() {
   const currentRecords = useMemo(() => getFilteredRecords(esfera, currentFilters), [classified, esfera, currentFilters]);
 
 
-  /** Compute per-esfera summary stats */
+  /** Compute per-esfera summary stats — single source of truth for all tabs */
   const esferaStats = useMemo(() => {
     const compute = (records: DadoOrcamentario[]) => {
-      const valorLiquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
-      const clean = records;
-      const p1 = clean.filter(r => r.ano >= 2018 && r.ano <= 2022);
-      const p2 = clean.filter(r => r.ano >= 2023 && r.ano <= 2025);
-      const t1 = p1.reduce((s, r) => s + valorLiquidado(r), 0);
-      const t2 = p2.reduce((s, r) => s + valorLiquidado(r), 0);
-      const anos = new Set(clean.map(r => r.ano));
-      const programas = new Set(clean.map(r => r.programa));
+      const p1 = records.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const p2 = records.filter(r => r.ano >= 2023 && r.ano <= 2025);
+
+      const liqP1 = p1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const liqP2 = p2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+      const dotP1 = p1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+      const dotP2 = p2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+      const pagoP1 = p1.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+      const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+
+      const anos = new Set(records.map(r => r.ano));
+      const programas = new Set(records.map(r => r.programa));
+
+      // Sem SESAI
+      const nonSesai = records.filter(r => classifyThematic(r) !== 'sesai');
+      const nsP1 = nonSesai.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const nsP2 = nonSesai.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const semSesai = {
+        dotacaoP1: nsP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotacaoP2: nsP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liquidadoP1: nsP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liquidadoP2: nsP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        pagoP1: nsP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: nsP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        variacaoDotacao: 0, variacaoLiquidado: 0, variacaoPago: 0,
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+      };
+      semSesai.variacaoDotacao = semSesai.dotacaoP1 > 0 ? ((semSesai.dotacaoP2 - semSesai.dotacaoP1) / semSesai.dotacaoP1 * 100) : 0;
+      semSesai.variacaoLiquidado = semSesai.liquidadoP1 > 0 ? ((semSesai.liquidadoP2 - semSesai.liquidadoP1) / semSesai.liquidadoP1 * 100) : 0;
+      semSesai.variacaoPago = semSesai.pagoP1 > 0 ? ((semSesai.pagoP2 - semSesai.pagoP1) / semSesai.pagoP1 * 100) : 0;
+      nonSesai.forEach(r => {
+        if (!semSesai.porAnoDetalhado[r.ano]) semSesai.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        semSesai.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        semSesai.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        semSesai.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+
+      // Por ano detalhado (com SESAI)
+      const porAnoDetalhado: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
+      records.forEach(r => {
+        if (!porAnoDetalhado[r.ano]) porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+
       return {
-        totalPeriodo1: t1,
-        totalPeriodo2: t2,
-        variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,
-        totalRegistros: clean.length,
+        // Liquidado (backward compat)
+        totalPeriodo1: liqP1,
+        totalPeriodo2: liqP2,
+        variacao: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
+        // Dotação
+        dotacaoPeriodo1: dotP1,
+        dotacaoPeriodo2: dotP2,
+        variacaoDotacao: dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0,
+        // Liquidado explicit
+        liquidadoPeriodo1: liqP1,
+        liquidadoPeriodo2: liqP2,
+        variacaoLiquidado: liqP1 > 0 ? ((liqP2 - liqP1) / liqP1 * 100) : 0,
+        // Pago
+        pagoPeriodo1: pagoP1,
+        pagoPeriodo2: pagoP2,
+        variacaoPago: pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0,
+        // Meta
+        totalRegistros: records.length,
         totalProgramas: programas.size,
         anosCobertura: Array.from(anos).sort(),
         metricaLabel: 'Liquidado',
+        // Detalhado
+        porAnoDetalhado,
+        semSesai,
       };
     };
     return {
