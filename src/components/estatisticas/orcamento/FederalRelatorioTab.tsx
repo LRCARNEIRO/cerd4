@@ -224,8 +224,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const totalPagoP2 = p2.reduce((s, r) => s + valorEfetivo(r), 0);
     const totalDotP1 = p1.reduce((s, r) => s + dotacao(r), 0);
     const totalDotP2 = p2.reduce((s, r) => s + dotacao(r), 0);
-    const totalLiqP1 = summaryStats?.liquidadoPeriodo1 ?? p1.reduce((s, r) => s + liquidado(r), 0);
-    const totalLiqP2 = summaryStats?.liquidadoPeriodo2 ?? p2.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP1 = p1.reduce((s, r) => s + liquidado(r), 0);
+    const totalLiqP2 = p2.reduce((s, r) => s + liquidado(r), 0);
 
     const pagoP1NoSesai = p1NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
     const pagoP2NoSesai = p2NoSesai.reduce((s, r) => s + valorEfetivo(r), 0);
