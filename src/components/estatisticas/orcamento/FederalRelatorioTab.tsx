@@ -139,7 +139,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-[10px]">Artigo</TableHead>
-                  <TableHead className="text-right text-[10px]">Liquidado</TableHead>
+                  <TableHead className="text-right text-[10px]">Pago</TableHead>
                   <TableHead className="text-right text-[10px]">% Total</TableHead>
                   <TableHead className="text-right text-[10px]">Programas</TableHead>
                 </TableRow>
