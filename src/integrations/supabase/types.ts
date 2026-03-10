@@ -218,6 +218,7 @@ export type Database = {
       }
       documentos_normativos: {
         Row: {
+          artigos_convencao: string[] | null
           categoria: string
           created_at: string
           id: string
@@ -235,6 +236,7 @@ export type Database = {
           url_origem: string | null
         }
         Insert: {
+          artigos_convencao?: string[] | null
           categoria?: string
           created_at?: string
           id?: string
@@ -252,6 +254,7 @@ export type Database = {
           url_origem?: string | null
         }
         Update: {
+          artigos_convencao?: string[] | null
           categoria?: string
           created_at?: string
           id?: string

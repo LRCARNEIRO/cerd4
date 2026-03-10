@@ -69,8 +69,11 @@ export default function Normativa() {
     count: documentos.filter(d => d.recomendacoes_impactadas?.includes(r)).length,
   }));
 
-  // Derive artigos for each doc from secoes_impactadas
+  // Get artigos for a doc: prefer DB field, fallback to derivation
   const getDocArtigos = (doc: any): ArtigoConvencao[] => {
+    if (doc.artigos_convencao && doc.artigos_convencao.length > 0) {
+      return doc.artigos_convencao as ArtigoConvencao[];
+    }
     const eixos: string[] = doc.secoes_impactadas || [];
     const artigos = new Set<ArtigoConvencao>();
     eixos.forEach(eixo => {

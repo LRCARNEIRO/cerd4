@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { NormativaImpactReview, type ImpactChange } from './NormativaImpactReview';
+import { inferArtigosDocumentoNormativo } from '@/utils/artigosConvencao';
 
 export function NormativaUpload() {
   const [isOpen, setIsOpen] = useState(false);
@@ -175,15 +176,24 @@ export function NormativaUpload() {
     const resumo: Record<string, number> = {};
     acceptedChanges.forEach(c => { resumo[c.tipo] = (resumo[c.tipo] || 0) + 1; });
 
+    const categoria = detectCategoria(acceptedChanges);
+    const artigos = inferArtigosDocumentoNormativo({
+      titulo: fileName,
+      categoria,
+      secoes_impactadas: secoes,
+      recomendacoes_impactadas: recs,
+    });
+
     await supabase.from('documentos_normativos').insert({
       titulo: fileName,
-      categoria: detectCategoria(acceptedChanges),
+      categoria,
       tipo_arquivo: selectedFile ? selectedFile.name.split('.').pop()?.toUpperCase() : 'URL',
       tamanho: selectedFile ? `${(selectedFile.size / 1024).toFixed(0)} KB` : null,
       url_origem: !selectedFile ? urlInput.trim() : null,
       metas_impactadas: metas,
       secoes_impactadas: secoes,
       recomendacoes_impactadas: recs,
+      artigos_convencao: artigos,
       status: 'processado',
       total_itens_extraidos: acceptedChanges.length,
       resumo_impacto: resumo,

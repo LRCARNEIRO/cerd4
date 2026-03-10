@@ -27,6 +27,7 @@ interface NormativaDocCardProps {
     metas_impactadas?: string[] | null;
     recomendacoes_impactadas?: string[] | null;
     secoes_impactadas?: string[] | null;
+    artigos_convencao?: string[] | null;
     resumo_impacto?: any;
   };
   onDelete: (doc: any) => void;
@@ -95,7 +96,7 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
               {m}
             </Badge>
           ))}
-          {deriveArtigosFromDoc(doc).map((art) => (
+          {getDocArticles(doc).map((art) => (
             <Badge key={art} variant="outline" className="text-[10px] font-bold border-accent bg-accent/10 text-accent-foreground">
               Art. {art}
             </Badge>
@@ -170,8 +171,12 @@ function buildRacialSummary(doc: any): string | null {
   return parts.length > 0 ? parts.join(' ') + '.' : null;
 }
 
-/** Derive ICERD articles from document's thematic axes (secoes_impactadas) */
-function deriveArtigosFromDoc(doc: any): ArtigoConvencao[] {
+/** Get ICERD articles: prefer DB field, fallback to derivation from eixos */
+function getDocArticles(doc: any): ArtigoConvencao[] {
+  if (doc.artigos_convencao && doc.artigos_convencao.length > 0) {
+    return (doc.artigos_convencao as ArtigoConvencao[]).sort();
+  }
+  // Fallback: derive from secoes_impactadas
   const eixos: string[] = doc.secoes_impactadas || [];
   const artigos = new Set<ArtigoConvencao>();
   eixos.forEach(eixo => {
