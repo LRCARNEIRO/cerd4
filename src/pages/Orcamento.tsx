@@ -29,6 +29,7 @@ import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { FederalIngestionPanel } from '@/components/dashboard/FederalIngestionPanel';
 import { EstadualIngestionPanel } from '@/components/dashboard/EstadualIngestionPanel';
 import { MunicipalIngestionPanel } from '@/components/dashboard/MunicipalIngestionPanel';
+import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
