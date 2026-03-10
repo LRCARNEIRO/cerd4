@@ -905,13 +905,13 @@ export default function Orcamento() {
                       </TableHeader>
                       <TableBody>
                         {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
-                          const total = esferaStats.federal.porAnoDetalhado[ano]?.pago || 0;
-                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
+                          const total = esferaStats.federal.porAnoDetalhado[ano]?.liquidado || 0;
+                          const semSesaiVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.liquidado || 0;
                           const sesaiVal = total - semSesaiVal;
                           const pctSesai = total > 0 ? (sesaiVal / total * 100) : 0;
                           // Interpretações dinâmicas baseadas nos dados
-                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.pago || 0;
-                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
+                          const semSVal = esferaStats.federal.semSesai?.porAnoDetalhado[ano]?.liquidado || 0;
+                          const prevSemS = ano > 2018 ? (esferaStats.federal.semSesai?.porAnoDetalhado[ano - 1]?.liquidado || 0) : 0;
                           const varPct = prevSemS > 0 ? ((semSVal - prevSemS) / prevSemS * 100) : 0;
                           const interpretacao = ano === 2018
                             ? `Base: sem SESAI = ${formatCurrency(semSVal)}.`
