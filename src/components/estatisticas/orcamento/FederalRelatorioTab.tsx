@@ -481,27 +481,27 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
             Sem sua remoção analítica, as demais políticas tornam-se estatisticamente invisíveis.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Card className="bg-chart-5/5 border-chart-5/30">
+             <Card className="bg-chart-5/5 border-chart-5/30">
               <CardContent className="pt-3 pb-2">
                 <p className="font-semibold text-foreground text-xs">SESAI em 2018–2022</p>
                 <p className="text-lg font-bold">{analysis.sesaiPctP1.toFixed(1)}%</p>
-                <p className="text-[10px]">{formatCurrency(analysis.sesaiLiqP1)} de {formatCurrency(analysis.totalLiqP1)}</p>
+                <p className="text-[10px]">{formatCurrency(analysis.sesaiPagoP1)} de {formatCurrency(analysis.totalPagoP1)}</p>
               </CardContent>
             </Card>
             <Card className="bg-chart-5/5 border-chart-5/30">
               <CardContent className="pt-3 pb-2">
                 <p className="font-semibold text-foreground text-xs">SESAI em 2023–2025</p>
                 <p className="text-lg font-bold">{analysis.sesaiPctP2.toFixed(1)}%</p>
-                <p className="text-[10px]">{formatCurrency(analysis.sesaiLiqP2)} de {formatCurrency(analysis.totalLiqP2)}</p>
+                <p className="text-[10px]">{formatCurrency(analysis.sesaiPagoP2)} de {formatCurrency(analysis.totalPagoP2)}</p>
               </CardContent>
             </Card>
             <Card className="bg-primary/5 border-primary/30">
               <CardContent className="pt-3 pb-2">
-                <p className="font-semibold text-foreground text-xs">Demais Políticas</p>
+                <p className="font-semibold text-foreground text-xs">Demais Políticas (Pago)</p>
                 <p className="text-lg font-bold text-primary">
-                  {formatCurrency(analysis.liqP1NoSesai)} → {formatCurrency(analysis.liqP2NoSesai)}
+                  {formatCurrency(analysis.pagoP1NoSesai)} → {formatCurrency(analysis.pagoP2NoSesai)}
                 </p>
-                <p className="text-[10px]">{varLiqNoSesai >= 0 ? '+' : ''}{varLiqNoSesai.toFixed(1)}% de variação</p>
+                <p className="text-[10px]">{varPagoNoSesai >= 0 ? '+' : ''}{varPagoNoSesai.toFixed(1)}% de variação</p>
               </CardContent>
             </Card>
           </div>
