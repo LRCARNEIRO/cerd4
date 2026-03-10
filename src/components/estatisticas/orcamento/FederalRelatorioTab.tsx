@@ -357,23 +357,23 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Card className="border-l-4 border-l-primary/60">
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Pago 2018–2022</p>
-                <p className="text-base font-bold">{formatCurrency(analysis.totalPagoP1)}</p>
+                <p className="text-[10px] text-muted-foreground">Liquidado 2018–2022</p>
+                <p className="text-base font-bold">{formatCurrency(analysis.totalLiqP1)}</p>
                 <p className="text-[10px]">Exec.: {analysis.execP1.toFixed(1)}%</p>
               </CardContent>
             </Card>
             <Card className="border-l-4 border-l-success/60">
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Pago 2023–2025</p>
-                <p className="text-base font-bold text-success">{formatCurrency(analysis.totalPagoP2)}</p>
+                <p className="text-[10px] text-muted-foreground">Liquidado 2023–2025</p>
+                <p className="text-base font-bold text-success">{formatCurrency(analysis.totalLiqP2)}</p>
                 <p className="text-[10px]">Exec.: {analysis.execP2.toFixed(1)}%</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4" style={{ borderLeftColor: varPago >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+            <Card className="border-l-4" style={{ borderLeftColor: varLiq >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
               <CardContent className="pt-3 pb-2">
-                <p className="text-[10px] text-muted-foreground">Variação Pago</p>
-                <p className={`text-base font-bold ${varPago >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {varPago >= 0 ? '+' : ''}{varPago.toFixed(1)}%
+                <p className="text-[10px] text-muted-foreground">Variação Liquidado</p>
+                <p className={`text-base font-bold ${varLiq >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {varLiq >= 0 ? '+' : ''}{varLiq.toFixed(1)}%
                 </p>
                 <p className="text-[10px]">P1 (5a) → P2 (3a)</p>
               </CardContent>
@@ -381,8 +381,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
             <Card className="border-l-4 border-l-chart-4">
               <CardContent className="pt-3 pb-2">
                 <p className="text-[10px] text-muted-foreground">Sem SESAI</p>
-                <p className={`text-base font-bold ${varPagoNoSesai >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {varPagoNoSesai >= 0 ? '+' : ''}{varPagoNoSesai.toFixed(1)}%
+                <p className={`text-base font-bold ${varLiqNoSesai >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {varLiqNoSesai >= 0 ? '+' : ''}{varLiqNoSesai.toFixed(1)}%
                 </p>
                 <p className="text-[10px]">Políticas stricto sensu</p>
               </CardContent>
