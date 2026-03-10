@@ -20,6 +20,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstadualResumoComparativo } from '@/components/estatisticas/orcamento/EstadualResumoComparativo';
+import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/MetodologiaFederalSection';
 import { EstadualRelatorioTab } from '@/components/estatisticas/orcamento/EstadualRelatorioTab';
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
