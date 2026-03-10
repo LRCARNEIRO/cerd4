@@ -27,6 +27,7 @@ interface NormativaDocCardProps {
     metas_impactadas?: string[] | null;
     recomendacoes_impactadas?: string[] | null;
     secoes_impactadas?: string[] | null;
+    artigos_convencao?: string[] | null;
     resumo_impacto?: any;
   };
   onDelete: (doc: any) => void;
