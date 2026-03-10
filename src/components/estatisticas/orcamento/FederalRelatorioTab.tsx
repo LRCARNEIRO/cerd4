@@ -116,14 +116,14 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
                   <XAxis type="number" tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={50} />
                   <Tooltip
-                    formatter={(value: number) => [formatCurrency(value), 'Liquidado']}
+                    formatter={(value: number) => [formatCurrency(value), 'Pago']}
                     labelFormatter={(label) => {
                       const item = icerdData.chartData.find(d => d.name === label);
                       return `${label} — ${item?.titulo || ''}`;
                     }}
                     contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
                   />
-                  <Bar dataKey="liquidado" radius={[0, 4, 4, 0]}>
+                  <Bar dataKey="pago" radius={[0, 4, 4, 0]}>
                     {icerdData.chartData.map((entry, i) => (
                       <Cell key={i} fill={entry.fill} />
                     ))}
