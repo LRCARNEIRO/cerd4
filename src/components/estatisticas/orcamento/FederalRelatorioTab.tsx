@@ -53,9 +53,9 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
   const icerdData = useMemo(() => {
     const allRecords = [...records, ...sesaiRecords];
     
-    const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; liquidado: number; pago: number; programas: Set<string> }>();
+    const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; pago: number; programas: Set<string> }>();
     for (const art of ARTIGOS_CONVENCAO) {
-      byArtigo.set(art.numero, { records: [], liquidado: 0, pago: 0, programas: new Set() });
+      byArtigo.set(art.numero, { records: [], pago: 0, programas: new Set() });
     }
 
     let unmappedCount = 0;
@@ -66,29 +66,27 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
         const entry = byArtigo.get(a);
         if (entry) {
           entry.records.push(r);
-          entry.liquidado += Number(r.liquidado) || 0;
-          entry.pago += Number(r.pago) || Number(r.dotacao_autorizada) || 0;
+          entry.pago += Number(r.pago) || 0;
           entry.programas.add(r.programa);
         }
       }
     }
 
-    const totalLiq = allRecords.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+    const totalPago = allRecords.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     const chartData = ARTIGOS_CONVENCAO.map((art, i) => {
       const entry = byArtigo.get(art.numero)!;
       return {
         name: `Art. ${art.numero}`,
         titulo: art.titulo,
-        liquidado: entry.liquidado,
         pago: entry.pago,
         programas: entry.programas.size,
         registros: entry.records.length,
-        pct: totalLiq > 0 ? (entry.liquidado / totalLiq * 100) : 0,
+        pct: totalPago > 0 ? (entry.pago / totalPago * 100) : 0,
         fill: ARTIGO_COLORS[i],
       };
     }).filter(d => d.registros > 0);
 
-    return { chartData, byArtigo, unmappedCount, totalRecords: allRecords.length, totalLiq };
+    return { chartData, byArtigo, unmappedCount, totalRecords: allRecords.length, totalPago };
   }, [records, sesaiRecords]);
 
   if (icerdData.chartData.length === 0) return null;
