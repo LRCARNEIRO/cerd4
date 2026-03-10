@@ -11,7 +11,19 @@ import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '
 interface Props {
   records: DadoOrcamentario[];
   sesaiRecords: DadoOrcamentario[];
-  stats: any; // useOrcamentoStats result
+  summaryStats: {
+    liquidadoPeriodo1: number;
+    liquidadoPeriodo2: number;
+    variacaoLiquidado: number;
+    totalRegistros: number;
+    totalProgramas: number;
+    anosCobertura: number[];
+    semSesai?: {
+      liquidadoP1: number;
+      liquidadoP2: number;
+      variacaoLiquidado: number;
+    };
+  };
   formatCurrency: (v: number) => string;
   formatCurrencyFull: (v: number) => string;
 }
