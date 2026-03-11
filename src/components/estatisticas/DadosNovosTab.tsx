@@ -142,11 +142,11 @@ const indicadoresSaude: NovoIndicador[] = [
     descricao: 'Prevalência de diabetes, hipertensão, doença falciforme por raça',
     fonte: 'VIGITEL / DataSUS',
     siglaFonte: 'VIGITEL',
-    urlFonte: 'https://svs.aids.gov.br/daent/cgdant/vigitel/publicacoes/',
+    urlFonte: 'https://svs.aids.gov.br/daent/cgdnt/vigitel/',
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Doença falciforme: 1 a cada 1.000 nascidos negros. Hipertensão: prevalência 30% maior em negros. Diabetes: negras 2x mais complicações que brancas (VIGITEL 2023).',
+    relevanciaRacial: '⏳ Dados de doenças crônicas por raça disponíveis nos relatórios VIGITEL anuais. Doença falciforme: prevalência maior na população negra (dado consolidado). Valores percentuais específicos de hipertensão e diabetes pendentes de verificação humana via relatório VIGITEL.',
     prioridade: 'media'
   }
 ];
