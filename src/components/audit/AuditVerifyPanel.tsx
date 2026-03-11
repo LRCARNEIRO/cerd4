@@ -74,15 +74,14 @@ function isDbItem(itemId: string, inventoryItems: AuditItem[] | null): { isDb: b
   const item = inventoryItems?.find(i => i.id === itemId);
   if (!item) return { isDb: false };
 
-  // DB items have origins like 'dados_orcamentarios', 'indicadores_interseccionais', 'conclusoes_analiticas'
   const dbOrigins = ['dados_orcamentarios', 'indicadores_interseccionais', 'conclusoes_analiticas'];
-  for (const table of dbOrigins) {
-    if (item.origem.startsWith(table)) {
-      return { isDb: true, tabela: table, recordId: item.id, origem: item.origem };
-    }
-  }
+  const matched = dbOrigins.find(table => item.origem.startsWith(table));
+  if (!matched) return { isDb: false, origem: item.origem };
 
-  return { isDb: false, origem: item.origem };
+  const fromOrigin = item.origem.includes(':') ? item.origem.split(':')[1] : undefined;
+  const recordId = fromOrigin || item.id;
+
+  return { isDb: true, tabela: matched, recordId, origem: item.origem };
 }
 
 interface Props {
