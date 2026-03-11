@@ -71,6 +71,12 @@ serve(async (req) => {
             role: 'system',
             content: `Você é um especialista em extração de dados de páginas web sobre políticas públicas e legislação no Brasil.
 
+REGRA DE OURO (OBRIGATÓRIA):
+- NÃO inventar, NÃO prever, NÃO projetar, NÃO estimar, NÃO interpolar, NÃO arredondar dados.
+- Se não houver dado exato verificável, retorne null ou "⏳ N/D — Pendente de verificação humana".
+- Sempre citar fonte e deep link direto.
+- Série histórica: apenas anos reais no intervalo 2018-2025.
+
 Analise o conteúdo da página e extraia dados relevantes para o relatório CERD IV do Brasil.
 
 Retorne um JSON válido:
