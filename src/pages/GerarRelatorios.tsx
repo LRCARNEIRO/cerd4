@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity } from 'lucide-react';
+import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
