@@ -227,7 +227,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Média ENEM 2023: brancos 542 pts vs negros 487 pts (gap de 55 pts). Redação: brancos 620 vs negros 558. Negros de baixa renda: 442 pts.',
+    relevanciaRacial: '⏳ Desempenho ENEM por raça disponível nos microdados ENEM (INEP). Médias exatas por raça/cor pendentes de verificação humana via processamento dos microdados.',
     prioridade: 'media'
   }
 ];
