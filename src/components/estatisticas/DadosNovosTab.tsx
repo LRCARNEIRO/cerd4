@@ -598,7 +598,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2023: 2.148 mortes em presídios. 71% das vítimas eram negras. Homicídios: 38% dos óbitos. Mortes por causas naturais evitáveis (tuberculose, HIV): 44% — negligência médica sistêmica.',
+    relevanciaRacial: '⏳ Dados de óbitos em estabelecimentos penais por raça disponíveis no SISDEPEN/RELIPEN. Totais e desagregação por causa/raça: pendentes de verificação humana via painel SISDEPEN.',
     prioridade: 'alta'
   }
 ];
