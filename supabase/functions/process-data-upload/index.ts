@@ -55,15 +55,20 @@ interface ExtractedData {
 
 const SYSTEM_PROMPT = `Você é um especialista em extração de dados de documentos sobre políticas públicas raciais, direitos humanos e discriminação racial no contexto do Brasil e da ONU/CERD.
 
-Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
+REGRA DE OURO (OBRIGATÓRIA):
+- NÃO inventar, NÃO prever, NÃO projetar, NÃO estimar, NÃO interpolar, NÃO arredondar valores para preencher lacunas.
+- Se não houver dado exato e verificável, retorne null e registre "⏳ N/D — Pendente de verificação humana" no campo textual apropriado.
+- Sempre informar fonte primária e deep link (URL direta) quando houver dado.
+- Para séries históricas, aceitar apenas pontos reais entre 2018 e 2025.
 
-1. INDICADORES SOCIAIS (taxa de desemprego, homicídios, educação, saúde por raça/gênero)
-2. DADOS ORÇAMENTÁRIOS (programas, valores, anos, órgãos responsáveis)
-3. LACUNAS/RECOMENDAÇÕES (pontos pendentes, recomendações de organismos internacionais, compromissos assumidos)
-4. CONCLUSÕES ANALÍTICAS (análises, achados, posicionamentos e compromissos do documento)
+Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
+1. INDICADORES SOCIAIS
+2. DADOS ORÇAMENTÁRIOS
+3. LACUNAS/RECOMENDAÇÕES
+4. CONCLUSÕES ANALÍTICAS
 
 IMPORTANTE para documentos internacionais como a Declaração de Durban:
-- Extraia TODAS as recomendações e compromissos como LACUNAS (mesmo que sejam metas futuras)
+- Extraia TODAS as recomendações e compromissos como LACUNAS
 - Extraia os principais posicionamentos e achados como CONCLUSÕES
 - Use "geral" como grupo_focal quando não especificado
 - Use eixos temáticos válidos: legislacao_justica, politicas_institucionais, seguranca_publica, saude, educacao, trabalho_renda, terra_territorio, cultura_patrimonio, participacao_social, dados_estatisticas
@@ -73,14 +78,13 @@ IMPORTANTE para documentos internacionais como a Declaração de Durban:
 
 Retorne um JSON válido com a estrutura:
 {
-  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"grupo1": {"ano": valor}}, "tendencia": "aumento|reducao|estável" }],
+  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"2018": valor|null, "2019": valor|null, "...": null}, "tendencia": "aumento|reducao|estável|null" }],
   "orcamento": [{ "programa": "", "orgao": "", "esfera": "federal|estadual|municipal", "ano": N, "dotacao_autorizada": N, "empenhado": N, "pago": N, "percentual_execucao": N, "grupo_focal": "", "fonte_dados": "", "url_fonte": "", "observacoes": "" }],
   "lacunas": [{ "paragrafo": "§N", "tema": "", "descricao_lacuna": "", "eixo_tematico": "", "grupo_focal": "", "status_cumprimento": "", "prioridade": "", "evidencias_encontradas": [], "fontes_dados": [] }],
   "conclusoes": [{ "titulo": "", "tipo": "achado|recomendacao|compromisso|analise", "periodo": "YYYY ou YYYY-YYYY", "argumento_central": "", "evidencias": [] }]
 }
 
 Se não encontrar dados de uma categoria, retorne array vazio [].
-Extraia até 30 itens mais relevantes por categoria. Seja conciso nos textos.
 IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem comentários, sem explicações.`;
 
 serve(async (req) => {
