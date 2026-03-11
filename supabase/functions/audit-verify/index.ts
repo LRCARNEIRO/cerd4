@@ -312,7 +312,8 @@ Um primeiro modelo avaliou este indicador:
 CONTEÚDO DA FONTE:
 ${sourceContent || '[Não disponível]'}
 
-Confirme ou conteste o veredito. Retorne APENAS JSON:
+Confirme ou conteste o veredito. Aplique Regra de Ouro: sem estimativa, sem projeção, sem interpolação.
+Retorne APENAS JSON:
 {
   "veredito": "confirmado" | "divergente",
   "confianca": 0-100,
