@@ -350,7 +350,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     periodicidade: 'Contínua',
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 1.045 municípios aderentes → 2024: 1.832 (+75%). Cobertura: 33% dos municípios. Meta PPA 2024-2027: 3.000 municípios.',
+    relevanciaRacial: '⏳ Dados de adesão ao SINAPIR disponíveis no portal do MIR. Quantitativos exatos de municípios aderentes pendentes de verificação humana via gov.br/igualdaderacial.',
     prioridade: 'alta'
   }
 ];
