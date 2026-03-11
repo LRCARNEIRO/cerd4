@@ -214,7 +214,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '3.526 escolas indígenas e 2.749 quilombolas (Censo Escolar 2023). 38% sem acesso à internet. Apenas 43% implementam Lei 10.639/2003 plenamente.',
+    relevanciaRacial: '⏳ Dados de escolas indígenas e quilombolas disponíveis nos microdados do Censo Escolar (INEP). Contagens e % de infraestrutura pendentes de verificação humana via Sinopse Estatística.',
     prioridade: 'alta'
   },
   {
