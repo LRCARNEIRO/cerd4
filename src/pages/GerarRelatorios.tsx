@@ -607,7 +607,10 @@ ${(respostasCerd || []).map(r => {
 
         {/* ABA: AUDITORIA TRIPLE-CHECK */}
         <TabsContent value="audit-inventory">
-          <AuditInventoryPanel />
+          <div className="space-y-8">
+            <AuditInventoryPanel onInventoryComplete={setAuditItems} />
+            <AuditVerifyPanel inventoryItems={auditItems} />
+          </div>
         </TabsContent>
       </Tabs>
     </DashboardLayout>
