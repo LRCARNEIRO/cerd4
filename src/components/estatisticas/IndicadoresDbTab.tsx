@@ -9,7 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
