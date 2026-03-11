@@ -460,7 +460,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '60,2% da titularidade feminina no CadÚnico (MDS 2024). Maioria dos beneficiários Faixa 1 são famílias negras. MCMV foi reclassificado como política com impacto racial indireto.',
+    relevanciaRacial: '⏳ Perfil racial de beneficiários MCMV Faixa 1: pendente de verificação humana via dados CadÚnico/MDS. Dados de titularidade feminina e desagregação racial não confirmados em fonte primária.',
     prioridade: 'alta'
   },
   {
