@@ -344,7 +344,7 @@ serve(async (req) => {
     for (const orc of (extractedData.orcamento || []).slice(0, 100)) {
       if (!orc.programa || !orc.orgao || !orc.ano || !orc.fonte_dados) continue;
       const ano = Number(orc.ano);
-      if (isNaN(ano) || ano < 2000 || ano > 2030) continue;
+      if (isNaN(ano) || ano < 2018 || ano > 2025) continue;
       proposedChanges.push({
         id: `change_${idx++}`,
         tabela: 'dados_orcamentarios',
