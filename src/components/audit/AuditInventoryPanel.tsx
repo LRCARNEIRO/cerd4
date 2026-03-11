@@ -67,6 +67,7 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || 'Falha no inventário');
       setResult(data);
+      onInventoryComplete?.(data.items);
       toast.success(`Inventário concluído: ${data.totals.total} itens catalogados`);
     } catch (err: any) {
       toast.error(`Erro: ${err.message}`);
