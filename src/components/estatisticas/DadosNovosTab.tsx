@@ -447,7 +447,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2023 (dados PNAD 2022)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Déficit habitacional: 72,2% das famílias em déficit são chefiadas por pessoas negras (FJP 2023). Total: 5,9 milhões de domicílios. Negros sobre-representados em relação aos 55,5% da população.',
+    relevanciaRacial: 'Déficit habitacional total Brasil 2022: 6.215.313 domicílios (FJP, PnadC 2022). ⏳ Desagregação por raça/cor do chefe do domicílio: pendente de verificação humana via relatório FJP 2023.',
     prioridade: 'alta'
   },
   {
