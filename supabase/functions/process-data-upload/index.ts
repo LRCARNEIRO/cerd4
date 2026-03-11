@@ -319,7 +319,7 @@ serve(async (req) => {
 
     // Build indicador proposals
     for (const ind of (extractedData.indicadores || []).slice(0, 100)) {
-      if (!ind.nome || !ind.categoria || !ind.fonte) continue;
+      if (!isGoldenRuleCompliantIndicator(ind)) continue;
       proposedChanges.push({
         id: `change_${idx++}`,
         tabela: 'indicadores_interseccionais',
@@ -331,7 +331,7 @@ serve(async (req) => {
           nome: sanitizeStr(ind.nome, 255),
           categoria: sanitizeStr(ind.categoria, 100),
           fonte: sanitizeStr(ind.fonte, 255),
-          url_fonte: ind.url_fonte ? sanitizeStr(ind.url_fonte, 500) : null,
+          url_fonte: sanitizeStr(ind.url_fonte, 500),
           dados: ind.dados || {},
           tendencia: ['aumento', 'reducao', 'estável'].includes(ind.tendencia || '') ? ind.tendencia : null,
           desagregacao_raca: true,
