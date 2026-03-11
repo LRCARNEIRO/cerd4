@@ -1,14 +1,15 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -331,9 +332,9 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
   );
 }
 
-function IndicadorDetail({ indicador }: { indicador: IndicadorData }) {
+function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData; highlighted?: boolean }) {
   return (
-    <Card className="mb-4 indicador-card">
+    <Card id={`indicador-${indicador.id}`} className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -551,21 +552,49 @@ export function IndicadoresDbTab() {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  const typedIndicadores = (indicadores || []) as IndicadorData[];
+
+  // Search results — must be before early return
+  const searchResults = useMemo(() => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    const term = searchTerm.toLowerCase();
+    return typedIndicadores.filter(i =>
+      i.nome.toLowerCase().includes(term) ||
+      i.categoria.toLowerCase().includes(term) ||
+      (i.subcategoria || '').toLowerCase().includes(term) ||
+      i.fonte.toLowerCase().includes(term)
+    ).slice(0, 10);
+  }, [typedIndicadores, searchTerm]);
+
+  const handleSelectResult = useCallback((ind: IndicadorData) => {
+    setCategoriaAtiva('todas');
+    setDocumentoAtivo('Todos');
+    setSearchTerm('');
+    setHighlightedId(ind.id);
+    setTimeout(() => {
+      const el = document.getElementById(`indicador-${ind.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => setHighlightedId(null), 3000);
+      }
+    }, 100);
+  }, []);
 
   const handleExportPDF = useCallback(() => {
-    const typedInds = (indicadores || []) as IndicadorData[];
-    const html = generateIndicadoresHTML(typedInds);
+    const html = generateIndicadoresHTML(typedIndicadores);
     const finalHtml = injectExportToolbar(html, 'Inventario-Indicadores-CERD-IV');
     const w = window.open('', '_blank');
     if (w) {
       w.document.write(finalHtml);
       w.document.close();
     }
-  }, [indicadores]);
+  }, [typedIndicadores]);
 
   const handleExportDOCX = useCallback(() => {
-    const typedInds = (indicadores || []) as IndicadorData[];
-    const html = generateIndicadoresHTML(typedInds);
+    const html = generateIndicadoresHTML(typedIndicadores);
     try {
       const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
@@ -580,7 +609,7 @@ export function IndicadoresDbTab() {
     } catch (e) {
       toast.error('Erro ao gerar documento');
     }
-  }, [indicadores]);
+  }, [typedIndicadores]);
 
   if (isLoading) {
     return (
@@ -595,8 +624,6 @@ export function IndicadoresDbTab() {
     );
   }
 
-  const typedIndicadores = (indicadores || []) as IndicadorData[];
-  
   // Get unique categories
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
@@ -619,6 +646,33 @@ export function IndicadoresDbTab() {
           <Download className="w-4 h-4" />
           Exportar DOCX
         </Button>
+      </div>
+
+      {/* Search bar */}
+      <div className="relative">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar indicador por nome, categoria ou fonte..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        {searchResults.length > 0 && (
+          <div className="absolute z-50 mt-1 w-full bg-popover border border-border rounded-md shadow-lg max-h-80 overflow-y-auto">
+            {searchResults.map(ind => (
+              <button
+                key={ind.id}
+                className="w-full text-left px-4 py-3 hover:bg-accent/50 border-b border-border/50 last:border-b-0 transition-colors"
+                onClick={() => handleSelectResult(ind)}
+              >
+                <p className="text-sm font-medium text-foreground">{ind.nome}</p>
+                <p className="text-xs text-muted-foreground">{ind.categoria} • {ind.fonte}</p>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <SummaryCards indicadores={typedIndicadores} />
@@ -675,7 +729,7 @@ export function IndicadoresDbTab() {
           </Card>
         ) : (
           indicadoresFiltrados.map(indicador => (
-            <IndicadorDetail key={indicador.id} indicador={indicador} />
+            <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
           ))
         )}
       </div>
