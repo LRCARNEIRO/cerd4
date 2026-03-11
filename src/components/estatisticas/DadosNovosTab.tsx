@@ -188,7 +188,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Distorção idade-série: negros 28,8% vs brancos 18,2% no ensino médio (Censo Escolar 2023). Meninos negros: taxa 35% acima da média.',
+    relevanciaRacial: '⏳ Distorção idade-série por raça disponível nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download dos microdados do Censo Escolar.',
     prioridade: 'alta'
   },
   {
