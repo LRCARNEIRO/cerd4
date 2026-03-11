@@ -135,6 +135,39 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
 
     // Build proposedChanges array (same format as file upload)
     const validEixos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const forbiddenTerms = ['estimad', 'estimativa', 'aproxim', 'interpol', 'proje', 'previs', 'arredond', 'inferid', 'suposi', 'guess'];
+    const hasForbiddenTerms = (value: any): boolean => {
+      if (typeof value === 'string') {
+        const lower = value.toLowerCase();
+        return forbiddenTerms.some(term => lower.includes(term));
+      }
+      if (Array.isArray(value)) return value.some(v => hasForbiddenTerms(v));
+      if (value && typeof value === 'object') return Object.values(value).some(v => hasForbiddenTerms(v));
+      return false;
+    };
+    const isDeepLink = (value: any) => typeof value === 'string' && /^https?:\/\//i.test(value.trim());
+    const collectYears = (value: any, years: Set<number>) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => collectYears(v, years));
+        return;
+      }
+      if (value && typeof value === 'object') {
+        Object.entries(value).forEach(([k, v]) => {
+          if (/^20\d{2}$/.test(k)) years.add(Number(k));
+          if (k === 'ano' && typeof v === 'number') years.add(v);
+          collectYears(v, years);
+        });
+      }
+    };
+    const isGoldenRuleCompliantIndicator = (ind: any): boolean => {
+      if (!ind.nome || !ind.categoria || !ind.fonte || !isDeepLink(ind.url_fonte || url)) return false;
+      if (!ind.dados || typeof ind.dados !== 'object') return false;
+      if (hasForbiddenTerms(ind)) return false;
+      const years = new Set<number>();
+      collectYears(ind.dados, years);
+      return [...years].every(y => y >= 2018 && y <= 2025);
+    };
+
     const proposedChanges: any[] = [];
     let idx = 0;
 
