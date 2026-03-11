@@ -16,6 +16,7 @@ import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReport
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
+import { AuditInventoryPanel } from '@/components/audit/AuditInventoryPanel';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
