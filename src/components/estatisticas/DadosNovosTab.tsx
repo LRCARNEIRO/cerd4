@@ -529,7 +529,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     periodicidade: 'A cada 2 anos',
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. 2022: candidatos negros receberam 37% dos recursos vs 55,5% da população. Gap de R$ 1,2 bilhão.',
+    relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. ⏳ Percentual exato de recursos recebidos por candidatos negros: pendente de verificação humana via prestação de contas TSE.',
     prioridade: 'alta'
   },
   {
