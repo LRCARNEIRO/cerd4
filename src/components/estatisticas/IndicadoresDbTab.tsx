@@ -729,7 +729,7 @@ export function IndicadoresDbTab() {
           </Card>
         ) : (
           indicadoresFiltrados.map(indicador => (
-            <IndicadorDetail key={indicador.id} indicador={indicador} />
+            <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
           ))
         )}
       </div>
