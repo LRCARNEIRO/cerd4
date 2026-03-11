@@ -95,12 +95,7 @@ const SOURCES = {
     { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência contra mulheres negras — feminicídio, estupro, lesão corporal' },
     { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Homicídios femininos por raça' },
   ] as SourceLink[],
-  radar: [
-    { label: 'PNAD Contínua 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html', detail: 'Renda, emprego e educação por raça/gênero' },
-    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência por raça/gênero' },
-    { label: 'DataSUS/SIM 2024', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def', detail: 'Mortalidade por raça/gênero' },
-    { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Pobreza e desigualdade por raça' },
-  ] as SourceLink[],
+  radar: [] as SourceLink[],
   classe: [
     { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Síntese de Indicadores Sociais 2024 — pobreza por raça' },
     { label: 'Banco Mundial — Linhas de Pobreza', url: 'https://www.worldbank.org/en/topic/poverty', detail: 'Definição das linhas de pobreza US$ 2,15/6,85/dia' },
