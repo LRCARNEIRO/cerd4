@@ -585,7 +585,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2024: 30,4% dos presos são provisórios. Negros provisórios: 72% do total de provisórios (sobre-representação). Tempo médio sem julgamento: 172 dias (negros) vs 128 dias (brancos).',
+    relevanciaRacial: '⏳ Proporção de presos provisórios por raça disponível no SISDEPEN/RELIPEN. Percentuais exatos e tempo médio sem julgamento por raça: pendentes de verificação humana via painel SISDEPEN.',
     prioridade: 'alta'
   },
   {
