@@ -29,7 +29,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function GerarRelatorios() {
-  
+  const [auditItems, setAuditItems] = useAuditState<any[] | null>(null);
   
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
