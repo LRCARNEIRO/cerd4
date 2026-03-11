@@ -236,6 +236,10 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
 
     for (const orc of (extractedData.orcamento || []).slice(0, 20)) {
       if (!orc.programa || !orc.orgao) continue;
+      const ano = Number(orc.ano || new Date().getFullYear());
+      if (isNaN(ano) || ano < 2018 || ano > 2025) continue;
+      if (!isDeepLink(orc.url_fonte || url) || hasForbiddenTerms(orc)) continue;
+
       proposedChanges.push({
         id: `url-orc-${idx++}`,
         tabela: 'dados_orcamentarios',
@@ -247,9 +251,9 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
           programa: String(orc.programa).substring(0, 255),
           orgao: String(orc.orgao).substring(0, 255),
           esfera: String(orc.esfera || 'federal').substring(0, 50),
-          ano: orc.ano || new Date().getFullYear(),
+          ano,
           fonte_dados: String(orc.fonte_dados || parsedUrl.hostname).substring(0, 255),
-          url_fonte: url,
+          url_fonte: String(orc.url_fonte || url).substring(0, 500),
         },
       });
     }
