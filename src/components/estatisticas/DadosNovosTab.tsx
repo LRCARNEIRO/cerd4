@@ -107,7 +107,7 @@ const indicadoresSaude: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: mort. materna negras 60,1/100mil NV → 2024: 55,5. Brancas: 49,9 → 54,2. Razão negra/branca: 1,2x (2018) → ~1,0x (2024). Pesquisa Nascer no Brasil II (2023) reporta ~2x com metodologia própria.',
+    relevanciaRacial: '⏳ Dados de mortalidade materna por raça disponíveis via TabNet/SIM — consultar diretamente com filtro raça/cor. Valores específicos pendentes de verificação humana via TabNet.',
     prioridade: 'alta'
   },
   {
@@ -133,7 +133,7 @@ const indicadoresSaude: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 72% gestantes negras com 7+ consultas → 2023: 78%. Brancas: 85% → 89%. Gap reduziu de 13 p.p. para 11 p.p. Indígenas: apenas 52% (SESAI 2023).',
+    relevanciaRacial: '⏳ Dados de pré-natal por raça disponíveis via TabNet/SINASC — consultar com filtro "Consultas de pré-natal" × "Raça/Cor da mãe". Valores percentuais específicos pendentes de verificação humana.',
     prioridade: 'alta'
   },
   {
@@ -142,11 +142,11 @@ const indicadoresSaude: NovoIndicador[] = [
     descricao: 'Prevalência de diabetes, hipertensão, doença falciforme por raça',
     fonte: 'VIGITEL / DataSUS',
     siglaFonte: 'VIGITEL',
-    urlFonte: 'https://svs.aids.gov.br/daent/cgdant/vigitel/publicacoes/',
+    urlFonte: 'https://svs.aids.gov.br/daent/cgdnt/vigitel/',
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Doença falciforme: 1 a cada 1.000 nascidos negros. Hipertensão: prevalência 30% maior em negros. Diabetes: negras 2x mais complicações que brancas (VIGITEL 2023).',
+    relevanciaRacial: '⏳ Dados de doenças crônicas por raça disponíveis nos relatórios VIGITEL anuais. Doença falciforme: prevalência maior na população negra (dado consolidado). Valores percentuais específicos de hipertensão e diabetes pendentes de verificação humana via relatório VIGITEL.',
     prioridade: 'media'
   }
 ];
@@ -188,7 +188,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Distorção idade-série: negros 28,8% vs brancos 18,2% no ensino médio (Censo Escolar 2023). Meninos negros: taxa 35% acima da média.',
+    relevanciaRacial: '⏳ Distorção idade-série por raça disponível nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download dos microdados do Censo Escolar.',
     prioridade: 'alta'
   },
   {
@@ -201,7 +201,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Evasão ensino médio: jovens negros 7,2% vs brancos 4,5% (Censo Escolar 2023). Jovens negros de baixa renda: 12,8% de abandono. Indígenas: 9,5%.',
+    relevanciaRacial: '⏳ Taxas de rendimento (abandono) por raça disponíveis nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download das taxas de rendimento.',
     prioridade: 'alta'
   },
   {
@@ -214,7 +214,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '3.526 escolas indígenas e 2.749 quilombolas (Censo Escolar 2023). 38% sem acesso à internet. Apenas 43% implementam Lei 10.639/2003 plenamente.',
+    relevanciaRacial: '⏳ Dados de escolas indígenas e quilombolas disponíveis nos microdados do Censo Escolar (INEP). Contagens e % de infraestrutura pendentes de verificação humana via Sinopse Estatística.',
     prioridade: 'alta'
   },
   {
@@ -227,7 +227,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Média ENEM 2023: brancos 542 pts vs negros 487 pts (gap de 55 pts). Redação: brancos 620 vs negros 558. Negros de baixa renda: 442 pts.',
+    relevanciaRacial: '⏳ Desempenho ENEM por raça disponível nos microdados ENEM (INEP). Médias exatas por raça/cor pendentes de verificação humana via processamento dos microdados.',
     prioridade: 'media'
   }
 ];
@@ -337,7 +337,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (MUNIC 2024)',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 8,2% dos municípios com órgão específico → 2023: 5,3% (desmonte local) → 2024: 9,2% (512 municípios, MUNIC 2024). Recuperação parcial após criação do MIR. Norte e Nordeste: cobertura inferior à média.',
+    relevanciaRacial: '⏳ Dados de órgãos municipais de igualdade racial disponíveis na MUNIC/IBGE. Percentuais específicos e série histórica pendentes de verificação humana via SIDRA/MUNIC.',
     prioridade: 'alta'
   },
   {
@@ -350,7 +350,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     periodicidade: 'Contínua',
     ultimaAtualizacao: '2025',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 1.045 municípios aderentes → 2024: 1.832 (+75%). Cobertura: 33% dos municípios. Meta PPA 2024-2027: 3.000 municípios.',
+    relevanciaRacial: '⏳ Dados de adesão ao SINAPIR disponíveis no portal do MIR. Quantitativos exatos de municípios aderentes pendentes de verificação humana via gov.br/igualdaderacial.',
     prioridade: 'alta'
   }
 ];
@@ -447,7 +447,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2023 (dados PNAD 2022)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Déficit habitacional: 72,2% das famílias em déficit são chefiadas por pessoas negras (FJP 2023). Total: 5,9 milhões de domicílios. Negros sobre-representados em relação aos 55,5% da população.',
+    relevanciaRacial: 'Déficit habitacional total Brasil 2022: 6.215.313 domicílios (FJP, PnadC 2022). ⏳ Desagregação por raça/cor do chefe do domicílio: pendente de verificação humana via relatório FJP 2023.',
     prioridade: 'alta'
   },
   {
@@ -460,7 +460,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '60,2% da titularidade feminina no CadÚnico (MDS 2024). Maioria dos beneficiários Faixa 1 são famílias negras. MCMV foi reclassificado como política com impacto racial indireto.',
+    relevanciaRacial: '⏳ Perfil racial de beneficiários MCMV Faixa 1: pendente de verificação humana via dados CadÚnico/MDS. Dados de titularidade feminina e desagregação racial não confirmados em fonte primária.',
     prioridade: 'alta'
   },
   {
@@ -529,7 +529,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     periodicidade: 'A cada 2 anos',
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. 2022: candidatos negros receberam 37% dos recursos vs 55,5% da população. Gap de R$ 1,2 bilhão.',
+    relevanciaRacial: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. ⏳ Percentual exato de recursos recebidos por candidatos negros: pendente de verificação humana via prestação de contas TSE.',
     prioridade: 'alta'
   },
   {
@@ -572,7 +572,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Taxa encarceramento negros: ~502/100mil vs brancos: ~195/100mil (cruzamento SISDEPEN 2024 × Censo 2022). Razão: 2,6x. Metodologia: pop. carcerária negra ÷ pop. negra total × 100mil.',
+    relevanciaRacial: '⏳ 🔀 Cruzamento indireto: taxa de encarceramento por raça requer cálculo (pop. carcerária por raça SISDEPEN ÷ pop. por raça Censo 2022 × 100mil). Valores exatos pendentes de verificação humana. Requer nota metodológica.',
     prioridade: 'alta'
   },
   {
@@ -585,7 +585,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2024: 30,4% dos presos são provisórios. Negros provisórios: 72% do total de provisórios (sobre-representação). Tempo médio sem julgamento: 172 dias (negros) vs 128 dias (brancos).',
+    relevanciaRacial: '⏳ Proporção de presos provisórios por raça disponível no SISDEPEN/RELIPEN. Percentuais exatos e tempo médio sem julgamento por raça: pendentes de verificação humana via painel SISDEPEN.',
     prioridade: 'alta'
   },
   {
@@ -598,7 +598,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2023: 2.148 mortes em presídios. 71% das vítimas eram negras. Homicídios: 38% dos óbitos. Mortes por causas naturais evitáveis (tuberculose, HIV): 44% — negligência médica sistêmica.',
+    relevanciaRacial: '⏳ Dados de óbitos em estabelecimentos penais por raça disponíveis no SISDEPEN/RELIPEN. Totais e desagregação por causa/raça: pendentes de verificação humana via painel SISDEPEN.',
     prioridade: 'alta'
   }
 ];
