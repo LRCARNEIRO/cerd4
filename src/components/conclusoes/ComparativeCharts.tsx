@@ -7,8 +7,8 @@ import {
 } from 'recharts';
 import {
   segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, evolucaoDesigualdade, radarVulnerabilidades,
-  violenciaInterseccional, classePorRaca, interseccionalidadeTrabalho
+  indicadoresSocioeconomicos, evolucaoDesigualdade,
+  violenciaInterseccional, classePorRaca
 } from '@/components/estatisticas/StatisticsData';
 
 const COLORS = {
@@ -95,12 +95,7 @@ const SOURCES = {
     { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência contra mulheres negras — feminicídio, estupro, lesão corporal' },
     { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Homicídios femininos por raça' },
   ] as SourceLink[],
-  radar: [
-    { label: 'PNAD Contínua 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html', detail: 'Renda, emprego e educação por raça/gênero' },
-    { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Violência por raça/gênero' },
-    { label: 'DataSUS/SIM 2024', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def', detail: 'Mortalidade por raça/gênero' },
-    { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Pobreza e desigualdade por raça' },
-  ] as SourceLink[],
+  radar: [] as SourceLink[],
   classe: [
     { label: 'SIS/IBGE 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', detail: 'Síntese de Indicadores Sociais 2024 — pobreza por raça' },
     { label: 'Banco Mundial — Linhas de Pobreza', url: 'https://www.worldbank.org/en/topic/poverty', detail: 'Definição das linhas de pobreza US$ 2,15/6,85/dia' },
@@ -505,48 +500,7 @@ export function TabelaSinteseComparativa() {
   );
 }
 
-// ============== RADAR VULNERABILIDADES ==============
-export function RadarVulnerabilidadesChart() {
-  const isEmpty = !radarVulnerabilidades || radarVulnerabilidades.length === 0;
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Radar de Vulnerabilidades por Grupo</CardTitle>
-        <CardDescription className="text-xs">Índice de vulnerabilidade relativa (0-100) — Fontes: PNAD/FBSP/DataSUS 2024</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {isEmpty ? (
-          <div className="h-64 flex flex-col items-center justify-center text-center gap-3 border border-dashed rounded-lg bg-muted/30 p-6">
-            <span className="text-2xl">⏳</span>
-            <p className="text-sm font-medium text-muted-foreground">Dados pendentes</p>
-            <p className="text-xs text-muted-foreground max-w-xs">
-              O índice composto de vulnerabilidades foi removido por não possuir fórmula de normalização auditável (Regra de Ouro).
-              Os dados brutos das fontes (SIDRA, FBSP, DataSUS) permanecem válidos nas demais seções.
-            </p>
-          </div>
-        ) : (
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarVulnerabilidades}>
-                <PolarGrid stroke="hsl(var(--border))" />
-                <PolarAngleAxis dataKey="eixo" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8 }} />
-                <Radar name="Mulher negra" dataKey="mulherNegra" stroke="hsl(var(--destructive))" fill="hsl(var(--destructive))" fillOpacity={0.2} />
-                <Radar name="Homem negro" dataKey="homemNegro" stroke="hsl(var(--chart-4))" fill="hsl(var(--chart-4))" fillOpacity={0.15} />
-                <Radar name="Mulher branca" dataKey="mulherBranca" stroke="hsl(var(--chart-2))" fill="hsl(var(--chart-2))" fillOpacity={0.1} />
-                <Radar name="Homem branco" dataKey="homemBranco" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground))" fillOpacity={0.05} />
-                <Legend wrapperStyle={{ fontSize: '10px' }} />
-                <Tooltip contentStyle={tooltipStyle} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-        <AuditSourceBlock sources={SOURCES.radar} />
-      </CardContent>
-    </Card>
-  );
-}
+// RadarVulnerabilidadesChart REMOVIDO — violava Regra de Ouro (índice composto não auditável)
 
 // ============== CLASSE POR RAÇA ==============
 export function ClassePorRacaChart() {
