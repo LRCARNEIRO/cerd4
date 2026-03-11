@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.audit-inventory]
 verify_jwt = false
+
+[functions.audit-verify]
+verify_jwt = false

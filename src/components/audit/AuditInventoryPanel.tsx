@@ -48,7 +48,11 @@ const CONFIANCA_BADGE: Record<string, { label: string; className: string; icon: 
   pendente: { label: 'Pendente', className: 'bg-warning/10 text-warning border-warning/30', icon: <Clock className="w-3 h-3" /> },
 };
 
-export function AuditInventoryPanel() {
+interface AuditInventoryPanelProps {
+  onInventoryComplete?: (items: AuditItem[]) => void;
+}
+
+export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanelProps) {
   const [result, setResult] = useState<InventoryResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('');
