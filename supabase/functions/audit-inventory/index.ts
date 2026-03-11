@@ -270,15 +270,15 @@ Deno.serve(async (req) => {
       .select('id, programa, orgao, esfera, ano, fonte_dados, url_fonte')
       .order('ano', { ascending: false });
 
-    const orcItems: AuditItem[] = (orcData || []).map((r: any, i: number) => ({
-      id: `ORC-${String(i + 1).padStart(4, '0')}`,
+    const orcItems: AuditItem[] = (orcData || []).map((r: any) => ({
+      id: r.id,
       tipo: 'registro_bd' as const,
       secao: 'Orçamento',
       indicador: `${r.programa} — ${r.orgao} (${r.esfera} ${r.ano})`,
       valor_atual: `${r.esfera} ${r.ano}`,
       fonte_declarada: r.fonte_dados,
       url_fonte: r.url_fonte,
-      origem: 'dados_orcamentarios',
+      origem: `dados_orcamentarios:${r.id}`,
       nivel_confianca: r.url_fonte ? 'A' as const : 'pendente' as const,
       notas_auditoria: r.url_fonte ? null : 'Sem URL de fonte — pendente de verificação',
     }));
@@ -288,15 +288,15 @@ Deno.serve(async (req) => {
       .from('indicadores_interseccionais')
       .select('id, nome, categoria, fonte, url_fonte, documento_origem');
 
-    const indItems: AuditItem[] = (indData || []).map((r: any, i: number) => ({
-      id: `IND-${String(i + 1).padStart(4, '0')}`,
+    const indItems: AuditItem[] = (indData || []).map((r: any) => ({
+      id: r.id,
       tipo: 'registro_bd' as const,
       secao: `Indicadores BD — ${r.categoria}`,
       indicador: r.nome,
       valor_atual: 'ver BD',
       fonte_declarada: r.fonte,
       url_fonte: r.url_fonte,
-      origem: 'indicadores_interseccionais',
+      origem: `indicadores_interseccionais:${r.id}`,
       nivel_confianca: r.url_fonte ? 'A' as const : 'pendente' as const,
       notas_auditoria: null,
     }));
@@ -306,15 +306,15 @@ Deno.serve(async (req) => {
       .from('conclusoes_analiticas')
       .select('id, titulo, tipo, secao_relatorio, evidencias');
 
-    const concItems: AuditItem[] = (concData || []).map((r: any, i: number) => ({
-      id: `CONC-${String(i + 1).padStart(4, '0')}`,
+    const concItems: AuditItem[] = (concData || []).map((r: any) => ({
+      id: r.id,
       tipo: 'narrativa' as const,
       secao: `Conclusões — ${r.secao_relatorio || r.tipo}`,
       indicador: r.titulo,
       valor_atual: `${r.tipo}`,
       fonte_declarada: 'conclusoes_analiticas',
       url_fonte: null,
-      origem: 'conclusoes_analiticas',
+      origem: `conclusoes_analiticas:${r.id}`,
       nivel_confianca: 'pendente' as const,
       notas_auditoria: r.evidencias?.length ? `${r.evidencias.length} evidências vinculadas` : 'Sem evidências',
     }));

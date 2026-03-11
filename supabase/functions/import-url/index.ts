@@ -71,6 +71,12 @@ serve(async (req) => {
             role: 'system',
             content: `Você é um especialista em extração de dados de páginas web sobre políticas públicas e legislação no Brasil.
 
+REGRA DE OURO (OBRIGATÓRIA):
+- NÃO inventar, NÃO prever, NÃO projetar, NÃO estimar, NÃO interpolar, NÃO arredondar dados.
+- Se não houver dado exato verificável, retorne null ou "⏳ N/D — Pendente de verificação humana".
+- Sempre citar fonte e deep link direto.
+- Série histórica: apenas anos reais no intervalo 2018-2025.
+
 Analise o conteúdo da página e extraia dados relevantes para o relatório CERD IV do Brasil.
 
 Retorne um JSON válido:
@@ -129,6 +135,39 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
 
     // Build proposedChanges array (same format as file upload)
     const validEixos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
+    const forbiddenTerms = ['estimad', 'estimativa', 'aproxim', 'interpol', 'proje', 'previs', 'arredond', 'inferid', 'suposi', 'guess'];
+    const hasForbiddenTerms = (value: any): boolean => {
+      if (typeof value === 'string') {
+        const lower = value.toLowerCase();
+        return forbiddenTerms.some(term => lower.includes(term));
+      }
+      if (Array.isArray(value)) return value.some(v => hasForbiddenTerms(v));
+      if (value && typeof value === 'object') return Object.values(value).some(v => hasForbiddenTerms(v));
+      return false;
+    };
+    const isDeepLink = (value: any) => typeof value === 'string' && /^https?:\/\//i.test(value.trim());
+    const collectYears = (value: any, years: Set<number>) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => collectYears(v, years));
+        return;
+      }
+      if (value && typeof value === 'object') {
+        Object.entries(value).forEach(([k, v]) => {
+          if (/^20\d{2}$/.test(k)) years.add(Number(k));
+          if (k === 'ano' && typeof v === 'number') years.add(v);
+          collectYears(v, years);
+        });
+      }
+    };
+    const isGoldenRuleCompliantIndicator = (ind: any): boolean => {
+      if (!ind.nome || !ind.categoria || !ind.fonte || !isDeepLink(ind.url_fonte || url)) return false;
+      if (!ind.dados || typeof ind.dados !== 'object') return false;
+      if (hasForbiddenTerms(ind)) return false;
+      const years = new Set<number>();
+      collectYears(ind.dados, years);
+      return [...years].every(y => y >= 2018 && y <= 2025);
+    };
+
     const proposedChanges: any[] = [];
     let idx = 0;
 
@@ -176,7 +215,7 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
     }
 
     for (const ind of (extractedData.indicadores || []).slice(0, 20)) {
-      if (!ind.nome || !ind.categoria) continue;
+      if (!isGoldenRuleCompliantIndicator(ind)) continue;
       proposedChanges.push({
         id: `url-ind-${idx++}`,
         tabela: 'indicadores_interseccionais',
@@ -188,7 +227,7 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
           nome: String(ind.nome).substring(0, 255),
           categoria: String(ind.categoria).substring(0, 100),
           fonte: String(ind.fonte || parsedUrl.hostname).substring(0, 255),
-          url_fonte: url,
+          url_fonte: String(ind.url_fonte || url).substring(0, 500),
           dados: ind.dados || {},
           tendencia: ind.tendencia || null,
         },
@@ -197,6 +236,10 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
 
     for (const orc of (extractedData.orcamento || []).slice(0, 20)) {
       if (!orc.programa || !orc.orgao) continue;
+      const ano = Number(orc.ano || new Date().getFullYear());
+      if (isNaN(ano) || ano < 2018 || ano > 2025) continue;
+      if (!isDeepLink(orc.url_fonte || url) || hasForbiddenTerms(orc)) continue;
+
       proposedChanges.push({
         id: `url-orc-${idx++}`,
         tabela: 'dados_orcamentarios',
@@ -208,9 +251,9 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
           programa: String(orc.programa).substring(0, 255),
           orgao: String(orc.orgao).substring(0, 255),
           esfera: String(orc.esfera || 'federal').substring(0, 50),
-          ano: orc.ano || new Date().getFullYear(),
+          ano,
           fonte_dados: String(orc.fonte_dados || parsedUrl.hostname).substring(0, 255),
-          url_fonte: url,
+          url_fonte: String(orc.url_fonte || url).substring(0, 500),
         },
       });
     }

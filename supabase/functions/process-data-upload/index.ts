@@ -55,15 +55,20 @@ interface ExtractedData {
 
 const SYSTEM_PROMPT = `Você é um especialista em extração de dados de documentos sobre políticas públicas raciais, direitos humanos e discriminação racial no contexto do Brasil e da ONU/CERD.
 
-Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
+REGRA DE OURO (OBRIGATÓRIA):
+- NÃO inventar, NÃO prever, NÃO projetar, NÃO estimar, NÃO interpolar, NÃO arredondar valores para preencher lacunas.
+- Se não houver dado exato e verificável, retorne null e registre "⏳ N/D — Pendente de verificação humana" no campo textual apropriado.
+- Sempre informar fonte primária e deep link (URL direta) quando houver dado.
+- Para séries históricas, aceitar apenas pontos reais entre 2018 e 2025.
 
-1. INDICADORES SOCIAIS (taxa de desemprego, homicídios, educação, saúde por raça/gênero)
-2. DADOS ORÇAMENTÁRIOS (programas, valores, anos, órgãos responsáveis)
-3. LACUNAS/RECOMENDAÇÕES (pontos pendentes, recomendações de organismos internacionais, compromissos assumidos)
-4. CONCLUSÕES ANALÍTICAS (análises, achados, posicionamentos e compromissos do documento)
+Analise o documento fornecido e extraia dados estruturados nas seguintes categorias:
+1. INDICADORES SOCIAIS
+2. DADOS ORÇAMENTÁRIOS
+3. LACUNAS/RECOMENDAÇÕES
+4. CONCLUSÕES ANALÍTICAS
 
 IMPORTANTE para documentos internacionais como a Declaração de Durban:
-- Extraia TODAS as recomendações e compromissos como LACUNAS (mesmo que sejam metas futuras)
+- Extraia TODAS as recomendações e compromissos como LACUNAS
 - Extraia os principais posicionamentos e achados como CONCLUSÕES
 - Use "geral" como grupo_focal quando não especificado
 - Use eixos temáticos válidos: legislacao_justica, politicas_institucionais, seguranca_publica, saude, educacao, trabalho_renda, terra_territorio, cultura_patrimonio, participacao_social, dados_estatisticas
@@ -73,14 +78,13 @@ IMPORTANTE para documentos internacionais como a Declaração de Durban:
 
 Retorne um JSON válido com a estrutura:
 {
-  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"grupo1": {"ano": valor}}, "tendencia": "aumento|reducao|estável" }],
+  "indicadores": [{ "nome": "", "categoria": "", "fonte": "", "url_fonte": "", "dados": {"2018": valor|null, "2019": valor|null, "...": null}, "tendencia": "aumento|reducao|estável|null" }],
   "orcamento": [{ "programa": "", "orgao": "", "esfera": "federal|estadual|municipal", "ano": N, "dotacao_autorizada": N, "empenhado": N, "pago": N, "percentual_execucao": N, "grupo_focal": "", "fonte_dados": "", "url_fonte": "", "observacoes": "" }],
   "lacunas": [{ "paragrafo": "§N", "tema": "", "descricao_lacuna": "", "eixo_tematico": "", "grupo_focal": "", "status_cumprimento": "", "prioridade": "", "evidencias_encontradas": [], "fontes_dados": [] }],
   "conclusoes": [{ "titulo": "", "tipo": "achado|recomendacao|compromisso|analise", "periodo": "YYYY ou YYYY-YYYY", "argumento_central": "", "evidencias": [] }]
 }
 
 Se não encontrar dados de uma categoria, retorne array vazio [].
-Extraia até 30 itens mais relevantes por categoria. Seja conciso nos textos.
 IMPORTANTE: Retorne APENAS o JSON, sem markdown, sem comentários, sem explicações.`;
 
 serve(async (req) => {
@@ -270,6 +274,40 @@ serve(async (req) => {
       const parsed = Number(n);
       return isNaN(parsed) ? null : parsed;
     };
+    const hasForbiddenTerms = (value: any): boolean => {
+      const forbidden = ['estimad', 'estimativa', 'aproxim', 'interpol', 'proje', 'previs', 'arredond', 'inferid', 'suposi', 'guess'];
+      if (typeof value === 'string') {
+        const lower = value.toLowerCase();
+        return forbidden.some(term => lower.includes(term));
+      }
+      if (Array.isArray(value)) return value.some(v => hasForbiddenTerms(v));
+      if (value && typeof value === 'object') return Object.values(value).some(v => hasForbiddenTerms(v));
+      return false;
+    };
+    const isDeepLink = (url: any) => typeof url === 'string' && /^https?:\/\//i.test(url.trim());
+    const collectYears = (value: any, years: Set<number>) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => collectYears(v, years));
+        return;
+      }
+      if (value && typeof value === 'object') {
+        Object.entries(value).forEach(([k, v]) => {
+          if (/^20\d{2}$/.test(k)) years.add(Number(k));
+          if (k === 'ano' && typeof v === 'number') years.add(v);
+          collectYears(v, years);
+        });
+      }
+    };
+    const isGoldenRuleCompliantIndicator = (ind: any): boolean => {
+      if (!ind.nome || !ind.categoria || !ind.fonte) return false;
+      if (!isDeepLink(ind.url_fonte)) return false;
+      if (!ind.dados || typeof ind.dados !== 'object') return false;
+      if (hasForbiddenTerms(ind)) return false;
+
+      const years = new Set<number>();
+      collectYears(ind.dados, years);
+      return [...years].every(y => y >= 2018 && y <= 2025);
+    };
 
     const validEixosTematicos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
     const validGruposFocais = ['negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
@@ -281,7 +319,7 @@ serve(async (req) => {
 
     // Build indicador proposals
     for (const ind of (extractedData.indicadores || []).slice(0, 100)) {
-      if (!ind.nome || !ind.categoria || !ind.fonte) continue;
+      if (!isGoldenRuleCompliantIndicator(ind)) continue;
       proposedChanges.push({
         id: `change_${idx++}`,
         tabela: 'indicadores_interseccionais',
@@ -293,7 +331,7 @@ serve(async (req) => {
           nome: sanitizeStr(ind.nome, 255),
           categoria: sanitizeStr(ind.categoria, 100),
           fonte: sanitizeStr(ind.fonte, 255),
-          url_fonte: ind.url_fonte ? sanitizeStr(ind.url_fonte, 500) : null,
+          url_fonte: sanitizeStr(ind.url_fonte, 500),
           dados: ind.dados || {},
           tendencia: ['aumento', 'reducao', 'estável'].includes(ind.tendencia || '') ? ind.tendencia : null,
           desagregacao_raca: true,
@@ -306,7 +344,7 @@ serve(async (req) => {
     for (const orc of (extractedData.orcamento || []).slice(0, 100)) {
       if (!orc.programa || !orc.orgao || !orc.ano || !orc.fonte_dados) continue;
       const ano = Number(orc.ano);
-      if (isNaN(ano) || ano < 2000 || ano > 2030) continue;
+      if (isNaN(ano) || ano < 2018 || ano > 2025) continue;
       proposedChanges.push({
         id: `change_${idx++}`,
         tabela: 'dados_orcamentarios',

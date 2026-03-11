@@ -7,7 +7,7 @@ const corsHeaders = {
 
 /**
  * Protocolo Triple-Check — Fase 3: Correção Assistida
- * 
+ *
  * Aplica correções aprovadas pelo operador:
  * - Registros BD (indicadores_interseccionais, dados_orcamentarios, conclusoes_analiticas): UPDATE direto
  * - StatisticsData.ts: Gera patch de código para aplicação manual
@@ -25,6 +25,19 @@ interface CorrectionRequest {
   valor_anterior?: string | number | null;
   notas?: string;
 }
+
+const FORBIDDEN_TERMS = [
+  'estimad',
+  'estimativa',
+  'aproxim',
+  'interpol',
+  'proje',
+  'previs',
+  'arredond',
+  'inferid',
+  'suposi',
+  'guess',
+];
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -52,15 +65,12 @@ Deno.serve(async (req) => {
     for (const corr of corrections) {
       try {
         if (corr.action === 'apply_db') {
-          // Direct DB update
           const result = await applyDbCorrection(sb, corr);
           results.push({ item_id: corr.item_id, status: 'applied', ...result });
         } else if (corr.action === 'mark_nd') {
-          // Mark as N/D in DB
           const result = await markAsND(sb, corr);
           results.push({ item_id: corr.item_id, status: 'marked_nd', ...result });
         } else if (corr.action === 'generate_patch') {
-          // Generate code patch for StatisticsData.ts
           const patch = generateCodePatch(corr);
           results.push({ item_id: corr.item_id, status: 'patch_generated', patch });
         }
@@ -92,9 +102,20 @@ Deno.serve(async (req) => {
   }
 });
 
+function hasForbiddenTerm(value: string): boolean {
+  const lower = value.toLowerCase();
+  return FORBIDDEN_TERMS.some(term => lower.includes(term));
+}
+
+function assertGoldenRuleValue(value: unknown, context: string): void {
+  if (typeof value === 'string' && hasForbiddenTerm(value)) {
+    throw new Error(`Regra de Ouro violada em ${context}: valor contém indício de estimativa/projeção.`);
+  }
+}
+
 async function applyDbCorrection(sb: any, corr: CorrectionRequest) {
   const allowedTables = ['indicadores_interseccionais', 'dados_orcamentarios', 'conclusoes_analiticas'];
-  
+
   if (!corr.tabela || !allowedTables.includes(corr.tabela)) {
     throw new Error(`Tabela não permitida: ${corr.tabela}`);
   }
@@ -102,19 +123,47 @@ async function applyDbCorrection(sb: any, corr: CorrectionRequest) {
     throw new Error('record_id obrigatório para correção em BD');
   }
 
-  // Build update object based on table
   const updateData: Record<string, any> = {};
 
   if (corr.tabela === 'indicadores_interseccionais') {
     if (corr.campo === 'dados') {
-      updateData.dados = corr.valor_corrigido;
+      assertGoldenRuleValue(corr.valor_corrigido, 'dados.valor_confirmado_fonte');
+
+      const { data: existing, error: fetchErr } = await sb
+        .from('indicadores_interseccionais')
+        .select('dados')
+        .eq('id', corr.record_id)
+        .single();
+
+      if (fetchErr) {
+        throw new Error(`Falha ao carregar indicador antes da correção: ${fetchErr.message}`);
+      }
+
+      const previous = existing?.dados && typeof existing.dados === 'object' ? existing.dados : {};
+      updateData.dados = {
+        ...previous,
+        valor_confirmado_fonte: corr.valor_corrigido,
+        status_validacao: 'confirmado_por_triple_check',
+        regra_ouro: {
+          sem_estimativa: true,
+          sem_interpolacao: true,
+          sem_projecao: true,
+          validado_em: new Date().toISOString(),
+        },
+      };
     } else if (corr.campo === 'nome') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'nome');
       updateData.nome = corr.valor_corrigido;
     } else if (corr.campo === 'url_fonte') {
+      if (typeof corr.valor_corrigido !== 'string' || !/^https?:\/\//i.test(corr.valor_corrigido)) {
+        throw new Error('Regra de Ouro: url_fonte deve ser um deep link válido (http/https).');
+      }
       updateData.url_fonte = corr.valor_corrigido;
     } else if (corr.campo === 'fonte') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'fonte');
       updateData.fonte = corr.valor_corrigido;
     } else if (corr.campo === 'tendencia') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'tendencia');
       updateData.tendencia = corr.valor_corrigido;
     }
   } else if (corr.tabela === 'dados_orcamentarios') {
@@ -122,14 +171,20 @@ async function applyDbCorrection(sb: any, corr: CorrectionRequest) {
     if (corr.campo && numFields.includes(corr.campo)) {
       updateData[corr.campo] = corr.valor_corrigido != null ? Number(corr.valor_corrigido) : null;
     } else if (corr.campo === 'url_fonte') {
+      if (typeof corr.valor_corrigido !== 'string' || !/^https?:\/\//i.test(corr.valor_corrigido)) {
+        throw new Error('url_fonte inválida para registro orçamentário.');
+      }
       updateData.url_fonte = corr.valor_corrigido;
     } else if (corr.campo === 'observacoes') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'observacoes');
       updateData.observacoes = corr.valor_corrigido;
     }
   } else if (corr.tabela === 'conclusoes_analiticas') {
     if (corr.campo === 'argumento_central') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'argumento_central');
       updateData.argumento_central = corr.valor_corrigido;
     } else if (corr.campo === 'titulo') {
+      assertGoldenRuleValue(corr.valor_corrigido, 'titulo');
       updateData.titulo = corr.valor_corrigido;
     }
   }
@@ -138,7 +193,6 @@ async function applyDbCorrection(sb: any, corr: CorrectionRequest) {
     throw new Error(`Campo '${corr.campo}' não reconhecido para tabela '${corr.tabela}'`);
   }
 
-  // Add audit note
   updateData.updated_at = new Date().toISOString();
 
   const { error } = await sb
@@ -162,12 +216,20 @@ async function markAsND(sb: any, corr: CorrectionRequest) {
     throw new Error('tabela e record_id obrigatórios');
   }
 
-  // For indicadores, set dados to N/D marker
   if (corr.tabela === 'indicadores_interseccionais') {
     const { error } = await sb
       .from('indicadores_interseccionais')
       .update({
-        dados: { valor: '⏳ N/D — Pendente de verificação humana', auditado: false },
+        dados: {
+          valor: '⏳ N/D — Pendente de verificação humana',
+          auditado: false,
+          regra_ouro: {
+            sem_estimativa: true,
+            sem_interpolacao: true,
+            sem_projecao: true,
+            motivo: 'ausência de dado exato verificável',
+          },
+        },
         tendencia: null,
         updated_at: new Date().toISOString(),
       })
@@ -179,7 +241,6 @@ async function markAsND(sb: any, corr: CorrectionRequest) {
 }
 
 function generateCodePatch(corr: CorrectionRequest): string {
-  // Generate a human-readable patch instruction for StatisticsData.ts
   const lines = [
     `// ═══ PATCH: ${corr.item_id} ═══`,
     `// Arquivo: src/components/estatisticas/StatisticsData.ts`,
@@ -190,6 +251,7 @@ function generateCodePatch(corr: CorrectionRequest): string {
     `// DEPOIS: ${corr.valor_corrigido ?? '⏳ N/D — Pendente de verificação humana'}`,
     `//`,
     `// Notas: ${corr.notas || 'Correção aprovada via Triple-Check Fase 3'}`,
+    `// Regra de Ouro: sem estimativas, sem projeções, sem interpolação`,
     `// ════════════════════════════`,
   ];
   return lines.join('\n');

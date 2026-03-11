@@ -74,15 +74,14 @@ function isDbItem(itemId: string, inventoryItems: AuditItem[] | null): { isDb: b
   const item = inventoryItems?.find(i => i.id === itemId);
   if (!item) return { isDb: false };
 
-  // DB items have origins like 'dados_orcamentarios', 'indicadores_interseccionais', 'conclusoes_analiticas'
   const dbOrigins = ['dados_orcamentarios', 'indicadores_interseccionais', 'conclusoes_analiticas'];
-  for (const table of dbOrigins) {
-    if (item.origem.startsWith(table)) {
-      return { isDb: true, tabela: table, recordId: item.id, origem: item.origem };
-    }
-  }
+  const matched = dbOrigins.find(table => item.origem.startsWith(table));
+  if (!matched) return { isDb: false, origem: item.origem };
 
-  return { isDb: false, origem: item.origem };
+  const fromOrigin = item.origem.includes(':') ? item.origem.split(':')[1] : undefined;
+  const recordId = fromOrigin || item.id;
+
+  return { isDb: true, tabela: matched, recordId, origem: item.origem };
 }
 
 interface Props {
@@ -131,7 +130,14 @@ export function AuditVerifyPanel({ inventoryItems }: Props) {
 
     try {
       if (itemInfo.isDb && itemInfo.tabela) {
-        // DB correction
+        const campoPorTabela: Record<string, string> = {
+          indicadores_interseccionais: 'dados',
+          dados_orcamentarios: 'observacoes',
+          conclusoes_analiticas: 'argumento_central',
+        };
+
+        const campo = campoPorTabela[itemInfo.tabela] || 'dados';
+
         const { data, error } = await supabase.functions.invoke('audit-apply-correction', {
           body: {
             action: verdict.valor_fonte ? 'apply_db' : 'mark_nd',
@@ -139,7 +145,7 @@ export function AuditVerifyPanel({ inventoryItems }: Props) {
             origem: itemInfo.origem,
             tabela: itemInfo.tabela,
             record_id: itemInfo.recordId,
-            campo: 'dados',
+            campo,
             valor_corrigido: verdict.valor_fonte,
             valor_anterior: verdict.valor_declarado,
             indicador: verdict.indicador,
