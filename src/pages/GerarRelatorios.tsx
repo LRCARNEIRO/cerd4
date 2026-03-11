@@ -320,6 +320,9 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="health-check" className="gap-1">
             <Activity className="w-4 h-4" /> Health Check
           </TabsTrigger>
+          <TabsTrigger value="audit-inventory" className="gap-1 bg-destructive/10">
+            <Shield className="w-4 h-4" /> Auditoria Triple-Check
+          </TabsTrigger>
         </TabsList>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
