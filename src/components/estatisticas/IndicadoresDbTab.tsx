@@ -552,6 +552,8 @@ export function IndicadoresDbTab() {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const handleExportPDF = useCallback(() => {
     const typedInds = (indicadores || []) as IndicadorData[];
