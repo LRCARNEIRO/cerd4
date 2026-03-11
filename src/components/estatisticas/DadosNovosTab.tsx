@@ -337,7 +337,7 @@ const indicadoresOrcamento: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (MUNIC 2024)',
     desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 8,2% dos municípios com órgão específico → 2023: 5,3% (desmonte local) → 2024: 9,2% (512 municípios, MUNIC 2024). Recuperação parcial após criação do MIR. Norte e Nordeste: cobertura inferior à média.',
+    relevanciaRacial: '⏳ Dados de órgãos municipais de igualdade racial disponíveis na MUNIC/IBGE. Percentuais específicos e série histórica pendentes de verificação humana via SIDRA/MUNIC.',
     prioridade: 'alta'
   },
   {
