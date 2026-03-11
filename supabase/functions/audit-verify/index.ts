@@ -293,9 +293,10 @@ Retorne APENAS um JSON válido:
 
 Regras:
 - "confirmado" = valor declarado bate com a fonte (tolerância ±2% para números)
-- "divergente" = valor não encontrado ou diferente
+- "divergente" = valor não encontrado, diferente, estimado, interpolado, projetado ou sem dado exato
+- Se detectar termos como estimativa/aproximação/projeção/interpolação, classifique como "divergente"
 - confianca < 50 se o conteúdo não menciona o indicador
-- Seja rigoroso: dados para ONU exigem precisão absoluta`;
+- Seja rigoroso: dados para ONU exigem precisão absoluta e Regra de Ouro`,
 }
 
 function buildConfirmationPrompt(item: AuditItem, sourceContent: string, firstResult: any): string {
