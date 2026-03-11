@@ -17,6 +17,8 @@ import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
 import { AuditInventoryPanel } from '@/components/audit/AuditInventoryPanel';
+import { AuditVerifyPanel } from '@/components/audit/AuditVerifyPanel';
+import { useState } from 'react';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
@@ -27,7 +29,7 @@ const statusLabels: Record<string, { label: string; color: string }> = {
 };
 
 export default function GerarRelatorios() {
-  
+  const [auditItems, setAuditItems] = useState<any[] | null>(null);
   
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
@@ -605,7 +607,10 @@ ${(respostasCerd || []).map(r => {
 
         {/* ABA: AUDITORIA TRIPLE-CHECK */}
         <TabsContent value="audit-inventory">
-          <AuditInventoryPanel />
+          <div className="space-y-8">
+            <AuditInventoryPanel onInventoryComplete={setAuditItems} />
+            <AuditVerifyPanel inventoryItems={auditItems} />
+          </div>
         </TabsContent>
       </Tabs>
     </DashboardLayout>
