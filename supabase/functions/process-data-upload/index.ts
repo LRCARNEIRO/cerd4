@@ -274,6 +274,40 @@ serve(async (req) => {
       const parsed = Number(n);
       return isNaN(parsed) ? null : parsed;
     };
+    const hasForbiddenTerms = (value: any): boolean => {
+      const forbidden = ['estimad', 'estimativa', 'aproxim', 'interpol', 'proje', 'previs', 'arredond', 'inferid', 'suposi', 'guess'];
+      if (typeof value === 'string') {
+        const lower = value.toLowerCase();
+        return forbidden.some(term => lower.includes(term));
+      }
+      if (Array.isArray(value)) return value.some(v => hasForbiddenTerms(v));
+      if (value && typeof value === 'object') return Object.values(value).some(v => hasForbiddenTerms(v));
+      return false;
+    };
+    const isDeepLink = (url: any) => typeof url === 'string' && /^https?:\/\//i.test(url.trim());
+    const collectYears = (value: any, years: Set<number>) => {
+      if (Array.isArray(value)) {
+        value.forEach(v => collectYears(v, years));
+        return;
+      }
+      if (value && typeof value === 'object') {
+        Object.entries(value).forEach(([k, v]) => {
+          if (/^20\d{2}$/.test(k)) years.add(Number(k));
+          if (k === 'ano' && typeof v === 'number') years.add(v);
+          collectYears(v, years);
+        });
+      }
+    };
+    const isGoldenRuleCompliantIndicator = (ind: any): boolean => {
+      if (!ind.nome || !ind.categoria || !ind.fonte) return false;
+      if (!isDeepLink(ind.url_fonte)) return false;
+      if (!ind.dados || typeof ind.dados !== 'object') return false;
+      if (hasForbiddenTerms(ind)) return false;
+
+      const years = new Set<number>();
+      collectYears(ind.dados, years);
+      return [...years].every(y => y >= 2018 && y <= 2025);
+    };
 
     const validEixosTematicos = ['legislacao_justica', 'politicas_institucionais', 'seguranca_publica', 'saude', 'educacao', 'trabalho_renda', 'terra_territorio', 'cultura_patrimonio', 'participacao_social', 'dados_estatisticas'];
     const validGruposFocais = ['negros', 'indigenas', 'quilombolas', 'ciganos', 'religioes_matriz_africana', 'juventude_negra', 'mulheres_negras', 'lgbtqia_negros', 'pcd_negros', 'idosos_negros', 'geral'];
