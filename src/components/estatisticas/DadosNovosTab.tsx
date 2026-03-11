@@ -133,7 +133,7 @@ const indicadoresSaude: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 72% gestantes negras com 7+ consultas → 2023: 78%. Brancas: 85% → 89%. Gap reduziu de 13 p.p. para 11 p.p. Indígenas: apenas 52% (SESAI 2023).',
+    relevanciaRacial: '⏳ Dados de pré-natal por raça disponíveis via TabNet/SINASC — consultar com filtro "Consultas de pré-natal" × "Raça/Cor da mãe". Valores percentuais específicos pendentes de verificação humana.',
     prioridade: 'alta'
   },
   {
