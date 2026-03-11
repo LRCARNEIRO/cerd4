@@ -18,7 +18,7 @@ import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolba
 import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
 import { AuditInventoryPanel } from '@/components/audit/AuditInventoryPanel';
 import { AuditVerifyPanel } from '@/components/audit/AuditVerifyPanel';
-import { useState as useAuditState } from 'react';
+import { useState } from 'react';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
