@@ -555,20 +555,46 @@ export function IndicadoresDbTab() {
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
+  const typedIndicadores = (indicadores || []) as IndicadorData[];
+
+  // Search results — must be before early return
+  const searchResults = useMemo(() => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    const term = searchTerm.toLowerCase();
+    return typedIndicadores.filter(i =>
+      i.nome.toLowerCase().includes(term) ||
+      i.categoria.toLowerCase().includes(term) ||
+      (i.subcategoria || '').toLowerCase().includes(term) ||
+      i.fonte.toLowerCase().includes(term)
+    ).slice(0, 10);
+  }, [typedIndicadores, searchTerm]);
+
+  const handleSelectResult = useCallback((ind: IndicadorData) => {
+    setCategoriaAtiva('todas');
+    setDocumentoAtivo('Todos');
+    setSearchTerm('');
+    setHighlightedId(ind.id);
+    setTimeout(() => {
+      const el = document.getElementById(`indicador-${ind.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => setHighlightedId(null), 3000);
+      }
+    }, 100);
+  }, []);
+
   const handleExportPDF = useCallback(() => {
-    const typedInds = (indicadores || []) as IndicadorData[];
-    const html = generateIndicadoresHTML(typedInds);
+    const html = generateIndicadoresHTML(typedIndicadores);
     const finalHtml = injectExportToolbar(html, 'Inventario-Indicadores-CERD-IV');
     const w = window.open('', '_blank');
     if (w) {
       w.document.write(finalHtml);
       w.document.close();
     }
-  }, [indicadores]);
+  }, [typedIndicadores]);
 
   const handleExportDOCX = useCallback(() => {
-    const typedInds = (indicadores || []) as IndicadorData[];
-    const html = generateIndicadoresHTML(typedInds);
+    const html = generateIndicadoresHTML(typedIndicadores);
     try {
       const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
@@ -583,7 +609,7 @@ export function IndicadoresDbTab() {
     } catch (e) {
       toast.error('Erro ao gerar documento');
     }
-  }, [indicadores]);
+  }, [typedIndicadores]);
 
   if (isLoading) {
     return (
@@ -598,40 +624,9 @@ export function IndicadoresDbTab() {
     );
   }
 
-  const typedIndicadores = (indicadores || []) as IndicadorData[];
-  
   // Get unique categories
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
-  // Search results
-  const searchResults = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return [];
-    const term = searchTerm.toLowerCase();
-    return typedIndicadores.filter(i =>
-      i.nome.toLowerCase().includes(term) ||
-      i.categoria.toLowerCase().includes(term) ||
-      (i.subcategoria || '').toLowerCase().includes(term) ||
-      i.fonte.toLowerCase().includes(term)
-    ).slice(0, 10);
-  }, [typedIndicadores, searchTerm]);
-
-  const handleSelectResult = (ind: IndicadorData) => {
-    // Reset filters so the indicator is visible
-    setCategoriaAtiva('todas');
-    setDocumentoAtivo('Todos');
-    setSearchTerm('');
-    setHighlightedId(ind.id);
-    // Scroll after render
-    setTimeout(() => {
-      const el = document.getElementById(`indicador-${ind.id}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Remove highlight after animation
-        setTimeout(() => setHighlightedId(null), 3000);
-      }
-    }, 100);
-  };
-
   // Filter by category and document
   const indicadoresFiltrados = typedIndicadores.filter(i => {
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
