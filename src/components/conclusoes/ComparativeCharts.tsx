@@ -7,8 +7,8 @@ import {
 } from 'recharts';
 import {
   segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, evolucaoDesigualdade, radarVulnerabilidades,
-  violenciaInterseccional, classePorRaca, interseccionalidadeTrabalho
+  indicadoresSocioeconomicos, evolucaoDesigualdade,
+  violenciaInterseccional, classePorRaca
 } from '@/components/estatisticas/StatisticsData';
 
 const COLORS = {
