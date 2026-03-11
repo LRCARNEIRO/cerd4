@@ -602,6 +602,11 @@ ${(respostasCerd || []).map(r => {
         <TabsContent value="health-check">
           <DeepLinkHealthCheck />
         </TabsContent>
+
+        {/* ABA: AUDITORIA TRIPLE-CHECK */}
+        <TabsContent value="audit-inventory">
+          <AuditInventoryPanel />
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );
