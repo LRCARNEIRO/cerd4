@@ -603,6 +603,35 @@ export function IndicadoresDbTab() {
   // Get unique categories
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
+  // Search results
+  const searchResults = useMemo(() => {
+    if (!searchTerm || searchTerm.length < 2) return [];
+    const term = searchTerm.toLowerCase();
+    return typedIndicadores.filter(i =>
+      i.nome.toLowerCase().includes(term) ||
+      i.categoria.toLowerCase().includes(term) ||
+      (i.subcategoria || '').toLowerCase().includes(term) ||
+      i.fonte.toLowerCase().includes(term)
+    ).slice(0, 10);
+  }, [typedIndicadores, searchTerm]);
+
+  const handleSelectResult = (ind: IndicadorData) => {
+    // Reset filters so the indicator is visible
+    setCategoriaAtiva('todas');
+    setDocumentoAtivo('Todos');
+    setSearchTerm('');
+    setHighlightedId(ind.id);
+    // Scroll after render
+    setTimeout(() => {
+      const el = document.getElementById(`indicador-${ind.id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Remove highlight after animation
+        setTimeout(() => setHighlightedId(null), 3000);
+      }
+    }, 100);
+  };
+
   // Filter by category and document
   const indicadoresFiltrados = typedIndicadores.filter(i => {
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
