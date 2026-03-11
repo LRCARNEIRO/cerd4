@@ -648,6 +648,33 @@ export function IndicadoresDbTab() {
         </Button>
       </div>
 
+      {/* Search bar */}
+      <div className="relative">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar indicador por nome, categoria ou fonte..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        {searchResults.length > 0 && (
+          <div className="absolute z-50 mt-1 w-full bg-popover border border-border rounded-md shadow-lg max-h-80 overflow-y-auto">
+            {searchResults.map(ind => (
+              <button
+                key={ind.id}
+                className="w-full text-left px-4 py-3 hover:bg-accent/50 border-b border-border/50 last:border-b-0 transition-colors"
+                onClick={() => handleSelectResult(ind)}
+              >
+                <p className="text-sm font-medium text-foreground">{ind.nome}</p>
+                <p className="text-xs text-muted-foreground">{ind.categoria} • {ind.fonte}</p>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <SummaryCards indicadores={typedIndicadores} />
       
       {/* Document source filter */}
