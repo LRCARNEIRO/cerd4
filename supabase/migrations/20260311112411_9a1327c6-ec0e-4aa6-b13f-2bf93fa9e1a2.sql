@@ -1,0 +1,1 @@
+UPDATE indicadores_interseccionais SET url_fonte = 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/20260105SINAPIRGeralAtualizado.pdf', updated_at = now() WHERE id = '36835b1a-8b07-4312-8c1d-8698645a1ad3';
