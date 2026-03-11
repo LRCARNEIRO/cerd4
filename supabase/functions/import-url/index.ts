@@ -215,7 +215,7 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
     }
 
     for (const ind of (extractedData.indicadores || []).slice(0, 20)) {
-      if (!ind.nome || !ind.categoria) continue;
+      if (!isGoldenRuleCompliantIndicator(ind)) continue;
       proposedChanges.push({
         id: `url-ind-${idx++}`,
         tabela: 'indicadores_interseccionais',
@@ -227,7 +227,7 @@ Se não encontrar dados de uma categoria, retorne array vazio [].`
           nome: String(ind.nome).substring(0, 255),
           categoria: String(ind.categoria).substring(0, 100),
           fonte: String(ind.fonte || parsedUrl.hostname).substring(0, 255),
-          url_fonte: url,
+          url_fonte: String(ind.url_fonte || url).substring(0, 500),
           dados: ind.dados || {},
           tendencia: ind.tendencia || null,
         },
