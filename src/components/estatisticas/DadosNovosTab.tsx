@@ -201,7 +201,7 @@ const indicadoresEducacao: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2024 (dados 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: 'Evasão ensino médio: jovens negros 7,2% vs brancos 4,5% (Censo Escolar 2023). Jovens negros de baixa renda: 12,8% de abandono. Indígenas: 9,5%.',
+    relevanciaRacial: '⏳ Taxas de rendimento (abandono) por raça disponíveis nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download das taxas de rendimento.',
     prioridade: 'alta'
   },
   {
