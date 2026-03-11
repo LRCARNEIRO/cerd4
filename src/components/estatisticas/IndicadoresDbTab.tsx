@@ -332,9 +332,9 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
   );
 }
 
-function IndicadorDetail({ indicador }: { indicador: IndicadorData }) {
+function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData; highlighted?: boolean }) {
   return (
-    <Card className="mb-4 indicador-card">
+    <Card id={`indicador-${indicador.id}`} className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
