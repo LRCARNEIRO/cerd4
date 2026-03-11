@@ -572,7 +572,7 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     periodicidade: 'Semestral',
     ultimaAtualizacao: '2024',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Taxa encarceramento negros: ~502/100mil vs brancos: ~195/100mil (cruzamento SISDEPEN 2024 × Censo 2022). Razão: 2,6x. Metodologia: pop. carcerária negra ÷ pop. negra total × 100mil.',
+    relevanciaRacial: '⏳ 🔀 Cruzamento indireto: taxa de encarceramento por raça requer cálculo (pop. carcerária por raça SISDEPEN ÷ pop. por raça Censo 2022 × 100mil). Valores exatos pendentes de verificação humana. Requer nota metodológica.',
     prioridade: 'alta'
   },
   {
