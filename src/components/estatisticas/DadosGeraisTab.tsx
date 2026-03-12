@@ -290,8 +290,8 @@ export function DadosGeraisTab() {
                     <Legend />
                     <Line type="monotone" dataKey="rendaMediaNegra" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="rendaMediaBranca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    {isRendaLive ? <Line type="monotone" dataKey="rendaPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
-                    {isRendaLive ? <Line type="monotone" dataKey="rendaParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasRendaData ? <Line type="monotone" dataKey="rendaPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasRendaData ? <Line type="monotone" dataKey="rendaParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
