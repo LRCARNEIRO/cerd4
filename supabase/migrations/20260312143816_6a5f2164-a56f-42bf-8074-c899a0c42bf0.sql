@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.temp_bulk_insert_ods(text);

@@ -5,12 +5,13 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { 
-  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope
+  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { atlasViolencia2025 } from './StatisticsData';
+import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import {
   narrativaViolencia, narrativaTrabalho, narrativaChefia,
   narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
@@ -22,7 +23,6 @@ import {
   lgbtqiaPorRaca,
   serieAntraTrans,
   deficienciaPorRaca,
-  juventudeNegra,
   classePorRaca,
   povosTradicionais,
   fonteDados,
@@ -800,6 +800,7 @@ export function DeficienciaTab() {
 }
 
 export function JuventudeTab() {
+  const { data: juventudeNegra = [], isLoading: isLoadingJuventude } = useJuventudeAuditados();
   return (
     <div className="space-y-6">
       {/* Atlas da Violência 2025 — Cards de Juventude */}
@@ -897,6 +898,14 @@ export function JuventudeTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {isLoadingJuventude ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground mr-2" />
+                <span className="text-sm text-muted-foreground">Carregando do banco...</span>
+              </div>
+            ) : juventudeNegra.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">Nenhum indicador de Juventude auditado encontrado no banco.</p>
+            ) : (
             <div className="space-y-4">
               {juventudeNegra.map(item => (
                 <div key={item.indicador} className="p-4 bg-muted rounded-lg">
@@ -949,6 +958,7 @@ export function JuventudeTab() {
                 </div>
               ))}
             </div>
+            )}
             <AuditFooter
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },

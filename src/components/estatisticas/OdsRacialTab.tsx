@@ -3,15 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { 
-  odsRacialIndicators, 
   odsGroups, 
   getOdsColor, 
-  TOTAL_ODS_RACIAL,
   type OdsRacialIndicator,
   type OdsFormat
 } from '@/data/odsRacialIndicators';
+import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
@@ -69,6 +68,9 @@ export function OdsRacialTab() {
   const [search, setSearch] = useState('');
   const [odsFilter, setOdsFilter] = useState<string>('todos');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const { data: odsRacialIndicators = [], isLoading } = useOdsRacialData();
+
+  const TOTAL_ODS_RACIAL = odsRacialIndicators.length;
 
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => {
@@ -77,6 +79,15 @@ export function OdsRacialTab() {
       return next;
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mr-2" />
+        <span className="text-muted-foreground">Carregando indicadores ODS Racial do banco...</span>
+      </div>
+    );
+  }
 
   const filtered = odsRacialIndicators.filter(ind => {
     const matchSearch = !search || ind.name.toLowerCase().includes(search.toLowerCase()) || 

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 
 // Componentes de abas
 import { DadosGeraisTab } from '@/components/estatisticas/DadosGeraisTab';
@@ -32,18 +33,17 @@ import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
-import { TOTAL_ODS_RACIAL } from '@/data/odsRacialIndicators';
-
+// TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const { data: indicadores } = useIndicadoresInterseccionais();
+  const { data: odsRacialFromDb = [] } = useOdsRacialData();
   
-  const totalIndicadoresDb = (indicadores || []).length;
-  const totalAuditadosDb = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
   
-  // ODS Racial: todos os 90 indicadores são auditados (dados replicados de planilhas oficiais)
-  const totalIndicadores = totalIndicadoresDb + TOTAL_ODS_RACIAL;
-  const totalAuditados = totalAuditadosDb + TOTAL_ODS_RACIAL;
+  // All indicators are now in the DB (including ODS Racial)
+  const totalIndicadores = (indicadores || []).length;
+  const totalAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
   const totalPendentes = totalIndicadores - totalAuditados;
 
   return (
@@ -140,7 +140,7 @@ export default function Estatisticas() {
             <UsersRound className="w-4 h-4" /> Grupos Focais
           </TabsTrigger>
           <TabsTrigger value="ods-racial" className="gap-1" style={{ backgroundColor: 'rgba(221,19,103,0.1)' }}>
-            <Globe className="w-4 h-4" /> ODS Racial (90)
+            <Globe className="w-4 h-4" /> ODS Racial ({TOTAL_ODS_RACIAL || '...'})
           </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
