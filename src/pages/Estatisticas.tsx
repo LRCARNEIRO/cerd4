@@ -40,12 +40,10 @@ export default function Estatisticas() {
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
   
   const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
-  const totalIndicadoresDb = (indicadores || []).length;
-  const totalAuditadosDb = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
   
-  // ODS Racial: todos os indicadores no banco são auditados
-  const totalIndicadores = totalIndicadoresDb + TOTAL_ODS_RACIAL;
-  const totalAuditados = totalAuditadosDb + TOTAL_ODS_RACIAL;
+  // All indicators are now in the DB (including ODS Racial)
+  const totalIndicadores = (indicadores || []).length;
+  const totalAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
   const totalPendentes = totalIndicadores - totalAuditados;
 
   return (
