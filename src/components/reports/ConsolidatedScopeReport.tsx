@@ -490,8 +490,8 @@ function generateConsolidatedHTML(data: {
 
   <h4>Violência Racial</h4>
   <table>
-    <tr><th>Ano</th><th>Homic. Negro (p/100k)</th><th>Homic. Branco</th><th>% Vítimas Negras</th><th>Letalidade Pol. (%)</th><th>Razão Risco</th></tr>
-    ${segurancaPublica.map(r => `<tr><td>${r.ano}</td><td>${r.homicidioNegro}</td><td>${r.homicidioBranco}</td><td>${r.percentualVitimasNegras}%</td><td>${r.letalidadePolicial}%</td><td>${r.razaoRisco}x</td></tr>`).join('')}
+    <tr><th>Ano</th><th>Homic. Negro (p/100k)</th><th>Homic. Não Negro</th><th>% Vítimas Negras</th><th>Letalidade Pol. (%)</th><th>Razão Risco</th></tr>
+    ${segurancaPublica.map(r => `<tr><td>${r.ano}</td><td>${r.homicidioNegro ?? 'n/a'}</td><td>${r.homicidioBranco ?? 'n/a'}</td><td>${r.percentualVitimasNegras}%</td><td>${r.letalidadePolicial}%</td><td>${r.razaoRisco != null ? r.razaoRisco + 'x' : 'n/a'}</td></tr>`).join('')}
   </table>
 
   <h4>Feminicídio</h4>
