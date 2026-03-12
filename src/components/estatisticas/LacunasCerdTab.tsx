@@ -620,7 +620,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §23:</strong> Razão renda negra/não negra: {dadosRendaHistorico[0]?.razao} (2018) → {dadosRendaHistorico[dadosRendaHistorico.length - 1]?.razao} ({dadosRendaHistorico[dadosRendaHistorico.length - 1]?.ano}).
+                  <strong>Análise §23:</strong> Razão renda negra/branca: {dadosRendaHistorico[0]?.razao} (2018) → {dadosRendaHistorico[dadosRendaHistorico.length - 1]?.razao} ({dadosRendaHistorico[dadosRendaHistorico.length - 1]?.ano}).
                   Renda negra cresceu de R${dadosRendaHistorico[0]?.negros} para R${dadosRendaHistorico[dadosRendaHistorico.length - 1]?.negros}, mas gap proporcional não se reduz.
                 </p>
               </div>
