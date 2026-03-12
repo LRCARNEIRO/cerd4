@@ -512,7 +512,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      temp_bulk_insert_ods: { Args: { sql_text: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
