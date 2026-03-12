@@ -1015,7 +1015,7 @@ export function ClasseSocialTab() {
               <Briefcase className="w-5 h-5 text-primary" />
               Distribuição por Faixa de Renda × Raça (%)
             </CardTitle>
-            <CardDescription>SIS/IBGE 2024 | Linhas de pobreza: Banco Mundial</CardDescription>
+            <CardDescription>SIS/IBGE 2023-2025 | Linhas de pobreza: Banco Mundial (US$6,85/dia) | Dados 2022-2024</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-72">
