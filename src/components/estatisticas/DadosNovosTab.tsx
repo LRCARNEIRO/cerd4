@@ -96,7 +96,7 @@ const indicadoresJudiciario: NovoIndicador[] = [
     periodicidade: 'Anual',
     ultimaAtualizacao: '2025 (dados 2024)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Crescimento expressivo: de 1.400 violações em 2021 para 5.200+ em 2024 (+271%). A Lei 14.532/2023 equiparou injúria racial a racismo, ampliando a tipificação. Maior visibilidade do canal impulsionou denúncias a partir de 2023.',
+    relevanciaRacial: 'Crescimento expressivo: de 1.400 violações em 2021 para 4.228 denúncias em 2024 (ano completo). A Lei 14.532/2023 equiparou injúria racial a racismo, ampliando a tipificação. Maior visibilidade do canal impulsionou denúncias a partir de 2023.',
     prioridade: 'alta',
     unidadeSerie: 'Denúncias / Violações',
     serieHistorica: [
@@ -106,7 +106,8 @@ const indicadoresJudiciario: NovoIndicador[] = [
       { ano: 2021, valor: '1.400 denúncias / 1.400 violações', fonte: 'MDHC (nov/2024)' },
       { ano: 2022, valor: '1.800 denúncias / 2.300 violações', fonte: 'MDHC (nov/2024)' },
       { ano: 2023, valor: '3.100 denúncias / 4.600 violações', fonte: 'MDHC (nov/2024)' },
-      { ano: 2024, valor: '3.400 denúncias / 5.200+ violações (jan-nov)', fonte: 'MDHC (nov/2024)' },
+      { ano: 2024, valor: '4.228 denúncias de racismo, injúria racial e violência étnico-racial (ano completo)', fonte: 'MDHC (mai/2025)' },
+      { ano: 2025, valor: '⏳ N/D', nota: 'Painel ONDH 2025 disponível (Power BI) — pendente extração com filtro racial. Total geral Disque 100: 617.837 denúncias (jan-dez/2025)' },
     ]
   },
   {
