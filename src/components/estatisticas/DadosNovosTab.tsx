@@ -28,73 +28,10 @@ interface NovoIndicador {
   prioridade: 'alta' | 'media' | 'baixa';
 }
 
-const indicadoresSeguranca: NovoIndicador[] = [
-  {
-    id: 'seg-1',
-    nome: 'Taxa de homicídios por raça/cor',
-    descricao: 'Número de homicídios dolosos por 100 mil habitantes, desagregado por raça/cor da vítima',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 37,6 (2018) → 28,9 (2023, Atlas); não negros 14,0 → 10,6.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-2',
-    nome: 'Mortes por intervenção policial',
-    descricao: 'Número de pessoas mortas em decorrência de intervenção policial, por raça/cor',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,4% das vítimas de letalidade policial eram negras → 2024: 82% (19º Anuário FBSP 2025). 6.429 mortes por intervenção policial em 2022 (dado mais recente consolidado).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-3',
-    nome: 'Feminicídios por raça/cor',
-    descricao: 'Número de feminicídios desagregado por raça/cor da vítima',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.492 casos). Aumento de 19% no total de feminicídios no período (19º Anuário FBSP 2025).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-5',
-    nome: 'População carcerária por raça/cor',
-    descricao: 'Perfil da população privada de liberdade com desagregação racial',
-    fonte: 'SISDEPEN / SENAPPEN',
-    siglaFonte: 'SISDEPEN',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    periodicidade: 'Semestral',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 63,6% da pop. carcerária era negra (726.354 presos) → 2024: 68,2% negra (832.295 presos). Aumento de 4,6 p.p. na sobre-representação racial.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-6',
-    nome: 'Jovens em cumprimento de medidas socioeducativas',
-    descricao: 'Perfil de adolescentes em medidas socioeducativas por raça/cor',
-    fonte: 'SINASE / MDH',
-    siglaFonte: 'SINASE',
-    urlFonte: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/sinase',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2023',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '67% dos adolescentes em medidas socioeducativas são negros (SINASE 2023). Jovens negros (15-29 anos): 73% dos óbitos por causas externas (Fiocruz 2025).',
-    prioridade: 'alta'
-  }
-];
+// Segurança: seg-1 (homicídios), seg-2 (letalidade policial), seg-3 (feminicídios),
+// seg-5 (pop carcerária), seg-6 (jovens socioeducativos) REMOVIDOS — já existem em
+// StatisticsData.ts (segurancaPublica, feminicidioSerie, juventudeNegra, jovensNegrosViolencia)
+const indicadoresSeguranca: NovoIndicador[] = [];
 
 const indicadoresSaude: NovoIndicador[] = [
   {
