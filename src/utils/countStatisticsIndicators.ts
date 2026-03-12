@@ -12,7 +12,6 @@ import {
   lgbtqiaPorRaca,
   classePorRaca,
   violenciaInterseccional,
-  juventudeNegra,
   radarVulnerabilidades,
   evolucaoDesigualdade,
   dadosDemograficos,
@@ -49,7 +48,7 @@ const seriesEstatisticas = [
   lgbtqiaPorRaca,
   classePorRaca,
   violenciaInterseccional,
-  juventudeNegra,
+  // juventudeNegra removido — agora vem do banco (indicadores_interseccionais)
   radarVulnerabilidades,
   evolucaoDesigualdade,
 ];

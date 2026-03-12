@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileDown, Loader2, Database, BarChart3, Printer } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { toast } from 'sonner';
 import {
@@ -20,7 +21,6 @@ import {
   lgbtqiaPorRaca,
   classePorRaca,
   violenciaInterseccional,
-  juventudeNegra,
   radarVulnerabilidades,
   evolucaoDesigualdade,
   atlasViolencia2025,
@@ -139,7 +139,7 @@ function indicadorToHTML(ind: any): string {
   return html;
 }
 
-function generateFullStatisticsHTML(indicadoresBD: any[]) {
+function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
 
@@ -260,7 +260,7 @@ ${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 
 <h3>3.4. Juventude Negra</h3>
-${arrayToHTMLTable(juventudeNegra, '')}
+${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr></thead><tbody>${juventudeNegraBD.map((j: any) => `<tr><td>${j.indicador}</td><td style="font-weight:600;color:#991b1b;">${j.valor}</td><td>${j.referencia}</td><td><a href="${j.url}">${j.fonte}</a></td></tr>`).join('')}</tbody></table>` : '<p class="meta">⏳ Carregando dados do banco...</p>'}
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
@@ -362,7 +362,7 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Juventude Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | ONU: §32-§36</div>
 <table>
   <tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr>
-  ${juventudeNegra.map(j => '<tr>' +
+  ${juventudeNegraBD.map((j: any) => '<tr>' +
     '<td>' + j.indicador + '</td>' +
     '<td style="font-weight:600;color:#991b1b;">' + j.valor + '</td>' +
     '<td>' + j.referencia + '</td>' +
@@ -438,7 +438,7 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[]) {
+function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Series data
@@ -457,7 +457,7 @@ function generateInventoryHTML(indicadoresBD: any[]) {
     { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
     { nome: 'Mulheres Chefes de Família', registros: 0, fonte: '🔴 LACUNA — SIDRA 6403 não publica por raça', periodo: 'N/A' },
     { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
-    { nome: 'Juventude Negra', registros: juventudeNegra.length, fonte: 'FBSP / PNAD', periodo: '2018-2024' },
+    { nome: 'Juventude Negra', registros: juventudeNegraBD.length, fonte: 'BD — Atlas/FBSP (auditado)', periodo: '2022-2025' },
     { nome: 'Educação Interseccional', registros: 0, fonte: '🔴 LACUNA — IBGE/INEP não publica raça×gênero', periodo: 'N/A' },
     { nome: 'Saúde Interseccional', registros: 0, fonte: '🔴 LACUNA — DataSUS não cruza raça×renda', periodo: 'N/A' },
     { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
@@ -660,12 +660,13 @@ function downloadDOCX(html: string, fileName: string) {
 
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
+  const { data: juventudeNegraBD } = useJuventudeAuditados();
   const [generating, setGenerating] = useState<string | null>(null);
 
   const handleFullReport = (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
     try {
-      const html = generateFullStatisticsHTML(indicadoresBD || []);
+      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || []);
       if (format === 'docx') {
         downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
@@ -680,7 +681,7 @@ export function StatisticsInventoryReport() {
   const handleInventory = (format: 'html' | 'docx') => {
     setGenerating(`inv-${format}`);
     try {
-      const html = generateInventoryHTML(indicadoresBD || []);
+      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || []);
       if (format === 'docx') {
         downloadDOCX(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {
