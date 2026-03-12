@@ -66,60 +66,9 @@ const indicadoresSaude: NovoIndicador[] = [
 
 // edu-1 (analfabetismo) e edu-2 (ensino superior) REMOVIDOS —
 // já existem em StatisticsData.ts (educacaoSerieHistorica)
-const indicadoresEducacao: NovoIndicador[] = [
-  {
-    id: 'edu-3',
-    nome: 'Distorção idade-série por raça/cor',
-    descricao: 'Proporção de alunos com atraso escolar de 2+ anos',
-    fonte: 'Censo Escolar / INEP',
-    siglaFonte: 'INEP',
-    urlFonte: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-distorcao-idade-serie',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '⏳ Distorção idade-série por raça disponível nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download dos microdados do Censo Escolar.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'edu-4',
-    nome: 'Evasão escolar por raça/cor',
-    descricao: 'Taxa de abandono escolar nos ensinos fundamental e médio',
-    fonte: 'Censo Escolar / INEP',
-    siglaFonte: 'INEP',
-    urlFonte: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-rendimento',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '⏳ Taxas de rendimento (abandono) por raça disponíveis nos Indicadores Educacionais INEP. Valores exatos pendentes de verificação humana via download das taxas de rendimento.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'edu-5',
-    nome: 'Educação escolar indígena e quilombola',
-    descricao: 'Escolas em territórios tradicionais, matrículas, infraestrutura',
-    fonte: 'Censo Escolar / INEP',
-    siglaFonte: 'INEP',
-    urlFonte: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '⏳ Dados de escolas indígenas e quilombolas disponíveis nos microdados do Censo Escolar (INEP). Contagens e % de infraestrutura pendentes de verificação humana via Sinopse Estatística.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'edu-6',
-    nome: 'Desempenho no ENEM por raça/cor',
-    descricao: 'Média de notas no ENEM desagregada por autodeclaração racial',
-    fonte: 'Microdados ENEM / INEP',
-    siglaFonte: 'INEP',
-    urlFonte: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '⏳ Desempenho ENEM por raça disponível nos microdados ENEM (INEP). Médias exatas por raça/cor pendentes de verificação humana via processamento dos microdados.',
-    prioridade: 'media'
-  }
-];
+// edu-3 (distorção idade-série), edu-4 (evasão escolar), edu-5 (educação indígena/quilombola),
+// edu-6 (desempenho ENEM) REMOVIDOS — dados pendentes de verificação humana, eliminados por saneamento
+const indicadoresEducacao: NovoIndicador[] = [];
 
 const indicadoresTerritorio: NovoIndicador[] = [
   {
