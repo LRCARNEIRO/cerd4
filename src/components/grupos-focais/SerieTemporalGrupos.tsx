@@ -170,7 +170,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Feminicídio mulheres negras (%)',
       grupo: 'mulheres_negras',
-      dados: feminicidioSerie.map(s => ({ ano: s.ano, valor: s.percentualNegras })),
+      dados: feminicidioSerie.filter(s => s.percentualNegras != null).map(s => ({ ano: s.ano, valor: s.percentualNegras! })),
       unidade: '%',
       fonte: 'FBSP',
       interpretacao: 'menor_melhor',
