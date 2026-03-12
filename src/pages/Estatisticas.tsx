@@ -115,6 +115,9 @@ export default function Estatisticas() {
           <TabsTrigger value="classe" className="gap-1">
             <Briefcase className="w-4 h-4" /> Classe Social
           </TabsTrigger>
+          <TabsTrigger value="cross-verify" className="gap-1 bg-destructive/10">
+            <Search className="w-4 h-4" /> Auditoria Cruzada
+          </TabsTrigger>
         </TabsList>
 
         {/* Common Core - 77 Tabelas */}
