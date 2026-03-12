@@ -9,6 +9,42 @@
 // 2. Proxies multiplicadores (fatores fixos ×1.5, ×1.8, ×2.5 etc.)
 // 3. Dados fabricados por IA sem fonte auditável
 // PERMITIDO: Cruzamentos indiretos (🔀) com 2+ fontes auditáveis + deep links + metodologia explícita
+//
+// ═══════════════════════════════════════════════════════════════════
+// REGRA DE COLETA — ANO-REFERÊNCIA vs ANO-PUBLICAÇÃO
+// ═══════════════════════════════════════════════════════════════════
+//
+// ESCOPO TEMPORAL OBRIGATÓRIO: 2018–2025 (dados cujo ANO-REFERÊNCIA
+// esteja dentro deste intervalo).
+//
+// Cada fonte possui uma lógica própria de defasagem entre o
+// "ano-referência" (a que período o dado se refere) e o
+// "ano-publicação" (quando o dado foi divulgado):
+//
+//  FONTE                  | DEFASAGEM TÍPICA        | EXEMPLO
+//  -----------------------|-------------------------|-----------------------------
+//  IBGE/PNAD Contínua     | Pub. ano N+1            | Pub. 2024 → dados ref. 2023
+//  IBGE/Censo             | Pub. N+1 a N+2          | Pub. 2023 → dados ref. 2022
+//  DataSUS/SIM            | Pub. N+2                | Pub. 2025 → dados ref. 2023
+//  DataSUS/SINASC         | Pub. N+1                | Pub. 2024 → dados ref. 2023
+//  Atlas da Violência     | Pub. N+2                | Pub. 2025 → dados ref. 2023
+//  FBSP Anuário           | Pub. N+1                | Pub. 2024 → dados ref. 2023
+//  SISDEPEN               | Semestral, pub. N+0.5   | Pub. 2025 → dados ref. 2024
+//  TSE Resultados         | Imediato (eleição)      | Pub. 2024 → dados ref. 2024
+//  ONDH/Disque 100        | Pub. N+0 a N+1          | Pub. nov/2024 → dados ref. 2024 (parcial)
+//  CNJ Painel             | Pub. contínua           | Pub. 2025 → dados ref. 2025
+//  FJP Déficit Hab.       | Pub. N+1                | Pub. 2023 → dados ref. 2022
+//  VIGITEL                | Pub. N+1                | Pub. 2024 → dados ref. 2023
+//  INEP/Censo Escolar     | Pub. N+1                | Pub. 2024 → dados ref. 2023
+//
+// REGRA: O campo "ano" na série histórica deve sempre refletir o
+// ANO-REFERÊNCIA do dado, NÃO o ano de publicação.
+// Ex: Se PNAD 2024 publica dados de 2023, registrar como ano: 2023.
+// A fonte deve indicar "(pub. 2024)" quando relevante para rastreio.
+//
+// PROIBIDO: Registrar dado do ano de publicação como se fosse do
+// ano-referência (ex: dado PNAD pub. 2024/ref. 2023 registrado como 2024).
+// ═══════════════════════════════════════════════════════════════════
 // =============================================
 
 // =============================================
