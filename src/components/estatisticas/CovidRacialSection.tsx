@@ -297,7 +297,7 @@ export function CovidRacialSection() {
             </div>
             <div className="flex items-center gap-2 mt-2">
               <p className="text-xs text-muted-foreground">
-                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
+                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a não negras.
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
