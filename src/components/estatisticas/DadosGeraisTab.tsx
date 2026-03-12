@@ -295,7 +295,7 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              {isRendaLive && sidraRendaData?.nota_metodologica && (
+              {hasRendaData && sidraRendaData?.nota_metodologica && (
                 <p className="text-[10px] text-muted-foreground mt-1 italic">
                   ℹ️ {sidraRendaData.nota_metodologica}
                 </p>
