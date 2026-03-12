@@ -958,6 +958,7 @@ export function JuventudeTab() {
                 </div>
               ))}
             </div>
+            )}
             <AuditFooter
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
