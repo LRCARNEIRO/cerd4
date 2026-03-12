@@ -285,9 +285,11 @@ export type Database = {
         Row: {
           analise_interseccional: string | null
           artigos_convencao: string[] | null
+          auditado_manualmente: boolean | null
           categoria: string
           created_at: string
           dados: Json
+          data_auditoria: string | null
           desagregacao_classe: boolean | null
           desagregacao_deficiencia: boolean | null
           desagregacao_genero: boolean | null
@@ -308,9 +310,11 @@ export type Database = {
         Insert: {
           analise_interseccional?: string | null
           artigos_convencao?: string[] | null
+          auditado_manualmente?: boolean | null
           categoria: string
           created_at?: string
           dados: Json
+          data_auditoria?: string | null
           desagregacao_classe?: boolean | null
           desagregacao_deficiencia?: boolean | null
           desagregacao_genero?: boolean | null
@@ -331,9 +335,11 @@ export type Database = {
         Update: {
           analise_interseccional?: string | null
           artigos_convencao?: string[] | null
+          auditado_manualmente?: boolean | null
           categoria?: string
           created_at?: string
           dados?: Json
+          data_auditoria?: string | null
           desagregacao_classe?: boolean | null
           desagregacao_deficiencia?: boolean | null
           desagregacao_genero?: boolean | null
