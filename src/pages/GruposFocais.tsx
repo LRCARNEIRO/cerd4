@@ -277,11 +277,14 @@ const indicadoresVulnerabilidade = {
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   // IVJ-N — Índice de Vulnerabilidade da Juventude Negra
+  // AUDITORIA 12/03/2026: riscoRelativo=2.0 refere-se a jovens com ensino fundamental incompleto (Atlas 2025, p.74 nota de rodapé)
+  // Atlas usa "Não Negros" em vez de "Brancos", exceto no IVJ-N (Escolaridade)
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
-    riscoRelativo: 2.0,
+    riscoRelativo: 2.0, // especificamente para ensino fundamental incompleto
     riscoRelativo2017: 1.9,
-    riscoSuperiorNegro: 3.0, // entre jovens c/ ensino superior
+    riscoSuperiorNegro: 3.0, // entre jovens c/ ensino superior (dado de 2021)
+    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado é específico, não geral
     ano: 2021,
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',

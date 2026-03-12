@@ -832,11 +832,14 @@ export const violenciaInterseccional = [
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
+// AUDITORIA MANUAL 12/03/2026 — Correções conforme planilha de auditagem (Eduardo)
+// Taxa homicídio: SIM (Atlas 2025, p.79) — mudou label "Brancos" → "Não Negros"
+// Desemprego 18-24: REMOVIDO — tabela SIDRA 7113 não encontrada com esse cruzamento
+// Nem-nem: REMOVIDO — tabela SIDRA 7113 × 9605 não encontrada com esse cruzamento
+// Encarceramento: CORRIGIDO — SISDEPEN não filtra por cor; fonte alterada para 19º Anuário FBSP 2025
 export const juventudeNegra = [
-  { indicador: 'Taxa de homicídio negros (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia' },
-  { indicador: 'Desemprego 18-24 anos (%)', valor: 20.8, referencia: 11.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113)', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
-  { indicador: 'Nem-nem (%)', valor: 27.2, referencia: 14.5, fonte: 'PNAD Contínua 2024 (SIDRA 7113 × 9605)', url: 'https://sidra.ibge.gov.br/Tabela/7113', cruzamento: true, fontesCruzamento: [{ nome: 'SIDRA 7113 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' }, { nome: 'SIDRA 9605 — Condição de atividade por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/9605' }], metodologiaCruzamento: 'Dados cruzados: desocupação jovem por cor/raça (SIDRA 7113) × condição NEET por faixa etária (SIDRA 9605). O IBGE não publica nem-nem desagregado simultaneamente por idade e cor/raça em tabela única.' },
-  { indicador: 'Encarceramento (% do total)', valor: 68.2, referencia: 31.8, fonte: 'SISDEPEN/SENAPPEN 2024', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
+  { indicador: 'Taxa de homicídio (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Não Negros' },
+  { indicador: 'Encarceramento (% do total)', valor: 68.7, referencia: 29.9, fonte: '19º Anuário FBSP 2025, p.19 e 399', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos', nota: 'Possível subnotificação (cobertura racial: 85,3%)' },
 ];
 
 // =============================================
