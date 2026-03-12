@@ -600,7 +600,7 @@ export function LgbtqiaTab() {
                   <TableHead>Ano</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead className="text-right">% Negros</TableHead>
-                  <TableHead className="text-right">% Não Negros</TableHead>
+                  <TableHead className="text-right">% Brancos</TableHead>
                   <TableHead className="text-right">% Indígenas</TableHead>
                   <TableHead>Dossiê</TableHead>
                 </TableRow>

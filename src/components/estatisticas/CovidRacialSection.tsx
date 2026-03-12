@@ -321,7 +321,7 @@ export function CovidRacialSection() {
               <TableRow>
                 <TableHead>Indicador</TableHead>
                 <TableHead className="text-right">Negros (%)</TableHead>
-                <TableHead className="text-right">Não Negros (%)</TableHead>
+                <TableHead className="text-right">Brancos (%)</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead>Fonte</TableHead>
               </TableRow>
