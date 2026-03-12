@@ -306,13 +306,15 @@ export const atlasViolencia2025 = {
 };
 
 // Jovens negros: 73% dos óbitos por causas externas (Fiocruz 2025)
-// População carcerária: 68,2% negra (SISDEPEN/SENAPPEN 2024)
+// População carcerária: 68,7% negra (19º Anuário FBSP 2025, p.19 e 399)
+// AUDITORIA 12/03/2026: Corrigido de 68.2% SISDEPEN → 68.7% FBSP (SISDEPEN não filtra por cor)
 export const jovensNegrosViolencia = {
   percentualObitosExternos: 73,
   fonte: 'Fiocruz - 1º Informe epidemiológico sobre a situação de saúde da juventude brasileira (2025)',
   dataReferencia: 'Agosto/2025',
-  populacaoCarcerariaPercentualNegra: 68.2,
-  fonteCarce: 'SISDEPEN/SENAPPEN 2024'
+  populacaoCarcerariaPercentualNegra: 68.7,
+  fonteCarce: '19º Anuário FBSP 2025, p.19 e 399',
+  notaCarce: 'Possível subnotificação (cobertura racial: 85,3%)',
 };
 
 // =============================================
