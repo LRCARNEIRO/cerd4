@@ -986,7 +986,6 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
           </>
         );
       })()}
-      </div>
     </div>
   );
 }
