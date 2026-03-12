@@ -971,6 +971,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
           'Trabalho Infantil', 'Trabalho Escravo', 'Intolerância Religiosa',
           'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
           'Conflitos Fundiários', 'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+          'favelas_aglomerados', 'sinapir_adesoes', 'migracao_refugio_racial', 'ciganos_saude_educacao',
         ]);
         const cerdGapIndicadores = indicadoresFiltrados.filter(i => 
           i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)
@@ -1077,6 +1078,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
           'Trabalho Infantil', 'Trabalho Escravo', 'Intolerância Religiosa',
           'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
           'Conflitos Fundiários', 'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+          'favelas_aglomerados', 'sinapir_adesoes', 'migracao_refugio_racial', 'ciganos_saude_educacao',
         ]);
         const nonGap = indicadoresFiltrados.filter(i => !(i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)));
         const withSeries = nonGap.filter(i => hasTimeSeries(i.dados || {}));
