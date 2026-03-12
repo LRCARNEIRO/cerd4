@@ -715,9 +715,14 @@ export const mulheresChefeFamiliaFontes = [
 //   Violência doméstica 59.8%: 🟡 PENDENTE verificação no PDF do 19º Anuário. O FBSP publica mas o valor exato precisa ser conferido.
 //   Estupro 54.2%: 🟡 PENDENTE verificação no PDF do 19º Anuário.
 export const violenciaInterseccional = [
-  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 36.4, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-  { tipo: 'Violência doméstica', mulherNegra: 59.8, mulherBranca: 40.2, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 59,8% pendente de verificação no PDF do 19º Anuário FBSP' },
-  { tipo: 'Estupro', mulherNegra: 54.2, mulherBranca: 45.8, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', pendente: true, notaAuditoria: 'Valor 54,2% pendente de verificação no PDF do 19º Anuário FBSP' },
+  // AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme 19º Anuário FBSP 2025, p.156
+  { tipo: 'Feminicídio', mulherNegra: 63.6, mulherBranca: 35.7, fonte: '19º Anuário FBSP 2025 (dados 2024), p.156', url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
+  // AUDITORIA: Violência doméstica — não há taxa percentual por raça publicada pelo FBSP.
+  // Dado auditado: NÚMERO ABSOLUTO de notificações (DataSUS/SINAN 2024) de violência interpessoal
+  // em residência/habitação coletiva, excluindo lesão autoprovocada, população feminina.
+  { tipo: 'Violência doméstica', mulherNegra: 111209, mulherBranca: 74763, fonte: 'DataSUS/SINAN 2024 — Notificações de violência interpessoal', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinannet/cnv/violebr.def', unidadeAbsoluta: true, notaAuditoria: 'Valores são números absolutos de notificações, NÃO percentuais. Fonte: registros de violência interpessoal/autoprovocada em residência, população feminina, excluindo lesão autoprovocada.' },
+  // AUDITORIA: Estupro corrigido de 54,2/45,8 para 55,6/43,1 conforme FBSP 2025
+  { tipo: 'Estupro', mulherNegra: 55.6, mulherBranca: 43.1, fonte: '19º Anuário FBSP 2025 (dados 2024)', url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
 ];
 
 // Juventude negra - 19º Anuário FBSP 2025 / Atlas da Violência 2025 / PNAD 2024
