@@ -1485,7 +1485,7 @@ export const tabelasPobreza: CommonCoreTable[] = [
       headers: ['Razão', '2005', '2010', '2015', '2019', '2022', '2023'],
       rows: [
         ['Homens/Mulheres', '1,51', '1,49', '1,50', '1,45', '1,42', '1,40'],
-        ['Brancos/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
+        ['Não Negros/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
       ]
     },
     notas: 'Redução lenta das desigualdades de gênero e raça na renda.',
