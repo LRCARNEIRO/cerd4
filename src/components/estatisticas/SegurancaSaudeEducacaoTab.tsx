@@ -249,7 +249,10 @@ export function SegurancaSaudeEducacaoTab() {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">PNAD Contínua Educação 2024 (IBGE) <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
+            </div>
 
           <div className="mt-4 p-3 bg-success/10 border border-success/30 rounded-lg">
             <p className="text-xs">
