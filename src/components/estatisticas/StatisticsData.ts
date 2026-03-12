@@ -467,6 +467,10 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
 
 Ref.: Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013.`,
   referencia: 'Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013',
+  referencias: [
+    { titulo: 'Chor & Lima — Mortalidade infantil segundo cor ou raça (Cad. Saúde Pública, 2005)', url: 'https://www.scielo.br/j/csp/a/YqR67bJXrZBZ6RRmRvCfMJP/' },
+    { titulo: 'IPEA Nota Técnica nº 10 — Vidas Perdidas e Racismo no Brasil (2013)', url: 'https://portalantigo.ipea.gov.br/agencia/images/stories/PDFs/nota_tecnica/131119_notatecnicadiest10.pdf' },
+  ],
 };
 
 // =============================================
