@@ -138,36 +138,9 @@ const indicadoresTerritorio: NovoIndicador[] = [
   }
 ];
 
-// orc-1 (execução orçamentária) e orc-3 (orçamento MIR) REMOVIDOS —
-// já cobertos na página /orcamento dedicada
-const indicadoresOrcamento: NovoIndicador[] = [
-  {
-    id: 'orc-4',
-    nome: 'Órgãos municipais de igualdade racial',
-    descricao: 'Existência de secretarias, coordenadorias, conselhos municipais',
-    fonte: 'Pesquisa de Informações Básicas Municipais',
-    siglaFonte: 'MUNIC/IBGE',
-    urlFonte: 'https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (MUNIC 2024)',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Dados de órgãos municipais de igualdade racial disponíveis na MUNIC/IBGE. Percentuais específicos e série histórica pendentes de verificação humana via SIDRA/MUNIC.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'orc-5',
-    nome: 'Municípios com SINAPIR',
-    descricao: 'Adesão municipal ao Sistema Nacional de Promoção da Igualdade Racial',
-    fonte: 'Ministério da Igualdade Racial / SINAPIR',
-    siglaFonte: 'MIR/SINAPIR',
-    urlFonte: 'https://www.gov.br/igualdaderacial/pt-br/acesso-a-informacao/sinapir',
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: false, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Dados de adesão ao SINAPIR disponíveis no portal do MIR. Quantitativos exatos de municípios aderentes pendentes de verificação humana via gov.br/igualdaderacial.',
-    prioridade: 'alta'
-  }
-];
+// orc-1, orc-3 REMOVIDOS (cobertos em /orcamento)
+// orc-4 (órgãos municipais) e orc-5 (SINAPIR) REMOVIDOS — já existem em AdmPublicaSection
+const indicadoresOrcamento: NovoIndicador[] = [];
 
 const indicadoresJudiciario: NovoIndicador[] = [
   {
