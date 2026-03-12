@@ -698,6 +698,40 @@ export function IndicadoresDbTab() {
       </div>
 
       <SummaryCards indicadores={typedIndicadores} />
+
+      {/* Audit filter */}
+      <Card className="border-l-4 border-l-success">
+        <CardContent className="pt-4 pb-3">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-success" />
+              <div>
+                <p className="text-sm font-semibold">Auditoria Manual</p>
+                <p className="text-xs text-muted-foreground">
+                  {totalAuditados} de {typedIndicadores.length} auditados ({totalPendentes} pendentes)
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {(['todos', 'auditados', 'pendentes'] as const).map(f => (
+                <Badge
+                  key={f}
+                  variant={filtroAuditoria === f ? "default" : "outline"}
+                  className={cn("cursor-pointer transition-colors", 
+                    filtroAuditoria === f && f === 'pendentes' && "bg-chart-4 text-chart-4-foreground",
+                    filtroAuditoria === f && f === 'auditados' && "bg-success text-success-foreground"
+                  )}
+                  onClick={() => setFiltroAuditoria(f)}
+                >
+                  {f === 'todos' && 'Todos'}
+                  {f === 'auditados' && `✓ Auditados (${totalAuditados})`}
+                  {f === 'pendentes' && `⏳ Pendentes (${totalPendentes})`}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Document source filter */}
       <div className="space-y-2">
