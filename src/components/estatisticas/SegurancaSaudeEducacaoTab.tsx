@@ -196,7 +196,7 @@ export function SegurancaSaudeEducacaoTab() {
             <GraduationCap className="w-5 h-5 text-primary" />
             Educação - Indicadores por Raça (2018-2024)
           </CardTitle>
-          <CardDescription>Ensino superior completo e analfabetismo</CardDescription>
+          <CardDescription>Ensino superior completo e analfabetismo por raça</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
