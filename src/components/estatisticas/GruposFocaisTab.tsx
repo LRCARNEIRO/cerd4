@@ -947,9 +947,9 @@ export function GruposFocaisTab() {
                   </div>
                   <div className="p-2 bg-destructive/10 rounded text-center mb-3">
                     <p className="text-sm font-bold text-destructive">
-                      {indicadoresVulnerabilidade.violenciaJuventude.percentualNegrosHomens}% jovens negros do sexo masculino
+                      {indicadoresVulnerabilidade.violenciaJuventude.feminicidioNegras}% das vítimas de homicídio feminino são negras
                     </p>
-                    <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+                    <p className="text-xs text-muted-foreground">Atlas da Violência 2025, p.57</p>
                   </div>
                   <FonteInfo fonte={indicadoresVulnerabilidade.violenciaJuventude.fonte} tabela="Atlas da Violência 2025" link={indicadoresVulnerabilidade.violenciaJuventude.link} atualizacao="2025-05-01" />
                 </CardContent>
