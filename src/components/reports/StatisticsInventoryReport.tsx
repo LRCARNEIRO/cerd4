@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileDown, Loader2, Database, BarChart3, Printer } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { toast } from 'sonner';
 import {
