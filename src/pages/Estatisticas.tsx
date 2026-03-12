@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 
 // Componentes de abas
 import { DadosGeraisTab } from '@/components/estatisticas/DadosGeraisTab';
