@@ -83,9 +83,9 @@ export default function Estatisticas() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success" />
               <div>
-                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD)</p>
+                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD + ODS Racial)</p>
                 <p className="text-xs text-muted-foreground">
-                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes)
+                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · inclui {TOTAL_ODS_RACIAL} ODS Racial ✓
                 </p>
               </div>
             </div>
