@@ -64,33 +64,9 @@ const indicadoresSaude: NovoIndicador[] = [
   }
 ];
 
+// edu-1 (analfabetismo) e edu-2 (ensino superior) REMOVIDOS —
+// já existem em StatisticsData.ts (educacaoSerieHistorica)
 const indicadoresEducacao: NovoIndicador[] = [
-  {
-    id: 'edu-1',
-    nome: 'Taxa de analfabetismo por raça/cor',
-    descricao: 'Proporção de pessoas de 15+ anos que não sabem ler/escrever',
-    fonte: 'PNAD Contínua / SIDRA 7125',
-    siglaFonte: 'IBGE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7125',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: negros 8,4% analfabetos → 2024: 6,9%. Brancos: 3,6% → 3,1%. Razão negro/branco: 2,3x → 2,2x. Idosos negros 60+: 21,8% vs brancos 8,1%. Anos 2020-2021 sem coleta (pandemia).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'edu-2',
-    nome: 'Ensino Superior Completo por raça/cor',
-    descricao: 'Percentual de pessoas de 14+ anos com ensino superior completo por cor/raça',
-    fonte: 'PNAD Contínua / SIDRA 7129',
-    siglaFonte: 'IBGE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7129#notas-tabela',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap aumentou de 12,4 p.p. para 13,5 p.p. apesar do avanço absoluto. Anos 2020-2021 sem coleta (pandemia).',
-    prioridade: 'alta'
-  },
   {
     id: 'edu-3',
     nome: 'Distorção idade-série por raça/cor',
