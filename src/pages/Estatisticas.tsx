@@ -93,6 +93,9 @@ export default function Estatisticas() {
           <TabsTrigger value="covid-racial" className="gap-1 bg-destructive/10">
             <HeartPulse className="w-4 h-4" /> COVID
           </TabsTrigger>
+          <TabsTrigger value="grupos-focais" className="gap-1 bg-primary/10">
+            <UsersRound className="w-4 h-4" /> Grupos Focais
+          </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
           </TabsTrigger>
