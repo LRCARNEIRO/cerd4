@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
   FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
-  Landmark, HeartPulse, Search
+  Landmark, HeartPulse
 } from 'lucide-react';
 
 // Componentes de abas
@@ -27,7 +27,7 @@ import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
-import { CrossVerifyPanel } from '@/components/audit/CrossVerifyPanel';
+
 
 
 export default function Estatisticas() {
@@ -115,9 +115,6 @@ export default function Estatisticas() {
           <TabsTrigger value="classe" className="gap-1">
             <Briefcase className="w-4 h-4" /> Classe Social
           </TabsTrigger>
-          <TabsTrigger value="cross-verify" className="gap-1 bg-destructive/10">
-            <Search className="w-4 h-4" /> Auditoria Cruzada
-          </TabsTrigger>
         </TabsList>
 
         {/* Common Core - 77 Tabelas */}
@@ -196,10 +193,6 @@ export default function Estatisticas() {
           <ClasseSocialTab />
         </TabsContent>
 
-        {/* Auditoria Cruzada Triple-Cross */}
-        <TabsContent value="cross-verify">
-          <CrossVerifyPanel />
-        </TabsContent>
 
       </Tabs>
     </DashboardLayout>
