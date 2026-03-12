@@ -3,11 +3,16 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface DesempregoSidra {
   ano: number;
-  trimestre: string;
   branca: number;
   preta: number;
   parda: number;
   negra: number;
+  trimestresUsados: number;
+  detalhe: {
+    branca_trimestres: number[];
+    preta_trimestres: number[];
+    parda_trimestres: number[];
+  };
   fonte: string;
   apiUrl: string;
 }
