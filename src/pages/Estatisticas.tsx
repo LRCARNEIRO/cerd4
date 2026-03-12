@@ -169,6 +169,7 @@ export default function Estatisticas() {
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
+        <TabsContent value="ods-racial"><OdsRacialTab /></TabsContent>
         <TabsContent value="fontes-dados"><FontesDadosTab /></TabsContent>
         <TabsContent value="vulnerabilidades"><VulnerabilidadesTab /></TabsContent>
         <TabsContent value="raca-genero"><RacaGeneroTab /></TabsContent>
