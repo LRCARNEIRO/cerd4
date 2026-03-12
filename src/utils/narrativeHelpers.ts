@@ -77,11 +77,11 @@ const tDesemprego = findTrabalhoIndicador(['desocupação', 'desocupacao']);
 const tInformalidade = findTrabalhoIndicador(['informalidade']);
 
 export const narrativaTrabalho = {
-  /** Razão rendimento mulher negra / homem não negro (%) */
+  /** Razão rendimento mulher negra / homem branco (%) */
   razaoRendaPct: (tRenda?.razaoMulherNegraHomemBranco ?? 0) * 100,
   /** Desemprego mulher negra */
   desempregoMulherNegra: tDesemprego?.mulherNegra ?? 0,
-  /** Desemprego homem não negro */
+  /** Desemprego homem branco */
   desempregoHomemBranco: tDesemprego?.homemBranco ?? 0,
   /** Razão desemprego */
   razaoDesemprego: tDesemprego?.razaoMulherNegraHomemBranco ?? 0,
