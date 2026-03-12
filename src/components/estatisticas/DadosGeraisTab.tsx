@@ -418,78 +418,63 @@ export function DadosGeraisTab() {
             </div>
           </div>
 
-          {/* Tabela comparativa: estático vs SIDRA ao vivo */}
+          {/* Tabela consolidada — reflete os gráficos (API SIDRA quando disponível) */}
           <Table className="mt-6">
             <TableHeader>
               <TableRow>
                 <TableHead>Ano</TableHead>
-                <TableHead className="text-right">Renda Negra {isRendaLive ? '(SIDRA)' : ''}</TableHead>
-                <TableHead className="text-right">Renda Branca {isRendaLive ? '(SIDRA)' : ''}</TableHead>
+                <TableHead className="text-right">Renda Negra</TableHead>
+                <TableHead className="text-right">Renda Branca</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
-                <TableHead className="text-right">Desemp. Negro {isLiveData ? '(SIDRA)' : ''}</TableHead>
-                <TableHead className="text-right">Desemp. Branco {isLiveData ? '(SIDRA)' : ''}</TableHead>
-                {(isLiveData || isRendaLive) && <TableHead className="text-right">Fonte</TableHead>}
+                <TableHead className="text-right">Desemp. Negro</TableHead>
+                <TableHead className="text-right">Desemp. Branco</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {indicadoresSocioeconomicos.map(item => {
-                const sidraRow = desempregoChartData.find(d => d.ano === item.ano);
-                const rendaRow = rendaChartData.find(d => d.ano === item.ano);
+              {(() => {
+                // Merge anos from all sources
+                const anosSet = new Set<number>();
+                rendaChartData.forEach(d => anosSet.add(d.ano));
+                desempregoChartData.forEach(d => anosSet.add(d.ano));
+                indicadoresSocioeconomicos.forEach(d => anosSet.add(d.ano));
+                const anos = [...anosSet].sort((a, b) => a - b);
 
-                const rendaN = isRendaLive && rendaRow ? rendaRow.rendaMediaNegra : item.rendaMediaNegra;
-                const rendaB = isRendaLive && rendaRow ? rendaRow.rendaMediaBranca : item.rendaMediaBranca;
-                const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : item.desempregoNegro;
-                const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : item.desempregoBranco;
+                return anos.map(ano => {
+                  const rendaRow = rendaChartData.find(d => d.ano === ano);
+                  const sidraRow = desempregoChartData.find(d => d.ano === ano);
+                  const staticRow = indicadoresSocioeconomicos.find(d => d.ano === ano);
 
-                const divergeRN = isRendaLive && rendaRow && Math.abs(rendaRow.rendaMediaNegra - item.rendaMediaNegra) > 50;
-                const divergeRB = isRendaLive && rendaRow && Math.abs(rendaRow.rendaMediaBranca - item.rendaMediaBranca) > 50;
-                const divergeN = isLiveData && sidraRow && Math.abs(sidraRow.desempregoNegro - item.desempregoNegro) > 0.5;
-                const divergeB = isLiveData && sidraRow && Math.abs(sidraRow.desempregoBranco - item.desempregoBranco) > 0.5;
+                  const rendaN = isRendaLive && rendaRow ? rendaRow.rendaMediaNegra : staticRow?.rendaMediaNegra;
+                  const rendaB = isRendaLive && rendaRow ? rendaRow.rendaMediaBranca : staticRow?.rendaMediaBranca;
+                  const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : staticRow?.desempregoNegro;
+                  const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : staticRow?.desempregoBranco;
 
-                const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
+                  const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
-                return (
-                  <TableRow key={item.ano}>
-                    <TableCell className="font-medium">{item.ano}</TableCell>
-                    <TableCell className={`text-right ${divergeRN ? 'text-amber-600 font-bold' : ''}`}>
-                      {formatCurrency(rendaN)}
-                      {divergeRN && <span className="text-[10px] ml-1" title={`Estático: ${formatCurrency(item.rendaMediaNegra)}`}>⚠️</span>}
-                    </TableCell>
-                    <TableCell className={`text-right ${divergeRB ? 'text-amber-600 font-bold' : ''}`}>
-                      {formatCurrency(rendaB)}
-                      {divergeRB && <span className="text-[10px] ml-1" title={`Estático: ${formatCurrency(item.rendaMediaBranca)}`}>⚠️</span>}
-                    </TableCell>
-                    <TableCell className="text-right text-destructive font-medium">
-                      {razao}x
-                    </TableCell>
-                    <TableCell className={`text-right ${divergeN ? 'text-amber-600 font-bold' : ''}`}>
-                      {desN}%
-                      {divergeN && <span className="text-[10px] ml-1" title={`Estático: ${item.desempregoNegro}%`}>⚠️</span>}
-                    </TableCell>
-                    <TableCell className={`text-right ${divergeB ? 'text-amber-600 font-bold' : ''}`}>
-                      {desB}%
-                      {divergeB && <span className="text-[10px] ml-1" title={`Estático: ${item.desempregoBranco}%`}>⚠️</span>}
-                    </TableCell>
-                    {(isLiveData || isRendaLive) && (
-                      <TableCell className="text-right text-[10px] text-muted-foreground">
-                        {(rendaRow as any)?.fonte || (sidraRow as any)?.fonte || '—'}
+                  return (
+                    <TableRow key={ano}>
+                      <TableCell className="font-medium">{ano}</TableCell>
+                      <TableCell className="text-right">
+                        {rendaN != null ? formatCurrency(rendaN) : '—'}
                       </TableCell>
-                    )}
-                  </TableRow>
-                );
-              })}
+                      <TableCell className="text-right">
+                        {rendaB != null ? formatCurrency(rendaB) : '—'}
+                      </TableCell>
+                      <TableCell className="text-right text-destructive font-medium">
+                        {razao !== '—' ? `${razao}x` : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {desN != null ? `${desN}%` : '—'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {desB != null ? `${desB}%` : '—'}
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })()}
             </TableBody>
           </Table>
-
-          {isLiveData && (
-            <div className="mt-3 p-3 rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
-              <p className="text-xs flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3 text-amber-600" />
-                <strong>Valores com ⚠️:</strong> divergência &gt;0,5 p.p. entre o sistema estático e a API SIDRA. 
-                Os dados SIDRA referem-se ao <strong>Q4 (4º trimestre)</strong> de cada ano, não à média anual.
-              </p>
-            </div>
-          )}
 
           <div className="text-xs text-muted-foreground mt-4 space-y-1">
             <p className="flex items-center gap-1">
