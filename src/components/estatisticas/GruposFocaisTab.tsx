@@ -974,7 +974,7 @@ export function GruposFocaisTab() {
                     </p>
                     <p className="flex items-center gap-1 text-destructive">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior</span>
+                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior (2021)</span>
                     </p>
                   </div>
                   <FonteInfo fonte={indicadoresVulnerabilidade.ivjn.fonte} tabela="Atlas da Violência 2025" link={indicadoresVulnerabilidade.ivjn.link} atualizacao="2025-05-01" />
