@@ -666,7 +666,7 @@ export function StatisticsInventoryReport() {
   const handleFullReport = (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
     try {
-      const html = generateFullStatisticsHTML(indicadoresBD || []);
+      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || []);
       if (format === 'docx') {
         downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
