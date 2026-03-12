@@ -931,7 +931,7 @@ export function JuventudeTab() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Jovens Brancos</span>
+                        <span>Jovens Não Negros</span>
                         <span className="font-bold">{item.referencia}</span>
                       </div>
                       <div className="h-2 bg-primary/20 rounded-full">
