@@ -2147,7 +2147,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       rows: [
         ['% titularidade feminina (total)', '82,5%', '84,2%', '85,1%'],
         ['% titularidade mulher negra', '56,8%', '58,5%', '60,2%'],
-        ['% titularidade mulher não negra', '23,2%', '23,5%', '22,8%'],
+        ['% titularidade mulher branca', '23,2%', '23,5%', '22,8%'],
         ['UH entregues (Faixa 1, mil)', '285', '142', '380']
       ]
     },
