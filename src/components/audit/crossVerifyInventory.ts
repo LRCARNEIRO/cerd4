@@ -140,7 +140,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-11',
-    indicador: 'Nem-nem jovens brancos (%)',
+    indicador: 'Nem-nem jovens não negros (%)',
     valor_declarado: 14.5,
     fonte_declarada: 'PNAD Contínua 2024 — IBGE/DIEESE',
     tipo_fonte: 'web',
