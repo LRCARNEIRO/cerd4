@@ -342,7 +342,18 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <CardTitle className="text-base">{indicador.nome}</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              {indicador.nome}
+              {indicador.auditado_manualmente ? (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
+                  <CheckCircle2 className="w-3 h-3" /> Auditado
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-chart-4/10 text-chart-4 border-chart-4/30">
+                  <CircleDashed className="w-3 h-3" /> Pendente
+                </Badge>
+              )}
+            </CardTitle>
             <CardDescription className="text-sm">
               {indicador.categoria}{indicador.subcategoria ? ` • ${indicador.subcategoria}` : ''}
               {' • '}<span className="font-medium">{indicador.fonte}</span>
