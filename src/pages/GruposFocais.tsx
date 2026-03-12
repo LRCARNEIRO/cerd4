@@ -264,10 +264,14 @@ const indicadoresVulnerabilidade = {
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   // Violência letal na juventude 15-29 anos
+  // AUDITORIA 12/03/2026: percentualVitimas=47.8 SIM (Atlas 2025, p.26)
+  // percentualNegrosHomens=79 REMOVIDO — informação não consta no documento (auditoria Eduardo)
+  // Substituído por: feminicídio mulheres negras 68,2% (Atlas 2025, p.57)
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
     percentualVitimas: 47.8,
-    percentualNegrosHomens: 79,
+    // REMOVIDO: percentualNegrosHomens — dado não verificável no Atlas 2025
+    feminicidioNegras: 68.2, // Atlas 2025, p.57: "mulheres negras representaram 68,2% do total de homicídios femininos"
     ano: 2023,
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
