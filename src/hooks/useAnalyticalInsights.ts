@@ -254,12 +254,12 @@ function gerarFiosCondutores(
       id: 'violencia-estrutural',
       titulo: 'Violência Racial Estrutural Persistente',
       tipo: 'lacuna_critica',
-      argumento: `Das ${lacunasViolencia.length} observações de segurança pública, ${naoCumpridas} permanecem não cumpridas. As evidências coletadas demonstram que a população negra segue sendo alvo desproporcional da violência letal do Estado e da criminalidade, com dados que pouco se alteram entre 2018 e 2024.`,
+      argumento: `Das ${lacunasViolencia.length} observações de segurança pública, ${naoCumpridas} permanecem não cumpridas. As evidências coletadas demonstram que a população negra segue sendo alvo desproporcional da violência letal do Estado e da criminalidade.`,
       evidencias: evidViolencia.slice(0, 8),
       eixos: ['seguranca_publica'],
       grupos: [...new Set(lacunasViolencia.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `Em 2018, 75,7% das vítimas de homicídio eram negras. Em 2024 (FBSP 2025), são 77% — aumento da desproporção apesar da queda nos números absolutos.`
+      comparativo2018: `Os dados do 19º Anuário FBSP 2025 e Atlas da Violência 2025 confirmam a persistência da desproporção racial na violência letal. Consultar StatisticsData.ts (segurancaPublica / atlasViolencia2025) para séries auditadas.`
     });
   }
 
@@ -282,12 +282,12 @@ function gerarFiosCondutores(
       id: 'territorios-tradicionais',
       titulo: 'Territórios Tradicionais: Retrocesso e Retomada',
       tipo: 'retrocesso',
-      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações, com o orçamento do INCRA para quilombolas caindo 90%. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
+      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
       evidencias: evidTerr.slice(0, 8),
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia total. 2023-2024: retomada com apenas 7% dos territórios quilombolas titulados.`
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada com 245 territórios quilombolas titulados (Palmares/INCRA 2025) de ~2.600 certificados (~9,4%). Dados orçamentários detalhados disponíveis no módulo Orçamento.`
     });
   }
 
@@ -316,18 +316,17 @@ function gerarFiosCondutores(
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (68% dos óbitos maternos são de mulheres negras — RASEAM 2025/SIM 2022; razão pretas/brancas: 2,3× — IEPS Jul/2025), informalidade laboral (51,2% para mulher negra 18-29 — PNAD 2024) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (67,1% dos óbitos são de mulheres negras — DataSUS/SIM 2022; razão pretas/brancas: 2,3× — IEPS Jul/2025) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
       evidencias: [
         { texto: 'Feminicídio: 63,6% das vítimas são mulheres negras (2024)', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
         { texto: 'Violência doméstica: 59,8% vítimas negras', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: 'Mortalidade materna: 68% dos óbitos são de mulheres negras; razão pretas/brancas: 2,3× (108,6 vs 46,9 por 100 mil NV)', fonte: 'RASEAM 2025 (SIM 2022) + IEPS Jul/2025', tipo: 'quantitativa' as const },
-        { texto: 'Informalidade mulher negra 18-29: 51,2%', fonte: 'PNAD Contínua 2024', tipo: 'quantitativa' as const },
-        ...evidMulheres.slice(0, 4),
+        { texto: 'Mortalidade materna: 67,1% dos óbitos são de mulheres negras; razão pretas/brancas: 2,3× (108,6 vs 46,9 por 100 mil NV)', fonte: 'DataSUS/SIM 2022 + Boletim IEPS nº 7 Jul/2025', tipo: 'quantitativa' as const },
+        ...evidMulheres.slice(0, 5),
       ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna: 68% dos óbitos são de negras (RASEAM 2025/SIM 2022); razão pretas/brancas: 2,3× (IEPS Jul/2025, série 2010-2023). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
+      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna: 67,1% dos óbitos são de negras (DataSUS/SIM 2022); razão pretas/brancas: 2,3× (Boletim IEPS nº 7, Jul/2025, série 2010-2023). Estupro: 54,2% das vítimas são mulheres negras (dado 2024).`
     });
   }
 
@@ -417,13 +416,11 @@ function gerarFiosCondutores(
     id: 'adm-publica-munic-estadic',
     titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
     tipo: 'lacuna_critica',
-    argumento: `A MUNIC/ESTADIC 2024 (IBGE) revela que apenas 2 estados possuem Fundos de Igualdade Racial ativos, e a maioria dos municípios carece de órgão dedicado ou conselho municipal de igualdade racial. A pesquisa mostra lacunas graves na institucionalização de políticas raciais em nível subnacional — especialmente para povos ciganos e indígenas, que praticamente não possuem estrutura específica em nenhuma esfera. Dos 5.570 municípios, menos de 5% possuem legislação municipal específica sobre igualdade racial.`,
+    argumento: `A MUNIC/ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, e a maioria dos municípios carece de órgão dedicado ou conselho municipal de igualdade racial. A pesquisa mostra lacunas graves na institucionalização de políticas raciais em nível subnacional — especialmente para povos ciganos e indígenas, que praticamente não possuem estrutura específica em nenhuma esfera.`,
     evidencias: [
-      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Menos de 5% dos municípios com legislação racial específica', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Perfil de gestores municipais: maioria brancos e homens', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
+      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa' },
+      { texto: 'Perfil de gestores municipais: maioria mulheres brancas', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
       { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'MUNIC/ESTADIC 2024', tipo: 'qualitativa' },
-      { texto: 'Conselhos de igualdade racial presentes em ~8% dos municípios', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
     ],
     eixos: ['politicas_institucionais', 'dados_estatisticas'],
     grupos: ['geral', 'ciganos', 'indigenas'],
@@ -436,19 +433,18 @@ function gerarFiosCondutores(
     id: 'covid-desigualdade-racial',
     titulo: 'COVID-19: Pandemia Expôs e Aprofundou a Desigualdade Racial',
     tipo: 'retrocesso',
-    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: excesso de mortalidade de +57% entre negros vs +38% entre brancos; letalidade hospitalar indígena de 62%; mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
+    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: negros representaram 57% dos óbitos por COVID apesar de serem 56% da população (DataSUS/SIM); mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
     evidencias: [
-      { texto: 'Excesso de mortalidade COVID negros: +57% vs brancos +38%', fonte: 'Fiocruz / Boletim Observatório COVID-19', tipo: 'quantitativa' },
-      { texto: 'Letalidade hospitalar indígena por COVID: 62%', fonte: 'DataSUS / SESAI', tipo: 'quantitativa' },
-      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
-      { texto: 'Insegurança alimentar grave: 18% lares negros vs 8% brancos', fonte: 'POF/IBGE 2022', tipo: 'quantitativa' },
+      { texto: 'Negros: 57% dos óbitos COVID (sobre-representação em relação à proporção populacional de 56%)', fonte: 'DataSUS/SIM — Painel COVID-19', tipo: 'quantitativa' },
+      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico (2020-2021)', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
+      { texto: 'Insegurança alimentar grave: 20,6% lares negros vs 10,6% brancos', fonte: 'II VIGISAN 2021-2022 (Rede PENSSAN)', tipo: 'quantitativa' },
       { texto: 'Mulheres negras: últimas a recuperar emprego pós-pandemia', fonte: 'PNAD Contínua 2023', tipo: 'quantitativa' },
-      { texto: 'Acesso a UTI: negros com 30% menos chance de internação em UTI', fonte: 'Fiocruz', tipo: 'quantitativa' },
+      { texto: 'Negros com +16% de chance de óbito em UTI por COVID', fonte: 'Fiocruz / Observatório COVID-19', tipo: 'quantitativa' },
     ],
     eixos: ['saude', 'trabalho_renda', 'dados_estatisticas'],
     grupos: ['negros', 'indigenas', 'mulheres_negras', 'idosos_negros'],
     relevancia: 'alta',
-    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros e os efeitos de longo prazo (Long COVID, perda educacional) afetam desproporcionalmente crianças e jovens negros.`
+    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros.`
   });
 
   // FIO 10: Assimetria ICERD × Orçamento — cruzamento aderência × investimento por artigo
@@ -1096,7 +1092,15 @@ function construirArgumento(
   }
   
   if (evidencias.length > 0) {
-    arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam que, apesar das ações, as disparidades estruturais persistem.`;
+    const taxaCumprimento = status.cumpridas + status.parciais;
+    const taxaProblematica = status.naoCumpridas + status.retrocessos;
+    if (taxaCumprimento > taxaProblematica) {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) indicam avanços parciais, embora lacunas significativas permaneçam em aberto.`;
+    } else if (status.retrocessos > 0) {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam retrocessos que exigem atenção emergencial no IV Relatório.`;
+    } else {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam que a maioria das recomendações permanece sem cumprimento adequado.`;
+    }
   }
   
   return arg;
