@@ -569,6 +569,7 @@ export function IndicadoresDbTab() {
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
 
   const typedIndicadores = (indicadores || []) as IndicadorData[];
 
