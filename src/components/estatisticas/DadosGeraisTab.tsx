@@ -25,7 +25,13 @@ export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
   const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
 
-  // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
+  // ═══════════════════════════════════════════════════════════════
+  // REGRA: Dados coletados via API SIDRA são a Fonte Única de Verdade.
+  // Uma vez obtidos (e auditados manualmente), são válidos independente
+  // do status online/offline da API. O React Query mantém cache infinito.
+  // ═══════════════════════════════════════════════════════════════
+
+  // Desemprego: dados da API (cache persistente)
   const desempregoChartData = useMemo(() => {
     if (sidraData?.dados?.length) {
       return sidraData.dados.map(d => ({
@@ -35,22 +41,12 @@ export function DadosGeraisTab() {
         desempregoPreta: d.preta,
         desempregoParda: d.parda,
         fonte: d.fonte,
-        live: true,
       }));
     }
-    // Fallback: dados estáticos
-    return indicadoresSocioeconomicos.map(d => ({
-      ano: d.ano,
-      desempregoNegro: d.desempregoNegro,
-      desempregoBranco: d.desempregoBranco,
-      fonte: d.fonte,
-      live: false,
-    }));
+    return [];
   }, [sidraData]);
 
-  const isLiveData = desempregoChartData[0]?.live === true;
-
-  // Renda: API SIDRA em tempo real com fallback para estáticos
+  // Renda: dados da API (cache persistente)
   const rendaChartData = useMemo(() => {
     if (sidraRendaData?.dados?.length) {
       return sidraRendaData.dados.map(d => ({
@@ -60,18 +56,13 @@ export function DadosGeraisTab() {
         rendaPreta: d.preta,
         rendaParda: d.parda,
         fonte: d.fonte,
-        live: true,
       }));
     }
-    return indicadoresSocioeconomicos.map(d => ({
-      ano: d.ano,
-      rendaMediaNegra: d.rendaMediaNegra,
-      rendaMediaBranca: d.rendaMediaBranca,
-      live: false,
-    }));
+    return [];
   }, [sidraRendaData]);
 
-  const isRendaLive = rendaChartData[0]?.live === true;
+  const hasRendaData = rendaChartData.length > 0;
+  const hasDesempregoData = desempregoChartData.length > 0;
 
 
   const formatCurrency = (value: number) => {
@@ -274,11 +265,11 @@ export function DadosGeraisTab() {
                 <h4 className="text-sm font-medium">Renda Média Mensal (R$)</h4>
                 {rendaLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
-                ) : isRendaLive ? (
-                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : hasRendaData ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> SIDRA — Dados auditados</Badge>
                 ) : (
                   <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchRenda()}>
-                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                    <WifiOff className="w-3 h-3" /> Sem dados — clique p/ buscar
                   </Badge>
                 )}
               </div>
@@ -299,17 +290,17 @@ export function DadosGeraisTab() {
                     <Legend />
                     <Line type="monotone" dataKey="rendaMediaNegra" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="rendaMediaBranca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    {isRendaLive ? <Line type="monotone" dataKey="rendaPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
-                    {isRendaLive ? <Line type="monotone" dataKey="rendaParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasRendaData ? <Line type="monotone" dataKey="rendaPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasRendaData ? <Line type="monotone" dataKey="rendaParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              {isRendaLive && sidraRendaData?.nota_metodologica && (
+              {hasRendaData && sidraRendaData?.nota_metodologica && (
                 <p className="text-[10px] text-muted-foreground mt-1 italic">
                   ℹ️ {sidraRendaData.nota_metodologica}
                 </p>
               )}
-              {isRendaLive && sidraRendaData?.dados && (() => {
+              {hasRendaData && sidraRendaData?.dados && (() => {
                 const parciais = sidraRendaData.dados.filter(d => d.trimestresUsados < 4);
                 if (parciais.length === 0) return null;
                 return (
@@ -334,11 +325,11 @@ export function DadosGeraisTab() {
                 <h4 className="text-sm font-medium">Taxa de Desemprego (%)</h4>
                 {sidraLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
-                ) : isLiveData ? (
-                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : hasDesempregoData ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> SIDRA — Dados auditados</Badge>
                 ) : (
                   <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchSidra()}>
-                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                    <WifiOff className="w-3 h-3" /> Sem dados — clique p/ buscar
                   </Badge>
                 )}
               </div>
@@ -359,12 +350,12 @@ export function DadosGeraisTab() {
                     <Legend />
                     <Line type="monotone" dataKey="desempregoNegro" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="desempregoBranco" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    {isLiveData ? <Line type="monotone" dataKey="desempregoPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
-                    {isLiveData ? <Line type="monotone" dataKey="desempregoParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasDesempregoData ? <Line type="monotone" dataKey="desempregoPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {hasDesempregoData ? <Line type="monotone" dataKey="desempregoParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              {isLiveData && sidraData?.nota_metodologica && (
+              {hasDesempregoData && sidraData?.nota_metodologica && (
                 <p className="text-[10px] text-muted-foreground mt-1 italic flex items-center gap-1">
                   <Info className="w-3 h-3" /> {sidraData.nota_metodologica}
                 </p>
@@ -432,28 +423,20 @@ export function DadosGeraisTab() {
             </TableHeader>
             <TableBody>
               {(() => {
-                // When API is live, use only years present in API data (no static fallback for missing years)
+                // Dados auditados: usar apenas anos presentes nos dados da API
                 const anosSet = new Set<number>();
-                if (isRendaLive) {
-                  rendaChartData.forEach(d => anosSet.add(d.ano));
-                }
-                if (isLiveData) {
-                  desempregoChartData.forEach(d => anosSet.add(d.ano));
-                }
-                // If neither API is live, fall back to static
-                if (!isRendaLive && !isLiveData) {
-                  indicadoresSocioeconomicos.forEach(d => anosSet.add(d.ano));
-                }
+                rendaChartData.forEach(d => anosSet.add(d.ano));
+                desempregoChartData.forEach(d => anosSet.add(d.ano));
                 const anos = [...anosSet].sort((a, b) => a - b);
 
                 return anos.map(ano => {
                   const rendaRow = rendaChartData.find(d => d.ano === ano);
                   const sidraRow = desempregoChartData.find(d => d.ano === ano);
 
-                  const rendaN = isRendaLive ? (rendaRow?.rendaMediaNegra ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaNegra ?? null;
-                  const rendaB = isRendaLive ? (rendaRow?.rendaMediaBranca ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaBranca ?? null;
-                  const desN = isLiveData ? (sidraRow?.desempregoNegro ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoNegro ?? null;
-                  const desB = isLiveData ? (sidraRow?.desempregoBranco ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoBranco ?? null;
+                  const rendaN = rendaRow?.rendaMediaNegra ?? null;
+                  const rendaB = rendaRow?.rendaMediaBranca ?? null;
+                  const desN = sidraRow?.desempregoNegro ?? null;
+                  const desB = sidraRow?.desempregoBranco ?? null;
 
                   const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
