@@ -1140,7 +1140,7 @@ export default function GruposFocais() {
                     </p>
                     <p className="flex items-center gap-1 text-destructive">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior</span>
+                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior (2021)</span>
                     </p>
                   </div>
                   <FonteInfo
