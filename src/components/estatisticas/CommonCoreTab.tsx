@@ -2118,7 +2118,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
     periodoAtualizado: '2023-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Faixa MCMV', '% Negros', '% Não Negros', '% Outros', 'Total famílias (mil)'],
+      headers: ['Faixa MCMV', '% Negros', '% Brancos', '% Outros', 'Total famílias (mil)'],
       rows: [
         ['Faixa 1 (até R$ 2.640)', '72,4%', '24,8%', '2,8%', '4.250'],
         ['Faixa 2 (R$ 2.640-4.400)', '58,3%', '38,2%', '3,5%', '1.850'],
