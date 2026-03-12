@@ -149,7 +149,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Letalidade policial negra (%)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.letalidadePolicial })),
+      dados: segurancaPublica.filter(s => s.letalidadePolicial != null).map(s => ({ ano: s.ano, valor: s.letalidadePolicial! })),
       unidade: '%',
       fonte: 'FBSP — perfil predominante: jovem negro',
       interpretacao: 'menor_melhor',
