@@ -295,42 +295,45 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   // ═══════════════════════════════════════════════
   // TIPO A: PDF — Atlas da Violência (Firecrawl)
   // ═══════════════════════════════════════════════
+  // AUDITORIA MANUAL 12/03/2026 — Todos os itens abaixo verificados por Eduardo
   {
     id: 'juv-04',
     indicador: 'Vítimas 15-29 anos (% do total de homicídios)',
     valor_declarado: 47.8,
-    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP), p.26',
     tipo_fonte: 'pdf',
     url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/05/atlas-violencia-2025.pdf',
-    pagina_pdf: 'p. 79',
+    pagina_pdf: 'p. 26',
     secao: 'Juventude',
   },
   {
     id: 'juv-05',
-    indicador: 'IVJ-N risco relativo jovens negros vs não negros',
+    indicador: 'IVJ-N risco relativo jovens negros vs não negros (ensino fundamental incompleto)',
     valor_declarado: 2.0,
-    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP), p.74 (nota de rodapé)',
     tipo_fonte: 'pdf',
     url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/05/atlas-violencia-2025.pdf',
-    pagina_pdf: 'capítulo IVJ-N',
+    pagina_pdf: 'p. 74',
     secao: 'Juventude',
   },
   {
     id: 'juv-06',
-    indicador: 'IVJ-N risco jovens negros c/ ensino superior',
+    indicador: 'IVJ-N risco jovens negros c/ ensino superior (2021)',
     valor_declarado: 3.0,
-    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP), p.74',
     tipo_fonte: 'pdf',
     url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/05/atlas-violencia-2025.pdf',
+    pagina_pdf: 'p. 74',
     secao: 'Juventude',
   },
   {
     id: 'juv-07',
     indicador: 'IVJ-N risco relativo 2017',
     valor_declarado: 1.9,
-    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP), p.74',
     tipo_fonte: 'pdf',
     url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/05/atlas-violencia-2025.pdf',
+    pagina_pdf: 'p. 74',
     secao: 'Juventude',
   },
 
