@@ -864,7 +864,7 @@ export function JuventudeTab() {
               </p>
               <p className="flex items-center gap-1 text-destructive">
                 <AlertTriangle className="w-3 h-3" />
-                Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior
+                Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior (2021)
               </p>
             </div>
           </CardContent>
