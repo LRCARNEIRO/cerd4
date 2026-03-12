@@ -192,9 +192,13 @@ export default function Estatisticas() {
           <JuventudeTab />
         </TabsContent>
 
-        {/* Classe Social */}
         <TabsContent value="classe">
           <ClasseSocialTab />
+        </TabsContent>
+
+        {/* Auditoria Cruzada Triple-Cross */}
+        <TabsContent value="cross-verify">
+          <CrossVerifyPanel />
         </TabsContent>
 
       </Tabs>
