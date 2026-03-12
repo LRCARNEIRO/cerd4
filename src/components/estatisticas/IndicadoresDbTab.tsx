@@ -268,7 +268,7 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
           <p className="text-xs text-muted-foreground leading-relaxed">
             {(() => {
               const interpretations = groups.map(group => {
-                const vals = chartData.filter(d => d[group] !== undefined).map(d => d[group] as number);
+                const vals = chartData.filter(d => d[group] != null).map(d => d[group] as number);
                 if (vals.length < 2) return null;
                 const first = vals[0];
                 const last = vals[vals.length - 1];
@@ -519,7 +519,7 @@ function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
         // Interpretation
         if (years.length >= 2) {
           const interps = groups.map(group => {
-            const vals = chartData.filter(d => d[group] !== undefined).map(d => d[group] as number);
+            const vals = chartData.filter(d => d[group] != null).map(d => d[group] as number);
             if (vals.length < 2) return null;
             const first = vals[0], last = vals[vals.length - 1];
             const diff = last - first;
