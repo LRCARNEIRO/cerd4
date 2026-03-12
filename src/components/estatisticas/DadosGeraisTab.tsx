@@ -432,22 +432,28 @@ export function DadosGeraisTab() {
             </TableHeader>
             <TableBody>
               {(() => {
-                // Merge anos from all sources
+                // When API is live, use only years present in API data (no static fallback for missing years)
                 const anosSet = new Set<number>();
-                rendaChartData.forEach(d => anosSet.add(d.ano));
-                desempregoChartData.forEach(d => anosSet.add(d.ano));
-                indicadoresSocioeconomicos.forEach(d => anosSet.add(d.ano));
+                if (isRendaLive) {
+                  rendaChartData.forEach(d => anosSet.add(d.ano));
+                }
+                if (isLiveData) {
+                  desempregoChartData.forEach(d => anosSet.add(d.ano));
+                }
+                // If neither API is live, fall back to static
+                if (!isRendaLive && !isLiveData) {
+                  indicadoresSocioeconomicos.forEach(d => anosSet.add(d.ano));
+                }
                 const anos = [...anosSet].sort((a, b) => a - b);
 
                 return anos.map(ano => {
                   const rendaRow = rendaChartData.find(d => d.ano === ano);
                   const sidraRow = desempregoChartData.find(d => d.ano === ano);
-                  const staticRow = indicadoresSocioeconomicos.find(d => d.ano === ano);
 
-                  const rendaN = isRendaLive && rendaRow ? rendaRow.rendaMediaNegra : staticRow?.rendaMediaNegra;
-                  const rendaB = isRendaLive && rendaRow ? rendaRow.rendaMediaBranca : staticRow?.rendaMediaBranca;
-                  const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : staticRow?.desempregoNegro;
-                  const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : staticRow?.desempregoBranco;
+                  const rendaN = isRendaLive ? (rendaRow?.rendaMediaNegra ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaNegra ?? null;
+                  const rendaB = isRendaLive ? (rendaRow?.rendaMediaBranca ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaBranca ?? null;
+                  const desN = isLiveData ? (sidraRow?.desempregoNegro ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoNegro ?? null;
+                  const desB = isLiveData ? (sidraRow?.desempregoBranco ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoBranco ?? null;
 
                   const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
