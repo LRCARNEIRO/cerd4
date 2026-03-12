@@ -362,7 +362,7 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Juventude Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | ONU: §32-§36</div>
 <table>
   <tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr>
-  ${juventudeNegra.map(j => '<tr>' +
+  ${juventudeNegraBD.map((j: any) => '<tr>' +
     '<td>' + j.indicador + '</td>' +
     '<td style="font-weight:600;color:#991b1b;">' + j.valor + '</td>' +
     '<td>' + j.referencia + '</td>' +
