@@ -72,7 +72,7 @@ export function RacaGeneroTab() {
                   />
                   <Legend />
                   <Bar dataKey="mulherNegra" name="Mulher Negra" fill="hsl(var(--destructive))" stackId="a" />
-                  <Bar dataKey="mulherBranca" name="Mulher Branca" fill="hsl(var(--chart-1))" stackId="a" />
+                  <Bar dataKey="mulherBranca" name="Mulher Não Negra" fill="hsl(var(--chart-1))" stackId="a" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
