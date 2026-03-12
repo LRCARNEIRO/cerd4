@@ -131,7 +131,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Homicídio negro (por 100 mil)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro })),
+      dados: segurancaPublica.filter(s => s.homicidioNegro != null).map(s => ({ ano: s.ano, valor: s.homicidioNegro! })),
       unidade: 'por 100 mil',
       fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
@@ -141,7 +141,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Vítimas negras de homicídio (%)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras })),
+      dados: segurancaPublica.filter(s => s.percentualVitimasNegras != null).map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras! })),
       unidade: '%',
       fonte: 'FBSP — concentração na faixa 15-29',
       interpretacao: 'menor_melhor',
