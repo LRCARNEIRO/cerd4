@@ -198,7 +198,7 @@ export function CovidRacialSection() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Excesso de Mortalidade Negra (2020)</p>
             <p className="text-2xl font-bold text-destructive">+57%</p>
-            <p className="text-xs text-muted-foreground">vs brancos (causas naturais)</p>
+            <p className="text-xs text-muted-foreground">vs não negros (causas naturais)</p>
             <AuditFooter fontes={FONTE_RACA_SAUDE} compact />
           </CardContent>
         </Card>
