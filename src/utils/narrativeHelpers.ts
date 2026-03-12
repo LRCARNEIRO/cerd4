@@ -242,10 +242,10 @@ export const NARRATIVE_DATA_MAP = [
   { label: 'Feminicídio negras 2024', narrativeValue: narrativaViolencia.feminicidioNegrasPct, sourceValue: feminicidioData.mulherNegra, source: 'violenciaInterseccional[Feminicídio].mulherNegra' },
   { label: 'Feminicídio negras 2018', narrativeValue: narrativaViolencia.feminicidio2018Pct, sourceValue: feminicidio2018.percentualNegras, source: 'feminicidioSerie[2018].percentualNegras' },
   // Interseccional — Trabalho
-  { label: 'Razão renda MN/HB', narrativeValue: narrativaTrabalho.razaoRendaPct, sourceValue: tRenda.razaoMulherNegraHomemBranco * 100, source: 'trabalhoRacaGenero[Renda].razaoMulherNegraHomemBranco × 100' },
-  { label: 'Desemprego MN', narrativeValue: narrativaTrabalho.desempregoMulherNegra, sourceValue: tDesemprego.mulherNegra, source: 'trabalhoRacaGenero[Desocupação].mulherNegra' },
-  { label: 'Desemprego HB', narrativeValue: narrativaTrabalho.desempregoHomemBranco, sourceValue: tDesemprego.homemBranco, source: 'trabalhoRacaGenero[Desocupação].homemBranco' },
-  { label: 'Informalidade MN', narrativeValue: narrativaTrabalho.informalidadeMulherNegra, sourceValue: tInformalidade.mulherNegra, source: 'trabalhoRacaGenero[Informalidade].mulherNegra' },
+  { label: 'Razão renda MN/HB', narrativeValue: narrativaTrabalho.razaoRendaPct, sourceValue: (tRenda?.razaoMulherNegraHomemBranco ?? 0) * 100, source: 'trabalhoRacaGenero[Renda].razaoMulherNegraHomemBranco × 100' },
+  { label: 'Desemprego MN', narrativeValue: narrativaTrabalho.desempregoMulherNegra, sourceValue: tDesemprego?.mulherNegra ?? 0, source: 'trabalhoRacaGenero[Desocupação].mulherNegra' },
+  { label: 'Desemprego HB', narrativeValue: narrativaTrabalho.desempregoHomemBranco, sourceValue: tDesemprego?.homemBranco ?? 0, source: 'trabalhoRacaGenero[Desocupação].homemBranco' },
+  { label: 'Informalidade MN', narrativeValue: narrativaTrabalho.informalidadeMulherNegra, sourceValue: tInformalidade?.mulherNegra ?? 0, source: 'trabalhoRacaGenero[Informalidade].mulherNegra' },
   // Interseccional — Chefia Familiar
   { label: 'Chefia negras %', narrativeValue: narrativaChefia.percentualNegras, sourceValue: chefiaFamiliarRacaGenero.percentualNegras, source: 'chefiaFamiliarRacaGenero.percentualNegras' },
   { label: 'CadÚnico negras %', narrativeValue: narrativaChefia.cadUnicoNegras, sourceValue: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras, source: 'chefiaFamiliarRacaGenero.cadUnicoMulheresNegras' },
