@@ -309,6 +309,18 @@ export function DadosGeraisTab() {
                   ℹ️ {sidraRendaData.nota_metodologica}
                 </p>
               )}
+              {isRendaLive && sidraRendaData?.dados && (() => {
+                const parciais = sidraRendaData.dados.filter(d => d.trimestresUsados < 4);
+                if (parciais.length === 0) return null;
+                return (
+                  <div className="mt-2 p-2 rounded border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700">
+                    <p className="text-[10px] text-amber-800 dark:text-amber-300 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3 shrink-0" />
+                      <strong>Ressalva:</strong> {parciais.map(d => `${d.ano} (${d.trimestresUsados}/4 trim.)`).join(', ')} — média calculada com dados parciais. Valores podem divergir da média anual consolidada.
+                    </p>
+                  </div>
+                );
+              })()}
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
                   SIDRA Tabela 6405 — Rendimento médio por cor/raça
