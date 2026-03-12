@@ -381,26 +381,39 @@ export function DesigualdadeEvolucaoChart() {
 
 // ============== VIOLÊNCIA INTERSECCIONAL ==============
 export function ViolenciaInterseccionalChart() {
+  // Filtrar apenas dados percentuais para o gráfico de barras
+  const dadosPercentuais = violenciaInterseccional.filter(v => !(v as any).unidadeAbsoluta);
+  const dadosAbsolutos = violenciaInterseccional.filter(v => (v as any).unidadeAbsoluta);
+
   return (
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm">Violência Interseccional: Mulheres Negras</CardTitle>
-        <CardDescription className="text-xs">Fonte: 19º Anuário FBSP 2025 (dados 2024)</CardDescription>
+        <CardDescription className="text-xs">Fonte: 19º Anuário FBSP 2025 / DataSUS SINAN (dados 2024)</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-48">
+        <div className="h-36">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={violenciaInterseccional} layout="vertical" margin={{ top: 5, right: 10, left: 80, bottom: 0 }}>
+            <BarChart data={dadosPercentuais} layout="vertical" margin={{ top: 5, right: 10, left: 80, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis type="number" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} domain={[0, 100]} />
               <YAxis type="category" dataKey="tipo" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => `${v}%`} />
               <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Bar dataKey="mulherNegra" name="Mulher negra" fill="hsl(var(--destructive))" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="mulherBranca" name="Mulher branca" fill="hsl(var(--muted-foreground))" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="mulherBranca" name="Mulher não negra" fill="hsl(var(--muted-foreground))" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
+        {dadosAbsolutos.length > 0 && (
+          <div className="mt-2 p-2 bg-muted/30 rounded text-xs text-muted-foreground">
+            {dadosAbsolutos.map(d => (
+              <p key={d.tipo}>
+                <strong>{d.tipo}:</strong> {d.mulherNegra.toLocaleString('pt-BR')} notificações (negras) vs {d.mulherBranca.toLocaleString('pt-BR')} (não negras) — {d.fonte}
+              </p>
+            ))}
+          </div>
+        )}
         <AuditSourceBlock sources={SOURCES.violenciaInterseccional} />
       </CardContent>
     </Card>

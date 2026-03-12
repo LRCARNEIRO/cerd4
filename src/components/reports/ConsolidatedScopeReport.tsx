@@ -502,8 +502,11 @@ function generateConsolidatedHTML(data: {
 
   <h4>Violência Interseccional (Raça × Gênero)</h4>
   <table>
-    <tr><th>Tipo de Violência</th><th>Mulher Negra (%)</th><th>Mulher Branca (%)</th><th>Fonte</th></tr>
-    ${violenciaInterseccional.map(r => `<tr><td>${r.tipo}</td><td>${r.mulherNegra}%</td><td>${r.mulherBranca}%</td><td>${r.fonte}</td></tr>`).join('')}
+    <tr><th>Tipo de Violência</th><th>Mulher Negra</th><th>Mulher Não Negra</th><th>Fonte</th></tr>
+    ${violenciaInterseccional.map(r => {
+      const isAbsoluto = (r as any).unidadeAbsoluta;
+      return `<tr><td>${r.tipo}</td><td>${isAbsoluto ? r.mulherNegra.toLocaleString('pt-BR') + ' notificações' : r.mulherNegra + '%'}</td><td>${isAbsoluto ? r.mulherBranca.toLocaleString('pt-BR') + ' notificações' : r.mulherBranca + '%'}</td><td>${r.fonte}</td></tr>`;
+    }).join('')}
   </table>
 
   <h4>Radar de Vulnerabilidades por Grupo</h4>
