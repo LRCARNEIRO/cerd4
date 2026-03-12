@@ -392,10 +392,6 @@ export function DadosGeraisTab() {
                 <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
                   📊 Fonte esperada: SIS/IBGE — Síntese de Indicadores Sociais
                 </a>
-              </p>
-                  <ExternalLink className="w-3 h-3" /> SIS/IBGE — Síntese de Indicadores Sociais (pobreza por cor/raça)
-                </a>
-              </p>
             </div>
           </div>
 
