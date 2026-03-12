@@ -178,7 +178,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Mortalidade materna negra (por 100 mil NV)',
       grupo: 'mulheres_negras',
-      dados: saudeSerieHistorica.map(s => ({ ano: s.ano, valor: s.mortalidadeMaternaNegra })),
+      dados: saudeSerieHistorica.filter(s => s.mortalidadeMaternaNegra != null).map(s => ({ ano: s.ano, valor: s.mortalidadeMaternaNegra! })),
       unidade: 'por 100 mil NV',
       fonte: 'DataSUS/SIM',
       interpretacao: 'menor_melhor',
