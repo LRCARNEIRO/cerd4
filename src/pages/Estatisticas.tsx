@@ -31,6 +31,7 @@ import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
+import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
@@ -133,6 +134,9 @@ export default function Estatisticas() {
           <TabsTrigger value="grupos-focais" className="gap-1 bg-primary/10">
             <UsersRound className="w-4 h-4" /> Grupos Focais
           </TabsTrigger>
+          <TabsTrigger value="ods-racial" className="gap-1" style={{ backgroundColor: 'rgba(221,19,103,0.1)' }}>
+            <Globe className="w-4 h-4" /> ODS Racial (90)
+          </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
           </TabsTrigger>
@@ -165,6 +169,7 @@ export default function Estatisticas() {
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
+        <TabsContent value="ods-racial"><OdsRacialTab /></TabsContent>
         <TabsContent value="fontes-dados"><FontesDadosTab /></TabsContent>
         <TabsContent value="vulnerabilidades"><VulnerabilidadesTab /></TabsContent>
         <TabsContent value="raca-genero"><RacaGeneroTab /></TabsContent>
