@@ -126,7 +126,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Idosos negros (60+)', 
-    impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
+    impacto: 'Taxa de letalidade 1,5x maior que idosos não negros; menor acesso a UTI; menor cobertura vacinal inicial',
     fonte: 'SIVEP-Gripe; NOIS/PUC-Rio'
   },
   { 
