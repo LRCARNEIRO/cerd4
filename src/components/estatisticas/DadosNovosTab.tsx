@@ -285,7 +285,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     prioridade: 'alta',
     unidadeSerie: '% sem esgoto adequado',
     serieHistorica: [
-      { ano: 2022, valor: 'Negros: 42,8% | Não Negros: 26,5% | Quilombos: 65,4% | TIs: 38,5% sem água', fonte: 'IBGE Censo 2022' },
+      { ano: 2022, valor: 'Negros: 42,8% | Brancos: 26,5% | Quilombos: 65,4% | TIs: 38,5% sem água', fonte: 'IBGE Censo 2022' },
       { ano: '2018-2021', valor: '⏳ N/D', nota: 'Dados PnadC disponíveis via SIDRA/IBGE — pendente extração' },
     ]
   }
