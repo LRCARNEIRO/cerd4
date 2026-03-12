@@ -35,7 +35,7 @@ const App = () => (
           <Route path="/orcamento-teste" element={<OrcamentoTeste />} />
           <Route path="/recomendacoes" element={<Recomendacoes />} />
           <Route path="/fontes" element={<Fontes />} />
-          <Route path="/grupos-focais" element={<GruposFocais />} />
+          <Route path="/grupos-focais" element={<Navigate to="/estatisticas" replace />} />
           <Route path="/conclusoes" element={<Conclusoes />} />
           <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
           <Route path="/normativa" element={<Normativa />} />
