@@ -142,7 +142,7 @@ export default function Estatisticas() {
             <UsersRound className="w-4 h-4" /> Grupos Focais
           </TabsTrigger>
           <TabsTrigger value="ods-racial" className="gap-1" style={{ backgroundColor: 'rgba(221,19,103,0.1)' }}>
-            <Globe className="w-4 h-4" /> ODS Racial (90)
+            <Globe className="w-4 h-4" /> ODS Racial ({TOTAL_ODS_RACIAL || '...'})
           </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
