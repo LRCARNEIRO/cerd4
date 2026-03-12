@@ -265,11 +265,11 @@ export function DadosGeraisTab() {
                 <h4 className="text-sm font-medium">Renda Média Mensal (R$)</h4>
                 {rendaLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
-                ) : isRendaLive ? (
-                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : hasRendaData ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> SIDRA — Dados auditados</Badge>
                 ) : (
                   <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchRenda()}>
-                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                    <WifiOff className="w-3 h-3" /> Sem dados — clique p/ buscar
                   </Badge>
                 )}
               </div>
