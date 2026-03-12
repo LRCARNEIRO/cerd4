@@ -612,9 +612,9 @@ export function LacunasCerdTab() {
                       }}
                     />
                     <Legend />
-                    <Line yAxisId="left" type="monotone" dataKey="brancos" name="Brancos (R$)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line yAxisId="left" type="monotone" dataKey="negros" name="Negros (R$)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line yAxisId="right" type="monotone" dataKey="razao" name="Razão (Negros/Brancos)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" />
+                     <Line yAxisId="left" type="monotone" dataKey="brancos" name="Não Negros (R$)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                     <Line yAxisId="left" type="monotone" dataKey="negros" name="Negros (R$)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                     <Line yAxisId="right" type="monotone" dataKey="razao" name="Razão (Negros/Não Negros)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
