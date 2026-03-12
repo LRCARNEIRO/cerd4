@@ -260,7 +260,7 @@ ${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 
 <h3>3.4. Juventude Negra</h3>
-${arrayToHTMLTable(juventudeNegra, '')}
+${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr></thead><tbody>${juventudeNegraBD.map((j: any) => `<tr><td>${j.indicador}</td><td style="font-weight:600;color:#991b1b;">${j.valor}</td><td>${j.referencia}</td><td><a href="${j.url}">${j.fonte}</a></td></tr>`).join('')}</tbody></table>` : '<p class="meta">⏳ Carregando dados do banco...</p>'}
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
