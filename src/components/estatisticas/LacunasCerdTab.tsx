@@ -429,8 +429,8 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §23:</strong> Diferença desemprego negros vs brancos: {dadosDesempregoHistorico[0]?.diferenca}pp (2018) → {dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.diferenca}pp ({dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.ano}).
-                  Pandemia agravou disparidades. Razão de renda negra/branca ≈ 59%.
+                   <strong>Análise §23:</strong> Diferença desemprego negros vs não negros: {dadosDesempregoHistorico[0]?.diferenca}pp (2018) → {dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.diferenca}pp ({dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.ano}).
+                   Pandemia agravou disparidades. Razão de renda negra/não negra ≈ 59%.
                 </p>
               </div>
               <AuditFooter 
