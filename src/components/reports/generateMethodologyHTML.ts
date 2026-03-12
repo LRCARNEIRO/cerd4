@@ -169,7 +169,7 @@ export function generateMethodologyHTML(): string {
           nome: 'Indicadores de Vulnerabilidade',
           icone: '⚡',
           origem: 'Observações Finais + FBSP/Atlas da Violência/DataSUS',
-          motivacao: `Consolida os <strong>indicadores de risco por grupo focal</strong>: homicídios (77% negros — FBSP 2025), letalidade policial (82% negros, 5.417 mortes — FBSP 2025), mortalidade materna (negras 107,2 vs. brancas 47,8 por 100 mil NV — DataSUS 2022), taxa de homicídio por 100 mil hab. (negros 28,9 vs. não-negros 10,6 — Atlas 2025), IVJ-N (risco 2,0x — Atlas 2025). Cada indicador referencia parágrafo ONU e artigo ICERD correspondente.`,
+          motivacao: `Consolida os <strong>indicadores de risco por grupo focal</strong>: homicídios (77% negros — FBSP 2025), letalidade policial (82% negros, 5.417 mortes — FBSP 2025), mortalidade materna (negras 57,3 vs. brancas 46,6 por 100 mil NV — DataSUS 2022), taxa de homicídio por 100 mil hab. (negros 28,9 vs. não-negros 10,6 — Atlas 2025), IVJ-N (risco 2,0x para jovens c/ ensino fundamental incompleto — Atlas 2025). Encarceramento: 68,7% negros (FBSP 2025). Cada indicador referencia parágrafo ONU e artigo ICERD correspondente.`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'Quadro-Monitoramento-CERD-Brasil.xlsx'],
           promptOrigem: 'Consolidar indicadores de vulnerabilidade por grupo focal usando FBSP 19º Anuário 2025, Atlas da Violência 2025 e DataSUS, vinculando cada indicador a parágrafos ONU e artigos ICERD.',
           artigos: ['Art. V.b (Segurança)', 'Art. V.e.iv (Saúde)', 'Art. I-II (Discriminação e medidas)'],

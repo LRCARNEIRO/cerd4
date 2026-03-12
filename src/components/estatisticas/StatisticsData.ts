@@ -209,7 +209,7 @@ export const razaoRendaRacial = 0.589;
 //   • 77% das vítimas de homicídio são negras
 //   • 82% das vítimas de letalidade policial são negras
 //   • 63,6% das vítimas de feminicídio são mulheres negras
-//   • População carcerária: 68,2% negra
+//   • População carcerária: 68,7% negra (19º Anuário FBSP 2025, p.19/399 — SISDEPEN não filtra por cor)
 // DADOS-CHAVE do Atlas da Violência 2025 (IPEA/FBSP) (ano-referência 2023):
 //   • Taxa de homicídio negros: 28,9/100 mil vs não negros: 10,6/100 mil
 //   • Risco relativo: 2,7x (estável desde 2018; Atlas cita 2,4x em 2013 — fora do recorte)
