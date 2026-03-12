@@ -438,7 +438,7 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[]) {
+function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Series data
