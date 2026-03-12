@@ -457,7 +457,7 @@ function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
     { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
     { nome: 'Mulheres Chefes de Família', registros: 0, fonte: '🔴 LACUNA — SIDRA 6403 não publica por raça', periodo: 'N/A' },
     { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
-    { nome: 'Juventude Negra', registros: juventudeNegra.length, fonte: 'FBSP / PNAD', periodo: '2018-2024' },
+    { nome: 'Juventude Negra', registros: juventudeNegraBD.length, fonte: 'BD — Atlas/FBSP (auditado)', periodo: '2022-2025' },
     { nome: 'Educação Interseccional', registros: 0, fonte: '🔴 LACUNA — IBGE/INEP não publica raça×gênero', periodo: 'N/A' },
     { nome: 'Saúde Interseccional', registros: 0, fonte: '🔴 LACUNA — DataSUS não cruza raça×renda', periodo: 'N/A' },
     { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
