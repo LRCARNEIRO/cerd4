@@ -433,19 +433,18 @@ function gerarFiosCondutores(
     id: 'covid-desigualdade-racial',
     titulo: 'COVID-19: Pandemia Expôs e Aprofundou a Desigualdade Racial',
     tipo: 'retrocesso',
-    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: excesso de mortalidade de +57% entre negros vs +38% entre brancos; letalidade hospitalar indígena de 62%; mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
+    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: negros representaram 57% dos óbitos por COVID apesar de serem 56% da população (DataSUS/SIM); mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
     evidencias: [
-      { texto: 'Excesso de mortalidade COVID negros: +57% vs brancos +38%', fonte: 'Fiocruz / Boletim Observatório COVID-19', tipo: 'quantitativa' },
-      { texto: 'Letalidade hospitalar indígena por COVID: 62%', fonte: 'DataSUS / SESAI', tipo: 'quantitativa' },
-      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
-      { texto: 'Insegurança alimentar grave: 18% lares negros vs 8% brancos', fonte: 'POF/IBGE 2022', tipo: 'quantitativa' },
+      { texto: 'Negros: 57% dos óbitos COVID (sobre-representação em relação à proporção populacional de 56%)', fonte: 'DataSUS/SIM — Painel COVID-19', tipo: 'quantitativa' },
+      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico (2020-2021)', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
+      { texto: 'Insegurança alimentar grave: 20,6% lares negros vs 10,6% brancos', fonte: 'II VIGISAN 2021-2022 (Rede PENSSAN)', tipo: 'quantitativa' },
       { texto: 'Mulheres negras: últimas a recuperar emprego pós-pandemia', fonte: 'PNAD Contínua 2023', tipo: 'quantitativa' },
-      { texto: 'Acesso a UTI: negros com 30% menos chance de internação em UTI', fonte: 'Fiocruz', tipo: 'quantitativa' },
+      { texto: 'Negros com +16% de chance de óbito em UTI por COVID', fonte: 'Fiocruz / Observatório COVID-19', tipo: 'quantitativa' },
     ],
     eixos: ['saude', 'trabalho_renda', 'dados_estatisticas'],
     grupos: ['negros', 'indigenas', 'mulheres_negras', 'idosos_negros'],
     relevancia: 'alta',
-    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros e os efeitos de longo prazo (Long COVID, perda educacional) afetam desproporcionalmente crianças e jovens negros.`
+    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros.`
   });
 
   // FIO 10: Assimetria ICERD × Orçamento — cruzamento aderência × investimento por artigo
