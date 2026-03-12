@@ -59,7 +59,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Taxa de homicídio (por 100 mil)',
       grupo: 'populacao_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro })),
+      dados: segurancaPublica.filter(s => s.homicidioNegro != null).map(s => ({ ano: s.ano, valor: s.homicidioNegro! })),
       unidade: 'por 100 mil',
       fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
@@ -67,7 +67,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Vítimas negras de homicídio (%)',
       grupo: 'populacao_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras })),
+      dados: segurancaPublica.filter(s => s.percentualVitimasNegras != null).map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras! })),
       unidade: '%',
       fonte: 'FBSP',
       interpretacao: 'menor_melhor',
@@ -75,7 +75,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Letalidade policial negra (%)',
       grupo: 'populacao_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.letalidadePolicial })),
+      dados: segurancaPublica.filter(s => s.letalidadePolicial != null).map(s => ({ ano: s.ano, valor: s.letalidadePolicial! })),
       unidade: '%',
       fonte: 'FBSP',
       interpretacao: 'menor_melhor',
@@ -131,7 +131,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Homicídio negro (por 100 mil)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.homicidioNegro })),
+      dados: segurancaPublica.filter(s => s.homicidioNegro != null).map(s => ({ ano: s.ano, valor: s.homicidioNegro! })),
       unidade: 'por 100 mil',
       fonte: 'Atlas da Violência (IPEA/FBSP)',
       interpretacao: 'menor_melhor',
@@ -141,7 +141,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Vítimas negras de homicídio (%)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras })),
+      dados: segurancaPublica.filter(s => s.percentualVitimasNegras != null).map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras! })),
       unidade: '%',
       fonte: 'FBSP — concentração na faixa 15-29',
       interpretacao: 'menor_melhor',
@@ -149,7 +149,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Letalidade policial negra (%)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.map(s => ({ ano: s.ano, valor: s.letalidadePolicial })),
+      dados: segurancaPublica.filter(s => s.letalidadePolicial != null).map(s => ({ ano: s.ano, valor: s.letalidadePolicial! })),
       unidade: '%',
       fonte: 'FBSP — perfil predominante: jovem negro',
       interpretacao: 'menor_melhor',
@@ -170,7 +170,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Feminicídio mulheres negras (%)',
       grupo: 'mulheres_negras',
-      dados: feminicidioSerie.map(s => ({ ano: s.ano, valor: s.percentualNegras })),
+      dados: feminicidioSerie.filter(s => s.percentualNegras != null).map(s => ({ ano: s.ano, valor: s.percentualNegras! })),
       unidade: '%',
       fonte: 'FBSP',
       interpretacao: 'menor_melhor',
@@ -178,7 +178,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
     {
       nome: 'Mortalidade materna negra (por 100 mil NV)',
       grupo: 'mulheres_negras',
-      dados: saudeSerieHistorica.map(s => ({ ano: s.ano, valor: s.mortalidadeMaternaNegra })),
+      dados: saudeSerieHistorica.filter(s => s.mortalidadeMaternaNegra != null).map(s => ({ ano: s.ano, valor: s.mortalidadeMaternaNegra! })),
       unidade: 'por 100 mil NV',
       fonte: 'DataSUS/SIM',
       interpretacao: 'menor_melhor',
