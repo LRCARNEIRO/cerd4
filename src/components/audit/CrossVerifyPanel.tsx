@@ -52,18 +52,21 @@ export function CrossVerifyPanel() {
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<any>(null);
 
+  const currentInventory = INVENTORIES[selectedInventory];
+  const currentItems = currentInventory.items;
+
   const runVerification = async () => {
     setLoading(true);
     setResults([]);
     setSummary(null);
 
     try {
-      toast.info('Iniciando auditoria cruzada (Juventude)...', {
+      toast.info(`Iniciando auditoria cruzada (${currentInventory.label})...`, {
         description: 'API SIDRA + Firecrawl PDF + GPT-5 adversário',
       });
 
       const { data, error } = await supabase.functions.invoke('audit-cross-verify', {
-        body: { indicators: JUVENTUDE_INVENTORY },
+        body: { indicators: currentItems },
       });
 
       if (error) throw error;
