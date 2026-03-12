@@ -32,13 +32,18 @@ import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
+import { TOTAL_ODS_RACIAL } from '@/data/odsRacialIndicators';
 
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const { data: indicadores } = useIndicadoresInterseccionais();
   
-  const totalIndicadores = (indicadores || []).length;
-  const totalAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const totalIndicadoresDb = (indicadores || []).length;
+  const totalAuditadosDb = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  
+  // ODS Racial: todos os 90 indicadores são auditados (dados replicados de planilhas oficiais)
+  const totalIndicadores = totalIndicadoresDb + TOTAL_ODS_RACIAL;
+  const totalAuditados = totalAuditadosDb + TOTAL_ODS_RACIAL;
   const totalPendentes = totalIndicadores - totalAuditados;
 
   return (
@@ -78,9 +83,9 @@ export default function Estatisticas() {
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success" />
               <div>
-                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD)</p>
+                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD + ODS Racial)</p>
                 <p className="text-xs text-muted-foreground">
-                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes)
+                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · inclui {TOTAL_ODS_RACIAL} ODS Racial ✓
                 </p>
               </div>
             </div>
