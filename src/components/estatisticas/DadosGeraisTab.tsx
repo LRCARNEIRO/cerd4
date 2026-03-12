@@ -50,6 +50,30 @@ export function DadosGeraisTab() {
 
   const isLiveData = desempregoChartData[0]?.live === true;
 
+  // Renda: API SIDRA em tempo real com fallback para estáticos
+  const rendaChartData = useMemo(() => {
+    if (sidraRendaData?.dados?.length) {
+      return sidraRendaData.dados.map(d => ({
+        ano: d.ano,
+        rendaMediaNegra: d.negra,
+        rendaMediaBranca: d.branca,
+        rendaPreta: d.preta,
+        rendaParda: d.parda,
+        fonte: d.fonte,
+        live: true,
+      }));
+    }
+    return indicadoresSocioeconomicos.map(d => ({
+      ano: d.ano,
+      rendaMediaNegra: d.rendaMediaNegra,
+      rendaMediaBranca: d.rendaMediaBranca,
+      live: false,
+    }));
+  }, [sidraRendaData]);
+
+  const isRendaLive = rendaChartData[0]?.live === true;
+
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
