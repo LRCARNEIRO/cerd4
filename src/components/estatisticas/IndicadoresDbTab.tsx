@@ -97,8 +97,9 @@ function isYearKey(key: string): boolean {
 
 // Normalize data: always returns { groups: string[], years: string[], chartData: Record[] }
 function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
+  const excludeKeys = new Set(['por_uf_2024', 'idade_media_vitima', 'unidade', 'slug', 'formato', 'ods_id', 'nota', 'serie', 'fonte', 'url', 'artigoCerd']);
   const objectKeys = Object.keys(dados).filter(
-    key => typeof dados[key] === 'object' && !['por_uf_2024', 'idade_media_vitima', 'unidade'].includes(key)
+    key => typeof dados[key] === 'object' && dados[key] !== null && !Array.isArray(dados[key]) && !excludeKeys.has(key)
   );
 
   if (objectKeys.length === 0) return { groups: [], years: [], chartData: [] };
@@ -444,7 +445,9 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
                       {val !== undefined
                         ? typeof val === 'number'
                           ? val.toLocaleString('pt-BR')
-                          : val
+                          : typeof val === 'object' && val !== null
+                            ? JSON.stringify(val)
+                            : String(val)
                         : '-'}
                     </TableCell>
                   );
