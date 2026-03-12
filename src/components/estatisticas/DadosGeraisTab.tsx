@@ -352,6 +352,7 @@ export function DadosGeraisTab() {
             </div>
           </div>
 
+          {/* Tabela comparativa: estático vs SIDRA ao vivo */}
           <Table className="mt-6">
             <TableHeader>
               <TableRow>
@@ -359,25 +360,56 @@ export function DadosGeraisTab() {
                 <TableHead className="text-right">Renda Negra</TableHead>
                 <TableHead className="text-right">Renda Branca</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
-                <TableHead className="text-right">Desemp. Negro</TableHead>
-                <TableHead className="text-right">Desemp. Branco</TableHead>
+                <TableHead className="text-right">Desemp. Negro {isLiveData ? '(SIDRA)' : ''}</TableHead>
+                <TableHead className="text-right">Desemp. Branco {isLiveData ? '(SIDRA)' : ''}</TableHead>
+                {isLiveData && <TableHead className="text-right">Fonte</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {indicadoresSocioeconomicos.map(item => (
-                <TableRow key={item.ano}>
-                  <TableCell className="font-medium">{item.ano}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.rendaMediaNegra)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.rendaMediaBranca)}</TableCell>
-                  <TableCell className="text-right text-destructive font-medium">
-                    {(item.rendaMediaBranca / item.rendaMediaNegra).toFixed(2)}x
-                  </TableCell>
-                  <TableCell className="text-right">{item.desempregoNegro}%</TableCell>
-                  <TableCell className="text-right">{item.desempregoBranco}%</TableCell>
-                </TableRow>
-              ))}
+              {indicadoresSocioeconomicos.map(item => {
+                const sidraRow = desempregoChartData.find(d => d.ano === item.ano);
+                const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : item.desempregoNegro;
+                const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : item.desempregoBranco;
+                const divergeN = isLiveData && sidraRow && Math.abs(sidraRow.desempregoNegro - item.desempregoNegro) > 0.5;
+                const divergeB = isLiveData && sidraRow && Math.abs(sidraRow.desempregoBranco - item.desempregoBranco) > 0.5;
+
+                return (
+                  <TableRow key={item.ano}>
+                    <TableCell className="font-medium">{item.ano}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(item.rendaMediaNegra)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(item.rendaMediaBranca)}</TableCell>
+                    <TableCell className="text-right text-destructive font-medium">
+                      {(item.rendaMediaBranca / item.rendaMediaNegra).toFixed(2)}x
+                    </TableCell>
+                    <TableCell className={`text-right ${divergeN ? 'text-amber-600 font-bold' : ''}`}>
+                      {desN}%
+                      {divergeN && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoNegro}%`}>⚠️</span>}
+                    </TableCell>
+                    <TableCell className={`text-right ${divergeB ? 'text-amber-600 font-bold' : ''}`}>
+                      {desB}%
+                      {divergeB && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoBranco}%`}>⚠️</span>}
+                    </TableCell>
+                    {isLiveData && (
+                      <TableCell className="text-right text-[10px] text-muted-foreground">
+                        {sidraRow?.fonte || '—'}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
+
+          {isLiveData && (
+            <div className="mt-3 p-3 rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
+              <p className="text-xs flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 text-amber-600" />
+                <strong>Valores com ⚠️:</strong> divergência &gt;0,5 p.p. entre o sistema estático e a API SIDRA. 
+                Os dados SIDRA referem-se ao <strong>Q4 (4º trimestre)</strong> de cada ano, não à média anual.
+              </p>
+            </div>
+          )}
+
           <div className="text-xs text-muted-foreground mt-4 space-y-1">
             <p className="flex items-center gap-1">
               <FileText className="w-3 h-3" />
