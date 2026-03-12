@@ -423,28 +423,20 @@ export function DadosGeraisTab() {
             </TableHeader>
             <TableBody>
               {(() => {
-                // When API is live, use only years present in API data (no static fallback for missing years)
+                // Dados auditados: usar apenas anos presentes nos dados da API
                 const anosSet = new Set<number>();
-                if (isRendaLive) {
-                  rendaChartData.forEach(d => anosSet.add(d.ano));
-                }
-                if (isLiveData) {
-                  desempregoChartData.forEach(d => anosSet.add(d.ano));
-                }
-                // If neither API is live, fall back to static
-                if (!isRendaLive && !isLiveData) {
-                  indicadoresSocioeconomicos.forEach(d => anosSet.add(d.ano));
-                }
+                rendaChartData.forEach(d => anosSet.add(d.ano));
+                desempregoChartData.forEach(d => anosSet.add(d.ano));
                 const anos = [...anosSet].sort((a, b) => a - b);
 
                 return anos.map(ano => {
                   const rendaRow = rendaChartData.find(d => d.ano === ano);
                   const sidraRow = desempregoChartData.find(d => d.ano === ano);
 
-                  const rendaN = isRendaLive ? (rendaRow?.rendaMediaNegra ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaNegra ?? null;
-                  const rendaB = isRendaLive ? (rendaRow?.rendaMediaBranca ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.rendaMediaBranca ?? null;
-                  const desN = isLiveData ? (sidraRow?.desempregoNegro ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoNegro ?? null;
-                  const desB = isLiveData ? (sidraRow?.desempregoBranco ?? null) : indicadoresSocioeconomicos.find(d => d.ano === ano)?.desempregoBranco ?? null;
+                  const rendaN = rendaRow?.rendaMediaNegra ?? null;
+                  const rendaB = rendaRow?.rendaMediaBranca ?? null;
+                  const desN = sidraRow?.desempregoNegro ?? null;
+                  const desB = sidraRow?.desempregoBranco ?? null;
 
                   const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
