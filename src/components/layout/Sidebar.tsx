@@ -71,7 +71,6 @@ const escopoSubsections: NavSection[] = [
     defaultOpen: false,
     items: [
       { title: 'Estatísticas Gerais', href: '/estatisticas', icon: BarChart3 },
-      { title: 'Grupos Focais', href: '/grupos-focais', icon: Users },
     ]
   },
   {

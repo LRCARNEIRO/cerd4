@@ -162,6 +162,11 @@ export default function Estatisticas() {
           <CovidRacialSection />
         </TabsContent>
 
+        {/* Grupos Focais */}
+        <TabsContent value="grupos-focais">
+          <GruposFocaisTab />
+        </TabsContent>
+
         {/* Fontes de Dados */}
         <TabsContent value="fontes-dados">
           <FontesDadosTab />
