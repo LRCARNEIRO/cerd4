@@ -76,7 +76,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-05',
-    indicador: 'IVJ-N risco relativo jovens negros vs brancos',
+    indicador: 'IVJ-N risco relativo jovens negros vs não negros',
     valor_declarado: 2.0,
     fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
     tipo_fonte: 'pdf',
