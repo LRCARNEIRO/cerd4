@@ -444,7 +444,9 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
                       {val !== undefined
                         ? typeof val === 'number'
                           ? val.toLocaleString('pt-BR')
-                          : val
+                          : typeof val === 'object' && val !== null
+                            ? JSON.stringify(val)
+                            : String(val)
                         : '-'}
                     </TableCell>
                   );
