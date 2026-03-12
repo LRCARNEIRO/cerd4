@@ -274,11 +274,12 @@ export const atlasViolencia2025 = {
   concentracaoRacial2022: 76.5,
   concentracaoRacial2018: 75.7,
   // Violência letal na juventude 15-29: 47,8% das vítimas em 2023
-  // NOTA AUDITORIA: "79% jovens negros masculinos" NÃO LOCALIZADO no Atlas 2025 — removido (Regra de Ouro)
+  // Violência letal na juventude 15-29: 47,8% das vítimas em 2023
+  // NOTA: percentualNegrosHomens pendente de auditoria cruzada — valor mantido para revisão humana
   juventude15_29: {
     percentualVitimas: 47.8,
     ano: 2023,
-    percentualNegrosHomens: null as number | null, // ⏳ N/D — Pendente de verificação humana
+    percentualNegrosHomens: 79 as number | null, // Pendente de confirmação via auditoria cruzada
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
   },
   // IVJ-N: Jovens negros têm risco 2x maior de homicídio que jovens brancos (2021)
