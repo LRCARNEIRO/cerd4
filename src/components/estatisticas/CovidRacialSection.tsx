@@ -259,7 +259,7 @@ export function CovidRacialSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e brancos (38%).
+              Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e não negros (38%).
             </p>
             <AuditFooter fontes={FONTE_SIVEP_NOIS} documentos={['CERD 2022 §24']} compact />
           </CardContent>
