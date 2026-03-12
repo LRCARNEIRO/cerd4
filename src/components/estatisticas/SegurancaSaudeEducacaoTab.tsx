@@ -20,7 +20,7 @@ export function SegurancaSaudeEducacaoTab() {
             <Shield className="w-5 h-5 text-destructive" />
             Segurança Pública - Violência Letal por Raça (2018-2024)
           </CardTitle>
-          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial | 19º Anuário FBSP 2025 + Atlas da Violência 2025</CardDescription>
+          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
