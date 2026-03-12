@@ -660,6 +660,7 @@ function downloadDOCX(html: string, fileName: string) {
 
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
+  const { data: juventudeNegraBD } = useJuventudeAuditados();
   const [generating, setGenerating] = useState<string | null>(null);
 
   const handleFullReport = (format: 'html' | 'docx') => {
