@@ -9,7 +9,9 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search, CheckCircle2, CircleDashed } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -54,6 +56,8 @@ interface IndicadorData {
   desagregacao_deficiencia?: boolean;
   desagregacao_orientacao_sexual?: boolean;
   documento_origem?: string[];
+  auditado_manualmente?: boolean;
+  data_auditoria?: string;
 }
 
 const DOCUMENTOS_FILTRO = [
@@ -338,7 +342,18 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <CardTitle className="text-base">{indicador.nome}</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              {indicador.nome}
+              {indicador.auditado_manualmente ? (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
+                  <CheckCircle2 className="w-3 h-3" /> Auditado
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-chart-4/10 text-chart-4 border-chart-4/30">
+                  <CircleDashed className="w-3 h-3" /> Pendente
+                </Badge>
+              )}
+            </CardTitle>
             <CardDescription className="text-sm">
               {indicador.categoria}{indicador.subcategoria ? ` • ${indicador.subcategoria}` : ''}
               {' • '}<span className="font-medium">{indicador.fonte}</span>
@@ -554,6 +569,7 @@ export function IndicadoresDbTab() {
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
 
   const typedIndicadores = (indicadores || []) as IndicadorData[];
 
@@ -631,8 +647,14 @@ export function IndicadoresDbTab() {
   const indicadoresFiltrados = typedIndicadores.filter(i => {
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
     const docMatch = documentoAtivo === 'Todos' || (i.documento_origem || []).includes(documentoAtivo);
-    return catMatch && docMatch;
+    const auditMatch = filtroAuditoria === 'todos' 
+      || (filtroAuditoria === 'auditados' && i.auditado_manualmente)
+      || (filtroAuditoria === 'pendentes' && !i.auditado_manualmente);
+    return catMatch && docMatch && auditMatch;
   });
+
+  const totalAuditados = typedIndicadores.filter(i => i.auditado_manualmente).length;
+  const totalPendentes = typedIndicadores.length - totalAuditados;
 
   return (
     <div className="space-y-6">
@@ -676,6 +698,40 @@ export function IndicadoresDbTab() {
       </div>
 
       <SummaryCards indicadores={typedIndicadores} />
+
+      {/* Audit filter */}
+      <Card className="border-l-4 border-l-success">
+        <CardContent className="pt-4 pb-3">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-success" />
+              <div>
+                <p className="text-sm font-semibold">Auditoria Manual</p>
+                <p className="text-xs text-muted-foreground">
+                  {totalAuditados} de {typedIndicadores.length} auditados ({totalPendentes} pendentes)
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {(['todos', 'auditados', 'pendentes'] as const).map(f => (
+                <Badge
+                  key={f}
+                  variant={filtroAuditoria === f ? "default" : "outline"}
+                  className={cn("cursor-pointer transition-colors", 
+                    filtroAuditoria === f && f === 'pendentes' && "bg-chart-4 text-chart-4-foreground",
+                    filtroAuditoria === f && f === 'auditados' && "bg-success text-success-foreground"
+                  )}
+                  onClick={() => setFiltroAuditoria(f)}
+                >
+                  {f === 'todos' && 'Todos'}
+                  {f === 'auditados' && `✓ Auditados (${totalAuditados})`}
+                  {f === 'pendentes' && `⏳ Pendentes (${totalPendentes})`}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Document source filter */}
       <div className="space-y-2">
