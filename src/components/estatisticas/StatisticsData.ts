@@ -742,42 +742,48 @@ export const juventudeNegra = [
 // MERCADO DE TRABALHO: Raça × Gênero
 // Fonte primária: DIEESE Boletim Consciência Negra Nov/2024 (PNAD Q2 2024)
 // + Fiocruz/MIR Informe 2023 + RASEAM 2023
+// AUDITORIA MANUAL 11/03/2026: Todos os valores corrigidos conforme DIEESE Boletim Consciência Negra Nov/2024
+// Fonte: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
+// NOTA IMPORTANTE: DIEESE usa "negros" e "não negros" (NÃO "brancos"). Labels foram ajustados.
+// Rendimento médio no 2º trimestre de 2024: p.8
+// Taxa de desocupação no 2º trimestre de 2024: p.3
+// Proporção de ocupados em trabalho desprotegido (informalidade) no 2º trimestre de 2024: p.5
 export const trabalhoRacaGenero = [
   {
-    indicador: 'Rendimento médio mensal',
-    homemBranco: 4568,
-    mulherBranca: 3222,
-    homemNegro: 2702,
-    mulherNegra: 2003,
+    indicador: 'Rendimento médio (Q2 2024)',
+    homemBranco: 4492, // "Homem não negro" no DIEESE
+    mulherBranca: 3404, // "Mulher não negra" no DIEESE
+    homemNegro: 2610,
+    mulherNegra: 2079,
     unidade: 'R$',
-    razaoMulherNegraHomemBranco: 0.439,
-    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024)',
+    razaoMulherNegraHomemBranco: 0.463, // 2079/4492
+    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.8',
     url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Mulher negra ganha 43,9% do rendimento do homem branco',
+    nota: 'Mulher negra ganha 46,3% do rendimento do homem não negro. Labels "branco" = "não negro" conforme DIEESE.',
   },
   {
-    indicador: 'Taxa de desocupação (%)',
-    homemBranco: 4.5,
-    mulherBranca: 6.3,
-    homemNegro: 6.1,
-    mulherNegra: 10.2,
+    indicador: 'Taxa de desocupação (Q2 2024, %)',
+    homemBranco: 4.6, // "Homem não negro"
+    mulherBranca: 6.7, // "Mulher não negra"
+    homemNegro: 6.3,
+    mulherNegra: 10.1,
     unidade: '%',
-    razaoMulherNegraHomemBranco: 2.27,
-    fonte: 'DIEESE/SINESP — PNAD Q2 2024',
-    url: 'https://sinesp.org.br/images/2024/novembro/Brasil_e_regi%C3%B5es_2024_-_Popula%C3%A7%C3%A3o_negra1.pdf',
-    nota: 'Desemprego de mulheres negras é 2,3x maior que de homens brancos',
+    razaoMulherNegraHomemBranco: 2.20, // 10.1/4.6
+    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.3',
+    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
+    nota: 'Desemprego de mulheres negras é 2,2x maior que de homens não negros',
   },
   {
-    indicador: 'Informalidade (%)',
-    homemBranco: 33.3,
-    mulherBranca: 34.5,
-    homemNegro: 46.6,
-    mulherNegra: 46.8,
+    indicador: 'Informalidade (Q2 2024, %)',
+    homemBranco: 34.1, // "Homem não negro"
+    mulherBranca: 34.3, // "Mulher não negra"
+    homemNegro: 45.8,
+    mulherNegra: 46.5,
     unidade: '%',
-    razaoMulherNegraHomemBranco: 1.41,
-    fonte: 'IBGE/PNAD Contínua Q2 2022 (série DIEESE)',
+    razaoMulherNegraHomemBranco: 1.36, // 46.5/34.1
+    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.5',
     url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Mulheres negras são 46,8% informais vs 33,3% homens brancos',
+    nota: 'Mulheres negras: 46,5% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
   },
 ];
 
