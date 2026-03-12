@@ -21,7 +21,6 @@ import {
   lgbtqiaPorRaca,
   classePorRaca,
   violenciaInterseccional,
-  juventudeNegra,
   radarVulnerabilidades,
   evolucaoDesigualdade,
   atlasViolencia2025,
