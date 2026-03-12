@@ -196,7 +196,7 @@ export function VulnerabilidadesTab() {
                   <Legend />
                   <Line type="monotone" dataKey="razaoRenda" name="Renda (brancos/negros)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   <Line type="monotone" dataKey="razaoDesemprego" name="Desemprego (negros/brancos)" stroke="hsl(var(--warning))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negros/brancos)" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negros/não negros)" stroke="hsl(var(--destructive))" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
