@@ -88,7 +88,7 @@ const SOURCES = {
   desigualdade: [
     { label: 'SIDRA 6405 — Renda por raça', url: 'https://sidra.ibge.gov.br/tabela/6405', detail: 'Razão de renda branca/negra' },
     { label: 'PNAD Contínua — Desocupação', url: 'https://sidra.ibge.gov.br/Tabela/6402', detail: 'Taxa de desocupação por cor/raça' },
-    { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Razão de homicídio negro/branco' },
+    { label: 'Atlas da Violência 2025', url: 'https://www.ipea.gov.br/atlasviolencia/', detail: 'Razão de homicídio negro/não negro' },
     { label: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/', detail: 'Letalidade policial e vítimas por raça' },
   ] as SourceLink[],
   violenciaInterseccional: [
@@ -362,7 +362,7 @@ export function DesigualdadeEvolucaoChart() {
               <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Line type="monotone" dataKey="razaoRenda" name="Renda (branco/negro)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
               <Line type="monotone" dataKey="razaoDesemprego" name="Desemprego (negro/branco)" stroke="hsl(var(--chart-4))" strokeWidth={2} />
-              <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negro/branco)" stroke="hsl(var(--destructive))" strokeWidth={2} />
+              <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negro/não negro)" stroke="hsl(var(--destructive))" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>

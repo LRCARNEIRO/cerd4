@@ -42,7 +42,7 @@ export function SegurancaSaudeEducacaoTab() {
                     />
                     <Legend />
                     <Line type="monotone" dataKey="homicidioNegro" name="Negros" stroke="hsl(var(--destructive))" strokeWidth={2} />
-                    <Line type="monotone" dataKey="homicidioBranco" name="Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Line type="monotone" dataKey="homicidioBranco" name="Não Negros" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -96,7 +96,7 @@ export function SegurancaSaudeEducacaoTab() {
               <TableRow>
                 <TableHead>Ano</TableHead>
                 <TableHead className="text-right">Homic. Negros</TableHead>
-                <TableHead className="text-right">Homic. Brancos</TableHead>
+                <TableHead className="text-right">Homic. Não Negros</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead className="text-right">Letalidade Policial (%)</TableHead>
               </TableRow>
