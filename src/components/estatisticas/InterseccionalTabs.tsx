@@ -104,8 +104,8 @@ export function RacaGeneroTab() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Indicador</TableHead>
-                  <TableHead className="text-right">H. Não Negro</TableHead>
-                  <TableHead className="text-right">M. Não Negra</TableHead>
+                  <TableHead className="text-right">H. Branco</TableHead>
+                  <TableHead className="text-right">M. Branca</TableHead>
                   <TableHead className="text-right">H. Negro</TableHead>
                   <TableHead className="text-right text-destructive">M. Negra</TableHead>
                   <TableHead className="text-right">Razão M.N/H.B</TableHead>
