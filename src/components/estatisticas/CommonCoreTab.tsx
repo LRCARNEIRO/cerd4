@@ -2171,7 +2171,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
     dados: {
       headers: ['Cor/Raça', '2016', '2019', '2022', '2023'],
       rows: [
-        ['Brancos', '89,2%', '90,1%', '91,5%', '91,8%'],
+        ['Não Negros', '89,2%', '90,1%', '91,5%', '91,8%'],
         ['Negros (Pretos+Pardos)', '78,5%', '80,2%', '82,8%', '83,5%'],
         ['Diferença (p.p.)', '10,7', '9,9', '8,7', '8,3'],
         ['Indígenas', '42,5%', '45,8%', '48,2%', '49,5%']
