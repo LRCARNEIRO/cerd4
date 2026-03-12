@@ -69,7 +69,7 @@ const excessoMortalidade = [
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Homens negros vs não negros - excesso mortalidade',
+    indicador: 'Homens negros vs brancos - excesso mortalidade',
     negros: '55% maior',
     naoNegros: 'Referência',
     valorNegros: 55,
