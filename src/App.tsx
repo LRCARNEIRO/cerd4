@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import PlanoTrabalho from "./pages/PlanoTrabalho";
 import CommonCore from "./pages/CommonCore";
@@ -11,7 +11,7 @@ import Orcamento from "./pages/Orcamento";
 import OrcamentoTeste from "./pages/OrcamentoTeste";
 import Recomendacoes from "./pages/Recomendacoes";
 import Fontes from "./pages/Fontes";
-import GruposFocais from "./pages/GruposFocais";
+
 import Conclusoes from "./pages/Conclusoes";
 import GerarRelatorios from "./pages/GerarRelatorios";
 import Normativa from "./pages/Normativa";
@@ -35,7 +35,7 @@ const App = () => (
           <Route path="/orcamento-teste" element={<OrcamentoTeste />} />
           <Route path="/recomendacoes" element={<Recomendacoes />} />
           <Route path="/fontes" element={<Fontes />} />
-          <Route path="/grupos-focais" element={<GruposFocais />} />
+          <Route path="/grupos-focais" element={<Navigate to="/estatisticas" replace />} />
           <Route path="/conclusoes" element={<Conclusoes />} />
           <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
           <Route path="/normativa" element={<Normativa />} />

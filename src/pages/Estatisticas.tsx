@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
   FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
-  Landmark, HeartPulse
+  Landmark, HeartPulse, UsersRound
 } from 'lucide-react';
 
 // Componentes de abas
@@ -27,6 +27,7 @@ import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
+import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 
 
 
@@ -92,6 +93,9 @@ export default function Estatisticas() {
           <TabsTrigger value="covid-racial" className="gap-1 bg-destructive/10">
             <HeartPulse className="w-4 h-4" /> COVID
           </TabsTrigger>
+          <TabsTrigger value="grupos-focais" className="gap-1 bg-primary/10">
+            <UsersRound className="w-4 h-4" /> Grupos Focais
+          </TabsTrigger>
           <TabsTrigger value="fontes-dados" className="gap-1">
             <Globe className="w-4 h-4" /> Fontes de Dados
           </TabsTrigger>
@@ -156,6 +160,11 @@ export default function Estatisticas() {
         {/* COVID-19 e Desigualdade Racial */}
         <TabsContent value="covid-racial">
           <CovidRacialSection />
+        </TabsContent>
+
+        {/* Grupos Focais */}
+        <TabsContent value="grupos-focais">
+          <GruposFocaisTab />
         </TabsContent>
 
         {/* Fontes de Dados */}
