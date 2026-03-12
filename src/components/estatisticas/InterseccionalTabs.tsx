@@ -961,12 +961,12 @@ export function JuventudeTab() {
               <ul className="text-xs text-muted-foreground space-y-2">
                 <li className="flex items-center gap-1">
                   • Taxa de homicídio ainda{' '}
-                  <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">2,78x maior</a>{' '}
+                  <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">{atlasViolencia2025.riscoRelativo}x maior</a>{' '}
                   (Atlas da Violência 2025)
                 </li>
                 <li className="flex items-center gap-1">
                   • Letalidade policial:{' '}
-                  <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">83% das vítimas são negras</a>{' '}
+                  <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">82% das vítimas são negras</a>{' '}
                   (19º Anuário FBSP 2025)
                 </li>
                 <li className="flex items-center gap-1">
