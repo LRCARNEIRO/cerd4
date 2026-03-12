@@ -5,12 +5,13 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { 
-  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope
+  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { atlasViolencia2025 } from './StatisticsData';
+import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import {
   narrativaViolencia, narrativaTrabalho, narrativaChefia,
   narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
