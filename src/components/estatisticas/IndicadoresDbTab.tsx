@@ -647,8 +647,14 @@ export function IndicadoresDbTab() {
   const indicadoresFiltrados = typedIndicadores.filter(i => {
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
     const docMatch = documentoAtivo === 'Todos' || (i.documento_origem || []).includes(documentoAtivo);
-    return catMatch && docMatch;
+    const auditMatch = filtroAuditoria === 'todos' 
+      || (filtroAuditoria === 'auditados' && i.auditado_manualmente)
+      || (filtroAuditoria === 'pendentes' && !i.auditado_manualmente);
+    return catMatch && docMatch && auditMatch;
   });
+
+  const totalAuditados = typedIndicadores.filter(i => i.auditado_manualmente).length;
+  const totalPendentes = typedIndicadores.length - totalAuditados;
 
   return (
     <div className="space-y-6">
