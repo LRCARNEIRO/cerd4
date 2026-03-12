@@ -143,6 +143,12 @@ function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
   }
 }
 
+// Detect if indicator has a real time series (≥2 data points)
+function hasTimeSeries(dados: Record<string, any>): boolean {
+  const { years } = normalizeIndicadorData(dados || {});
+  return years.length >= 2;
+}
+
 function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
   const { groups, chartData } = normalizeIndicadorData(indicador.dados || {});
 
@@ -190,6 +196,205 @@ function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
           ))}
         </LineChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+// ============================
+// RETRATO PONTUAL — Single-point indicators grouped by source
+// ============================
+
+function extractKeyValues(dados: Record<string, any>): Array<{ label: string; value: string; sublabel?: string }> {
+  const results: Array<{ label: string; value: string; sublabel?: string }> = [];
+  
+  for (const [key, val] of Object.entries(dados)) {
+    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url')) continue;
+    
+    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+      for (const [subKey, subVal] of Object.entries(val as Record<string, any>)) {
+        if (subVal === null || subVal === undefined || String(subVal).includes('N/D')) continue;
+        if (typeof subVal === 'number' || (typeof subVal === 'string' && !subVal.startsWith('⏳'))) {
+          const formattedVal = typeof subVal === 'number' 
+            ? subVal >= 1000 ? subVal.toLocaleString('pt-BR') : subVal.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+            : subVal;
+          results.push({
+            label: formatGroupName(key),
+            value: String(formattedVal),
+            sublabel: subKey
+          });
+        }
+      }
+    } else if (typeof val === 'number') {
+      results.push({
+        label: formatGroupName(key),
+        value: val >= 1000 ? val.toLocaleString('pt-BR') : val.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+      });
+    }
+  }
+  return results.slice(0, 12); // cap for layout
+}
+
+function generateInsight(indicadores: IndicadorData[]): string {
+  const insights: string[] = [];
+  
+  for (const ind of indicadores) {
+    const kvs = extractKeyValues(ind.dados || {});
+    // Find racial disparity
+    const negrosVal = kvs.find(kv => kv.label.toLowerCase().includes('negro'));
+    const brancosVal = kvs.find(kv => kv.label.toLowerCase().includes('branco'));
+    const indVal = kvs.find(kv => kv.label.toLowerCase().includes('indíg'));
+    const nacVal = kvs.find(kv => kv.label.toLowerCase().includes('nacional') || kv.label.toLowerCase().includes('geral'));
+    
+    if (negrosVal && brancosVal) {
+      const nv = parseFloat(negrosVal.value.replace(/\./g, '').replace(',', '.'));
+      const bv = parseFloat(brancosVal.value.replace(/\./g, '').replace(',', '.'));
+      if (!isNaN(nv) && !isNaN(bv) && bv > 0) {
+        const gap = Math.abs(nv - bv);
+        const direction = nv < bv ? 'menor' : 'maior';
+        insights.push(`${ind.nome}: pop. negra ${direction} (${negrosVal.value} vs ${brancosVal.value})`);
+      }
+    } else if (indVal && nacVal) {
+      insights.push(`${ind.nome}: Indígenas ${indVal.value} vs nacional ${nacVal.value}`);
+    }
+  }
+  
+  if (insights.length === 0) return '';
+  return insights.join('. ') + '.';
+}
+
+function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }) {
+  // Group by fonte
+  const porFonte = useMemo(() => {
+    const map = new Map<string, IndicadorData[]>();
+    for (const ind of indicadores) {
+      const key = ind.fonte;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(ind);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
+  }, [indicadores]);
+
+  if (indicadores.length === 0) return null;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="h-8 w-1 bg-accent rounded-full" />
+        <div>
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Layers className="w-5 h-5 text-accent" />
+            Retrato Pontual — Dados de Referência ({indicadores.length})
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Indicadores com dado único (Censo, pesquisas pontuais) — agrupados por fonte
+          </p>
+        </div>
+      </div>
+
+      {porFonte.map(([fonte, inds]) => {
+        const insight = generateInsight(inds);
+        return (
+          <Card key={fonte} className="overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30 border-b border-border/50">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <CardTitle className="text-sm">{fonte}</CardTitle>
+                  <Badge variant="secondary" className="text-[10px]">{inds.length} indicadores</Badge>
+                </div>
+                {inds[0]?.url_fonte && (
+                  <a href={inds[0].url_fonte} target="_blank" rel="noopener noreferrer" 
+                     className="text-xs text-primary hover:underline flex items-center gap-1">
+                    <ExternalLink className="w-3 h-3" /> Fonte oficial
+                  </a>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-0">
+              {/* Compact table for all indicators from this source */}
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-semibold text-xs w-[35%]">Indicador</TableHead>
+                      <TableHead className="text-xs text-center">Ano</TableHead>
+                      <TableHead className="text-xs">Valores por Grupo</TableHead>
+                      <TableHead className="text-xs text-center w-20">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {inds.map(ind => {
+                      const kvs = extractKeyValues(ind.dados || {});
+                      const { years } = normalizeIndicadorData(ind.dados || {});
+                      return (
+                        <TableRow key={ind.id} id={`indicador-${ind.id}`}>
+                          <TableCell className="py-3">
+                            <p className="text-sm font-medium leading-tight">{ind.nome}</p>
+                            {ind.subcategoria && (
+                              <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className="text-[10px]">
+                              {years.length > 0 ? years.join(', ') : '—'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1.5">
+                              {kvs.length > 0 ? kvs.map((kv, i) => (
+                                <span key={i} className="inline-flex items-center gap-1 text-xs bg-secondary/60 text-secondary-foreground px-2 py-0.5 rounded-md">
+                                  <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span>
+                                  <span>{kv.value}{(ind.dados as any)?.unidade ? ` ${(ind.dados as any).unidade}` : ''}</span>
+                                </span>
+                              )) : (
+                                <span className="text-xs text-muted-foreground italic">⏳ Pendente extração</span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {ind.auditado_manualmente ? (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-success/10 text-success border-success/30">
+                                <CheckCircle2 className="w-3 h-3" />
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-chart-4/10 text-chart-4 border-chart-4/30">
+                                <CircleDashed className="w-3 h-3" />
+                              </Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Insight block */}
+              {insight && (
+                <div className="mt-4 p-3 bg-primary/5 border border-primary/15 rounded-lg">
+                  <p className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    Retrato — Disparidades identificadas
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{insight}</p>
+                </div>
+              )}
+
+              {/* Document origin badges */}
+              {inds.some(i => i.documento_origem?.length) && (
+                <div className="mt-3 flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" /> Documentos:
+                  </span>
+                  {[...new Set(inds.flatMap(i => i.documento_origem || []))].map((doc, i) => (
+                    <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0">{doc}</Badge>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -738,28 +943,49 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         </div>
       </div>
 
-      {/* Indicadores detalhados */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-primary" />
-          Indicadores Desagregados por Raça/Cor ({indicadoresFiltrados.length})
-        </h3>
+      {/* Split indicators: series vs single-point */}
+      {(() => {
+        const withSeries = indicadoresFiltrados.filter(i => hasTimeSeries(i.dados || {}));
+        const singlePoint = indicadoresFiltrados.filter(i => !hasTimeSeries(i.dados || {}));
         
-        {indicadoresFiltrados.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              <p>Nenhum indicador cadastrado ainda.</p>
-              <p className="text-sm mt-2">
-                Utilize a página de Fontes para adicionar indicadores ao sistema.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          indicadoresFiltrados.map(indicador => (
-            <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
-          ))
-        )}
-      </div>
+        return (
+          <>
+            {/* Retrato Pontual — single-point indicators grouped by source */}
+            <RetratoPontualSection indicadores={singlePoint} />
+
+            {/* Séries Temporais — indicators with time series */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-8 w-1 bg-primary rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    Séries Temporais ({withSeries.length})
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Indicadores com evolução no tempo (2018–2025)
+                  </p>
+                </div>
+              </div>
+              
+              {withSeries.length === 0 && singlePoint.length === 0 ? (
+                <Card>
+                  <CardContent className="py-8 text-center text-muted-foreground">
+                    <p>Nenhum indicador cadastrado ainda.</p>
+                    <p className="text-sm mt-2">
+                      Utilize a página de Fontes para adicionar indicadores ao sistema.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                withSeries.map(indicador => (
+                  <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
+                ))
+              )}
+            </div>
+          </>
+        );
+      })()}
     </div>
   );
 }
