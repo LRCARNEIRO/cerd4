@@ -159,7 +159,7 @@ export default function Conclusoes() {
         <tr><td>Feminicídio negro (%)</td><td>${fem2018L.percentualNegras}%</td><td>${fem2024L.percentualNegras}%</td><td class="stat-change negative">+${(fem2024L.percentualNegras - fem2018L.percentualNegras).toFixed(1)}pp</td></tr>
         <tr><td>Superior completo negro (%)</td><td>${edu2018L.superiorNegroPercent}%</td><td>${edu2024L.superiorNegroPercent}%</td><td class="stat-change positive">+${(edu2024L.superiorNegroPercent - edu2018L.superiorNegroPercent).toFixed(1)}pp</td></tr>
         <tr><td>Renda média negra (R$)</td><td>R$ ${eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaNegra}</td><td class="stat-change positive">+${((eco2024L.rendaMediaNegra / eco2018L.rendaMediaNegra - 1) * 100).toFixed(0)}%</td></tr>
-        <tr><td>Gap renda branca-negra (R$)</td><td>R$ ${eco2018L.rendaMediaBranca - eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaBranca - eco2024L.rendaMediaNegra}</td><td class="stat-change negative">Ampliou</td></tr>
+        <tr><td>Gap renda não negra-negra (R$)</td><td>R$ ${eco2018L.rendaMediaBranca - eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaBranca - eco2024L.rendaMediaNegra}</td><td class="stat-change negative">Ampliou</td></tr>
       </tbody>
     </table>`;
 
