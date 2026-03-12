@@ -151,7 +151,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Indígenas', 
-    impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
+    impacto: 'Mortalidade hospitalar de 62% (vs 38% não negros); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
     fonte: 'SIVEP-Gripe; SESAI/MS'
   },
   { 
