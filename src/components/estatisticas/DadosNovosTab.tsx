@@ -141,7 +141,14 @@ const indicadoresJudiciario: NovoIndicador[] = [
     prioridade: 'alta',
     unidadeSerie: 'Denúncias',
     serieHistorica: [
-      { ano: '2018-2024', valor: '⏳ N/D', nota: 'Série disponível via Painel ONDH com filtro "intolerância religiosa" — pendente extração' },
+      { ano: '2018', valor: '⏳ N/D', nota: 'Painel ONDH não disponibiliza dados anteriores a 2020' },
+      { ano: '2019', valor: '⏳ N/D', nota: 'Painel ONDH não disponibiliza dados anteriores a 2020' },
+      { ano: '2020', valor: '566', nota: 'Disque 100 — Painel ONDH/MDHC' },
+      { ano: '2021', valor: '584', nota: 'Disque 100 — Painel ONDH/MDHC' },
+      { ano: '2022', valor: '898', nota: 'Disque 100 — Painel ONDH/MDHC' },
+      { ano: '2023', valor: '1.482', nota: 'Disque 100 — Painel ONDH/MDHC' },
+      { ano: '2024', valor: '2.472', nota: 'Disque 100 — Painel ONDH/MDHC' },
+      { ano: '2025', valor: '2.723', nota: 'Disque 100 — Painel ONDH/MDHC (parcial ou acumulado)' },
     ]
   },
   {
