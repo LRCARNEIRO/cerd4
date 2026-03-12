@@ -1,0 +1,21 @@
+[
+  {
+    "indicador": "Distorção idade-série no ensino médio por raça",
+    "baseline_cerd_iii": "Negros: 52,1% (2004) → 29% (2015)",
+    "keywords": [
+      "distorção",
+      "idade-série"
+    ],
+    "area": "Educação"
+  },
+  {
+    "indicador": "Adesão ao SINAPIR (série de adesões por período)",
+    "baseline_cerd_iii": "Instrumento institucional; atualização 2024/2025 necessária",
+    "keywords": [
+      "sinapir",
+      "adesões",
+      "igualdade racial"
+    ],
+    "area": "Adm Pública"
+  }
+]
