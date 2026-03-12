@@ -3,18 +3,80 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExternalLink, Search, Globe, Target, FileText } from 'lucide-react';
+import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown } from 'lucide-react';
 import { 
   odsRacialIndicators, 
   odsGroups, 
   getOdsColor, 
   TOTAL_ODS_RACIAL,
-  type OdsRacialIndicator 
+  type OdsRacialIndicator,
+  type OdsFormat
 } from '@/data/odsRacialIndicators';
+
+function formatValue(value: number | null, formato: OdsFormat): string {
+  if (value === null || value === undefined) return 'N/D';
+  if (formato === 'percent') return `${(value * 100).toFixed(2)}%`;
+  if (formato === 'money') return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  // float
+  return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+}
+
+const raceLabels = [
+  { key: 'amarela' as const, label: 'Amarela', color: 'hsl(45, 80%, 50%)' },
+  { key: 'indigena' as const, label: 'Indígena', color: 'hsl(25, 70%, 45%)' },
+  { key: 'negra' as const, label: 'Negra', color: 'hsl(270, 50%, 40%)' },
+  { key: 'branca' as const, label: 'Branca', color: 'hsl(210, 50%, 50%)' },
+];
+
+function SeriesTable({ indicator }: { indicator: OdsRacialIndicator }) {
+  const years = Object.keys(indicator.series).map(Number).sort();
+  if (years.length === 0) return null;
+
+  return (
+    <div className="mt-2 overflow-x-auto">
+      <table className="w-full text-[11px]">
+        <thead>
+          <tr className="border-b border-border">
+            <th className="text-left py-1 pr-2 font-medium text-muted-foreground">Ano</th>
+            {raceLabels.map(r => (
+              <th key={r.key} className="text-right py-1 px-1.5 font-medium" style={{ color: r.color }}>
+                {r.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {years.map(year => {
+            const d = indicator.series[year];
+            return (
+              <tr key={year} className="border-b border-border/50 hover:bg-muted/30">
+                <td className="py-1 pr-2 font-mono font-medium text-foreground">{year}</td>
+                {raceLabels.map(r => (
+                  <td key={r.key} className="text-right py-1 px-1.5 font-mono text-muted-foreground">
+                    {formatValue(d[r.key], indicator.formato)}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function OdsRacialTab() {
   const [search, setSearch] = useState('');
   const [odsFilter, setOdsFilter] = useState<string>('todos');
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   const filtered = odsRacialIndicators.filter(ind => {
     const matchSearch = !search || ind.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -24,7 +86,6 @@ export function OdsRacialTab() {
     return matchSearch && matchOds;
   });
 
-  // Agrupar por ODS
   const grouped = odsGroups.reduce((acc, group) => {
     const items = filtered.filter(ind => ind.group === group);
     if (items.length > 0) acc.push({ group, items });
@@ -43,9 +104,9 @@ export function OdsRacialTab() {
                 Plataforma ODS Racial — ODSR/UFPB
               </h3>
               <p className="text-sm text-muted-foreground">
-                Catálogo completo de <strong>{TOTAL_ODS_RACIAL} indicadores</strong> de igualdade étnico-racial, 
+                Catálogo completo de <strong>{TOTAL_ODS_RACIAL} indicadores</strong> de igualdade étnico-racial com séries temporais reais (2018-2024), 
                 organizados por Objetivos de Desenvolvimento Sustentável (ODS). 
-                Dados desagregados por raça/cor (Amarela, Branca, Negra, Indígena) com séries temporais 2018-2025.
+                Dados desagregados por raça/cor (Amarela, Branca, Negra, Indígena).
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="text-xs" style={{ backgroundColor: '#DD1367', color: 'white' }}>
@@ -102,7 +163,8 @@ export function OdsRacialTab() {
 
       {/* Contagem */}
       <p className="text-sm text-muted-foreground">
-        Exibindo <strong>{filtered.length}</strong> de {TOTAL_ODS_RACIAL} indicadores
+        Exibindo <strong>{filtered.length}</strong> de {TOTAL_ODS_RACIAL} indicadores — 
+        clique em um indicador para expandir a série temporal
       </p>
 
       {/* Indicadores agrupados por ODS */}
@@ -125,39 +187,59 @@ export function OdsRacialTab() {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="divide-y divide-border">
-                {items.map(ind => (
-                  <div key={ind.id} className="py-3 first:pt-0 last:pb-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground leading-tight">
-                          {ind.name}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {ind.fonte}
-                          </Badge>
-                          <span className="text-[10px] text-muted-foreground font-mono">
-                            {ind.id}
-                          </span>
-                          {ind.artigoCerd?.map(art => (
-                            <Badge key={art} variant="outline" className="text-[10px] px-1.5 py-0">
-                              <FileText className="w-2.5 h-2.5 mr-0.5" />{art}
+                {items.map(ind => {
+                  const isExpanded = expandedIds.has(ind.id);
+                  const years = Object.keys(ind.series).map(Number).sort();
+                  const yearRange = years.length > 0 ? `${years[0]}-${years[years.length - 1]}` : '';
+                  const formatoLabel = ind.formato === 'percent' ? '%' : ind.formato === 'money' ? 'R$' : '№';
+
+                  return (
+                    <div key={ind.id} className="py-3 first:pt-0 last:pb-0">
+                      <div 
+                        className="flex items-start justify-between gap-3 cursor-pointer"
+                        onClick={() => toggleExpand(ind.id)}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground leading-tight">
+                            {ind.name}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                              {ind.fonte}
                             </Badge>
-                          ))}
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                              {formatoLabel}
+                            </Badge>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {yearRange} · {years.length} anos
+                            </span>
+                            {ind.artigoCerd?.map(art => (
+                              <Badge key={art} variant="outline" className="text-[10px] px-1.5 py-0">
+                                <FileText className="w-2.5 h-2.5 mr-0.5" />{art}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <a
+                            href={ind.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-border hover:bg-accent transition-colors"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <Target className="w-3 h-3" />
+                            <span className="hidden sm:inline">ODSR</span>
+                          </a>
+                          <span className="text-xs text-muted-foreground">
+                            {isExpanded ? '▲' : '▼'}
+                          </span>
                         </div>
                       </div>
-                      <a
-                        href={ind.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-border hover:bg-accent transition-colors"
-                      >
-                        <Target className="w-3 h-3" />
-                        <span className="hidden sm:inline">Ver série</span>
-                      </a>
+                      {isExpanded && <SeriesTable indicator={ind} />}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -176,11 +258,11 @@ export function OdsRacialTab() {
       <Card className="bg-muted/50">
         <CardContent className="py-4">
           <p className="text-xs text-muted-foreground">
-            <strong>Nota Metodológica:</strong> Os indicadores são provenientes da Plataforma ODS Racial (ODSR/UFPB), 
-            vinculada ao Governo Federal. Os dados são desagregados por raça/cor (Amarela, Branca, Negra, Indígena) 
-            utilizando fontes primárias oficiais. Cada indicador possui deep link direto para a plataforma ODSR, 
-            onde podem ser consultadas as séries temporais completas e a metodologia de cálculo. 
-            Recorte temporal do projeto: 2018-2025.
+            <strong>Nota Metodológica:</strong> Dados extraídos exclusivamente das planilhas oficiais da Plataforma ODS Racial (ODSR/UFPB, 2018-2024). 
+            Nenhum dado foi inventado, projetado ou interpolado. Valores ausentes são exibidos como "N/D". 
+            Formato: percent = proporção (ex: 0.89 = 89%); float = taxa direta; money = R$. 
+            Fontes primárias: RAIS/MTE, DataSUS (SIM/SIH/SINAN/SINASC), INEP, TSE, CadÚnico/MDS. 
+            Links diretos apontam para a plataforma ODSR para consulta das metodologias de cálculo.
           </p>
         </CardContent>
       </Card>
