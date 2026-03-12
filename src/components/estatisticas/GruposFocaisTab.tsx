@@ -213,15 +213,18 @@ const indicadoresVulnerabilidade = {
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
+  // AUDITORIA 12/03/2026: percentualNegrosHomens REMOVIDO — dado não verificável
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
-    percentualVitimas: 47.8, percentualNegrosHomens: 79,
+    percentualVitimas: 47.8,
+    feminicidioNegras: 68.2, // Atlas 2025, p.57
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
     riscoRelativo: 2.0, riscoRelativo2017: 1.9, riscoSuperiorNegro: 3.0,
+    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado específico
     ano: 2021, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
