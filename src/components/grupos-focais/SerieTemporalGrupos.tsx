@@ -159,10 +159,10 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
       grupo: 'juventude_negra',
       dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro })),
       unidade: '%',
-      fonte: 'PNAD Contínua (SIDRA 7113)',
+      fonte: 'PNAD Contínua (SIDRA 6402)',
       interpretacao: 'menor_melhor',
       estimativa: true,
-      metodologia: 'Taxa geral negra; juventude 18-24 registra ~20,8% (2024)',
+      metodologia: 'Taxa geral negra — dado desagregado juventude 18-24 não localizado na SIDRA',
     },
   ];
 

@@ -83,8 +83,8 @@ const gruposFocaisData = {
     ],
     observacoesONU: ['32', '33', '34', '35', '36'],
     politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
-    indicadores: ['Taxa de homicídios 12-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
-    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,5x maior que jovens não negros.',
+    indicadores: ['Taxa de homicídios 15-29', 'Encarceramento', 'Evasão escolar'],
+    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,7x maior que jovens não negros (Atlas 2025).',
   },
   populacao_negra: {
     nome: 'População Negra (Preta + Parda)',
