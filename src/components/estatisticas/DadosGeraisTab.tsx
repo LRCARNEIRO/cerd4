@@ -21,6 +21,33 @@ import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function DadosGeraisTab() {
+  const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
+
+  // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
+  const desempregoChartData = useMemo(() => {
+    if (sidraData?.dados?.length) {
+      return sidraData.dados.map(d => ({
+        ano: d.ano,
+        desempregoNegro: d.negra,
+        desempregoBranco: d.branca,
+        desempregoPreta: d.preta,
+        desempregoParda: d.parda,
+        fonte: d.fonte,
+        live: true,
+      }));
+    }
+    // Fallback: dados estáticos
+    return indicadoresSocioeconomicos.map(d => ({
+      ano: d.ano,
+      desempregoNegro: d.desempregoNegro,
+      desempregoBranco: d.desempregoBranco,
+      fonte: d.fonte,
+      live: false,
+    }));
+  }, [sidraData]);
+
+  const isLiveData = desempregoChartData[0]?.live === true;
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
