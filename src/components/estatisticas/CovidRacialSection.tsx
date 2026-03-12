@@ -49,7 +49,7 @@ const FONTE_INTERSECCIONAL = [
 const excessoMortalidade = [
   { 
     indicador: 'Excesso de mortalidade (causas naturais, 2020)',
-    negros: '57% a mais que não negros',
+    negros: '57% a mais que brancos',
     naoNegros: 'Referência',
     valorNegros: 57,
     fonte: 'Raça e Saúde/SIM'
@@ -62,14 +62,14 @@ const excessoMortalidade = [
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Idosos 80+ pretos/pardos vs não negros (2020)',
+    indicador: 'Idosos 80+ pretos/pardos vs brancos (2020)',
     negros: 'Quase 2x mais mortes',
     naoNegros: 'Referência',
     valorNegros: 100,
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Homens negros vs não negros - excesso mortalidade',
+    indicador: 'Homens negros vs brancos - excesso mortalidade',
     negros: '55% maior',
     naoNegros: 'Referência',
     valorNegros: 55,
@@ -81,7 +81,7 @@ const excessoMortalidade = [
 // Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio)
 const letalidadeHospitalar = [
   { raca: 'Pretos e Pardos', letalidade: 55, sobrevivencia: 45 },
-  { raca: 'Não Negros', letalidade: 38, sobrevivencia: 62 },
+  { raca: 'Brancos', letalidade: 38, sobrevivencia: 62 },
   { raca: 'Indígenas', letalidade: 62, sobrevivencia: 38 },
 ];
 
@@ -111,7 +111,7 @@ const mortalidadeMaternaCovid = [
 // o que compromete a precisão das taxas desagregadas. Valores são estimativas
 // baseadas na parcela com informação de raça/cor preenchida.
 const vacinacaoRaca = [
-  { grupo: 'Não Negros', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
+  { grupo: 'Brancos', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
   { grupo: 'Pardos', cobertura1Dose: 84.2, coberturaCompleta: 74.8 },
   { grupo: 'Pretos', cobertura1Dose: 81.8, coberturaCompleta: 71.5 },
   { grupo: 'Indígenas', cobertura1Dose: 78.5, coberturaCompleta: 68.2 },
@@ -126,7 +126,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Idosos negros (60+)', 
-    impacto: 'Taxa de letalidade 1,5x maior que idosos não negros; menor acesso a UTI; menor cobertura vacinal inicial',
+    impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
     fonte: 'SIVEP-Gripe; NOIS/PUC-Rio'
   },
   { 
@@ -151,7 +151,7 @@ const interseccionalidadeCovid = [
   },
   { 
     grupo: 'Indígenas', 
-    impacto: 'Mortalidade hospitalar de 62% (vs 38% não negros); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
+    impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
     fonte: 'SIVEP-Gripe; SESAI/MS'
   },
   { 
@@ -177,7 +177,7 @@ export function CovidRacialSection() {
               </h3>
               <p className="text-sm text-muted-foreground">
                 A pandemia de COVID-19 expôs e aprofundou as desigualdades raciais estruturais no Brasil. 
-                Pessoas pretas e pardas morreram <strong>57% a mais</strong> do que não negras em 2020 
+                Pessoas pretas e pardas morreram <strong>57% a mais</strong> do que brancas em 2020 
                 (~36 mil óbitos em excesso). A análise interseccional revela que mulheres negras, idosos, 
                 indígenas, quilombolas, jovens periféricos e trabalhadores informais negros foram 
                 desproporcionalmente afetados.
@@ -198,7 +198,7 @@ export function CovidRacialSection() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Excesso de Mortalidade Negra (2020)</p>
             <p className="text-2xl font-bold text-destructive">+57%</p>
-            <p className="text-xs text-muted-foreground">vs não negros (causas naturais)</p>
+            <p className="text-xs text-muted-foreground">vs brancos (causas naturais)</p>
             <AuditFooter fontes={FONTE_RACA_SAUDE} compact />
           </CardContent>
         </Card>
@@ -214,7 +214,7 @@ export function CovidRacialSection() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
             <p className="text-2xl font-bold text-warning">62%</p>
-            <p className="text-xs text-muted-foreground">vs 38% não negros</p>
+            <p className="text-xs text-muted-foreground">vs 38% brancos</p>
             <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
           </CardContent>
         </Card>
@@ -259,7 +259,7 @@ export function CovidRacialSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e não negros (38%).
+              Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e brancos (38%).
             </p>
             <AuditFooter fontes={FONTE_SIVEP_NOIS} documentos={['CERD 2022 §24']} compact />
           </CardContent>
@@ -291,13 +291,13 @@ export function CovidRacialSection() {
                   />
                   <Legend />
                   <Line type="monotone" dataKey="negra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
-                  <Line type="monotone" dataKey="branca" name="Não Negra" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <p className="text-xs text-muted-foreground">
-                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a não negras.
+                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
@@ -321,7 +321,7 @@ export function CovidRacialSection() {
               <TableRow>
                 <TableHead>Indicador</TableHead>
                 <TableHead className="text-right">Negros (%)</TableHead>
-                <TableHead className="text-right">Não Negros (%)</TableHead>
+                <TableHead className="text-right">Brancos (%)</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead>Fonte</TableHead>
               </TableRow>

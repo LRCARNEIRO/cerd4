@@ -373,10 +373,10 @@ export function LacunasCerdTab() {
                       formatter={(value: number) => [`${value}%`, '']}
                     />
                     <Legend />
-                    <Line type="monotone" dataKey="superiorBranco" name="Superior — Não Negros" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="superiorBranco" name="Superior — Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="superiorNegro" name="Superior — Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="analfabetismoNegro" name="Analfabetismo — Negros" stroke="hsl(var(--destructive))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Não Negros" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Brancos" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -423,14 +423,14 @@ export function LacunasCerdTab() {
                     />
                     <Legend />
                     <Area type="monotone" dataKey="negros" name="Negros" fill="hsl(var(--destructive) / 0.3)" stroke="hsl(var(--destructive))" strokeWidth={2} />
-                    <Area type="monotone" dataKey="brancos" name="Não Negros" fill="hsl(var(--chart-1) / 0.3)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Area type="monotone" dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1) / 0.3)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                   <strong>Análise §23:</strong> Diferença desemprego negros vs não negros: {dadosDesempregoHistorico[0]?.diferenca}pp (2018) → {dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.diferenca}pp ({dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.ano}).
-                   Pandemia agravou disparidades. Razão de renda negra/não negra ≈ 59%.
+                   <strong>Análise §23:</strong> Diferença desemprego negros vs brancos: {dadosDesempregoHistorico[0]?.diferenca}pp (2018) → {dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.diferenca}pp ({dadosDesempregoHistorico[dadosDesempregoHistorico.length - 1]?.ano}).
+                   Pandemia agravou disparidades. Razão de renda negra/branca ≈ 59%.
                 </p>
               </div>
               <AuditFooter 
@@ -612,15 +612,15 @@ export function LacunasCerdTab() {
                       }}
                     />
                     <Legend />
-                     <Line yAxisId="left" type="monotone" dataKey="brancos" name="Não Negros (R$)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                     <Line yAxisId="left" type="monotone" dataKey="brancos" name="Brancos (R$)" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
                      <Line yAxisId="left" type="monotone" dataKey="negros" name="Negros (R$)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
-                     <Line yAxisId="right" type="monotone" dataKey="razao" name="Razão (Negros/Não Negros)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" />
+                     <Line yAxisId="right" type="monotone" dataKey="razao" name="Razão (Negros/Brancos)" stroke="hsl(var(--warning))" strokeWidth={2} strokeDasharray="5 5" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 p-3 bg-info/5 border border-info/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §23:</strong> Razão renda negra/não negra: {dadosRendaHistorico[0]?.razao} (2018) → {dadosRendaHistorico[dadosRendaHistorico.length - 1]?.razao} ({dadosRendaHistorico[dadosRendaHistorico.length - 1]?.ano}).
+                  <strong>Análise §23:</strong> Razão renda negra/branca: {dadosRendaHistorico[0]?.razao} (2018) → {dadosRendaHistorico[dadosRendaHistorico.length - 1]?.razao} ({dadosRendaHistorico[dadosRendaHistorico.length - 1]?.ano}).
                   Renda negra cresceu de R${dadosRendaHistorico[0]?.negros} para R${dadosRendaHistorico[dadosRendaHistorico.length - 1]?.negros}, mas gap proporcional não se reduz.
                 </p>
               </div>

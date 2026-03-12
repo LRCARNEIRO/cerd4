@@ -159,7 +159,7 @@ export default function Conclusoes() {
         <tr><td>Feminicídio negro (%)</td><td>${fem2018L.percentualNegras}%</td><td>${fem2024L.percentualNegras}%</td><td class="stat-change negative">+${(fem2024L.percentualNegras - fem2018L.percentualNegras).toFixed(1)}pp</td></tr>
         <tr><td>Superior completo negro (%)</td><td>${edu2018L.superiorNegroPercent}%</td><td>${edu2024L.superiorNegroPercent}%</td><td class="stat-change positive">+${(edu2024L.superiorNegroPercent - edu2018L.superiorNegroPercent).toFixed(1)}pp</td></tr>
         <tr><td>Renda média negra (R$)</td><td>R$ ${eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaNegra}</td><td class="stat-change positive">+${((eco2024L.rendaMediaNegra / eco2018L.rendaMediaNegra - 1) * 100).toFixed(0)}%</td></tr>
-        <tr><td>Gap renda não negra-negra (R$)</td><td>R$ ${eco2018L.rendaMediaBranca - eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaBranca - eco2024L.rendaMediaNegra}</td><td class="stat-change negative">Ampliou</td></tr>
+        <tr><td>Gap renda branca-negra (R$)</td><td>R$ ${eco2018L.rendaMediaBranca - eco2018L.rendaMediaNegra}</td><td>R$ ${eco2024L.rendaMediaBranca - eco2024L.rendaMediaNegra}</td><td class="stat-change negative">Ampliou</td></tr>
       </tbody>
     </table>`;
 
@@ -299,7 +299,7 @@ export default function Conclusoes() {
               <CardContent className="pt-3 pb-3 text-center">
                 <p className="text-xs text-muted-foreground">Razão renda</p>
                 <p className="text-lg font-bold text-warning">{(eco2024.rendaMediaBranca/eco2024.rendaMediaNegra).toFixed(2)}x</p>
-                <p className="text-xs text-muted-foreground">Negro = {(eco2024.rendaMediaNegra/eco2024.rendaMediaBranca*100).toFixed(0)}% do não negro</p>
+                <p className="text-xs text-muted-foreground">Negro = {(eco2024.rendaMediaNegra/eco2024.rendaMediaBranca*100).toFixed(0)}% do branco</p>
               </CardContent>
             </Card>
           </div>
@@ -518,7 +518,7 @@ export default function Conclusoes() {
                       vítimas negras de homicídio subiram de {seg2018.percentualVitimasNegras}% para {seg2024.percentualVitimasNegras}%, 
                       feminicídio de mulheres negras de {fem2018.percentualNegras}% para {fem2024.percentualNegras}%, 
                       letalidade policial negra de {seg2018.letalidadePolicial}% para {seg2024.letalidadePolicial}%, 
-                      e o gap absoluto de renda não negra-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
+                      e o gap absoluto de renda branca-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
                       A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica e apenas 2 UFs mantêm Fundos de Igualdade Racial ativos, 
                       evidenciando que os avanços federais não capilarizaram para governos subnacionais. 
                       A COVID-19 (2020-2022) aprofundou todas as disparidades, e a recuperação pós-pandemia atinge desigualmente a população negra.

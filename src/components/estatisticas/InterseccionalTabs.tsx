@@ -72,7 +72,7 @@ export function RacaGeneroTab() {
                   />
                   <Legend />
                   <Bar dataKey="mulherNegra" name="Mulher Negra" fill="hsl(var(--destructive))" stackId="a" />
-                  <Bar dataKey="mulherBranca" name="Mulher Não Negra" fill="hsl(var(--chart-1))" stackId="a" />
+                  <Bar dataKey="mulherBranca" name="Mulher Branca" fill="hsl(var(--chart-1))" stackId="a" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -104,8 +104,8 @@ export function RacaGeneroTab() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Indicador</TableHead>
-                  <TableHead className="text-right">H. Não Negro</TableHead>
-                  <TableHead className="text-right">M. Não Negra</TableHead>
+                  <TableHead className="text-right">H. Branco</TableHead>
+                  <TableHead className="text-right">M. Branca</TableHead>
                   <TableHead className="text-right">H. Negro</TableHead>
                   <TableHead className="text-right text-destructive">M. Negra</TableHead>
                   <TableHead className="text-right">Razão M.N/H.B</TableHead>
@@ -155,9 +155,9 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
           <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Dupla Penalidade no Mercado de Trabalho</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            A mulher negra recebe <strong>{fmt(narrativaTrabalho.razaoRendaPct)}%</strong> do rendimento do homem não negro, demonstrando que raça e gênero 
+            A mulher negra recebe <strong>{fmt(narrativaTrabalho.razaoRendaPct)}%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
             operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra ({fmt(narrativaTrabalho.desempregoMulherNegra)}%) é 
-            {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina não negra ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
+            {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina branca ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
@@ -306,9 +306,9 @@ export function RacaGeneroTab() {
               <TableRow>
                 <TableHead>Indicador</TableHead>
                 <TableHead className="text-right">M. Negra</TableHead>
-                <TableHead className="text-right">M. Não Negra</TableHead>
+                <TableHead className="text-right">M. Branca</TableHead>
                 <TableHead className="text-right">H. Negro</TableHead>
-                <TableHead className="text-right">H. Não Negro</TableHead>
+                <TableHead className="text-right">H. Branco</TableHead>
                 <TableHead>Nota</TableHead>
               </TableRow>
             </TableHeader>
@@ -552,7 +552,7 @@ export function LgbtqiaTab() {
             <Rainbow className="w-5 h-5 text-primary" />
             Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)
           </CardTitle>
-          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Não Negros {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
+          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Brancos {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -571,7 +571,7 @@ export function LgbtqiaTab() {
                 />
                 <Legend />
                 <Bar dataKey="negros" name="Negros (pretos e pardos)" fill="hsl(var(--chart-1))" />
-                <Bar dataKey="brancos" name="Não Negros" fill="hsl(var(--muted-foreground))" opacity={0.5} />
+                <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--muted-foreground))" opacity={0.5} />
                 <Bar dataKey="indigenas" name="Indígenas" fill="hsl(var(--destructive))" opacity={0.7} />
               </BarChart>
             </ResponsiveContainer>
@@ -600,7 +600,7 @@ export function LgbtqiaTab() {
                   <TableHead>Ano</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead className="text-right">% Negros</TableHead>
-                  <TableHead className="text-right">% Não Negros</TableHead>
+                  <TableHead className="text-right">% Brancos</TableHead>
                   <TableHead className="text-right">% Indígenas</TableHead>
                   <TableHead>Dossiê</TableHead>
                 </TableRow>
