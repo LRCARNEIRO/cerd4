@@ -299,7 +299,7 @@ export default function Conclusoes() {
               <CardContent className="pt-3 pb-3 text-center">
                 <p className="text-xs text-muted-foreground">Razão renda</p>
                 <p className="text-lg font-bold text-warning">{(eco2024.rendaMediaBranca/eco2024.rendaMediaNegra).toFixed(2)}x</p>
-                <p className="text-xs text-muted-foreground">Negro = {(eco2024.rendaMediaNegra/eco2024.rendaMediaBranca*100).toFixed(0)}% do branco</p>
+                <p className="text-xs text-muted-foreground">Negro = {(eco2024.rendaMediaNegra/eco2024.rendaMediaBranca*100).toFixed(0)}% do não negro</p>
               </CardContent>
             </Card>
           </div>
