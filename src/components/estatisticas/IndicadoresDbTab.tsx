@@ -9,7 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
-import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search, CheckCircle2, CircleDashed } from 'lucide-react';
+import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink, BookOpen, Download, Printer, Search, CheckCircle2, CircleDashed, AlertTriangle, Plus } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
@@ -965,10 +965,122 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         </div>
       </div>
 
-      {/* Split indicators: series vs single-point */}
+      {/* Novos Indicadores — Lacunas CERD III */}
       {(() => {
-        const withSeries = indicadoresFiltrados.filter(i => hasTimeSeries(i.dados || {}));
-        const singlePoint = indicadoresFiltrados.filter(i => !hasTimeSeries(i.dados || {}));
+        const CERD_GAP_SUBCATS = new Set([
+          'Trabalho Infantil', 'Trabalho Escravo', 'Intolerância Religiosa',
+          'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
+          'Conflitos Fundiários', 'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+        ]);
+        const cerdGapIndicadores = indicadoresFiltrados.filter(i => 
+          i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)
+        );
+        const withData = cerdGapIndicadores.filter(i => {
+          const d = i.dados || {};
+          const nota = typeof d === 'object' ? (d as any).nota : '';
+          return nota ? !String(nota).startsWith('⏳') : true;
+        });
+        const pending = cerdGapIndicadores.filter(i => {
+          const d = i.dados || {};
+          const nota = typeof d === 'object' ? (d as any).nota : '';
+          return nota ? String(nota).startsWith('⏳') : false;
+        });
+
+        if (cerdGapIndicadores.length === 0) return null;
+
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-8 w-1 bg-chart-4 rounded-full" />
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-chart-4" />
+                  Novos Indicadores — Lacunas CERD III ({cerdGapIndicadores.length})
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Indicadores coletados para preencher lacunas identificadas no cruzamento CERD III × Sistema · 
+                  <span className="text-success font-medium">{withData.length} com dados</span> · 
+                  <span className="text-chart-4 font-medium">{pending.length} pendentes de verificação</span>
+                </p>
+              </div>
+            </div>
+
+            {/* With data — show as series or retrato */}
+            {withData.map(ind => {
+              const hasSeries = hasTimeSeries(ind.dados || {});
+              return hasSeries 
+                ? <IndicadorDetail key={ind.id} indicador={ind} highlighted={highlightedId === ind.id} />
+                : null;
+            })}
+
+            {/* Retrato pontual for single-point new indicators */}
+            <RetratoPontualSection indicadores={withData.filter(i => !hasTimeSeries(i.dados || {}))} />
+
+            {/* Pending indicators */}
+            {pending.length > 0 && (
+              <Card className="border-l-4 border-l-chart-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-chart-4" />
+                    Indicadores Pendentes de Verificação Humana ({pending.length})
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Deep links e fontes identificados — aguardando extração manual dos dados numéricos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs w-[30%]">Indicador</TableHead>
+                        <TableHead className="text-xs">Categoria</TableHead>
+                        <TableHead className="text-xs">Fonte</TableHead>
+                        <TableHead className="text-xs">Status</TableHead>
+                        <TableHead className="text-xs">Deep Link</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pending.map(ind => (
+                        <TableRow key={ind.id}>
+                          <TableCell className="text-sm font-medium">{ind.nome}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px]">{ind.categoria}</Badge>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{ind.fonte}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4 border-chart-4/30">
+                              ⏳ Pendente
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {ind.url_fonte && (
+                              <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer" 
+                                 className="text-xs text-primary hover:underline flex items-center gap-1">
+                                <ExternalLink className="w-3 h-3" /> Fonte
+                              </a>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Split indicators: series vs single-point (excluding CERD gap ones already shown above) */}
+      {(() => {
+        const CERD_GAP_SUBCATS = new Set([
+          'Trabalho Infantil', 'Trabalho Escravo', 'Intolerância Religiosa',
+          'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
+          'Conflitos Fundiários', 'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+        ]);
+        const nonGap = indicadoresFiltrados.filter(i => !(i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)));
+        const withSeries = nonGap.filter(i => hasTimeSeries(i.dados || {}));
+        const singlePoint = nonGap.filter(i => !hasTimeSeries(i.dados || {}));
         
         return (
           <>
