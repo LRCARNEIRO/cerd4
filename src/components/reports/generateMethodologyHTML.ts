@@ -128,7 +128,7 @@ export function generateMethodologyHTML(): string {
           nome: 'Juventude',
           icone: '👶',
           origem: 'Observações Finais §32-36 + Atlas da Violência 2025',
-          motivacao: `O Comitê CERD dedicou 5 parágrafos (§32-36) à <strong>violência contra a juventude negra</strong>, tornando este o tema prioritário das Observações Finais 2022. A aba apresenta dados do Atlas da Violência 2025 (IVJ-N — Índice de Vulnerabilidade da Juventude Negra: risco 2,0x maior, chegando a 3,0x entre jovens com ensino superior), homicídios de jovens (47,8% das vítimas têm 15-29 anos, 79% são negros) e o Programa Juventude Negra Viva (Decreto 11.956/2024).`,
+          motivacao: `O Comitê CERD dedicou 5 parágrafos (§32-36) à <strong>violência contra a juventude negra</strong>, tornando este o tema prioritário das Observações Finais 2022. A aba apresenta dados do Atlas da Violência 2025 (IVJ-N — Índice de Vulnerabilidade da Juventude Negra: risco 2,0x maior entre jovens com ensino fundamental incompleto, chegando a 3,0x entre jovens com ensino superior em 2021), homicídios de jovens (47,8% das vítimas têm 15-29 anos) e o Programa Juventude Negra Viva (Decreto 11.956/2024).`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'CERD-Follow-up-Brasil-2026.pdf'],
           promptOrigem: 'Consolidar dados sobre violência contra juventude negra conforme §32-36 das Observações Finais, usando Atlas da Violência 2025 e FBSP, incluindo IVJ-N e políticas específicas.',
           artigos: ['Art. V.b (Segurança pessoal)', 'Art. II (Medidas de eliminação)', 'Art. V.e (Direitos sociais)'],
