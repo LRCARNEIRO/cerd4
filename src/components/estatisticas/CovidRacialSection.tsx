@@ -49,29 +49,29 @@ const FONTE_INTERSECCIONAL = [
 const excessoMortalidade = [
   { 
     indicador: 'Excesso de mortalidade (causas naturais, 2020)',
-    negros: '57% a mais que brancos',
-    brancos: 'Referência',
+    negros: '57% a mais que não negros',
+    naoNegros: 'Referência',
     valorNegros: 57,
     fonte: 'Raça e Saúde/SIM'
   },
   { 
     indicador: 'Óbitos em excesso de pretos e pardos (2020)',
     negros: '~36 mil óbitos a mais',
-    brancos: '—',
+    naoNegros: '—',
     valorNegros: 36000,
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Idosos 80+ pretos/pardos vs brancos (2020)',
+    indicador: 'Idosos 80+ pretos/pardos vs não negros (2020)',
     negros: 'Quase 2x mais mortes',
-    brancos: 'Referência',
+    naoNegros: 'Referência',
     valorNegros: 100,
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Homens negros vs brancos - excesso mortalidade',
+    indicador: 'Homens negros vs não negros - excesso mortalidade',
     negros: '55% maior',
-    brancos: 'Referência',
+    naoNegros: 'Referência',
     valorNegros: 55,
     fonte: 'Raça e Saúde/SIM'
   },
