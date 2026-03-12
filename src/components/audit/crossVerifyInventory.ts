@@ -122,7 +122,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-09',
-    indicador: 'Desemprego jovens brancos (%)',
+    indicador: 'Desemprego jovens não negros (%)',
     valor_declarado: 11.5,
     fonte_declarada: 'PNAD Contínua 2024 — IBGE/SIDRA',
     tipo_fonte: 'web',
