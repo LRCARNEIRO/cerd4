@@ -1122,7 +1122,7 @@ export default function GruposFocais() {
                 <CardContent>
                   <div className="text-center mb-4">
                     <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
-                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p>
+                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
                     <p className="font-medium text-muted-foreground">Evolução:</p>

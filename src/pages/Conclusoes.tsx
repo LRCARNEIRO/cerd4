@@ -518,7 +518,7 @@ export default function Conclusoes() {
                       vítimas negras de homicídio subiram de {seg2018.percentualVitimasNegras}% para {seg2024.percentualVitimasNegras}%, 
                       feminicídio de mulheres negras de {fem2018.percentualNegras}% para {fem2024.percentualNegras}%, 
                       letalidade policial negra de {seg2018.letalidadePolicial}% para {seg2024.letalidadePolicial}%, 
-                      e o gap absoluto de renda branca-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
+                      e o gap absoluto de renda não negra-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
                       A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica e apenas 2 UFs mantêm Fundos de Igualdade Racial ativos, 
                       evidenciando que os avanços federais não capilarizaram para governos subnacionais. 
                       A COVID-19 (2020-2022) aprofundou todas as disparidades, e a recuperação pós-pandemia atinge desigualmente a população negra.
