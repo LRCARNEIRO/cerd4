@@ -33,33 +33,9 @@ interface NovoIndicador {
 // StatisticsData.ts (segurancaPublica, feminicidioSerie, juventudeNegra, jovensNegrosViolencia)
 const indicadoresSeguranca: NovoIndicador[] = [];
 
+// sau-1 (mortalidade materna) e sau-2 (mortalidade infantil) REMOVIDOS —
+// já existem em StatisticsData.ts (saudeSerieHistorica + metodologias)
 const indicadoresSaude: NovoIndicador[] = [
-  {
-    id: 'sau-1',
-    nome: 'Mortalidade materna por raça/cor',
-    descricao: 'Razão de mortalidade materna desagregada por raça/cor',
-    fonte: 'Sistema de Informações sobre Mortalidade',
-    siglaFonte: 'SIM/DataSUS',
-    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Dados de mortalidade materna por raça disponíveis via TabNet/SIM — consultar diretamente com filtro raça/cor. Valores específicos pendentes de verificação humana via TabNet.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'sau-2',
-    nome: 'Mortalidade infantil por raça/cor',
-    descricao: 'Taxa de mortalidade infantil (< 1 ano) por raça/cor',
-    fonte: 'Sistema de Informações sobre Nascidos Vivos',
-    siglaFonte: 'SINASC/DataSUS',
-    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: mort. infantil negra 14,5/mil NV → 2024: 11,8. Branca: 10,2 → 8,5. Diferença: negros ainda 39% acima dos brancos. Indígenas: 38,8/mil NV (SESAI 2023).',
-    prioridade: 'alta'
-  },
   {
     id: 'sau-3',
     nome: 'Cobertura de pré-natal por raça/cor',
