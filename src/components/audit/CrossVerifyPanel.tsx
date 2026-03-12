@@ -10,7 +10,12 @@ import {
   Play, Loader2, CheckCircle2, XCircle, AlertTriangle,
   Search, Database, FileText, Globe, Download
 } from 'lucide-react';
-import { JUVENTUDE_INVENTORY } from './crossVerifyInventory';
+import { JUVENTUDE_INVENTORY, DADOS_GERAIS_INVENTORY, type IndicatorToVerify } from './crossVerifyInventory';
+
+const INVENTORIES: Record<string, { label: string; items: IndicatorToVerify[] }> = {
+  'dados-gerais': { label: 'Dados Gerais', items: DADOS_GERAIS_INVENTORY },
+  'juventude': { label: 'Juventude', items: JUVENTUDE_INVENTORY },
+};
 
 interface VerifyResult {
   id: string;
