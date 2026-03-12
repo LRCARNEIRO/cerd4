@@ -307,7 +307,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     unidadeSerie: '% candidatos negros (pretos+pardos)',
     serieHistorica: [
       { ano: '2014 (gerais)', valor: '46,7%', fonte: 'TSE Repositório Dados Eleitorais' },
-      { ano: '2016 (munic.)', valor: '⏳ N/D', nota: '1ª vez que negros superaram brancos — valor exato pendente' },
+      { ano: '2016 (munic.)', valor: '⏳ N/D', nota: '1ª vez que negros superaram não negros — valor exato pendente' },
       { ano: '2018 (gerais)', valor: '51,7%', fonte: 'TSE Repositório Dados Eleitorais', nota: '1ª vez >50% em gerais' },
       { ano: '2020 (munic.)', valor: '52,2%', fonte: 'TSE Repositório Dados Eleitorais' },
       { ano: '2022 (gerais)', valor: '51,2%', fonte: 'TSE Repositório Dados Eleitorais' },
