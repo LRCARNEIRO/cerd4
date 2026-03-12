@@ -59,14 +59,29 @@ Deno.serve(async (req) => {
       );
     }
 
-    const rawData = await resp.json();
+    const respText = await resp.text();
+    console.log('SIDRA raw response length:', respText.length);
+    console.log('SIDRA raw first 500 chars:', respText.substring(0, 500));
+
+    let rawData: any[];
+    try {
+      rawData = JSON.parse(respText);
+    } catch {
+      console.error('Failed to parse SIDRA JSON');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Resposta SIDRA não é JSON válido', raw: respText.substring(0, 200) }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Primeira linha é header, dados começam no índice 1
     const dataRows = rawData.slice(1);
 
     // Log da estrutura real para debug
     if (dataRows.length > 0) {
-      console.log('SIDRA row keys:', Object.keys(dataRows[0]));
-      console.log('SIDRA first row:', JSON.stringify(dataRows[0]));
+      console.log('SIDRA row keys:', JSON.stringify(Object.keys(dataRows[0])));
+      console.log('SIDRA row 0:', JSON.stringify(dataRows[0]));
+      console.log('SIDRA row 1:', JSON.stringify(dataRows[1]));
     }
 
     // Agrupar por trimestre
