@@ -800,6 +800,7 @@ export function DeficienciaTab() {
 }
 
 export function JuventudeTab() {
+  const { data: juventudeNegra = [], isLoading: isLoadingJuventude } = useJuventudeAuditados();
   return (
     <div className="space-y-6">
       {/* Atlas da Violência 2025 — Cards de Juventude */}
