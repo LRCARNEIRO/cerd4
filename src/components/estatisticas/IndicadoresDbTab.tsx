@@ -563,13 +563,16 @@ function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
   return html;
 }
 
-export function IndicadoresDbTab() {
+interface IndicadoresDbTabProps {
+  filtroAuditoria?: 'todos' | 'auditados' | 'pendentes';
+}
+
+export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTabProps) {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
 
   const typedIndicadores = (indicadores || []) as IndicadorData[];
 
