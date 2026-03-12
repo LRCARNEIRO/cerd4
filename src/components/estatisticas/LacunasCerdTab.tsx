@@ -376,7 +376,7 @@ export function LacunasCerdTab() {
                     <Line type="monotone" dataKey="superiorBranco" name="Superior — Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="superiorNegro" name="Superior — Negros" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
                     <Line type="monotone" dataKey="analfabetismoNegro" name="Analfabetismo — Negros" stroke="hsl(var(--destructive))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Não Negros" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="analfabetismoBranco" name="Analfabetismo — Brancos" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
