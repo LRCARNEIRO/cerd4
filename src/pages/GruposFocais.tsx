@@ -1241,7 +1241,15 @@ O indicador apresenta um viés sistemático: quem preenche a cor/raça no atesta
 
 CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir esse viés vinculando os microdados do SIM com os do SINASC via software R, atribuindo à criança falecida a cor/raça da mãe (autodeclarada no SINASC). Com as restrições da LGPD, esse procedimento de linkage nominal não é mais viável.
 
-Ref.: Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013.`}
+Ref.: ver links abaixo.`}
+                  </div>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    <a href="https://www.scielo.br/j/csp/a/YqR67bJXrZBZ6RRmRvCfMJP/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> Chor & Lima — Mortalidade infantil segundo cor ou raça (Cad. Saúde Pública, 2005)
+                    </a>
+                    <a href="https://portalantigo.ipea.gov.br/agencia/images/stories/PDFs/nota_tecnica/131119_notatecnicadiest10.pdf" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> IPEA Nota Técnica nº 10 — Vidas Perdidas e Racismo no Brasil (2013)
+                    </a>
                   </div>
                 </details>
 
