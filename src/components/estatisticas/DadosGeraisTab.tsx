@@ -17,11 +17,13 @@ import {
 } from './StatisticsData';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
+import { useSidraRenda } from '@/hooks/useSidraRenda';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
+  const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
 
   // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
   const desempregoChartData = useMemo(() => {
@@ -47,6 +49,30 @@ export function DadosGeraisTab() {
   }, [sidraData]);
 
   const isLiveData = desempregoChartData[0]?.live === true;
+
+  // Renda: API SIDRA em tempo real com fallback para estáticos
+  const rendaChartData = useMemo(() => {
+    if (sidraRendaData?.dados?.length) {
+      return sidraRendaData.dados.map(d => ({
+        ano: d.ano,
+        rendaMediaNegra: d.negra,
+        rendaMediaBranca: d.branca,
+        rendaPreta: d.preta,
+        rendaParda: d.parda,
+        fonte: d.fonte,
+        live: true,
+      }));
+    }
+    return indicadoresSocioeconomicos.map(d => ({
+      ano: d.ano,
+      rendaMediaNegra: d.rendaMediaNegra,
+      rendaMediaBranca: d.rendaMediaBranca,
+      live: false,
+    }));
+  }, [sidraRendaData]);
+
+  const isRendaLive = rendaChartData[0]?.live === true;
+
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -244,10 +270,21 @@ export function DadosGeraisTab() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Renda */}
             <div>
-              <h4 className="text-sm font-medium mb-3">Renda Média Mensal (R$)</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="text-sm font-medium">Renda Média Mensal (R$)</h4>
+                {rendaLoading ? (
+                  <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
+                ) : isRendaLive ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : (
+                  <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchRenda()}>
+                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                  </Badge>
+                )}
+              </div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={indicadoresSocioeconomicos}>
+                  <LineChart data={rendaChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
@@ -259,11 +296,19 @@ export function DadosGeraisTab() {
                         borderRadius: '8px'
                       }}
                     />
-                    <Line type="monotone" dataKey="rendaMediaNegra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} />
-                    <Line type="monotone" dataKey="rendaMediaBranca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Legend />
+                    <Line type="monotone" dataKey="rendaMediaNegra" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="rendaMediaBranca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    {isRendaLive ? <Line type="monotone" dataKey="rendaPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
+                    {isRendaLive ? <Line type="monotone" dataKey="rendaParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} /> : null}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              {isRendaLive && sidraRendaData?.nota_metodologica && (
+                <p className="text-[10px] text-muted-foreground mt-1 italic">
+                  ℹ️ {sidraRendaData.nota_metodologica}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://sidra.ibge.gov.br/tabela/6405" target="_blank" rel="noopener noreferrer" className="hover:underline">
                   SIDRA Tabela 6405 — Rendimento médio por cor/raça
