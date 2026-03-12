@@ -266,12 +266,14 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos lares monoparentais femininos são chefiados por mulheres negras, que respondem 
-            por <strong>{fmt(narrativaChefia.cadUnicoNegras)}%</strong> das inscritas no CadÚnico (vs {fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas — razão {fmt(narrativaChefia.razaoCadUnico)}×). A insegurança alimentar atinge {fmt(narrativaChefia.domiciliosIA, 0)}% desses domicílios, 
+            <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos {(narrativaChefia.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras 
+            ({(narrativaChefia.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022).
+            {narrativaChefia.cadUnicoNegras != null ? ` Respondem por ${fmt(narrativaChefia.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas).` : ' Dados CadÚnico pendentes de verificação.'}
+            {' '}A insegurança alimentar atinge {fmt(narrativaChefia.domiciliosIA, 0)}% desses domicílios, 
             com {fmt(narrativaChefia.domiciliosFome)}% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
             gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: RASEAM 2023 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
+          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022/SIDRA 10179-10182 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
         </div>
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>

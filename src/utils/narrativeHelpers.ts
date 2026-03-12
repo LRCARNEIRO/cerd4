@@ -94,13 +94,19 @@ export const narrativaTrabalho = {
 
 export const narrativaChefia = {
   percentualNegras: chefiaFamiliarRacaGenero.percentualNegras,
+  totalMulheres: chefiaFamiliarRacaGenero.mulheresChefesMonoparentais,
+  totalMulheresNegras: chefiaFamiliarRacaGenero.mulheresNegrasChefesMonoparentais,
+  totalHomens: chefiaFamiliarRacaGenero.homensChefesMonoparentais,
+  totalHomensNegros: chefiaFamiliarRacaGenero.homensNegrosChefesMonoparentais,
   cadUnicoNegras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
   cadUnicoBrancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
-  razaoCadUnico: +(chefiaFamiliarRacaGenero.cadUnicoMulheresNegras / chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas).toFixed(1),
   domiciliosIA: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
   domiciliosFome: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
   get texto() {
-    return `${fmt(this.percentualNegras)}% dos lares monoparentais femininos são chefiados por mulheres negras, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas — razão ${fmt(this.razaoCadUnico)}×). A insegurança alimentar atinge ${fmt(this.domiciliosIA, 0)}% desses domicílios, com ${fmt(this.domiciliosFome)}% em situação de fome. O cruzamento revela um ciclo de vulnerabilidade estrutural onde gênero e raça se retroalimentam na reprodução da pobreza intergeracional.`;
+    const cadUnicoTexto = this.cadUnicoNegras != null && this.cadUnicoBrancas != null
+      ? `, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas)`
+      : ' (dados CadÚnico pendentes de verificação)';
+    return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A insegurança alimentar atinge ${fmt(this.domiciliosIA, 0)}% desses domicílios, com ${fmt(this.domiciliosFome)}% em situação de fome. O cruzamento revela um ciclo de vulnerabilidade estrutural onde gênero e raça se retroalimentam na reprodução da pobreza intergeracional.`;
   },
 } as const;
 
