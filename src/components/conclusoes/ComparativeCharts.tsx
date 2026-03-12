@@ -362,7 +362,7 @@ export function DesigualdadeEvolucaoChart() {
               <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Line type="monotone" dataKey="razaoRenda" name="Renda (branco/negro)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
               <Line type="monotone" dataKey="razaoDesemprego" name="Desemprego (negro/branco)" stroke="hsl(var(--chart-4))" strokeWidth={2} />
-              <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negro/branco)" stroke="hsl(var(--destructive))" strokeWidth={2} />
+              <Line type="monotone" dataKey="razaoHomicidio" name="Homicídio (negro/não negro)" stroke="hsl(var(--destructive))" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
         </div>
