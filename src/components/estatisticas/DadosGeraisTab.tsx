@@ -373,29 +373,28 @@ export function DadosGeraisTab() {
             {/* Pobreza */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <h4 className="text-sm font-medium">Taxa de Pobreza por Raça (%) — Linha US$6,85/dia</h4>
+                <h4 className="text-sm font-medium">Taxa de Pobreza: Pretos × Brancos (%) — Linha US$6,85/dia</h4>
                 <Badge variant="outline" className="text-[10px] gap-1 border-emerald-300 text-emerald-700">
-                  SIS/IBGE — Dados verificados (2022-2024)
+                  SIS/IBGE — Dados verificados (2022-2023)
                 </Badge>
               </div>
               {(() => {
-                const pobrezaData = indicadoresSocioeconomicos.filter(d => d.pobreza_negra != null || d.pobreza_branca != null);
-                if (pobrezaData.length === 0) {
-                  return (
-                    <div className="h-48 flex items-center justify-center bg-muted/30 rounded-lg border border-dashed border-muted-foreground/30">
-                      <p className="text-sm text-muted-foreground">⏳ N/D — Sem dados verificados disponíveis</p>
-                    </div>
-                  );
-                }
+                // Dados verificados SIS/IBGE:
+                // 2022 (SIS 2023): Pretos/Pardos 40,0% | Brancos 21,0% — dado combinado (preto separado não publicado)
+                // 2023 (SIS 2024): Pretos 30,8% | Brancos 17,7%
+                const pobrezaBarData = [
+                  { ano: '2022', pretos: 40.0, brancos: 21.0, nota: 'Pretos/Pardos (combinado)' },
+                  { ano: '2023', pretos: 30.8, brancos: 17.7, nota: 'Pretos (desagregado)' },
+                ];
                 return (
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={pobrezaData}>
+                      <BarChart data={pobrezaBarData} barGap={4}>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
-                        <YAxis tick={{ fontSize: 10 }} domain={[0, 50]} />
+                        <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+                        <YAxis tick={{ fontSize: 10 }} domain={[0, 50]} unit="%" />
                         <Tooltip 
-                          formatter={(value: number) => [`${value}%`, '']}
+                          formatter={(value: number, name: string) => [`${value}%`, name]}
                           contentStyle={{
                             backgroundColor: 'hsl(var(--card))',
                             border: '1px solid hsl(var(--border))',
@@ -403,15 +402,15 @@ export function DadosGeraisTab() {
                           }}
                         />
                         <Legend />
-                        <Line type="monotone" dataKey="pobreza_negra" name="Pretos/Pardos" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 4 }} connectNulls={false} />
-                        <Line type="monotone" dataKey="pobreza_branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 4 }} connectNulls={false} />
-                      </LineChart>
+                        <Bar dataKey="pretos" name="Pretos" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 );
               })()}
               <p className="text-[10px] text-muted-foreground mt-1 italic">
-                ⚠️ Linha de pobreza Banco Mundial: US$6,85 PPC 2017/dia (≈ R$665/mês). Dados de 2018-2021 não disponíveis com essa linha (mudança metodológica em 2022). Dados desagregados por preto/pardo na seção "Classe por Raça".
+                ⚠️ Linha US$6,85 PPC 2017/dia (≈ R$665/mês). 2022: dado combinado pretos/pardos (SIS 2023 não desagregou). 2023: pretos desagregado (SIS 2024). Pardos 2023: 35,5%.
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
