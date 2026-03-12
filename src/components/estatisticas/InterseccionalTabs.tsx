@@ -571,7 +571,7 @@ export function LgbtqiaTab() {
                 />
                 <Legend />
                 <Bar dataKey="negros" name="Negros (pretos e pardos)" fill="hsl(var(--chart-1))" />
-                <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--muted-foreground))" opacity={0.5} />
+                <Bar dataKey="brancos" name="Não Negros" fill="hsl(var(--muted-foreground))" opacity={0.5} />
                 <Bar dataKey="indigenas" name="Indígenas" fill="hsl(var(--destructive))" opacity={0.7} />
               </BarChart>
             </ResponsiveContainer>
