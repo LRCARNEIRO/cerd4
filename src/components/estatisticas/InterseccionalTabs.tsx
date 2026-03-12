@@ -987,7 +987,6 @@ export function JuventudeTab() {
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
                 { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
               ]}
               documentos={['CERD 2022']}
             />
