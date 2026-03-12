@@ -2041,7 +2041,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       headers: ['Cor/Raça', 'Déficit 2019 (mil)', '% do déficit', 'Déficit 2022 (mil)', '% do déficit'],
       rows: [
         ['Negros (Pretos+Pardos)', '3.650', '58,2%', '3.870', '59,8%'],
-        ['Brancos', '2.350', '37,5%', '2.280', '35,2%'],
+        ['Não Negros', '2.350', '37,5%', '2.280', '35,2%'],
         ['Indígenas', '85', '1,4%', '92', '1,4%'],
         ['Outros/NI', '185', '2,9%', '230', '3,6%'],
         ['Total Brasil', '6.270', '100%', '6.472', '100%']
