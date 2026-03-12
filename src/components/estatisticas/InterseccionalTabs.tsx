@@ -1040,7 +1040,7 @@ export function ClasseSocialTab() {
               </ResponsiveContainer>
             </div>
             <div className="mt-2 text-[10px] text-muted-foreground">
-              Fonte verificada: SIS/IBGE 2024 (dados 2023). Linhas de pobreza Banco Mundial (US$2,15/dia e US$6,85/dia).
+              Fontes: SIS/IBGE 2023 (dados 2022), SIS/IBGE 2024 (dados 2023), SIS/IBGE 2025 (dados 2024). Linha US$6,85 PPC 2017/dia.
             </div>
             <AuditFooter
               fontes={[
