@@ -222,6 +222,9 @@ export function SegurancaSaudeEducacaoTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">SIDRA 7129 / PNAD Contínua Educação (IBGE) <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-3">Taxa de Analfabetismo (%)</h4>
