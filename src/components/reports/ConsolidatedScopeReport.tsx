@@ -247,8 +247,8 @@ function generateConsolidatedHTML(data: {
     <div class="kpi"><div class="value">${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</div><div class="label">Pop. Carcerária Negra</div></div>
   </div>
   <table>
-    <tr><th>Ano</th><th>Homic. Negro (p/100k)</th><th>Homic. Branco</th><th>Letalidade Pol. (%)</th><th>% Vítimas Negras</th><th>Razão Risco</th></tr>
-    ${segurancaPublica.map(r => `<tr><td>${r.ano}</td><td>${r.homicidioNegro}</td><td>${r.homicidioBranco}</td><td>${r.letalidadePolicial}%</td><td>${r.percentualVitimasNegras}%</td><td>${r.razaoRisco}x</td></tr>`).join('')}
+    <tr><th>Ano</th><th>Homic. Negro (p/100k)</th><th>Homic. Não Negro</th><th>Letalidade Pol. (%)</th><th>% Vítimas Negras</th><th>Razão Risco</th></tr>
+    ${segurancaPublica.map(r => `<tr><td>${r.ano}</td><td>${r.homicidioNegro ?? 'n/a'}</td><td>${r.homicidioBranco ?? 'n/a'}</td><td>${r.letalidadePolicial}%</td><td>${r.percentualVitimasNegras}%</td><td>${r.razaoRisco != null ? r.razaoRisco + 'x' : 'n/a'}</td></tr>`).join('')}
   </table>
   <p class="source">Fontes: Anuário FBSP (2019-2025); Atlas da Violência (IPEA); SISDEPEN/SENAPPEN.</p>
 
