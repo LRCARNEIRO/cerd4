@@ -952,9 +952,6 @@ export function JuventudeTab() {
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
                 { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-                { nome: 'SIDRA 7113 — Desocupação por idade e cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
-                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
-                { nome: 'SIM/DataSUS — Mortalidade por causas externas', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
               ]}
               documentos={['CERD 2022', '19º Anuário FBSP 2025']}
             />
