@@ -291,7 +291,7 @@ export function CovidRacialSection() {
                   />
                   <Legend />
                   <Line type="monotone" dataKey="negra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
-                  <Line type="monotone" dataKey="branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="branca" name="Não Negra" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
                 </LineChart>
               </ResponsiveContainer>
             </div>
