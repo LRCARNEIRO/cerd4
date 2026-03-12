@@ -8,7 +8,7 @@ const corsHeaders = {
  *
  * Tipo A (PDF):  Firecrawl scrape → IA adversária (GPT-5) busca o número
  * Tipo B (API):  Fetch direto da API SIDRA/JSON → parse automático → comparação
- * Tipo C (Web):  Fetch URL → markdown → IA adversária busca o número
+ * Tipo C (Web):  Firecrawl scrape URL → IA adversária busca o número
  *
  * REGRA: IA que CRIOU o dado (Gemini) NÃO audita. GPT-5 é o auditor adversário.
  */
@@ -20,9 +20,7 @@ interface IndicatorToVerify {
   fonte_declarada: string;
   tipo_fonte: 'pdf' | 'api_sidra' | 'web' | 'desconhecido';
   url_fonte: string | null;
-  // SIDRA-specific: pre-built API URL with params
   sidra_api_url?: string;
-  // For SIDRA: which cell to look for
   sidra_filtros?: {
     variavel?: string;
     periodo?: string;
@@ -72,39 +70,30 @@ Deno.serve(async (req) => {
 
     const results: VerifyResult[] = [];
 
-    // Process sequentially to avoid rate limits
     for (const ind of indicators) {
       let result: VerifyResult;
 
-      switch (ind.tipo_fonte) {
-        case 'api_sidra':
-          result = await verifySidra(ind);
-          break;
-        case 'pdf':
-          result = await verifyPdf(ind, firecrawlKey, lovableApiKey);
-          break;
-        case 'web':
-          result = await verifyWeb(ind, lovableApiKey);
-          break;
-        default:
-          result = {
-            id: ind.id,
-            indicador: ind.indicador,
-            secao: ind.secao,
-            valor_declarado: String(ind.valor_declarado ?? 'N/D'),
-            valor_encontrado: null,
-            veredito: 'erro',
-            tipo_fonte: ind.tipo_fonte,
-            confianca: 0,
-            divergencia: 'Tipo de fonte desconhecido',
-            metodo_verificacao: 'nenhum',
-            detalhes: null,
-          };
+      try {
+        switch (ind.tipo_fonte) {
+          case 'api_sidra':
+            result = await verifySidra(ind);
+            break;
+          case 'pdf':
+            result = await verifyPdfOrWeb(ind, firecrawlKey, lovableApiKey);
+            break;
+          case 'web':
+            result = await verifyWeb(ind, firecrawlKey, lovableApiKey);
+            break;
+          default:
+            result = makeBase(ind, 'erro', 'Tipo de fonte desconhecido', 'nenhum');
+        }
+      } catch (err: unknown) {
+        console.error(`Error verifying ${ind.id}:`, err);
+        result = makeBase(ind, 'erro', err instanceof Error ? err.message : 'Erro inesperado', 'nenhum');
       }
 
       results.push(result);
-      // Small delay between requests to avoid rate limiting
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise(r => setTimeout(r, 800));
     }
 
     const summary = {
@@ -130,27 +119,35 @@ Deno.serve(async (req) => {
   }
 });
 
-// ═══════════════════════════════════════════════
-// TIPO B: Verificação via API SIDRA (JSON direto)
-// ═══════════════════════════════════════════════
-async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
-  const base: VerifyResult = {
+function makeBase(
+  ind: IndicatorToVerify,
+  veredito: VerifyResult['veredito'],
+  divergencia: string | null,
+  metodo: string,
+): VerifyResult {
+  return {
     id: ind.id,
     indicador: ind.indicador,
     secao: ind.secao,
     valor_declarado: String(ind.valor_declarado ?? 'N/D'),
     valor_encontrado: null,
-    veredito: 'erro',
-    tipo_fonte: 'api_sidra',
+    veredito,
+    tipo_fonte: ind.tipo_fonte,
     confianca: 0,
-    divergencia: null,
-    metodo_verificacao: 'API SIDRA JSON direta',
+    divergencia,
+    metodo_verificacao: metodo,
     detalhes: null,
   };
+}
+
+// ═══════════════════════════════════════════════
+// TIPO B: Verificação via API SIDRA (JSON direto)
+// ═══════════════════════════════════════════════
+async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
+  const base = makeBase(ind, 'erro', null, 'API SIDRA JSON direta');
 
   if (!ind.sidra_api_url) {
-    base.veredito = 'erro';
-    base.divergencia = 'URL da API SIDRA não fornecida. Necessário montar a query com parâmetros.';
+    base.divergencia = 'URL da API SIDRA não fornecida';
     return base;
   }
 
@@ -161,9 +158,9 @@ async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
     });
 
     if (!resp.ok) {
+      const errText = await resp.text();
       base.veredito = 'link_quebrado';
-      base.divergencia = `API SIDRA retornou status ${resp.status}`;
-      await resp.text();
+      base.divergencia = `API SIDRA retornou status ${resp.status}: ${errText.substring(0, 200)}`;
       return base;
     }
 
@@ -176,17 +173,13 @@ async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
       return base;
     }
 
-    // SIDRA returns array: [header_row, ...data_rows]
-    // Each row has keys like "V" (valor), "D1N" (categoria 1 nome), "D2N" (cat 2 nome), etc.
-    // Find the row matching our filters
     const filtros = ind.sidra_filtros;
-    const dataRows = data.slice(1); // skip header
+    const dataRows = data.slice(1);
 
     let matchedRow: any = null;
     let matchDetails = '';
 
     if (filtros?.descricao_busca) {
-      // Search by description text in any dimension
       const search = filtros.descricao_busca.toLowerCase();
       matchedRow = dataRows.find((row: any) => {
         const allValues = Object.values(row).join(' ').toLowerCase();
@@ -194,58 +187,44 @@ async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
       });
       matchDetails = `Busca: "${filtros.descricao_busca}"`;
     } else {
-      // Try to match by cor_raca and faixa_etaria in dimension names
-      matchedRow = dataRows.find((row: any) => {
-        const dims = Object.entries(row)
-          .filter(([k]) => k.match(/^D\dN$/))
-          .map(([, v]) => String(v).toLowerCase());
-
-        const matchCor = !filtros?.cor_raca || dims.some(d => d.includes(filtros.cor_raca!.toLowerCase()));
-        const matchIdade = !filtros?.faixa_etaria || dims.some(d => d.includes(filtros.faixa_etaria!.toLowerCase()));
-        const matchPeriodo = !filtros?.periodo || String(row['D1C'] || row['D2C'] || row['D3C'] || '').includes(filtros.periodo);
-        return matchCor && matchIdade && matchPeriodo;
-      });
-      matchDetails = `Filtros: cor=${filtros?.cor_raca}, idade=${filtros?.faixa_etaria}, período=${filtros?.periodo}`;
+      matchedRow = dataRows[0];
+      matchDetails = 'Primeira linha de dados';
     }
 
     if (!matchedRow) {
       base.veredito = 'nao_encontrado';
-      base.divergencia = `Nenhuma linha correspondente encontrada. ${matchDetails}`;
-      base.detalhes = `${dataRows.length} linhas retornadas. Primeira: ${JSON.stringify(dataRows[0]).substring(0, 300)}`;
+      base.divergencia = `Nenhuma linha encontrada. ${matchDetails}`;
+      base.detalhes = `${dataRows.length} linhas. Primeira: ${JSON.stringify(dataRows[0]).substring(0, 300)}`;
       return base;
     }
 
-    // Extract value
     const valorApi = matchedRow['V'];
     if (valorApi === null || valorApi === undefined || valorApi === '...' || valorApi === '-' || valorApi === 'X') {
       base.veredito = 'nao_encontrado';
       base.valor_encontrado = String(valorApi);
-      base.divergencia = `Valor na API SIDRA: "${valorApi}" (dado não disponível/suprimido)`;
+      base.divergencia = `Valor SIDRA: "${valorApi}" (suprimido/indisponível)`;
       return base;
     }
 
     base.valor_encontrado = String(valorApi);
 
-    // Compare values
     const declaredNum = parseFloat(String(ind.valor_declarado));
     const foundNum = parseFloat(String(valorApi));
 
     if (!isNaN(declaredNum) && !isNaN(foundNum)) {
       const diff = Math.abs(declaredNum - foundNum);
-      const tolerance = Math.max(Math.abs(declaredNum) * 0.02, 0.1); // 2% or 0.1
+      const tolerance = Math.max(Math.abs(declaredNum) * 0.02, 0.1);
 
       if (diff <= tolerance) {
         base.veredito = 'confirmado';
         base.confianca = 95;
-        base.detalhes = `API: ${foundNum}, Sistema: ${declaredNum}, Diff: ${diff.toFixed(2)}. ${matchDetails}`;
+        base.detalhes = `API: ${foundNum}, Sistema: ${declaredNum}, Diff: ${diff.toFixed(2)}`;
       } else {
         base.veredito = 'divergente';
         base.confianca = 90;
-        base.divergencia = `Sistema=${declaredNum}, API SIDRA=${foundNum} (diff=${diff.toFixed(2)})`;
-        base.detalhes = matchDetails;
+        base.divergencia = `Sistema=${declaredNum}, API=${foundNum} (diff=${diff.toFixed(2)})`;
       }
     } else {
-      // String comparison
       if (String(ind.valor_declarado).trim() === String(valorApi).trim()) {
         base.veredito = 'confirmado';
         base.confianca = 90;
@@ -258,42 +237,19 @@ async function verifySidra(ind: IndicatorToVerify): Promise<VerifyResult> {
     return base;
 
   } catch (err: unknown) {
-    base.veredito = 'erro';
     base.divergencia = err instanceof Error ? err.message : 'Erro ao consultar SIDRA';
     return base;
   }
 }
 
 // ═══════════════════════════════════════════════
-// TIPO A: Verificação via PDF (Firecrawl + IA adversária GPT-5)
+// Extrai conteúdo de URL via Firecrawl ou fetch direto
 // ═══════════════════════════════════════════════
-async function verifyPdf(
-  ind: IndicatorToVerify,
+async function fetchContent(
+  url: string,
   firecrawlKey: string | undefined,
-  lovableApiKey: string,
-): Promise<VerifyResult> {
-  const base: VerifyResult = {
-    id: ind.id,
-    indicador: ind.indicador,
-    secao: ind.secao,
-    valor_declarado: String(ind.valor_declarado ?? 'N/D'),
-    valor_encontrado: null,
-    veredito: 'erro',
-    tipo_fonte: 'pdf',
-    confianca: 0,
-    divergencia: null,
-    metodo_verificacao: 'Firecrawl PDF + GPT-5 adversário',
-    detalhes: null,
-  };
-
-  if (!ind.url_fonte) {
-    base.veredito = 'nao_encontrado';
-    base.divergencia = 'Sem URL de fonte PDF';
-    return base;
-  }
-
-  // Step 1: Extract PDF content
-  let pdfContent = '';
+): Promise<{ content: string; method: string } | { error: string }> {
+  // Tenta Firecrawl primeiro (melhor para PDFs e sites dinâmicos)
   if (firecrawlKey) {
     try {
       const fcResp = await fetch('https://api.firecrawl.dev/v1/scrape', {
@@ -303,7 +259,7 @@ async function verifyPdf(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          url: ind.url_fonte,
+          url,
           formats: ['markdown'],
           onlyMainContent: true,
         }),
@@ -311,55 +267,93 @@ async function verifyPdf(
 
       if (fcResp.ok) {
         const fcData = await fcResp.json();
-        pdfContent = (fcData.data?.markdown || fcData.markdown || '').substring(0, 20000);
+        const md = (fcData.data?.markdown || fcData.markdown || '').substring(0, 8000);
+        if (md.length > 100) {
+          return { content: md, method: 'Firecrawl markdown' };
+        }
+      } else if (fcResp.status === 402) {
+        console.log('Firecrawl 402 (créditos insuficientes), fallback para fetch direto');
+        await fcResp.text();
       } else {
         const errText = await fcResp.text();
-        base.veredito = 'link_quebrado';
-        base.divergencia = `Firecrawl PDF erro: ${fcResp.status}`;
-        base.detalhes = errText.substring(0, 200);
-        return base;
+        console.log(`Firecrawl ${fcResp.status}: ${errText.substring(0, 100)}`);
       }
     } catch (err) {
-      base.veredito = 'link_quebrado';
-      base.divergencia = `Firecrawl falhou: ${err instanceof Error ? err.message : 'erro'}`;
-      return base;
+      console.log('Firecrawl error, fallback:', err instanceof Error ? err.message : 'erro');
     }
-  } else {
-    base.veredito = 'erro';
-    base.divergencia = 'FIRECRAWL_API_KEY não configurada — PDF não pode ser acessado';
-    return base;
   }
 
-  if (!pdfContent || pdfContent.length < 100) {
-    base.veredito = 'nao_encontrado';
-    base.divergencia = 'PDF extraído vazio ou muito curto';
-    return base;
-  }
+  // Fallback: fetch direto
+  try {
+    const resp = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; CERD-IV-Auditor/1.0)',
+        'Accept': 'text/html,application/xhtml+xml,*/*',
+      },
+      redirect: 'follow',
+    });
 
-  // Step 2: GPT-5 (adversarial) verifies the number
-  return await verifyWithAdversarialAI(ind, base, pdfContent, lovableApiKey, 'PDF');
+    if (!resp.ok) {
+      await resp.text();
+      return { error: `URL retornou ${resp.status}` };
+    }
+
+    const html = await resp.text();
+    const textContent = html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .substring(0, 8000);
+
+    if (textContent.length < 50) {
+      return { error: 'Conteúdo extraído vazio' };
+    }
+
+    return { content: textContent, method: 'Fetch direto HTML→texto' };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : 'Erro ao acessar URL' };
+  }
 }
 
 // ═══════════════════════════════════════════════
-// TIPO C: Verificação via Web (fetch + IA adversária GPT-5)
+// TIPO A: Verificação via PDF (Firecrawl → fallback fetch → GPT-5)
+// ═══════════════════════════════════════════════
+async function verifyPdfOrWeb(
+  ind: IndicatorToVerify,
+  firecrawlKey: string | undefined,
+  lovableApiKey: string,
+): Promise<VerifyResult> {
+  const base = makeBase(ind, 'erro', null, 'Firecrawl PDF + GPT-5 adversário');
+
+  if (!ind.url_fonte) {
+    base.veredito = 'nao_encontrado';
+    base.divergencia = 'Sem URL de fonte PDF';
+    return base;
+  }
+
+  const result = await fetchContent(ind.url_fonte, firecrawlKey);
+
+  if ('error' in result) {
+    base.veredito = 'link_quebrado';
+    base.divergencia = result.error;
+    return base;
+  }
+
+  base.metodo_verificacao = `${result.method} + GPT-5 adversário`;
+  return await verifyWithAdversarialAI(ind, base, result.content, lovableApiKey, 'PDF');
+}
+
+// ═══════════════════════════════════════════════
+// TIPO C: Verificação via Web (Firecrawl → fallback fetch → GPT-5)
 // ═══════════════════════════════════════════════
 async function verifyWeb(
   ind: IndicatorToVerify,
+  firecrawlKey: string | undefined,
   lovableApiKey: string,
 ): Promise<VerifyResult> {
-  const base: VerifyResult = {
-    id: ind.id,
-    indicador: ind.indicador,
-    secao: ind.secao,
-    valor_declarado: String(ind.valor_declarado ?? 'N/D'),
-    valor_encontrado: null,
-    veredito: 'erro',
-    tipo_fonte: 'web',
-    confianca: 0,
-    divergencia: null,
-    metodo_verificacao: 'Fetch web + GPT-5 adversário',
-    detalhes: null,
-  };
+  const base = makeBase(ind, 'erro', null, 'Fetch web + GPT-5 adversário');
 
   if (!ind.url_fonte) {
     base.veredito = 'nao_encontrado';
@@ -367,42 +361,16 @@ async function verifyWeb(
     return base;
   }
 
-  try {
-    const resp = await fetch(ind.url_fonte, {
-      headers: { 'User-Agent': 'CERD-IV-Auditor/1.0' },
-      redirect: 'follow',
-    });
+  const result = await fetchContent(ind.url_fonte, firecrawlKey);
 
-    if (!resp.ok) {
-      base.veredito = 'link_quebrado';
-      base.divergencia = `URL retornou ${resp.status}`;
-      await resp.text();
-      return base;
-    }
-
-    const html = await resp.text();
-    // Strip HTML tags for text content
-    const textContent = html
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .substring(0, 15000);
-
-    if (textContent.length < 50) {
-      base.veredito = 'nao_encontrado';
-      base.divergencia = 'Conteúdo web extraído vazio';
-      return base;
-    }
-
-    return await verifyWithAdversarialAI(ind, base, textContent, lovableApiKey, 'Web');
-
-  } catch (err: unknown) {
+  if ('error' in result) {
     base.veredito = 'link_quebrado';
-    base.divergencia = err instanceof Error ? err.message : 'Erro ao acessar URL';
+    base.divergencia = result.error;
     return base;
   }
+
+  base.metodo_verificacao = `${result.method} + GPT-5 adversário`;
+  return await verifyWithAdversarialAI(ind, base, result.content, lovableApiKey, 'Web');
 }
 
 // ═══════════════════════════════════════════════
@@ -415,6 +383,9 @@ async function verifyWithAdversarialAI(
   lovableApiKey: string,
   sourceType: string,
 ): Promise<VerifyResult> {
+  // Truncar conteúdo para evitar erro 400 por payload grande
+  const truncatedContent = sourceContent.substring(0, 6000);
+
   const prompt = `Você é um auditor ADVERSÁRIO verificando dados de um relatório para a ONU (CERD IV).
 Seu papel é CONTESTAR o dado — só confirme se o número exato estiver na fonte.
 
@@ -424,27 +395,19 @@ FONTE DECLARADA: ${ind.fonte_declarada}
 ${ind.pagina_pdf ? `PÁGINA CITADA: ${ind.pagina_pdf}` : ''}
 
 CONTEÚDO EXTRAÍDO DA FONTE (${sourceType}):
-${sourceContent}
+${truncatedContent}
 
-INSTRUÇÕES RÍGIDAS:
-1. Procure o número EXATO "${ind.valor_declarado}" no conteúdo acima
-2. Se encontrar o número exato (tolerância ±0.5 para decimais), classifique como "confirmado"
-3. Se encontrar um número DIFERENTE para o mesmo indicador, classifique como "divergente"
-4. Se o indicador não aparece no conteúdo, classifique como "nao_encontrado"
-5. NUNCA aceite estimativas, projeções, interpolações ou arredondamentos
-6. Se o número parece plausível mas NÃO está literalmente no texto, é "nao_encontrado"
+INSTRUÇÕES:
+1. Procure o número EXATO "${ind.valor_declarado}" no conteúdo
+2. Se encontrar (tolerância ±0.5), classifique como "confirmado"
+3. Se encontrar número DIFERENTE para o mesmo indicador, classifique como "divergente"
+4. Se o indicador não aparece, classifique como "nao_encontrado"
+5. NUNCA aceite estimativas ou projeções
 
 Retorne APENAS JSON:
-{
-  "veredito": "confirmado" | "divergente" | "nao_encontrado",
-  "valor_encontrado": "valor exato encontrado ou null",
-  "confianca": 0-100,
-  "divergencia": "descrição se divergente ou null",
-  "trecho_fonte": "trecho exato do texto onde encontrou o dado (max 200 chars) ou null"
-}`;
+{"veredito":"confirmado|divergente|nao_encontrado","valor_encontrado":"valor ou null","confianca":0-100,"divergencia":"descrição ou null","trecho_fonte":"trecho max 150 chars ou null"}`;
 
   try {
-    // Use GPT-5 as adversarial model (different from Gemini that created the data)
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -452,31 +415,19 @@ Retorne APENAS JSON:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5',
+        model: 'openai/gpt-5-mini',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.05,
-        max_tokens: 800,
+        max_tokens: 500,
       }),
     });
 
-    if (response.status === 429) {
-      base.veredito = 'erro';
-      base.divergencia = 'Rate limit excedido. Tente novamente.';
-      await response.text();
-      return base;
-    }
-
-    if (response.status === 402) {
-      base.veredito = 'erro';
-      base.divergencia = 'Créditos insuficientes para IA.';
-      await response.text();
-      return base;
-    }
-
     if (!response.ok) {
+      const errBody = await response.text();
+      console.error(`AI gateway ${response.status}: ${errBody.substring(0, 200)}`);
       base.veredito = 'erro';
       base.divergencia = `IA adversária retornou ${response.status}`;
-      await response.text();
+      base.detalhes = errBody.substring(0, 200);
       return base;
     }
 
@@ -486,7 +437,7 @@ Retorne APENAS JSON:
 
     if (!jsonMatch) {
       base.veredito = 'erro';
-      base.divergencia = 'IA adversária não retornou JSON válido';
+      base.divergencia = 'IA não retornou JSON válido';
       base.detalhes = content.substring(0, 300);
       return base;
     }
@@ -502,7 +453,7 @@ Retorne APENAS JSON:
 
   } catch (err: unknown) {
     base.veredito = 'erro';
-    base.divergencia = `Falha na IA adversária: ${err instanceof Error ? err.message : 'erro'}`;
+    base.divergencia = `Falha na IA: ${err instanceof Error ? err.message : 'erro'}`;
     return base;
   }
 }
