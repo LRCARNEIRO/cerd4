@@ -355,7 +355,7 @@ export function DadosGeraisTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              {isLiveData && sidraData?.nota_metodologica && (
+              {hasDesempregoData && sidraData?.nota_metodologica && (
                 <p className="text-[10px] text-muted-foreground mt-1 italic flex items-center gap-1">
                   <Info className="w-3 h-3" /> {sidraData.nota_metodologica}
                 </p>
