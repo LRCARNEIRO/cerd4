@@ -33,8 +33,7 @@ import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
-import { TOTAL_ODS_RACIAL } from '@/data/odsRacialIndicators';
-
+// TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const { data: indicadores } = useIndicadoresInterseccionais();
