@@ -282,12 +282,12 @@ function gerarFiosCondutores(
       id: 'territorios-tradicionais',
       titulo: 'Territórios Tradicionais: Retrocesso e Retomada',
       tipo: 'retrocesso',
-      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações, com o orçamento do INCRA para quilombolas caindo 90%. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
+      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
       evidencias: evidTerr.slice(0, 8),
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia total. 2023-2024: retomada com apenas 7% dos territórios quilombolas titulados.`
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada com 245 territórios quilombolas titulados (Palmares/INCRA 2025) de ~2.600 certificados (~9,4%). Dados orçamentários detalhados disponíveis no módulo Orçamento.`
     });
   }
 
