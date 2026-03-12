@@ -193,10 +193,6 @@ export default function Estatisticas() {
           <ClasseSocialTab />
         </TabsContent>
 
-        {/* Auditoria Cruzada Triple-Cross */}
-        <TabsContent value="cross-verify">
-          <CrossVerifyPanel />
-        </TabsContent>
 
       </Tabs>
     </DashboardLayout>
