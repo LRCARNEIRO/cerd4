@@ -23,6 +23,7 @@ const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3
 
 export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
+  const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
 
   // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
   const desempregoChartData = useMemo(() => {
