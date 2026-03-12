@@ -388,10 +388,15 @@ export function SegurancaSaudeEducacaoTab() {
                     ))}
                   </ul>
                 </div>
-                <p className="text-xs text-destructive/80 italic">
-                  ⚠ Viés: {mortalidadeInfantilMetodologia.viesConhecido}
-                </p>
-                <p className="text-[10px] text-muted-foreground">
+                <details className="mt-2">
+                  <summary className="text-xs text-destructive/80 italic cursor-pointer hover:text-destructive">
+                    ⚠ Viés de classificação racial — clique para ver nota completa
+                  </summary>
+                  <div className="mt-2 p-3 bg-destructive/5 border border-destructive/20 rounded-lg text-xs text-muted-foreground whitespace-pre-line leading-relaxed">
+                    {mortalidadeInfantilMetodologia.notaMetodologicaCompleta}
+                  </div>
+                </details>
+                <p className="text-[10px] text-muted-foreground mt-1">
                   Ref.: {mortalidadeInfantilMetodologia.referencia}
                 </p>
               </div>

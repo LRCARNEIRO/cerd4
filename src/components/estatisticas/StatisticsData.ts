@@ -454,6 +454,18 @@ export const mortalidadeInfantilMetodologia = {
   ],
   formula: '(Óbitos infantis < 1 ano por raça ÷ Nascidos vivos por raça da mãe) × 1.000',
   viesConhecido: 'No SIM a cor/raça é atribuída por terceiros (médico/cartório); no SINASC é autodeclarada pela mãe. Isso gera sub-registro de óbitos negros e pode inverter a razão racial (branca aparecendo > negra).',
+  notaMetodologicaCompleta: `⚠️ NOTA METODOLÓGICA — VIÉS DE CLASSIFICAÇÃO RACIAL EM ÓBITOS INFANTIS:
+Estes dados representam apenas a taxa bruta de mortalidade infantil ([óbitos infantis / nascidos vivos] × 1.000) calculada a partir dos dados do DataSUS (SIM + SINASC). Eles NÃO eliminam a defasagem estatística dos óbitos classificados como "ignorados" quanto à cor/raça.
+
+O indicador apresenta um viés sistemático que inverte a razão racial: a mortalidade infantil de brancos aparece consistentemente maior que a de negros, o que não corresponde à realidade. Isso ocorre porque:
+
+1) Quem preenche a cor/raça no atestado de óbito (SIM) não é um parente da criança, mas sim o médico ou funcionário do cartório;
+2) Bebês que vêm a óbito frequentemente adquirem aspecto esbranquiçado, levando à classificação equivocada como "brancos";
+3) Na pressa do registro, muitos óbitos são classificados como "ignorados" — entre 2018 e 2025, foram 15.992 óbitos infantis com cor/raça ignorada, mais que o dobro dos 6.718 óbitos registrados como de crianças pretas.
+
+CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir esse viés vinculando os microdados do SIM com os do SINASC via software R, atribuindo à criança falecida a cor/raça da mãe (autodeclarada no SINASC). Esse cruzamento elevava significativamente a taxa de mortalidade de crianças pretas e pardas. Com as restrições da LGPD, esse procedimento de linkage nominal não é mais viável.
+
+Ref.: Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013.`,
   referencia: 'Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013',
 };
 
