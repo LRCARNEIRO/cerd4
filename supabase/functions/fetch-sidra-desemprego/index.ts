@@ -59,19 +59,45 @@ Deno.serve(async (req) => {
       );
     }
 
-    const rawData: SidraRow[] = await resp.json();
-    // Primeira linha é header
+    const rawData = await resp.json();
+    // Primeira linha é header, dados começam no índice 1
     const dataRows = rawData.slice(1);
 
+    // Log da estrutura real para debug
+    if (dataRows.length > 0) {
+      console.log('SIDRA row keys:', Object.keys(dataRows[0]));
+      console.log('SIDRA first row:', JSON.stringify(dataRows[0]));
+    }
+
     // Agrupar por trimestre
+    // Campos SIDRA JSON: D2C = código do trimestre, D4C = código cor/raça, V = valor
     const byTrimestre: Record<string, Record<string, number>> = {};
 
     for (const row of dataRows) {
-      const codigo = row['D2C'] || row['Trimestre (Código)'];
-      const corCodigo = row['Cor ou raça (Código)'] || (row as any)['D4C'];
-      const valor = parseFloat(row['V'] || (row as any).V);
+      // Tentar múltiplas possíveis chaves
+      const allKeys = Object.keys(row);
+      
+      // Encontrar o campo do trimestre (código numérico tipo 201804)
+      // e o campo da cor/raça (código tipo 2776)
+      let codigo = '';
+      let corCodigo = '';
+      const valor = parseFloat(String(row['V']));
 
-      if (!codigo || isNaN(valor)) continue;
+      // SIDRA retorna campos como D1C, D2C, D3C, D4C etc
+      // D1C = Brasil (1), D2C = Variável (4099), D3C = Trimestre, D4C = Cor/raça
+      for (const key of allKeys) {
+        const v = String(row[key]);
+        // Trimestre: 6 dígitos tipo 201804
+        if (/^\d{6}$/.test(v) && parseInt(v) >= 201800 && parseInt(v) <= 202599) {
+          codigo = v;
+        }
+        // Cor/raça: 4 dígitos tipo 2776, 2777, 2779
+        if (v === '2776' || v === '2777' || v === '2779') {
+          corCodigo = v;
+        }
+      }
+
+      if (!codigo || !corCodigo || isNaN(valor)) continue;
 
       if (!byTrimestre[codigo]) byTrimestre[codigo] = {};
 
