@@ -1,0 +1,1 @@
+UPDATE indicadores_interseccionais SET url_fonte = 'https://www.cnmp.mp.br/portal/relatoriosbi/mp-um-retrato' WHERE id IN ('49ec4e69-da17-4602-8002-640405be028c', 'd998be7c-d1c8-44d9-b038-3d99fb8b3d31') AND url_fonte IS NULL;
