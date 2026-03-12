@@ -8,7 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend, PieChart, Pie, Cell 
 } from 'recharts';
-import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { 
   dadosDemograficos, 
   evolucaoComposicaoRacial, 
@@ -16,10 +16,38 @@ import {
   fonteDados 
 } from './StatisticsData';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function DadosGeraisTab() {
+  const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
+
+  // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
+  const desempregoChartData = useMemo(() => {
+    if (sidraData?.dados?.length) {
+      return sidraData.dados.map(d => ({
+        ano: d.ano,
+        desempregoNegro: d.negra,
+        desempregoBranco: d.branca,
+        desempregoPreta: d.preta,
+        desempregoParda: d.parda,
+        fonte: d.fonte,
+        live: true,
+      }));
+    }
+    // Fallback: dados estáticos
+    return indicadoresSocioeconomicos.map(d => ({
+      ano: d.ano,
+      desempregoNegro: d.desempregoNegro,
+      desempregoBranco: d.desempregoBranco,
+      fonte: d.fonte,
+      live: false,
+    }));
+  }, [sidraData]);
+
+  const isLiveData = desempregoChartData[0]?.live === true;
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -243,33 +271,59 @@ export function DadosGeraisTab() {
               </p>
             </div>
 
-            {/* Desemprego */}
+            {/* Desemprego — DADOS EM TEMPO REAL via API SIDRA */}
             <div>
-              <h4 className="text-sm font-medium mb-3">Taxa de Desemprego (%)</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="text-sm font-medium">Taxa de Desemprego (%)</h4>
+                {sidraLoading ? (
+                  <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
+                ) : isLiveData ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : (
+                  <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchSidra()}>
+                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                  </Badge>
+                )}
+              </div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={indicadoresSocioeconomicos}>
+                  <LineChart data={desempregoChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
                     <Tooltip 
-                      formatter={(value: number) => [`${value}%`, '']}
+                      formatter={(value: number, name: string) => [`${value}%`, name]}
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
                     />
-                    <Line type="monotone" dataKey="desempregoNegro" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} />
-                    <Line type="monotone" dataKey="desempregoBranco" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Legend />
+                    <Line type="monotone" dataKey="desempregoNegro" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="desempregoBranco" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    {isLiveData && (
+                      <>
+                        <Line type="monotone" dataKey="desempregoPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} />
+                        <Line type="monotone" dataKey="desempregoParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} />
+                      </>
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              {isLiveData && sidraData?.nota_metodologica && (
+                <p className="text-[10px] text-muted-foreground mt-1 italic flex items-center gap-1">
+                  <Info className="w-3 h-3" /> {sidraData.nota_metodologica}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
-                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  SIDRA Tabela 6402 — Desocupação por cor/raça
+                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA Tabela 6402 — Desocupação por cor/raça (referência p/ auditoria)
                 </a>
               </p>
+              {sidraError && (
+                <p className="text-[10px] text-destructive mt-1">Erro: {sidraError instanceof Error ? sidraError.message : 'Falha na API'}</p>
+              )}
             </div>
 
             {/* Pobreza */}
@@ -298,6 +352,7 @@ export function DadosGeraisTab() {
             </div>
           </div>
 
+          {/* Tabela comparativa: estático vs SIDRA ao vivo */}
           <Table className="mt-6">
             <TableHeader>
               <TableRow>
@@ -305,25 +360,56 @@ export function DadosGeraisTab() {
                 <TableHead className="text-right">Renda Negra</TableHead>
                 <TableHead className="text-right">Renda Branca</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
-                <TableHead className="text-right">Desemp. Negro</TableHead>
-                <TableHead className="text-right">Desemp. Branco</TableHead>
+                <TableHead className="text-right">Desemp. Negro {isLiveData ? '(SIDRA)' : ''}</TableHead>
+                <TableHead className="text-right">Desemp. Branco {isLiveData ? '(SIDRA)' : ''}</TableHead>
+                {isLiveData && <TableHead className="text-right">Fonte</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {indicadoresSocioeconomicos.map(item => (
-                <TableRow key={item.ano}>
-                  <TableCell className="font-medium">{item.ano}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.rendaMediaNegra)}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(item.rendaMediaBranca)}</TableCell>
-                  <TableCell className="text-right text-destructive font-medium">
-                    {(item.rendaMediaBranca / item.rendaMediaNegra).toFixed(2)}x
-                  </TableCell>
-                  <TableCell className="text-right">{item.desempregoNegro}%</TableCell>
-                  <TableCell className="text-right">{item.desempregoBranco}%</TableCell>
-                </TableRow>
-              ))}
+              {indicadoresSocioeconomicos.map(item => {
+                const sidraRow = desempregoChartData.find(d => d.ano === item.ano);
+                const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : item.desempregoNegro;
+                const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : item.desempregoBranco;
+                const divergeN = isLiveData && sidraRow && Math.abs(sidraRow.desempregoNegro - item.desempregoNegro) > 0.5;
+                const divergeB = isLiveData && sidraRow && Math.abs(sidraRow.desempregoBranco - item.desempregoBranco) > 0.5;
+
+                return (
+                  <TableRow key={item.ano}>
+                    <TableCell className="font-medium">{item.ano}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(item.rendaMediaNegra)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(item.rendaMediaBranca)}</TableCell>
+                    <TableCell className="text-right text-destructive font-medium">
+                      {(item.rendaMediaBranca / item.rendaMediaNegra).toFixed(2)}x
+                    </TableCell>
+                    <TableCell className={`text-right ${divergeN ? 'text-amber-600 font-bold' : ''}`}>
+                      {desN}%
+                      {divergeN && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoNegro}%`}>⚠️</span>}
+                    </TableCell>
+                    <TableCell className={`text-right ${divergeB ? 'text-amber-600 font-bold' : ''}`}>
+                      {desB}%
+                      {divergeB && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoBranco}%`}>⚠️</span>}
+                    </TableCell>
+                    {isLiveData && (
+                      <TableCell className="text-right text-[10px] text-muted-foreground">
+                        {sidraRow?.fonte || '—'}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
+
+          {isLiveData && (
+            <div className="mt-3 p-3 rounded-md border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800">
+              <p className="text-xs flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 text-amber-600" />
+                <strong>Valores com ⚠️:</strong> divergência &gt;0,5 p.p. entre o sistema estático e a API SIDRA. 
+                Os dados SIDRA referem-se ao <strong>Q4 (4º trimestre)</strong> de cada ano, não à média anual.
+              </p>
+            </div>
+          )}
+
           <div className="text-xs text-muted-foreground mt-4 space-y-1">
             <p className="flex items-center gap-1">
               <FileText className="w-3 h-3" />
