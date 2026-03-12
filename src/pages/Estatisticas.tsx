@@ -38,8 +38,12 @@ export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const { data: indicadores } = useIndicadoresInterseccionais();
   
-  const totalIndicadores = (indicadores || []).length;
-  const totalAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const totalIndicadoresDb = (indicadores || []).length;
+  const totalAuditadosDb = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  
+  // ODS Racial: todos os 90 indicadores são auditados (dados replicados de planilhas oficiais)
+  const totalIndicadores = totalIndicadoresDb + TOTAL_ODS_RACIAL;
+  const totalAuditados = totalAuditadosDb + TOTAL_ODS_RACIAL;
   const totalPendentes = totalIndicadores - totalAuditados;
 
   return (
