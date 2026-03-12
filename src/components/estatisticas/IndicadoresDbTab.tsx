@@ -96,10 +96,23 @@ function isYearKey(key: string): boolean {
 }
 
 // Normalize data: always returns { groups: string[], years: string[], chartData: Record[] }
-function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
-  const excludeKeys = new Set(['por_uf_2024', 'idade_media_vitima', 'unidade', 'slug', 'formato', 'ods_id', 'nota', 'serie', 'fonte', 'url', 'artigoCerd']);
-  const objectKeys = Object.keys(dados).filter(
-    key => typeof dados[key] === 'object' && dados[key] !== null && !Array.isArray(dados[key]) && !excludeKeys.has(key)
+function normalizeIndicadorData(dados: Record<string, any>) {
+  // ODS Racial indicators wrap data inside a "series" key — unwrap it
+  const excludeMetaKeys = new Set([
+    'por_uf_2024', 'idade_media_vitima', 'unidade', 'slug', 'formato',
+    'ods_id', 'nota', 'serie', 'fonte', 'url', 'artigoCerd',
+    'regra_ouro', 'status_validacao', 'nota_racial', 'nota_refugio',
+    'nota_registros', 'datamigra_bi_url',
+  ]);
+
+  // If dados has a "series" sub-object with year keys, use that as the effective data
+  let effective: Record<string, any> = dados;
+  if (dados.series && typeof dados.series === 'object' && !Array.isArray(dados.series)) {
+    effective = dados.series;
+  }
+
+  const objectKeys = Object.keys(effective).filter(
+    key => typeof effective[key] === 'object' && effective[key] !== null && !Array.isArray(effective[key]) && !excludeMetaKeys.has(key)
   );
 
   if (objectKeys.length === 0) return { groups: [], years: [], chartData: [] };
@@ -111,14 +124,17 @@ function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
     const sortedYears = objectKeys.sort();
     const metricsSet = new Set<string>();
     sortedYears.forEach(year => {
-      Object.keys(dados[year] || {}).forEach(m => metricsSet.add(m));
+      Object.keys(effective[year] || {}).forEach(m => {
+        if (!excludeMetaKeys.has(m) && m !== 'nota') metricsSet.add(m);
+      });
     });
     const groups = Array.from(metricsSet);
     const chartData = sortedYears.map(year => {
       const point: Record<string, any> = { ano: year };
       groups.forEach(metric => {
-        if (dados[year]?.[metric] !== undefined) {
-          point[metric] = dados[year][metric];
+        const val = effective[year]?.[metric];
+        if (val !== undefined && val !== null) {
+          point[metric] = val;
         }
       });
       return point;
@@ -128,14 +144,17 @@ function normalizeIndicadorData(dados: Record<string, Record<string, number>>) {
     // Standard: top-level = groups, sub-keys = years
     const allYears = new Set<string>();
     objectKeys.forEach(group => {
-      Object.keys(dados[group] || {}).forEach(year => allYears.add(year));
+      Object.keys(effective[group] || {}).forEach(year => {
+        if (isYearKey(year)) allYears.add(year);
+      });
     });
     const sortedYears = Array.from(allYears).sort();
     const chartData = sortedYears.map(year => {
       const point: Record<string, any> = { ano: year };
       objectKeys.forEach(group => {
-        if (dados[group]?.[year] !== undefined) {
-          point[group] = dados[group][year];
+        const val = effective[group]?.[year];
+        if (val !== undefined && val !== null) {
+          point[group] = val;
         }
       });
       return point;
