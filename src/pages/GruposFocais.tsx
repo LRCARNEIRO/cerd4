@@ -1228,6 +1228,23 @@ export default function GruposFocais() {
                   </div>
                 </div>
 
+                {/* Nota metodológica sobre mortalidade infantil por raça */}
+                <details className="mb-3">
+                  <summary className="text-xs text-destructive/80 italic cursor-pointer hover:text-destructive">
+                    ⚠ Nota metodológica: viés de classificação racial em óbitos infantis — clique para expandir
+                  </summary>
+                  <div className="mt-2 p-3 bg-destructive/5 border border-destructive/20 rounded-lg text-xs text-muted-foreground whitespace-pre-line leading-relaxed">
+                    {`⚠️ NOTA METODOLÓGICA — VIÉS DE CLASSIFICAÇÃO RACIAL EM ÓBITOS INFANTIS:
+Estes dados representam apenas a taxa bruta de mortalidade infantil ([óbitos infantis / nascidos vivos] × 1.000) calculada a partir dos dados do DataSUS (SIM + SINASC). Eles NÃO eliminam a defasagem estatística dos óbitos classificados como "ignorados" quanto à cor/raça.
+
+O indicador apresenta um viés sistemático: quem preenche a cor/raça no atestado de óbito (SIM) não é um parente da criança, mas sim o médico ou funcionário do cartório. Bebês que vêm a óbito frequentemente adquirem aspecto esbranquiçado, levando à classificação equivocada como "brancos". Na pressa do registro, muitos óbitos são classificados como "ignorados" — entre 2018 e 2025, foram 15.992 óbitos infantis com cor/raça ignorada, mais que o dobro dos 6.718 óbitos registrados como de crianças pretas.
+
+CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir esse viés vinculando os microdados do SIM com os do SINASC via software R, atribuindo à criança falecida a cor/raça da mãe (autodeclarada no SINASC). Com as restrições da LGPD, esse procedimento de linkage nominal não é mais viável.
+
+Ref.: Chor & Lima, Cad. Saúde Pública 2005; IPEA Nota Técnica 2013.`}
+                  </div>
+                </details>
+
                 {/* Interpretação */}
                 <div className="p-3 bg-muted rounded-lg mb-3">
                   <p className="text-xs font-medium">Interpretação (NCPI 2024, INEP 2022, SESAI 2024):</p>
