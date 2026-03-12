@@ -1092,7 +1092,15 @@ function construirArgumento(
   }
   
   if (evidencias.length > 0) {
-    arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam que, apesar das ações, as disparidades estruturais persistem.`;
+    const taxaCumprimento = status.cumpridas + status.parciais;
+    const taxaProblematica = status.naoCumpridas + status.retrocessos;
+    if (taxaCumprimento > taxaProblematica) {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) indicam avanços parciais, embora lacunas significativas permaneçam em aberto.`;
+    } else if (status.retrocessos > 0) {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam retrocessos que exigem atenção emergencial no IV Relatório.`;
+    } else {
+      arg += `\n\nAs evidências coletadas (${evidencias.length} registros) revelam que a maioria das recomendações permanece sem cumprimento adequado.`;
+    }
   }
   
   return arg;
