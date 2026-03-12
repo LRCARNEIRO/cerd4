@@ -411,41 +411,56 @@ export function DadosGeraisTab() {
             <TableHeader>
               <TableRow>
                 <TableHead>Ano</TableHead>
-                <TableHead className="text-right">Renda Negra</TableHead>
-                <TableHead className="text-right">Renda Branca</TableHead>
+                <TableHead className="text-right">Renda Negra {isRendaLive ? '(SIDRA)' : ''}</TableHead>
+                <TableHead className="text-right">Renda Branca {isRendaLive ? '(SIDRA)' : ''}</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead className="text-right">Desemp. Negro {isLiveData ? '(SIDRA)' : ''}</TableHead>
                 <TableHead className="text-right">Desemp. Branco {isLiveData ? '(SIDRA)' : ''}</TableHead>
-                {isLiveData && <TableHead className="text-right">Fonte</TableHead>}
+                {(isLiveData || isRendaLive) && <TableHead className="text-right">Fonte</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {indicadoresSocioeconomicos.map(item => {
                 const sidraRow = desempregoChartData.find(d => d.ano === item.ano);
+                const rendaRow = rendaChartData.find(d => d.ano === item.ano);
+
+                const rendaN = isRendaLive && rendaRow ? rendaRow.rendaMediaNegra : item.rendaMediaNegra;
+                const rendaB = isRendaLive && rendaRow ? rendaRow.rendaMediaBranca : item.rendaMediaBranca;
                 const desN = isLiveData && sidraRow ? sidraRow.desempregoNegro : item.desempregoNegro;
                 const desB = isLiveData && sidraRow ? sidraRow.desempregoBranco : item.desempregoBranco;
+
+                const divergeRN = isRendaLive && rendaRow && Math.abs(rendaRow.rendaMediaNegra - item.rendaMediaNegra) > 50;
+                const divergeRB = isRendaLive && rendaRow && Math.abs(rendaRow.rendaMediaBranca - item.rendaMediaBranca) > 50;
                 const divergeN = isLiveData && sidraRow && Math.abs(sidraRow.desempregoNegro - item.desempregoNegro) > 0.5;
                 const divergeB = isLiveData && sidraRow && Math.abs(sidraRow.desempregoBranco - item.desempregoBranco) > 0.5;
+
+                const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
                 return (
                   <TableRow key={item.ano}>
                     <TableCell className="font-medium">{item.ano}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.rendaMediaNegra)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(item.rendaMediaBranca)}</TableCell>
+                    <TableCell className={`text-right ${divergeRN ? 'text-amber-600 font-bold' : ''}`}>
+                      {formatCurrency(rendaN)}
+                      {divergeRN && <span className="text-[10px] ml-1" title={`Estático: ${formatCurrency(item.rendaMediaNegra)}`}>⚠️</span>}
+                    </TableCell>
+                    <TableCell className={`text-right ${divergeRB ? 'text-amber-600 font-bold' : ''}`}>
+                      {formatCurrency(rendaB)}
+                      {divergeRB && <span className="text-[10px] ml-1" title={`Estático: ${formatCurrency(item.rendaMediaBranca)}`}>⚠️</span>}
+                    </TableCell>
                     <TableCell className="text-right text-destructive font-medium">
-                      {(item.rendaMediaBranca / item.rendaMediaNegra).toFixed(2)}x
+                      {razao}x
                     </TableCell>
                     <TableCell className={`text-right ${divergeN ? 'text-amber-600 font-bold' : ''}`}>
                       {desN}%
-                      {divergeN && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoNegro}%`}>⚠️</span>}
+                      {divergeN && <span className="text-[10px] ml-1" title={`Estático: ${item.desempregoNegro}%`}>⚠️</span>}
                     </TableCell>
                     <TableCell className={`text-right ${divergeB ? 'text-amber-600 font-bold' : ''}`}>
                       {desB}%
-                      {divergeB && <span className="text-[10px] ml-1" title={`Sistema: ${item.desempregoBranco}%`}>⚠️</span>}
+                      {divergeB && <span className="text-[10px] ml-1" title={`Estático: ${item.desempregoBranco}%`}>⚠️</span>}
                     </TableCell>
-                    {isLiveData && (
+                    {(isLiveData || isRendaLive) && (
                       <TableCell className="text-right text-[10px] text-muted-foreground">
-                        {sidraRow?.fonte || '—'}
+                        {(rendaRow as any)?.fonte || (sidraRow as any)?.fonte || '—'}
                       </TableCell>
                     )}
                   </TableRow>
