@@ -141,19 +141,19 @@ export function CrossVerifyPanel() {
 
         {/* Inventory Preview */}
         <div className="border rounded-lg p-3 bg-muted/30">
-          <p className="text-xs font-semibold mb-2">Inventário: {JUVENTUDE_INVENTORY.length} indicadores</p>
+          <p className="text-xs font-semibold mb-2">Inventário ({currentInventory.label}): {currentItems.length} indicadores</p>
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div className="flex items-center gap-1">
-              <Database className="w-3 h-3 text-blue-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'api_sidra').length} via API SIDRA</span>
+              <Database className="w-3 h-3 text-primary" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'api_sidra').length} via API SIDRA</span>
             </div>
             <div className="flex items-center gap-1">
-              <FileText className="w-3 h-3 text-amber-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'pdf').length} via PDF</span>
+              <FileText className="w-3 h-3 text-accent-foreground" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'pdf').length} via PDF</span>
             </div>
             <div className="flex items-center gap-1">
-              <Globe className="w-3 h-3 text-green-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'web').length} via Web</span>
+              <Globe className="w-3 h-3 text-chart-2" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'web').length} via Web</span>
             </div>
           </div>
         </div>
