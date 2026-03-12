@@ -943,27 +943,49 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         </div>
       </div>
 
-      {/* Indicadores detalhados */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-primary" />
-          Indicadores Desagregados por Raça/Cor ({indicadoresFiltrados.length})
-        </h3>
+      {/* Split indicators: series vs single-point */}
+      {(() => {
+        const withSeries = indicadoresFiltrados.filter(i => hasTimeSeries(i.dados || {}));
+        const singlePoint = indicadoresFiltrados.filter(i => !hasTimeSeries(i.dados || {}));
         
-        {indicadoresFiltrados.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-muted-foreground">
-              <p>Nenhum indicador cadastrado ainda.</p>
-              <p className="text-sm mt-2">
-                Utilize a página de Fontes para adicionar indicadores ao sistema.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          indicadoresFiltrados.map(indicador => (
-            <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
-          ))
-        )}
+        return (
+          <>
+            {/* Retrato Pontual — single-point indicators grouped by source */}
+            <RetratoPontualSection indicadores={singlePoint} />
+
+            {/* Séries Temporais — indicators with time series */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-8 w-1 bg-primary rounded-full" />
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-primary" />
+                    Séries Temporais ({withSeries.length})
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Indicadores com evolução no tempo (2018–2025)
+                  </p>
+                </div>
+              </div>
+              
+              {withSeries.length === 0 && singlePoint.length === 0 ? (
+                <Card>
+                  <CardContent className="py-8 text-center text-muted-foreground">
+                    <p>Nenhum indicador cadastrado ainda.</p>
+                    <p className="text-sm mt-2">
+                      Utilize a página de Fontes para adicionar indicadores ao sistema.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                withSeries.map(indicador => (
+                  <IndicadorDetail key={indicador.id} indicador={indicador} highlighted={highlightedId === indicador.id} />
+                ))
+              )}
+            </div>
+          </>
+        );
+      })()}
       </div>
     </div>
   );
