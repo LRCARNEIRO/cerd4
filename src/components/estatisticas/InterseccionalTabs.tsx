@@ -898,6 +898,14 @@ export function JuventudeTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {isLoadingJuventude ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground mr-2" />
+                <span className="text-sm text-muted-foreground">Carregando do banco...</span>
+              </div>
+            ) : juventudeNegra.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4">Nenhum indicador de Juventude auditado encontrado no banco.</p>
+            ) : (
             <div className="space-y-4">
               {juventudeNegra.map(item => (
                 <div key={item.indicador} className="p-4 bg-muted rounded-lg">
