@@ -139,7 +139,7 @@ function indicadorToHTML(ind: any): string {
   return html;
 }
 
-function generateFullStatisticsHTML(indicadoresBD: any[]) {
+function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
 
