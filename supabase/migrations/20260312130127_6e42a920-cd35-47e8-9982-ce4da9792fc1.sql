@@ -1,0 +1,1 @@
+DELETE FROM indicadores_interseccionais WHERE id IN ('a8642ce8-7ffd-43aa-b55a-709d772fee18', '8e2e8127-2544-460c-810f-2d1fe8d4a794');
