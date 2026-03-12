@@ -919,7 +919,7 @@ export function JuventudeTab() {
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Jovens Negros</span>
+                        <span>{(item as any).labelNegro || 'Jovens Negros'}</span>
                         <span className="font-bold text-destructive">{item.valor}</span>
                       </div>
                       <div className="h-2 bg-destructive/20 rounded-full">
@@ -931,7 +931,7 @@ export function JuventudeTab() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>{item.fonte?.includes('Atlas') ? 'Jovens Não Negros' : 'Jovens Brancos'}</span>
+                        <span>{(item as any).labelReferencia || (item.fonte?.includes('Atlas') ? 'Jovens Não Negros' : 'Jovens Brancos')}</span>
                         <span className="font-bold">{item.referencia}</span>
                       </div>
                       <div className="h-2 bg-primary/20 rounded-full">
@@ -942,6 +942,9 @@ export function JuventudeTab() {
                       </div>
                     </div>
                   </div>
+                  {(item as any).nota && (
+                    <p className="text-[10px] text-warning mt-2 italic">⚠ {(item as any).nota}</p>
+                  )}
                 </div>
               ))}
             </div>
