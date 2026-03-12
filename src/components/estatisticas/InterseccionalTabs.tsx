@@ -830,12 +830,18 @@ export function JuventudeTab() {
               <p className="text-4xl font-bold text-warning">{atlasViolencia2025.juventude15_29.percentualVitimas}%</p>
               <p className="text-sm text-muted-foreground">das vítimas de homicídio tinham 15-29 anos</p>
             </div>
-            <div className="p-2 bg-destructive/10 rounded text-center mb-3">
-              <p className="text-sm font-bold text-destructive">
-                {atlasViolencia2025.juventude15_29.percentualNegrosHomens}% jovens negros do sexo masculino
-              </p>
-              <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
-            </div>
+            {atlasViolencia2025.juventude15_29.percentualNegrosHomens != null ? (
+              <div className="p-2 bg-destructive/10 rounded text-center mb-3">
+                <p className="text-sm font-bold text-destructive">
+                  {atlasViolencia2025.juventude15_29.percentualNegrosHomens}% jovens negros do sexo masculino
+                </p>
+                <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+              </div>
+            ) : (
+              <div className="p-2 bg-muted rounded text-center mb-3">
+                <p className="text-xs text-muted-foreground italic">⏳ Percentual de jovens negros masculinos entre vítimas — Pendente de verificação humana</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
