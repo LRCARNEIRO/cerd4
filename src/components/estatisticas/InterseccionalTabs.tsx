@@ -155,9 +155,9 @@ export function RacaGeneroTab() {
         <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
           <h4 className="text-sm font-semibold text-primary mb-1">📊 Análise: Dupla Penalidade no Mercado de Trabalho</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            A mulher negra recebe <strong>{fmt(narrativaTrabalho.razaoRendaPct)}%</strong> do rendimento do homem não negro, demonstrando que raça e gênero 
+            A mulher negra recebe <strong>{fmt(narrativaTrabalho.razaoRendaPct)}%</strong> do rendimento do homem branco, demonstrando que raça e gênero 
             operam como <strong>vetores cumulativos de desigualdade</strong>. A desocupação feminina negra ({fmt(narrativaTrabalho.desempregoMulherNegra)}%) é 
-            {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina não negra ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
+            {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina branca ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
