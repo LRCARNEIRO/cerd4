@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Scale, Users, CheckCircle2, Home, Vote, Building2 } from 'lucide-react';
+import { ExternalLink, Heart, Scale, Users, CheckCircle2, Home, Vote, Building2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -292,6 +292,7 @@ const categorias = [
   { id: 'judiciario', nome: 'Judiciário, Acesso à Justiça e Racismo (§12-14, §25-27)', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' },
   { id: 'representatividade', nome: 'Representatividade Política (§45-46)', icon: Vote, indicadores: indicadoresRepresentatividade, cor: 'bg-indigo-600' },
   { id: 'sistema-prisional', nome: 'Sistema Prisional (§38-40)', icon: Building2, indicadores: indicadoresSistemaPrisional, cor: 'bg-slate-700' },
+  { id: 'saude', nome: 'Saúde', icon: Heart, indicadores: indicadoresSaude, cor: 'bg-pink-500' },
   { id: 'habitacao', nome: 'Habitação e Moradia (§42-44)', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
 ];
 
