@@ -413,6 +413,8 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
 ];
 
 // §38-40 — Sistema Prisional Detalhado (SISDEPEN)
+// sp-2 (taxa encarceramento), sp-3 (presos provisórios), sp-5 (mortes em presídios) REMOVIDOS —
+// dados pendentes de verificação humana (⏳), mantido apenas sp-1 com dados confirmados
 const indicadoresSistemaPrisional: NovoIndicador[] = [
   {
     id: 'sp-1',
@@ -425,45 +427,6 @@ const indicadoresSistemaPrisional: NovoIndicador[] = [
     ultimaAtualizacao: '2024 (2º sem. 2023)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: true },
     relevanciaRacial: '2024: 68,2% da pop. carcerária é negra (832.295 presos). 2018: 63,6% (726.354). Aumento de 4,6 p.p. Escolaridade: 61% não completou ensino fundamental. Mulheres negras presas: 68% do total feminino.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'sp-2',
-    nome: 'Taxa de encarceramento por 100 mil habitantes por raça',
-    descricao: 'Taxa de encarceramento calculada por grupo racial (cruzamento SISDEPEN × Censo)',
-    fonte: 'SISDEPEN / IBGE (cruzamento)',
-    siglaFonte: 'SISDEPEN/IBGE 🔀',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen/bases-de-dados',
-    periodicidade: 'Semestral',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ 🔀 Cruzamento indireto: taxa de encarceramento por raça requer cálculo (pop. carcerária por raça SISDEPEN ÷ pop. por raça Censo 2022 × 100mil). Valores exatos pendentes de verificação humana. Requer nota metodológica.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'sp-3',
-    nome: 'Presos provisórios sem condenação por raça/cor',
-    descricao: 'Proporção de presos provisórios (sem julgamento) por raça/cor',
-    fonte: 'SISDEPEN / SENAPPEN',
-    siglaFonte: 'SISDEPEN',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    periodicidade: 'Semestral',
-    ultimaAtualizacao: '2024 (2º sem. 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Proporção de presos provisórios por raça disponível no SISDEPEN/RELIPEN. Percentuais exatos e tempo médio sem julgamento por raça: pendentes de verificação humana via painel SISDEPEN.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'sp-5',
-    nome: 'Mortes em estabelecimentos penais por raça/cor',
-    descricao: 'Óbitos de pessoas presas (homicídio, suicídio, causas naturais) por raça/cor',
-    fonte: 'SISDEPEN / SENAPPEN',
-    siglaFonte: 'SISDEPEN',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    periodicidade: 'Semestral',
-    ultimaAtualizacao: '2024 (2º sem. 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Dados de óbitos em estabelecimentos penais por raça disponíveis no SISDEPEN/RELIPEN. Totais e desagregação por causa/raça: pendentes de verificação humana via painel SISDEPEN.',
     prioridade: 'alta'
   }
 ];
