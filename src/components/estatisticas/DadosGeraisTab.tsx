@@ -503,11 +503,22 @@ export function DadosGeraisTab() {
               const max = Math.max(...ratios.map(r => r.razao));
               const anoInicio = ratios[0].ano;
               const anoFim = ultimo.ano;
+              const pct = (ultimo.razao * 100).toFixed(1).replace('.', ',');
               return (
-                <p className="italic">
-                  Renda de pessoas negras equivale a {(ultimo.razao * 100).toFixed(1).replace('.', ',')}% da de brancas (PNAD {ultimo.ano} — SIDRA 6405).
-                  {ratios.length > 1 && ` Comparativo ${anoInicio}→${anoFim}: razão manteve-se entre ${min.toFixed(2).replace('.', ',')} e ${max.toFixed(2).replace('.', ',')}.`}
-                </p>
+                <div className="mt-3 rounded-lg border border-accent bg-accent/10 p-3 flex items-start gap-3">
+                  <div className="flex-shrink-0 rounded-full bg-accent/20 p-2">
+                    <TrendingDown className="w-4 h-4 text-accent-foreground" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-semibold text-foreground">
+                      Renda negra = {pct}% da branca
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      PNAD {ultimo.ano} — SIDRA 6405
+                      {ratios.length > 1 && ` · Série ${anoInicio}–${anoFim}: razão entre ${min.toFixed(2).replace('.', ',')} e ${max.toFixed(2).replace('.', ',')}`}
+                    </p>
+                  </div>
+                </div>
               );
             })()}
           </div>
