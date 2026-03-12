@@ -892,7 +892,7 @@ export function JuventudeTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Baby className="w-5 h-5 text-warning" />
-              Indicadores da Juventude Negra vs. Não Negra
+              Indicadores da Juventude Negra — Comparativo
             </CardTitle>
           </CardHeader>
           <CardContent>
