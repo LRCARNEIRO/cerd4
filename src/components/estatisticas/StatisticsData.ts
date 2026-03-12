@@ -364,7 +364,8 @@ export const saudeSerieHistorica = [
   { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
   // DataSUS/SIM 2023 - dados consolidados
   { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
-  // DataSUS/SIM 2024 — dados PRELIMINARES, removidos conforme Regra de Ouro (proibição de dados não consolidados)
+  // AUDITORIA MANUAL 11/03/2026: DataSUS 2024 — cálculo manual (Óbitos/NV × fator)
+  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
 ];
 
 // Metodologia de cálculo — Mortalidade infantil por raça/cor
