@@ -132,10 +132,11 @@ function inventoryStatisticsConstants(): AuditItem[] {
   );
 
   // --- juventudeNegra ---
+  // AUDITORIA 12/03/2026: Desemprego 18-24 e Nem-nem REMOVIDOS (tabelas não encontradas)
+  // Encarceramento corrigido: SISDEPEN → FBSP 68,7%
   items.push(
-    { id: id(), tipo: 'constante', secao: 'Juventude', indicador: 'Desemprego 18-24 negro (%)', valor_atual: 20.8, fonte_declarada: 'PNAD 2024 (SIDRA 7113)', url_fonte: 'https://sidra.ibge.gov.br/Tabela/7113', origem: 'StatisticsData.ts::juventudeNegra', nivel_confianca: 'A', notas_auditoria: null },
-    { id: id(), tipo: 'constante', secao: 'Juventude', indicador: 'Nem-nem negro (%)', valor_atual: 27.2, fonte_declarada: 'SIDRA 7113 × 9605', url_fonte: 'https://sidra.ibge.gov.br/Tabela/7113', origem: 'StatisticsData.ts::juventudeNegra', nivel_confianca: 'B', notas_auditoria: 'Cruzamento indireto: desocupação × condição NEET' },
-    { id: id(), tipo: 'constante', secao: 'Juventude', indicador: 'Pop. carcerária % negra', valor_atual: 68.2, fonte_declarada: 'SISDEPEN/SENAPPEN 2024', url_fonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen', origem: 'StatisticsData.ts::juventudeNegra', nivel_confianca: 'A', notas_auditoria: null },
+    { id: id(), tipo: 'constante', secao: 'Juventude', indicador: 'Taxa homicídio negros (por 100 mil)', valor_atual: 28.9, fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url_fonte: 'https://www.ipea.gov.br/atlasviolencia', origem: 'StatisticsData.ts::juventudeNegra', nivel_confianca: 'A', notas_auditoria: 'Auditado 12/03/2026 — SIM (Atlas 2025, p.79)' },
+    { id: id(), tipo: 'constante', secao: 'Juventude', indicador: 'Pop. carcerária % negra', valor_atual: 68.7, fonte_declarada: '19º Anuário FBSP 2025, p.19 e 399', url_fonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', origem: 'StatisticsData.ts::juventudeNegra', nivel_confianca: 'A', notas_auditoria: 'Auditado 12/03/2026 — corrigido de SISDEPEN 68,2% para FBSP 68,7%. Cobertura racial: 85,3%' },
   );
 
   // --- trabalhoRacaGenero ---
