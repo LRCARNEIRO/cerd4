@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
       '202401,202402,202403,202404',
     ].join(',');
 
-    const apiUrl = `https://apisidra.ibge.gov.br/values/t/6405/n1/1/v/5929/p/${periodos}/c86/allxt`;
+    const apiUrl = `https://apisidra.ibge.gov.br/values/t/6405/n1/1/v/5932/p/${periodos}/c86/allxt`;
 
     console.log('Fetching SIDRA renda (all quarters):', apiUrl);
 
