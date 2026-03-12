@@ -281,7 +281,7 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual/Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
+    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% não negros (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
     prioridade: 'alta',
     unidadeSerie: '% sem esgoto adequado',
     serieHistorica: [
