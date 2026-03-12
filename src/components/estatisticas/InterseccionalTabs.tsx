@@ -878,8 +878,8 @@ export function JuventudeTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
-                Jovens negros (15-29 anos) representam a maioria absoluta das vítimas de homicídio no Brasil.
-                A taxa de homicídio de jovens negros é <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que a de jovens não negros (Atlas da Violência 2025).
+                Jovens negros (15–29 anos) representam a maior parte das vítimas de homicídio no Brasil.
+                Entre jovens com ensino fundamental incompleto, o risco de homicídio de jovens negros foi <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que o de jovens não negros em 2021 (Atlas da Violência 2025, p.71–74).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
