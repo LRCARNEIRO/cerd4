@@ -2177,7 +2177,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Indígenas', '42,5%', '45,8%', '48,2%', '49,5%']
       ]
     },
-    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre não negros e negros. Indígenas com acesso muito inferior.',
+    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre brancos e negros. Indígenas com acesso muito inferior.',
     tendencia: 'crescente'
   },
   {
