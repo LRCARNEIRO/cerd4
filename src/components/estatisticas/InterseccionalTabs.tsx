@@ -973,12 +973,13 @@ export function JuventudeTab() {
                 <li className="flex items-center gap-1">
                   • Letalidade policial:{' '}
                   <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">82% das vítimas são negras</a>{' '}
-                  (19º Anuário FBSP 2025)
+                  (19º Anuário FBSP 2025, p.70)
                 </li>
                 <li className="flex items-center gap-1">
                   • Encarceramento:{' '}
-                  <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,2% dos presos são negros</a>{' '}
-                  (SISDEPEN 2024)
+                  <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,7% dos presos são negros</a>{' '}
+                  (19º Anuário FBSP 2025, p.19 e 399)
+                  <span className="text-[10px] text-warning ml-1">⚠ cobertura racial: 85,3%</span>
                 </li>
               </ul>
             </div>
