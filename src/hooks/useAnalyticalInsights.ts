@@ -254,12 +254,12 @@ function gerarFiosCondutores(
       id: 'violencia-estrutural',
       titulo: 'Violência Racial Estrutural Persistente',
       tipo: 'lacuna_critica',
-      argumento: `Das ${lacunasViolencia.length} observações de segurança pública, ${naoCumpridas} permanecem não cumpridas. As evidências coletadas demonstram que a população negra segue sendo alvo desproporcional da violência letal do Estado e da criminalidade, com dados que pouco se alteram entre 2018 e 2024.`,
+      argumento: `Das ${lacunasViolencia.length} observações de segurança pública, ${naoCumpridas} permanecem não cumpridas. As evidências coletadas demonstram que a população negra segue sendo alvo desproporcional da violência letal do Estado e da criminalidade.`,
       evidencias: evidViolencia.slice(0, 8),
       eixos: ['seguranca_publica'],
       grupos: [...new Set(lacunasViolencia.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `Em 2018, 75,7% das vítimas de homicídio eram negras. Em 2024 (FBSP 2025), são 77% — aumento da desproporção apesar da queda nos números absolutos.`
+      comparativo2018: `Os dados do 19º Anuário FBSP 2025 e Atlas da Violência 2025 confirmam a persistência da desproporção racial na violência letal. Consultar StatisticsData.ts (segurancaPublica / atlasViolencia2025) para séries auditadas.`
     });
   }
 
