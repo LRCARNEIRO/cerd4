@@ -135,16 +135,6 @@ export function SegurancaSaudeEducacaoTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              19º Anuário FBSP 2025 <ExternalLink className="w-3 h-3" />
-            </a>
-            {' | '}
-            <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              Atlas da Violência 2025 (IPEA) <ExternalLink className="w-3 h-3" />
-            </a>
-          </p>
 
           {/* Atlas da Violência 2025 — 4 Indicadores Complementares */}
           <div className="mt-6">
