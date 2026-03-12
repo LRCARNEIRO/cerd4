@@ -25,7 +25,13 @@ export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
   const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
 
-  // Dados de desemprego: API SIDRA em tempo real com fallback para estáticos
+  // ═══════════════════════════════════════════════════════════════
+  // REGRA: Dados coletados via API SIDRA são a Fonte Única de Verdade.
+  // Uma vez obtidos (e auditados manualmente), são válidos independente
+  // do status online/offline da API. O React Query mantém cache infinito.
+  // ═══════════════════════════════════════════════════════════════
+
+  // Desemprego: dados da API (cache persistente)
   const desempregoChartData = useMemo(() => {
     if (sidraData?.dados?.length) {
       return sidraData.dados.map(d => ({
@@ -35,22 +41,12 @@ export function DadosGeraisTab() {
         desempregoPreta: d.preta,
         desempregoParda: d.parda,
         fonte: d.fonte,
-        live: true,
       }));
     }
-    // Fallback: dados estáticos
-    return indicadoresSocioeconomicos.map(d => ({
-      ano: d.ano,
-      desempregoNegro: d.desempregoNegro,
-      desempregoBranco: d.desempregoBranco,
-      fonte: d.fonte,
-      live: false,
-    }));
+    return [];
   }, [sidraData]);
 
-  const isLiveData = desempregoChartData[0]?.live === true;
-
-  // Renda: API SIDRA em tempo real com fallback para estáticos
+  // Renda: dados da API (cache persistente)
   const rendaChartData = useMemo(() => {
     if (sidraRendaData?.dados?.length) {
       return sidraRendaData.dados.map(d => ({
@@ -60,18 +56,13 @@ export function DadosGeraisTab() {
         rendaPreta: d.preta,
         rendaParda: d.parda,
         fonte: d.fonte,
-        live: true,
       }));
     }
-    return indicadoresSocioeconomicos.map(d => ({
-      ano: d.ano,
-      rendaMediaNegra: d.rendaMediaNegra,
-      rendaMediaBranca: d.rendaMediaBranca,
-      live: false,
-    }));
+    return [];
   }, [sidraRendaData]);
 
-  const isRendaLive = rendaChartData[0]?.live === true;
+  const hasRendaData = rendaChartData.length > 0;
+  const hasDesempregoData = desempregoChartData.length > 0;
 
 
   const formatCurrency = (value: number) => {
