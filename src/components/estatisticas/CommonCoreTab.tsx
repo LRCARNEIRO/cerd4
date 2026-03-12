@@ -2096,7 +2096,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       rows: [
         ['Total em aglom. subnormais', '11.425.644', '16.390.000'],
         ['Negros (Pretos+Pardos)', '7.398.000 (64,7%)', '11.310.000 (69,0%)'],
-        ['Não Negros', '3.542.000 (31,0%)', '4.425.000 (27,0%)'],
+        ['Brancos', '3.542.000 (31,0%)', '4.425.000 (27,0%)'],
         ['% negros na pop. geral', '50,7%', '55,5%'],
         ['Sobre-representação negra', '+14,0 p.p.', '+13,5 p.p.']
       ]
