@@ -300,7 +300,7 @@ export function DadosGeraisTab() {
                   ℹ️ {sidraRendaData.nota_metodologica}
                 </p>
               )}
-              {isRendaLive && sidraRendaData?.dados && (() => {
+              {hasRendaData && sidraRendaData?.dados && (() => {
                 const parciais = sidraRendaData.dados.filter(d => d.trimestresUsados < 4);
                 if (parciais.length === 0) return null;
                 return (
