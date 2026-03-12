@@ -226,7 +226,7 @@ ${arrayToHTMLTable(evolucaoComposicaoRacial, '')}
 
 <h3>1.3. Indicadores Socioeconômicos por Raça/Cor</h3>
 ${arrayToHTMLTable(indicadoresSocioeconomicos, '')}
-<div class="section-summary">Razão de renda negros/brancos: <strong>${razaoRendaRacial}</strong> — desigualdade estrutural persistente.</div>
+<div class="section-summary">Razão de renda negros/não negros: <strong>${razaoRendaRacial}</strong> — desigualdade estrutural persistente.</div>
 
 <h3>1.4. Rendimentos Médios por Raça (Censo 2022)</h3>
 ${arrayToHTMLTable(rendimentosCenso2022.rendimentoPorRaca || [], '')}
