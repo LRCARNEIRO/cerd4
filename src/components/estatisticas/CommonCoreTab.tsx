@@ -2203,7 +2203,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Indígenas', '28,5%', '32,1%', '35,8%', '37,2%']
       ]
     },
-    notas: 'Disparidade de 16 p.p. entre não negros e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
+    notas: 'Disparidade de 16 p.p. entre brancos e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
     tendencia: 'crescente'
   }
 ];

@@ -383,7 +383,7 @@ ${arrayToHTMLTable(violenciaInterseccional, '')}
 <h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
 <table>
-  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Não Negra</th><th>Média Nacional</th></tr>
+  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Branca</th><th>Média Nacional</th></tr>
   <tr><td>Água rede geral</td><td>${povosTradicionais.populacaoNegra.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.aguaRedeGeral}%</td></tr>
   <tr><td>Esgoto adequado</td><td>${povosTradicionais.populacaoNegra.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.esgotoAdequado}%</td></tr>
   <tr><td>Coleta de lixo</td><td>${povosTradicionais.populacaoNegra.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.coletaLixo}%</td></tr>
