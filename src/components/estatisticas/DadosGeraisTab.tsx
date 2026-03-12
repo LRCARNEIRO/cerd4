@@ -460,7 +460,7 @@ export function DadosGeraisTab() {
                     </TableCell>
                     {(isLiveData || isRendaLive) && (
                       <TableCell className="text-right text-[10px] text-muted-foreground">
-                        {rendaRow?.fonte || sidraRow?.fonte || '—'}
+                        {(rendaRow as any)?.fonte || (sidraRow as any)?.fonte || '—'}
                       </TableCell>
                     )}
                   </TableRow>
