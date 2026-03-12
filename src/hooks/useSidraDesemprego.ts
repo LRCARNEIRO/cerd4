@@ -36,7 +36,8 @@ export function useSidraDesemprego() {
       if (!data?.success) throw new Error(data?.error || 'Falha ao buscar SIDRA');
       return data;
     },
-    staleTime: 1000 * 60 * 60, // 1h cache — dados SIDRA mudam trimestralmente
+    staleTime: Infinity,   // Dados auditados: nunca expiram na sessão
+    gcTime: Infinity,
     retry: 2,
   });
 }
