@@ -795,23 +795,29 @@ export const trabalhoRacaGeneroFontes = [
 
 // CHEFIA FAMILIAR E VULNERABILIDADE: Raça × Gênero
 // Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022
+// AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme Censo 2022 / SIDRA Tabela 10179
+// Dados anteriores (4,3M mulheres, 501K homens) eram de fontes não-verificáveis.
+// Novos valores: Censo 2022 — domicílios monoparentais por sexo e raça/cor do responsável.
 export const chefiaFamiliarRacaGenero = {
-  mulheresChefesMonoparentais: 4300000,
-  percentualNegras: 65.8,
-  percentualBrancas: 34.2,
-  homensChefesMonoparentais: 501000,
+  mulheresChefesMonoparentais: 7810826, // Censo 2022/SIDRA 10179
+  mulheresNegrasChefesMonoparentais: 4667133, // Censo 2022/SIDRA 10180
+  percentualNegras: 59.8, // 4.667.133 / 7.810.826
+  percentualBrancas: 40.2,
+  homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
+  homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
   domiciliosFemininosIA: 63.0,
   domiciliosFemininosFome: 18.8,
   domiciliosNegrosIA: 60.0,
-  cadUnicoMulheresNegras: 38.5,
-  cadUnicoMulheresBrancas: 17.0,
+  cadUnicoMulheresNegras: null as number | null, // PENDENTE verificação
+  cadUnicoMulheresBrancas: null as number | null, // PENDENTE verificação
   fontes: [
-    { nome: 'RASEAM 2024 — Chefia familiar monoparental (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
+    { nome: 'Censo 2022/SIDRA 10179 — Mulheres chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
+    { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
+    { nome: 'Censo 2022/SIDRA 10181 — Homens chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10181' },
+    { nome: 'Censo 2022/SIDRA 10182 — Homens negros chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10182' },
     { nome: 'II VIGISAN 2022 — Insegurança Alimentar (PDF)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
-    { nome: 'Fiocruz/MIR — Informe Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
-    { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
   ],
-  metodologia: '🔀 Cruzamento indireto: RASEAM 2023 (chefia monoparental × raça) + II VIGISAN 2022 (IA × sexo responsável) + CadÚnico 2023 (perfil beneficiários × raça × gênero).',
+  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor do responsável. IA/Fome: II VIGISAN 2022.',
 };
 
 // EDUCAÇÃO: Raça × Gênero
