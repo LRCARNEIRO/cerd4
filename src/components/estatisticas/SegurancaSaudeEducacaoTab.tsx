@@ -96,7 +96,7 @@ export function SegurancaSaudeEducacaoTab() {
               <TableRow>
                 <TableHead>Ano</TableHead>
                 <TableHead className="text-right">Homic. Negros</TableHead>
-                <TableHead className="text-right">Homic. Brancos</TableHead>
+                <TableHead className="text-right">Homic. Não Negros</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead className="text-right">Letalidade Policial (%)</TableHead>
               </TableRow>

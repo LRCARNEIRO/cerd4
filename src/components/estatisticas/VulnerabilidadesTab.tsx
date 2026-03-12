@@ -205,7 +205,7 @@ export function VulnerabilidadesTab() {
               <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                 <li>• <strong>Renda:</strong> Pessoas negras ganham 58,9% do que ganham pessoas brancas (PNAD Contínua 2024)</li>
                 <li>• <strong>Desemprego:</strong> Negros têm 1,5x mais desemprego que brancos (PNAD 2024)</li>
-                <li>• <strong>Homicídio:</strong> 77% das vítimas são negras; risco 2,7x maior (19º Anuário FBSP 2025 / Atlas 2025)</li>
+                <li>• <strong>Homicídio:</strong> 77% das vítimas são negras; risco 2,7x maior vs não negros (19º Anuário FBSP 2025 / Atlas 2025)</li>
               </ul>
             </div>
             <AuditFooter
