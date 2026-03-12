@@ -221,80 +221,128 @@ function IndicadorChart({ indicador }: { indicador: IndicadorData }) {
 }
 
 // ============================
-// RETRATO PONTUAL — Single-point indicators grouped by source
+// RETRATO PONTUAL — Quadro comparativo Brancos × Negros
 // ============================
 
-function extractKeyValues(dados: Record<string, any>): Array<{ label: string; value: string; sublabel?: string }> {
-  const results: Array<{ label: string; value: string; sublabel?: string }> = [];
-  
-  for (const [key, val] of Object.entries(dados)) {
-    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url')) continue;
-    
-    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
-      for (const [subKey, subVal] of Object.entries(val as Record<string, any>)) {
-        if (subVal === null || subVal === undefined || String(subVal).includes('N/D')) continue;
-        if (typeof subVal === 'number' || (typeof subVal === 'string' && !subVal.startsWith('⏳'))) {
-          const formattedVal = typeof subVal === 'number' 
-            ? subVal >= 1000 ? subVal.toLocaleString('pt-BR') : subVal.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-            : subVal;
-          results.push({
-            label: formatGroupName(key),
-            value: String(formattedVal),
-            sublabel: subKey
-          });
-        }
-      }
-    } else if (typeof val === 'number') {
-      results.push({
-        label: formatGroupName(key),
-        value: val >= 1000 ? val.toLocaleString('pt-BR') : val.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-      });
-    }
-  }
-  return results.slice(0, 12); // cap for layout
+interface RacialComparison {
+  indicador: IndicadorData;
+  ano: string;
+  negros: number | null;
+  brancos: number | null;
+  indigenas: number | null;
+  nacional: number | null;
+  unidade: string;
+  razao: number | null; // negros/brancos ratio
 }
 
-function generateInsight(indicadores: IndicadorData[]): string {
-  const insights: string[] = [];
-  
-  for (const ind of indicadores) {
-    const kvs = extractKeyValues(ind.dados || {});
-    // Find racial disparity
-    const negrosVal = kvs.find(kv => kv.label.toLowerCase().includes('negro'));
-    const brancosVal = kvs.find(kv => kv.label.toLowerCase().includes('branco'));
-    const indVal = kvs.find(kv => kv.label.toLowerCase().includes('indíg'));
-    const nacVal = kvs.find(kv => kv.label.toLowerCase().includes('nacional') || kv.label.toLowerCase().includes('geral'));
-    
-    if (negrosVal && brancosVal) {
-      const nv = parseFloat(negrosVal.value.replace(/\./g, '').replace(',', '.'));
-      const bv = parseFloat(brancosVal.value.replace(/\./g, '').replace(',', '.'));
-      if (!isNaN(nv) && !isNaN(bv) && bv > 0) {
-        const gap = Math.abs(nv - bv);
-        const direction = nv < bv ? 'menor' : 'maior';
-        insights.push(`${ind.nome}: pop. negra ${direction} (${negrosVal.value} vs ${brancosVal.value})`);
+function extractRacialComparison(ind: IndicadorData): RacialComparison | null {
+  const dados = ind.dados as Record<string, any>;
+  if (!dados) return null;
+
+  let negros: number | null = null;
+  let brancos: number | null = null;
+  let indigenas: number | null = null;
+  let nacional: number | null = null;
+  let ano = '';
+  let unidade = (dados.unidade as string) || '%';
+
+  // Strategy 1: top-level keys like { Negros: { 2022: val }, Brancos: { 2022: val } }
+  for (const [key, val] of Object.entries(dados)) {
+    const keyLower = key.toLowerCase();
+    if (keyLower === 'unidade' || keyLower === 'nota' || keyLower.startsWith('nota_') || keyLower.startsWith('fonte_') || keyLower.endsWith('_url') || keyLower === 'slug' || keyLower === 'formato' || keyLower === 'regra_ouro') continue;
+
+    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+      // Get last year value
+      const entries = Object.entries(val as Record<string, any>)
+        .filter(([k, v]) => /^\d{4}$/.test(k) && v !== null && v !== undefined && !String(v).includes('N/D'))
+        .sort(([a], [b]) => Number(b) - Number(a));
+      
+      if (entries.length === 0) continue;
+      const [lastYear, lastVal] = entries[0];
+      const numVal = typeof lastVal === 'number' ? lastVal : parseFloat(String(lastVal).replace(/\./g, '').replace(',', '.'));
+      if (isNaN(numVal)) continue;
+
+      if (!ano || Number(lastYear) > Number(ano)) ano = lastYear;
+
+      if (keyLower.includes('negro') || keyLower.includes('pret') || keyLower.includes('pard')) {
+        negros = numVal;
+      } else if (keyLower.includes('branco')) {
+        brancos = numVal;
+      } else if (keyLower.includes('indíg') || keyLower.includes('indigena')) {
+        indigenas = numVal;
+      } else if (keyLower.includes('nacional') || keyLower.includes('geral') || keyLower.includes('total')) {
+        nacional = numVal;
       }
-    } else if (indVal && nacVal) {
-      insights.push(`${ind.nome}: Indígenas ${indVal.value} vs nacional ${nacVal.value}`);
+    } else if (typeof val === 'number') {
+      // Simple key-value
+      if (keyLower.includes('negro') || keyLower.includes('pret')) {
+        negros = val;
+      } else if (keyLower.includes('branco')) {
+        brancos = val;
+      } else if (keyLower.includes('indíg') || keyLower.includes('indigena')) {
+        indigenas = val;
+      } else if (keyLower.includes('nacional') || keyLower.includes('geral') || keyLower.includes('total')) {
+        nacional = val;
+      }
     }
   }
-  
-  if (insights.length === 0) return '';
-  return insights.join('. ') + '.';
+
+  // Strategy 2: year-keyed { 2022: { Negros: val, Brancos: val } }
+  if (negros === null && brancos === null) {
+    const yearKeys = Object.keys(dados).filter(k => /^\d{4}$/.test(k)).sort((a, b) => Number(b) - Number(a));
+    for (const yk of yearKeys) {
+      const yearData = dados[yk];
+      if (typeof yearData !== 'object' || yearData === null) continue;
+      for (const [rk, rv] of Object.entries(yearData as Record<string, any>)) {
+        const rkLower = rk.toLowerCase();
+        const numV = typeof rv === 'number' ? rv : parseFloat(String(rv).replace(/\./g, '').replace(',', '.'));
+        if (isNaN(numV)) continue;
+        if (rkLower.includes('negro') || rkLower.includes('pret')) negros = numV;
+        else if (rkLower.includes('branco')) brancos = numV;
+        else if (rkLower.includes('indíg') || rkLower.includes('indigena')) indigenas = numV;
+        else if (rkLower.includes('nacional') || rkLower.includes('geral')) nacional = numV;
+      }
+      if (negros !== null || brancos !== null) { ano = yk; break; }
+    }
+  }
+
+  if (negros === null && brancos === null && indigenas === null && nacional === null) return null;
+
+  const razao = (negros !== null && brancos !== null && brancos > 0) ? negros / brancos : null;
+
+  return { indicador: ind, ano, negros, brancos, indigenas, nacional, unidade, razao };
+}
+
+function formatNum(val: number | null, large = false): string {
+  if (val === null) return '—';
+  if (large || val >= 10000) return val.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  return val.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 }
 
 function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }) {
-  // Group by fonte
-  const porFonte = useMemo(() => {
-    const map = new Map<string, IndicadorData[]>();
+  const { comparisons, noComparison } = useMemo(() => {
+    const comps: RacialComparison[] = [];
+    const noComp: IndicadorData[] = [];
     for (const ind of indicadores) {
-      const key = ind.fonte;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(ind);
+      const comp = extractRacialComparison(ind);
+      if (comp) comps.push(comp);
+      else noComp.push(ind);
     }
-    return Array.from(map.entries()).sort((a, b) => b[1].length - a[1].length);
+    // Sort by category
+    comps.sort((a, b) => a.indicador.categoria.localeCompare(b.indicador.categoria));
+    return { comparisons: comps, noComparison: noComp };
   }, [indicadores]);
 
   if (indicadores.length === 0) return null;
+
+  // Summary stats
+  const withRatio = comparisons.filter(c => c.razao !== null);
+  const avgRatio = withRatio.length > 0 
+    ? withRatio.reduce((sum, c) => sum + c.razao!, 0) / withRatio.length 
+    : null;
+  const worstDisparity = withRatio.length > 0
+    ? withRatio.reduce((worst, c) => Math.abs(c.razao! - 1) > Math.abs(worst.razao! - 1) ? c : worst)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -303,120 +351,198 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Layers className="w-5 h-5 text-accent" />
-            Retrato Pontual — Dados de Referência ({indicadores.length})
+            Quadro Comparativo Racial — Retrato Pontual ({indicadores.length})
           </h3>
           <p className="text-xs text-muted-foreground">
-            Indicadores com dado único (Censo, pesquisas pontuais) — agrupados por fonte
+            Indicadores com dado único organizados por disparidade Brancos × Negros/Pretos
           </p>
         </div>
       </div>
 
-      {porFonte.map(([fonte, inds]) => {
-        const insight = generateInsight(inds);
-        return (
-          <Card key={fonte} className="overflow-hidden">
-            <CardHeader className="pb-3 bg-muted/30 border-b border-border/50">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <CardTitle className="text-sm">{fonte}</CardTitle>
-                  <Badge variant="secondary" className="text-[10px]">{inds.length} indicadores</Badge>
-                </div>
-                {inds[0]?.url_fonte && (
-                  <a href={inds[0].url_fonte} target="_blank" rel="noopener noreferrer" 
-                     className="text-xs text-primary hover:underline flex items-center gap-1">
-                    <ExternalLink className="w-3 h-3" /> Fonte oficial
-                  </a>
-                )}
+      {/* Summary card */}
+      {avgRatio !== null && (
+        <Card className="bg-gradient-to-r from-destructive/5 to-warning/5 border-destructive/20">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-start gap-3">
+              <TrendingUp className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold">Síntese das Disparidades</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  De {withRatio.length} indicadores com dados raciais comparáveis, a razão média Negro/Branco é{' '}
+                  <span className="font-bold text-foreground">{avgRatio.toFixed(2)}</span>.
+                  {worstDisparity && (
+                    <> Maior disparidade: <span className="font-medium text-destructive">{worstDisparity.indicador.nome}</span> (razão {worstDisparity.razao!.toFixed(2)}).</>
+                  )}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent className="pt-4 space-y-0">
-              {/* Compact table for all indicators from this source */}
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="font-semibold text-xs w-[35%]">Indicador</TableHead>
-                      <TableHead className="text-xs text-center">Ano</TableHead>
-                      <TableHead className="text-xs">Valores por Grupo</TableHead>
-                      <TableHead className="text-xs text-center w-20">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {inds.map(ind => {
-                      const kvs = extractKeyValues(ind.dados || {});
-                      const { years } = normalizeIndicadorData(ind.dados || {});
-                      return (
-                        <TableRow key={ind.id} id={`indicador-${ind.id}`}>
-                          <TableCell className="py-3">
-                            <p className="text-sm font-medium leading-tight">{ind.nome}</p>
-                            {ind.subcategoria && (
-                              <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Badge variant="outline" className="text-[10px]">
-                              {years.length > 0 ? years.join(', ') : '—'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1.5">
-                              {kvs.length > 0 ? kvs.map((kv, i) => (
-                                <span key={i} className="inline-flex items-center gap-1 text-xs bg-secondary/60 text-secondary-foreground px-2 py-0.5 rounded-md">
-                                  <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span>
-                                  <span>{kv.value}{(ind.dados as any)?.unidade ? ` ${(ind.dados as any).unidade}` : ''}</span>
-                                </span>
-                              )) : (
-                                <span className="text-xs text-muted-foreground italic">⏳ Pendente extração</span>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {ind.auditado_manualmente ? (
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-success/10 text-success border-success/30">
-                                <CheckCircle2 className="w-3 h-3" />
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-chart-4/10 text-chart-4 border-chart-4/30">
-                                <CircleDashed className="w-3 h-3" />
-                              </Badge>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-              {/* Insight block */}
-              {insight && (
-                <div className="mt-4 p-3 bg-primary/5 border border-primary/15 rounded-lg">
-                  <p className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    Retrato — Disparidades identificadas
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{insight}</p>
-                </div>
-              )}
+      {/* Main comparison table */}
+      {comparisons.length > 0 && (
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-3 bg-muted/30 border-b border-border/50">
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              <CardTitle className="text-sm">Comparativo Brancos × Negros — {comparisons.length} indicadores</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/20">
+                    <TableHead className="font-semibold text-xs w-[30%]">Indicador</TableHead>
+                    <TableHead className="text-xs text-center w-16">Ano</TableHead>
+                    <TableHead className="text-xs text-right w-24">Brancos</TableHead>
+                    <TableHead className="text-xs text-right w-24">Negros</TableHead>
+                    <TableHead className="text-xs text-right w-24">Indígenas</TableHead>
+                    <TableHead className="text-xs text-center w-20">Razão N/B</TableHead>
+                    <TableHead className="text-xs w-[15%]">Fonte</TableHead>
+                    <TableHead className="text-xs text-center w-12">🔗</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {comparisons.map((comp, idx) => {
+                    const isLargeNumber = (comp.negros !== null && comp.negros >= 10000) || (comp.brancos !== null && comp.brancos >= 10000);
+                    const razaoColor = comp.razao !== null
+                      ? Math.abs(comp.razao - 1) > 0.5 ? 'text-destructive font-bold' 
+                        : Math.abs(comp.razao - 1) > 0.2 ? 'text-warning font-semibold'
+                        : 'text-success'
+                      : 'text-muted-foreground';
+                    
+                    return (
+                      <TableRow key={comp.indicador.id} id={`indicador-${comp.indicador.id}`}
+                        className={cn(idx % 2 === 0 && 'bg-muted/10')}>
+                        <TableCell className="py-2.5">
+                          <p className="text-xs font-medium leading-tight">{comp.indicador.nome}</p>
+                          {comp.indicador.subcategoria && (
+                            <span className="text-[10px] text-muted-foreground">{comp.indicador.subcategoria}</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="text-[10px] px-1.5">{comp.ano || '—'}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-mono">
+                          {formatNum(comp.brancos, isLargeNumber)}
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-mono font-semibold">
+                          {formatNum(comp.negros, isLargeNumber)}
+                        </TableCell>
+                        <TableCell className="text-right text-xs font-mono">
+                          {formatNum(comp.indigenas, isLargeNumber)}
+                        </TableCell>
+                        <TableCell className={cn("text-center text-xs", razaoColor)}>
+                          {comp.razao !== null ? comp.razao.toFixed(2) : '—'}
+                        </TableCell>
+                        <TableCell className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={comp.indicador.fonte}>
+                          {comp.indicador.fonte}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {comp.indicador.url_fonte ? (
+                            <a href={comp.indicador.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
+                              <ExternalLink className="w-3.5 h-3.5 inline" />
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground/50">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-              {/* Document origin badges */}
-              {inds.some(i => i.documento_origem?.length) && (
-                <div className="mt-3 flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                    <BookOpen className="w-3 h-3" /> Documentos:
-                  </span>
-                  {[...new Set(inds.flatMap(i => i.documento_origem || []))].map((doc, i) => (
-                    <Badge key={i} variant="outline" className="text-[10px] px-1.5 py-0">{doc}</Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })}
+      {/* Non-comparable indicators (no racial breakdown) */}
+      {noComparison.length > 0 && (
+        <Card className="overflow-hidden">
+          <CardHeader className="pb-3 bg-muted/20 border-b border-border/50">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-sm text-muted-foreground">Sem desagregação racial comparável ({noComparison.length})</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-semibold text-xs w-[35%]">Indicador</TableHead>
+                    <TableHead className="text-xs text-center">Ano</TableHead>
+                    <TableHead className="text-xs">Valores</TableHead>
+                    <TableHead className="text-xs w-[15%]">Fonte</TableHead>
+                    <TableHead className="text-xs text-center w-12">🔗</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {noComparison.map((ind, idx) => {
+                    const kvs = extractKeyValues(ind.dados || {});
+                    const { years } = normalizeIndicadorData(ind.dados || {});
+                    return (
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} className={cn(idx % 2 === 0 && 'bg-muted/10')}>
+                        <TableCell className="py-2.5">
+                          <p className="text-xs font-medium leading-tight">{ind.nome}</p>
+                          {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="text-[10px] px-1.5">{years.length > 0 ? years.join(', ') : '—'}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {kvs.length > 0 ? kvs.map((kv, i) => (
+                              <span key={i} className="inline-flex items-center gap-1 text-[10px] bg-secondary/60 text-secondary-foreground px-1.5 py-0.5 rounded">
+                                <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span> {kv.value}
+                              </span>
+                            )) : <span className="text-[10px] text-muted-foreground italic">⏳ Pendente</span>}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={ind.fonte}>{ind.fonte}</TableCell>
+                        <TableCell className="text-center">
+                          {ind.url_fonte ? (
+                            <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
+                              <ExternalLink className="w-3.5 h-3.5 inline" />
+                            </a>
+                          ) : <span className="text-muted-foreground/50">—</span>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
+}
+
+// Keep extractKeyValues for the non-comparable table
+function extractKeyValues(dados: Record<string, any>): Array<{ label: string; value: string; sublabel?: string }> {
+  const results: Array<{ label: string; value: string; sublabel?: string }> = [];
+  for (const [key, val] of Object.entries(dados)) {
+    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url') || key === 'slug' || key === 'formato' || key === 'regra_ouro') continue;
+    if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+      for (const [subKey, subVal] of Object.entries(val as Record<string, any>)) {
+        if (subVal === null || subVal === undefined || String(subVal).includes('N/D')) continue;
+        if (typeof subVal === 'number' || (typeof subVal === 'string' && !subVal.startsWith('⏳'))) {
+          const formattedVal = typeof subVal === 'number'
+            ? subVal >= 1000 ? subVal.toLocaleString('pt-BR') : subVal.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+            : subVal;
+          results.push({ label: formatGroupName(key), value: String(formattedVal), sublabel: subKey });
+        }
+      }
+    } else if (typeof val === 'number') {
+      results.push({ label: formatGroupName(key), value: val >= 1000 ? val.toLocaleString('pt-BR') : val.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) });
+    }
+  }
+  return results.slice(0, 12);
 }
 
 function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
