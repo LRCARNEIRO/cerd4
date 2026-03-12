@@ -833,7 +833,7 @@ export default function GruposFocais() {
                       <tr className="border-b border-border">
                         <th className="text-left py-2 px-3 font-medium">Indicador</th>
                         <th className="text-center py-2 px-3 font-medium">Nacional</th>
-                        <th className="text-center py-2 px-3 font-medium text-primary">Brancos</th>
+                        <th className="text-center py-2 px-3 font-medium text-primary">Não Negros</th>
                         <th className="text-center py-2 px-3 font-medium text-warning">Negros</th>
                         <th className="text-center py-2 px-3 font-medium text-accent">Indígenas (total)</th>
                         <th className="text-center py-2 px-3 font-medium text-destructive">Indígenas (TIs)</th>
