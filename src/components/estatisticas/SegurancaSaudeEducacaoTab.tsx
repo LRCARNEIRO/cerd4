@@ -115,6 +115,9 @@ export function SegurancaSaudeEducacaoTab() {
               ))}
             </TableBody>
           </Table>
+          <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
+            <FileText className="w-3 h-3" /> Fontes da tabela: Atlas da Violência 2025 (IPEA) — homicídios | 19º Anuário FBSP 2025 — letalidade policial
+          </p>
 
           {/* Atlas da Violência 2025 — 4 Indicadores Complementares */}
           <div className="mt-6">
