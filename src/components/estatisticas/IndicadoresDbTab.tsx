@@ -54,6 +54,8 @@ interface IndicadorData {
   desagregacao_deficiencia?: boolean;
   desagregacao_orientacao_sexual?: boolean;
   documento_origem?: string[];
+  auditado_manualmente?: boolean;
+  data_auditoria?: string;
 }
 
 const DOCUMENTOS_FILTRO = [
