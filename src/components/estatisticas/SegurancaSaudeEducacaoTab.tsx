@@ -49,26 +49,6 @@ export function SegurancaSaudeEducacaoTab() {
               <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
                 <FileText className="w-3 h-3" /> Fonte: <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">Atlas da Violência 2025 (IPEA/FBSP) <ExternalLink className="w-2.5 h-2.5" /></a>
               </p>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={segurancaPublica}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      formatter={(value: number) => [value.toFixed(1), '']}
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Line type="monotone" dataKey="homicidioNegro" name="Negros" stroke="hsl(var(--destructive))" strokeWidth={2} />
-                    <Line type="monotone" dataKey="homicidioBranco" name="Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-3">Letalidade Policial - % de Negros entre Vítimas</h4>
