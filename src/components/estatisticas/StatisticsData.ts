@@ -227,8 +227,9 @@ export const segurancaPublica = [
   // 18º Anuário FBSP 2024 (dados de 2023): 82,7% letalidade policial
   { ano: 2023, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.7, percentualVitimasNegras: 76.6, razaoRisco: 2.7 },
   // 19º Anuário FBSP 2025 (dados de 2024): 82% letalidade policial, 77% vítimas negras
-  // NOTA: Taxa de homicídio por 100 mil para 2024 ainda não publicada pelo Atlas — valor omitido.
-  { ano: 2024, homicidioNegro: 28.9, homicidioBranco: 10.6, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: 2.7 },
+  // NOTA: Taxa de homicídio por 100 mil para 2024 AINDA NÃO PUBLICADA pelo Atlas — null conforme Regra de Ouro.
+  // AUDITORIA MANUAL 11/03/2026: Confirmado que Atlas 2025 cobre apenas até 2023. Taxas 2024 = n/a.
+  { ano: 2024, homicidioNegro: null as number | null, homicidioBranco: null as number | null, letalidadePolicial: 82.0, percentualVitimasNegras: 77.0, razaoRisco: null as number | null },
 ];
 
 // Feminicídio - série histórica (Anuário FBSP)
