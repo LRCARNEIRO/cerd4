@@ -111,7 +111,7 @@ const mortalidadeMaternaCovid = [
 // o que compromete a precisão das taxas desagregadas. Valores são estimativas
 // baseadas na parcela com informação de raça/cor preenchida.
 const vacinacaoRaca = [
-  { grupo: 'Não Negros', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
+  { grupo: 'Brancos', cobertura1Dose: 89.5, coberturaCompleta: 82.3 },
   { grupo: 'Pardos', cobertura1Dose: 84.2, coberturaCompleta: 74.8 },
   { grupo: 'Pretos', cobertura1Dose: 81.8, coberturaCompleta: 71.5 },
   { grupo: 'Indígenas', cobertura1Dose: 78.5, coberturaCompleta: 68.2 },
