@@ -10,7 +10,12 @@ import {
   Play, Loader2, CheckCircle2, XCircle, AlertTriangle,
   Search, Database, FileText, Globe, Download
 } from 'lucide-react';
-import { JUVENTUDE_INVENTORY } from './crossVerifyInventory';
+import { JUVENTUDE_INVENTORY, DADOS_GERAIS_INVENTORY, type IndicatorToVerify } from './crossVerifyInventory';
+
+const INVENTORIES: Record<string, { label: string; items: IndicatorToVerify[] }> = {
+  'dados-gerais': { label: 'Dados Gerais', items: DADOS_GERAIS_INVENTORY },
+  'juventude': { label: 'Juventude', items: JUVENTUDE_INVENTORY },
+};
 
 interface VerifyResult {
   id: string;
@@ -42,9 +47,13 @@ const tipoFonteIcons = {
 };
 
 export function CrossVerifyPanel() {
+  const [selectedInventory, setSelectedInventory] = useState<string>('dados-gerais');
   const [results, setResults] = useState<VerifyResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<any>(null);
+
+  const currentInventory = INVENTORIES[selectedInventory];
+  const currentItems = currentInventory.items;
 
   const runVerification = async () => {
     setLoading(true);
@@ -52,12 +61,12 @@ export function CrossVerifyPanel() {
     setSummary(null);
 
     try {
-      toast.info('Iniciando auditoria cruzada (Juventude)...', {
+      toast.info(`Iniciando auditoria cruzada (${currentInventory.label})...`, {
         description: 'API SIDRA + Firecrawl PDF + GPT-5 adversário',
       });
 
       const { data, error } = await supabase.functions.invoke('audit-cross-verify', {
-        body: { indicators: JUVENTUDE_INVENTORY },
+        body: { indicators: currentItems },
       });
 
       if (error) throw error;
@@ -92,7 +101,7 @@ export function CrossVerifyPanel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `auditoria-cruzada-juventude-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `auditoria-cruzada-${selectedInventory}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -102,14 +111,27 @@ export function CrossVerifyPanel() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Search className="w-5 h-5 text-primary" />
-          Auditoria Cruzada Triple-Cross — Teste Juventude
+          Auditoria Cruzada Triple-Cross
         </CardTitle>
         <CardDescription>
-          Verifica {JUVENTUDE_INVENTORY.length} indicadores usando 3 métodos: API SIDRA (JSON direto),
-          Firecrawl (PDF), e GPT-5 como IA adversária. Gemini (que criou os dados) NÃO participa.
+          Selecione o inventário e execute a verificação com 3 métodos: API SIDRA (JSON direto),
+          Firecrawl (PDF), e GPT-5 como IA adversária.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Inventory Selector */}
+        <div className="flex gap-2">
+          {Object.entries(INVENTORIES).map(([key, inv]) => (
+            <Button
+              key={key}
+              variant={selectedInventory === key ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => { setSelectedInventory(key); setResults([]); setSummary(null); }}
+            >
+              {inv.label} ({inv.items.length})
+            </Button>
+          ))}
+        </div>
         {/* Method Legend */}
         <div className="flex flex-wrap gap-3 text-xs">
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" /> Tipo B: API SIDRA</Badge>
@@ -119,19 +141,19 @@ export function CrossVerifyPanel() {
 
         {/* Inventory Preview */}
         <div className="border rounded-lg p-3 bg-muted/30">
-          <p className="text-xs font-semibold mb-2">Inventário: {JUVENTUDE_INVENTORY.length} indicadores</p>
+          <p className="text-xs font-semibold mb-2">Inventário ({currentInventory.label}): {currentItems.length} indicadores</p>
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div className="flex items-center gap-1">
-              <Database className="w-3 h-3 text-blue-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'api_sidra').length} via API SIDRA</span>
+              <Database className="w-3 h-3 text-primary" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'api_sidra').length} via API SIDRA</span>
             </div>
             <div className="flex items-center gap-1">
-              <FileText className="w-3 h-3 text-amber-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'pdf').length} via PDF</span>
+              <FileText className="w-3 h-3 text-accent-foreground" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'pdf').length} via PDF</span>
             </div>
             <div className="flex items-center gap-1">
-              <Globe className="w-3 h-3 text-green-600" />
-              <span>{JUVENTUDE_INVENTORY.filter(i => i.tipo_fonte === 'web').length} via Web</span>
+              <Globe className="w-3 h-3 text-chart-2" />
+              <span>{currentItems.filter(i => i.tipo_fonte === 'web').length} via Web</span>
             </div>
           </div>
         </div>
