@@ -320,7 +320,7 @@ function formatNum(val: number | null, large = false): string {
 }
 
 function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }) {
-  const { comparisons, noComparison } = useMemo(() => {
+  const { comparisons, noComparison, themeGroups } = useMemo(() => {
     const comps: RacialComparison[] = [];
     const noComp: IndicadorData[] = [];
     for (const ind of indicadores) {
@@ -328,14 +328,20 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
       if (comp) comps.push(comp);
       else noComp.push(ind);
     }
-    // Sort by category
     comps.sort((a, b) => a.indicador.categoria.localeCompare(b.indicador.categoria));
-    return { comparisons: comps, noComparison: noComp };
+
+    // Group by subcategoria or categoria for thematic storytelling
+    const groups: Record<string, RacialComparison[]> = {};
+    for (const c of comps) {
+      const theme = c.indicador.subcategoria || c.indicador.categoria;
+      if (!groups[theme]) groups[theme] = [];
+      groups[theme].push(c);
+    }
+    return { comparisons: comps, noComparison: noComp, themeGroups: groups };
   }, [indicadores]);
 
   if (indicadores.length === 0) return null;
 
-  // Summary stats
   const withRatio = comparisons.filter(c => c.razao !== null);
   const avgRatio = withRatio.length > 0 
     ? withRatio.reduce((sum, c) => sum + c.razao!, 0) / withRatio.length 
@@ -344,6 +350,16 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
     ? withRatio.reduce((worst, c) => Math.abs(c.razao! - 1) > Math.abs(worst.razao! - 1) ? c : worst)
     : null;
 
+  // Theme labels
+  const themeLabels: Record<string, string> = {
+    saneamento: '🚰 Saneamento Básico',
+    saneamento_tradicional: '🏘️ Comunidades Tradicionais',
+    deficit_habitacional: '🏠 Déficit Habitacional',
+    favelas: '🏙️ Favelas e Aglomerados',
+    favelas_aglomerados: '🏙️ Favelas e Aglomerados',
+    patrimonio: '🏛️ Patrimônio Cultural',
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-2">
@@ -351,115 +367,163 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Layers className="w-5 h-5 text-accent" />
-            Quadro Comparativo Racial — Retrato Pontual ({indicadores.length})
+            Retrato Racial — Dados Pontuais ({indicadores.length})
           </h3>
           <p className="text-xs text-muted-foreground">
-            Indicadores com dado único organizados por disparidade Brancos × Negros/Pretos
+            Indicadores que revelam a desigualdade estrutural num instante do tempo
           </p>
         </div>
       </div>
 
-      {/* Summary card */}
-      {avgRatio !== null && (
-        <Card className="bg-gradient-to-r from-destructive/5 to-warning/5 border-destructive/20">
-          <CardContent className="pt-4 pb-4">
-            <div className="flex items-start gap-3">
-              <TrendingUp className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold">Síntese das Disparidades</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  De {withRatio.length} indicadores com dados raciais comparáveis, a razão média Negro/Branco é{' '}
-                  <span className="font-bold text-foreground">{avgRatio.toFixed(2)}</span>.
-                  {worstDisparity && (
-                    <> Maior disparidade: <span className="font-medium text-destructive">{worstDisparity.indicador.nome}</span> (razão {worstDisparity.razao!.toFixed(2)}).</>
-                  )}
+      {/* Hero narrative card */}
+      {avgRatio !== null && worstDisparity && (
+        <Card className="overflow-hidden border-none shadow-lg">
+          <div className="bg-gradient-to-br from-primary/10 via-destructive/5 to-accent/10 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Key stat */}
+              <div className="flex flex-col items-center justify-center text-center">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1">Razão Média de Disparidade</p>
+                <p className={cn(
+                  "text-5xl font-black tabular-nums",
+                  avgRatio > 1.3 ? "text-destructive" : avgRatio > 1.1 ? "text-chart-4" : "text-success"
+                )}>
+                  {avgRatio.toFixed(2)}×
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Negro / Branco</p>
+              </div>
+
+              {/* Worst disparity callout */}
+              <div className="md:col-span-2 flex flex-col justify-center">
+                <p className="text-sm font-semibold text-foreground mb-2">
+                  📊 O que os dados contam
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Em <span className="font-bold text-foreground">{withRatio.length} indicadores</span> com dados raciais comparáveis, 
+                  a população negra apresenta sistematicamente piores condições. 
+                  A maior disparidade está em{' '}
+                  <span className="font-bold text-destructive">{worstDisparity.indicador.nome}</span>{' '}
+                  (razão {worstDisparity.razao!.toFixed(2)}×), seguida por padrões persistentes em saneamento, 
+                  habitação e acesso a serviços básicos — evidência de racismo estrutural que o Estado deve responder ao CERD.
                 </p>
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
       )}
 
-      {/* Main comparison table */}
-      {comparisons.length > 0 && (
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-3 bg-muted/30 border-b border-border/50">
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-primary" />
-              <CardTitle className="text-sm">Comparativo Brancos × Negros — {comparisons.length} indicadores</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/20">
-                    <TableHead className="font-semibold text-xs w-[30%]">Indicador</TableHead>
-                    <TableHead className="text-xs text-center w-16">Ano</TableHead>
-                    <TableHead className="text-xs text-right w-24">Brancos</TableHead>
-                    <TableHead className="text-xs text-right w-24">Negros</TableHead>
-                    <TableHead className="text-xs text-right w-24">Indígenas</TableHead>
-                    <TableHead className="text-xs text-center w-20">Razão N/B</TableHead>
-                    <TableHead className="text-xs w-[15%]">Fonte</TableHead>
-                    <TableHead className="text-xs text-center w-12">🔗</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {comparisons.map((comp, idx) => {
-                    const isLargeNumber = (comp.negros !== null && comp.negros >= 10000) || (comp.brancos !== null && comp.brancos >= 10000);
-                    const razaoColor = comp.razao !== null
-                      ? Math.abs(comp.razao - 1) > 0.5 ? 'text-destructive font-bold' 
-                        : Math.abs(comp.razao - 1) > 0.2 ? 'text-warning font-semibold'
-                        : 'text-success'
-                      : 'text-muted-foreground';
-                    
-                    return (
-                      <TableRow key={comp.indicador.id} id={`indicador-${comp.indicador.id}`}
-                        className={cn(idx % 2 === 0 && 'bg-muted/10')}>
-                        <TableCell className="py-2.5">
-                          <p className="text-xs font-medium leading-tight">{comp.indicador.nome}</p>
-                          {comp.indicador.subcategoria && (
-                            <span className="text-[10px] text-muted-foreground">{comp.indicador.subcategoria}</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="text-[10px] px-1.5">{comp.ano || '—'}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right text-xs font-mono">
-                          {formatNum(comp.brancos, isLargeNumber)}
-                        </TableCell>
-                        <TableCell className="text-right text-xs font-mono font-semibold">
-                          {formatNum(comp.negros, isLargeNumber)}
-                        </TableCell>
-                        <TableCell className="text-right text-xs font-mono">
-                          {formatNum(comp.indigenas, isLargeNumber)}
-                        </TableCell>
-                        <TableCell className={cn("text-center text-xs", razaoColor)}>
-                          {comp.razao !== null ? comp.razao.toFixed(2) : '—'}
-                        </TableCell>
-                        <TableCell className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={comp.indicador.fonte}>
-                          {comp.indicador.fonte}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {comp.indicador.url_fonte ? (
-                            <a href={comp.indicador.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
-                              <ExternalLink className="w-3.5 h-3.5 inline" />
-                            </a>
-                          ) : (
-                            <span className="text-muted-foreground/50">—</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Themed visual cards with horizontal bar charts */}
+      {Object.entries(themeGroups).map(([theme, comps]) => {
+        const label = themeLabels[theme] || theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Build bar data for the group
+        const barData = comps.map(c => ({
+          nome: c.indicador.nome.replace(/—.*$/, '').trim().slice(0, 35),
+          Brancos: c.brancos,
+          Negros: c.negros,
+          'Indígenas em TIs': c.indigenas,
+          Nacional: c.nacional,
+          razao: c.razao,
+          ano: c.ano,
+          url: c.indicador.url_fonte,
+          fonte: c.indicador.fonte,
+        }));
 
-      {/* Non-comparable indicators (no racial breakdown) */}
+        // Narrative insight for the group
+        const groupWithRatio = comps.filter(c => c.razao !== null);
+        const avgGroupRatio = groupWithRatio.length > 0
+          ? groupWithRatio.reduce((s, c) => s + c.razao!, 0) / groupWithRatio.length
+          : null;
+        const hasIndigenas = comps.some(c => c.indigenas !== null);
+        const worstInGroup = groupWithRatio.length > 0
+          ? groupWithRatio.reduce((w, c) => Math.abs(c.razao! - 1) > Math.abs(w.razao! - 1) ? c : w)
+          : null;
+
+        return (
+          <Card key={theme} className="overflow-hidden">
+            <CardHeader className="pb-2 border-b border-border/30 bg-muted/20">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold">{label}</CardTitle>
+                <Badge variant="outline" className="text-[10px]">
+                  {comps.length} indicador{comps.length > 1 ? 'es' : ''} · {comps[0]?.ano || '—'}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-4">
+              {/* Horizontal bar chart */}
+              <div style={{ height: Math.max(comps.length * 60 + 40, 140) }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barData} layout="vertical" margin={{ left: 10, right: 16, top: 5, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="nome" width={160} tick={{ fontSize: 10 }} />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        fontSize: '11px'
+                      }}
+                      formatter={(value: number, name: string) => [
+                        typeof value === 'number' ? value.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : '—',
+                        name
+                      ]}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '11px' }} />
+                    <Bar dataKey="Brancos" fill="#94a3b8" radius={[0, 4, 4, 0]} barSize={14} />
+                    <Bar dataKey="Negros" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={14} />
+                    {hasIndigenas && (
+                      <Bar dataKey="Indígenas em TIs" fill="#16a34a" radius={[0, 4, 4, 0]} barSize={14} />
+                    )}
+                    <Bar dataKey="Nacional" fill="#a3a3a3" radius={[0, 4, 4, 0]} barSize={10} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Narrative insight box */}
+              <div className="rounded-lg border bg-gradient-to-r from-primary/5 to-transparent p-3">
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  <span className="font-semibold text-foreground">💡 Conclusão: </span>
+                  {avgGroupRatio !== null && avgGroupRatio > 1 ? (
+                    <>
+                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
+                      que a branca (razão média {avgGroupRatio.toFixed(2)}×).
+                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×).</>}
+                    </>
+                  ) : avgGroupRatio !== null && avgGroupRatio < 1 ? (
+                    <>
+                      Neste eixo, a população negra apresenta taxa {((1 - avgGroupRatio) * 100).toFixed(0)}% menor que a branca — 
+                      indicando déficit de acesso.
+                    </>
+                  ) : hasIndigenas ? (
+                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas.</>
+                  ) : (
+                    <>Dados pontuais sem comparação racial direta disponível.</>
+                  )}
+                </p>
+              </div>
+
+              {/* Source links row */}
+              <div className="flex flex-wrap gap-2">
+                {comps.map(c => (
+                  <div key={c.indicador.id} className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <span className="font-medium">{c.indicador.nome.split('—')[0].trim().slice(0, 25)}:</span>
+                    {c.indicador.url_fonte ? (
+                      <a href={c.indicador.url_fonte} target="_blank" rel="noopener noreferrer" 
+                         className="text-primary hover:underline inline-flex items-center gap-0.5">
+                        <ExternalLink className="w-2.5 h-2.5" /> {c.indicador.fonte}
+                      </a>
+                    ) : (
+                      <span>{c.indicador.fonte}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {/* Non-comparable indicators */}
       {noComparison.length > 0 && (
         <Card className="overflow-hidden">
           <CardHeader className="pb-3 bg-muted/20 border-b border-border/50">
