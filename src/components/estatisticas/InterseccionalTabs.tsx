@@ -552,7 +552,7 @@ export function LgbtqiaTab() {
             <Rainbow className="w-5 h-5 text-primary" />
             Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)
           </CardTitle>
-          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Brancos {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
+          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Não Negros {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
@@ -571,7 +571,7 @@ export function LgbtqiaTab() {
                 />
                 <Legend />
                 <Bar dataKey="negros" name="Negros (pretos e pardos)" fill="hsl(var(--chart-1))" />
-                <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--muted-foreground))" opacity={0.5} />
+                <Bar dataKey="brancos" name="Não Negros" fill="hsl(var(--muted-foreground))" opacity={0.5} />
                 <Bar dataKey="indigenas" name="Indígenas" fill="hsl(var(--destructive))" opacity={0.7} />
               </BarChart>
             </ResponsiveContainer>
@@ -600,7 +600,7 @@ export function LgbtqiaTab() {
                   <TableHead>Ano</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead className="text-right">% Negros</TableHead>
-                  <TableHead className="text-right">% Brancos</TableHead>
+                  <TableHead className="text-right">% Não Negros</TableHead>
                   <TableHead className="text-right">% Indígenas</TableHead>
                   <TableHead>Dossiê</TableHead>
                 </TableRow>
@@ -854,7 +854,7 @@ export function JuventudeTab() {
           <CardContent>
             <div className="text-center mb-4">
               <p className="text-4xl font-bold text-warning">{atlasViolencia2025.ivjn.riscoRelativo}x</p>
-              <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p>
+              <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
             </div>
             <div className="text-xs space-y-1 mb-3">
               <p className="font-medium text-muted-foreground">Evolução:</p>
@@ -879,7 +879,7 @@ export function JuventudeTab() {
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
                 Jovens negros (15-29 anos) representam a maioria absoluta das vítimas de homicídio no Brasil.
-                A taxa de homicídio de jovens negros é <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que a de jovens brancos (Atlas da Violência 2025).
+                A taxa de homicídio de jovens negros é <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que a de jovens não negros (Atlas da Violência 2025).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
@@ -892,7 +892,7 @@ export function JuventudeTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Baby className="w-5 h-5 text-warning" />
-              Indicadores da Juventude Negra vs. Branca
+              Indicadores da Juventude Negra vs. Não Negra
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -931,7 +931,7 @@ export function JuventudeTab() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Jovens Brancos</span>
+                        <span>Jovens Não Negros</span>
                         <span className="font-bold">{item.referencia}</span>
                       </div>
                       <div className="h-2 bg-primary/20 rounded-full">
@@ -1112,7 +1112,7 @@ export function ClasseSocialTab() {
               <p className="text-[10px] text-muted-foreground">(2º pior entre 30 países)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
+              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs não negros</p>
               <p className="text-3xl font-bold text-destructive">40%</p>
               <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
               <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>

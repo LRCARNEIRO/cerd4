@@ -281,11 +281,11 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual/Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
+    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% não negros (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
     prioridade: 'alta',
     unidadeSerie: '% sem esgoto adequado',
     serieHistorica: [
-      { ano: 2022, valor: 'Negros: 42,8% | Brancos: 26,5% | Quilombos: 65,4% | TIs: 38,5% sem água', fonte: 'IBGE Censo 2022' },
+      { ano: 2022, valor: 'Negros: 42,8% | Não Negros: 26,5% | Quilombos: 65,4% | TIs: 38,5% sem água', fonte: 'IBGE Censo 2022' },
       { ano: '2018-2021', valor: '⏳ N/D', nota: 'Dados PnadC disponíveis via SIDRA/IBGE — pendente extração' },
     ]
   }
@@ -302,12 +302,12 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     periodicidade: 'A cada 2 anos',
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Candidatos negros superaram brancos pela 1ª vez em 2020 e novamente em 2024 (52,7%). Porém, eleitos negros a prefeito são apenas 33% — sub-representação de 22 p.p.',
+    relevanciaRacial: 'Candidatos negros superaram não negros pela 1ª vez em 2020 e novamente em 2024 (52,7%). Porém, eleitos negros a prefeito são apenas 33% — sub-representação de 22 p.p.',
     prioridade: 'alta',
     unidadeSerie: '% candidatos negros (pretos+pardos)',
     serieHistorica: [
       { ano: '2014 (gerais)', valor: '46,7%', fonte: 'TSE Repositório Dados Eleitorais' },
-      { ano: '2016 (munic.)', valor: '⏳ N/D', nota: '1ª vez que negros superaram brancos — valor exato pendente' },
+      { ano: '2016 (munic.)', valor: '⏳ N/D', nota: '1ª vez que negros superaram não negros — valor exato pendente' },
       { ano: '2018 (gerais)', valor: '51,7%', fonte: 'TSE Repositório Dados Eleitorais', nota: '1ª vez >50% em gerais' },
       { ano: '2020 (munic.)', valor: '52,2%', fonte: 'TSE Repositório Dados Eleitorais' },
       { ano: '2022 (gerais)', valor: '51,2%', fonte: 'TSE Repositório Dados Eleitorais' },

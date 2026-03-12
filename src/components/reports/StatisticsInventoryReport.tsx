@@ -226,7 +226,7 @@ ${arrayToHTMLTable(evolucaoComposicaoRacial, '')}
 
 <h3>1.3. Indicadores Socioeconômicos por Raça/Cor</h3>
 ${arrayToHTMLTable(indicadoresSocioeconomicos, '')}
-<div class="section-summary">Razão de renda negros/brancos: <strong>${razaoRendaRacial}</strong> — desigualdade estrutural persistente.</div>
+<div class="section-summary">Razão de renda negros/não negros: <strong>${razaoRendaRacial}</strong> — desigualdade estrutural persistente.</div>
 
 <h3>1.4. Rendimentos Médios por Raça (Censo 2022)</h3>
 ${arrayToHTMLTable(rendimentosCenso2022.rendimentoPorRaca || [], '')}
@@ -267,7 +267,7 @@ ${arrayToHTMLTable(juventudeNegra, '')}
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
 
 <h3>3.6. Saúde Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/não negra = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
 
 <h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
 ${arrayToHTMLTable(serieAntraTrans, '')}
@@ -361,7 +361,7 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <h3>6.4. Juventude Negra (15-29 anos)</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Juventude Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | ONU: §32-§36</div>
 <table>
-  <tr><th>Indicador</th><th>Negros</th><th>Brancos</th><th>Fonte</th></tr>
+  <tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr>
   ${juventudeNegra.map(j => '<tr>' +
     '<td>' + j.indicador + '</td>' +
     '<td style="font-weight:600;color:#991b1b;">' + j.valor + '</td>' +
@@ -376,14 +376,14 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <h4>Violência contra Mulheres Negras</h4>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 <h4>Saúde Interseccional (Raça × Classe)</h4>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Dado verificado: mortalidade materna negra ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra} vs branca ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca} por 100 mil NV (${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}), razão ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x (DataSUS/SIM).</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Dado verificado: mortalidade materna negra ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra} vs não negra ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca} por 100 mil NV (${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}), razão ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x (DataSUS/SIM).</div>
 <h4>Mulheres Chefes de Família — Série Histórica</h4>
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça.</div>
 
 <h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
 <table>
-  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Branca</th><th>Média Nacional</th></tr>
+  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Não Negra</th><th>Média Nacional</th></tr>
   <tr><td>Água rede geral</td><td>${povosTradicionais.populacaoNegra.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.aguaRedeGeral}%</td></tr>
   <tr><td>Esgoto adequado</td><td>${povosTradicionais.populacaoNegra.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.esgotoAdequado}%</td></tr>
   <tr><td>Coleta de lixo</td><td>${povosTradicionais.populacaoNegra.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.coletaLixo}%</td></tr>

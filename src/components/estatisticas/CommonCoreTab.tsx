@@ -731,7 +731,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Taxa líquida (18-24)', '10,5%', '14,4%', '17,6%', '23,8%', '25,5%', '26,2%'],
         ['Homens', '9,2%', '12,1%', '14,8%', '20,1%', '21,8%', '22,5%'],
         ['Mulheres', '11,8%', '16,7%', '20,4%', '27,5%', '29,2%', '29,9%'],
-        ['Brancos', '16,6%', '21,3%', '25,3%', '31,5%', '32,8%', '33,5%'],
+        ['Não Negros', '16,6%', '21,3%', '25,3%', '31,5%', '32,8%', '33,5%'],
         ['Negros', '5,2%', '8,5%', '11,8%', '18,2%', '20,5%', '21,3%']
       ]
     },
@@ -758,7 +758,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Total', '6,1', '7,2', '7,8', '9,4', '9,9', '10,2'],
         ['Homens', '5,9', '7,0', '7,5', '9,1', '9,6', '9,9'],
         ['Mulheres', '6,3', '7,5', '8,1', '9,7', '10,2', '10,5'],
-        ['Brancos', '7,3', '8,5', '9,1', '10,7', '11,1', '11,4'],
+        ['Não Negros', '7,3', '8,5', '9,1', '10,7', '11,1', '11,4'],
         ['Negros', '4,7', '6,1', '6,8', '8,3', '8,9', '9,2'],
         ['Diferença B-N', '2,6', '2,4', '2,3', '2,4', '2,2', '2,2']
       ]
@@ -786,7 +786,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Total', '11,4%', '14,2%', '21,3%', '24,8%', '25,9%'],
         ['Homens', '9,8%', '11,8%', '18,1%', '21,5%', '22,5%'],
         ['Mulheres', '12,9%', '16,5%', '24,5%', '28,1%', '29,3%'],
-        ['Brancos', '16,2%', '20,5%', '29,8%', '33,5%', '34,8%'],
+        ['Não Negros', '16,2%', '20,5%', '29,8%', '33,5%', '34,8%'],
         ['Negros', '5,8%', '8,2%', '14,2%', '17,8%', '18,9%']
       ]
     },
@@ -1195,7 +1195,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Total', '7,1%', '8,5%', '11,9%', '13,5%', '9,3%', '6,8%'],
         ['Homens', '5,7%', '6,8%', '9,7%', '11,0%', '7,5%', '5,5%'],
         ['Mulheres', '9,1%', '10,8%', '14,7%', '16,5%', '11,6%', '8,5%'],
-        ['Brancos', '5,8%', '6,9%', '9,8%', '11,3%', '7,5%', '5,2%'],
+        ['Não Negros', '5,8%', '6,9%', '9,8%', '11,3%', '7,5%', '5,2%'],
         ['Negros', '8,1%', '9,9%', '13,8%', '15,6%', '10,9%', '8,2%'],
         ['Jovens 18-24', '16,8%', '18,9%', '25,3%', '29,8%', '19,2%', '15,5%']
       ]
@@ -1223,7 +1223,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Total', '55,5%', '56,2%', '54,4%', '56,7%', '58,5%'],
         ['Homens', '68,2%', '68,5%', '65,8%', '67,7%', '69,5%'],
         ['Mulheres', '43,6%', '44,7%', '43,9%', '46,5%', '48,2%'],
-        ['Brancos', '57,8%', '58,5%', '56,5%', '58,8%', '60,2%'],
+        ['Não Negros', '57,8%', '58,5%', '56,5%', '58,8%', '60,2%'],
         ['Negros', '53,4%', '54,0%', '52,5%', '54,8%', '57,0%']
       ]
     },
@@ -1249,7 +1249,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Total', '43,8%', '44,6%', '41,1%', '39,8%', '38,2%'],
         ['Homens', '41,8%', '42,5%', '39,2%', '38,0%', '36,5%'],
         ['Mulheres', '46,3%', '47,2%', '43,5%', '42,0%', '40,2%'],
-        ['Brancos', '37,5%', '38,2%', '35,0%', '33,5%', '32,1%'],
+        ['Não Negros', '37,5%', '38,2%', '35,0%', '33,5%', '32,1%'],
         ['Negros', '49,5%', '50,5%', '46,8%', '45,5%', '43,8%']
       ]
     },
@@ -1276,12 +1276,12 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Total', 'R$ 1.893', 'R$ 2.180', 'R$ 2.415', 'R$ 2.787', 'R$ 3.225'],
         ['Homens', 'R$ 2.152', 'R$ 2.478', 'R$ 2.782', 'R$ 3.180', 'R$ 3.680'],
         ['Mulheres', 'R$ 1.552', 'R$ 1.793', 'R$ 1.972', 'R$ 2.305', 'R$ 2.685'],
-        ['Brancos', 'R$ 2.396', 'R$ 2.785', 'R$ 3.115', 'R$ 3.548', 'R$ 4.120'],
+        ['Não Negros', 'R$ 2.396', 'R$ 2.785', 'R$ 3.115', 'R$ 3.548', 'R$ 4.120'],
         ['Negros', 'R$ 1.388', 'R$ 1.588', 'R$ 1.762', 'R$ 2.085', 'R$ 2.425'],
         ['Razão N/B', '57,9%', '57,0%', '56,6%', '58,8%', '58,9%']
       ]
     },
-    notas: 'Negros recebem cerca de 59% do rendimento de brancos.',
+    notas: 'Negros recebem cerca de 59% do rendimento de não negros.',
     tendencia: 'crescente'
   },
   {
@@ -1485,7 +1485,7 @@ export const tabelasPobreza: CommonCoreTable[] = [
       headers: ['Razão', '2005', '2010', '2015', '2019', '2022', '2023'],
       rows: [
         ['Homens/Mulheres', '1,51', '1,49', '1,50', '1,45', '1,42', '1,40'],
-        ['Brancos/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
+        ['Não Negros/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
       ]
     },
     notas: 'Redução lenta das desigualdades de gênero e raça na renda.',
@@ -2041,7 +2041,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       headers: ['Cor/Raça', 'Déficit 2019 (mil)', '% do déficit', 'Déficit 2022 (mil)', '% do déficit'],
       rows: [
         ['Negros (Pretos+Pardos)', '3.650', '58,2%', '3.870', '59,8%'],
-        ['Brancos', '2.350', '37,5%', '2.280', '35,2%'],
+        ['Não Negros', '2.350', '37,5%', '2.280', '35,2%'],
         ['Indígenas', '85', '1,4%', '92', '1,4%'],
         ['Outros/NI', '185', '2,9%', '230', '3,6%'],
         ['Total Brasil', '6.270', '100%', '6.472', '100%']
@@ -2065,7 +2065,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
     periodoAtualizado: '2010-2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Indicador', 'Negros (%)', 'Brancos (%)', 'Razão N/B'],
+      headers: ['Indicador', 'Negros (%)', 'Não Negros (%)', 'Razão N/NN'],
       rows: [
         ['Sem banheiro exclusivo', '6,8%', '2,1%', '3,2x'],
         ['Adensamento excessivo', '8,5%', '4,2%', '2,0x'],
@@ -2096,7 +2096,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       rows: [
         ['Total em aglom. subnormais', '11.425.644', '16.390.000'],
         ['Negros (Pretos+Pardos)', '7.398.000 (64,7%)', '11.310.000 (69,0%)'],
-        ['Brancos', '3.542.000 (31,0%)', '4.425.000 (27,0%)'],
+        ['Não Negros', '3.542.000 (31,0%)', '4.425.000 (27,0%)'],
         ['% negros na pop. geral', '50,7%', '55,5%'],
         ['Sobre-representação negra', '+14,0 p.p.', '+13,5 p.p.']
       ]
@@ -2118,7 +2118,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
     periodoAtualizado: '2023-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Faixa MCMV', '% Negros', '% Brancos', '% Outros', 'Total famílias (mil)'],
+      headers: ['Faixa MCMV', '% Negros', '% Não Negros', '% Outros', 'Total famílias (mil)'],
       rows: [
         ['Faixa 1 (até R$ 2.640)', '72,4%', '24,8%', '2,8%', '4.250'],
         ['Faixa 2 (R$ 2.640-4.400)', '58,3%', '38,2%', '3,5%', '1.850'],
@@ -2147,7 +2147,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
       rows: [
         ['% titularidade feminina (total)', '82,5%', '84,2%', '85,1%'],
         ['% titularidade mulher negra', '56,8%', '58,5%', '60,2%'],
-        ['% titularidade mulher branca', '23,2%', '23,5%', '22,8%'],
+        ['% titularidade mulher não negra', '23,2%', '23,5%', '22,8%'],
         ['UH entregues (Faixa 1, mil)', '285', '142', '380']
       ]
     },
@@ -2171,13 +2171,13 @@ export const tabelasMoradia: CommonCoreTable[] = [
     dados: {
       headers: ['Cor/Raça', '2016', '2019', '2022', '2023'],
       rows: [
-        ['Brancos', '89,2%', '90,1%', '91,5%', '91,8%'],
+        ['Não Negros', '89,2%', '90,1%', '91,5%', '91,8%'],
         ['Negros (Pretos+Pardos)', '78,5%', '80,2%', '82,8%', '83,5%'],
         ['Diferença (p.p.)', '10,7', '9,9', '8,7', '8,3'],
         ['Indígenas', '42,5%', '45,8%', '48,2%', '49,5%']
       ]
     },
-    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre brancos e negros. Indígenas com acesso muito inferior.',
+    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre não negros e negros. Indígenas com acesso muito inferior.',
     tendencia: 'crescente'
   },
   {
@@ -2197,13 +2197,13 @@ export const tabelasMoradia: CommonCoreTable[] = [
     dados: {
       headers: ['Cor/Raça', '2016', '2019', '2022', '2023'],
       rows: [
-        ['Brancos', '78,5%', '80,2%', '82,5%', '83,2%'],
+        ['Não Negros', '78,5%', '80,2%', '82,5%', '83,2%'],
         ['Negros (Pretos+Pardos)', '58,2%', '61,5%', '65,8%', '67,2%'],
         ['Diferença (p.p.)', '20,3', '18,7', '16,7', '16,0'],
         ['Indígenas', '28,5%', '32,1%', '35,8%', '37,2%']
       ]
     },
-    notas: 'Disparidade de 16 p.p. entre brancos e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
+    notas: 'Disparidade de 16 p.p. entre não negros e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
     tendencia: 'crescente'
   }
 ];

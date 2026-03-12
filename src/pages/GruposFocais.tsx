@@ -84,7 +84,7 @@ const gruposFocaisData = {
     observacoesONU: ['32', '33', '34', '35', '36'],
     politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
     indicadores: ['Taxa de homicídios 12-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
-    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,5x maior que jovens brancos.',
+    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,5x maior que jovens não negros.',
   },
   populacao_negra: {
     nome: 'População Negra (Preta + Parda)',
@@ -833,7 +833,7 @@ export default function GruposFocais() {
                       <tr className="border-b border-border">
                         <th className="text-left py-2 px-3 font-medium">Indicador</th>
                         <th className="text-center py-2 px-3 font-medium">Nacional</th>
-                        <th className="text-center py-2 px-3 font-medium text-primary">Brancos</th>
+                        <th className="text-center py-2 px-3 font-medium text-primary">Não Negros</th>
                         <th className="text-center py-2 px-3 font-medium text-warning">Negros</th>
                         <th className="text-center py-2 px-3 font-medium text-accent">Indígenas (total)</th>
                         <th className="text-center py-2 px-3 font-medium text-destructive">Indígenas (TIs)</th>
@@ -1122,7 +1122,7 @@ export default function GruposFocais() {
                 <CardContent>
                   <div className="text-center mb-4">
                     <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
-                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p>
+                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
                     <p className="font-medium text-muted-foreground">Evolução:</p>

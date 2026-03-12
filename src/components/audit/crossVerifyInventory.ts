@@ -76,7 +76,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-05',
-    indicador: 'IVJ-N risco relativo jovens negros vs brancos',
+    indicador: 'IVJ-N risco relativo jovens negros vs não negros',
     valor_declarado: 2.0,
     fonte_declarada: 'Atlas da Violência 2025 (IPEA/FBSP)',
     tipo_fonte: 'pdf',
@@ -107,7 +107,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   // TIPO B: API SIDRA — Desemprego por cor/raça
   // Tabela 6403: Taxa de desocupação por cor ou raça (PNAD Contínua Trimestral)
   // Variável 4099 = Taxa de desocupação
-  // c86 = Cor ou raça: 2776=Branca, 2777=Preta, 2778=Parda, 2795=Preta ou parda
+  // c86 = Cor ou raça: 2776=Branca, 2777=Preta, 2778=Parda, 2795=Preta ou parda (NOTA: No sistema, exibimos como "Não Negros" ao invés de "Brancos")
   // ═══════════════════════════════════════════════
   {
     id: 'juv-08',
@@ -122,7 +122,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-09',
-    indicador: 'Desemprego jovens brancos (%)',
+    indicador: 'Desemprego jovens não negros (%)',
     valor_declarado: 11.5,
     fonte_declarada: 'PNAD Contínua 2024 — IBGE/SIDRA',
     tipo_fonte: 'web',
@@ -140,7 +140,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   },
   {
     id: 'juv-11',
-    indicador: 'Nem-nem jovens brancos (%)',
+    indicador: 'Nem-nem jovens não negros (%)',
     valor_declarado: 14.5,
     fonte_declarada: 'PNAD Contínua 2024 — IBGE/DIEESE',
     tipo_fonte: 'web',
