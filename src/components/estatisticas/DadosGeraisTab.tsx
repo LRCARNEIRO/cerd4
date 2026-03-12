@@ -492,7 +492,24 @@ export function DadosGeraisTab() {
                 Tabela 6403 — População por cor/raça
               </a>
             </p>
-            <p className="italic">Renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 — SIDRA 6405). Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61.</p>
+            {hasRendaData && (() => {
+              const dados = sidraRendaData!.dados;
+              const ratios = dados
+                .filter(d => d.negra > 0 && d.branca > 0)
+                .map(d => ({ ano: d.ano, razao: +(d.negra / d.branca).toFixed(3) }));
+              if (ratios.length === 0) return null;
+              const ultimo = ratios[ratios.length - 1];
+              const min = Math.min(...ratios.map(r => r.razao));
+              const max = Math.max(...ratios.map(r => r.razao));
+              const anoInicio = ratios[0].ano;
+              const anoFim = ultimo.ano;
+              return (
+                <p className="italic">
+                  Renda de pessoas negras equivale a {(ultimo.razao * 100).toFixed(1).replace('.', ',')}% da de brancas (PNAD {ultimo.ano} — SIDRA 6405).
+                  {ratios.length > 1 && ` Comparativo ${anoInicio}→${anoFim}: razão manteve-se entre ${min.toFixed(2).replace('.', ',')} e ${max.toFixed(2).replace('.', ',')}.`}
+                </p>
+              );
+            })()}
           </div>
         </CardContent>
       </Card>
