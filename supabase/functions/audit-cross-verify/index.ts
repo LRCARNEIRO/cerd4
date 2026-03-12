@@ -415,7 +415,7 @@ Retorne APENAS JSON:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-5-mini',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.05,
         max_tokens: 500,
