@@ -213,15 +213,18 @@ const indicadoresVulnerabilidade = {
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
+  // AUDITORIA 12/03/2026: percentualNegrosHomens REMOVIDO — dado não verificável
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
-    percentualVitimas: 47.8, percentualNegrosHomens: 79,
+    percentualVitimas: 47.8,
+    feminicidioNegras: 68.2, // Atlas 2025, p.57
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
     riscoRelativo: 2.0, riscoRelativo2017: 1.9, riscoSuperiorNegro: 3.0,
+    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado específico
     ano: 2021, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
@@ -944,9 +947,9 @@ export function GruposFocaisTab() {
                   </div>
                   <div className="p-2 bg-destructive/10 rounded text-center mb-3">
                     <p className="text-sm font-bold text-destructive">
-                      {indicadoresVulnerabilidade.violenciaJuventude.percentualNegrosHomens}% jovens negros do sexo masculino
+                      {indicadoresVulnerabilidade.violenciaJuventude.feminicidioNegras}% das vítimas de homicídio feminino são negras
                     </p>
-                    <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+                    <p className="text-xs text-muted-foreground">Atlas da Violência 2025, p.57</p>
                   </div>
                   <FonteInfo fonte={indicadoresVulnerabilidade.violenciaJuventude.fonte} tabela="Atlas da Violência 2025" link={indicadoresVulnerabilidade.violenciaJuventude.link} atualizacao="2025-05-01" />
                 </CardContent>
@@ -961,6 +964,7 @@ export function GruposFocaisTab() {
                   <div className="text-center mb-4">
                     <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
                     <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
+                    <p className="text-[10px] text-warning mt-1">({indicadoresVulnerabilidade.ivjn.qualificador})</p>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
                     <p className="font-medium text-muted-foreground">Evolução:</p>
@@ -970,7 +974,7 @@ export function GruposFocaisTab() {
                     </p>
                     <p className="flex items-center gap-1 text-destructive">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior</span>
+                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior (2021)</span>
                     </p>
                   </div>
                   <FonteInfo fonte={indicadoresVulnerabilidade.ivjn.fonte} tabela="Atlas da Violência 2025" link={indicadoresVulnerabilidade.ivjn.link} atualizacao="2025-05-01" />

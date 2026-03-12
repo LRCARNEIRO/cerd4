@@ -172,7 +172,7 @@ export const narrativaLGBTQIA = {
 
 export const narrativaJuventude = {
   percentualVitimas: atlasViolencia2025.juventude15_29.percentualVitimas,
-  percentualNegrosHomens: atlasViolencia2025.juventude15_29.percentualNegrosHomens,
+  // REMOVIDO: percentualNegrosHomens — dado não verificável no Atlas 2025 (auditoria 12/03/2026)
   riscoRelativo: atlasViolencia2025.ivjn.riscoRelativo,
   riscoRelativo2017: atlasViolencia2025.ivjn.riscoRelativo2017,
   riscoSuperiorNegro: atlasViolencia2025.ivjn.riscoSuperiorNegro,

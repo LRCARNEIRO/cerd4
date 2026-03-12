@@ -855,6 +855,7 @@ export function JuventudeTab() {
             <div className="text-center mb-4">
               <p className="text-4xl font-bold text-warning">{atlasViolencia2025.ivjn.riscoRelativo}x</p>
               <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
+              <p className="text-[10px] text-warning mt-1">(ensino fundamental incompleto)</p>
             </div>
             <div className="text-xs space-y-1 mb-3">
               <p className="font-medium text-muted-foreground">Evolução:</p>
@@ -864,7 +865,7 @@ export function JuventudeTab() {
               </p>
               <p className="flex items-center gap-1 text-destructive">
                 <AlertTriangle className="w-3 h-3" />
-                Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior
+                Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior (2021)
               </p>
             </div>
           </CardContent>
@@ -878,8 +879,8 @@ export function JuventudeTab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Genocídio da Juventude Negra</h3>
               <p className="text-sm text-muted-foreground">
-                Jovens negros (15-29 anos) representam a maioria absoluta das vítimas de homicídio no Brasil.
-                A taxa de homicídio de jovens negros é <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que a de jovens não negros (Atlas da Violência 2025).
+                Jovens negros (15–29 anos) representam a maior parte das vítimas de homicídio no Brasil.
+                Entre jovens com ensino fundamental incompleto, o risco de homicídio de jovens negros foi <strong>{atlasViolencia2025.ivjn.riscoRelativo}x maior</strong> que o de jovens não negros em 2021 (Atlas da Violência 2025, p.71–74).
                 Este é o principal ponto de crítica do Comitê CERD.
               </p>
             </div>
@@ -919,7 +920,7 @@ export function JuventudeTab() {
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Jovens Negros</span>
+                        <span>{(item as any).labelNegro || 'Jovens Negros'}</span>
                         <span className="font-bold text-destructive">{item.valor}</span>
                       </div>
                       <div className="h-2 bg-destructive/20 rounded-full">
@@ -931,7 +932,7 @@ export function JuventudeTab() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>{item.fonte?.includes('Atlas') ? 'Jovens Não Negros' : 'Jovens Brancos'}</span>
+                        <span>{(item as any).labelReferencia || (item.fonte?.includes('Atlas') ? 'Jovens Não Negros' : 'Jovens Brancos')}</span>
                         <span className="font-bold">{item.referencia}</span>
                       </div>
                       <div className="h-2 bg-primary/20 rounded-full">
@@ -942,6 +943,9 @@ export function JuventudeTab() {
                       </div>
                     </div>
                   </div>
+                  {(item as any).nota && (
+                    <p className="text-[10px] text-warning mt-2 italic">⚠ {(item as any).nota}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -949,9 +953,6 @@ export function JuventudeTab() {
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
                 { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-                { nome: 'SIDRA 7113 — Desocupação por idade e cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7113' },
-                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
-                { nome: 'SIM/DataSUS — Mortalidade por causas externas', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
               ]}
               documentos={['CERD 2022', '19º Anuário FBSP 2025']}
             />
@@ -973,12 +974,13 @@ export function JuventudeTab() {
                 <li className="flex items-center gap-1">
                   • Letalidade policial:{' '}
                   <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">82% das vítimas são negras</a>{' '}
-                  (19º Anuário FBSP 2025)
+                  (19º Anuário FBSP 2025, p.70)
                 </li>
                 <li className="flex items-center gap-1">
                   • Encarceramento:{' '}
-                  <a href="https://www.gov.br/senappen/pt-br/servicos/sisdepen" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,2% dos presos são negros</a>{' '}
-                  (SISDEPEN 2024)
+                  <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="font-bold text-destructive hover:underline">68,7% dos presos são negros</a>{' '}
+                  (19º Anuário FBSP 2025, p.19 e 399)
+                  <span className="text-[10px] text-warning ml-1">⚠ cobertura racial: 85,3%</span>
                 </li>
               </ul>
             </div>
@@ -986,7 +988,6 @@ export function JuventudeTab() {
               fontes={[
                 { nome: 'Atlas da Violência 2025 (IPEA/FBSP)', url: 'https://www.ipea.gov.br/atlasviolencia' },
                 { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/' },
-                { nome: 'SISDEPEN/SENAPPEN', url: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen' },
               ]}
               documentos={['CERD 2022']}
             />

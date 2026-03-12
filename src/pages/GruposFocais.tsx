@@ -264,20 +264,27 @@ const indicadoresVulnerabilidade = {
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   // Violência letal na juventude 15-29 anos
+  // AUDITORIA 12/03/2026: percentualVitimas=47.8 SIM (Atlas 2025, p.26)
+  // percentualNegrosHomens=79 REMOVIDO — informação não consta no documento (auditoria Eduardo)
+  // Substituído por: feminicídio mulheres negras 68,2% (Atlas 2025, p.57)
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
     percentualVitimas: 47.8,
-    percentualNegrosHomens: 79,
+    // REMOVIDO: percentualNegrosHomens — dado não verificável no Atlas 2025
+    feminicidioNegras: 68.2, // Atlas 2025, p.57: "mulheres negras representaram 68,2% do total de homicídios femininos"
     ano: 2023,
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
   },
   // IVJ-N — Índice de Vulnerabilidade da Juventude Negra
+  // AUDITORIA 12/03/2026: riscoRelativo=2.0 refere-se a jovens com ensino fundamental incompleto (Atlas 2025, p.74 nota de rodapé)
+  // Atlas usa "Não Negros" em vez de "Brancos", exceto no IVJ-N (Escolaridade)
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
-    riscoRelativo: 2.0,
+    riscoRelativo: 2.0, // especificamente para ensino fundamental incompleto
     riscoRelativo2017: 1.9,
-    riscoSuperiorNegro: 3.0, // entre jovens c/ ensino superior
+    riscoSuperiorNegro: 3.0, // entre jovens c/ ensino superior (dado de 2021)
+    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado é específico, não geral
     ano: 2021,
     fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
@@ -1100,9 +1107,9 @@ export default function GruposFocais() {
                   </div>
                   <div className="p-2 bg-destructive/10 rounded text-center mb-3">
                     <p className="text-sm font-bold text-destructive">
-                      {indicadoresVulnerabilidade.violenciaJuventude.percentualNegrosHomens}% jovens negros do sexo masculino
+                      {indicadoresVulnerabilidade.violenciaJuventude.feminicidioNegras}% das vítimas de homicídio feminino são negras
                     </p>
-                    <p className="text-xs text-muted-foreground">entre as vítimas de mortes violentas intencionais</p>
+                    <p className="text-xs text-muted-foreground">Atlas da Violência 2025, p.57</p>
                   </div>
                   <FonteInfo
                     fonte={indicadoresVulnerabilidade.violenciaJuventude.fonte}
@@ -1123,6 +1130,7 @@ export default function GruposFocais() {
                   <div className="text-center mb-4">
                     <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
                     <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
+                    <p className="text-[10px] text-warning mt-1">({indicadoresVulnerabilidade.ivjn.qualificador})</p>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
                     <p className="font-medium text-muted-foreground">Evolução:</p>
@@ -1132,7 +1140,7 @@ export default function GruposFocais() {
                     </p>
                     <p className="flex items-center gap-1 text-destructive">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior</span>
+                      <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior (2021)</span>
                     </p>
                   </div>
                   <FonteInfo

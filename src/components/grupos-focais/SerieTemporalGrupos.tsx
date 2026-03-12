@@ -125,7 +125,7 @@ function buildIndicadores(): Record<string, IndicadorTemporal[]> {
   ];
 
   // Juventude Negra: séries temporais existentes que afetam desproporcionalmente jovens 15-29
-  // Atlas 2025: {narrativaJuventude.percentualVitimas}% vítimas homicídio têm 15-29 anos; {narrativaJuventude.percentualNegrosHomens}% jovens negros masculinos
+  // Atlas 2025: {narrativaJuventude.percentualVitimas}% vítimas homicídio têm 15-29 anos
   // Não usa multiplicadores — usa as séries reais de segurança/emprego como indicadores correlatos
   const juventudeNegra: IndicadorTemporal[] = [
     {
