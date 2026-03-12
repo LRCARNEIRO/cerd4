@@ -81,7 +81,7 @@ const excessoMortalidade = [
 // Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio)
 const letalidadeHospitalar = [
   { raca: 'Pretos e Pardos', letalidade: 55, sobrevivencia: 45 },
-  { raca: 'Brancos', letalidade: 38, sobrevivencia: 62 },
+  { raca: 'Não Negros', letalidade: 38, sobrevivencia: 62 },
   { raca: 'Indígenas', letalidade: 62, sobrevivencia: 38 },
 ];
 
