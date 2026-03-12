@@ -47,6 +47,7 @@ const tipoFonteIcons = {
 };
 
 export function CrossVerifyPanel() {
+  const [selectedInventory, setSelectedInventory] = useState<string>('dados-gerais');
   const [results, setResults] = useState<VerifyResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<any>(null);
