@@ -90,6 +90,9 @@ export function SegurancaSaudeEducacaoTab() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">19º Anuário FBSP 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
             </div>
           </div>
 
