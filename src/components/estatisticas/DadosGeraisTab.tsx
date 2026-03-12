@@ -375,35 +375,22 @@ export function DadosGeraisTab() {
               <div className="flex items-center gap-2 mb-3">
                 <h4 className="text-sm font-medium">Taxa de Pobreza (%)</h4>
                 <Badge variant="outline" className="text-[10px] gap-1 border-amber-300 text-amber-700">
-                  <AlertTriangle className="w-3 h-3" /> Dados estáticos (SIS/IBGE)
+                  <AlertTriangle className="w-3 h-3" /> Pendente de verificação
                 </Badge>
               </div>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={indicadoresSocioeconomicos.filter(d => d.pobreza_negra != null)}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
-                    <Tooltip 
-                      formatter={(value: number) => [`${value}%`, '']}
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Line type="monotone" dataKey="pobreza_negra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
-                    <Line type="monotone" dataKey="pobreza_branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+              <div className="h-48 flex items-center justify-center bg-muted/30 rounded-lg border border-dashed border-muted-foreground/30">
+                <div className="text-center space-y-2">
+                  <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
+                  <p className="text-sm text-muted-foreground font-medium">⏳ N/D — Pendente de verificação humana</p>
+                  <p className="text-[10px] text-muted-foreground max-w-md">
+                    Dados de pobreza por cor/raça (série histórica 2018-2024) não localizados na fonte SIS/IBGE.
+                    Dados pontuais de 2023 disponíveis na seção "Classe por Raça" abaixo.
+                  </p>
+                </div>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-1 italic">
-                ⚠️ Linha de pobreza Banco Mundial: &lt; US$6,85/dia (≈ R$665/mês). Valores 2020-2023 pendentes de verificação SIS/IBGE. 2024 não publicado.
-              </p>
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                  <ExternalLink className="w-3 h-3" /> SIS/IBGE — Síntese de Indicadores Sociais (pobreza por cor/raça)
+                  📊 Fonte esperada: SIS/IBGE — Síntese de Indicadores Sociais
                 </a>
               </p>
             </div>

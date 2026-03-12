@@ -122,35 +122,40 @@ export const indicadoresSocioeconomicos = [
     ano: 2018, 
     rendaMediaNegra: 1608, rendaMediaBranca: 2796,
     desempregoNegro: 13.8, desempregoBranco: 9.2,
-    pobreza_negra: 32.9, pobreza_branca: 15.4,
+    // POBREZA 2018: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2018'
   },
   { 
     ano: 2019, 
     rendaMediaNegra: 1678, rendaMediaBranca: 2874,
     desempregoNegro: 13.5, desempregoBranco: 8.9,
-    pobreza_negra: 31.5, pobreza_branca: 14.8,
+    // POBREZA 2019: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2019'
   },
   { 
     ano: 2020, 
     rendaMediaNegra: 1542, rendaMediaBranca: 2685,
     desempregoNegro: 15.2, desempregoBranco: 10.8,
-    pobreza_negra: 35.8, pobreza_branca: 18.2,
+    // POBREZA 2020: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2020'
   },
   { 
     ano: 2021, 
     rendaMediaNegra: 1598, rendaMediaBranca: 2752,
     desempregoNegro: 14.8, desempregoBranco: 10.2,
-    pobreza_negra: 34.2, pobreza_branca: 17.5,
+    // POBREZA 2021: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2021'
   },
   { 
     ano: 2022, 
     rendaMediaNegra: 1725, rendaMediaBranca: 2895,
     desempregoNegro: 11.5, desempregoBranco: 7.8,
-    pobreza_negra: 28.5, pobreza_branca: 14.2,
+    // POBREZA 2022: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2022'
   },
   { 
@@ -158,7 +163,8 @@ export const indicadoresSocioeconomicos = [
     ano: 2023, 
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
-    pobreza_negra: 24.8, pobreza_branca: 12.1,
+    // POBREZA 2023: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
+    pobreza_negra: null, pobreza_branca: null,
     fonte: 'PNAD Contínua 2023 (SIDRA 6405)'
   },
   { 
@@ -178,7 +184,8 @@ export const indicadoresSocioeconomicos = [
 // Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
 // Ano 2023: renda verificada via SIDRA 6405 (R$2.199 negros, R$3.730 brancos).
 // Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
-// POBREZA 2020-2024: NÃO VERIFICADA. SIS/IBGE publica pobreza por cor/raça anualmente — conferir.
+// POBREZA 2018-2024: TODOS SANEADOS (null). Fonte SIS/IBGE não localizada pelo pesquisador. Pendente de verificação humana.
+// Dados pontuais de pobreza 2023 disponíveis em classePorRaca (SIS/IBGE 2024, dados de 2023).
 
 // Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6405)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
