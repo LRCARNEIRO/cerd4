@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Shield, Heart, GraduationCap, DollarSign, Scale, Map, Users, CheckCircle2, Home, Vote, Building2 } from 'lucide-react';
+import { ExternalLink, Heart, GraduationCap, DollarSign, Scale, Map, Users, CheckCircle2, Home, Vote, Building2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
@@ -28,101 +28,14 @@ interface NovoIndicador {
   prioridade: 'alta' | 'media' | 'baixa';
 }
 
-const indicadoresSeguranca: NovoIndicador[] = [
-  {
-    id: 'seg-1',
-    nome: 'Taxa de homicídios por raça/cor',
-    descricao: 'Número de homicídios dolosos por 100 mil habitantes, desagregado por raça/cor da vítima',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,7% das vítimas negras → 2024: 77% (19º Anuário FBSP 2025). Risco 2,7x maior para negros (Atlas da Violência 2025). Taxa por 100mil: negros 37,6 (2018) → 28,9 (2023, Atlas); não negros 14,0 → 10,6.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-2',
-    nome: 'Mortes por intervenção policial',
-    descricao: 'Número de pessoas mortas em decorrência de intervenção policial, por raça/cor',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 75,4% das vítimas de letalidade policial eram negras → 2024: 82% (19º Anuário FBSP 2025). 6.429 mortes por intervenção policial em 2022 (dado mais recente consolidado).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-3',
-    nome: 'Feminicídios por raça/cor',
-    descricao: 'Número de feminicídios desagregado por raça/cor da vítima',
-    fonte: 'Fórum Brasileiro de Segurança Pública',
-    siglaFonte: 'FBSP',
-    urlFonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 61% mulheres negras vítimas de feminicídio (1.206 casos) → 2024: 63,6% (1.492 casos). Aumento de 19% no total de feminicídios no período (19º Anuário FBSP 2025).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-5',
-    nome: 'População carcerária por raça/cor',
-    descricao: 'Perfil da população privada de liberdade com desagregação racial',
-    fonte: 'SISDEPEN / SENAPPEN',
-    siglaFonte: 'SISDEPEN',
-    urlFonte: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
-    periodicidade: 'Semestral',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 63,6% da pop. carcerária era negra (726.354 presos) → 2024: 68,2% negra (832.295 presos). Aumento de 4,6 p.p. na sobre-representação racial.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'seg-6',
-    nome: 'Jovens em cumprimento de medidas socioeducativas',
-    descricao: 'Perfil de adolescentes em medidas socioeducativas por raça/cor',
-    fonte: 'SINASE / MDH',
-    siglaFonte: 'SINASE',
-    urlFonte: 'https://www.gov.br/mdh/pt-br/navegue-por-temas/crianca-e-adolescente/sinase',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2023',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '67% dos adolescentes em medidas socioeducativas são negros (SINASE 2023). Jovens negros (15-29 anos): 73% dos óbitos por causas externas (Fiocruz 2025).',
-    prioridade: 'alta'
-  }
-];
+// Segurança: seg-1 (homicídios), seg-2 (letalidade policial), seg-3 (feminicídios),
+// seg-5 (pop carcerária), seg-6 (jovens socioeducativos) REMOVIDOS — já existem em
+// StatisticsData.ts (segurancaPublica, feminicidioSerie, juventudeNegra, jovensNegrosViolencia)
+const indicadoresSeguranca: NovoIndicador[] = [];
 
+// sau-1 (mortalidade materna) e sau-2 (mortalidade infantil) REMOVIDOS —
+// já existem em StatisticsData.ts (saudeSerieHistorica + metodologias)
 const indicadoresSaude: NovoIndicador[] = [
-  {
-    id: 'sau-1',
-    nome: 'Mortalidade materna por raça/cor',
-    descricao: 'Razão de mortalidade materna desagregada por raça/cor',
-    fonte: 'Sistema de Informações sobre Mortalidade',
-    siglaFonte: 'SIM/DataSUS',
-    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Dados de mortalidade materna por raça disponíveis via TabNet/SIM — consultar diretamente com filtro raça/cor. Valores específicos pendentes de verificação humana via TabNet.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'sau-2',
-    nome: 'Mortalidade infantil por raça/cor',
-    descricao: 'Taxa de mortalidade infantil (< 1 ano) por raça/cor',
-    fonte: 'Sistema de Informações sobre Nascidos Vivos',
-    siglaFonte: 'SINASC/DataSUS',
-    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: mort. infantil negra 14,5/mil NV → 2024: 11,8. Branca: 10,2 → 8,5. Diferença: negros ainda 39% acima dos brancos. Indígenas: 38,8/mil NV (SESAI 2023).',
-    prioridade: 'alta'
-  },
   {
     id: 'sau-3',
     nome: 'Cobertura de pré-natal por raça/cor',
@@ -151,33 +64,9 @@ const indicadoresSaude: NovoIndicador[] = [
   }
 ];
 
+// edu-1 (analfabetismo) e edu-2 (ensino superior) REMOVIDOS —
+// já existem em StatisticsData.ts (educacaoSerieHistorica)
 const indicadoresEducacao: NovoIndicador[] = [
-  {
-    id: 'edu-1',
-    nome: 'Taxa de analfabetismo por raça/cor',
-    descricao: 'Proporção de pessoas de 15+ anos que não sabem ler/escrever',
-    fonte: 'PNAD Contínua / SIDRA 7125',
-    siglaFonte: 'IBGE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7125',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: negros 8,4% analfabetos → 2024: 6,9%. Brancos: 3,6% → 3,1%. Razão negro/branco: 2,3x → 2,2x. Idosos negros 60+: 21,8% vs brancos 8,1%. Anos 2020-2021 sem coleta (pandemia).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'edu-2',
-    nome: 'Ensino Superior Completo por raça/cor',
-    descricao: 'Percentual de pessoas de 14+ anos com ensino superior completo por cor/raça',
-    fonte: 'PNAD Contínua / SIDRA 7129',
-    siglaFonte: 'IBGE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7129#notas-tabela',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: true },
-    relevanciaRacial: '2018: 8,1% negros com ensino superior → 2024: 11,4% (+41%). Brancos: 20,5% → 24,9%. Gap aumentou de 12,4 p.p. para 13,5 p.p. apesar do avanço absoluto. Anos 2020-2021 sem coleta (pandemia).',
-    prioridade: 'alta'
-  },
   {
     id: 'edu-3',
     nome: 'Distorção idade-série por raça/cor',
@@ -300,33 +189,9 @@ const indicadoresTerritorio: NovoIndicador[] = [
   }
 ];
 
+// orc-1 (execução orçamentária) e orc-3 (orçamento MIR) REMOVIDOS —
+// já cobertos na página /orcamento dedicada
 const indicadoresOrcamento: NovoIndicador[] = [
-  {
-    id: 'orc-1',
-    nome: 'Execução orçamentária de políticas raciais',
-    descricao: 'Dotação, empenho, liquidação e pagamento de programas de igualdade racial',
-    fonte: 'Sistema Integrado de Planejamento e Orçamento',
-    siglaFonte: 'SIOP',
-    urlFonte: 'https://www.siop.planejamento.gov.br/',
-    periodicidade: 'Mensal',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2019: orçamento MIR/SEPPIR praticamente zerado (R$ 1,2mi executado). 2024: R$ 194mi dotação MIR (execução 72%). Comparativo 2018→2024: queda de 95% (2019-2022) seguida de retomada parcial.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'orc-3',
-    nome: 'Orçamento do MIR e órgãos de igualdade racial',
-    descricao: 'Execução orçamentária do Ministério da Igualdade Racial',
-    fonte: 'Portal da Transparência',
-    siglaFonte: 'CGU',
-    urlFonte: 'https://portaldatransparencia.gov.br/orgaos/92000-MINISTERIO-DA-IGUALDADE-RACIAL',
-    periodicidade: 'Diária',
-    ultimaAtualizacao: '2025 (tempo real)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: false, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: SEPPIR com R$ 32mi executados → 2019-2022: extinção/esvaziamento (R$ 1-5mi). 2023: recriação MIR com R$ 137mi → 2024: R$ 194mi. Retomada: +490% vs 2022.',
-    prioridade: 'alta'
-  },
   {
     id: 'orc-4',
     nome: 'Órgãos municipais de igualdade racial',
@@ -607,12 +472,11 @@ const categorias = [
   { id: 'judiciario', nome: 'Judiciário, Acesso à Justiça e Racismo (§12-14, §25-27)', icon: Scale, indicadores: indicadoresJudiciario, cor: 'bg-purple-500' },
   { id: 'representatividade', nome: 'Representatividade Política (§45-46)', icon: Vote, indicadores: indicadoresRepresentatividade, cor: 'bg-indigo-600' },
   { id: 'sistema-prisional', nome: 'Sistema Prisional (§38-40)', icon: Building2, indicadores: indicadoresSistemaPrisional, cor: 'bg-slate-700' },
-  { id: 'seguranca', nome: 'Segurança Pública', icon: Shield, indicadores: indicadoresSeguranca, cor: 'bg-red-500' },
   { id: 'saude', nome: 'Saúde', icon: Heart, indicadores: indicadoresSaude, cor: 'bg-pink-500' },
   { id: 'educacao', nome: 'Educação', icon: GraduationCap, indicadores: indicadoresEducacao, cor: 'bg-blue-500' },
   { id: 'habitacao', nome: 'Habitação e Moradia (§42-44)', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
   { id: 'territorio', nome: 'Terras e Territórios', icon: Map, indicadores: indicadoresTerritorio, cor: 'bg-green-500' },
-  { id: 'orcamento', nome: 'Orçamento e Finanças', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
+  { id: 'orcamento', nome: 'Institucional e Financiamento', icon: DollarSign, indicadores: indicadoresOrcamento, cor: 'bg-yellow-500' },
 ];
 
 /** Total de indicadores auditáveis na aba Dados Novos */
