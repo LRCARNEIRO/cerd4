@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.audit-apply-correction]
 verify_jwt = false
+
+[functions.audit-cross-verify]
+verify_jwt = false
