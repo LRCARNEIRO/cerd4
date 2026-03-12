@@ -20,7 +20,7 @@ export function SegurancaSaudeEducacaoTab() {
             <Shield className="w-5 h-5 text-destructive" />
             Segurança Pública - Violência Letal por Raça (2018-2024)
           </CardTitle>
-          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial | 19º Anuário FBSP 2025 + Atlas da Violência 2025</CardDescription>
+          <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -46,6 +46,9 @@ export function SegurancaSaudeEducacaoTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">Atlas da Violência 2025 (IPEA/FBSP) <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-3">Letalidade Policial - % de Negros entre Vítimas</h4>
@@ -67,6 +70,9 @@ export function SegurancaSaudeEducacaoTab() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">19º Anuário FBSP 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
             </div>
           </div>
 
@@ -109,15 +115,8 @@ export function SegurancaSaudeEducacaoTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
-            <FileText className="w-3 h-3" />
-            <a href="https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              19º Anuário FBSP 2025 <ExternalLink className="w-3 h-3" />
-            </a>
-            {' | '}
-            <a href="https://www.ipea.gov.br/atlasviolencia" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-              Atlas da Violência 2025 (IPEA) <ExternalLink className="w-3 h-3" />
-            </a>
+          <p className="text-[10px] text-muted-foreground mt-2 flex items-center gap-1">
+            <FileText className="w-3 h-3" /> Fontes da tabela: Atlas da Violência 2025 (IPEA) — homicídios | 19º Anuário FBSP 2025 — letalidade policial
           </p>
 
           {/* Atlas da Violência 2025 — 4 Indicadores Complementares */}
@@ -180,7 +179,7 @@ export function SegurancaSaudeEducacaoTab() {
             <GraduationCap className="w-5 h-5 text-primary" />
             Educação - Indicadores por Raça (2018-2024)
           </CardTitle>
-          <CardDescription>Ensino superior completo e analfabetismo</CardDescription>
+          <CardDescription>Ensino superior completo e analfabetismo por raça</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -206,6 +205,9 @@ export function SegurancaSaudeEducacaoTab() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://sidra.ibge.gov.br/Tabela/7129" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">SIDRA 7129 / PNAD Contínua Educação (IBGE) <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium mb-3">Taxa de Analfabetismo (%)</h4>
@@ -230,7 +232,10 @@ export function SegurancaSaudeEducacaoTab() {
                 </ResponsiveContainer>
               </div>
             </div>
-          </div>
+              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                <FileText className="w-3 h-3" /> Fonte: <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">PNAD Contínua Educação 2024 (IBGE) <ExternalLink className="w-2.5 h-2.5" /></a>
+              </p>
+            </div>
 
           <div className="mt-4 p-3 bg-success/10 border border-success/30 rounded-lg">
             <p className="text-xs">
@@ -292,7 +297,7 @@ export function SegurancaSaudeEducacaoTab() {
             <Heart className="w-5 h-5 text-destructive" />
             Saúde - Indicadores por Raça (2018-2023)
           </CardTitle>
-          <CardDescription>Mortalidade materna e infantil — Cruzamento SIM × SINASC (DataSUS)</CardDescription>
+          <CardDescription>Mortalidade materna e infantil por raça</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
