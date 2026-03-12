@@ -37,11 +37,13 @@ import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const { data: indicadores } = useIndicadoresInterseccionais();
+  const { data: odsRacialFromDb = [] } = useOdsRacialData();
   
+  const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
   const totalIndicadoresDb = (indicadores || []).length;
   const totalAuditadosDb = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
   
-  // ODS Racial: todos os 90 indicadores são auditados (dados replicados de planilhas oficiais)
+  // ODS Racial: todos os indicadores no banco são auditados
   const totalIndicadores = totalIndicadoresDb + TOTAL_ODS_RACIAL;
   const totalAuditados = totalAuditadosDb + TOTAL_ODS_RACIAL;
   const totalPendentes = totalIndicadores - totalAuditados;
