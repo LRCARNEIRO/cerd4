@@ -396,9 +396,13 @@ export function SegurancaSaudeEducacaoTab() {
                     {mortalidadeInfantilMetodologia.notaMetodologicaCompleta}
                   </div>
                 </details>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Ref.: {mortalidadeInfantilMetodologia.referencia}
-                </p>
+                <div className="flex flex-wrap gap-3 mt-1">
+                  {mortalidadeInfantilMetodologia.referencias.map((ref, i) => (
+                    <a key={i} href={ref.url} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> {ref.titulo}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
