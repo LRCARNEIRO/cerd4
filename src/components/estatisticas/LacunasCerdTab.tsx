@@ -423,7 +423,7 @@ export function LacunasCerdTab() {
                     />
                     <Legend />
                     <Area type="monotone" dataKey="negros" name="Negros" fill="hsl(var(--destructive) / 0.3)" stroke="hsl(var(--destructive))" strokeWidth={2} />
-                    <Area type="monotone" dataKey="brancos" name="Não Negros" fill="hsl(var(--chart-1) / 0.3)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Area type="monotone" dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1) / 0.3)" stroke="hsl(var(--chart-1))" strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
