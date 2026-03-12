@@ -542,7 +542,7 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 <!-- Gráfico 8: Evolução Desigualdade -->
 <div class="chart-container">
   <div class="chart-title">Evolução das Razões de Desigualdade 2018→2024</div>
-  <div class="chart-subtitle">Razão branco/negro em renda, desemprego e homicídio — Fontes: PNAD/SIDRA, FBSP 2025, Atlas 2025</div>
+  <div class="chart-subtitle">Razão branco/negro em renda e desemprego (PNAD/SIDRA), negro/não negro em homicídio (Atlas 2025)</div>
   ${desigChart}
   <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:8px;margin-top:8px;font-size:10px;">
     <strong>Conclusão:</strong> Apesar de melhorias pontuais em renda e emprego, a razão de homicídio permanece estável em ~2,7x. A desigualdade estrutural se mantém mesmo com políticas afirmativas.
