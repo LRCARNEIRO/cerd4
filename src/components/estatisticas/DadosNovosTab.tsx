@@ -302,7 +302,7 @@ const indicadoresRepresentatividade: NovoIndicador[] = [
     periodicidade: 'A cada 2 anos',
     ultimaAtualizacao: '2024 (eleições municipais)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Candidatos negros superaram brancos pela 1ª vez em 2020 e novamente em 2024 (52,7%). Porém, eleitos negros a prefeito são apenas 33% — sub-representação de 22 p.p.',
+    relevanciaRacial: 'Candidatos negros superaram não negros pela 1ª vez em 2020 e novamente em 2024 (52,7%). Porém, eleitos negros a prefeito são apenas 33% — sub-representação de 22 p.p.',
     prioridade: 'alta',
     unidadeSerie: '% candidatos negros (pretos+pardos)',
     serieHistorica: [
