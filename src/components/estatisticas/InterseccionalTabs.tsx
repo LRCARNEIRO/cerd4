@@ -892,7 +892,7 @@ export function JuventudeTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Baby className="w-5 h-5 text-warning" />
-              Indicadores da Juventude Negra vs. Não Negra
+              Indicadores da Juventude Negra — Comparativo
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -931,7 +931,7 @@ export function JuventudeTab() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
-                        <span>Jovens Não Negros</span>
+                        <span>{item.fonte?.includes('Atlas') ? 'Jovens Não Negros' : 'Jovens Brancos'}</span>
                         <span className="font-bold">{item.referencia}</span>
                       </div>
                       <div className="h-2 bg-primary/20 rounded-full">
@@ -1112,7 +1112,7 @@ export function ClasseSocialTab() {
               <p className="text-[10px] text-muted-foreground">(2º pior entre 30 países)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
-              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs não negros</p>
+              <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
               <p className="text-3xl font-bold text-destructive">40%</p>
               <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
               <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>
