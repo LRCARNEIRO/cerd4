@@ -107,7 +107,7 @@ export const JUVENTUDE_INVENTORY: IndicatorToVerify[] = [
   // TIPO B: API SIDRA — Desemprego por cor/raça
   // Tabela 6403: Taxa de desocupação por cor ou raça (PNAD Contínua Trimestral)
   // Variável 4099 = Taxa de desocupação
-  // c86 = Cor ou raça: 2776=Branca, 2777=Preta, 2778=Parda, 2795=Preta ou parda
+  // c86 = Cor ou raça: 2776=Branca, 2777=Preta, 2778=Parda, 2795=Preta ou parda (NOTA: No sistema, exibimos como "Não Negros" ao invés de "Brancos")
   // ═══════════════════════════════════════════════
   {
     id: 'juv-08',
