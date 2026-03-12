@@ -87,12 +87,12 @@ const letalidadeHospitalar = [
 
 // Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
 const impactoSocioeconomico = [
-  { indicador: 'Perda de emprego/renda', negros: 28.6, brancos: 18.2, fonte: 'PNAD COVID/IBGE 2020' },
-  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, brancos: 22.8, fonte: 'PNAD COVID/IBGE 2020' },
-  { indicador: 'Insegurança alimentar grave', negros: 10.4, brancos: 5.1, fonte: 'POF/Rede PENSSAN 2022' },
-  { indicador: 'Informalidade pré-pandemia', negros: 47.4, brancos: 34.5, fonte: 'PNAD Contínua 2019' },
-  { indicador: 'Sem plano de saúde', negros: 78.5, brancos: 55.2, fonte: 'PNAD Contínua 2019' },
-  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, brancos: 3.5, fonte: 'PNAD COVID/IBGE 2020' },
+  { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2, fonte: 'PNAD COVID/IBGE 2020' },
+  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8, fonte: 'PNAD COVID/IBGE 2020' },
+  { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1, fonte: 'POF/Rede PENSSAN 2022' },
+  { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5, fonte: 'PNAD Contínua 2019' },
+  { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2, fonte: 'PNAD Contínua 2019' },
+  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5, fonte: 'PNAD COVID/IBGE 2020' },
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
