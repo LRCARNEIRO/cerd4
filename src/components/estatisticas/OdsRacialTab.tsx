@@ -3,15 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown } from 'lucide-react';
+import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { 
-  odsRacialIndicators, 
   odsGroups, 
   getOdsColor, 
-  TOTAL_ODS_RACIAL,
   type OdsRacialIndicator,
   type OdsFormat
 } from '@/data/odsRacialIndicators';
+import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
