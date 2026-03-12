@@ -70,73 +70,8 @@ const indicadoresSaude: NovoIndicador[] = [
 // edu-6 (desempenho ENEM) REMOVIDOS — dados pendentes de verificação humana, eliminados por saneamento
 const indicadoresEducacao: NovoIndicador[] = [];
 
-const indicadoresTerritorio: NovoIndicador[] = [
-  {
-    id: 'ter-1',
-    nome: 'Terras Indígenas por fase de regularização',
-    descricao: 'Quantidade de TIs por status: identificadas, declaradas, homologadas, regularizadas',
-    fonte: 'Fundação Nacional dos Povos Indígenas',
-    siglaFonte: 'FUNAI',
-    urlFonte: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '644 Terras Indígenas (496 homologadas/regularizadas). 2019-2022: 0 homologações. 2023-2024: 10 novas homologações. 148 TIs aguardam demarcação.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'ter-2',
-    nome: 'Comunidades quilombolas certificadas',
-    descricao: 'Número de comunidades com certidão FCP e processos INCRA',
-    fonte: 'Fundação Cultural Palmares',
-    siglaFonte: 'FCP',
-    urlFonte: 'https://www.gov.br/palmares/pt-br/servicos/certidoes-expedidas',
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 2.523 comunidades certificadas → 2025: 3.158 (+635). 245 territórios titulados (384 títulos). 1.330.186 quilombolas (Censo 2022, 1ª contagem oficial).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'ter-3',
-    nome: 'Territórios quilombolas titulados',
-    descricao: 'Processos de titulação de territórios quilombolas pelo INCRA',
-    fonte: 'Instituto Nacional de Colonização e Reforma Agrária',
-    siglaFonte: 'INCRA',
-    urlFonte: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
-    periodicidade: 'Contínua',
-    ultimaAtualizacao: '2025',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2019-2022: apenas 4 titulações (retrocesso). 2023-2024: retomada com PNGTAQ (Dec. 11.786/2023). Orçamento INCRA para quilombos: queda de 90% (2016-2022), retomada parcial 2023-2024.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'ter-4',
-    nome: 'Conflitos fundiários em territórios tradicionais',
-    descricao: 'Registros de conflitos em TIs e territórios quilombolas',
-    fonte: 'Comissão Pastoral da Terra / CIMI',
-    siglaFonte: 'CPT/CIMI',
-    urlFonte: 'https://www.cptnacional.org.br/publicacoes/conflitos-no-campo-brasil',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024 (dados 2023)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: 1.489 conflitos → 2023: 2.203 (+48%). Invasões em TIs cresceram 180% (2019-2022). Garimpo ilegal: pico de 20 mil em terras Yanomami (2022). Assassinatos de indígenas: 31 em 2023 (CIMI).',
-    prioridade: 'alta'
-  },
-  {
-    id: 'ter-5',
-    nome: 'Acesso a saneamento em comunidades tradicionais',
-    descricao: 'Água, esgoto, coleta de lixo em TIs e quilombos',
-    fonte: 'Censo IBGE 2022',
-    siglaFonte: 'IBGE',
-    urlFonte: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
-    periodicidade: 'Decenal',
-    ultimaAtualizacao: '2023 (Censo 2022)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Quilombos: 26,6% sem água canalizada, 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Negros em periferias: 2x menos acesso a saneamento que brancos em áreas centrais.',
-    prioridade: 'alta'
-  }
-];
+// ter-1 a ter-5 REMOVIDOS — já cobertos em Grupos Focais (Povos Indígenas/Quilombolas) e Dados Gerais (Censo 2022)
+const indicadoresTerritorio: NovoIndicador[] = [];
 
 // orc-1, orc-3 REMOVIDOS (cobertos em /orcamento)
 // orc-4 (órgãos municipais) e orc-5 (SINAPIR) REMOVIDOS — já existem em AdmPublicaSection
