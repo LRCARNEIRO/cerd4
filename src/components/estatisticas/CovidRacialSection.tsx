@@ -62,7 +62,7 @@ const excessoMortalidade = [
     fonte: 'Raça e Saúde/SIM'
   },
   { 
-    indicador: 'Idosos 80+ pretos/pardos vs não negros (2020)',
+    indicador: 'Idosos 80+ pretos/pardos vs brancos (2020)',
     negros: 'Quase 2x mais mortes',
     naoNegros: 'Referência',
     valorNegros: 100,
