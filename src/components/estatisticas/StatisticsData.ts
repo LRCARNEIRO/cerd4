@@ -336,6 +336,71 @@ export const analfabetismoGeral2024 = {
 };
 
 // =============================================
+// EVASÃO ESCOLAR — Jovens 15-29 que não estudam e não concluíram ensino médio
+// Fonte: IBGE, Síntese de Indicadores Sociais 2025, Tabela 4.16
+// URL: https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html?edicao=45341&t=resultados
+// NOTA AUDITORIA: O indicador disponível desagregado por raça/cor é "% de jovens 15-29 que
+// não estudam e não concluíram ensino médio". A desagregação identifica, dentro desses jovens,
+// a proporção de negros e brancos. Valores de 2020 e 2021 não disponíveis (PNAD suspensa).
+// =============================================
+export const evasaoEscolarSerie = [
+  { ano: 2018, percentualNegro: 70.8, percentualBranco: 28.3 },
+  { ano: 2019, percentualNegro: 71.7, percentualBranco: 27.3 },
+  // 2020 e 2021: PNAD suspensa na pandemia
+  { ano: 2022, percentualNegro: 70.7, percentualBranco: 28.2 },
+  { ano: 2023, percentualNegro: 71.2, percentualBranco: 27.8 },
+  { ano: 2024, percentualNegro: 72.2, percentualBranco: 26.8 },
+];
+export const evasaoEscolarFonte = {
+  nome: 'IBGE — Síntese de Indicadores Sociais 2025, Tabela 4.16',
+  url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html?edicao=45341&t=resultados',
+  indicadorOficial: 'Jovens de 15 a 29 anos de idade que não estudam e não concluíram ensino médio (%)',
+  notaMetodologica: 'Desagregação por raça/cor identifica a proporção de negros e brancos dentro do total de jovens nessa condição.',
+};
+
+// =============================================
+// DÉFICIT HABITACIONAL — por cor/raça
+// Fonte: Fundação João Pinheiro (FJP)
+// URL: https://fjp.mg.gov.br/deficit-habitacional-no-brasil/
+// NOTA: Dados disponíveis apenas para 2018, 2019 e 2022 (metodologia PNAD).
+// Anos 2020-2021 sem dados (PNAD suspensa). 2023-2025 ainda não publicados.
+// =============================================
+export const deficitHabitacionalSerie = [
+  { ano: 2018, negros: 4026049, brancos: 1839961 },
+  { ano: 2019, negros: 4096623, brancos: 1899515 },
+  // 2020 e 2021: sem dados (PNAD suspensa)
+  { ano: 2022, negros: 4122625, brancos: 1973211 },
+];
+export const deficitHabitacionalFonte = {
+  nome: 'Fundação João Pinheiro — Déficit Habitacional no Brasil',
+  url: 'https://fjp.mg.gov.br/deficit-habitacional-no-brasil/',
+  unidade: 'domicílios',
+};
+
+// =============================================
+// PERFIL RACIAL BENEFICIÁRIOS CadÚnico — por cor/raça
+// Fonte: SAGICAD / MDS — Secretaria de Avaliação, Gestão da Informação e Cadastro Único
+// URL: https://aplicacoes.cidadania.gov.br/vis/data3/v.php
+// NOTA AUDITORIA: Foi considerado apenas o último valor informado a cada ano.
+// =============================================
+export const cadUnicoPerfilRacial = [
+  { ano: 2018, negros: 51856516, brancos: 20766499 },
+  { ano: 2019, negros: 53793129, brancos: 21586157 },
+  { ano: 2020, negros: 52907437, brancos: 21284432 },
+  { ano: 2021, negros: 57038366, brancos: 23630351 },
+  { ano: 2022, negros: 64651435, brancos: 27655024 },
+  { ano: 2023, negros: 67483137, brancos: 29296896 },
+  { ano: 2024, negros: 65324079, brancos: 28567097 },
+  { ano: 2025, negros: 65383976, brancos: 28242324 },
+];
+export const cadUnicoFonte = {
+  nome: 'SAGICAD/MDS — Cadastro Único',
+  url: 'https://aplicacoes.cidadania.gov.br/vis/data3/v.php',
+  unidade: 'pessoas inscritas no CadÚnico',
+  nota: 'Último valor informado a cada ano',
+};
+
+// =============================================
 // SAÚDE - DataSUS/SINAN
 // =============================================
 
