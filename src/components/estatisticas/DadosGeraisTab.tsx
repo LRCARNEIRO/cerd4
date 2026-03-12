@@ -271,33 +271,59 @@ export function DadosGeraisTab() {
               </p>
             </div>
 
-            {/* Desemprego */}
+            {/* Desemprego — DADOS EM TEMPO REAL via API SIDRA */}
             <div>
-              <h4 className="text-sm font-medium mb-3">Taxa de Desemprego (%)</h4>
+              <div className="flex items-center gap-2 mb-3">
+                <h4 className="text-sm font-medium">Taxa de Desemprego (%)</h4>
+                {sidraLoading ? (
+                  <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
+                ) : isLiveData ? (
+                  <Badge className="bg-emerald-500/15 text-emerald-700 text-[10px] gap-1 border-emerald-200"><Wifi className="w-3 h-3" /> API SIDRA (tempo real)</Badge>
+                ) : (
+                  <Badge variant="destructive" className="text-[10px] gap-1 cursor-pointer" onClick={() => refetchSidra()}>
+                    <WifiOff className="w-3 h-3" /> Offline — clique p/ retry
+                  </Badge>
+                )}
+              </div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={indicadoresSocioeconomicos}>
+                  <LineChart data={desempregoChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} />
                     <Tooltip 
-                      formatter={(value: number) => [`${value}%`, '']}
+                      formatter={(value: number, name: string) => [`${value}%`, name]}
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
                     />
-                    <Line type="monotone" dataKey="desempregoNegro" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} />
-                    <Line type="monotone" dataKey="desempregoBranco" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Legend />
+                    <Line type="monotone" dataKey="desempregoNegro" name="Negra (Preta+Parda)" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={{ r: 3 }} />
+                    <Line type="monotone" dataKey="desempregoBranco" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={{ r: 3 }} />
+                    {isLiveData && (
+                      <>
+                        <Line type="monotone" dataKey="desempregoPreta" name="Preta" stroke="hsl(var(--chart-4))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} />
+                        <Line type="monotone" dataKey="desempregoParda" name="Parda" stroke="hsl(var(--chart-5))" strokeWidth={1} strokeDasharray="5 5" dot={{ r: 2 }} />
+                      </>
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
+              {isLiveData && sidraData?.nota_metodologica && (
+                <p className="text-[10px] text-muted-foreground mt-1 italic flex items-center gap-1">
+                  <Info className="w-3 h-3" /> {sidraData.nota_metodologica}
+                </p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
-                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                  SIDRA Tabela 6402 — Desocupação por cor/raça
+                <a href="https://sidra.ibge.gov.br/tabela/6402" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                  <ExternalLink className="w-3 h-3" /> SIDRA Tabela 6402 — Desocupação por cor/raça (referência p/ auditoria)
                 </a>
               </p>
+              {sidraError && (
+                <p className="text-[10px] text-destructive mt-1">Erro: {sidraError instanceof Error ? sidraError.message : 'Falha na API'}</p>
+              )}
             </div>
 
             {/* Pobreza */}
