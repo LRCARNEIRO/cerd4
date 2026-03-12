@@ -31,6 +31,7 @@ import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
+import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
