@@ -50,12 +50,14 @@ const vulnerabilidadeMultidimensional = [
   },
   {
     dimensao: 'CadÚnico — mulheres negras',
-    indicador: `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`,
+    indicador: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras != null 
+      ? `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`
+      : '⏳ Dados CadÚnico pendentes de verificação',
     valor: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
     referencia: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
     unidade: '%',
-    fonte: 'Fiocruz/MIR 2023',
-    url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf',
+    fonte: 'Pendente verificação',
+    url: '',
     icone: ShieldAlert,
   },
   {
