@@ -36,7 +36,8 @@ export function useSidraRenda() {
       if (!data?.success) throw new Error(data?.error || 'Falha ao buscar SIDRA renda');
       return data;
     },
-    staleTime: 1000 * 60 * 60, // 1h cache
+    staleTime: Infinity,   // Dados auditados: nunca expiram na sessão
+    gcTime: Infinity,      // Manter em cache permanentemente
     retry: 2,
   });
 }
