@@ -323,7 +323,7 @@ export function generateConclusoesFullHTML(params: GenerateParams): string {
     series: [
       { name: 'Renda (branco/negro)', color: '#2563eb', values: evolucaoDesigualdade.map(d => d.razaoRenda) },
       { name: 'Desemprego (negro/branco)', color: '#f59e0b', values: evolucaoDesigualdade.map(d => d.razaoDesemprego) },
-      { name: 'Homicídio (negro/branco)', color: '#dc2626', values: evolucaoDesigualdade.map(d => d.razaoHomicidio) },
+      { name: 'Homicídio (negro/não negro)', color: '#dc2626', values: evolucaoDesigualdade.map(d => d.razaoHomicidio) },
     ]
   }, 580, 200, 1, 3);
 
