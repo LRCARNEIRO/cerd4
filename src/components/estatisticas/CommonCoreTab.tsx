@@ -1281,7 +1281,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Razão N/B', '57,9%', '57,0%', '56,6%', '58,8%', '58,9%']
       ]
     },
-    notas: 'Negros recebem cerca de 59% do rendimento de brancos.',
+    notas: 'Negros recebem cerca de 59% do rendimento de não negros.',
     tendencia: 'crescente'
   },
   {
