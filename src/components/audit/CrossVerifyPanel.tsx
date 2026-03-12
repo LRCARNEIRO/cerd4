@@ -111,14 +111,27 @@ export function CrossVerifyPanel() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Search className="w-5 h-5 text-primary" />
-          Auditoria Cruzada Triple-Cross — Teste Juventude
+          Auditoria Cruzada Triple-Cross
         </CardTitle>
         <CardDescription>
-          Verifica {JUVENTUDE_INVENTORY.length} indicadores usando 3 métodos: API SIDRA (JSON direto),
-          Firecrawl (PDF), e GPT-5 como IA adversária. Gemini (que criou os dados) NÃO participa.
+          Selecione o inventário e execute a verificação com 3 métodos: API SIDRA (JSON direto),
+          Firecrawl (PDF), e GPT-5 como IA adversária.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Inventory Selector */}
+        <div className="flex gap-2">
+          {Object.entries(INVENTORIES).map(([key, inv]) => (
+            <Button
+              key={key}
+              variant={selectedInventory === key ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => { setSelectedInventory(key); setResults([]); setSummary(null); }}
+            >
+              {inv.label} ({inv.items.length})
+            </Button>
+          ))}
+        </div>
         {/* Method Legend */}
         <div className="flex flex-wrap gap-3 text-xs">
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" /> Tipo B: API SIDRA</Badge>
