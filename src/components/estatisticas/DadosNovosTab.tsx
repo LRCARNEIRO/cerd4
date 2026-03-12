@@ -189,33 +189,9 @@ const indicadoresTerritorio: NovoIndicador[] = [
   }
 ];
 
+// orc-1 (execução orçamentária) e orc-3 (orçamento MIR) REMOVIDOS —
+// já cobertos na página /orcamento dedicada
 const indicadoresOrcamento: NovoIndicador[] = [
-  {
-    id: 'orc-1',
-    nome: 'Execução orçamentária de políticas raciais',
-    descricao: 'Dotação, empenho, liquidação e pagamento de programas de igualdade racial',
-    fonte: 'Sistema Integrado de Planejamento e Orçamento',
-    siglaFonte: 'SIOP',
-    urlFonte: 'https://www.siop.planejamento.gov.br/',
-    periodicidade: 'Mensal',
-    ultimaAtualizacao: '2025 (dados 2024)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2019: orçamento MIR/SEPPIR praticamente zerado (R$ 1,2mi executado). 2024: R$ 194mi dotação MIR (execução 72%). Comparativo 2018→2024: queda de 95% (2019-2022) seguida de retomada parcial.',
-    prioridade: 'alta'
-  },
-  {
-    id: 'orc-3',
-    nome: 'Orçamento do MIR e órgãos de igualdade racial',
-    descricao: 'Execução orçamentária do Ministério da Igualdade Racial',
-    fonte: 'Portal da Transparência',
-    siglaFonte: 'CGU',
-    urlFonte: 'https://portaldatransparencia.gov.br/orgaos/92000-MINISTERIO-DA-IGUALDADE-RACIAL',
-    periodicidade: 'Diária',
-    ultimaAtualizacao: '2025 (tempo real)',
-    desagregacoes: { raca: true, genero: false, idade: false, territorio: false, rendaClasse: false, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '2018: SEPPIR com R$ 32mi executados → 2019-2022: extinção/esvaziamento (R$ 1-5mi). 2023: recriação MIR com R$ 137mi → 2024: R$ 194mi. Retomada: +490% vs 2022.',
-    prioridade: 'alta'
-  },
   {
     id: 'orc-4',
     nome: 'Órgãos municipais de igualdade racial',
