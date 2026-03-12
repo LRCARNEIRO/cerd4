@@ -2065,7 +2065,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
     periodoAtualizado: '2010-2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Indicador', 'Negros (%)', 'Não Negros (%)', 'Razão N/NN'],
+      headers: ['Indicador', 'Negros (%)', 'Brancos (%)', 'Razão N/B'],
       rows: [
         ['Sem banheiro exclusivo', '6,8%', '2,1%', '3,2x'],
         ['Adensamento excessivo', '8,5%', '4,2%', '2,0x'],
