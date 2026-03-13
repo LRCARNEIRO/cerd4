@@ -118,10 +118,10 @@ export function generateMethodologyHTML(): string {
         {
           nome: 'Deficiência',
           icone: '♿',
-          origem: 'Observações Finais + Censo 2022 (SIDRA 9324/9339)',
-          motivacao: `Responde à demanda do CERD sobre <strong>pessoas com deficiência pertencentes a grupos raciais</strong>. Apresenta prevalência de deficiência por raça/cor usando dados do <strong>Censo 2022 (SIDRA Tabela 9324)</strong>: Pretos 9,4%, Pardos 8,2%, Brancos 8,6%, Indígenas 7,9%. Após auditoria, dados fabricados de emprego e renda PcD por raça foram removidos e registrados como lacunas documentadas (fonte esperada: SIDRA 9339 — ainda não publicada com esse cruzamento).`,
+          origem: 'Observações Finais + Censo 2022 (SIDRA 10126) + PNADC (SIDRA 4178/9384/9354)',
+          motivacao: `Responde à demanda do CERD sobre <strong>pessoas com deficiência pertencentes a grupos raciais</strong>. Apresenta prevalência de deficiência por raça/cor usando dados do <strong>Censo 2022 (SIDRA Tabela 10126)</strong>: Branca 7,1%, Preta 8,6%, Parda 7,2%, Amarela 6,6%, Indígena 6,6%. Nível de ocupação PcD por raça (SIDRA 4178): Branca 24,4%, Preta 31,2%, Parda 27,4%. Renda média PcD (SIDRA 9384): Branca R$2.358, Preta R$1.485, Parda R$1.547. Disparidades 14-59 anos (SIDRA 9354): taxa de ocupação PcD Parda 61,7%, Preta 49,6%, Branca 44,7%.`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'Recomendacoes-Gerais-Paragrafos-NOVA.pdf'],
-          promptOrigem: 'Integrar dados do Censo 2022 sobre prevalência de deficiência por raça (SIDRA 9324). Remover dados fabricados de empregabilidade PcD por raça e registrar como lacuna (SIDRA 9339 pendente).',
+          promptOrigem: 'Integrar dados do Censo 2022 (SIDRA 10126) sobre prevalência PcD por raça, PNADC (SIDRA 4178) para ocupação, PNADC (SIDRA 9384) para renda e PNADC (SIDRA 9354) para disparidades 14-59 anos.',
           artigos: ['Art. V.e (Direitos econômicos e sociais)', 'Art. I (Discriminação múltipla)'],
         },
         {

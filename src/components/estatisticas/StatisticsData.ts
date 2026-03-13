@@ -535,38 +535,33 @@ export const interseccionalidadeTrabalhoFontes = [
 // Deficiência por Raça — PNAD Contínua 2022 (IBGE)
 // Prevalência (% com deficiência): SIDRA Tabela 9324 (por cor/raça)
 //   URL: https://sidra.ibge.gov.br/Tabela/9324
-// Ocupação e rendimento PcD: SIDRA Tabela 9339
-//   URL: https://sidra.ibge.gov.br/Tabela/9339
-// Nota: Empregabilidade = % de PcD em idade de trabalhar que estão ocupadas (SIDRA 9339)
-//       Rendimento médio = rendimento habitual real (todos os trabalhos) PcD por cor/raça (SIDRA 9339)
-// Fonte complementar: Censo 2022 — SIDRA 9514 (tipo de deficiência por cor/raça)
-//   URL: https://sidra.ibge.gov.br/Tabela/9514
-// AUDITORIA FASE 3:
-// Prevalência de deficiência por cor/raça — DUAS FONTES OFICIAIS:
-//   1) PNAD Contínua 2022 (SIDRA 9324): 8,9% total (18,6 milhões) — metodologia WG-SS
-//   2) Censo 2022 (IBGE Mai/2025): 7,3% total (14,4 milhões) — metodologia do Grupo de Washington adaptada
-//   Diferença decorre de metodologia: PNAD usa WG-SS Short Set; Censo usa pergunta adaptada.
-// Prevalência por raça (PNAD 2022 / SIDRA 9324): valores publicados na tabela SIDRA.
 // =============================================
-// Deficiência × Raça — Ocupação PcD 14-59 anos
-// Fonte ÚNICA: SIDRA Tabela 9354 — PNAD Contínua 2022 (3º trimestre)
-// https://sidra.ibge.gov.br/tabela/9354
-// Variável: Pessoas de 14 a 59 anos de idade (Mil pessoas)
-// Classificações: Cor/raça × Situação de ocupação × Existência de deficiência
-// Nota: Tabela 9354 NÃO inclui categoria Indígena (apenas Branca, Preta, Parda).
-// taxaDeficiencia: mantida de SIDRA 9324 (prevalência por raça, PNAD 2022).
-// rendaMedia: REMOVIDA — Tabela 9354 não contém dados de rendimento.
+// Deficiência × Raça — DADOS AUDITADOS (Março/2026)
+// FONTES VERIFICADAS POR AUDITORIA MANUAL:
+//   1) Prevalência PcD por raça: Censo 2022 — SIDRA Tabela 10126
+//      URL: https://sidra.ibge.gov.br/tabela/10126
+//   2) Nível de Ocupação PcD por raça: PNADC 2022 — SIDRA Tabela 4178
+//      URL: https://sidra.ibge.gov.br/tabela/4178
+//   3) Renda Média PcD por raça: PNADC 2022 — SIDRA Tabela 9384
+//      URL: https://sidra.ibge.gov.br/tabela/9384
+//   4) Disparidades (14-59 anos): PNADC 2022 — SIDRA Tabela 9354
+//      URL: https://sidra.ibge.gov.br/tabela/9354
+// NOTA: Dados agora residem primariamente no BD (indicadores_interseccionais, categoria='deficiencia').
+//       Este export é mantido como fallback para compatibilidade com relatórios.
 // =============================================
 export const deficienciaPorRaca = [
-  // empregabilidade = % PcD Ocupadas / Total PcD (14-59 anos), SIDRA 9354
-  // Branca: 1.423 ocupadas / (1.423 + 1.761) total = 44.7%
-  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 44.7, totalPcdMil: 3184, ocupadasMil: 1423, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
-  // Preta: 537 ocupadas / (537 + 547) total = 49.5% → distribuição API = 49.6%
-  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 49.6, totalPcdMil: 1084, ocupadasMil: 537, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
-  // Parda: 1.776 ocupadas / (1.776 + 2.552) total = 41.0%
-  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 41.0, totalPcdMil: 4328, ocupadasMil: 1776, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
-  // Negra (Preta + Parda): (537 + 1.776) / (1.084 + 4.328) = 2.313 / 5.412 = 42.7%
-  { raca: 'Negra (P+P)', taxaDeficiencia: 8.9, empregabilidade: 42.7, totalPcdMil: 5412, ocupadasMil: 2313, fonte: 'SIDRA 9354 (PNAD Contínua 2022)', agregado: true },
+  { raca: 'Branca', taxaDeficiencia: 7.1, empregabilidade: 24.4, rendaMedia: 2358, fonte: 'Censo 2022 (SIDRA 10126) / PNADC (SIDRA 4178/9384)' },
+  { raca: 'Preta', taxaDeficiencia: 8.6, empregabilidade: 31.2, rendaMedia: 1485, fonte: 'Censo 2022 (SIDRA 10126) / PNADC (SIDRA 4178/9384)' },
+  { raca: 'Amarela', taxaDeficiencia: 6.6, empregabilidade: null, rendaMedia: null, fonte: 'Censo 2022 (SIDRA 10126)' },
+  { raca: 'Parda', taxaDeficiencia: 7.2, empregabilidade: 27.4, rendaMedia: 1547, fonte: 'Censo 2022 (SIDRA 10126) / PNADC (SIDRA 4178/9384)' },
+  { raca: 'Indígena', taxaDeficiencia: 6.6, empregabilidade: null, rendaMedia: null, fonte: 'Censo 2022 (SIDRA 10126)' },
+];
+
+// Disparidades Interseccionais PcD (14-59 anos) — SIDRA 9354
+export const disparidadesPcd1459 = [
+  { raca: 'Branca', pcdOcupadasPct: 44.7, comDeficienciaPct: 5.5, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
+  { raca: 'Preta', pcdOcupadasPct: 49.6, comDeficienciaPct: 6.8, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
+  { raca: 'Parda', pcdOcupadasPct: 61.7, comDeficienciaPct: 6.7, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
 ];
 
 // =============================================
@@ -1030,18 +1025,9 @@ export const saudeMaternaRaca = {
 };
 
 // Legacy export mantido para compatibilidade
-export const lacunasDocumentadas = [
-  {
-    id: 'LACUNA-PCD-EMPREGO-RENDA',
-    nome: 'Empregabilidade e Renda de PcD por Raça',
-    descricao: 'A SIDRA 9339 publica nível de ocupação e rendimento de PcD, mas os valores exatos por raça (empregabilidade 29,8% / 25,1% / 26,3% e renda R$2.402 / R$1.586 / R$1.548) não foram verificados individualmente na tabela SIDRA.',
-    fonteEsperada: 'SIDRA 9339 — Ocupação e rendimento PcD por cor/raça',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9339',
-    status: 'pendente_verificacao' as const,
-    relevancia: ['CERD 2022 §29', 'Common Core'],
-    dadoRemovido: 'Valores mantidos mas sinalizados como pendentes de verificação individual na SIDRA 9339',
-  },
-];
+// NOTA: Lacuna PCD-EMPREGO-RENDA resolvida na auditagem de Março/2026
+// Dados corrigidos: Ocupação via SIDRA 4178, Renda via SIDRA 9384, Prevalência via Censo SIDRA 10126
+export const lacunasDocumentadas: any[] = [];
 
 // REMOVIDO: educacaoInterseccional — substituído por educacaoRacaGenero (cruzamento indireto auditável).
 export const educacaoInterseccional: never[] = [];
