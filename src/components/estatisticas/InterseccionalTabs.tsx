@@ -698,17 +698,15 @@ export function DeficienciaTab() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Tabela 1: Pessoas com Deficiência por Raça — fontes múltiplas auditadas */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Accessibility className="w-5 h-5 text-primary" />
-              Pessoas com Deficiência por Raça — Ocupação (14-59 anos)
+              Pessoas com Deficiência por Raça
             </CardTitle>
             <CardDescription>
-              SIDRA Tabela 9354 — PNAD Contínua 2022 (3º trimestre) |{' '}
-              <a href="https://sidra.ibge.gov.br/tabela/9354" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                Ver dados brutos
-              </a>
+              Prevalência: Censo 2022 (SIDRA 10126) | Ocupação: PNADC (SIDRA 4178) | Renda: PNADC (SIDRA 9384)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -717,47 +715,54 @@ export function DeficienciaTab() {
                 <TableRow>
                   <TableHead>Raça/Cor</TableHead>
                   <TableHead className="text-right">% com Deficiência</TableHead>
-                  <TableHead className="text-right">% PcD Ocupadas</TableHead>
-                  <TableHead className="text-right">PcD Total (mil)</TableHead>
-                  <TableHead className="text-right">PcD Ocupadas (mil)</TableHead>
+                  <TableHead className="text-right">Nível Ocupação PcD (%)</TableHead>
+                  <TableHead className="text-right">Renda Média PcD (R$)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {deficienciaPorRaca.map(item => (
-                  <TableRow key={item.raca} className={cn((item as any).agregado && "bg-muted/50 font-semibold")}>
+                  <TableRow key={item.raca}>
                     <TableCell className="font-medium">{item.raca}</TableCell>
                     <TableCell className="text-right">{item.taxaDeficiencia}%</TableCell>
-                    <TableCell className={cn("text-right", item.empregabilidade < 42 && "text-destructive font-semibold")}>
-                      {item.empregabilidade}%
+                    <TableCell className="text-right">
+                      {item.empregabilidade != null ? `${item.empregabilidade}%` : <span className="text-muted-foreground">N/D</span>}
                     </TableCell>
-                    <TableCell className="text-right">{((item as any).totalPcdMil || 0).toLocaleString('pt-BR')}</TableCell>
-                    <TableCell className="text-right">{((item as any).ocupadasMil || 0).toLocaleString('pt-BR')}</TableCell>
+                    <TableCell className="text-right">
+                      {item.rendaMedia != null ? formatCurrency(item.rendaMedia) : <span className="text-muted-foreground">N/D</span>}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
             <AuditFooter
               fontes={[
-                { nome: 'SIDRA 9354 — Ocupação PcD por cor/raça, 14-59 anos (PNAD 2022)', url: 'https://sidra.ibge.gov.br/tabela/9354' },
-                { nome: 'SIDRA 9324 — Prevalência PcD por cor/raça (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' },
+                { nome: 'SIDRA 10126 — Prevalência PcD por cor/raça (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/10126' },
+                { nome: 'SIDRA 4178 — Nível de Ocupação PcD por cor/raça (PNADC 2022)', url: 'https://sidra.ibge.gov.br/tabela/4178' },
+                { nome: 'SIDRA 9384 — Renda Média PcD por cor/raça (PNADC 2022)', url: 'https://sidra.ibge.gov.br/tabela/9384' },
               ]}
               documentos={['CERD 2022', 'Common Core']}
             />
           </CardContent>
         </Card>
 
+        {/* Tabela/Gráfico 2: Disparidades Interseccionais PcD — SIDRA 9354 */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Disparidades Interseccionais PcD</CardTitle>
-            <CardDescription>Nível de ocupação PcD (14-59 anos) por cor/raça — SIDRA 9354, PNAD Contínua 2022</CardDescription>
+            <CardTitle className="text-base">Disparidades Interseccionais PcD (14-59 anos)</CardTitle>
+            <CardDescription>
+              Ocupação e prevalência por cor/raça — SIDRA 9354, PNAD Contínua 2022 |{' '}
+              <a href="https://sidra.ibge.gov.br/tabela/9354" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Ver dados brutos
+              </a>
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={deficienciaPorRaca.filter((d: any) => !d.agregado)}>
+                <BarChart data={disparidadesPcd1459}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="raca" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} domain={[0, 60]} />
+                  <YAxis tick={{ fontSize: 12 }} domain={[0, 70]} />
                   <Tooltip 
                     formatter={(value: number) => [`${value}%`, '']}
                     contentStyle={{
@@ -767,20 +772,20 @@ export function DeficienciaTab() {
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="empregabilidade" name="% PcD Ocupadas (14-59)" fill="hsl(var(--primary))" />
-                  <Bar dataKey="taxaDeficiencia" name="% com Deficiência" fill="hsl(var(--warning))" />
+                  <Bar dataKey="pcdOcupadasPct" name="% PcD Ocupadas (14-59)" fill="hsl(var(--primary))" />
+                  <Bar dataKey="comDeficienciaPct" name="% com Deficiência (14-59)" fill="hsl(var(--warning))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Disparidade ocupacional:</strong> PcD pardas têm menor taxa de ocupação (41,0%) vs PcD pretas (49,6%) e brancas (44,7%).
-                Negras agregadas (Preta + Parda): 42,7% — 2 p.p. abaixo de brancas. Fonte: SIDRA 9354, PNAD Contínua 2022.
+                <strong>Disparidade ocupacional (14-59 anos):</strong> PcD pardas têm a maior taxa de ocupação (61,7%) vs PcD pretas (49,6%) e brancas (44,7%).
+                Prevalência de deficiência: Preta 6,8%, Parda 6,7%, Branca 5,5%. Fonte: SIDRA 9354, PNAD Contínua 2022.
               </p>
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'SIDRA 9354 — Ocupação PcD por cor/raça (PNAD 2022)', url: 'https://sidra.ibge.gov.br/tabela/9354' },
+                { nome: 'SIDRA 9354 — Ocupação e prevalência PcD por cor/raça (PNAD 2022)', url: 'https://sidra.ibge.gov.br/tabela/9354' },
               ]}
               documentos={['CERD 2022']}
             />

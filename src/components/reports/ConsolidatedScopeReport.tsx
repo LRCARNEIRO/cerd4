@@ -290,8 +290,8 @@ function generateConsolidatedHTML(data: {
 
   <h4>Deficiência por Raça</h4>
   <table>
-    <tr><th>Raça</th><th>Taxa Deficiência (%)</th><th>% PcD Ocupadas</th><th>PcD Total (mil)</th></tr>
-    ${deficienciaPorRaca.map(r => `<tr><td>${r.raca}</td><td>${r.taxaDeficiencia}%</td><td>${r.empregabilidade}%</td><td>${r.totalPcdMil?.toLocaleString('pt-BR') ?? 'N/D'}</td></tr>`).join('')}
+    <tr><th>Raça</th><th>% com Deficiência</th><th>Nível Ocupação PcD (%)</th><th>Renda Média PcD (R$)</th></tr>
+    ${deficienciaPorRaca.map(r => `<tr><td>${r.raca}</td><td>${r.taxaDeficiencia}%</td><td>${r.empregabilidade != null ? r.empregabilidade + '%' : 'N/D'}</td><td>${r.rendaMedia != null ? 'R$ ' + r.rendaMedia.toLocaleString('pt-BR') : 'N/D'}</td></tr>`).join('')}
   </table>
 
   <h4>LGBTQIA+ por Raça</h4>
