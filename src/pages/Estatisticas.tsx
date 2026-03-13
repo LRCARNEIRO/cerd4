@@ -41,10 +41,42 @@ export default function Estatisticas() {
   
   const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
   
-  // All indicators are now in the DB (including ODS Racial)
-  const totalIndicadores = (indicadores || []).length;
-  const totalAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
-  const totalPendentes = totalIndicadores - totalAuditados;
+  // BD indicators
+  const bdTotal = (indicadores || []).length;
+  const bdAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const bdPendentes = bdTotal - bdAuditados;
+
+  // Static hardcoded indicators across tabs (counted from StatisticsData.ts exports)
+  // These are the data series/constants rendered in static tabs that are NOT in the BD
+  const STATIC_TAB_COUNTS = {
+    'Dados Gerais (demograficos)': { total: 8, auditados: 8 },
+    'Dados Gerais (composição racial série)': { total: 7, auditados: 7 },
+    'Dados Gerais (socioeconômicos série)': { total: 7, auditados: 2 },  // 2018-2022 pendentes
+    'Dados Gerais (rendimentos Censo)': { total: 1, auditados: 0 },
+    'Segurança (homicídio/letalidade série)': { total: 7, auditados: 7 },
+    'Saúde (mortalidade materna/infantil série)': { total: 6, auditados: 6 },
+    'Educação (ensino superior/analfabetismo série)': { total: 5, auditados: 5 },
+    'Educação (evasão escolar série)': { total: 1, auditados: 1 },
+    'Raça × Gênero (trabalho)': { total: 4, auditados: 4 },
+    'Raça × Gênero (saúde materna)': { total: 2, auditados: 2 },
+    'Raça × Gênero (educação)': { total: 2, auditados: 2 },
+    'Vulnerabilidades (violência)': { total: 3, auditados: 3 },
+    'Vulnerabilidades (chefia familiar)': { total: 1, auditados: 1 },
+    'Classe Social': { total: 2, auditados: 2 },
+    'Juventude': { total: 2, auditados: 2 },
+    'LGBTQIA+ (ANTRA série)': { total: 9, auditados: 3 },  // 2023+ auditados
+    'Povos Tradicionais': { total: 4, auditados: 4 },
+    'Adm Pública': { total: 1, auditados: 0 },
+    'COVID Racial': { total: 1, auditados: 0 },
+  };
+
+  const staticTotal = Object.values(STATIC_TAB_COUNTS).reduce((s, v) => s + v.total, 0);
+  const staticAuditados = Object.values(STATIC_TAB_COUNTS).reduce((s, v) => s + v.auditados, 0);
+  const staticPendentes = staticTotal - staticAuditados;
+
+  const totalIndicadores = bdTotal + staticTotal;
+  const totalAuditados = bdAuditados + staticAuditados;
+  const totalPendentes = bdPendentes + staticPendentes;
 
   return (
     <DashboardLayout
@@ -77,15 +109,15 @@ export default function Estatisticas() {
       </Card>
 
       {/* Filtro de Auditoria — nível raiz */}
-      <Card className="mb-6 border-l-4 border-l-success">
+       <Card className="mb-6 border-l-4 border-l-success">
         <CardContent className="pt-4 pb-3">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success" />
               <div>
-                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD + ODS Racial)</p>
+                <p className="text-sm font-semibold">Auditoria Manual — Todos os Indicadores (BD + Abas Estáticas)</p>
                 <p className="text-xs text-muted-foreground">
-                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · inclui {TOTAL_ODS_RACIAL} ODS Racial ✓
+                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · BD: {bdAuditados}/{bdTotal} · Estáticos: {staticAuditados}/{staticTotal}
                 </p>
               </div>
             </div>
@@ -107,6 +139,27 @@ export default function Estatisticas() {
               ))}
             </div>
           </div>
+          {/* Detail breakdown when pendentes filter is active */}
+          {filtroAuditoria === 'pendentes' && totalPendentes > 0 && (
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Detalhamento dos itens pendentes:</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {bdPendentes > 0 && (
+                  <Badge variant="outline" className="text-xs bg-destructive/5 text-destructive border-destructive/20">
+                    BD: {bdPendentes} pendentes
+                  </Badge>
+                )}
+                {Object.entries(STATIC_TAB_COUNTS)
+                  .filter(([, v]) => v.total - v.auditados > 0)
+                  .map(([key, v]) => (
+                    <Badge key={key} variant="outline" className="text-xs bg-chart-4/5 text-chart-4 border-chart-4/20">
+                      {key}: {v.total - v.auditados}
+                    </Badge>
+                  ))
+                }
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
