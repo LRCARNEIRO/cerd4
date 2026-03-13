@@ -1080,9 +1080,9 @@ export function ClasseSocialTab() {
                 <p className="text-xs text-muted-foreground">
                   <strong>IEPS (jul/2025, série 2010-2023):</strong> razão mortalidade materna pretas/brancas = <strong>2,3×</strong> (108,6 vs 46,9 por 100 mil NV). Pardas: 56,6/100 mil NV.
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <strong>RASEAM 2025 (SIM 2022):</strong> mulheres negras = 68% das mortes maternas.
-                </p>
+                 <p className="text-xs text-muted-foreground mt-1">
+                   <strong>RASEAM 2025 (dados 2023):</strong> razão de mortalidade materna por 100 mil NV — pretas: <strong>72,9</strong> | pardas: <strong>49,9</strong> | brancas: <strong>46,3</strong>.
+                 </p>
               </div>
               <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
                 <p className="text-xs">
@@ -1122,9 +1122,9 @@ export function ClasseSocialTab() {
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
               <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
-              <p className="text-3xl font-bold text-destructive">40%</p>
-              <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
-              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>
+              <p className="text-3xl font-bold text-destructive">≈40%</p>
+              <p className="text-xs text-muted-foreground">menor (R$13,73 vs R$23,02)</p>
+              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 — PNAD Contínua (dados 2023)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
               <p className="text-xs text-muted-foreground mb-1">1% mais rico detém</p>
@@ -1135,9 +1135,9 @@ export function ClasseSocialTab() {
           </div>
           <div className="mt-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral — não há desagregação por raça na publicação original. 
-              A desigualdade racial no topo da distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, Dez/2024), 
-              mas nenhum deles publica a composição racial exata do 1% mais rico em formato desagregado por cor/raça.
+              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral, sem desagregação por raça na publicação original. 
+              A desigualdade racial na distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, dez/2024). 
+              Este último apresenta composição por cor/raça nos centésimos da distribuição de renda (incluindo o centésimo superior), a partir da integração DIRPF–PNADC.
             </p>
           </div>
           <AuditFooter

@@ -795,7 +795,8 @@ export const classePorRaca = [
   // VERIFICADO: SIS/IBGE 2025 (dados 2024) — Notícia Preta / IBGE
   // Total: pobreza 23,1%, extrema pobreza 3,5%. Pardos 29,8% P, pretos 25,8% P. Brancos N/D direto.
   { faixa: 'Extrema pobreza 2024 (< US$2,15/dia)', branca: null, parda: null, preta: null, total: 3.5, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://noticiapreta.com.br/pobreza-queda-desigualdade-racial-ibge-2024/' },
-  { faixa: 'Pobreza 2024 (< US$6,85/dia)', branca: null, parda: 29.8, preta: 25.8, total: 23.1, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://noticiapreta.com.br/pobreza-queda-desigualdade-racial-ibge-2024/' },
+  // AUDITORIA MANUAL 13/03/2026 (Eduardo): Branca 2024 = 15,1% — Fonte: SIS/IBGE 2025 (Livro 102240)
+  { faixa: 'Pobreza 2024 (< US$6,85/dia)', branca: 15.1, parda: 29.8, preta: 25.8, total: 23.1, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://biblioteca.ibge.gov.br/visualizacao/livros/liv102240.pdf' },
 ];
 
 // =============================================
@@ -1005,6 +1006,12 @@ export const saudeMaternaRaca = {
   mortalidadeMaternaNegraPercentual: 68.0, // RASEAM 2025 — proporção de óbitos maternos de mulheres negras (pretas+pardas), dado SIM 2022
   mortalidadeMaternaBrancaPercentual: 29.7, // idem
   anoReferencia: 2022, // último ano consolidado SIM/DataSUS; RASEAM 2025 mantém esse recorte
+  // AUDITORIA MANUAL 13/03/2026 (Eduardo): Dados RASEAM 2025 para 2023 (razão por 100 mil NV):
+  // Pretas: 72,9 | Pardas: 49,9 | Brancas: 46,3
+  razaoMortalidade2023_pretas: 72.9,
+  razaoMortalidade2023_pardas: 49.9,
+  razaoMortalidade2023_brancas: 46.3,
+  fonteRaseam2025: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
   // IEPS Boletim jul/2025 — série até 2023: razão mortalidade materna pretas/brancas = 2,3× (108,6 vs 46,9 por 100 mil NV)
   razaoMortalidadePretasBrancas: 2.3,
   taxaPretasPor100milNV: 108.6,
