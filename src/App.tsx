@@ -41,6 +41,7 @@ const App = () => (
           <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
           <Route path="/normativa" element={<Normativa />} />
           <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
+          <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

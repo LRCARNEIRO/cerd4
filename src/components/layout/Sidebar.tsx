@@ -80,6 +80,7 @@ const escopoSubsections: NavSection[] = [
     items: [
       { title: 'Orçamento', href: '/orcamento', icon: DollarSign },
       { title: 'TESTE', href: '/orcamento-teste', icon: FlaskConical },
+      { title: 'Guia de Auditoria', href: '/guia-auditoria', icon: ClipboardCheck },
     ]
   },
   {
