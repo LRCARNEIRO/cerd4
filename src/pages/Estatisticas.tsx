@@ -46,28 +46,57 @@ export default function Estatisticas() {
   const bdAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
   const bdPendentes = bdTotal - bdAuditados;
 
-  // Static hardcoded indicators across tabs (counted from StatisticsData.ts exports)
-  // These are the data series/constants rendered in static tabs that are NOT in the BD
+  // Comprehensive count of ALL auditable data items across static tabs
+  // Each row in a series, each constant, each card = 1 auditable item
   const STATIC_TAB_COUNTS = {
-    'Dados Gerais (demograficos)': { total: 8, auditados: 8 },
-    'Dados Gerais (composição racial série)': { total: 7, auditados: 7 },
-    'Dados Gerais (socioeconômicos série)': { total: 7, auditados: 2 },  // 2018-2022 pendentes
-    'Dados Gerais (rendimentos Censo)': { total: 1, auditados: 0 },
-    'Segurança (homicídio/letalidade série)': { total: 7, auditados: 7 },
-    'Saúde (mortalidade materna/infantil série)': { total: 6, auditados: 6 },
-    'Educação (ensino superior/analfabetismo série)': { total: 5, auditados: 5 },
-    'Educação (evasão escolar série)': { total: 1, auditados: 1 },
-    'Raça × Gênero (trabalho)': { total: 4, auditados: 4 },
-    'Raça × Gênero (saúde materna)': { total: 2, auditados: 2 },
-    'Raça × Gênero (educação)': { total: 2, auditados: 2 },
-    'Vulnerabilidades (violência)': { total: 3, auditados: 3 },
-    'Vulnerabilidades (chefia familiar)': { total: 1, auditados: 1 },
-    'Classe Social': { total: 2, auditados: 2 },
-    'Juventude': { total: 2, auditados: 2 },
-    'LGBTQIA+ (ANTRA série)': { total: 9, auditados: 3 },  // 2023+ auditados
-    'Povos Tradicionais': { total: 4, auditados: 4 },
-    'Adm Pública': { total: 1, auditados: 0 },
-    'COVID Racial': { total: 1, auditados: 0 },
+    // DADOS GERAIS
+    'dadosDemograficos (10 constantes)': { total: 10, auditados: 10 },
+    'evolucaoComposicaoRacial (7 anos)': { total: 7, auditados: 7 },
+    'indicadoresSocioeconomicos (7 anos × 4 métricas)': { total: 28, auditados: 8 },  // 2023-2024 auditados (8 campos), 2018-2022 pendentes (20 campos)
+    'razaoRendaRacial': { total: 1, auditados: 1 },
+    'rendimentosCenso2022 (6 raças + Gini)': { total: 7, auditados: 0 },
+    // SEGURANÇA
+    'segurancaPublica (7 anos × 5 métricas)': { total: 35, auditados: 35 },
+    'feminicidioSerie (7 anos × 2 métricas)': { total: 14, auditados: 2 },  // só 2024 auditado
+    'atlasViolencia2025 (12 constantes)': { total: 12, auditados: 12 },
+    'jovensNegrosViolencia (3 constantes)': { total: 3, auditados: 3 },
+    // EDUCAÇÃO
+    'educacaoSerieHistorica (5 anos × 4 métricas)': { total: 20, auditados: 20 },
+    'analfabetismoGeral2024 (7 constantes)': { total: 7, auditados: 7 },
+    'evasaoEscolarSerie (5 anos × 2 métricas)': { total: 10, auditados: 10 },
+    // SAÚDE
+    'saudeSerieHistorica (7 anos × 4 métricas)': { total: 28, auditados: 28 },
+    // HABITAÇÃO
+    'deficitHabitacionalSerie (3 anos × 2 raças)': { total: 6, auditados: 0 },
+    'cadUnicoPerfilRacial (8 anos × 2 raças)': { total: 16, auditados: 0 },
+    // RAÇA × GÊNERO
+    'interseccionalidadeTrabalho (4 grupos × 3 métricas)': { total: 12, auditados: 12 },
+    'trabalhoRacaGenero (3 indicadores × 4 grupos)': { total: 12, auditados: 12 },
+    'educacaoRacaGenero (5 indicadores × 4 grupos)': { total: 20, auditados: 20 },
+    'chefiaFamiliarRacaGenero (10 constantes)': { total: 10, auditados: 10 },
+    'saudeMaternaRaca (8 constantes)': { total: 8, auditados: 8 },
+    // DEFICIÊNCIA
+    'deficienciaPorRaca (5 raças × 3 métricas)': { total: 15, auditados: 15 },
+    'disparidadesPcd1459 (3 raças × 2 métricas)': { total: 6, auditados: 6 },
+    // LGBTQIA+
+    'serieAntraTrans (9 anos × 4 métricas)': { total: 36, auditados: 12 },  // 2023-2025 auditados
+    'lgbtqiaPorRaca (3 métricas)': { total: 3, auditados: 3 },
+    // VULNERABILIDADES
+    'violenciaInterseccional (3 tipos × 2 métricas)': { total: 6, auditados: 6 },
+    // JUVENTUDE
+    'juventudeNegra (2 indicadores × 2 métricas)': { total: 4, auditados: 4 },
+    // CLASSE SOCIAL
+    'classePorRaca (6 faixas × 4 raças)': { total: 24, auditados: 24 },
+    // POVOS TRADICIONAIS
+    'povosTradicionais.indigenas (16 constantes)': { total: 16, auditados: 16 },
+    'povosTradicionais.quilombolas (14 constantes)': { total: 14, auditados: 14 },
+    'povosTradicionais.populacaoNegra (8 constantes infra)': { total: 8, auditados: 0 },
+    'povosTradicionais.ciganos (5 constantes)': { total: 5, auditados: 5 },
+    // EVOLUÇÃO DESIGUALDADE
+    'evolucaoDesigualdade (7 anos × 3 razões)': { total: 21, auditados: 7 },  // 2024 auditado
+    // ADM PÚBLICA / COVID (componentes próprios)
+    'AdmPública/SINAPIR': { total: 5, auditados: 0 },
+    'CovidRacial': { total: 8, auditados: 0 },
   };
 
   const staticTotal = Object.values(STATIC_TAB_COUNTS).reduce((s, v) => s + v.total, 0);
