@@ -919,8 +919,8 @@ export const chefiaFamiliarRacaGenero = {
   domiciliosFemininosIA: 63.0,
   domiciliosFemininosFome: 18.8,
   domiciliosNegrosIA: 60.0,
-  cadUnicoMulheresNegras: null as number | null, // PENDENTE verificação
-  cadUnicoMulheresBrancas: null as number | null, // PENDENTE verificação
+  cadUnicoMulheresNegras: 38.5, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
+  cadUnicoMulheresBrancas: 17.0, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   fontes: [
     { nome: 'Censo 2022/SIDRA 10179 — Mulheres chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
     { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
