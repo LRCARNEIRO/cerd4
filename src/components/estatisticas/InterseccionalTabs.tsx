@@ -1122,9 +1122,9 @@ export function ClasseSocialTab() {
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
               <p className="text-xs text-muted-foreground mb-1">Rendimento/hora negros vs brancos</p>
-              <p className="text-3xl font-bold text-destructive">40%</p>
-              <p className="text-xs text-muted-foreground">menor (R$13,70 vs R$23,00)</p>
-              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 (dados 2023)</p>
+              <p className="text-3xl font-bold text-destructive">≈40%</p>
+              <p className="text-xs text-muted-foreground">menor (R$13,73 vs R$23,02)</p>
+              <p className="text-[10px] text-muted-foreground">SIS/IBGE 2024 — PNAD Contínua (dados 2023)</p>
             </div>
             <div className="p-4 bg-muted rounded-lg text-center">
               <p className="text-xs text-muted-foreground mb-1">1% mais rico detém</p>
