@@ -1,0 +1,500 @@
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ExternalLink, Search, Filter, Download, CheckCircle2, AlertTriangle, BookOpen, Layers, DollarSign, FileText, ClipboardCheck } from 'lucide-react';
+
+const PORTAL_TRANSPARENCIA = 'https://portaldatransparencia.gov.br';
+const SIOP = 'https://www.siop.planejamento.gov.br';
+const DADOS_ABERTOS = 'https://portaldatransparencia.gov.br/download-de-dados/orcamento-despesa';
+
+export default function GuiaAuditoria() {
+  return (
+    <DashboardLayout
+      title="Guia de Auditoria Orçamentária"
+      subtitle="Passo a passo para reproduzir e verificar todos os dados orçamentários nos portais oficiais"
+    >
+      <div className="space-y-6 max-w-4xl">
+
+        {/* INTRODUÇÃO */}
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <ClipboardCheck className="w-6 h-6 text-primary mt-1 shrink-0" />
+              <div className="space-y-2 text-sm">
+                <p className="font-semibold text-base text-foreground">Objetivo deste Guia</p>
+                <p className="text-muted-foreground">
+                  Este guia permite que <strong>qualquer pessoa</strong> reproduza, nos portais oficiais do governo brasileiro,
+                  os mesmos dados orçamentários exibidos neste sistema. Inclui instruções para localizar tanto a
+                  <strong> seleção das ações orçamentárias</strong> quanto os <strong>valores de dotação e execução</strong>.
+                </p>
+                <p className="text-muted-foreground">
+                  <strong>Portais utilizados:</strong> Portal da Transparência, SIOP, Dados Abertos da LOA.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ═══════════ PARTE 1: COMO ENCONTRAR AS AÇÕES ═══════════ */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Search className="w-5 h-5" />
+              Parte 1 — Como Localizar as Ações Orçamentárias
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              O sistema usa 4 camadas de filtragem para selecionar ações com recorte racial/étnico. Abaixo, como reproduzir cada uma.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="multiple" className="w-full">
+
+              {/* CAMADA 1 */}
+              <AccordionItem value="camada1">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Badge>Camada 1</Badge>
+                    <span className="font-semibold">Programas Temáticos do PPA</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <p className="font-semibold">🔍 Passo a passo no Portal da Transparência:</p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>
+                        Acesse{' '}
+                        <a href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                          Despesas → Programa e Ação <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </li>
+                      <li>No campo <strong>"Programa"</strong>, digite o código do programa (ex: <code>5804</code>).</li>
+                      <li>Selecione o <strong>Ano/Exercício</strong> desejado (ex: 2024).</li>
+                      <li>Clique em <strong>"Consultar"</strong>. Todas as ações vinculadas a esse programa serão listadas.</li>
+                      <li>Para ver o detalhamento (orgão executor, dotação, empenho, pago), clique na ação desejada.</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-2">Programas focais (todos os registros são incluídos):</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {[
+                        { cod: '5804', nome: 'Igualdade Étnico-Racial (MIR)', ppa: '2024–2027' },
+                        { cod: '5803', nome: 'Juventude Negra Viva (MIR)', ppa: '2024–2027' },
+                        { cod: '5802', nome: 'Quilombolas e Ciganos (MIR)', ppa: '2024–2027' },
+                        { cod: '5136', nome: 'Proteção Povos Indígenas (MPI)', ppa: '2024–2027' },
+                        { cod: '2034', nome: 'Igualdade Racial (SEPPIR)', ppa: '2016–2019' },
+                        { cod: '2065', nome: 'Povos Indígenas (legado)', ppa: '2012–2019' },
+                        { cod: '0617', nome: 'Povos Indígenas (MPI)', ppa: '2020–2023' },
+                      ].map(p => (
+                        <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-3 py-2 text-xs hover:bg-muted/50 transition-colors">
+                          <span><code className="font-mono font-bold">{p.cod}</code> — {p.nome}</span>
+                          <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                    <p className="text-xs flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Programas universais</strong> (ex: 5111 – Educação Básica, 2310 – Trabalho Decente):
+                        apenas as ações cujo título contenha palavras-chave raciais/étnicas são incluídas.
+                        No portal, busque pelo programa e verifique quais ações possuem termos como "indígena", "quilombola", "racial", "étnico" etc.
+                      </span>
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* CAMADA 2 */}
+              <AccordionItem value="camada2">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Camada 2</Badge>
+                    <span className="font-semibold">Subfunção 422 — Direitos Individuais, Coletivos e Difusos</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <p className="font-semibold">🔍 Passo a passo:</p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>
+                        Acesse{' '}
+                        <a href={`${PORTAL_TRANSPARENCIA}/despesas/consulta?ordenarPor=mesAno&direcao=desc`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                          Despesas → Consulta detalhada <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </li>
+                      <li>Nos filtros avançados, selecione <strong>Subfunção: 422</strong>.</li>
+                      <li>Selecione o <strong>Ano</strong>.</li>
+                      <li>Nos resultados, verifique quais ações possuem palavras-chave raciais/étnicas no título.</li>
+                      <li><strong>Apenas ações com recorte racial/étnico</strong> são incorporadas ao sistema.</li>
+                    </ol>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Exemplo: a ação "21CS – Enfrentamento ao Racismo e Promoção da Igualdade Racial" aparece sob a subfunção 422.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* CAMADA 3 */}
+              <AccordionItem value="camada3">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">Camada 3</Badge>
+                    <span className="font-semibold">Órgãos MIR (67000) e MPI (92000)</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <p className="font-semibold">🔍 Passo a passo:</p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>
+                        Acesse{' '}
+                        <a href={`${PORTAL_TRANSPARENCIA}/despesas/orgao?ordenarPor=orgaoSuperior&direcao=asc`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                          Despesas → Por Órgão <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </li>
+                      <li>No filtro, busque <strong>"Ministério da Igualdade Racial"</strong> (código 67000) ou <strong>"Ministério dos Povos Indígenas"</strong> (código 92000).</li>
+                      <li>Selecione o <strong>Ano</strong> (disponível a partir de 2023).</li>
+                      <li><strong>Todos os registros</strong> desses órgãos são incluídos sem filtro adicional.</li>
+                    </ol>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Nota:</strong> MIR e MPI foram criados em 2023. Para anos anteriores, os programas equivalentes estavam sob SEPPIR, FUNAI e MDHC (cobertos pelas Camadas 1 e 2).
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* CAMADA 4 */}
+              <AccordionItem value="camada4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-emerald-600">Camada 4</Badge>
+                    <span className="font-semibold">Ações Específicas — SESAI, FUNAI, INCRA</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <p className="font-semibold">🔍 Passo a passo:</p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>
+                        Acesse{' '}
+                        <a href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                          Despesas → Programa e Ação <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </li>
+                      <li>No campo <strong>"Ação"</strong>, digite o código da ação diretamente.</li>
+                      <li>Selecione o <strong>Ano</strong>.</li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold mb-2">Ações capturadas por código direto:</p>
+                    <div className="space-y-1">
+                      {[
+                        { cod: '20YP', nome: 'Promoção e Recuperação da Saúde Indígena', orgao: 'SESAI/MS' },
+                        { cod: '7684', nome: 'Saneamento Básico em Aldeias Indígenas', orgao: 'SESAI/MS' },
+                        { cod: '20UF', nome: 'Gestão de Terras Indígenas', orgao: 'FUNAI' },
+                        { cod: '2384', nome: 'Proteção dos Direitos dos Povos Indígenas', orgao: 'FUNAI' },
+                        { cod: '15Q1', nome: 'Titulação Territórios Quilombolas', orgao: 'INCRA' },
+                        { cod: '20G7', nome: 'Regularização Fundiária Quilombola', orgao: 'INCRA' },
+                      ].map(a => (
+                        <div key={a.cod} className="flex items-center gap-2 text-xs px-3 py-1.5 rounded bg-muted/30">
+                          <code className="font-mono font-bold text-primary">{a.cod}</code>
+                          <span className="text-muted-foreground">— {a.nome}</span>
+                          <Badge variant="outline" className="text-[10px] ml-auto">{a.orgao}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                    <p className="text-xs flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Sobre registros com dotação zero:</strong> Algumas ações da FUNAI (ex: Programa 0151)
+                        possuem execução financeira (empenhado/pago) mas dotação inicial = 0. São recursos de <em>Receitas Próprias</em> ou
+                        <em> Projetos Especiais</em> (compensações como Belo Monte, royalties), que não constam na dotação LOA convencional.
+                      </span>
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* KEYWORD-FIRST */}
+              <AccordionItem value="keywords">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">Passo 6</Badge>
+                    <span className="font-semibold">Varredura por Palavras-Chave</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 text-sm">
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                    <p className="font-semibold">🔍 Como reproduzir manualmente:</p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>
+                        Acesse{' '}
+                        <a href={`${PORTAL_TRANSPARENCIA}/despesas`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                          Portal da Transparência — Despesas <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </li>
+                      <li>Use o campo de busca textual para pesquisar termos como: <code>quilombola</code>, <code>indígena</code>, <code>racial</code>, <code>capoeira</code>, <code>terreiro</code>, <code>palmares</code>.</li>
+                      <li>Filtre por <strong>Ano</strong> e revise os resultados manualmente.</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <p className="font-semibold mb-2">Palavras-chave utilizadas pelo sistema:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['racial', 'racismo', 'negro/negra', 'afro', 'quilombola', 'indígena', 'cigano/romani',
+                        'palmares', 'terreiro', 'matriz africana', 'capoeira', 'candomblé', 'umbanda',
+                        'juventude negra', 'étnico', 'povos tradicionais', 'discriminação', 'afrodescendente',
+                        'saúde indígena', 'sesai'].map(kw => (
+                        <Badge key={kw} variant="outline" className="text-xs">{kw}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
+
+        {/* ═══════════ PARTE 2: COMO ENCONTRAR OS VALORES ═══════════ */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <DollarSign className="w-5 h-5" />
+              Parte 2 — Como Encontrar os Valores (Dotação e Execução)
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Uma vez identificadas as ações, os valores podem ser verificados por três caminhos.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+
+            {/* Caminho A: Portal da Transparência */}
+            <div className="space-y-3">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Badge>A</Badge> Portal da Transparência — Valores de Execução
+              </h4>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                  <li>
+                    Acesse{' '}
+                    <a href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao`} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                      Despesas → Programa e Ação <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </li>
+                  <li>Busque pelo <strong>programa</strong> ou <strong>ação</strong> desejada.</li>
+                  <li>Na página de resultados, os valores exibidos são: <strong>Empenhado</strong>, <strong>Liquidado</strong> e <strong>Pago</strong>.</li>
+                  <li>Clique na ação para ver o detalhamento por UG (unidade gestora).</li>
+                </ol>
+
+                <div className="bg-background rounded border p-3 text-xs space-y-1">
+                  <p className="font-semibold text-foreground">📊 Campos coletados pelo sistema:</p>
+                  <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
+                    <li><strong>Pago</strong> — métrica primária (reflete o recurso efetivamente desembolsado)</li>
+                    <li><strong>Empenhado</strong> — valor comprometido (reserva orçamentária)</li>
+                    <li><strong>Liquidado</strong> — valor reconhecido como devido</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                <p className="text-xs flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <strong>Atenção:</strong> O Portal da Transparência inclui Restos a Pagar (RAP) nos totais.
+                  O sistema <strong>exclui RAP</strong> para manter a integridade da série histórica por exercício.
+                  Por isso, os valores no sistema podem ser menores que o total exibido no portal.
+                </p>
+              </div>
+            </div>
+
+            {/* Caminho B: LOA / Dados Abertos */}
+            <div className="space-y-3">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Badge variant="secondary">B</Badge> Dados Abertos da LOA — Valores de Dotação
+              </h4>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                  <li>
+                    Acesse{' '}
+                    <a href={DADOS_ABERTOS} target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                      Download de Dados — Orçamento/Despesa <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </li>
+                  <li>Selecione o <strong>Ano</strong> desejado e baixe o arquivo <strong>ZIP</strong>.</li>
+                  <li>Descompacte o ZIP. Dentro haverá um arquivo <strong>CSV</strong> (separado por <code>;</code>).</li>
+                  <li>Abra no Excel/LibreCalc. As colunas relevantes são:
+                    <ul className="list-disc list-inside ml-4 mt-1 space-y-0.5">
+                      <li><code>CÓDIGO PROGRAMA ORÇAMENTÁRIO</code> — código do programa (ex: 5804)</li>
+                      <li><code>CÓDIGO AÇÃO</code> — código da ação (ex: 21CS)</li>
+                      <li><code>ORÇAMENTO INICIAL (R$)</code> — dotação inicial (LOA aprovada)</li>
+                      <li><code>ORÇAMENTO ATUALIZADO (R$)</code> — dotação autorizada (com créditos adicionais)</li>
+                    </ul>
+                  </li>
+                  <li>Filtre por código de programa para encontrar os valores de dotação.</li>
+                </ol>
+              </div>
+
+              <div className="bg-background rounded border p-3 text-xs">
+                <p className="font-semibold text-foreground mb-1">💡 Dica: fórmula de percentual de execução</p>
+                <code className="text-primary">% Execução = (Pago ÷ Dotação Atualizada) × 100</code>
+                <p className="text-muted-foreground mt-1">
+                  Se a dotação atualizada for zero, usa-se a dotação inicial como referência.
+                </p>
+              </div>
+            </div>
+
+            {/* Caminho C: API */}
+            <div className="space-y-3">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Badge variant="outline">C</Badge> API do Portal da Transparência (consulta avançada)
+              </h4>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                  <li>
+                    Cadastre-se gratuitamente no{' '}
+                    <a href="https://portaldatransparencia.gov.br/api-de-dados" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">
+                      Portal da Transparência — API de Dados <ExternalLink className="w-3 h-3" />
+                    </a>
+                    {' '}para obter uma chave de API.
+                  </li>
+                  <li>Use o endpoint <code>/despesas/por-funcional-programatica</code>.</li>
+                  <li>
+                    Exemplo de consulta:<br />
+                    <code className="text-xs break-all">
+                      GET /api-de-dados/despesas/por-funcional-programatica?ano=2024&programa=5804&pagina=1
+                    </code>
+                  </li>
+                  <li>
+                    O JSON de resposta incluirá campos como: <code>dotacaoInicial</code>, <code>dotacaoAtualizada</code>,
+                    <code> empenhado</code>, <code>liquidado</code>, <code>pago</code>.
+                  </li>
+                </ol>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Esta é a fonte utilizada pelo sistema como complemento à LOA para registros que não possuem dotação no CSV.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ═══════════ PARTE 3: EXCLUSÕES ═══════════ */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Filter className="w-5 h-5" />
+              Parte 3 — O Que é Excluído (e Por Quê)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <p className="text-muted-foreground">
+              Para evitar a <strong>inflação artificial</strong> dos totais de política racial,
+              o sistema exclui programas universais de grande escala que beneficiam a população em geral,
+              sem recorte racial/étnico explícito.
+            </p>
+
+            <div>
+              <p className="font-semibold mb-2">Programas universais excluídos:</p>
+              <div className="space-y-1">
+                {[
+                  { cod: '2068', nome: 'Bolsa Família / Cadastro Único' },
+                  { cod: '2049', nome: 'Moradia Digna / MCMV' },
+                  { cod: '2012', nome: 'Fortalecimento SUS' },
+                  { cod: '2015', nome: 'Fortalecimento SUAS' },
+                  { cod: '5113', nome: 'Educação Superior (genérico, ~R$ 14 bi)' },
+                ].map(p => (
+                  <div key={p.cod} className="flex items-center gap-2 text-xs px-3 py-1.5 rounded bg-destructive/5">
+                    <code className="font-mono font-bold">{p.cod}</code>
+                    <span className="text-muted-foreground">— {p.nome}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground bg-muted/30 rounded p-3">
+              <strong>Critério geral:</strong> programas universais com orçamentos bilionários são excluídos a menos que
+              possuam ações específicas com palavras-chave raciais/étnicas no título. Nesse caso, apenas a ação específica é incluída,
+              não o programa inteiro.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* ═══════════ PARTE 4: CHECKLIST DE VERIFICAÇÃO ═══════════ */}
+        <Card className="border-emerald-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              Parte 4 — Checklist de Verificação Rápida
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Para verificar qualquer dado do sistema, siga estes passos:
+            </p>
+          </CardHeader>
+          <CardContent>
+            <ol className="list-decimal list-inside space-y-3 text-sm text-muted-foreground">
+              <li>
+                <strong>Identifique o programa e ação:</strong> Na tabela do sistema, anote o código do programa
+                (4 dígitos, ex: <code>5804</code>) e, se disponível, o código da ação (ex: <code>21CS</code>).
+              </li>
+              <li>
+                <strong>Verifique no Portal da Transparência:</strong> Busque o programa em{' '}
+                <a href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao`} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                  Despesas → Programa e Ação
+                </a>.
+                Compare <strong>Empenhado</strong>, <strong>Liquidado</strong> e <strong>Pago</strong>.
+              </li>
+              <li>
+                <strong>Verifique a dotação:</strong> Baixe o CSV da LOA do ano correspondente em{' '}
+                <a href={DADOS_ABERTOS} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                  Dados Abertos
+                </a>.
+                Filtre por código de programa e compare <strong>Orçamento Inicial</strong> e <strong>Orçamento Atualizado</strong>.
+              </li>
+              <li>
+                <strong>Se o valor no sistema for menor que no portal:</strong> Verifique se o portal está incluindo
+                Restos a Pagar (RAP). O sistema exclui RAP por design.
+              </li>
+              <li>
+                <strong>Se a dotação for zero mas houver execução:</strong> O registro provavelmente é de Receita Própria
+                ou Projeto Especial (ex: compensações de Belo Monte, royalties). São extra-orçamentários por natureza.
+              </li>
+            </ol>
+          </CardContent>
+        </Card>
+
+        {/* ═══════════ LINKS DIRETOS ═══════════ */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <BookOpen className="w-5 h-5" />
+              Links Diretos para Portais Oficiais
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { nome: 'Portal da Transparência — Despesas', url: `${PORTAL_TRANSPARENCIA}/despesas` },
+                { nome: 'Dados Abertos — Download LOA', url: DADOS_ABERTOS },
+                { nome: 'API de Dados — Documentação', url: 'https://portaldatransparencia.gov.br/api-de-dados' },
+                { nome: 'SIOP — Sistema de Orçamento', url: SIOP },
+                { nome: 'PPA 2024–2027 — Agendas Transversais', url: 'https://www.gov.br/planejamento/pt-br/assuntos/plano-plurianual-ppa/ppa-2024-2027' },
+                { nome: 'SICONFI — Dados Estaduais/Municipais', url: 'https://siconfi.tesouro.gov.br' },
+              ].map(link => (
+                <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-4 py-3 text-sm hover:bg-muted/50 transition-colors">
+                  <span className="text-foreground">{link.nome}</span>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
+    </DashboardLayout>
+  );
+}

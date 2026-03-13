@@ -16,6 +16,7 @@ import Conclusoes from "./pages/Conclusoes";
 import GerarRelatorios from "./pages/GerarRelatorios";
 import Normativa from "./pages/Normativa";
 import DocumentosBalizadores from "./pages/DocumentosBalizadores";
+import GuiaAuditoria from "./pages/GuiaAuditoria";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
           <Route path="/normativa" element={<Normativa />} />
           <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
+          <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -21,7 +21,8 @@ import {
   Upload,
   FolderOpen,
   Settings,
-  FlaskConical
+  FlaskConical,
+  ClipboardCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -80,6 +81,7 @@ const escopoSubsections: NavSection[] = [
     items: [
       { title: 'Orçamento', href: '/orcamento', icon: DollarSign },
       { title: 'TESTE', href: '/orcamento-teste', icon: FlaskConical },
+      { title: 'Guia de Auditoria', href: '/guia-auditoria', icon: ClipboardCheck },
     ]
   },
   {
