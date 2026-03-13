@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar 
 } from 'recharts';
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
-import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia } from './StatisticsData';
+import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia, evasaoEscolarSerie, evasaoEscolarFonte } from './StatisticsData';
 import { narrativaSeguranca, fmt } from '@/utils/narrativeHelpers';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
