@@ -109,15 +109,15 @@ export default function Estatisticas() {
       </Card>
 
       {/* Filtro de Auditoria — nível raiz */}
-      <Card className="mb-6 border-l-4 border-l-success">
+       <Card className="mb-6 border-l-4 border-l-success">
         <CardContent className="pt-4 pb-3">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success" />
               <div>
-                <p className="text-sm font-semibold">Auditoria Manual — Indicadores (BD + ODS Racial)</p>
+                <p className="text-sm font-semibold">Auditoria Manual — Todos os Indicadores (BD + Abas Estáticas)</p>
                 <p className="text-xs text-muted-foreground">
-                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · inclui {TOTAL_ODS_RACIAL} ODS Racial ✓
+                  {totalAuditados} de {totalIndicadores} auditados ({totalPendentes} pendentes) · BD: {bdAuditados}/{bdTotal} · Estáticos: {staticAuditados}/{staticTotal}
                 </p>
               </div>
             </div>
@@ -139,6 +139,27 @@ export default function Estatisticas() {
               ))}
             </div>
           </div>
+          {/* Detail breakdown when pendentes filter is active */}
+          {filtroAuditoria === 'pendentes' && totalPendentes > 0 && (
+            <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+              <p className="text-xs font-medium text-muted-foreground mb-2">Detalhamento dos itens pendentes:</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {bdPendentes > 0 && (
+                  <Badge variant="outline" className="text-xs bg-destructive/5 text-destructive border-destructive/20">
+                    BD: {bdPendentes} pendentes
+                  </Badge>
+                )}
+                {Object.entries(STATIC_TAB_COUNTS)
+                  .filter(([, v]) => v.total - v.auditados > 0)
+                  .map(([key, v]) => (
+                    <Badge key={key} variant="outline" className="text-xs bg-chart-4/5 text-chart-4 border-chart-4/20">
+                      {key}: {v.total - v.auditados}
+                    </Badge>
+                  ))
+                }
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
