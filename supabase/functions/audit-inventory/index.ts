@@ -141,8 +141,8 @@ function inventoryStatisticsConstants(): AuditItem[] {
 
   // --- trabalhoRacaGenero ---
   items.push(
-    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Renda homem branco (Q2 2024)', valor_atual: 4568, fonte_declarada: 'DIEESE Q2 2024', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: null },
-    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Razão mulher negra / homem branco', valor_atual: 0.439, fonte_declarada: 'DIEESE', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'Mulher negra ganha 43,9% do rendimento do homem branco' },
+    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Renda homem não negro (Q2 2024)', valor_atual: 4492, fonte_declarada: 'DIEESE Q2 2024, p.8', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — corrigido de 4568 para 4492' },
+    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Razão mulher negra / homem não negro', valor_atual: 0.463, fonte_declarada: 'DIEESE', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — 2079/4492 = 46,3%' },
   );
 
   // --- saudeMaternaRaca ---
