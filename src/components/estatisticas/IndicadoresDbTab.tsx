@@ -1270,6 +1270,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
            'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
            'Saúde Indígena', 'Justiça Racial', 'Vacinação',
            'favelas_aglomerados', 'ciganos_saude_educacao',
+           'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
          ]);
         const nonGap = indicadoresFiltrados.filter(i => !(i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)));
         const withSeries = nonGap.filter(i => hasTimeSeries(i.dados || {}));
