@@ -815,6 +815,77 @@ export function GruposFocaisTab() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Terreiros tombados pelo IPHAN */}
+            <Card className="border-l-4 border-l-accent">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <MapPin className="w-5 h-5 text-accent" />
+                  Terreiros Tombados e Registrados — IPHAN
+                </CardTitle>
+                <CardDescription>
+                  Patrimônio cultural de matriz africana reconhecido pelo IPHAN (2018→2024)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="text-center p-3 bg-accent/10 rounded-lg">
+                    <p className="text-2xl font-bold">7</p>
+                    <p className="text-sm text-muted-foreground">Tombados (2024)</p>
+                  </div>
+                  <div className="text-center p-3 bg-accent/10 rounded-lg">
+                    <p className="text-2xl font-bold">5</p>
+                    <p className="text-sm text-muted-foreground">Registrados (2024)</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">5</p>
+                    <p className="text-sm text-muted-foreground">Tombados (2018)</p>
+                  </div>
+                  <div className="text-center p-3 bg-muted rounded-lg">
+                    <p className="text-2xl font-bold">3</p>
+                    <p className="text-sm text-muted-foreground">Registrados (2018)</p>
+                  </div>
+                </div>
+
+                <div className="p-3 border border-border rounded-lg mb-4">
+                  <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-success" /> Evolução 2018→2024
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 text-xs">
+                    <div className="text-center">
+                      <p className="text-muted-foreground">Tombados</p>
+                      <p className="font-medium">5 → 7</p>
+                      <Badge variant="outline" className="text-success border-success/30 text-xs">+40,0%</Badge>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-muted-foreground">Registrados</p>
+                      <p className="font-medium">3 → 5</p>
+                      <Badge variant="outline" className="text-success border-success/30 text-xs">+66,7%</Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-warning/10 rounded text-xs text-muted-foreground">
+                  <strong className="text-warning">⚠ Nota:</strong> Número absoluto muito baixo. 
+                  Anos intermediários (2019-2023) sem dados verificáveis na base IPHAN/CGID — pendente auditoria completa.
+                  Categoria "estável" devido ao volume limitado.
+                </div>
+
+                <div className="mt-3 p-2 bg-muted/50 rounded text-xs">
+                  <p className="font-medium mb-1 flex items-center gap-1">
+                    <FileText className="w-3 h-3" /> Fonte e Documentos
+                  </p>
+                  <a href="http://portal.iphan.gov.br/pagina/detalhes/126" target="_blank" rel="noopener noreferrer" 
+                     className="text-primary hover:underline flex items-center gap-1">
+                    <ExternalLink className="w-3 h-3" /> IPHAN — Patrimônio Cultural
+                  </a>
+                  <div className="flex gap-1 mt-1">
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">CERD/C/BRA/CO/18-20</Badge>
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">Durban</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
