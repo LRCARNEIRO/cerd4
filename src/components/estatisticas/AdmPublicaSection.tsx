@@ -586,6 +586,142 @@ export function AdmPublicaSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ====== COTAS RACIAIS ====== */}
+      <Card className="border-l-4 border-l-chart-5 mt-8">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-3">
+            <GraduationCap className="w-6 h-6 text-chart-5 flex-shrink-0" />
+            <div>
+              <h3 className="font-semibold text-foreground mb-1">
+                Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Políticas de ação afirmativa para ingresso de pessoas negras, indígenas e quilombolas 
+                em concursos públicos federais e universidades federais (2012–2025).
+              </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Badge className="bg-chart-5/10 text-chart-5">Art. 2(2)</Badge>
+                <Badge className="bg-chart-5/10 text-chart-5">Art. 5(e)</Badge>
+                <Badge className="bg-chart-5/10 text-chart-5">Art. 7</Badge>
+                <Badge variant="outline">2012–2025</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Cotas no serviço público */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-chart-5" />
+              Cotas Raciais no Serviço Público Federal
+            </CardTitle>
+            <CardDescription>Lei 12.990/2014 → Lei 15.142/2025</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg border border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <Badge className="bg-chart-3/10 text-chart-3">Lei 12.990/2014</Badge>
+                  <span className="text-lg font-bold">20%</span>
+                </div>
+                <p className="text-xs text-muted-foreground">Reserva de vagas para negros em concursos federais</p>
+              </div>
+              <div className="flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-chart-1" />
+              </div>
+              <div className="p-3 rounded-lg border-2 border-chart-1/50 bg-chart-1/5">
+                <div className="flex items-center justify-between mb-2">
+                  <Badge className="bg-chart-1/10 text-chart-1">Lei 15.142/2025</Badge>
+                  <span className="text-lg font-bold text-chart-1">30%</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Ampliação para 30% — inclui negros, indígenas e quilombolas
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 rounded-lg border border-warning/30 bg-warning/5">
+              <p className="text-xs flex items-start gap-1">
+                <AlertTriangle className="w-3 h-3 text-warning flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>Lacuna:</strong> Percentual de servidores negros efetivamente nomeados via cotas 
+                  não confirmado em fonte MGI/SIGEPE. Efetividade pendente de verificação.
+                </span>
+              </p>
+            </div>
+            <AuditFooter 
+              fontes={[
+                { nome: 'Senado Federal — Lei 15.142/2025', url: 'https://www12.senado.leg.br/noticias/materias/2025/06/06/lei-amplia-a-30-as-vagas-para-negros-indigenas-e-quilombolas-em-concursos' },
+                { nome: 'MGI / Serviço Público Federal', url: 'https://www.gov.br/gestao/pt-br' },
+              ]} 
+              documentos={['CERD Observações Finais 2022', 'CERD III Relatório (2018)']} 
+              compact 
+            />
+          </CardContent>
+        </Card>
+
+        {/* Cotas na educação superior */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-chart-5" />
+              Ingresso por Cotas Raciais em Universidades Federais
+            </CardTitle>
+            <CardDescription>Crescimento de 493% no critério étnico-racial (2012→2022)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart 
+                  data={[
+                    { ano: '2012', total: 40661, racial: 12425 },
+                    { ano: '2022', total: 108616, racial: 73679 },
+                  ]} 
+                  margin={{ left: 10, right: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                  <Tooltip 
+                    formatter={(value: number, name: string) => [
+                      value.toLocaleString('pt-BR'), 
+                      name === 'total' ? 'Total ingressos por cotas' : 'Critério étnico-racial'
+                    ]}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend formatter={(value) => value === 'total' ? 'Total Cotas' : 'Étnico-Racial'} />
+                  <Bar dataKey="total" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="racial" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-3 space-y-1">
+              <p className="text-xs flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-chart-1" />
+                <strong>Total cotas:</strong> 40.661 → 108.616 (+167%)
+              </p>
+              <p className="text-xs flex items-center gap-1">
+                <TrendingUp className="w-3 h-3 text-chart-1" />
+                <strong>Étnico-racial:</strong> 12.425 → 73.679 (+493%)
+              </p>
+            </div>
+            <AuditFooter 
+              fontes={[
+                { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/assuntos/noticias/censo-da-educacao-superior/ingresso-por-cotas-aumentou-167-nas-universidades' },
+              ]} 
+              documentos={['CERD Observações Finais 2022', 'Recomendações Gerais (RGs)']} 
+              compact 
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
