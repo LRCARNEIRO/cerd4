@@ -16,6 +16,7 @@ import Conclusoes from "./pages/Conclusoes";
 import GerarRelatorios from "./pages/GerarRelatorios";
 import Normativa from "./pages/Normativa";
 import DocumentosBalizadores from "./pages/DocumentosBalizadores";
+import GuiaAuditoria from "./pages/GuiaAuditoria";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
