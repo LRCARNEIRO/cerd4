@@ -547,19 +547,26 @@ export const interseccionalidadeTrabalhoFontes = [
 //   2) Censo 2022 (IBGE Mai/2025): 7,3% total (14,4 milhões) — metodologia do Grupo de Washington adaptada
 //   Diferença decorre de metodologia: PNAD usa WG-SS Short Set; Censo usa pergunta adaptada.
 // Prevalência por raça (PNAD 2022 / SIDRA 9324): valores publicados na tabela SIDRA.
-// Prevalência por raça (Censo 2022): pardas 6,4M, brancas 6,1M, pretas 1,8M, indígenas 78K (IBGE Maio/2025)
-//   Censo 2022: Indígenas = 7,9% (131 mil de 1,6 milhão com 2+ anos)
-// Empregabilidade e renda PcD (SIDRA 9339): valores NÃO VERIFICADOS individualmente por raça.
-//   Status: 🟡 taxaDeficiencia = plausível (SIDRA 9324), empregabilidade/renda = PENDENTE AUDITAGEM INDIVIDUAL
+// =============================================
+// Deficiência × Raça — Ocupação PcD 14-59 anos
+// Fonte ÚNICA: SIDRA Tabela 9354 — PNAD Contínua 2022 (3º trimestre)
+// https://sidra.ibge.gov.br/tabela/9354
+// Variável: Pessoas de 14 a 59 anos de idade (Mil pessoas)
+// Classificações: Cor/raça × Situação de ocupação × Existência de deficiência
+// Nota: Tabela 9354 NÃO inclui categoria Indígena (apenas Branca, Preta, Parda).
+// taxaDeficiencia: mantida de SIDRA 9324 (prevalência por raça, PNAD 2022).
+// rendaMedia: REMOVIDA — Tabela 9354 não contém dados de rendimento.
+// =============================================
 export const deficienciaPorRaca = [
-  // taxaDeficiencia: PNAD 2022 / SIDRA 9324 (plausível, publicado por raça)
-  // empregabilidade e rendaMedia: SIDRA 9339 — NÃO VERIFICADOS individualmente. Marcados estimativa.
-  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 29.8, rendaMedia: 2402, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
-  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 25.1, rendaMedia: 1586, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
-  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 26.3, rendaMedia: 1548, fonte: 'SIDRA 9324 + 9339 (PNAD Contínua 2022)', estimativaEmprego: true },
-  // Censo 2022 (Mai/2025): Indígenas 7,9% prevalência (131 mil). PNAD 2022 não publica separadamente.
-  // Emprego/renda indígena PcD: NÃO publicado por nenhuma fonte. Cruzamento SIS × SIDRA 9324.
-  { raca: 'Indígena', taxaDeficiencia: 7.9, empregabilidade: 20.4, rendaMedia: 1180, fonte: 'Censo 2022 (prevalência) + SIS/IBGE 2024 (emprego/renda)', estimativaEmprego: true, cruzamento: true, fontesCruzamento: [{ nome: 'Censo 2022 — PcD por cor/raça (Mai/2025)', url: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/43463-censo-2022-brasil-tem-14-4-milhoes-de-pessoas-com-deficiencia' }, { nome: 'SIDRA 9324 — Prevalência PcD (PNAD 2022)', url: 'https://sidra.ibge.gov.br/Tabela/9324' }, { nome: 'SIS/IBGE 2024 — Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' }], metodologiaCruzamento: 'Prevalência 7,9% confirmada pelo Censo 2022 (Mai/2025). Emprego/renda indígena PcD não publicados — cruzamento SIS × Censo.' }
+  // empregabilidade = % PcD Ocupadas / Total PcD (14-59 anos), SIDRA 9354
+  // Branca: 1.423 ocupadas / (1.423 + 1.761) total = 44.7%
+  { raca: 'Branca', taxaDeficiencia: 9.0, empregabilidade: 44.7, totalPcdMil: 3184, ocupadasMil: 1423, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
+  // Preta: 537 ocupadas / (537 + 547) total = 49.5% → distribuição API = 49.6%
+  { raca: 'Preta', taxaDeficiencia: 9.6, empregabilidade: 49.6, totalPcdMil: 1084, ocupadasMil: 537, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
+  // Parda: 1.776 ocupadas / (1.776 + 2.552) total = 41.0%
+  { raca: 'Parda', taxaDeficiencia: 8.6, empregabilidade: 41.0, totalPcdMil: 4328, ocupadasMil: 1776, fonte: 'SIDRA 9354 (PNAD Contínua 2022)' },
+  // Negra (Preta + Parda): (537 + 1.776) / (1.084 + 4.328) = 2.313 / 5.412 = 42.7%
+  { raca: 'Negra (P+P)', taxaDeficiencia: 8.9, empregabilidade: 42.7, totalPcdMil: 5412, ocupadasMil: 2313, fonte: 'SIDRA 9354 (PNAD Contínua 2022)', agregado: true },
 ];
 
 // =============================================
