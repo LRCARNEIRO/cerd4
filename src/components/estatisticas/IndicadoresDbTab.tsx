@@ -1159,7 +1159,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       {(() => {
          const CERD_GAP_SUBCATS = new Set([
            'Trabalho Infantil', 'Intolerância Religiosa',
-           'Distorção Idade-Série', 'Cotas Raciais', 'Educação Indígena',
+           'Distorção Idade-Série', 'Educação Indígena',
            'Saúde Indígena', 'Justiça Racial', 'Vacinação',
            'favelas_aglomerados', 'ciganos_saude_educacao',
            'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
