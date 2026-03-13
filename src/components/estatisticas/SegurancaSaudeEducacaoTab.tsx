@@ -290,6 +290,80 @@ export function SegurancaSaudeEducacaoTab() {
         </CardContent>
       </Card>
 
+      {/* Evasão Escolar */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-amber-600" />
+            Evasão Escolar — Jovens 15-29 anos sem Ensino Médio (2018-2024)
+          </CardTitle>
+          <CardDescription>
+            Jovens de 15 a 29 anos que não estudam e não concluíram o ensino médio (%), por raça/cor.
+            Valores de 2020 e 2021 indisponíveis (PNAD suspensa na pandemia).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-medium mb-3">Série Temporal — Evasão por Raça</h4>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={evasaoEscolarSerie}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} domain={[20, 80]} unit="%" />
+                    <Tooltip
+                      formatter={(value: number) => [`${value.toFixed(1)}%`, '']}
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Line type="monotone" dataKey="percentualNegro" name="Negros" stroke="hsl(var(--destructive))" strokeWidth={2} connectNulls />
+                    <Line type="monotone" dataKey="percentualBranco" name="Brancos" stroke="hsl(var(--chart-1))" strokeWidth={2} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-3">Tabela de Dados</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ano</TableHead>
+                    <TableHead>Negros (%)</TableHead>
+                    <TableHead>Brancos (%)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {evasaoEscolarSerie.map(item => (
+                    <TableRow key={item.ano}>
+                      <TableCell className="font-medium">{item.ano}</TableCell>
+                      <TableCell>{item.percentualNegro?.toFixed(1) ?? 'N/D'}</TableCell>
+                      <TableCell>{item.percentualBranco?.toFixed(1) ?? 'N/D'}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <FileText className="w-3 h-3" /> <strong>Fonte:</strong>
+            </p>
+            <a href={evasaoEscolarFonte.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+              <ExternalLink className="w-3 h-3" /> {evasaoEscolarFonte.nome}
+            </a>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              <Badge variant="outline" className="text-[10px] mr-1">✅ Auditado</Badge>
+              Indicador: "Jovens de 15 a 29 anos que não estudam e não concluíram ensino médio". A desagregação identifica a proporção de negros e brancos nesse universo.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Saúde */}
       <Card>
         <CardHeader>
