@@ -3,13 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, Play, Download, Database, Link2, BarChart3, FileText, Loader2, Shield, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { Search, Play, Download, Database, Link2, BarChart3, FileText, Loader2, Shield, AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 
 interface AuditItem {
   id: string;
@@ -22,15 +21,16 @@ interface AuditItem {
   origem: string;
   nivel_confianca: 'A' | 'B' | 'C' | 'pendente';
   notas_auditoria: string | null;
+  auditado: boolean;
 }
 
 interface InventoryResult {
   success: boolean;
   timestamp: string;
-  totals: { constantes: number; urls: number; series: number; registros_bd: number; total: number };
+  totals: { constantes: number; urls: number; series: number; registros_bd: number; total: number; auditados: number; pendentes: number };
   sections: Record<string, number>;
+  audit_by_section: Record<string, { auditados: number; pendentes: number; total: number }>;
   items: AuditItem[];
-  exclusions: string[];
 }
 
 const TIPO_ICONS: Record<string, React.ReactNode> = {
@@ -59,6 +59,7 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
   const [tipoFilter, setTipoFilter] = useState<string>('all');
   const [confiancaFilter, setConfiancaFilter] = useState<string>('all');
   const [secaoFilter, setSecaoFilter] = useState<string>('all');
+  const [auditFilter, setAuditFilter] = useState<string>('all');
 
   const runInventory = async () => {
     setLoading(true);
@@ -68,7 +69,7 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
       if (!data?.success) throw new Error(data?.error || 'Falha no inventário');
       setResult(data);
       onInventoryComplete?.(data.items);
-      toast.success(`Inventário concluído: ${data.totals.total} itens catalogados`);
+      toast.success(`Inventário concluído: ${data.totals.total} itens (${data.totals.auditados} auditados, ${data.totals.pendentes} pendentes)`);
     } catch (err: any) {
       toast.error(`Erro: ${err.message}`);
     } finally {
@@ -81,6 +82,8 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
     if (tipoFilter !== 'all' && item.tipo !== tipoFilter) return false;
     if (confiancaFilter !== 'all' && item.nivel_confianca !== confiancaFilter) return false;
     if (secaoFilter !== 'all' && item.secao !== secaoFilter) return false;
+    if (auditFilter === 'auditado' && !item.auditado) return false;
+    if (auditFilter === 'pendente' && item.auditado) return false;
     return true;
   }) || [];
 
@@ -107,9 +110,7 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
             Protocolo Triple-Check — Fase 1: Inventário Sistêmico
           </CardTitle>
           <CardDescription>
-            Cataloga todos os itens auditáveis: constantes, séries históricas, deep links, registros orçamentários e narrativas.
-            <br />
-            <strong>Exclusões:</strong> Base Normativa • Aba Segurança/Saúde/Educação (auditada manualmente)
+            Cataloga todos os itens auditáveis do sistema com status de auditoria: constantes, séries históricas, deep links, registros orçamentários e narrativas.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -130,14 +131,75 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
       {/* Results */}
       {result && (
         <>
-          {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold text-primary">{result.totals.total}</p><p className="text-xs text-muted-foreground">Total Itens</p></CardContent></Card>
+          {/* Audit Status KPIs */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Card className="border-l-4 border-l-primary cursor-pointer hover:ring-1 ring-primary" onClick={() => setAuditFilter('all')}>
+              <CardContent className="pt-4 text-center">
+                <p className="text-3xl font-bold text-primary">{result.totals.total}</p>
+                <p className="text-sm text-muted-foreground">Total de Itens</p>
+              </CardContent>
+            </Card>
+            <Card className="border-l-4 border-l-success cursor-pointer hover:ring-1 ring-success" onClick={() => setAuditFilter('auditado')}>
+              <CardContent className="pt-4 text-center">
+                <p className="text-3xl font-bold text-success">{result.totals.auditados}</p>
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <CheckCircle2 className="w-4 h-4" /> Auditados
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {result.totals.total > 0 ? Math.round(result.totals.auditados / result.totals.total * 100) : 0}% do total
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="border-l-4 border-l-destructive cursor-pointer hover:ring-1 ring-destructive" onClick={() => setAuditFilter('pendente')}>
+              <CardContent className="pt-4 text-center">
+                <p className="text-3xl font-bold text-destructive">{result.totals.pendentes}</p>
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <XCircle className="w-4 h-4" /> Pendentes de Auditoria
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {result.totals.total > 0 ? Math.round(result.totals.pendentes / result.totals.total * 100) : 0}% do total
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Type KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold">{result.totals.constantes}</p><p className="text-xs text-muted-foreground">Constantes</p></CardContent></Card>
             <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold">{result.totals.urls}</p><p className="text-xs text-muted-foreground">Deep Links</p></CardContent></Card>
             <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold">{result.totals.series}</p><p className="text-xs text-muted-foreground">Séries</p></CardContent></Card>
             <Card><CardContent className="pt-4 text-center"><p className="text-2xl font-bold">{result.totals.registros_bd}</p><p className="text-xs text-muted-foreground">Registros BD</p></CardContent></Card>
           </div>
+
+          {/* Audit by Section */}
+          <Card>
+            <CardHeader><CardTitle className="text-sm">Status de Auditoria por Seção</CardTitle></CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {Object.entries(result.audit_by_section)
+                  .sort((a, b) => b[1].pendentes - a[1].pendentes)
+                  .map(([sec, data]) => {
+                    const pct = data.total > 0 ? Math.round(data.auditados / data.total * 100) : 0;
+                    return (
+                      <div key={sec} className="flex items-center gap-3 cursor-pointer hover:bg-muted/40 p-2 rounded" onClick={() => setSecaoFilter(sec)}>
+                        <span className="text-xs font-medium min-w-[200px]">{sec}</span>
+                        <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-success rounded-full transition-all" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs text-muted-foreground min-w-[120px] text-right">
+                          {data.auditados}/{data.total} ({pct}%)
+                        </span>
+                        {data.pendentes > 0 && (
+                          <Badge variant="outline" className="text-[9px] bg-destructive/10 text-destructive border-destructive/30">
+                            {data.pendentes} pendentes
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Confidence distribution */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -156,26 +218,20 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
             })}
           </div>
 
-          {/* Sections breakdown */}
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Distribuição por Seção</CardTitle></CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(result.sections).sort((a, b) => b[1] - a[1]).map(([sec, count]) => (
-                  <Badge key={sec} variant="outline" className="cursor-pointer hover:bg-primary/10" onClick={() => setSecaoFilter(sec)}>
-                    {sec}: {count}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Filters */}
           <div className="flex gap-3 flex-wrap items-center">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
               <Input placeholder="Buscar indicador ou seção..." value={filter} onChange={e => setFilter(e.target.value)} className="pl-9" />
             </div>
+            <Select value={auditFilter} onValueChange={setAuditFilter}>
+              <SelectTrigger className="w-[150px]"><SelectValue placeholder="Auditoria" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="auditado">✅ Auditados</SelectItem>
+                <SelectItem value="pendente">❌ Pendentes</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={tipoFilter} onValueChange={setTipoFilter}>
               <SelectTrigger className="w-[140px]"><SelectValue placeholder="Tipo" /></SelectTrigger>
               <SelectContent>
@@ -204,8 +260,8 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
                 {sections.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
               </SelectContent>
             </Select>
-            {(filter || tipoFilter !== 'all' || confiancaFilter !== 'all' || secaoFilter !== 'all') && (
-              <Button variant="ghost" size="sm" onClick={() => { setFilter(''); setTipoFilter('all'); setConfiancaFilter('all'); setSecaoFilter('all'); }}>Limpar</Button>
+            {(filter || tipoFilter !== 'all' || confiancaFilter !== 'all' || secaoFilter !== 'all' || auditFilter !== 'all') && (
+              <Button variant="ghost" size="sm" onClick={() => { setFilter(''); setTipoFilter('all'); setConfiancaFilter('all'); setSecaoFilter('all'); setAuditFilter('all'); }}>Limpar</Button>
             )}
             <Badge variant="outline">{filteredItems.length} de {result.totals.total}</Badge>
           </div>
@@ -216,6 +272,7 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[50px]">Status</TableHead>
                     <TableHead className="w-[80px]">ID</TableHead>
                     <TableHead className="w-[80px]">Tipo</TableHead>
                     <TableHead className="w-[120px]">Seção</TableHead>
@@ -229,7 +286,14 @@ export function AuditInventoryPanel({ onInventoryComplete }: AuditInventoryPanel
                   {filteredItems.slice(0, 200).map(item => {
                     const conf = CONFIANCA_BADGE[item.nivel_confianca];
                     return (
-                      <TableRow key={item.id}>
+                      <TableRow key={item.id} className={item.auditado ? '' : 'bg-destructive/5'}>
+                        <TableCell>
+                          {item.auditado ? (
+                            <CheckCircle2 className="w-4 h-4 text-success" />
+                          ) : (
+                            <XCircle className="w-4 h-4 text-destructive" />
+                          )}
+                        </TableCell>
                         <TableCell className="font-mono text-xs">{item.id}</TableCell>
                         <TableCell><span className="flex items-center gap-1 text-xs">{TIPO_ICONS[item.tipo]} {item.tipo}</span></TableCell>
                         <TableCell className="text-xs">{item.secao}</TableCell>
