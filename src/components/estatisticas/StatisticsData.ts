@@ -1025,18 +1025,9 @@ export const saudeMaternaRaca = {
 };
 
 // Legacy export mantido para compatibilidade
-export const lacunasDocumentadas = [
-  {
-    id: 'LACUNA-PCD-EMPREGO-RENDA',
-    nome: 'Empregabilidade e Renda de PcD por Raça',
-    descricao: 'A SIDRA 9339 publica nível de ocupação e rendimento de PcD, mas os valores exatos por raça (empregabilidade 29,8% / 25,1% / 26,3% e renda R$2.402 / R$1.586 / R$1.548) não foram verificados individualmente na tabela SIDRA.',
-    fonteEsperada: 'SIDRA 9339 — Ocupação e rendimento PcD por cor/raça',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9339',
-    status: 'pendente_verificacao' as const,
-    relevancia: ['CERD 2022 §29', 'Common Core'],
-    dadoRemovido: 'Valores mantidos mas sinalizados como pendentes de verificação individual na SIDRA 9339',
-  },
-];
+// NOTA: Lacuna PCD-EMPREGO-RENDA resolvida na auditagem de Março/2026
+// Dados corrigidos: Ocupação via SIDRA 4178, Renda via SIDRA 9384, Prevalência via Censo SIDRA 10126
+export const lacunasDocumentadas: any[] = [];
 
 // REMOVIDO: educacaoInterseccional — substituído por educacaoRacaGenero (cruzamento indireto auditável).
 export const educacaoInterseccional: never[] = [];
