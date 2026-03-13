@@ -226,12 +226,153 @@ export default function GuiaAuditoria() {
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-2">
                     <Badge>Camada 1</Badge>
-                    <span className="font-semibold">Programas Temáticos do PPA</span>
+                    <span className="font-semibold">Programas Temáticos do PPA (Agendas Transversais)</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 text-sm">
+
+                  {/* Explicação conceitual */}
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2 text-xs text-muted-foreground">
+                    <p className="font-semibold text-sm text-foreground">📋 O que é a Camada 1?</p>
+                    <p>
+                      A Camada 1 identifica programas orçamentários com <strong>recorte racial e/ou indígena</strong> a partir dos
+                      códigos de programa do PPA (Plano Plurianual). A fonte primária a partir de <strong>2024</strong> são as
+                      <strong> Agendas Transversais do PPA 2024–2027</strong> — documentos oficiais publicados pelo Ministério do
+                      Planejamento que listam explicitamente os programas e ações vinculados às políticas de Igualdade Racial e Povos Indígenas.
+                    </p>
+                    <p>
+                      Para manter a <strong>série histórica completa (2018–2025)</strong>, o sistema retroage com os códigos PPA
+                      equivalentes dos ciclos anteriores (2016–2019 e 2020–2023), garantindo cobertura contínua mesmo com as mudanças
+                      de nomenclatura e reestruturação ministerial.
+                    </p>
+                  </div>
+
+                  {/* Timeline dos PPAs */}
+                  <div className="space-y-3">
+                    <p className="font-semibold text-sm">📅 Cobertura por Ciclo de PPA</p>
+
+                    {/* PPA 2024-2027 */}
+                    <div className="rounded-lg border-2 border-primary/40 bg-primary/5 p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-primary">2024–2027</Badge>
+                        <span className="font-semibold text-sm">PPA Atual — Agendas Transversais</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Fonte: <strong>Agendas Transversais do PPA 2024–2027</strong> (Igualdade Racial + Povos Indígenas), publicadas pelo
+                        Ministério do Planejamento e Orçamento. Esses documentos listam explicitamente quais programas e ações do orçamento
+                        federal são vinculados a essas agendas.
+                      </p>
+                      <div className="text-xs text-muted-foreground">
+                        <p className="font-semibold text-foreground mb-1">Programas focais (incluídos integralmente):</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                          {[
+                            { cod: '5804', nome: 'Igualdade Étnico-Racial', orgao: 'MIR' },
+                            { cod: '5803', nome: 'Juventude Negra Viva', orgao: 'MIR' },
+                            { cod: '5802', nome: 'Quilombolas e Ciganos', orgao: 'MIR' },
+                            { cod: '5136', nome: 'Proteção Povos Indígenas', orgao: 'MPI' },
+                            { cod: '5034', nome: 'Proteção à Vida e Direitos Humanos', orgao: 'MDHC' },
+                          ].map(p => (
+                            <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-2.5 py-1.5 text-xs hover:bg-muted/50 transition-colors">
+                              <span><code className="font-mono font-bold text-primary">{p.cod}</code> — {p.nome} <span className="text-muted-foreground">({p.orgao})</span></span>
+                              <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="bg-amber-500/10 border border-amber-500/30 rounded p-2.5 text-xs">
+                        <p className="flex items-start gap-2">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                          <span>
+                            <strong>Programas universais expandidos</strong> (também listados nas Agendas Transversais, mas com orçamentos
+                            bilionários — ex: 1617, 1189, 2316, 5111): apenas ações cujo título contenha <strong>palavras-chave raciais/étnicas</strong> são
+                            incluídas. Isso evita a inflação artificial dos totais com orçamento universal não-etiquetado.
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* PPA 2020-2023 */}
+                    <div className="rounded-lg border border-muted bg-muted/30 p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">2020–2023</Badge>
+                        <span className="font-semibold text-sm">PPA Intermediário</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Período de <strong>esvaziamento institucional</strong> (extinção da SEPPIR, fusão em MDHC).
+                        Os programas equivalentes deste ciclo são usados para manter a continuidade da série histórica.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                        {[
+                          { cod: '0617', nome: 'Proteção Povos Indígenas', orgao: 'FUNAI' },
+                          { cod: '0153', nome: 'Gestão da Política Indigenista', orgao: 'FUNAI' },
+                          { cod: '5022', nome: 'Gestão da Política de Direitos Humanos', orgao: 'MDHC' },
+                        ].map(p => (
+                          <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-2.5 py-1.5 text-xs hover:bg-muted/50 transition-colors">
+                            <span><code className="font-mono font-bold text-primary">{p.cod}</code> — {p.nome} <span className="text-muted-foreground">({p.orgao})</span></span>
+                            <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* PPA 2016-2019 */}
+                    <div className="rounded-lg border border-muted bg-muted/30 p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">2016–2019</Badge>
+                        <span className="font-semibold text-sm">PPA Legado</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Programas da era <strong>SEPPIR</strong> (antes da fusão). Cobrem os dados de 2018–2019 na série histórica.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                        {[
+                          { cod: '2034', nome: 'Igualdade Racial e Superação do Racismo', orgao: 'SEPPIR' },
+                          { cod: '2065', nome: 'Proteção e Promoção Povos Indígenas', orgao: 'FUNAI' },
+                        ].map(p => (
+                          <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-2.5 py-1.5 text-xs hover:bg-muted/50 transition-colors">
+                            <span><code className="font-mono font-bold text-primary">{p.cod}</code> — {p.nome} <span className="text-muted-foreground">({p.orgao})</span></span>
+                            <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Lógica focal vs universal */}
+                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                    <p className="font-semibold text-sm">⚙️ Lógica de Filtragem: Focal vs. Universal</p>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left p-2 font-semibold text-foreground">Tipo</th>
+                            <th className="text-left p-2 font-semibold text-foreground">Critério de Inclusão</th>
+                            <th className="text-left p-2 font-semibold text-foreground">Exemplos</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-muted-foreground">
+                          <tr className="border-b border-muted/50">
+                            <td className="p-2 font-semibold text-primary">Programa Focal</td>
+                            <td className="p-2"><strong>Todas</strong> as ações são incluídas, sem filtro adicional</td>
+                            <td className="p-2">5804, 5803, 5802, 5136, 2034, 2065</td>
+                          </tr>
+                          <tr>
+                            <td className="p-2 font-semibold text-amber-700 dark:text-amber-400">Programa Universal</td>
+                            <td className="p-2">Somente ações com <strong>palavras-chave raciais/étnicas</strong> no título</td>
+                            <td className="p-2">1617, 1189, 2316, 5111 (Educação Básica)</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Esta distinção é fundamental: sem ela, programas universais de R$ 10–100 bilhões (como Bolsa Família ou SUS)
+                      inflariam artificialmente os totais de política racial, comprometendo a integridade analítica.
+                    </p>
+                  </div>
+
+                  {/* Passo a passo */}
                   <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                    <p className="font-semibold">🔍 Passo a passo no Portal da Transparência:</p>
+                    <p className="font-semibold">🔍 Como reproduzir no Portal da Transparência:</p>
                     <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
                       <li>
                         Acesse{' '}
@@ -241,40 +382,17 @@ export default function GuiaAuditoria() {
                       </li>
                       <li>No campo <strong>"Programa"</strong>, digite o código do programa (ex: <code>5804</code>).</li>
                       <li>Selecione o <strong>Ano/Exercício</strong> desejado (ex: 2024).</li>
-                      <li>Clique em <strong>"Consultar"</strong>. Todas as ações vinculadas a esse programa serão listadas.</li>
-                      <li>Para ver o detalhamento (orgão executor, dotação, empenho, pago), clique na ação desejada.</li>
+                      <li>Clique em <strong>"Consultar"</strong>. Todas as ações vinculadas serão listadas.</li>
+                      <li>Para programas universais, verifique quais ações possuem termos como "indígena", "quilombola", "racial" etc.</li>
+                      <li>Para ver detalhamento (órgão executor, dotação, empenho, pago), clique na ação desejada.</li>
                     </ol>
                   </div>
 
-                  <div>
-                    <p className="font-semibold mb-2">Programas focais (todos os registros são incluídos):</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {[
-                        { cod: '5804', nome: 'Igualdade Étnico-Racial (MIR)', ppa: '2024–2027' },
-                        { cod: '5803', nome: 'Juventude Negra Viva (MIR)', ppa: '2024–2027' },
-                        { cod: '5802', nome: 'Quilombolas e Ciganos (MIR)', ppa: '2024–2027' },
-                        { cod: '5136', nome: 'Proteção Povos Indígenas (MPI)', ppa: '2024–2027' },
-                        { cod: '2034', nome: 'Igualdade Racial (SEPPIR)', ppa: '2016–2019' },
-                        { cod: '2065', nome: 'Povos Indígenas (legado)', ppa: '2012–2019' },
-                        { cod: '0617', nome: 'Povos Indígenas (MPI)', ppa: '2020–2023' },
-                      ].map(p => (
-                        <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-3 py-2 text-xs hover:bg-muted/50 transition-colors">
-                          <span><code className="font-mono font-bold">{p.cod}</code> — {p.nome}</span>
-                          <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-                    <p className="text-xs flex items-start gap-2">
-                      <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                      <span>
-                        <strong>Programas universais</strong> (ex: 5111 – Educação Básica, 2310 – Trabalho Decente):
-                        apenas as ações cujo título contenha palavras-chave raciais/étnicas são incluídas.
-                        No portal, busque pelo programa e verifique quais ações possuem termos como "indígena", "quilombola", "racial", "étnico" etc.
-                      </span>
-                    </p>
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-muted-foreground">
+                    <strong className="text-foreground">📎 Documentos-fonte das Agendas Transversais:</strong> Os PDFs oficiais das Agendas
+                    Transversais de Igualdade Racial e Povos Indígenas (PPA 2024–2027) estão disponíveis no portal do Ministério do
+                    Planejamento. O sistema disponibiliza accordions interativos que permitem visualizar a lista completa de ações e
+                    programas incorporados em cada passo, garantindo transparência e auditabilidade.
                   </div>
                 </AccordionContent>
               </AccordionItem>
