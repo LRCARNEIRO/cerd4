@@ -394,6 +394,12 @@ export default function GuiaAuditoria() {
                     Planejamento. O sistema disponibiliza accordions interativos que permitem visualizar a lista completa de ações e
                     programas incorporados em cada passo, garantindo transparência e auditabilidade.
                   </div>
+
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-muted-foreground">
+                    <strong className="text-foreground">💡 Resumindo:</strong> Camada 1 pergunta <em>"quem executa este programa racial?"</em> (qualquer órgão).
+                    Camada 3 pergunta <em>"o que este órgão racial faz?"</em> (qualquer programa).
+                    A interseção é deduplicada automaticamente pela chave <code className="text-primary">órgão|programa|ano</code>.
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
