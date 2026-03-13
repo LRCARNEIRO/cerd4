@@ -338,7 +338,7 @@ export function RacaGeneroTab() {
           e cuidado. O cruzamento indica que <strong>políticas universais de expansão do ensino superior não eliminam a 
           desigualdade racial-de-gênero</strong> sem ações afirmativas complementares.
         </p>
-        <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: MIR 2023 + PNAD Educação 2023 · Art. 5(e)(v) ICERD</p>
+        <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022 — SIDRA 9606/10061/9542/9517 · Art. 5(e)(v) ICERD</p>
       </div>
 
       {/* ═══ Conclusão Transversal ═══ */}
