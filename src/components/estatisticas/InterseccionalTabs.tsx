@@ -1080,9 +1080,9 @@ export function ClasseSocialTab() {
                 <p className="text-xs text-muted-foreground">
                   <strong>IEPS (jul/2025, série 2010-2023):</strong> razão mortalidade materna pretas/brancas = <strong>2,3×</strong> (108,6 vs 46,9 por 100 mil NV). Pardas: 56,6/100 mil NV.
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <strong>RASEAM 2025 (SIM 2022):</strong> mulheres negras = 68% das mortes maternas.
-                </p>
+                 <p className="text-xs text-muted-foreground mt-1">
+                   <strong>RASEAM 2025 (dados 2023):</strong> razão de mortalidade materna por 100 mil NV — pretas: <strong>72,9</strong> | pardas: <strong>49,9</strong> | brancas: <strong>46,3</strong>.
+                 </p>
               </div>
               <div className="p-3 bg-warning/10 border border-warning/30 rounded-lg">
                 <p className="text-xs">
