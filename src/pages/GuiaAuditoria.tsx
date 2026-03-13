@@ -554,6 +554,132 @@ export default function GuiaAuditoria() {
           </CardContent>
         </Card>
 
+        {/* ═══════════ FONTES E FÓRMULAS ═══════════ */}
+        <Card className="border-amber-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="w-5 h-5" />
+              Fontes dos Dados e Fórmula de Execução
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              De onde vem cada campo exibido no sistema e como o percentual de execução é calculado.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+
+            {/* Tabela de fontes */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2 font-semibold text-foreground">Campo</th>
+                    <th className="text-left p-2 font-semibold text-foreground">Fonte</th>
+                    <th className="text-left p-2 font-semibold text-foreground">Uso</th>
+                  </tr>
+                </thead>
+                <tbody className="text-muted-foreground">
+                  <tr className="border-b border-muted/50">
+                    <td className="p-2 font-mono font-semibold text-foreground">dotacao_inicial</td>
+                    <td className="p-2">CSV LOA (Dados Abertos)</td>
+                    <td className="p-2">Baseline comparativo — "o que foi planejado na LOA aprovada"</td>
+                  </tr>
+                  <tr className="border-b border-muted/50">
+                    <td className="p-2 font-mono font-semibold text-foreground">dotacao_autorizada</td>
+                    <td className="p-2">CSV LOA + API Portal</td>
+                    <td className="p-2">Denominador do % execução (inclui créditos adicionais/suplementares)</td>
+                  </tr>
+                  <tr className="border-b border-muted/50">
+                    <td className="p-2 font-mono font-semibold text-foreground">empenhado</td>
+                    <td className="p-2">API Portal da Transparência</td>
+                    <td className="p-2">Reserva orçamentária (compromisso legal)</td>
+                  </tr>
+                  <tr className="border-b border-muted/50">
+                    <td className="p-2 font-mono font-semibold text-foreground">liquidado</td>
+                    <td className="p-2">API Portal da Transparência</td>
+                    <td className="p-2">Reconhecimento da dívida (serviço prestado/bem entregue)</td>
+                  </tr>
+                  <tr className="border-b border-muted/50">
+                    <td className="p-2 font-mono font-semibold text-foreground">pago</td>
+                    <td className="p-2">API Portal da Transparência</td>
+                    <td className="p-2"><strong className="text-foreground">Métrica primária</strong> — recurso efetivamente desembolsado</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 font-mono font-semibold text-foreground">percentual_execucao</td>
+                    <td className="p-2">Calculado internamente</td>
+                    <td className="p-2"><code className="text-primary">pago ÷ dotacao_autorizada × 100</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Esclarecimentos */}
+            <div className="space-y-3">
+              <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-xs text-muted-foreground">
+                <p className="font-semibold text-sm text-foreground">📐 Fórmula de % Execução</p>
+                <div className="bg-background rounded border p-3 text-center">
+                  <code className="text-primary text-sm font-bold">% Execução = (Pago ÷ Dotação Autorizada) × 100</code>
+                </div>
+                <ul className="list-disc list-inside space-y-1 mt-2">
+                  <li>Se <code>dotacao_autorizada</code> = 0 ou nulo → usa <code>dotacao_inicial</code> como fallback</li>
+                  <li>Se ambas = 0 → percentual fica <strong>nulo</strong> (não divide por zero)</li>
+                </ul>
+              </div>
+
+              <div className="bg-muted/50 rounded-lg p-4 text-xs text-muted-foreground space-y-2">
+                <p className="font-semibold text-sm text-foreground">📌 Esclarecimentos importantes</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li><strong>Dotação Inicial</strong> (<code>ORÇAMENTO INICIAL (R$)</code>) — valor aprovado na Lei Orçamentária Anual.</li>
+                  <li><strong>Dotação Autorizada</strong> (<code>ORÇAMENTO ATUALIZADO (R$)</code>) — valor após créditos adicionais e suplementares ao longo do exercício.</li>
+                  <li>Ambos vêm do <strong>CSV da LOA</strong> (Dados Abertos) e são armazenados nos campos correspondentes.</li>
+                  <li>O valor <strong>"Pago"</strong> vem exclusivamente da <strong>API do Portal da Transparência</strong> — a LOA só contém dotação, não execução.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* DESTAQUE: Orçamento Simbólico */}
+            <div className="relative rounded-xl border-2 border-destructive/50 bg-destructive/5 p-5 space-y-3">
+              <div className="absolute -top-3 left-4">
+                <Badge variant="destructive" className="text-sm px-3 py-1 font-bold shadow-md">
+                  ⚠ Indicador Crítico
+                </Badge>
+              </div>
+              <div className="pt-2">
+                <h4 className="text-base font-bold text-destructive flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  Orçamento Simbólico — Política no Papel Sem Entrega na Ponta
+                </h4>
+                <p className="text-sm text-muted-foreground mt-2">
+                  O conceito de <strong>"Orçamento Simbólico"</strong> identifica registros onde existe <strong>dotação inicial prevista</strong> 
+                  (a política foi planejada e aprovada na LOA), mas o valor <strong>pago é zero ou próximo de zero</strong>.
+                </p>
+                <div className="bg-background rounded-lg border p-4 mt-3 space-y-2">
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="font-mono bg-primary/10 text-primary rounded px-2 py-1 text-xs">dotacao_inicial &gt; 0</span>
+                    <span className="text-muted-foreground font-bold">+</span>
+                    <span className="font-mono bg-destructive/10 text-destructive rounded px-2 py-1 text-xs">pago ≈ 0</span>
+                    <span className="text-muted-foreground font-bold">=</span>
+                    <Badge variant="destructive">Orçamento Simbólico</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Isso evidencia o <strong>hiato entre a previsão legal e a entrega efetiva</strong> do recurso. A política existe no papel
+                    — foi debatida, aprovada pelo Congresso, alocada no PPA e na LOA — mas na prática, o dinheiro não chega à ponta.
+                  </p>
+                </div>
+                <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                  <p><strong>Por que isso importa para o CERD?</strong></p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    <li>Demonstra que a <em>existência formal</em> de uma política não garante sua implementação efetiva.</li>
+                    <li>Permite identificar padrões de <strong>subexecução sistemática</strong> em políticas de igualdade racial.</li>
+                    <li>É evidência direta de descumprimento das obrigações sob a Convenção ICERD (Artigos 2 e 5).</li>
+                    <li>Diferencia-se da ausência total de política: o Estado <em>reconheceu</em> a necessidade, mas <em>não entregou</em>.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </CardContent>
+        </Card>
+
         {/* ═══════════ PARTE 3: EXCLUSÕES ═══════════ */}
         <Card>
           <CardHeader>
