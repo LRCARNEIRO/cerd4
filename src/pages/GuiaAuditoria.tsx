@@ -29,7 +29,12 @@ export default function GuiaAuditoria() {
                   <strong> seleção das ações orçamentárias</strong> quanto os <strong>valores de dotação e execução</strong>.
                 </p>
                 <p className="text-muted-foreground">
-                  <strong>Portais utilizados:</strong> Portal da Transparência, SIOP, Dados Abertos da LOA.
+                  <strong>Fonte dos dados:</strong> O sistema <strong>não acessa o SIAFI diretamente</strong> (acesso restrito a servidores públicos).
+                  Todos os dados vêm da <strong>API pública do Portal da Transparência</strong> (<code>api.portaldatransparencia.gov.br/api-de-dados/despesas/</code>),
+                  que por sua vez publica os dados extraídos do SIAFI. É a mesma base, só que por canal público e auditável.
+                </p>
+                <p className="text-muted-foreground">
+                  <strong>Portais utilizados:</strong> Portal da Transparência (API pública), Dados Abertos da LOA, SIOP (consulta complementar).
                 </p>
               </div>
             </div>
