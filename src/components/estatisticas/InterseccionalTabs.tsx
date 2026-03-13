@@ -1135,9 +1135,9 @@ export function ClasseSocialTab() {
           </div>
           <div className="mt-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
             <p className="text-xs text-muted-foreground">
-              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral — não há desagregação por raça na publicação original. 
-              A desigualdade racial no topo da distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, Dez/2024), 
-              mas nenhum deles publica a composição racial exata do 1% mais rico em formato desagregado por cor/raça.
+              <strong>Nota metodológica:</strong> O dado OCDE (9 gerações) refere-se ao Brasil geral, sem desagregação por raça na publicação original. 
+              A desigualdade racial na distribuição de renda é documentada pelo SIS/IBGE e pelo Relatório da Distribuição da Renda (Min. Fazenda, dez/2024). 
+              Este último apresenta composição por cor/raça nos centésimos da distribuição de renda (incluindo o centésimo superior), a partir da integração DIRPF–PNADC.
             </p>
           </div>
           <AuditFooter

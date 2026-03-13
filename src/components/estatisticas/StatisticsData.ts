@@ -1006,6 +1006,12 @@ export const saudeMaternaRaca = {
   mortalidadeMaternaNegraPercentual: 68.0, // RASEAM 2025 — proporção de óbitos maternos de mulheres negras (pretas+pardas), dado SIM 2022
   mortalidadeMaternaBrancaPercentual: 29.7, // idem
   anoReferencia: 2022, // último ano consolidado SIM/DataSUS; RASEAM 2025 mantém esse recorte
+  // AUDITORIA MANUAL 13/03/2026 (Eduardo): Dados RASEAM 2025 para 2023 (razão por 100 mil NV):
+  // Pretas: 72,9 | Pardas: 49,9 | Brancas: 46,3
+  razaoMortalidade2023_pretas: 72.9,
+  razaoMortalidade2023_pardas: 49.9,
+  razaoMortalidade2023_brancas: 46.3,
+  fonteRaseam2025: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
   // IEPS Boletim jul/2025 — série até 2023: razão mortalidade materna pretas/brancas = 2,3× (108,6 vs 46,9 por 100 mil NV)
   razaoMortalidadePretasBrancas: 2.3,
   taxaPretasPor100milNV: 108.6,
