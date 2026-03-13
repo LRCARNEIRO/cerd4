@@ -23,6 +23,7 @@ import {
   lgbtqiaPorRaca,
   serieAntraTrans,
   deficienciaPorRaca,
+  disparidadesPcd1459,
   classePorRaca,
   povosTradicionais,
   fonteDados,
