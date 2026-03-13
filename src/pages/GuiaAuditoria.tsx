@@ -158,6 +158,52 @@ export default function GuiaAuditoria() {
                 <li>O campo <code className="text-primary">razao_selecao</code> registra <strong>qual camada</strong> capturou o registro primeiro.</li>
               </ol>
             </div>
+
+            {/* Tabela comparativa Camada 1 vs Camada 3 */}
+            <div className="space-y-3">
+              <p className="font-semibold text-sm flex items-center gap-2">
+                <Layers className="w-4 h-4" />
+                Camada 1 vs Camada 3 — Comparacao detalhada
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-2 font-semibold text-muted-foreground w-1/5"></th>
+                      <th className="text-left p-2 font-semibold text-primary">Camada 1 — Programas PPA</th>
+                      <th className="text-left p-2 font-semibold text-emerald-700 dark:text-emerald-400">Camada 3 — Orgaos MIR/MPI</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-muted-foreground">
+                    <tr className="border-b border-muted/50">
+                      <td className="p-2 font-semibold text-foreground">Criterio</td>
+                      <td className="p-2">Filtra por <strong>codigo de programa</strong> (5034, 5803, 5804...)</td>
+                      <td className="p-2">Filtra por <strong>codigo de orgao</strong> (67000, 92000)</td>
+                    </tr>
+                    <tr className="border-b border-muted/50">
+                      <td className="p-2 font-semibold text-foreground">Abrangencia</td>
+                      <td className="p-2">Captura acoes de <strong>qualquer orgao</strong> que execute aquele programa</td>
+                      <td className="p-2">Captura <strong>todas as acoes</strong> daquele orgao, independente do programa</td>
+                    </tr>
+                    <tr className="border-b border-muted/50">
+                      <td className="p-2 font-semibold text-foreground">Exemplo</td>
+                      <td className="p-2">Programa 5803 (Juventude Negra Viva) pode ter acoes no MEC, MS, MIR</td>
+                      <td className="p-2">Orgao 67000 (MIR) inclui acoes administrativas, convenios, etc. fora dos programas tematicos</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 font-semibold text-foreground">Por que ambas?</td>
+                      <td className="p-2">Um programa racial pode ser executado por orgaos fora do MIR/MPI</td>
+                      <td className="p-2">O MIR/MPI podem ter acoes fora dos programas tematicos da Camada 1</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-muted-foreground">
+                <strong className="text-foreground">Resumindo:</strong> Camada 1 pergunta <em>"quem executa este programa racial?"</em> (qualquer orgao).
+                Camada 3 pergunta <em>"o que este orgao racial faz?"</em> (qualquer programa).
+                A intersecao e deduplicada automaticamente pela chave <code className="text-primary">orgao|programa|ano</code>.
+              </div>
+            </div>
           </CardContent>
         </Card>
 
