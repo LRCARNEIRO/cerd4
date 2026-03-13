@@ -21,7 +21,8 @@ import {
   Upload,
   FolderOpen,
   Settings,
-  FlaskConical
+  FlaskConical,
+  ClipboardCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
