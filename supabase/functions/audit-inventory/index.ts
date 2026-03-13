@@ -101,8 +101,8 @@ function inventoryStatisticsConstants(): AuditItem[] {
     { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Renda homem negro (Q2 2024)', valor_atual: 0, fonte_declarada: 'DIEESE', url_fonte: null, origem: 'StatisticsData.ts::interseccionalidadeTrabalho', nivel_confianca: 'C', notas_auditoria: 'REMOVIDO (Regra de Ouro). DIEESE não desagrega renda por sexo × raça para homens negros. Valor=0 → N/D na UI.' },
   );
 
-  // --- deficienciaPorRaca ---
-  items.push({ id: id(), tipo: 'constante', secao: 'Deficiência', indicador: 'Prevalência PcD por raça (PNAD 2022)', valor_atual: '9.0% branca / 9.6% preta / 8.6% parda', fonte_declarada: 'SIDRA 9324', url_fonte: 'https://sidra.ibge.gov.br/Tabela/9324', origem: 'StatisticsData.ts::deficienciaPorRaca', nivel_confianca: 'A', notas_auditoria: 'Empregabilidade/renda PcD por raça: PENDENTE VERIFICAÇÃO (SIDRA 9339)' });
+  // --- deficienciaPorRaca (AUDITADO Mar/2026) ---
+  items.push({ id: id(), tipo: 'constante', secao: 'Deficiência', indicador: 'Prevalência PcD por raça (Censo 2022)', valor_atual: '7.1% branca / 8.6% preta / 7.2% parda / 6.6% amarela / 6.6% indígena', fonte_declarada: 'Censo 2022 — SIDRA 10126', url_fonte: 'https://sidra.ibge.gov.br/tabela/10126', origem: 'BD::indicadores_interseccionais (categoria=deficiencia)', nivel_confianca: 'A', notas_auditoria: 'Auditado manualmente Mar/2026. Ocupação via SIDRA 4178, Renda via SIDRA 9384, Disparidades via SIDRA 9354.' });
 
   // --- serieAntraTrans ---
   for (const ano of [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]) {
