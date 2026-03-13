@@ -36,6 +36,126 @@ export default function GuiaAuditoria() {
           </CardContent>
         </Card>
 
+        {/* DIAGRAMA DE SOBREPOSIÇÃO DAS CAMADAS */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Layers className="w-5 h-5" />
+              Diagrama de Sobreposição e Deduplicação
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Cada camada captura ações por critérios diferentes. A interseção é deduplicada automaticamente pela chave <code>órgão|programa|ano</code>.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Visual Venn-like diagram */}
+            <div className="relative w-full max-w-2xl mx-auto py-8">
+              <svg viewBox="0 0 600 400" className="w-full h-auto" role="img" aria-label="Diagrama de sobreposição das camadas de filtragem orçamentária">
+                {/* Camada 1 - Programas PPA */}
+                <ellipse cx="220" cy="180" rx="170" ry="130" className="fill-primary/10 stroke-primary" strokeWidth="2" strokeDasharray="6 3" />
+                <text x="120" y="100" className="fill-primary text-[13px] font-bold">Camada 1</text>
+                <text x="120" y="118" className="fill-primary text-[11px]">Programas PPA</text>
+                <text x="110" y="140" className="fill-muted-foreground text-[10px]">5804, 5803, 5802,</text>
+                <text x="110" y="155" className="fill-muted-foreground text-[10px]">5136, 2034, 2065...</text>
+
+                {/* Camada 3 - Órgãos MIR/MPI */}
+                <ellipse cx="380" cy="180" rx="170" ry="130" className="fill-emerald-500/10 stroke-emerald-600" strokeWidth="2" strokeDasharray="6 3" />
+                <text x="420" y="100" className="fill-emerald-700 dark:fill-emerald-400 text-[13px] font-bold">Camada 3</text>
+                <text x="420" y="118" className="fill-emerald-700 dark:fill-emerald-400 text-[11px]">Orgaos MIR/MPI</text>
+                <text x="420" y="140" className="fill-muted-foreground text-[10px]">67000 (MIR)</text>
+                <text x="420" y="155" className="fill-muted-foreground text-[10px]">92000 (MPI)</text>
+
+                {/* Intersection zone */}
+                <text x="300" y="170" className="fill-foreground text-[11px] font-bold" textAnchor="middle">INTERSECAO</text>
+                <text x="300" y="188" className="fill-muted-foreground text-[9px]" textAnchor="middle">Ex: MIR executa</text>
+                <text x="300" y="200" className="fill-muted-foreground text-[9px]" textAnchor="middle">Programa 5804</text>
+                <text x="300" y="216" className="fill-destructive text-[10px] font-semibold" textAnchor="middle">DEDUPLICADO</text>
+
+                {/* Exclusive to Camada 1 */}
+                <text x="110" y="200" className="fill-muted-foreground text-[9px]" textAnchor="middle">Ex: MEC executa</text>
+                <text x="110" y="212" className="fill-muted-foreground text-[9px]" textAnchor="middle">acao do programa</text>
+                <text x="110" y="224" className="fill-muted-foreground text-[9px]" textAnchor="middle">5803 (Juventude</text>
+                <text x="110" y="236" className="fill-muted-foreground text-[9px]" textAnchor="middle">Negra Viva)</text>
+
+                {/* Exclusive to Camada 3 */}
+                <text x="490" y="200" className="fill-muted-foreground text-[9px]" textAnchor="middle">Ex: MIR executa</text>
+                <text x="490" y="212" className="fill-muted-foreground text-[9px]" textAnchor="middle">acoes administ.</text>
+                <text x="490" y="224" className="fill-muted-foreground text-[9px]" textAnchor="middle">fora dos programas</text>
+                <text x="490" y="236" className="fill-muted-foreground text-[9px]" textAnchor="middle">tematicos</text>
+
+                {/* Camada 2 */}
+                <ellipse cx="200" cy="300" rx="110" ry="70" className="fill-amber-500/10 stroke-amber-500" strokeWidth="1.5" strokeDasharray="4 2" />
+                <text x="155" y="300" className="fill-amber-700 dark:fill-amber-400 text-[11px] font-bold">Camada 2</text>
+                <text x="140" y="315" className="fill-amber-700 dark:fill-amber-400 text-[9px]">Subfuncao 422</text>
+
+                {/* Camada 4 */}
+                <ellipse cx="400" cy="310" rx="110" ry="70" className="fill-violet-500/10 stroke-violet-500" strokeWidth="1.5" strokeDasharray="4 2" />
+                <text x="365" y="305" className="fill-violet-700 dark:fill-violet-400 text-[11px] font-bold">Camada 4</text>
+                <text x="345" y="320" className="fill-violet-700 dark:fill-violet-400 text-[9px]">SESAI/FUNAI/INCRA</text>
+
+                {/* Deduplication arrow */}
+                <line x1="300" y1="370" x2="300" y2="395" className="stroke-destructive" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                <defs>
+                  <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" className="fill-destructive" />
+                  </marker>
+                </defs>
+              </svg>
+              <div className="text-center mt-2">
+                <Badge variant="destructive" className="text-xs">
+                  Deduplicacao: chave orgao|programa|ano - registro unico
+                </Badge>
+              </div>
+            </div>
+
+            {/* Explanation cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+                <p className="text-sm font-semibold text-primary">Exclusivo da Camada 1</p>
+                <p className="text-xs text-muted-foreground">
+                  Acoes de programas raciais executadas por orgaos <strong>fora</strong> do MIR/MPI.
+                  Ex: MEC executando acao do Programa 5803 (Juventude Negra), MS executando acao do 5136 (Povos Indigenas).
+                </p>
+              </div>
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2">
+                <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Exclusivo da Camada 3</p>
+                <p className="text-xs text-muted-foreground">
+                  Acoes do MIR/MPI que <strong>nao estao</strong> em programas tematicos listados na Camada 1.
+                  Ex: despesas administrativas, convenios internacionais, acoes de gestao interna.
+                </p>
+              </div>
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">Camada 2 — Subfuncao 422</p>
+                <p className="text-xs text-muted-foreground">
+                  Captura acoes classificadas em "Direitos Individuais, Coletivos e Difusos" de <strong>qualquer orgao</strong>,
+                  validadas por palavras-chave. Pode sobrepor-se as Camadas 1 e 3.
+                </p>
+              </div>
+              <div className="rounded-lg border border-violet-500/30 bg-violet-500/5 p-4 space-y-2">
+                <p className="text-sm font-semibold text-violet-700 dark:text-violet-400">Camada 4 — Acoes Especificas</p>
+                <p className="text-xs text-muted-foreground">
+                  Captura acoes por codigo direto (20YP, 7684, 20UF, etc.) de orgaos como SESAI e FUNAI
+                  que podem nao aparecer em nenhuma das outras camadas.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
+              <p className="font-semibold flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Como funciona a deduplicacao?
+              </p>
+              <ol className="list-decimal list-inside space-y-1 text-muted-foreground text-xs">
+                <li>Cada camada gera uma lista independente de registros orcamentarios.</li>
+                <li>Os resultados sao unidos (UNION) em uma lista combinada.</li>
+                <li>A chave composta <code className="text-primary">orgao | programa | ano</code> identifica cada registro unico.</li>
+                <li>Se o mesmo registro aparece em mais de uma camada, apenas <strong>uma copia</strong> e mantida.</li>
+                <li>O campo <code className="text-primary">razao_selecao</code> registra <strong>qual camada</strong> capturou o registro primeiro.</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* ═══════════ PARTE 1: COMO ENCONTRAR AS AÇÕES ═══════════ */}
         <Card>
           <CardHeader>
