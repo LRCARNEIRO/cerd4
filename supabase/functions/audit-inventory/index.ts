@@ -126,9 +126,9 @@ function inventoryStatisticsConstants(): AuditItem[] {
 
   // --- violenciaInterseccional ---
   items.push(
-    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Feminicídio % mulheres negras (2024)', valor_atual: 63.6, fonte_declarada: '19º Anuário FBSP 2025', url_fonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'A', notas_auditoria: 'CONFIRMADO via múltiplas fontes jornalísticas' },
-    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Violência doméstica % mulheres negras', valor_atual: 59.8, fonte_declarada: '19º Anuário FBSP 2025', url_fonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'pendente', notas_auditoria: 'PENDENTE verificação no PDF do 19º Anuário' },
-    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Estupro % mulheres negras', valor_atual: 54.2, fonte_declarada: '19º Anuário FBSP 2025', url_fonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'pendente', notas_auditoria: 'PENDENTE verificação no PDF do 19º Anuário' },
+    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Feminicídio % mulheres negras (2024)', valor_atual: 63.6, fonte_declarada: '19º Anuário FBSP 2025, p.156', url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — confirmado p.156' },
+    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Violência doméstica notificações mulheres negras (abs)', valor_atual: 111209, fonte_declarada: 'DataSUS/SINAN 2024', url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinannet/cnv/violebr.def', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — valores absolutos, NÃO percentuais' },
+    { id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Estupro % mulheres negras (2024)', valor_atual: 55.6, fonte_declarada: '19º Anuário FBSP 2025', url_fonte: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf', origem: 'StatisticsData.ts::violenciaInterseccional', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — corrigido de 54,2% para 55,6%' },
   );
 
   // --- juventudeNegra ---
@@ -141,8 +141,8 @@ function inventoryStatisticsConstants(): AuditItem[] {
 
   // --- trabalhoRacaGenero ---
   items.push(
-    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Renda homem branco (Q2 2024)', valor_atual: 4568, fonte_declarada: 'DIEESE Q2 2024', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: null },
-    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Razão mulher negra / homem branco', valor_atual: 0.439, fonte_declarada: 'DIEESE', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'Mulher negra ganha 43,9% do rendimento do homem branco' },
+    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Renda homem não negro (Q2 2024)', valor_atual: 4492, fonte_declarada: 'DIEESE Q2 2024, p.8', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — corrigido de 4568 para 4492' },
+    { id: id(), tipo: 'constante', secao: 'Raça × Gênero', indicador: 'Razão mulher negra / homem não negro', valor_atual: 0.463, fonte_declarada: 'DIEESE', url_fonte: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf', origem: 'StatisticsData.ts::trabalhoRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — 2079/4492 = 46,3%' },
   );
 
   // --- saudeMaternaRaca ---
@@ -152,7 +152,7 @@ function inventoryStatisticsConstants(): AuditItem[] {
   );
 
   // --- chefiaFamiliarRacaGenero ---
-  items.push({ id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Mulheres chefes monoparentais (total)', valor_atual: 4300000, fonte_declarada: 'RASEAM 2024', url_fonte: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf', origem: 'StatisticsData.ts::chefiaFamiliarRacaGenero', nivel_confianca: 'B', notas_auditoria: 'Cruzamento RASEAM + VIGISAN + CadÚnico' });
+  items.push({ id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Mulheres chefes monoparentais (total)', valor_atual: 7810826, fonte_declarada: 'Censo 2022/SIDRA 10179', url_fonte: 'https://sidra.ibge.gov.br/Tabela/10179', origem: 'StatisticsData.ts::chefiaFamiliarRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — Censo 2022' });
 
   // --- Adm Pública (if not excluded) ---
   items.push(
