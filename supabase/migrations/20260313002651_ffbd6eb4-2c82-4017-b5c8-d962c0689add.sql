@@ -1,0 +1,1 @@
+DELETE FROM indicadores_interseccionais WHERE subcategoria = 'sinapir_adesoes';
