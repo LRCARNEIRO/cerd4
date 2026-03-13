@@ -795,7 +795,8 @@ export const classePorRaca = [
   // VERIFICADO: SIS/IBGE 2025 (dados 2024) — Notícia Preta / IBGE
   // Total: pobreza 23,1%, extrema pobreza 3,5%. Pardos 29,8% P, pretos 25,8% P. Brancos N/D direto.
   { faixa: 'Extrema pobreza 2024 (< US$2,15/dia)', branca: null, parda: null, preta: null, total: 3.5, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://noticiapreta.com.br/pobreza-queda-desigualdade-racial-ibge-2024/' },
-  { faixa: 'Pobreza 2024 (< US$6,85/dia)', branca: null, parda: 29.8, preta: 25.8, total: 23.1, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://noticiapreta.com.br/pobreza-queda-desigualdade-racial-ibge-2024/' },
+  // AUDITORIA MANUAL 13/03/2026 (Eduardo): Branca 2024 = 15,1% — Fonte: SIS/IBGE 2025 (Livro 102240)
+  { faixa: 'Pobreza 2024 (< US$6,85/dia)', branca: 15.1, parda: 29.8, preta: 25.8, total: 23.1, ano: 2024, fonte: 'SIS/IBGE 2025 (dados 2024)', url: 'https://biblioteca.ibge.gov.br/visualizacao/livros/liv102240.pdf' },
 ];
 
 // =============================================
