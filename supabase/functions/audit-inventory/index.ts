@@ -152,7 +152,7 @@ function inventoryStatisticsConstants(): AuditItem[] {
   );
 
   // --- chefiaFamiliarRacaGenero ---
-  items.push({ id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Mulheres chefes monoparentais (total)', valor_atual: 4300000, fonte_declarada: 'RASEAM 2024', url_fonte: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf', origem: 'StatisticsData.ts::chefiaFamiliarRacaGenero', nivel_confianca: 'B', notas_auditoria: 'Cruzamento RASEAM + VIGISAN + CadÚnico' });
+  items.push({ id: id(), tipo: 'constante', secao: 'Vulnerabilidades', indicador: 'Mulheres chefes monoparentais (total)', valor_atual: 7810826, fonte_declarada: 'Censo 2022/SIDRA 10179', url_fonte: 'https://sidra.ibge.gov.br/Tabela/10179', origem: 'StatisticsData.ts::chefiaFamiliarRacaGenero', nivel_confianca: 'A', notas_auditoria: 'AUDITADO 12/03/2026 — Censo 2022' });
 
   // --- Adm Pública (if not excluded) ---
   items.push(
