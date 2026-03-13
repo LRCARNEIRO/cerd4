@@ -987,12 +987,12 @@ export const educacaoRacaGenero = [
   },
 ];
 
+// AUDITORIA MANUAL 12/03/2026: Fontes atualizadas para Censo 2022 (SIDRA)
 export const educacaoRacaGeneroFontes = [
-  { nome: 'Informe MIR 2023 — Mulheres Negras', url: 'https://www.gov.br/igualdaderacial/pt-br' },
-  { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/7129' },
-  { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/7125' },
-  { nome: 'PNAD Educação 2023/2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao.html' },
-  { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
+  { nome: 'SIDRA 9606 — Pop. residente por cor/raça e sexo (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9606' },
+  { nome: 'SIDRA 10061 — Nível de instrução por sexo e cor/raça (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/10061' },
+  { nome: 'SIDRA 9542 — Alfabetização por sexo e cor/raça (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9542' },
+  { nome: 'SIDRA 9517 — Condição de ocupação por instrução, sexo e cor/raça (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9517' },
 ];
 
 // SAÚDE MATERNA: Raça
