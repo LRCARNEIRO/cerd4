@@ -227,9 +227,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF direto)',
   },
   {
     indicador: 'Dados Disque 100 — LGBTQIA+',
