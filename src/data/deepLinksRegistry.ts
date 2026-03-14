@@ -301,9 +301,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Cobertura vacinal COVID',
     secao: 'COVID Racial',
-    url: 'https://sipni.datasus.gov.br',
+    url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
     fonte: 'SI-PNI/DataSUS',
-    descricao: 'Sistema de Informação do PNI — cobertura vacinal',
+    descricao: 'DataSUS TabNet → Imunizações → COVID-19 Doses Aplicadas → raça/cor',
   },
   {
     indicador: 'Vacinação e raça — Fiocruz',
