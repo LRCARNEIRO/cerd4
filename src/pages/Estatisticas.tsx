@@ -80,7 +80,7 @@ export default function Estatisticas() {
     'deficienciaPorRaca (5 raças × 3 métricas)': { total: 15, auditados: 15 },
     'disparidadesPcd1459 (3 raças × 2 métricas)': { total: 6, auditados: 6 },
     // LGBTQIA+
-    'serieAntraTrans (9 anos × 4 métricas)': { total: 36, auditados: 12 },  // 2023-2025 auditados
+    'serieAntraTrans (9 anos × 4 métricas)': { total: 36, auditados: 36 },
     'lgbtqiaPorRaca (3 métricas)': { total: 3, auditados: 3 },
     // VULNERABILIDADES
     'violenciaInterseccional (3 tipos × 2 métricas)': { total: 6, auditados: 6 },
