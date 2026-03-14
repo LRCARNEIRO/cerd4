@@ -90,9 +90,9 @@ export const COMPARACAO = {
 // ══════════════════════════════════════════════
 
 export const CONTADORES_POS_ETAPA6 = {
-  totalArquivosImportandoStatisticsData: 4,  // narrativeHelpers, countStatisticsIndicators, StatisticsInventoryReport(contagem), useMirrorData(imports)
-  totalArquivosUsandoMirrorData: 18,
-  totalArquivosPendentes: 2,                 // narrativeHelpers + countStatisticsIndicators (module-level)
-  totalNarrativasMapeadas: 27,               // NARRATIVE_DATA_MAP — sem mudança
-  percentualMigrado: 90,                     // 18/20 arquivos
+  totalArquivosImportandoStatisticsData: 4,  // narrativeHelpers(factory fallback), countStatisticsIndicators(factory fallback), StatisticsInventoryReport(contagem), useMirrorData(imports)
+  totalArquivosUsandoMirrorData: 20,
+  totalArquivosPendentes: 0,
+  totalNarrativasMapeadas: 27,
+  percentualMigrado: 100,
 };
