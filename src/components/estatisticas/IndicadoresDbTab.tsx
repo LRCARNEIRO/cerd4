@@ -319,18 +319,102 @@ function formatNum(val: number | null, large = false): string {
   return val.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
 }
 
+// Detect if an indicator is "lower is better" (mortality, violence, poverty, deficit, etc.)
+function isLowerBetter(nome: string, categoria: string): boolean {
+  const lowerNome = nome.toLowerCase();
+  const lowerCat = categoria.toLowerCase();
+  const negativeTerms = [
+    'mortalidade', 'homicídio', 'feminicídio', 'violência', 'assassinato',
+    'óbito', 'morte', 'letalidade', 'desemprego', 'analfabet', 'evasão',
+    'abandono', 'déficit', 'pobreza', 'miséria', 'trabalho infantil',
+    'trabalho escravo', 'encarceramento', 'aglomerado', 'favela',
+    'insegurança', 'intolerância', 'distorção', 'subnotificação',
+  ];
+  return negativeTerms.some(t => lowerNome.includes(t) || lowerCat.includes(t));
+}
+
+// Extract multiple racial comparisons from nested structures (e.g. Censo 2022 with multiple metrics)
+function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
+  const dados = ind.dados as Record<string, any>;
+  if (!dados) return [];
+
+  const excludeMeta = new Set([
+    'unidade', 'nota', 'serie', 'fonte', 'url', 'slug', 'formato',
+    'regra_ouro', 'deep_links', 'lacuna_racial', 'artigoCerd',
+    'nota_racial', 'nota_refugio', 'nota_registros', 'datamigra_bi_url',
+    'status_validacao',
+  ]);
+
+  const results: RacialComparison[] = [];
+  const unidade = (dados.unidade as string) || '%';
+
+  // Check for nested metric objects like { taxa_X: { "Negros": val, "Brancos": val } }
+  for (const [metricKey, metricVal] of Object.entries(dados)) {
+    if (excludeMeta.has(metricKey)) continue;
+    if (typeof metricVal !== 'object' || metricVal === null || Array.isArray(metricVal)) continue;
+
+    // Check if this sub-object has racial keys (not year keys)
+    const subKeys = Object.keys(metricVal as Record<string, any>);
+    const hasRacialKeys = subKeys.some(k => {
+      const kl = k.toLowerCase();
+      return kl.includes('negro') || kl.includes('branco') || kl.includes('indíg') || kl.includes('indigena');
+    });
+    const hasYearKeys = subKeys.some(k => /^\d{4}$/.test(k));
+
+    if (hasRacialKeys && !hasYearKeys) {
+      // This is a racial comparison metric
+      let negros: number | null = null;
+      let brancos: number | null = null;
+      let indigenas: number | null = null;
+      let nacional: number | null = null;
+
+      for (const [rk, rv] of Object.entries(metricVal as Record<string, any>)) {
+        const rkLower = rk.toLowerCase();
+        const numV = typeof rv === 'number' ? rv : parseFloat(String(rv).replace(/\./g, '').replace(',', '.'));
+        if (isNaN(numV)) continue;
+        if (rkLower.includes('negro') || rkLower.includes('pret') || rkLower.includes('pard')) negros = numV;
+        else if (rkLower.includes('branco')) brancos = numV;
+        else if (rkLower.includes('indíg') || rkLower.includes('indigena')) indigenas = numV;
+        else if (rkLower.includes('nacional') || rkLower.includes('geral') || rkLower.includes('total')) nacional = numV;
+      }
+
+      if (negros !== null || brancos !== null || indigenas !== null) {
+        const razao = (negros !== null && brancos !== null && brancos > 0) ? negros / brancos : null;
+        const metricLabel = metricKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ Pct$/, ' (%)');
+        results.push({
+          indicador: { ...ind, nome: `${ind.nome.split('—')[0].trim()} — ${metricLabel}` },
+          ano: '2022', negros, brancos, indigenas, nacional, unidade, razao,
+        });
+      }
+    }
+  }
+
+  // If no nested racial metrics found, try the original flat extraction
+  if (results.length === 0) {
+    const comp = extractRacialComparison(ind);
+    if (comp) results.push(comp);
+  }
+
+  return results;
+}
+
 function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }) {
   const { comparisons, noComparison, themeGroups } = useMemo(() => {
     const comps: RacialComparison[] = [];
     const noComp: IndicadorData[] = [];
+    const processedIds = new Set<string>();
+
     for (const ind of indicadores) {
-      const comp = extractRacialComparison(ind);
-      if (comp) comps.push(comp);
-      else noComp.push(ind);
+      const extracted = extractAllRacialComparisons(ind);
+      if (extracted.length > 0) {
+        comps.push(...extracted);
+        processedIds.add(ind.id);
+      } else {
+        noComp.push(ind);
+      }
     }
     comps.sort((a, b) => a.indicador.categoria.localeCompare(b.indicador.categoria));
 
-    // Group by subcategoria or categoria for thematic storytelling
     const groups: Record<string, RacialComparison[]> = {};
     for (const c of comps) {
       const theme = c.indicador.subcategoria || c.indicador.categoria;
@@ -346,11 +430,7 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
   const avgRatio = withRatio.length > 0 
     ? withRatio.reduce((sum, c) => sum + c.razao!, 0) / withRatio.length 
     : null;
-  const worstDisparity = withRatio.length > 0
-    ? withRatio.reduce((worst, c) => Math.abs(c.razao! - 1) > Math.abs(worst.razao! - 1) ? c : worst)
-    : null;
 
-  // Theme labels
   const themeLabels: Record<string, string> = {
     saneamento: '🚰 Saneamento Básico',
     saneamento_tradicional: '🏘️ Comunidades Tradicionais',
@@ -358,7 +438,61 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
     favelas: '🏙️ Favelas e Aglomerados',
     favelas_aglomerados: '🏙️ Favelas e Aglomerados',
     patrimonio: '🏛️ Patrimônio Cultural',
+    censo_2022_racial: '📊 Censo 2022 — Políticas Raciais',
+    educacao_indigena: '📚 Educação Indígena',
+    saude_indigena: '🏥 Saúde Indígena',
+    trabalho_escravo: '⛓️ Trabalho Escravo',
   };
+
+  // Verdict logic aware of "lower is better"
+  function getVerdict(comp: RacialComparison): { text: string; color: string; icon: string } {
+    const { razao, indicador } = comp;
+    if (razao === null) return { text: 'Sem comparação', color: 'text-muted-foreground', icon: '—' };
+    
+    const lowerBetter = isLowerBetter(indicador.nome, indicador.categoria);
+    
+    if (lowerBetter) {
+      // Higher ratio = negros have MORE of a bad thing = worse
+      if (razao > 2) return { text: 'Disparidade crítica — negros duplamente expostos', color: 'text-destructive', icon: '🔴' };
+      if (razao > 1.3) return { text: 'Negros significativamente mais afetados', color: 'text-destructive', icon: '🟠' };
+      if (razao > 1.05) return { text: 'Negros moderadamente mais afetados', color: 'text-chart-4', icon: '🟡' };
+      if (razao < 0.95) return { text: 'Brancos mais afetados neste indicador', color: 'text-muted-foreground', icon: '🔵' };
+      return { text: 'Paridade aproximada', color: 'text-success', icon: '🟢' };
+    } else {
+      // Lower ratio = negros have LESS of a good thing = worse
+      if (razao < 0.5) return { text: 'Disparidade crítica — acesso negro ≤50%', color: 'text-destructive', icon: '🔴' };
+      if (razao < 0.75) return { text: 'Déficit significativo para negros', color: 'text-destructive', icon: '🟠' };
+      if (razao < 0.95) return { text: 'Negros em desvantagem moderada', color: 'text-chart-4', icon: '🟡' };
+      if (razao > 1.3) return { text: 'Negros à frente neste indicador', color: 'text-primary', icon: '🔵' };
+      return { text: 'Paridade aproximada', color: 'text-success', icon: '🟢' };
+    }
+  }
+
+  function formatRatio(razao: number | null, nome: string, categoria: string): string {
+    if (razao === null) return '—';
+    const lowerBetter = isLowerBetter(nome, categoria);
+    if (lowerBetter) {
+      return `${razao.toFixed(2)}×`;
+    } else {
+      return `${razao.toFixed(2)}×`;
+    }
+  }
+
+  function ratioColor(razao: number | null, nome: string, categoria: string): string {
+    if (razao === null) return '';
+    const lowerBetter = isLowerBetter(nome, categoria);
+    if (lowerBetter) {
+      if (razao > 2) return 'text-destructive font-black';
+      if (razao > 1.3) return 'text-destructive font-bold';
+      if (razao > 1.05) return 'text-chart-4 font-semibold';
+      return 'text-success';
+    } else {
+      if (razao < 0.5) return 'text-destructive font-black';
+      if (razao < 0.75) return 'text-destructive font-bold';
+      if (razao < 0.95) return 'text-chart-4 font-semibold';
+      return 'text-success';
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -367,43 +501,33 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Layers className="w-5 h-5 text-accent" />
-            Retrato Racial — Dados Pontuais ({indicadores.length})
+            Retrato Racial — Dados Pontuais ({comparisons.length + noComparison.length})
           </h3>
           <p className="text-xs text-muted-foreground">
-            Indicadores que revelam a desigualdade estrutural num instante do tempo
+            Indicadores que revelam a desigualdade estrutural num instante do tempo — formato tabular para clareza
           </p>
         </div>
       </div>
 
-      {/* Hero narrative card */}
-      {avgRatio !== null && worstDisparity && (
+      {/* Hero summary */}
+      {avgRatio !== null && (
         <Card className="overflow-hidden border-none shadow-lg">
-          <div className="bg-gradient-to-br from-primary/10 via-destructive/5 to-accent/10 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Key stat */}
-              <div className="flex flex-col items-center justify-center text-center">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1">Razão Média de Disparidade</p>
-                <p className={cn(
-                  "text-5xl font-black tabular-nums",
-                  avgRatio > 1.3 ? "text-destructive" : avgRatio > 1.1 ? "text-chart-4" : "text-success"
-                )}>
+          <div className="bg-gradient-to-br from-primary/10 via-destructive/5 to-accent/10 p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <div className="flex flex-col items-center text-center">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium mb-1">Razão Média N/B</p>
+                <p className={cn("text-4xl font-black tabular-nums", avgRatio > 1.3 ? "text-destructive" : avgRatio > 1.1 ? "text-chart-4" : "text-success")}>
                   {avgRatio.toFixed(2)}×
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Negro / Branco</p>
               </div>
-
-              {/* Worst disparity callout */}
-              <div className="md:col-span-2 flex flex-col justify-center">
-                <p className="text-sm font-semibold text-foreground mb-2">
-                  📊 O que os dados contam
-                </p>
+              <div className="md:col-span-2">
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Em <span className="font-bold text-foreground">{withRatio.length} indicadores</span> com dados raciais comparáveis, 
-                  a população negra apresenta sistematicamente piores condições. 
-                  A maior disparidade está em{' '}
-                  <span className="font-bold text-destructive">{worstDisparity.indicador.nome}</span>{' '}
-                  (razão {worstDisparity.razao!.toFixed(2)}×), seguida por padrões persistentes em saneamento, 
-                  habitação e acesso a serviços básicos — evidência de racismo estrutural que o Estado deve responder ao CERD.
+                  <span className="font-bold text-foreground">📊 Síntese: </span>
+                  Em <strong>{withRatio.length}</strong> métricas com dados raciais comparáveis, 
+                  a população negra está sistematicamente em desvantagem. 
+                  A tabela abaixo apresenta cada indicador com seu <strong>veredito</strong> contextualizado — 
+                  indicadores onde "menor é pior" (renda, acesso) e "maior é pior" (mortalidade, violência) 
+                  são interpretados corretamente.
                 </p>
               </div>
             </div>
@@ -411,32 +535,11 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
         </Card>
       )}
 
-      {/* Themed visual cards with horizontal bar charts */}
+      {/* THEMED TABLES */}
       {Object.entries(themeGroups).map(([theme, comps]) => {
         const label = themeLabels[theme] || theme.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        
-        // Build bar data for the group
-        const barData = comps.map(c => ({
-          nome: c.indicador.nome.replace(/—.*$/, '').trim().slice(0, 35),
-          Brancos: c.brancos,
-          Negros: c.negros,
-          'Indígenas em TIs': c.indigenas,
-          Nacional: c.nacional,
-          razao: c.razao,
-          ano: c.ano,
-          url: c.indicador.url_fonte,
-          fonte: c.indicador.fonte,
-        }));
-
-        // Narrative insight for the group
-        const groupWithRatio = comps.filter(c => c.razao !== null);
-        const avgGroupRatio = groupWithRatio.length > 0
-          ? groupWithRatio.reduce((s, c) => s + c.razao!, 0) / groupWithRatio.length
-          : null;
         const hasIndigenas = comps.some(c => c.indigenas !== null);
-        const worstInGroup = groupWithRatio.length > 0
-          ? groupWithRatio.reduce((w, c) => Math.abs(c.razao! - 1) > Math.abs(w.razao! - 1) ? c : w)
-          : null;
+        const hasNacional = comps.some(c => c.nacional !== null);
 
         return (
           <Card key={theme} className="overflow-hidden">
@@ -444,71 +547,105 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-semibold">{label}</CardTitle>
                 <Badge variant="outline" className="text-[10px]">
-                  {comps.length} indicador{comps.length > 1 ? 'es' : ''} · {comps[0]?.ano || '—'}
+                  {comps.length} métrica{comps.length > 1 ? 's' : ''} · {comps[0]?.ano || '—'}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="pt-4 space-y-4">
-              {/* Horizontal bar chart */}
-              <div style={{ height: Math.max(comps.length * 60 + 40, 140) }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} layout="vertical" margin={{ left: 10, right: 16, top: 5, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 10 }} />
-                    <YAxis type="category" dataKey="nome" width={160} tick={{ fontSize: 10 }} />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                        fontSize: '11px'
-                      }}
-                      formatter={(value: number, name: string) => [
-                        typeof value === 'number' ? value.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : '—',
-                        name
-                      ]}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '11px' }} />
-                    <Bar dataKey="Brancos" fill="#94a3b8" radius={[0, 4, 4, 0]} barSize={14} />
-                    <Bar dataKey="Negros" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={14} />
-                    {hasIndigenas && (
-                      <Bar dataKey="Indígenas em TIs" fill="#16a34a" radius={[0, 4, 4, 0]} barSize={14} />
-                    )}
-                    <Bar dataKey="Nacional" fill="#a3a3a3" radius={[0, 4, 4, 0]} barSize={10} />
-                  </BarChart>
-                </ResponsiveContainer>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/30">
+                      <TableHead className="text-xs font-bold w-[28%]">Indicador</TableHead>
+                      <TableHead className="text-xs text-center font-bold">Negros</TableHead>
+                      <TableHead className="text-xs text-center font-bold">Brancos</TableHead>
+                      {hasIndigenas && <TableHead className="text-xs text-center font-bold">Indígenas</TableHead>}
+                      {hasNacional && <TableHead className="text-xs text-center font-bold">Nacional</TableHead>}
+                      <TableHead className="text-xs text-center font-bold">Razão N/B</TableHead>
+                      <TableHead className="text-xs font-bold w-[25%]">Veredito</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {comps.map((c, idx) => {
+                      const verdict = getVerdict(c);
+                      const shortName = c.indicador.nome.length > 50
+                        ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
+                        : c.indicador.nome;
+                      return (
+                        <TableRow key={`${c.indicador.id}-${idx}`} className={cn(idx % 2 === 0 && 'bg-muted/10')}>
+                          <TableCell className="py-2">
+                            <p className="text-xs font-medium leading-tight">{shortName}</p>
+                            <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="text-xs font-semibold text-primary tabular-nums">{formatNum(c.negros)}</span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="text-xs font-semibold text-muted-foreground tabular-nums">{formatNum(c.brancos)}</span>
+                          </TableCell>
+                          {hasIndigenas && (
+                            <TableCell className="text-center">
+                              <span className="text-xs font-semibold text-success tabular-nums">{formatNum(c.indigenas)}</span>
+                            </TableCell>
+                          )}
+                          {hasNacional && (
+                            <TableCell className="text-center">
+                              <span className="text-xs tabular-nums">{formatNum(c.nacional)}</span>
+                            </TableCell>
+                          )}
+                          <TableCell className="text-center">
+                            <span className={cn("text-sm tabular-nums", ratioColor(c.razao, c.indicador.nome, c.indicador.categoria))}>
+                              {formatRatio(c.razao, c.indicador.nome, c.indicador.categoria)}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={cn("text-[10px] leading-tight", verdict.color)}>
+                              {verdict.icon} {verdict.text}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
 
-              {/* Narrative insight box */}
-              <div className="rounded-lg border bg-gradient-to-r from-primary/5 to-transparent p-3">
+              {/* Group narrative */}
+              <div className="mx-4 my-3 rounded-lg border bg-gradient-to-r from-primary/5 to-transparent p-3">
                 <p className="text-xs leading-relaxed text-muted-foreground">
                   <span className="font-semibold text-foreground">💡 Conclusão: </span>
-                  {avgGroupRatio !== null && avgGroupRatio > 1 ? (
-                    <>
-                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.5 ? 'drasticamente' : avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
-                      que a branca (razão média <strong>{avgGroupRatio.toFixed(2)}×</strong>).
-                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×), evidenciando que a população negra {worstInGroup.razao! > 2 ? 'é mais do que duplamente prejudicada' : 'sofre desvantagem estrutural mensurável'} nesta dimensão.</>}
-                      {' '}Isso configura evidência de discriminação racial indireta (Art. 1º da ICERD), reforçando a necessidade de políticas afirmativas específicas.
-                    </>
-                  ) : avgGroupRatio !== null && avgGroupRatio < 1 ? (
-                    <>
-                      Neste eixo, a população negra apresenta taxa <strong>{((1 - avgGroupRatio) * 100).toFixed(0)}% menor</strong> que a branca — 
-                      indicando déficit de acesso que perpetua desigualdades estruturais. 
-                      {worstInGroup && <> O maior hiato está em <strong>{worstInGroup.indicador.nome}</strong>, onde a sub-representação negra revela barreiras institucionais persistentes.</>}
-                    </>
-                  ) : hasIndigenas ? (
-                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas — situação que o Estado não documentava adequadamente no III Relatório CERD e que agora exige resposta detalhada ao Comitê.</>
-                  ) : (
-                    <>Dados pontuais sem comparação racial direta disponível — lacuna que limita a capacidade de resposta do Estado ao CERD.</>
-                  )}
+                  {(() => {
+                    const groupWithRatio = comps.filter(c => c.razao !== null);
+                    const disadvantaged = groupWithRatio.filter(c => {
+                      const lb = isLowerBetter(c.indicador.nome, c.indicador.categoria);
+                      return lb ? c.razao! > 1.05 : c.razao! < 0.95;
+                    });
+                    const critical = groupWithRatio.filter(c => {
+                      const lb = isLowerBetter(c.indicador.nome, c.indicador.categoria);
+                      return lb ? c.razao! > 2 : c.razao! < 0.5;
+                    });
+                    
+                    if (disadvantaged.length === 0 && groupWithRatio.length > 0) {
+                      return 'Paridade racial aproximada neste eixo — situação rara que merece destaque positivo no relatório.';
+                    }
+                    
+                    const pct = groupWithRatio.length > 0 ? ((disadvantaged.length / groupWithRatio.length) * 100).toFixed(0) : '0';
+                    return (
+                      <>
+                        Em <strong>{pct}%</strong> das métricas deste eixo ({disadvantaged.length}/{groupWithRatio.length}), 
+                        a população negra está em desvantagem.
+                        {critical.length > 0 && <> Destaque para <strong>{critical.length}</strong> com disparidade crítica (razão &gt;2× ou &lt;0.5×).</>}
+                        {' '}Configura evidência de discriminação racial indireta (Art. 1º da ICERD).
+                      </>
+                    );
+                  })()}
                 </p>
               </div>
 
-              {/* Source links row */}
-              <div className="flex flex-wrap gap-2">
-                {comps.map(c => (
-                  <div key={c.indicador.id} className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <span className="font-medium">{c.indicador.nome.split('—')[0].trim().slice(0, 25)}:</span>
+              {/* Source links */}
+              <div className="px-4 pb-3 flex flex-wrap gap-2">
+                {comps.map((c, i) => (
+                  <div key={`src-${c.indicador.id}-${i}`} className="flex items-center gap-1 text-[10px] text-muted-foreground">
                     {c.indicador.url_fonte ? (
                       <a href={c.indicador.url_fonte} target="_blank" rel="noopener noreferrer" 
                          className="text-primary hover:underline inline-flex items-center gap-0.5">
