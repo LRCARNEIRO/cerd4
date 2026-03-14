@@ -218,18 +218,22 @@ export function RacaGeneroTab() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 mb-4 items-center">
               <div className="p-3 bg-muted rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Mulheres chefes monoparentais</p>
                 <p className="text-xl font-bold">{(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / 1_000_000).toFixed(1)} mi</p>
                 <p className="text-xs font-medium text-destructive">{chefiaFamiliarRacaGenero.percentualNegras}% negras</p>
               </div>
+              <div className="text-center px-2">
+                <p className="text-lg font-bold text-warning">
+                  {(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / chefiaFamiliarRacaGenero.homensChefesMonoparentais).toFixed(1).replace('.', ',')}×
+                </p>
+                <p className="text-[10px] text-muted-foreground leading-tight">menor<br/>(homens)</p>
+              </div>
               <div className="p-3 bg-muted rounded-lg text-center">
                 <p className="text-xs text-muted-foreground">Homens chefes monoparentais</p>
                 <p className="text-xl font-bold">{(chefiaFamiliarRacaGenero.homensChefesMonoparentais / 1_000_000).toFixed(2).replace('.', ',')} mi</p>
-                <p className="text-xs text-muted-foreground">
-                  {(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / chefiaFamiliarRacaGenero.homensChefesMonoparentais).toFixed(1).replace('.', ',')}× menor
-                </p>
+                <p className="text-xs font-medium text-destructive">{((chefiaFamiliarRacaGenero.homensNegrosChefesMonoparentais / chefiaFamiliarRacaGenero.homensChefesMonoparentais) * 100).toFixed(1)}% negros</p>
               </div>
             </div>
             <div className="space-y-2">
