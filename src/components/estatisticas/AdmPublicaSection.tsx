@@ -133,6 +133,7 @@ const legislacaoData = estadicData.legislacaoMaisCitada.map(item => ({
 }));
 
 export function AdmPublicaSection() {
+  const { admSource } = useMirrorData();
   return (
     <div className="space-y-6">
       {/* Header */}
