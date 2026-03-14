@@ -188,6 +188,11 @@ export function CovidRacialSection() {
                 <Badge variant="destructive">Excesso de mortalidade +57%</Badge>
                 <Badge className="bg-warning/10 text-warning border border-warning">Interseccional</Badge>
                 <Badge variant="outline">2020-2022</Badge>
+                {covidSource === 'bd' ? (
+                  <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({covidCount})</Badge>
+                ) : (
+                  <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+                )}
               </div>
             </div>
           </div>
