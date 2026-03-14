@@ -622,7 +622,7 @@ export const serieAntraTrans = [
 // Dados abertos: https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100
 // AUDITORIA: lgbtqiaPorRaca usa dados de 2025 (Dossiê ANTRA 2026, último verificado)
 export const lgbtqiaPorRaca = [
-  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 28.0, indigenaLGBT: 2.0, fonte: 'ANTRA Dossiê 2026 (dados 2025)', estimativa: false },
+  { indicador: 'Vítimas de assassinato trans (% negras)', negroLGBT: 70.0, brancoLGBT: 26.0, indigenaLGBT: 4.0, fonte: 'ANTRA Dossiê 2026 (dados 2025), p. 66', estimativa: false },
 ];
 
 // =============================================
