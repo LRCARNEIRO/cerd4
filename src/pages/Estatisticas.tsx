@@ -193,6 +193,10 @@ export default function Estatisticas() {
         </CardContent>
       </Card>
 
+      {/* Espelho Seguro — Painel de Migração */}
+      <MirrorIngestionPanel />
+
+      <div className="mt-6" />
       <Tabs defaultValue="common-core" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
           <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
