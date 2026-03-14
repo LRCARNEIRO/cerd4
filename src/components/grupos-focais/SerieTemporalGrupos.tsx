@@ -47,10 +47,17 @@ const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'esta
   );
 };
 
-// Build indicator series from StatisticsData
+// Build indicator series from mirror data (SSoT)
 // REGRA DE OURO: PROIBIDO usar proxies multiplicadores (×1.5, ×1.8, ×2.5 etc.) ou projeções.
 // Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
-function buildIndicadores(): Record<string, IndicadorTemporal[]> {
+function buildIndicadores(
+  segurancaPublica: any[],
+  educacaoSerieHistorica: any[],
+  indicadoresSocioeconomicos: any[],
+  feminicidioSerie: any[],
+  saudeSerieHistorica: any[],
+  povosTradicionais: any,
+): Record<string, IndicadorTemporal[]> {
   const populacaoNegra: IndicadorTemporal[] = [
     {
       nome: 'Taxa de homicídio (por 100 mil)',
