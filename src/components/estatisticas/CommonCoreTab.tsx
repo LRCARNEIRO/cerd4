@@ -237,6 +237,7 @@ export const tabelasDemograficas: CommonCoreTable[] = [
         ['% 60+ anos', '11,7%', '13,0%', '14,3%', '15,6%', '16,8%']
       ]
     },
+    notas: '⚠️ Dados de razão de dependência calculados a partir de PNAD Contínua trimestral (Tabela 7109) — valores anuais são médias dos 4 trimestres. Valores arredondados a 1 casa decimal conforme fonte.',
     tendencia: 'crescente'
   },
   {
@@ -422,7 +423,7 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Gasto social federal em relação ao PIB',
     fonte: 'ME/IBGE',
     fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.gov.br/fazenda/pt-br/assuntos/orcamento-federal',
+    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
@@ -450,7 +451,7 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Participação de cada área no gasto social como % do PIB',
     fonte: 'ME/IBGE',
     fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.gov.br/fazenda/pt-br/assuntos/orcamento-federal',
+    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
@@ -478,7 +479,7 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Composição percentual do gasto social federal por área',
     fonte: 'ME/IBGE',
     fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.gov.br/fazenda/pt-br/assuntos/orcamento-federal',
+    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
@@ -527,7 +528,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['65+ anos', '34,4%', '30,8%', '25,7%', '18,6%', '15,8%', '14,9%']
       ]
     },
-    notas: 'Queda consistente do analfabetismo, especialmente entre jovens.',
+    notas: 'PNAD Contínua Educação (anual, suplemento do 2º trimestre). Queda consistente do analfabetismo, especialmente entre jovens.',
     tendencia: 'decrescente'
   },
   {
@@ -840,14 +841,14 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023', '2024*'],
+      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023'],
       rows: [
-        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5', '76,2'],
-        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1', '72,8'],
-        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9', '79,6']
+        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5'],
+        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1'],
+        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9']
       ]
     },
-    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva.',
+    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva. Coluna 2024 removida — dado preliminar (Tábuas de Mortalidade ainda não publicadas).',
     tendencia: 'crescente'
   },
   {
@@ -865,12 +866,12 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022', '2024*'],
+      headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022'],
       rows: [
-        ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60', '1,58']
+        ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60']
       ]
     },
-    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006.',
+    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006. Coluna 2024 removida — dado preliminar não publicado oficialmente.',
     tendencia: 'decrescente'
   },
   {
@@ -913,7 +914,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Óbitos de menores de 1 ano por 1.000 nascidos vivos',
     fonte: 'MS/SIM-SINASC',
     fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2023',
     statusAtualizacao: 'atualizado',
@@ -935,7 +936,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Óbitos de menores de 5 anos por 1.000 nascidos vivos',
     fonte: 'MS/SIM-SINASC',
     fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2005-2015',
     periodoAtualizado: '2005-2023',
     statusAtualizacao: 'atualizado',
@@ -961,14 +962,14 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '1989-2023',
     statusAtualizacao: 'parcial',
     dados: {
-      headers: ['Ano', '1989', '1996', '2006', '2019*', '2023*'],
+      headers: ['Ano', '1989', '1996', '2006', '2019 (SISVAN)', '2023 (SISVAN)'],
       rows: [
         ['Homens', '5,4%', '4,5%', '1,8%', '2,1%', '2,3%'],
         ['Mulheres', '5,4%', '4,0%', '2,0%', '2,0%', '2,2%'],
         ['Total', '5,4%', '4,2%', '1,9%', '2,1%', '2,2%']
       ]
     },
-    notas: '* Dados do SISVAN (crianças acompanhadas em UBS). Tendência de leve aumento pós-2019.',
+    notas: 'Dados 1989-2006: PNDS (pesquisa domiciliar representativa). Dados 2019-2023: SISVAN (crianças acompanhadas em UBS — amostra não-representativa). Metodologias distintas: comparação direta requer cautela.',
     tendencia: 'estavel'
   },
   {
@@ -995,7 +996,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Centro-Oeste', '8,0%', '8,2%', '8,2%', '8,3%', '8,4%']
       ]
     },
-    notas: 'Taxa relativamente estável. Sudeste tem maior prevalência (mais diagnósticos?).',
+    notas: '⚠️ Pendente de verificação humana: progressão regional com incrementos muito regulares (0,1 p.p.) sugere possível arredondamento. Verificar diretamente no TabNet SINASC. Sudeste tem maior prevalência (possível viés de diagnóstico).',
     tendencia: 'estavel'
   },
   {
@@ -1007,7 +1008,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Óbitos maternos por 100.000 nascidos vivos',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2001-2011',
     periodoAtualizado: '2001-2022',
     statusAtualizacao: 'atualizado',
@@ -1029,7 +1030,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Distribuição percentual dos óbitos maternos por tipo de causa',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2001-2015',
     periodoAtualizado: '2001-2022',
     statusAtualizacao: 'atualizado',
@@ -1081,7 +1082,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Percentual de gestantes com 7+ consultas de pré-natal',
     fonte: 'MS/SINASC',
     fonteCompleta: 'Ministério da Saúde - SINASC',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/nascidos-vivos-desde-1994',
     periodoOriginal: '2004-2011',
     periodoAtualizado: '2004-2022',
     statusAtualizacao: 'atualizado',
@@ -1174,6 +1175,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '46,6%', '48,1%', '50,2%', '51,6%', '52,6%', '53,0%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Dado 2024: média T1-T4.',
     tendencia: 'crescente'
   },
   {
@@ -1201,7 +1203,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Jovens 18-24', '16,8%', '18,9%', '25,3%', '29,8%', '19,2%', '15,5%']
       ]
     },
-    notas: 'Pico em 2021 devido à pandemia. Recuperação significativa em 2022-2024.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Pico em 2021 devido à pandemia. Recuperação significativa em 2022-2024.',
     tendencia: 'decrescente'
   },
   {
@@ -1228,6 +1230,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Negros', '53,4%', '54,0%', '52,5%', '54,8%', '57,0%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres.',
     tendencia: 'crescente'
   },
   {
@@ -1254,7 +1257,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Negros', '49,5%', '50,5%', '46,8%', '45,5%', '43,8%']
       ]
     },
-    notas: 'Informalidade estruturalmente maior entre negros.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Informalidade estruturalmente maior entre negros.',
     tendencia: 'decrescente'
   },
   {
@@ -1282,7 +1285,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Razão N/B', '57,9%', '57,0%', '56,6%', '58,8%', '58,9%']
       ]
     },
-    notas: 'Negros recebem cerca de 59% do rendimento de brancos.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Valores em R$ correntes. Negros recebem cerca de 59% do rendimento de brancos.',
     tendencia: 'crescente'
   },
   {
@@ -1314,6 +1317,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Serviços Domésticos', '6,8%', '6,2%', '6,3%', '5,8%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres.',
     tendencia: 'estavel'
   },
   {
@@ -1338,7 +1342,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '46,3%', '54,9%', '59,6%', '62,0%', '64,2%', '65,6%']
       ]
     },
-    notas: 'Aumento consistente na formalização e contribuição previdenciária.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Aumento consistente na formalização e contribuição previdenciária.',
     tendencia: 'crescente'
   },
   {
@@ -1363,7 +1367,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '53,1%', '56,5%', '61,5%', '65,0%', '68,2%', '69,5%']
       ]
     },
-    notas: 'Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
     tendencia: 'crescente'
   }
 ];
@@ -1813,7 +1817,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     descricao: 'Mortes por acidentes de transporte terrestre',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2023',
     statusAtualizacao: 'atualizado',
@@ -1836,7 +1840,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     descricao: 'Mortes por lesões autoprovocadas intencionalmente',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2004-2014',
     periodoAtualizado: '2004-2023',
     statusAtualizacao: 'atualizado',
@@ -1868,7 +1872,7 @@ export const tabelasHabitacao: CommonCoreTable[] = [
     descricao: 'População apta a votar nas eleições',
     fonte: 'TSE',
     fonteCompleta: 'Tribunal Superior Eleitoral',
-    urlFonte: 'https://www.tse.jus.br/eleicoes/estatisticas/estatisticas-eleitorais',
+    urlFonte: 'https://sig.tse.jus.br/ords/dwapr/r/seai/sig-eleicao/home',
     periodoOriginal: '2010-2016',
     periodoAtualizado: '2010-2024',
     statusAtualizacao: 'atualizado',
@@ -1891,7 +1895,7 @@ export const tabelasHabitacao: CommonCoreTable[] = [
     descricao: 'Eleitores que compareceram às urnas',
     fonte: 'TSE',
     fonteCompleta: 'Tribunal Superior Eleitoral',
-    urlFonte: 'https://www.tse.jus.br/eleicoes/estatisticas/estatisticas-eleitorais',
+    urlFonte: 'https://sig.tse.jus.br/ords/dwapr/r/seai/sig-eleicao/home',
     periodoOriginal: '2010-2014',
     periodoAtualizado: '2010-2022',
     statusAtualizacao: 'atualizado',
@@ -2219,7 +2223,7 @@ export const tabelasSistemaPolitico: CommonCoreTable[] = [
     descricao: 'Participação feminina no Congresso Nacional',
     fonte: 'TSE/Câmara',
     fonteCompleta: 'TSE e Câmara dos Deputados',
-    urlFonte: 'https://www.camara.leg.br/',
+    urlFonte: 'https://www.camara.leg.br/deputados/bancada',
     periodoOriginal: '2002-2014',
     periodoAtualizado: '2002-2022',
     statusAtualizacao: 'atualizado',
