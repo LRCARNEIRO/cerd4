@@ -286,14 +286,147 @@ export function CovidRacialSection() {
             <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
           </CardContent>
         </Card>
+        <Card className="border-l-4 border-l-chart-3">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">OR Ajustado: Pretos/Pardos</p>
+            <p className="text-2xl font-bold">1,15</p>
+            <p className="text-xs text-muted-foreground">IC 95%: 1,09–1,22 (n=228.196)</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-chart-4">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">Ventilação invasiva fora da UTI</p>
+            <p className="text-2xl font-bold text-chart-4">17% vs 11%</p>
+            <p className="text-xs text-muted-foreground">Pretos/Pardos vs Brancos</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">Admissão em UTI (Brancos)</p>
+            <p className="text-2xl font-bold text-primary">36% vs 32%</p>
+            <p className="text-xs text-muted-foreground">Brancos vs Pretos/Pardos</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
       </div>
+
+      {/* NOVO: Dados do Estudo Peres et al. (2021) — SIVEP-Gripe */}
+      <Card className="border-l-4 border-l-chart-3">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="w-4 h-4 text-chart-3" />
+            Estudo Peres et al. (2021) — Fatores Sociodemográficos e Mortalidade Hospitalar
+          </CardTitle>
+          <CardDescription>
+            SIVEP-Gripe: 228.196 pacientes adultos hospitalizados com COVID-19, RT-qPCR confirmados (fev-ago 2020).
+            DOI: 10.1016/j.puhe.2021.01.005
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Acesso a UTI e ventilação por raça */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3">Acesso a UTI e Ventilação Invasiva por Raça</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Raça</TableHead>
+                    <TableHead className="text-right">UTI (%)</TableHead>
+                    <TableHead className="text-right">Vent. Invasiva (%)</TableHead>
+                    <TableHead className="text-right">Vent. Fora UTI (%)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {peresStudyData.acessoUTI.map(item => (
+                    <TableRow key={item.raca}>
+                      <TableCell className="font-medium text-sm">{item.raca}</TableCell>
+                      <TableCell className="text-right">{item.admissaoUTI}%</TableCell>
+                      <TableCell className="text-right">{item.ventilacaoInvasiva}%</TableCell>
+                      <TableCell className={`text-right font-medium ${item.ventilacaoForaUTI > 15 ? 'text-destructive' : ''}`}>
+                        {item.ventilacaoForaUTI}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p className="text-xs text-muted-foreground mt-2">
+                Pretos/Pardos recebiam ventilação invasiva <strong>fora da UTI</strong> em 17% dos casos (vs 11% brancos),
+                indicando menor acesso a leitos de terapia intensiva.
+              </p>
+            </div>
+
+            {/* Odds Ratios ajustados */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3">Odds Ratios Ajustados — Mortalidade Hospitalar</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fator</TableHead>
+                    <TableHead className="text-right">OR</TableHead>
+                    <TableHead className="text-right">IC 95%</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {peresStudyData.oddsRatios.map(item => (
+                    <TableRow key={item.fator}>
+                      <TableCell className="font-medium text-sm">{item.fator}</TableCell>
+                      <TableCell className={`text-right font-bold ${item.or >= 1.5 ? 'text-destructive' : 'text-warning'}`}>
+                        {item.or.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right text-xs text-muted-foreground">
+                        {item.icInf.toFixed(2)}–{item.icSup.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p className="text-xs text-muted-foreground mt-2">
+                Ajustado por sexo, idade, escolaridade, região e comorbidades. Região Norte teve OR=2,76:
+                pacientes no Norte tinham quase 3x mais chance de óbito hospitalar.
+              </p>
+            </div>
+          </div>
+
+          {/* Gradiente escolaridade × raça */}
+          <div className="mt-6">
+            <h4 className="text-sm font-semibold mb-3">Mortalidade Hospitalar por Escolaridade e Raça (%)</h4>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={peresStudyData.mortalidadePorEscolaridade}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="nivel" tick={{ fontSize: 9 }} />
+                  <YAxis domain={[0, 70]} tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    formatter={(value: number, name: string) => [`${value}%`, name === 'pretosPardos' ? 'Pretos/Pardos' : 'Brancos']}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="pretosPardos" name="Pretos/Pardos" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Analfabetos pretos/pardos tiveram a maior mortalidade (58%). A disparidade racial persiste em todos os
+              níveis de escolaridade, demonstrando que o racismo estrutural opera independentemente da educação formal.
+            </p>
+          </div>
+          <AuditFooter fontes={FONTE_PERES_ETAL} documentos={['CERD 2022 §24', 'ICERD Art. 5(e)(iv)']} />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Letalidade hospitalar por raça */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Letalidade Hospitalar por COVID-19 e Raça</CardTitle>
-            <CardDescription>SIVEP-Gripe / NOIS PUC-Rio — pacientes hospitalizados</CardDescription>
+            <CardDescription>Peres et al. (2021) — SIVEP-Gripe, n=228.196 (fev-ago 2020)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
