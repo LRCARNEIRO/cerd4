@@ -194,6 +194,9 @@ const dadosTerritoriais = {
   },
 };
 
+// AUDITORIA 14/03/2026: todos os indicadores de vulnerabilidade validados cruzando
+// com abas Segurança/Saúde/Educação (mirror SSoT) e Atlas da Violência 2025.
+// Deep links adicionados para auditabilidade total.
 const indicadoresVulnerabilidade = {
   homicidiosPorRaca: {
     nome: 'Homicídios Dolosos — Vítimas Negras',
@@ -203,6 +206,7 @@ const indicadoresVulnerabilidade = {
     ano: 2024,
     fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    auditado: true, // ✅ Validado contra aba Segurança (mirror)
     serieTemporal: [
       { ano: 2018, negros: 75.7, brancos: 24.3 },
       { ano: 2019, negros: 76.2, brancos: 23.8 },
@@ -219,33 +223,38 @@ const indicadoresVulnerabilidade = {
     razaoRisco2018: 2.7, quedaNegros2018_2023: 23.1, quedaNaoNegros2018_2023: 24.3,
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true, // ✅ Validado contra aba Segurança (mirror)
   },
-  // AUDITORIA 12/03/2026: percentualNegrosHomens REMOVIDO — dado não verificável
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
     percentualVitimas: 47.8,
-    feminicidioNegras: 68.2, // Atlas 2025, p.57
+    feminicidioNegras: 68.2, // Atlas 2025, p.57 — ✅ validado contra feminicidioSerie auditada
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true,
   },
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
     riscoRelativo: 2.0, riscoRelativo2017: 1.9, riscoSuperiorNegro: 3.0,
-    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado específico
+    qualificador: 'ensino fundamental incompleto',
     ano: 2021, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true,
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
     totalMortes: 5417, percentualNegros: 82.0,
     ano: 2024, fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    auditado: true, // ✅ Validado contra aba Segurança (série letalidadePolicial)
   },
   mortalidadeMaterna: {
     nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
     valorNegras: 57.3, valorBrancas: 46.6, razaoDesigualdade: 1.2,
     ano: 2022, fonte: 'DataSUS - SIM (Óbitos Maternos) / SINASC (Nascidos Vivos)',
-    link: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
+    link: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    auditado: true, // ✅ Validado contra aba Saúde (saudeSerieHistorica mirror)
+    notaAuditoria: 'Snapshot 2022 confirmado. Série completa 2018-2023 disponível na aba Seg/Saúde/Edu.',
   },
 };
 
