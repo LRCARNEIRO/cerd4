@@ -440,7 +440,7 @@ export function CovidRacialSection() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Letalidade Hospitalar por COVID-19 e Raça</CardTitle>
-            <CardDescription>Peres et al. (2021) — SIVEP-Gripe, n=228.196 (fev-ago 2020)</CardDescription>
+            <CardDescription>Moreira et al. (2023) — Int J Equity Health 22:186</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
@@ -466,10 +466,10 @@ export function CovidRacialSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Indígenas hospitalizados tiveram a maior letalidade (43%), seguidos por pretos/pardos (42%) e brancos (37%).
-              Dados de Peres et al. (2021), n=228.196 pacientes com desfecho definido.
+              Pretos tiveram a maior letalidade (37,9%), seguidos por indígenas (34,7%), pardos (34,0%), brancos (32,2%) e asiáticos (31,6%).
+              Fonte: Moreira et al. (2023), Int J Equity Health.
             </p>
-            <AuditFooter fontes={[...FONTE_SIVEP_NOIS, ...FONTE_PERES_ETAL]} documentos={['CERD 2022 §24']} compact />
+            <AuditFooter fontes={[...FONTE_SPRINGER_LETALIDADE, ...FONTE_PERES_ETAL]} documentos={['CERD 2022 §24']} compact />
           </CardContent>
         </Card>
 
