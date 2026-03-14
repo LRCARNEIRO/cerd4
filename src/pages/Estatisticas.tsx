@@ -96,7 +96,7 @@ export default function Estatisticas() {
     // EVOLUÇÃO DESIGUALDADE
     'evolucaoDesigualdade (7 anos × 3 razões)': { total: 21, auditados: 7 },  // 2024 auditado
     // ADM PÚBLICA / COVID (componentes próprios)
-    'AdmPública/SINAPIR': { total: 5, auditados: 0 },
+    'AdmPública/SINAPIR': { total: 5, auditados: 5 },
     'CovidRacial': { total: 8, auditados: 0 },
   };
 
