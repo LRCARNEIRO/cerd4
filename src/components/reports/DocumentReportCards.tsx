@@ -296,6 +296,18 @@ export function DocumentReportCards() {
                   fiosCondutores, conclusoesDinamicas, insightsCruzamento,
                   stats, lacunas: lacunas || [], respostas: respostas || [],
                   indicadores: indicadores || [], orcStats,
+                  mirrorData: {
+                    segurancaPublica: mirror.segurancaPublica,
+                    feminicidioSerie: mirror.feminicidioSerie,
+                    educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+                    saudeSerieHistorica: mirror.saudeSerieHistorica,
+                    indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+                    evolucaoDesigualdade: mirror.evolucaoDesigualdade,
+                    violenciaInterseccional: mirror.violenciaInterseccional,
+                    classePorRaca: mirror.classePorRaca,
+                    dadosDemograficos: mirror.dadosDemograficos,
+                    povosTradicionais: mirror.povosTradicionais,
+                  },
                 });
                 downloadAsDocx(html, 'Conclusoes-Analiticas-Integral');
               }}
