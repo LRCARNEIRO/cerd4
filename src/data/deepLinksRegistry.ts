@@ -227,9 +227,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Saúde materna raça × classe',
     secao: 'Interseccionalidade',
-    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf/view',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF direto)',
   },
   {
     indicador: 'Dados Disque 100 — LGBTQIA+',
@@ -273,9 +273,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Mortalidade materna COVID',
     secao: 'COVID Racial',
-    url: 'https://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
+    url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
     fonte: 'DataSUS/SIM',
-    descricao: 'Mortalidade materna — série temporal por cor/raça',
+    descricao: 'DataSUS TabNet → Estatísticas Vitais → Mortalidade Materna → Coluna: Cor/Raça (deep link CGI bloqueado por CORS)',
   },
   {
     indicador: 'Mortalidade materna — IEPS',
@@ -301,9 +301,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Cobertura vacinal COVID',
     secao: 'COVID Racial',
-    url: 'https://sipni.datasus.gov.br',
+    url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
     fonte: 'SI-PNI/DataSUS',
-    descricao: 'Sistema de Informação do PNI — cobertura vacinal',
+    descricao: 'DataSUS TabNet → Imunizações → COVID-19 Doses Aplicadas → raça/cor',
   },
   {
     indicador: 'Vacinação e raça — Fiocruz',
@@ -319,16 +319,16 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Chefia familiar monoparental negra',
     secao: 'Vulnerabilidades',
-    url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2024 — chefia familiar monoparental (PDF)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF direto)',
   },
   {
     indicador: 'Insegurança alimentar negra',
     secao: 'Vulnerabilidades',
-    url: 'https://olheparaafome.com.br/VIGISAN_Inseguranca_alimentar.pdf',
+    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
     fonte: 'II VIGISAN / Rede PENSSAN',
-    descricao: 'VIGISAN — Insegurança Alimentar no contexto da Covid-19 (PDF alternativo)',
+    descricao: 'II VIGISAN 2022 — Insegurança Alimentar no contexto da Covid-19 (PDF direto)',
   },
   {
     indicador: 'Desocupação por cor/raça',
@@ -372,14 +372,14 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SINAPIR',
     secao: 'Administração Pública',
-    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir',
+    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/copy2_of_noticias/novas-adesoes-fortalecem-o-sistema-nacional-de-promocao-da-igualdade-racial',
     fonte: 'MIR',
-    descricao: 'SINAPIR — Sistema Nacional de Promoção da Igualdade Racial',
+    descricao: 'SINAPIR — Novas adesões ao Sistema Nacional de Promoção da Igualdade Racial (Jul/2025)',
   },
   {
     indicador: 'SINAPIR — lista entes',
     secao: 'Administração Pública',
-    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/20260105SINAPIRGeralAtualizado.pdf',
+    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/SINAPIRGeralAtualizado06.01.2025.pdf',
     fonte: 'MIR',
     descricao: 'SINAPIR — Lista de entes participantes (Jan/2025, PDF)',
   },
@@ -404,9 +404,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Quilombolas — INCRA',
     secao: 'Lacunas CERD',
-    url: 'https://www.palmares.gov.br/',
+    url: 'https://palmares.gov.br/wp-content/uploads/2016/06/COMUNIDADES-CERTIFICADAS.pdf',
     fonte: 'Palmares',
-    descricao: 'Fundação Cultural Palmares — certificações quilombolas',
+    descricao: 'Fundação Cultural Palmares — Certidões expedidas a CRQs (PDF)',
   },
 
   // ═══════════════════════════════════════════
@@ -471,9 +471,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Taxas de rendimento escolar',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-rendimento',
+    url: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-rendimento-escolar',
     fonte: 'INEP',
-    descricao: 'INEP — Taxas de rendimento (aprovação, reprovação, abandono)',
+    descricao: 'INEP — Taxas de rendimento escolar (aprovação, reprovação, abandono)',
   },
   {
     indicador: 'Microdados Censo Escolar',
@@ -531,9 +531,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SIOP — planejamento orçamentário',
     secao: 'Orçamento',
-    url: 'https://www.siop.planejamento.gov.br/siop/',
+    url: 'https://www1.siop.planejamento.gov.br/acessopublico/?rvn=1',
     fonte: 'MPO',
-    descricao: 'SIOP — Sistema Integrado de Planejamento e Orçamento',
+    descricao: 'SIOP — Acesso Público: consulta livre ao orçamento federal',
   },
   {
     indicador: 'SICONFI — orçamento subnacional',
@@ -545,9 +545,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Portal Transparência — MIR',
     secao: 'Orçamento',
-    url: 'https://portaldatransparencia.gov.br/orgaos/92000-MINISTERIO-DA-IGUALDADE-RACIAL',
+    url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2024&ate=31%2F12%2F2026&orgaos=OR92000',
     fonte: 'CGU',
-    descricao: 'Portal da Transparência — Ministério da Igualdade Racial',
+    descricao: 'Portal da Transparência — Despesas do MIR (Órgão 92000) filtrado',
   },
 
   // ═══════════════════════════════════════════
