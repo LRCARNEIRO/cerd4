@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
