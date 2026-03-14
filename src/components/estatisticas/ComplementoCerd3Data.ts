@@ -65,6 +65,7 @@ export const trabalhoEscravo: ComplementoIndicador = {
   url_fonte: 'https://sit.trabalho.gov.br/radar/',
   artigos_convencao: ['Art.5(e)(i)', 'Art.6'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'MTE 2025: 83% dos resgatados são pretos ou pardos. Acumulado histórico: 66% negro.',
