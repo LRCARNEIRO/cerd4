@@ -827,6 +827,7 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
           <p className="text-xs font-semibold text-foreground mb-1">📊 Interpretação ({sortedYears[0]}→{sortedYears[sortedYears.length - 1]}):</p>
           <p className="text-xs text-muted-foreground leading-relaxed">
             {(() => {
+              const lowerBetter = isLowerBetter(indicador.nome, indicador.categoria);
               const interpretations = groups.map(group => {
                 const vals = chartData.filter(d => d[group] != null).map(d => d[group] as number);
                 if (vals.length < 2) return null;
@@ -835,11 +836,10 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
                 const diff = last - first;
                 const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
                 const label = formatGroupName(group);
-                const isSeguranca = indicador.categoria === 'Segurança Pública';
                 const direction = diff > 0
-                  ? (isSeguranca ? 'piorou' : 'melhorou')
+                  ? (lowerBetter ? 'piorou ↑' : 'melhorou ↑')
                   : diff < 0
-                    ? (isSeguranca ? 'melhorou' : 'piorou')
+                    ? (lowerBetter ? 'melhorou ↓' : 'piorou ↓')
                     : 'manteve-se estável';
                 return `${label}: de ${first.toLocaleString('pt-BR')} para ${last.toLocaleString('pt-BR')} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'var. n/d'}, ${direction})`;
               }).filter(Boolean);
