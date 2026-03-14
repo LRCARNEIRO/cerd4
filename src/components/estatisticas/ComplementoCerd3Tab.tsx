@@ -23,7 +23,18 @@ function TendenciaBadge({ t }: { t?: string }) {
   return <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>;
 }
 
-function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years: string[]; chartData: Record<string, any>[] } | null {
+interface TimeSeriesResult {
+  keys: string[];
+  years: string[];
+  chartData: Record<string, any>[];
+  label: string; // e.g. '%' or 'absoluto'
+}
+
+function isPctKey(key: string): boolean {
+  return /^pct_|^razao_|_pct$|_razao$|_ratio$/.test(key);
+}
+
+function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | null {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
     'escolas_em_territorios', 'alfabetizacao', 'por_regiao', 'religioes_vitimadas_2024',
@@ -35,7 +46,8 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
     'processos_pendentes_acumulados',
   ]);
 
-  const seriesKeys: string[] = [];
+  const pctSeriesKeys: string[] = [];
+  const absSeriesKeys: string[] = [];
   const allYears = new Set<string>();
 
   for (const [k, v] of Object.entries(dados)) {
@@ -45,42 +57,54 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
       const yearsOnly = subKeys.filter(s => /^\d{4}$/.test(s));
       if (yearsOnly.length >= 2) {
         const firstVal = v[yearsOnly[0]];
-        if (typeof firstVal === 'number' || typeof firstVal === 'string') {
-          seriesKeys.push(k);
-          yearsOnly.forEach(y => allYears.add(y));
-        } else if (typeof firstVal === 'object' && firstVal !== null) {
-          seriesKeys.push(k);
+        if (typeof firstVal === 'number' || typeof firstVal === 'string' || (typeof firstVal === 'object' && firstVal !== null)) {
+          if (isPctKey(k)) {
+            pctSeriesKeys.push(k);
+          } else {
+            absSeriesKeys.push(k);
+          }
           yearsOnly.forEach(y => allYears.add(y));
         }
       }
     }
   }
 
-  if (seriesKeys.length === 0 || allYears.size < 2) return null;
+  if ((pctSeriesKeys.length + absSeriesKeys.length) === 0 || allYears.size < 2) return null;
 
   const sortedYears = Array.from(allYears).sort();
-  const flatKeys: string[] = [];
 
-  const chartData = sortedYears.map(year => {
-    const point: Record<string, any> = { ano: year };
-    for (const sk of seriesKeys) {
-      const val = dados[sk]?.[year];
-      if (val === undefined || val === null) continue;
-      if (typeof val === 'object' && !Array.isArray(val)) {
-        for (const [race, rv] of Object.entries(val as Record<string, any>)) {
-          const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
-          if (!flatKeys.includes(flatKey)) flatKeys.push(flatKey);
-          if (typeof rv === 'number') point[flatKey] = rv;
+  function buildGroup(seriesKeys: string[], label: string): TimeSeriesResult | null {
+    if (seriesKeys.length === 0) return null;
+    const flatKeys: string[] = [];
+    const chartData = sortedYears.map(year => {
+      const point: Record<string, any> = { ano: year };
+      for (const sk of seriesKeys) {
+        const val = dados[sk]?.[year];
+        if (val === undefined || val === null) continue;
+        if (typeof val === 'object' && !Array.isArray(val)) {
+          for (const [race, rv] of Object.entries(val as Record<string, any>)) {
+            const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
+            if (!flatKeys.includes(flatKey)) flatKeys.push(flatKey);
+            if (typeof rv === 'number') point[flatKey] = rv;
+          }
+        } else {
+          const displayKey = sk.replace(/_/g, ' ');
+          if (!flatKeys.includes(displayKey)) flatKeys.push(displayKey);
+          point[displayKey] = typeof val === 'number' ? val : parseFloat(String(val));
         }
-      } else {
-        if (!flatKeys.includes(sk)) flatKeys.push(sk);
-        point[sk] = typeof val === 'number' ? val : parseFloat(String(val));
       }
-    }
-    return point;
-  });
+      return point;
+    });
+    return { keys: flatKeys, years: sortedYears, chartData, label };
+  }
 
-  return { keys: flatKeys.length > 0 ? flatKeys : seriesKeys, years: sortedYears, chartData };
+  const results: TimeSeriesResult[] = [];
+  const pctGroup = buildGroup(pctSeriesKeys, '%');
+  const absGroup = buildGroup(absSeriesKeys, 'absoluto');
+  if (pctGroup) results.push(pctGroup);
+  if (absGroup) results.push(absGroup);
+
+  return results.length > 0 ? results : null;
 }
 
 /** Renders chart + always renders table below it */
