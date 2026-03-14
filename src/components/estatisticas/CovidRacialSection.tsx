@@ -233,7 +233,9 @@ export function CovidRacialSection() {
               <p className="text-sm text-muted-foreground">
                 A pandemia de COVID-19 expôs e aprofundou as desigualdades raciais estruturais no Brasil. 
                 Pessoas pretas e pardas morreram <strong>57% a mais</strong> do que brancas em 2020 
-                (~36 mil óbitos em excesso). A análise interseccional revela que mulheres negras, idosos, 
+                (~36 mil óbitos em excesso). Estudo peer-reviewed com <strong>228.196 pacientes</strong> (Peres et al., 2021)
+                confirmou OR ajustado de <strong>1,15</strong> para mortalidade hospitalar de pretos/pardos, mesmo controlando
+                por sexo, idade, escolaridade e comorbidades. A análise interseccional revela que mulheres negras, idosos, 
                 indígenas, quilombolas, jovens periféricos e trabalhadores informais negros foram 
                 desproporcionalmente afetados.
               </p>
