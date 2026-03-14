@@ -44,10 +44,31 @@ function generateConsolidatedHTML(data: {
   insightsCruzamento: InsightCruzamento[];
   sinteseExecutiva: any;
   respostas: any[];
+  mirrorData?: any;
 }) {
   const { indicadores, lacunas, lacunasStats, orcStats, orcamentarios, documentosNormativos,
-    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas } = data;
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas, mirrorData } = data;
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const m = mirrorData || {};
+  const dadosDemograficos = m.dadosDemograficos || hcDemo;
+  const evolucaoComposicaoRacial = m.evolucaoComposicaoRacial || hcEvolucao;
+  const segurancaPublica = m.segurancaPublica || hcSeguranca;
+  const feminicidioSerie = m.feminicidioSerie || hcFeminicidio;
+  const educacaoSerieHistorica = m.educacaoSerieHistorica || hcEducacao;
+  const indicadoresSocioeconomicos = m.indicadoresSocioeconomicos || hcSocioEco;
+  const analfabetismoGeral2024 = m.analfabetismoGeral2024 || hcAnalfabetismo;
+  const saudeSerieHistorica = m.saudeSerieHistorica || hcSaude;
+  const rendimentosCenso2022 = m.rendimentosCenso2022 || hcRendimentos;
+  const interseccionalidadeTrabalho = m.interseccionalidadeTrabalho || hcIntersecTrabalho;
+  const deficienciaPorRaca = m.deficienciaPorRaca || hcDeficiencia;
+  const lgbtqiaPorRaca = m.lgbtqiaPorRaca || hcLgbtqia;
+  const povosTradicionais = m.povosTradicionais || hcPovos;
+  const violenciaInterseccional = m.violenciaInterseccional || hcViolencia;
+  const evolucaoDesigualdade = m.evolucaoDesigualdade || hcEvolDesig;
+  const classePorRaca = m.classePorRaca || hcClasse;
+  const jovensNegrosViolencia = m.jovensNegrosViolencia || hcJovensViolencia;
 
   // Shorthand for comparisons
   const seg2018 = segurancaPublica[0];
