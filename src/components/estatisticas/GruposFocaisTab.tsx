@@ -414,8 +414,8 @@ export function GruposFocaisTab() {
               <div>
                 <AlertTriangle className="w-8 h-8 mb-2 text-destructive" />
                 <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
-                <p className="text-2xl font-bold text-destructive">S/D</p>
-                <p className="text-xs text-destructive mt-1">Lacuna crítica CERD §54-55</p>
+                <p className="text-2xl font-bold">{gruposFocaisData.ciganos.populacao?.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
               </div>
               <div className="flex flex-col items-end gap-1">
                 <AuditadoBadge nota="SIDRA 9891 — Censo 2022 (41.738 ciganos contados)" />
