@@ -531,9 +531,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SIOP — planejamento orçamentário',
     secao: 'Orçamento',
-    url: 'https://www.siop.planejamento.gov.br/siop/',
+    url: 'https://www1.siop.planejamento.gov.br/acessopublico/?rvn=1',
     fonte: 'MPO',
-    descricao: 'SIOP — Sistema Integrado de Planejamento e Orçamento',
+    descricao: 'SIOP — Acesso Público: consulta livre ao orçamento federal',
   },
   {
     indicador: 'SICONFI — orçamento subnacional',
