@@ -731,6 +731,7 @@ export function ConsolidatedScopeReport() {
         insightsCruzamento,
         sinteseExecutiva,
         respostas: respostas || [],
+        mirrorData,
       });
 
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
