@@ -326,10 +326,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '-3,3', '7.610', '36.200', '5,16'],
         ['2022', '3,0', '9.915', '47.607', '5,17'],
         ['2023', '2,9', '10.900', '52.092', '4,99'],
-        ['2024*', '3,2', '11.400', '54.180', '5,20']
+        ['2024', 'N/D — Pendente de verificação', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. Valores nominais em R$ bilhões.',
+    notas: 'Valores nominais em R$ bilhões. Dado de 2024 pendente de publicação oficial pelo IBGE.',
     tendencia: 'crescente'
   },
   {
