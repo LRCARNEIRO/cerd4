@@ -93,14 +93,45 @@ const excessoMortalidade = [
   },
 ];
 
-// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio
-// Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio), Nota Técnica 11
+// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio + Peres et al. 2021
+// Fonte primária: Peres et al. Public Health 192 (2021) 15-20 — Tabela 1 (n=228.196)
 // Navegação: SIVEP-Gripe (BigData COVID Fiocruz) → Painel SRAG → filtro raça/cor → desfecho óbito vs alta
 const letalidadeHospitalar = [
-  { raca: 'Pretos e Pardos', letalidade: 55, sobrevivencia: 45 },
-  { raca: 'Brancos', letalidade: 38, sobrevivencia: 62 },
-  { raca: 'Indígenas', letalidade: 62, sobrevivencia: 38 },
+  { raca: 'Pretos e Pardos', letalidade: 42, sobrevivencia: 58 },
+  { raca: 'Brancos', letalidade: 37, sobrevivencia: 63 },
+  { raca: 'Indígenas', letalidade: 43, sobrevivencia: 57 },
+  { raca: 'Asiáticos', letalidade: 39, sobrevivencia: 61 },
 ];
+
+// Dados do estudo Peres et al. (2021) — SIVEP-Gripe, 228.196 pacientes
+// DOI: 10.1016/j.puhe.2021.01.005
+const peresStudyData = {
+  amostra: 228196,
+  periodo: 'fev-ago 2020',
+  mortalidadeGeral: 37,
+  // Acesso a UTI por raça (Tabela 1)
+  acessoUTI: [
+    { raca: 'Brancos', admissaoUTI: 36, ventilacaoInvasiva: 19, ventilacaoForaUTI: 11 },
+    { raca: 'Pretos/Pardos', admissaoUTI: 32, ventilacaoInvasiva: 21, ventilacaoForaUTI: 17 },
+    { raca: 'Indígenas', admissaoUTI: 28, ventilacaoInvasiva: 23, ventilacaoForaUTI: 28 },
+    { raca: 'Asiáticos', admissaoUTI: 34, ventilacaoInvasiva: 19, ventilacaoForaUTI: 14 },
+  ],
+  // Odds Ratios ajustados (Tabela S4, Fig. 3)
+  oddsRatios: [
+    { fator: 'Pretos/Pardos (vs Brancos)', or: 1.15, icInf: 1.09, icSup: 1.22 },
+    { fator: 'Região Norte (vs Sudeste)', or: 2.76, icInf: 2.45, icSup: 3.10 },
+    { fator: 'Região Nordeste (vs Sudeste)', or: 2.05, icInf: 1.86, icSup: 2.26 },
+    { fator: 'Analfabeto (vs Superior)', or: 1.77, icInf: 1.58, icSup: 1.98 },
+    { fator: 'Até Ensino Médio (vs Superior)', or: 1.52, icInf: 1.40, icSup: 1.65 },
+  ],
+  // Mortalidade por escolaridade × raça
+  mortalidadePorEscolaridade: [
+    { nivel: 'Analfabeto', pretosPardos: 58, brancos: 52 },
+    { nivel: 'Até Ens. Médio', pretosPardos: 48, brancos: 42 },
+    { nivel: 'Ensino Médio', pretosPardos: 38, brancos: 33 },
+    { nivel: 'Superior', pretosPardos: 28, brancos: 25 },
+  ],
+};
 
 // Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
 // Navegação PNAD COVID: covid19.ibge.gov.br → Microdados → filtro V0009 (raça/cor)
