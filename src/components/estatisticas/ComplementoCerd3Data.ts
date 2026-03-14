@@ -638,10 +638,7 @@ export const complementoCerd3Indicators: ComplementoIndicador[] = [
   deficitHabitacionalRacial,
   favelasAglomerados,
   saneamentoRacial,
-  // Censo 2022
-  quilombolasCenso,
-  ciganosCenso,
-  indigenasTisCenso,
+  // Censo 2022 (quilombolasCenso, ciganosCenso, indigenasTisCenso exibidos apenas nos Mapas Demográficos)
   religioesMatrizAfricana,
   // Migração
   migracaoInternacional,
