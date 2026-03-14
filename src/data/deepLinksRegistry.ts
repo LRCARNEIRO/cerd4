@@ -273,9 +273,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Mortalidade materna COVID',
     secao: 'COVID Racial',
-    url: 'https://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
+    url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
     fonte: 'DataSUS/SIM',
-    descricao: 'Mortalidade materna — série temporal por cor/raça',
+    descricao: 'DataSUS TabNet → Estatísticas Vitais → Mortalidade Materna → Coluna: Cor/Raça (deep link CGI bloqueado por CORS)',
   },
   {
     indicador: 'Mortalidade materna — IEPS',
