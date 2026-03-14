@@ -45,6 +45,7 @@ export const trabalhoInfantil: ComplementoIndicador = {
   url_fonte: 'https://sidra.ibge.gov.br/tabela/7436',
   artigos_convencao: ['Art.5(e)(i)'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
+  tipo: 'complementar',
   tendencia: 'melhora',
   dados: {
     nota: 'Em 2022, 66,3% das crianças em situação de trabalho infantil eram pretas ou pardas.',
