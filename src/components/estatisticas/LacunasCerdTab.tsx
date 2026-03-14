@@ -70,6 +70,52 @@ export function LacunasCerdTab() {
   const { data: stats, isLoading: statsLoading } = useLacunasStats();
   const { data: lacunas, isLoading: lacunasLoading } = useLacunasIdentificadas();
   const { data: respostas, isLoading: respostasLoading } = useRespostasLacunasCerdIII();
+  const mirror = useMirrorData();
+
+  // SSoT: derived series from useMirrorData (BD first, fallback to hardcoded)
+  const educacaoSerieHistorica = mirror.educacaoSerieHistorica;
+  const indicadoresSocioeconomicos = mirror.indicadoresSocioeconomicos;
+  const segurancaPublica = mirror.segurancaPublica;
+
+  const dadosEducacaoHistorico = educacaoSerieHistorica.map((d: any) => ({
+    ano: d.ano,
+    superiorNegro: d.superiorNegroPercent,
+    superiorBranco: d.superiorBrancoPercent,
+    analfabetismoNegro: d.analfabetismoNegro,
+    analfabetismoBranco: d.analfabetismoBranco,
+    gapSuperior: +(d.superiorBrancoPercent - d.superiorNegroPercent).toFixed(1),
+  }));
+
+  const dadosDesempregoHistorico = indicadoresSocioeconomicos.map((d: any) => ({
+    ano: d.ano,
+    negros: d.desempregoNegro,
+    brancos: d.desempregoBranco,
+    diferenca: +(d.desempregoNegro - d.desempregoBranco).toFixed(1),
+    fonte: d.fonte,
+  }));
+
+  const dadosHomicidioHistorico = segurancaPublica.map((d: any) => ({
+    ano: d.ano,
+    negros: d.homicidioNegro,
+    naoNegros: d.homicidioBranco,
+    razao: d.razaoRisco,
+    fonte: d.ano <= 2023 ? 'Atlas da Violência 2025' : '19º Anuário FBSP 2025',
+  }));
+
+  const dadosLetalidadePolicial = segurancaPublica.map((d: any) => ({
+    ano: d.ano,
+    percentualNegros: d.letalidadePolicial,
+    percentualVitimasNegras: d.percentualVitimasNegras,
+    fonte: 'Anuário FBSP',
+  }));
+
+  const dadosRendaHistorico = indicadoresSocioeconomicos.map((d: any) => ({
+    ano: d.ano,
+    brancos: d.rendaMediaBranca,
+    negros: d.rendaMediaNegra,
+    razao: +(d.rendaMediaNegra / d.rendaMediaBranca).toFixed(2),
+    fonte: d.fonte,
+  }));
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['lacunas-stats'] });

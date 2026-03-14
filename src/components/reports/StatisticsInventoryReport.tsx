@@ -7,29 +7,13 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { toast } from 'sonner';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import {
-  dadosDemograficos,
-  evolucaoComposicaoRacial,
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  feminicidioSerie,
-  educacaoSerieHistorica,
-  saudeSerieHistorica,
-  interseccionalidadeTrabalho,
-  deficienciaPorRaca,
-  serieAntraTrans,
-  lgbtqiaPorRaca,
-  classePorRaca,
-  violenciaInterseccional,
   radarVulnerabilidades,
-  evolucaoDesigualdade,
   atlasViolencia2025,
-  rendimentosCenso2022,
-  analfabetismoGeral2024,
   jovensNegrosViolencia,
   razaoRendaRacial,
   interseccionalidadeTrabalhoFontes,
-  povosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas,

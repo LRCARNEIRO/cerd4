@@ -89,6 +89,18 @@ export function DocumentReportCards() {
         fiosCondutores, conclusoesDinamicas, insightsCruzamento,
         stats, lacunas: lacunas || [], respostas: respostas || [],
         indicadores: indicadores || [], orcStats,
+        mirrorData: {
+          segurancaPublica: mirror.segurancaPublica,
+          feminicidioSerie: mirror.feminicidioSerie,
+          educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+          saudeSerieHistorica: mirror.saudeSerieHistorica,
+          indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+          evolucaoDesigualdade: mirror.evolucaoDesigualdade,
+          violenciaInterseccional: mirror.violenciaInterseccional,
+          classePorRaca: mirror.classePorRaca,
+          dadosDemograficos: mirror.dadosDemograficos,
+          povosTradicionais: mirror.povosTradicionais,
+        },
       });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);

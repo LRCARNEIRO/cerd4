@@ -293,7 +293,15 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
 }
 
 export function SerieTemporalGrupos() {
-  const indicadoresPorGrupo = buildIndicadores();
+  const mirror = useMirrorData();
+  const indicadoresPorGrupo = buildIndicadores(
+    mirror.segurancaPublica,
+    mirror.educacaoSerieHistorica,
+    mirror.indicadoresSocioeconomicos,
+    mirror.feminicidioSerie,
+    mirror.saudeSerieHistorica,
+    mirror.povosTradicionais,
+  );
 
   const grupoLabels: Record<string, string> = {
     populacao_negra: 'População Negra (Preta + Parda)',
