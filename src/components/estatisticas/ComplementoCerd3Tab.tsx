@@ -372,6 +372,15 @@ export function ComplementoCerd3Tab() {
         ))}
       </div>
 
+      {/* MAPAS INTERATIVOS — Censo 2022 */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <h2 className="text-lg font-bold text-foreground">🗺️ Mapas Demográficos — Censo 2022</h2>
+          <Badge variant="outline" className="text-[10px]">Quilombolas · Ciganos · Indígenas em TIs</Badge>
+        </div>
+        <CensoDemografiaMapas />
+      </div>
+
       {/* SUBSEÇÃO 2: Dados Novos */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
