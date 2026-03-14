@@ -343,7 +343,7 @@ export function GruposFocaisTab() {
                     <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
                   </TooltipContent>
                 </Tooltip>
-                <AuditadoBadge nota="SIDRA 9578 — Censo 2022 (universo)" />
+                
               </div>
             </div>
             <FonteInfo 
