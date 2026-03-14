@@ -483,17 +483,17 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2020', '2024*'],
+      headers: ['Área', '2010', '2015', '2020', '2022'],
       rows: [
-        ['Previdência Social', '57,1%', '53,2%', '50,7%', '52,8%'],
-        ['Saúde', '12,6%', '11,8%', '13,1%', '12,3%'],
-        ['Educação e Cultura', '13,7%', '15,4%', '11,3%', '14,9%'],
-        ['Assistência Social', '9,0%', '8,8%', '19,7%', '14,9%'],
-        ['Trabalho e Emprego', '5,4%', '6,8%', '8,5%', '7,7%'],
-        ['Outros', '2,2%', '4,0%', '-3,3%', '-2,6%']
+        ['Previdência Social', '57,1%', '53,2%', '50,7%', 'N/D'],
+        ['Saúde', '12,6%', '11,8%', '13,1%', 'N/D'],
+        ['Educação e Cultura', '13,7%', '15,4%', '11,3%', 'N/D'],
+        ['Assistência Social', '9,0%', '8,8%', '19,7%', 'N/D'],
+        ['Trabalho e Emprego', '5,4%', '6,8%', '8,5%', 'N/D'],
+        ['Outros', '2,2%', '4,0%', '-3,3%', 'N/D']
       ]
     },
-    notas: '* Projeção. Assistência Social expandiu significativamente em 2020.',
+    notas: 'Assistência Social expandiu significativamente em 2020. Dados de 2022 pendentes de consolidação oficial.',
     tendencia: 'estavel'
   }
 ];
