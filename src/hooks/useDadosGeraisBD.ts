@@ -29,12 +29,16 @@ export function useDadosGeraisBD() {
       (i: any) => i.subcategoria === 'composicao_racial'
     );
 
-    let dadosDemograficos: typeof hardcodedDemograficos;
-    let fonteDemografia: 'bd' | 'hardcoded';
+    let dadosDemograficos = hardcodedDemograficos;
+    let fonteDemografia: 'bd' | 'hardcoded' = 'hardcoded';
+    let paragrafos: string | null = null;
+    let artigosConvencao: string[] = [];
 
     if (composicaoRecord) {
       const d = composicaoRecord.dados as any;
+      // Merge BD data over hardcoded, keeping all hardcoded fields as fallback
       dadosDemograficos = {
+        ...hardcodedDemograficos,
         populacaoTotal: d.populacaoTotal ?? hardcodedDemograficos.populacaoTotal,
         composicaoRacial: d.composicao ?? hardcodedDemograficos.composicaoRacial,
         populacaoNegra: d.populacaoNegra ?? hardcodedDemograficos.populacaoNegra,
@@ -44,9 +48,8 @@ export function useDadosGeraisBD() {
         urlFonte: composicaoRecord.url_fonte ?? hardcodedDemograficos.urlFonte,
       };
       fonteDemografia = 'bd';
-    } else {
-      dadosDemograficos = hardcodedDemograficos;
-      fonteDemografia = 'hardcoded';
+      paragrafos = d.paragrafos_cerd ?? null;
+      artigosConvencao = (composicaoRecord as any).artigos_convencao || [];
     }
 
     // ── Evolução Composição Racial (subcategoria: evolucao_racial) ──
@@ -54,34 +57,23 @@ export function useDadosGeraisBD() {
       (i: any) => i.subcategoria === 'evolucao_racial'
     );
 
-    let evolucaoComposicaoRacial: typeof hardcodedEvolucao;
-    let fonteEvolucao: 'bd' | 'hardcoded';
+    let evolucaoComposicaoRacial = hardcodedEvolucao;
+    let fonteEvolucao: 'bd' | 'hardcoded' = 'hardcoded';
 
     if (evolucaoRecord) {
       const d = evolucaoRecord.dados as any;
-      // The mirror stores data as { series: { "2018": { branca, negra }, ... } }
       if (d.series && typeof d.series === 'object') {
         evolucaoComposicaoRacial = Object.entries(d.series)
           .map(([ano, vals]: [string, any]) => ({
             ano: Number(ano),
             branca: vals.branca,
             negra: vals.negra,
+            fonte: evolucaoRecord.fonte || 'PNAD Contínua',
           }))
           .sort((a, b) => a.ano - b.ano);
-      } else {
-        evolucaoComposicaoRacial = hardcodedEvolucao;
       }
       fonteEvolucao = 'bd';
-    } else {
-      evolucaoComposicaoRacial = hardcodedEvolucao;
-      fonteEvolucao = 'hardcoded';
     }
-
-    // ── Metadados CERD (parágrafos) ──
-    const paragrafos = composicaoRecord
-      ? (composicaoRecord.dados as any).paragrafos_cerd
-      : null;
-    const artigosConvencao = composicaoRecord?.artigos_convencao || [];
 
     return {
       dadosDemograficos,
