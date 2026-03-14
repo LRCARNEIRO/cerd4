@@ -319,9 +319,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Chefia familiar monoparental negra',
     secao: 'Vulnerabilidades',
-    url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
+    url: 'https://www.gov.br/mulheres/pt-br/central-de-conteudos/publicacoes/raseam-2025.pdf',
     fonte: 'RASEAM',
-    descricao: 'RASEAM 2024 — chefia familiar monoparental (PDF)',
+    descricao: 'RASEAM 2025 — Relatório Anual Socioeconômico da Mulher (PDF direto)',
   },
   {
     indicador: 'Insegurança alimentar negra',
