@@ -33,7 +33,7 @@ const App = () => (
           <Route path="/common-core" element={<CommonCore />} />
           <Route path="/estatisticas" element={<Estatisticas />} />
           <Route path="/orcamento" element={<Orcamento />} />
-          <Route path="/orcamento-teste" element={<OrcamentoTeste />} />
+          
           <Route path="/recomendacoes" element={<Recomendacoes />} />
           <Route path="/fontes" element={<Fontes />} />
           <Route path="/grupos-focais" element={<Navigate to="/estatisticas" replace />} />
