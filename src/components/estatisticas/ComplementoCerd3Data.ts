@@ -132,6 +132,7 @@ export const distorcaoIdadeSerie: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/indicadores-educacionais',
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'melhora',
   dados: {
     fundamental: {
