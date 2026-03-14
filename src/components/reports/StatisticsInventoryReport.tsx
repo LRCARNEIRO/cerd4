@@ -428,8 +428,12 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
+function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
+    segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
+    interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
+    lgbtqiaPorRaca, deficienciaPorRaca, classePorRaca, evolucaoDesigualdade } = m;
 
   // Series data
   const series = [
