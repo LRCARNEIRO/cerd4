@@ -214,7 +214,11 @@ export function DocumentReportCards() {
               variant="outline"
               className="gap-2"
               onClick={() => {
-                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
+                  segurancaPublica: mirror.segurancaPublica,
+                  feminicidioSerie: mirror.feminicidioSerie,
+                  educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+                });
                 downloadAsDocx(html, 'CERD-IV-Relatorio-Periodico');
               }}
             >
