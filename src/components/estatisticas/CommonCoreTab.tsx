@@ -2470,6 +2470,11 @@ export const CommonCoreTab = () => {
                 <Badge className="bg-primary text-primary-foreground">Common Core 2020</Badge>
                 <Badge variant="outline">ONU/OHCHR</Badge>
                 <Badge variant="outline">Brasil</Badge>
+                {ccSource === 'bd' ? (
+                  <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({ccCount})</Badge>
+                ) : (
+                  <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-6">
