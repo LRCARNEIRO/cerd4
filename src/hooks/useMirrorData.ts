@@ -155,6 +155,12 @@ export function useMirrorData() {
     // ── EVOLUÇÃO DESIGUALDADE ──
     const evolDesig = resolveArray('trabalho_renda', 'evolucao_desigualdade', hcEvolDesig);
 
+    // ── SOCIOECONÔMICO ──
+    const socioeco = resolveArray('trabalho_renda', 'socioeconomico', hcSocioeco);
+
+    // ── POVOS TRADICIONAIS (complex nested object — passthrough with source tracking) ──
+    const ptMirrors = findAllByCategory('povos_tradicionais');
+    const ptSource: MirrorSource = ptMirrors.length > 0 ? 'bd' : 'hardcoded';
     // ══════════════════════════════════
     // STAGE 3 — Common Core
     // ══════════════════════════════════
