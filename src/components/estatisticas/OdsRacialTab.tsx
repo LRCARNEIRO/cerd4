@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
+import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
 import { 
   odsGroups, 
   getOdsColor, 
+  odsRacialIndicators as staticOdsIndicators,
   type OdsRacialIndicator,
   type OdsFormat
 } from '@/data/odsRacialIndicators';
 import { useOdsRacialData } from '@/hooks/useOdsRacialData';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
