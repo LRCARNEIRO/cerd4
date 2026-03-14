@@ -1126,7 +1126,7 @@ export function GruposFocaisTab() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <Users className="w-5 h-5 text-accent" />
                   Indicadores Sociais — Povos Indígenas
-                  <AuditadoBadge nota="NCPI/DataSUS + INEP Censo Escolar + SESAI — cruzamento de 3 fontes" />
+                  
                 </CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   🔀 Cruzamento: NCPI/DataSUS (2024) + INEP Censo Escolar (2022) + SESAI (2024)
