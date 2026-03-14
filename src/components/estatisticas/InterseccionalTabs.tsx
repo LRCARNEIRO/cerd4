@@ -18,12 +18,9 @@ import {
   povosTradicionais,
 } from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
-import {
-  narrativaViolencia, narrativaTrabalho, narrativaChefia,
-  narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
-  fmt,
-} from '@/utils/narrativeHelpers';
+import { fmt } from '@/utils/narrativeHelpers';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 export function RacaGeneroTab() {
   const {

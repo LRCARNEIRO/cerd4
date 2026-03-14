@@ -9,8 +9,8 @@ import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp, CheckCircle2 
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { povosTradicionais } from './StatisticsData';
-import { narrativaCovid } from '@/utils/narrativeHelpers';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 // =============================================
 // Fontes agrupadas por tema

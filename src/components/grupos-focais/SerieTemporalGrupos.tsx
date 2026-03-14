@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 interface IndicadorTemporal {
   nome: string;
