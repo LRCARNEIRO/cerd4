@@ -407,10 +407,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '341', '4.679', '61,4%'],
         ['2022', '368', '5.312', '56,1%'],
         ['2023', '378', '6.050', '60,8%'],
-        ['2024*', '390', '6.450', '62,5%']
+        ['2024', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. DLSP = Dívida Líquida do Setor Público.',
+    notas: 'DLSP = Dívida Líquida do Setor Público. Dado de 2024 pendente de publicação oficial pelo BCB.',
     tendencia: 'crescente'
   },
   {
