@@ -228,7 +228,7 @@ export function RacaGeneroTab() {
                 <p className="text-xs text-muted-foreground">Homens chefes monoparentais</p>
                 <p className="text-xl font-bold">{(chefiaFamiliarRacaGenero.homensChefesMonoparentais / 1_000_000).toFixed(2).replace('.', ',')} mi</p>
                 <p className="text-xs text-muted-foreground">
-                  ({chefiaFamiliarRacaGenero.homensChefesMonoparentais.toLocaleString('pt-BR')})
+                  {(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / chefiaFamiliarRacaGenero.homensChefesMonoparentais).toFixed(1).replace('.', ',')}× menor
                 </p>
               </div>
             </div>
