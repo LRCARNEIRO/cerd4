@@ -17,11 +17,7 @@ import {
   ViolenciaInterseccionalChart, TabelaSinteseComparativa,
   ClassePorRacaChart
 } from '@/components/conclusoes/ComparativeCharts';
-import {
-  dadosDemograficos, resumoExecutivo, segurancaPublica, feminicidioSerie,
-  educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos,
-  povosTradicionais
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
