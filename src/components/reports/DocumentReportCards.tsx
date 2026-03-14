@@ -68,7 +68,12 @@ export function DocumentReportCards() {
   const handleGenerateCERD = async () => {
     setGeneratingCERD(true);
     try {
-      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
+        segurancaPublica: mirror.segurancaPublica,
+        feminicidioSerie: mirror.feminicidioSerie,
+        educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+        indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+      });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
