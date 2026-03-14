@@ -32,6 +32,14 @@ const FONTE_PERES_ETAL = [
   { nome: 'GitHub NOIS/PUC-Rio — Código e dados reprodutíveis do estudo', url: 'https://github.com/noispuc/Peres_etal_PublicHealth_Socio_demographic_COVID19_mortality' },
 ];
 
+const FONTE_BAQUI_ETAL = [
+  { nome: 'Baqui et al. (2020) — "Ethnic and regional variations in hospital mortality from COVID-19 in Brazil", The Lancet Global Health 8(8), e1018-e1026', url: 'https://www.fsp.usp.br/site/wp-content/uploads/2020/07/1-s2.0-S2214109X20302850-main.pdf' },
+];
+
+const FONTE_SPRINGER_LETALIDADE = [
+  { nome: 'Moreira et al. (2023) — "Racial inequalities and COVID-19 mortality in Brazil", Int J Equity Health 22:186', url: 'https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf' },
+];
+
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
   { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
