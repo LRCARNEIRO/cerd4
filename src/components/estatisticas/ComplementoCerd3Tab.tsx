@@ -272,8 +272,8 @@ const areaLabels: Record<string, string> = {
 };
 
 function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
-  const hasSeries = extractTimeSeries(ind.dados) !== null;
-  const nota = (ind.dados as any).nota;
+  const series = extractTimeSeries(ind.dados);
+  const hasSeries = series !== null && series.length > 0;
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
 
