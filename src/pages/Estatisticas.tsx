@@ -216,8 +216,11 @@ export default function Estatisticas() {
           <TabsTrigger value="lacunas-cerd" className="gap-1">
             <FileText className="w-4 h-4" /> Lacunas CERD
           </TabsTrigger>
+          <TabsTrigger value="complemento-cerd3" className="gap-1 bg-chart-4/10">
+            <FileText className="w-4 h-4" /> Complemento CERD 3 ({COMPLEMENTO_CERD3_COUNT})
+          </TabsTrigger>
           <TabsTrigger value="indicadores-db" className="gap-1">
-            <BarChart3 className="w-4 h-4" /> Indicadores (BD)
+            <BarChart3 className="w-4 h-4" /> Espelho Seguro (BD)
           </TabsTrigger>
           <TabsTrigger value="adm-publica" className="gap-1 bg-chart-3/10">
             <Landmark className="w-4 h-4" /> Adm Pública
