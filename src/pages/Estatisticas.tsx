@@ -99,7 +99,7 @@ export default function Estatisticas() {
     'evolucaoDesigualdade (7 anos × 3 razões)': { total: 21, auditados: 7 },  // 2024 auditado
     // ADM PÚBLICA / COVID (componentes próprios)
     'AdmPública/SINAPIR': { total: 5, auditados: 5 },
-    'CovidRacial': { total: 18, auditados: 8 },
+    'CovidRacial': { total: 18, auditados: 18 },
     // GRUPOS FOCAIS — AUDITORIA 14/03/2026: cruzamento com abas auditadas
     'GruposFocais/Séries Temporais (mirror SSoT)': { total: 15, auditados: 15 },
     'GruposFocais/Direitos Territoriais (quilombolas 14 + indígenas 18)': { total: 32, auditados: 32 },
