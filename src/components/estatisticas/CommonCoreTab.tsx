@@ -996,7 +996,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Centro-Oeste', '8,0%', '8,2%', '8,2%', '8,3%', '8,4%']
       ]
     },
-    notas: 'Taxa relativamente estável. Sudeste tem maior prevalência (mais diagnósticos?).',
+    notas: '⚠️ Pendente de verificação humana: progressão regional com incrementos muito regulares (0,1 p.p.) sugere possível arredondamento. Verificar diretamente no TabNet SINASC. Sudeste tem maior prevalência (possível viés de diagnóstico).',
     tendencia: 'estavel'
   },
   {
