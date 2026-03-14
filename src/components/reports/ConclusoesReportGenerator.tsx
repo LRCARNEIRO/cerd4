@@ -7,11 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais,
-  dadosDemograficos
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
