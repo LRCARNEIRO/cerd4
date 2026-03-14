@@ -498,18 +498,20 @@ export function CovidRacialSection() {
                     }}
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="negra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="preta" name="Preta" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="parda" name="Parda" stroke="hsl(var(--chart-4))" strokeWidth={2} dot />
                   <Line type="monotone" dataKey="branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <p className="text-xs text-muted-foreground">
-                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
+                Pico em 2021: RMM de mães pretas atingiu 179,4/100mil NV; pardas 94,4; brancas 103,8. 
+                Fonte: IEPS Boletim Çarê Jul/2025.
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
-                metodologia="Cálculo: série mortalidade materna por raça (pretas+pardas agregadas como 'negra') a partir de: (1) SIM/DataSUS — óbitos maternos por cor/raça (tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def); (2) IEPS Boletim Çarê Jul/2025 — taxas calculadas e série temporal validada (ieps.org.br/pesquisas/boletim-care). Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV. Pico 2021 (COVID): negra 85,2/100mil NV." 
+                metodologia="Fonte: IEPS Boletim Çarê Jul/2025 (ieps.org.br/boletim-care-ieps-07-2025). RMM desagregada por cor/raça da mãe: pretas, pardas e brancas separadamente. Pico 2021 (COVID): pretas 179,4; pardas 94,4; brancas 103,8 por 100mil NV." 
               />
             </div>
             <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
