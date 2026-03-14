@@ -3,12 +3,14 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ExternalLink, AlertTriangle, TrendingUp, TrendingDown, Minus, FileText, CheckCircle2, PlusCircle, Layers } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIndicador } from './ComplementoCerd3Data';
 import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
 import { cn } from '@/lib/utils';
 
+const COLOR_ABS = 'hsl(var(--chart-1))';
+const COLOR_PCT = 'hsl(var(--chart-2))';
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 function TendenciaBadge({ t }: { t?: string }) {
@@ -23,18 +25,20 @@ function TendenciaBadge({ t }: { t?: string }) {
   return <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>;
 }
 
-interface TimeSeriesResult {
-  keys: string[];
+interface DualAxisData {
   years: string[];
   chartData: Record<string, any>[];
-  label: string; // e.g. '%' or 'absoluto'
+  pctKeys: string[];
+  absKeys: string[];
+  singleScaleKeys: string[];
+  singleLabel: string;
 }
 
 function isPctKey(key: string): boolean {
   return /^pct_|^razao_|_pct$|_razao$|_ratio$/.test(key);
 }
 
-function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | null {
+function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
     'escolas_em_territorios', 'alfabetizacao', 'por_regiao', 'religioes_vitimadas_2024',
@@ -58,11 +62,8 @@ function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | nul
       if (yearsOnly.length >= 2) {
         const firstVal = v[yearsOnly[0]];
         if (typeof firstVal === 'number' || typeof firstVal === 'string' || (typeof firstVal === 'object' && firstVal !== null)) {
-          if (isPctKey(k)) {
-            pctSeriesKeys.push(k);
-          } else {
-            absSeriesKeys.push(k);
-          }
+          if (isPctKey(k)) pctSeriesKeys.push(k);
+          else absSeriesKeys.push(k);
           yearsOnly.forEach(y => allYears.add(y));
         }
       }
@@ -73,118 +74,180 @@ function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | nul
 
   const sortedYears = Array.from(allYears).sort();
 
-  function buildGroup(seriesKeys: string[], label: string): TimeSeriesResult | null {
-    if (seriesKeys.length === 0) return null;
-    const flatKeys: string[] = [];
-    const chartData = sortedYears.map(year => {
-      const point: Record<string, any> = { ano: year };
-      for (const sk of seriesKeys) {
-        const val = dados[sk]?.[year];
-        if (val === undefined || val === null) continue;
-        if (typeof val === 'object' && !Array.isArray(val)) {
-          for (const [race, rv] of Object.entries(val as Record<string, any>)) {
-            const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
-            if (!flatKeys.includes(flatKey)) flatKeys.push(flatKey);
-            if (typeof rv === 'number') point[flatKey] = rv;
-          }
-        } else {
-          const displayKey = sk.replace(/_/g, ' ');
-          if (!flatKeys.includes(displayKey)) flatKeys.push(displayKey);
-          point[displayKey] = typeof val === 'number' ? val : parseFloat(String(val));
+  const pctDisplayKeys: string[] = [];
+  const absDisplayKeys: string[] = [];
+
+  const chartData = sortedYears.map(year => {
+    const point: Record<string, any> = { ano: year };
+    for (const sk of [...pctSeriesKeys, ...absSeriesKeys]) {
+      const val = dados[sk]?.[year];
+      if (val === undefined || val === null) continue;
+      const isPct = isPctKey(sk);
+      if (typeof val === 'object' && !Array.isArray(val)) {
+        for (const [race, rv] of Object.entries(val as Record<string, any>)) {
+          const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
+          if (isPct) { if (!pctDisplayKeys.includes(flatKey)) pctDisplayKeys.push(flatKey); }
+          else { if (!absDisplayKeys.includes(flatKey)) absDisplayKeys.push(flatKey); }
+          if (typeof rv === 'number') point[flatKey] = rv;
         }
+      } else {
+        const displayKey = sk.replace(/_/g, ' ');
+        if (isPct) { if (!pctDisplayKeys.includes(displayKey)) pctDisplayKeys.push(displayKey); }
+        else { if (!absDisplayKeys.includes(displayKey)) absDisplayKeys.push(displayKey); }
+        point[displayKey] = typeof val === 'number' ? val : parseFloat(String(val));
       }
-      return point;
-    });
-    return { keys: flatKeys, years: sortedYears, chartData, label };
-  }
+    }
+    return point;
+  });
 
-  const results: TimeSeriesResult[] = [];
-  const pctGroup = buildGroup(pctSeriesKeys, '%');
-  const absGroup = buildGroup(absSeriesKeys, 'absoluto');
-  if (pctGroup) results.push(pctGroup);
-  if (absGroup) results.push(absGroup);
-
-  return results.length > 0 ? results : null;
+  return {
+    years: sortedYears,
+    chartData,
+    pctKeys: pctDisplayKeys,
+    absKeys: absDisplayKeys,
+    singleScaleKeys: pctDisplayKeys.length > 0 && absDisplayKeys.length === 0 ? pctDisplayKeys
+      : absDisplayKeys.length > 0 && pctDisplayKeys.length === 0 ? absDisplayKeys : [],
+    singleLabel: pctDisplayKeys.length > 0 && absDisplayKeys.length === 0 ? '%'
+      : absDisplayKeys.length > 0 && pctDisplayKeys.length === 0 ? 'absoluto' : '',
+  };
 }
 
-function SingleChart({ group }: { group: TimeSeriesResult }) {
-  if (group.chartData.length < 2) return null;
-  const isPct = group.label === '%';
+/** Dual-axis chart: bars for absolute (left Y), line for % (right Y). Single-scale fallback for uniform data. */
+function DualAxisChart({ data }: { data: DualAxisData }) {
+  if (data.chartData.length < 2) return null;
+
+  const isDual = data.pctKeys.length > 0 && data.absKeys.length > 0;
+
   return (
-    <div className="space-y-2">
-      <Badge variant="outline" className="text-[10px]">
-        {isPct ? '📊 Percentual (%)' : '📊 Quantitativo (absoluto)'}
-      </Badge>
-      <div className="h-56">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={group.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+    <div className="h-64">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={data.chartData} margin={{ top: 8, right: isDual ? 60 : 20, left: 10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+
+          {isDual ? (
+            <>
+              {/* Left Y — absolute */}
+              <YAxis
+                yAxisId="abs"
+                tick={{ fontSize: 10 }}
+                tickFormatter={v => v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                label={{ value: 'Qtd', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: 'hsl(var(--muted-foreground))' } }}
+              />
+              {/* Right Y — % */}
+              <YAxis
+                yAxisId="pct"
+                orientation="right"
+                tick={{ fontSize: 10 }}
+                tickFormatter={v => `${v}%`}
+                domain={[0, 100]}
+                label={{ value: '%', angle: 90, position: 'insideRight', style: { fontSize: 10, fill: 'hsl(var(--muted-foreground))' } }}
+              />
+            </>
+          ) : (
             <YAxis
-              tick={{ fontSize: 11 }}
-              tickFormatter={v => isPct ? `${v}%` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+              yAxisId="single"
+              tick={{ fontSize: 10 }}
+              tickFormatter={v => data.singleLabel === '%' ? `${v}%` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
-                fontSize: '12px',
-              }}
-              formatter={(value: number, name: string) => [
-                isPct
-                  ? `${typeof value === 'number' ? value.toLocaleString('pt-BR') : value}%`
-                  : typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
-                name.replace(/_/g, ' '),
-              ]}
-            />
-            <Legend wrapperStyle={{ fontSize: '11px' }} formatter={v => v.replace(/_/g, ' ')} />
-            {group.keys.map((key, idx) => (
-              <Line key={key} type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-xs">Ano</TableHead>
-            {group.keys.map(k => (
-              <TableHead key={k} className="text-xs text-right">{k.replace(/_/g, ' ')}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {group.chartData.map((row, i) => (
-            <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
-              <TableCell className="text-xs font-bold">{row.ano}</TableCell>
-              {group.keys.map(k => (
-                <TableCell key={k} className="text-xs text-right tabular-nums font-semibold">
-                  {row[k] != null
-                    ? (isPct
-                        ? `${typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]}%`
-                        : (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]))
-                    : '—'}
-                </TableCell>
-              ))}
-            </TableRow>
+          )}
+
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'hsl(var(--card))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px',
+              fontSize: '12px',
+            }}
+            formatter={(value: number, name: string) => {
+              const isPct = data.pctKeys.includes(name);
+              return [
+                isPct ? `${value.toLocaleString('pt-BR')}%` : value.toLocaleString('pt-BR'),
+                name,
+              ];
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: '11px' }} />
+
+          {/* Absolute series as bars */}
+          {isDual && data.absKeys.map((key, idx) => (
+            <Bar key={key} yAxisId="abs" dataKey={key} fill={COLORS[idx % COLORS.length]} fillOpacity={0.7} barSize={28} radius={[4, 4, 0, 0]} />
           ))}
-        </TableBody>
-      </Table>
+          {/* % series as lines */}
+          {isDual && data.pctKeys.map((key, idx) => (
+            <Line key={key} yAxisId="pct" type="monotone" dataKey={key} stroke={COLORS[(data.absKeys.length + idx) % COLORS.length]} strokeWidth={2.5} dot={{ r: 4, strokeWidth: 2, fill: 'hsl(var(--card))' }} />
+          ))}
+
+          {/* Single-scale fallback: use lines */}
+          {!isDual && data.singleScaleKeys.map((key, idx) => (
+            <Line key={key} yAxisId="single" type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
+          ))}
+        </ComposedChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-/** Renders chart(s) + table(s), splitting % vs absolute */
-function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
-  const groups = extractTimeSeries(dados);
-  if (!groups || groups.length === 0) return null;
+/** Unified table with all metrics — both % and absolute side by side */
+function UnifiedTable({ data }: { data: DualAxisData }) {
+  const allKeys = [...data.absKeys, ...data.pctKeys];
+  if (data.singleScaleKeys.length > 0 && allKeys.length === 0) {
+    allKeys.push(...data.singleScaleKeys);
+  }
+  if (allKeys.length === 0) return null;
 
   return (
-    <div className="space-y-4 mt-3">
-      {groups.map((g, i) => (
-        <SingleChart key={i} group={g} />
-      ))}
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="text-xs w-[60px]">Ano</TableHead>
+          {allKeys.map(k => (
+            <TableHead key={k} className="text-xs text-right">
+              {k}
+              {data.pctKeys.includes(k) && <span className="text-muted-foreground ml-1">(%)</span>}
+            </TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.chartData.map((row, i) => (
+          <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
+            <TableCell className="text-xs font-bold">{row.ano}</TableCell>
+            {allKeys.map(k => {
+              const isPct = data.pctKeys.includes(k);
+              return (
+                <TableCell key={k} className="text-xs text-right tabular-nums font-semibold">
+                  {row[k] != null
+                    ? isPct
+                      ? `${typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]}%`
+                      : typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]
+                    : '—'}
+                </TableCell>
+              );
+            })}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+/** Renders a dual-axis chart + unified table */
+function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
+  const data = extractDualAxisData(dados);
+  if (!data) return null;
+
+  const isDual = data.pctKeys.length > 0 && data.absKeys.length > 0;
+
+  return (
+    <div className="space-y-3 mt-3">
+      {isDual && (
+        <Badge variant="outline" className="text-[10px]">
+          📊 Gráfico duplo eixo — barras = quantitativo · linha = percentual
+        </Badge>
+      )}
+      <DualAxisChart data={data} />
+      <UnifiedTable data={data} />
     </div>
   );
 }
@@ -272,8 +335,8 @@ const areaLabels: Record<string, string> = {
 };
 
 function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
-  const series = extractTimeSeries(ind.dados);
-  const hasSeries = series !== null && series.length > 0;
+  const dualData = extractDualAxisData(ind.dados);
+  const hasSeries = dualData !== null;
   const nota = (ind.dados as any).nota;
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
