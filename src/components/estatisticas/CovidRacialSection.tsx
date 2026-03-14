@@ -26,6 +26,12 @@ const FONTE_SIVEP_NOIS = [
   { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://sites.google.com/view/naborfrancisco/publica%C3%A7%C3%B5es' },
 ];
 
+const FONTE_PERES_ETAL = [
+  { nome: 'Peres et al. (2021) — "Sociodemographic factors associated with COVID-19 in-hospital mortality in Brazil", Public Health 192:15-20, DOI: 10.1016/j.puhe.2021.01.005', url: 'https://doi.org/10.1016/j.puhe.2021.01.005' },
+  { nome: 'SIVEP-Gripe — 228.196 pacientes adultos hospitalizados, RT-qPCR confirmados (fev-ago 2020)', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'GitHub NOIS/PUC-Rio — Código e dados reprodutíveis do estudo', url: 'https://github.com/noispuc/Peres_etal_PublicHealth_Socio_demographic_COVID19_mortality' },
+];
+
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
   { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
@@ -87,14 +93,45 @@ const excessoMortalidade = [
   },
 ];
 
-// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio
-// Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio), Nota Técnica 11
+// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio + Peres et al. 2021
+// Fonte primária: Peres et al. Public Health 192 (2021) 15-20 — Tabela 1 (n=228.196)
 // Navegação: SIVEP-Gripe (BigData COVID Fiocruz) → Painel SRAG → filtro raça/cor → desfecho óbito vs alta
 const letalidadeHospitalar = [
-  { raca: 'Pretos e Pardos', letalidade: 55, sobrevivencia: 45 },
-  { raca: 'Brancos', letalidade: 38, sobrevivencia: 62 },
-  { raca: 'Indígenas', letalidade: 62, sobrevivencia: 38 },
+  { raca: 'Pretos e Pardos', letalidade: 42, sobrevivencia: 58 },
+  { raca: 'Brancos', letalidade: 37, sobrevivencia: 63 },
+  { raca: 'Indígenas', letalidade: 43, sobrevivencia: 57 },
+  { raca: 'Asiáticos', letalidade: 39, sobrevivencia: 61 },
 ];
+
+// Dados do estudo Peres et al. (2021) — SIVEP-Gripe, 228.196 pacientes
+// DOI: 10.1016/j.puhe.2021.01.005
+const peresStudyData = {
+  amostra: 228196,
+  periodo: 'fev-ago 2020',
+  mortalidadeGeral: 37,
+  // Acesso a UTI por raça (Tabela 1)
+  acessoUTI: [
+    { raca: 'Brancos', admissaoUTI: 36, ventilacaoInvasiva: 19, ventilacaoForaUTI: 11 },
+    { raca: 'Pretos/Pardos', admissaoUTI: 32, ventilacaoInvasiva: 21, ventilacaoForaUTI: 17 },
+    { raca: 'Indígenas', admissaoUTI: 28, ventilacaoInvasiva: 23, ventilacaoForaUTI: 28 },
+    { raca: 'Asiáticos', admissaoUTI: 34, ventilacaoInvasiva: 19, ventilacaoForaUTI: 14 },
+  ],
+  // Odds Ratios ajustados (Tabela S4, Fig. 3)
+  oddsRatios: [
+    { fator: 'Pretos/Pardos (vs Brancos)', or: 1.15, icInf: 1.09, icSup: 1.22 },
+    { fator: 'Região Norte (vs Sudeste)', or: 2.76, icInf: 2.45, icSup: 3.10 },
+    { fator: 'Região Nordeste (vs Sudeste)', or: 2.05, icInf: 1.86, icSup: 2.26 },
+    { fator: 'Analfabeto (vs Superior)', or: 1.77, icInf: 1.58, icSup: 1.98 },
+    { fator: 'Até Ensino Médio (vs Superior)', or: 1.52, icInf: 1.40, icSup: 1.65 },
+  ],
+  // Mortalidade por escolaridade × raça
+  mortalidadePorEscolaridade: [
+    { nivel: 'Analfabeto', pretosPardos: 58, brancos: 52 },
+    { nivel: 'Até Ens. Médio', pretosPardos: 48, brancos: 42 },
+    { nivel: 'Ensino Médio', pretosPardos: 38, brancos: 33 },
+    { nivel: 'Superior', pretosPardos: 28, brancos: 25 },
+  ],
+};
 
 // Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
 // Navegação PNAD COVID: covid19.ibge.gov.br → Microdados → filtro V0009 (raça/cor)
@@ -196,7 +233,9 @@ export function CovidRacialSection() {
               <p className="text-sm text-muted-foreground">
                 A pandemia de COVID-19 expôs e aprofundou as desigualdades raciais estruturais no Brasil. 
                 Pessoas pretas e pardas morreram <strong>57% a mais</strong> do que brancas em 2020 
-                (~36 mil óbitos em excesso). A análise interseccional revela que mulheres negras, idosos, 
+                (~36 mil óbitos em excesso). Estudo peer-reviewed com <strong>228.196 pacientes</strong> (Peres et al., 2021)
+                confirmou OR ajustado de <strong>1,15</strong> para mortalidade hospitalar de pretos/pardos, mesmo controlando
+                por sexo, idade, escolaridade e comorbidades. A análise interseccional revela que mulheres negras, idosos, 
                 indígenas, quilombolas, jovens periféricos e trabalhadores informais negros foram 
                 desproporcionalmente afetados.
               </p>
@@ -249,14 +288,147 @@ export function CovidRacialSection() {
             <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
           </CardContent>
         </Card>
+        <Card className="border-l-4 border-l-chart-3">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">OR Ajustado: Pretos/Pardos</p>
+            <p className="text-2xl font-bold">1,15</p>
+            <p className="text-xs text-muted-foreground">IC 95%: 1,09–1,22 (n=228.196)</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-chart-4">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">Ventilação invasiva fora da UTI</p>
+            <p className="text-2xl font-bold text-chart-4">17% vs 11%</p>
+            <p className="text-xs text-muted-foreground">Pretos/Pardos vs Brancos</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="pt-4">
+            <p className="text-xs text-muted-foreground">Admissão em UTI (Brancos)</p>
+            <p className="text-2xl font-bold text-primary">36% vs 32%</p>
+            <p className="text-xs text-muted-foreground">Brancos vs Pretos/Pardos</p>
+            <AuditFooter fontes={FONTE_PERES_ETAL} compact />
+          </CardContent>
+        </Card>
       </div>
+
+      {/* NOVO: Dados do Estudo Peres et al. (2021) — SIVEP-Gripe */}
+      <Card className="border-l-4 border-l-chart-3">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="w-4 h-4 text-chart-3" />
+            Estudo Peres et al. (2021) — Fatores Sociodemográficos e Mortalidade Hospitalar
+          </CardTitle>
+          <CardDescription>
+            SIVEP-Gripe: 228.196 pacientes adultos hospitalizados com COVID-19, RT-qPCR confirmados (fev-ago 2020).
+            DOI: 10.1016/j.puhe.2021.01.005
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Acesso a UTI e ventilação por raça */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3">Acesso a UTI e Ventilação Invasiva por Raça</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Raça</TableHead>
+                    <TableHead className="text-right">UTI (%)</TableHead>
+                    <TableHead className="text-right">Vent. Invasiva (%)</TableHead>
+                    <TableHead className="text-right">Vent. Fora UTI (%)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {peresStudyData.acessoUTI.map(item => (
+                    <TableRow key={item.raca}>
+                      <TableCell className="font-medium text-sm">{item.raca}</TableCell>
+                      <TableCell className="text-right">{item.admissaoUTI}%</TableCell>
+                      <TableCell className="text-right">{item.ventilacaoInvasiva}%</TableCell>
+                      <TableCell className={`text-right font-medium ${item.ventilacaoForaUTI > 15 ? 'text-destructive' : ''}`}>
+                        {item.ventilacaoForaUTI}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p className="text-xs text-muted-foreground mt-2">
+                Pretos/Pardos recebiam ventilação invasiva <strong>fora da UTI</strong> em 17% dos casos (vs 11% brancos),
+                indicando menor acesso a leitos de terapia intensiva.
+              </p>
+            </div>
+
+            {/* Odds Ratios ajustados */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3">Odds Ratios Ajustados — Mortalidade Hospitalar</h4>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fator</TableHead>
+                    <TableHead className="text-right">OR</TableHead>
+                    <TableHead className="text-right">IC 95%</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {peresStudyData.oddsRatios.map(item => (
+                    <TableRow key={item.fator}>
+                      <TableCell className="font-medium text-sm">{item.fator}</TableCell>
+                      <TableCell className={`text-right font-bold ${item.or >= 1.5 ? 'text-destructive' : 'text-warning'}`}>
+                        {item.or.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right text-xs text-muted-foreground">
+                        {item.icInf.toFixed(2)}–{item.icSup.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <p className="text-xs text-muted-foreground mt-2">
+                Ajustado por sexo, idade, escolaridade, região e comorbidades. Região Norte teve OR=2,76:
+                pacientes no Norte tinham quase 3x mais chance de óbito hospitalar.
+              </p>
+            </div>
+          </div>
+
+          {/* Gradiente escolaridade × raça */}
+          <div className="mt-6">
+            <h4 className="text-sm font-semibold mb-3">Mortalidade Hospitalar por Escolaridade e Raça (%)</h4>
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={peresStudyData.mortalidadePorEscolaridade}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="nivel" tick={{ fontSize: 9 }} />
+                  <YAxis domain={[0, 70]} tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    formatter={(value: number, name: string) => [`${value}%`, name === 'pretosPardos' ? 'Pretos/Pardos' : 'Brancos']}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="pretosPardos" name="Pretos/Pardos" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Analfabetos pretos/pardos tiveram a maior mortalidade (58%). A disparidade racial persiste em todos os
+              níveis de escolaridade, demonstrando que o racismo estrutural opera independentemente da educação formal.
+            </p>
+          </div>
+          <AuditFooter fontes={FONTE_PERES_ETAL} documentos={['CERD 2022 §24', 'ICERD Art. 5(e)(iv)']} />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Letalidade hospitalar por raça */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Letalidade Hospitalar por COVID-19 e Raça</CardTitle>
-            <CardDescription>SIVEP-Gripe / NOIS PUC-Rio — pacientes hospitalizados</CardDescription>
+            <CardDescription>Peres et al. (2021) — SIVEP-Gripe, n=228.196 (fev-ago 2020)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
@@ -282,9 +454,10 @@ export function CovidRacialSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Indígenas hospitalizados tiveram a maior letalidade (62%), seguidos por pretos/pardos (55%) e brancos (38%).
+              Indígenas hospitalizados tiveram a maior letalidade (43%), seguidos por pretos/pardos (42%) e brancos (37%).
+              Dados de Peres et al. (2021), n=228.196 pacientes com desfecho definido.
             </p>
-            <AuditFooter fontes={FONTE_SIVEP_NOIS} documentos={['CERD 2022 §24']} compact />
+            <AuditFooter fontes={[...FONTE_SIVEP_NOIS, ...FONTE_PERES_ETAL]} documentos={['CERD 2022 §24']} compact />
           </CardContent>
         </Card>
 
@@ -455,8 +628,17 @@ export function CovidRacialSection() {
               intersecção raça × gênero.
             </p>
             <p>
-              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (62%), agravada pelo 
+              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (43%), agravada pelo 
               subfinanciamento da SESAI e dificuldade de acesso.
+            </p>
+            <p>
+              • Estudo peer-reviewed (Peres et al., 2021) com <strong>228.196 pacientes</strong> comprovou que 
+              pretos/pardos tinham <strong>OR ajustado de 1,15</strong> para mortalidade, mesmo controlando comorbidades. 
+              Região Norte: OR=2,76; analfabetos: OR=1,77.
+            </p>
+            <p>
+              • Pretos/pardos foram ventilados <strong>fora da UTI</strong> em 17% dos casos (vs 11% brancos), 
+              evidenciando desigualdade no acesso a leitos de terapia intensiva.
             </p>
             <p>
               • A recuperação pós-pandemia é <strong>desigual</strong>: negros foram os últimos a recuperar emprego 
@@ -467,8 +649,9 @@ export function CovidRacialSection() {
             fontes={[
               ...FONTE_RACA_SAUDE,
               ...FONTE_PNAD_COVID,
+              ...FONTE_PERES_ETAL,
             ]} 
-            documentos={['CERD 2022 §24-25', 'RG 25']} 
+            documentos={['CERD 2022 §24-25', 'RG 25', 'ICERD Art. 5(e)(iv)']} 
             compact 
           />
         </CardContent>
