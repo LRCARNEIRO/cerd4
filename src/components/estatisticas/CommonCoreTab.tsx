@@ -1081,7 +1081,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Percentual de gestantes com 7+ consultas de pré-natal',
     fonte: 'MS/SINASC',
     fonteCompleta: 'Ministério da Saúde - SINASC',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/nascidos-vivos-desde-1994',
     periodoOriginal: '2004-2011',
     periodoAtualizado: '2004-2022',
     statusAtualizacao: 'atualizado',
