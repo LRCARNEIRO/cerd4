@@ -28,7 +28,7 @@ import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
-import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
+// DadosNovosTab removed — merged into ComplementoCerd3Tab
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
