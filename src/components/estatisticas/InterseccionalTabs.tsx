@@ -26,6 +26,10 @@ import {
 import { useMirrorData } from '@/hooks/useMirrorData';
 
 export function RacaGeneroTab() {
+  const {
+    violenciaInterseccional, trabalhoRacaGenero, chefiaFamiliarRacaGenero,
+    educacaoRacaGenero, saudeMaternaRaca, atlasViolencia2025,
+  } = useMirrorData();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
