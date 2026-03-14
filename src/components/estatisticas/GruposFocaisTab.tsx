@@ -132,6 +132,7 @@ const dadosTerritoriais = {
     comunidadesCertificadasFCP: 3158,
     fonteFCP: 'Fundação Cultural Palmares - Portarias de Certificação Quilombola',
     linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola',
+    auditadoFCP: true, // ✅ AUDITORIA 14/03/2026: validado contra Complemento CERD III (3.158)
     familiasAtendidas: 155000,
     areaTotal: 1162002,
     fonteArea: 'INCRA - Soma das áreas no PDF Títulos Expedidos (ha)',
