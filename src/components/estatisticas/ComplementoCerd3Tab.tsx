@@ -6,6 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIndicador } from './ComplementoCerd3Data';
+import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
 import { cn } from '@/lib/utils';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
@@ -369,6 +370,15 @@ export function ComplementoCerd3Tab() {
         {Object.entries(complementaresByArea).map(([area, indicators]) => (
           <AreaSection key={area} area={area} indicators={indicators} />
         ))}
+      </div>
+
+      {/* MAPAS INTERATIVOS — Censo 2022 */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <h2 className="text-lg font-bold text-foreground">🗺️ Mapas Demográficos — Censo 2022</h2>
+          <Badge variant="outline" className="text-[10px]">Quilombolas · Ciganos · Indígenas em TIs</Badge>
+        </div>
+        <CensoDemografiaMapas />
       </div>
 
       {/* SUBSEÇÃO 2: Dados Novos */}
