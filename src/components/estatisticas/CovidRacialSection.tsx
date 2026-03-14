@@ -75,7 +75,7 @@ const FONTE_INTERSECCIONAL = [
 // Fonte: racaesaude.org.br (dados SIM/DataSUS + Registro Civil)
 const excessoMortalidade = [
   { 
-    indicador: 'Excesso de mortalidade (causas naturais, 2020)',
+    indicador: 'Excesso de mortalidade durante a pandemia (2020)',
     negros: '57% a mais que brancos',
     naoNegros: 'Referência',
     valorNegros: 57,
