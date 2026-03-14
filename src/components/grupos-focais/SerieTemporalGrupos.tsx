@@ -2,11 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, feminicidioSerie,
-  povosTradicionais
-} from '@/components/estatisticas/StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
 
