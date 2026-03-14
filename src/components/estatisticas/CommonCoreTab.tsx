@@ -1229,6 +1229,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Negros', '53,4%', '54,0%', '52,5%', '54,8%', '57,0%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres.',
     tendencia: 'crescente'
   },
   {
