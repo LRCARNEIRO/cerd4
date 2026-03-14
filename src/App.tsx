@@ -8,7 +8,7 @@ import PlanoTrabalho from "./pages/PlanoTrabalho";
 import CommonCore from "./pages/CommonCore";
 import Estatisticas from "./pages/Estatisticas";
 import Orcamento from "./pages/Orcamento";
-import OrcamentoTeste from "./pages/OrcamentoTeste";
+
 import Recomendacoes from "./pages/Recomendacoes";
 import Fontes from "./pages/Fontes";
 
