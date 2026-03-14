@@ -505,41 +505,58 @@ export function CovidRacialSection() {
         </Card>
       </div>
 
-      {/* Impacto socioeconômico */}
+      {/* Impacto no mercado de trabalho por raça */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Impactos Socioeconômicos da Pandemia por Raça</CardTitle>
-          <CardDescription>Determinantes sociais que amplificaram a desigualdade racial na COVID-19</CardDescription>
+          <CardTitle className="text-base">Impacto da Pandemia no Mercado de Trabalho por Raça</CardTitle>
+          <CardDescription>
+            Indicadores auditáveis: PNAD COVID-19 (IBGE, nov/2020) e IPEA/PNADC (Souza, 2020 — decomposição Shapley)
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Indicador</TableHead>
-                <TableHead className="text-right">Negros (%)</TableHead>
-                <TableHead className="text-right">Brancos (%)</TableHead>
+                <TableHead className="text-right">Negros</TableHead>
+                <TableHead className="text-right">Brancos</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead>Fonte</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {impactoSocioeconomico.map(item => (
-                <TableRow key={item.indicador}>
-                  <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
-                  <TableCell className="text-right font-medium">{item.negros}%</TableCell>
-                  <TableCell className="text-right">{item.naoNegros}%</TableCell>
-                  <TableCell className={`text-right font-medium ${
-                    (item.negros / item.naoNegros) >= 1 ? 'text-destructive' : 'text-chart-1'
-                  }`}>
-                    {(item.negros / item.naoNegros).toFixed(1)}x
-                    {(item.negros / item.naoNegros) < 1 && ' ✓'}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{item.fonte}</TableCell>
-                </TableRow>
-              ))}
+              {impactoTrabalhoRacial.map(item => {
+                const razao = item.brancos !== 0 ? (item.negros / item.brancos) : 0;
+                const isMonetary = item.unidade === 'R$';
+                const razaoLabel = isMonetary ? `${(razao).toFixed(2)}x` : `${razao.toFixed(1)}x`;
+                const isWorse = isMonetary ? razao < 1 : razao > 1;
+                return (
+                  <TableRow key={item.indicador}>
+                    <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {isMonetary ? `R$ ${item.negros.toLocaleString('pt-BR')}` : `${item.negros}${item.unidade}`}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {isMonetary ? `R$ ${item.brancos.toLocaleString('pt-BR')}` : `${item.brancos}${item.unidade}`}
+                    </TableCell>
+                    <TableCell className={`text-right font-medium ${isWorse ? 'text-destructive' : 'text-chart-1'}`}>
+                      {razaoLabel}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[200px]">{item.fonte}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
-          <AuditFooter fontes={FONTE_PNAD_COVID} documentos={['PNAD COVID 2020', 'IPEA nº 29']} compact />
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+            <p className="text-xs text-muted-foreground">
+              <strong>Nota metodológica:</strong> A massa salarial negra caiu <strong>23%</strong> (vs 19% brancos) entre Q1 e Q2 de 2020. 
+              A eliminação de postos de trabalho (efeito emprego) explica quase toda a diferença: negros perderam 2x mais postos. 
+              O Auxílio Emergencial beneficiou mais a população negra (⅔ dos benefícios) e reduziu a desigualdade GE(0) em 32,4% 
+              (IPEA/PNAD-Covid, Souza 2020).
+            </p>
+          </div>
+          <AuditFooter fontes={FONTE_PNAD_COVID} documentos={['PNAD COVID 2020', 'IPEA Nota Técnica DISOC nº 92', 'UNDP HDR 2021-22']} compact />
         </CardContent>
       </Card>
 
