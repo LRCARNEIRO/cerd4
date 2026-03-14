@@ -8,6 +8,7 @@ import {
 import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin, Info, GraduationCap, Briefcase } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
