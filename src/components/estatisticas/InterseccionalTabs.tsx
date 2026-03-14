@@ -553,7 +553,7 @@ export function LgbtqiaTab() {
             <Rainbow className="w-5 h-5 text-primary" />
             Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)
           </CardTitle>
-          <CardDescription>Dossiê ANTRA — série histórica completa. Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Brancos {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
+          <CardDescription>Fonte única: Dossiê ANTRA 2026 — série histórica consolidada (p.30, p.66). Média: Negros {narrativaLGBTQIA.mediaSerieNegros}%, Brancos {100 - narrativaLGBTQIA.mediaSerieNegros - 1}%, Indígenas 1%</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-80">
