@@ -37,6 +37,8 @@ import {
   evolucaoDesigualdade as hcEvolDesig,
   rendimentosCenso2022 as hcRendimentos,
   povosTradicionais as hcPovos,
+  indicadoresSocioeconomicos as hcSocioeco,
+  resumoExecutivo as hcResumoExecutivo,
 } from '@/components/estatisticas/StatisticsData';
 
 import type { CommonCoreTable } from '@/components/estatisticas/CommonCoreTab';
