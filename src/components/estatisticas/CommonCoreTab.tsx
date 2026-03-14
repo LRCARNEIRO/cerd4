@@ -1813,7 +1813,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     descricao: 'Mortes por acidentes de transporte terrestre',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2023',
     statusAtualizacao: 'atualizado',
