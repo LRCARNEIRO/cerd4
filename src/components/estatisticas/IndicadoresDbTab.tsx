@@ -102,7 +102,7 @@ function normalizeIndicadorData(dados: Record<string, any>) {
     'por_uf_2024', 'idade_media_vitima', 'unidade', 'slug', 'formato',
     'ods_id', 'nota', 'serie', 'fonte', 'url', 'artigoCerd',
     'regra_ouro', 'status_validacao', 'nota_racial', 'nota_refugio',
-    'nota_registros', 'datamigra_bi_url',
+    'nota_registros', 'datamigra_bi_url', 'deep_links', 'lacuna_racial',
   ]);
 
   // If dados has a "series" sub-object with year keys, use that as the effective data
@@ -249,7 +249,7 @@ function extractRacialComparison(ind: IndicadorData): RacialComparison | null {
   // Strategy 1: top-level keys like { Negros: { 2022: val }, Brancos: { 2022: val } }
   for (const [key, val] of Object.entries(dados)) {
     const keyLower = key.toLowerCase();
-    if (keyLower === 'unidade' || keyLower === 'nota' || keyLower.startsWith('nota_') || keyLower.startsWith('fonte_') || keyLower.endsWith('_url') || keyLower === 'slug' || keyLower === 'formato' || keyLower === 'regra_ouro') continue;
+    if (keyLower === 'unidade' || keyLower === 'nota' || keyLower.startsWith('nota_') || keyLower.startsWith('fonte_') || keyLower.endsWith('_url') || keyLower === 'slug' || keyLower === 'formato' || keyLower === 'regra_ouro' || keyLower === 'deep_links' || keyLower === 'lacuna_racial') continue;
 
     if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
       // Get last year value
@@ -485,19 +485,21 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
                   <span className="font-semibold text-foreground">💡 Conclusão: </span>
                   {avgGroupRatio !== null && avgGroupRatio > 1 ? (
                     <>
-                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
-                      que a branca (razão média {avgGroupRatio.toFixed(2)}×).
-                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×).</>}
+                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.5 ? 'drasticamente' : avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
+                      que a branca (razão média <strong>{avgGroupRatio.toFixed(2)}×</strong>).
+                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×), evidenciando que a população negra {worstInGroup.razao! > 2 ? 'é mais do que duplamente prejudicada' : 'sofre desvantagem estrutural mensurável'} nesta dimensão.</>}
+                      {' '}Isso configura evidência de discriminação racial indireta (Art. 1º da ICERD), reforçando a necessidade de políticas afirmativas específicas.
                     </>
                   ) : avgGroupRatio !== null && avgGroupRatio < 1 ? (
                     <>
-                      Neste eixo, a população negra apresenta taxa {((1 - avgGroupRatio) * 100).toFixed(0)}% menor que a branca — 
-                      indicando déficit de acesso.
+                      Neste eixo, a população negra apresenta taxa <strong>{((1 - avgGroupRatio) * 100).toFixed(0)}% menor</strong> que a branca — 
+                      indicando déficit de acesso que perpetua desigualdades estruturais. 
+                      {worstInGroup && <> O maior hiato está em <strong>{worstInGroup.indicador.nome}</strong>, onde a sub-representação negra revela barreiras institucionais persistentes.</>}
                     </>
                   ) : hasIndigenas ? (
-                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas.</>
+                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas — situação que o Estado não documentava adequadamente no III Relatório CERD e que agora exige resposta detalhada ao Comitê.</>
                   ) : (
-                    <>Dados pontuais sem comparação racial direta disponível.</>
+                    <>Dados pontuais sem comparação racial direta disponível — lacuna que limita a capacidade de resposta do Estado ao CERD.</>
                   )}
                 </p>
               </div>
@@ -591,7 +593,7 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
 function extractKeyValues(dados: Record<string, any>): Array<{ label: string; value: string; sublabel?: string }> {
   const results: Array<{ label: string; value: string; sublabel?: string }> = [];
   for (const [key, val] of Object.entries(dados)) {
-    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url') || key === 'slug' || key === 'formato' || key === 'regra_ouro') continue;
+    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url') || key === 'slug' || key === 'formato' || key === 'regra_ouro' || key === 'deep_links' || key === 'lacuna_racial') continue;
     if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
       for (const [subKey, subVal] of Object.entries(val as Record<string, any>)) {
         if (subVal === null || subVal === undefined || String(subVal).includes('N/D')) continue;
@@ -1160,10 +1162,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
          const CERD_GAP_SUBCATS = new Set([
             'Trabalho Infantil', 'Intolerância Religiosa',
             'Distorção Idade-Série', 'Educação Indígena',
-            'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+            'Saúde Indígena', 'Justiça Racial',
             'favelas_aglomerados', 'ciganos_saude_educacao',
             'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
-            'trabalho_escravo', 'vacinacao', 'saude_indigena', 'educacao_indigena',
+            'trabalho_escravo', 'saude_indigena', 'educacao_indigena',
           ]);
         const cerdGapIndicadores = indicadoresFiltrados.filter(i => 
           i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)
@@ -1264,14 +1266,54 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         );
       })()}
 
+      {/* Censo 2022 — Políticas Raciais */}
+      {(() => {
+        const censoIndicadores = indicadoresFiltrados.filter(i => i.subcategoria === 'censo_2022_racial');
+        if (censoIndicadores.length === 0) return null;
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-8 w-1 bg-accent rounded-full" />
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Users className="w-5 h-5 text-accent" />
+                  Censo 2022 — Dados Raciais Inéditos ({censoIndicadores.length})
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Dados que o Estado brasileiro não possuía no III Relatório CERD — quilombolas, ciganos, indígenas fora de TIs, religiões de matriz africana
+                </p>
+              </div>
+            </div>
+
+            <Card className="overflow-hidden border-none shadow-lg">
+              <div className="bg-gradient-to-br from-accent/10 via-primary/5 to-chart-3/10 p-5">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  <span className="font-bold text-foreground">📋 Contexto CERD IV: </span>
+                  O Censo 2022 produziu pela primeira vez dados oficiais sobre populações que o Comitê CERD cobrava sistematicamente ao Brasil 
+                  (§21-22, §33-36, §54-55 das Observações Finais 2022). Esses dados inéditos permitem agora uma resposta factual 
+                  às recomendações sobre quilombolas, ciganos e povos de matriz africana — substituindo estimativas por contagens oficiais.
+                </p>
+              </div>
+            </Card>
+
+            <RetratoPontualSection indicadores={censoIndicadores} />
+            {censoIndicadores.filter(i => hasTimeSeries(i.dados || {})).map(ind => (
+              <IndicadorDetail key={ind.id} indicador={ind} highlighted={highlightedId === ind.id} />
+            ))}
+          </div>
+        );
+      })()}
+
       {/* Split indicators: series vs single-point (excluding CERD gap ones already shown above) */}
       {(() => {
           const CERD_GAP_SUBCATS = new Set([
            'Trabalho Infantil', 'Intolerância Religiosa',
            'Distorção Idade-Série', 'Educação Indígena',
-           'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+           'Saúde Indígena', 'Justiça Racial',
            'favelas_aglomerados', 'ciganos_saude_educacao',
            'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
+           'trabalho_escravo', 'saude_indigena', 'educacao_indigena',
+           'censo_2022_racial',
          ]);
         const nonGap = indicadoresFiltrados.filter(i => !(i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)));
         const withSeries = nonGap.filter(i => hasTimeSeries(i.dados || {}));
