@@ -275,6 +275,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
   const { data: stats } = useLacunasStats();
+  const { gfSource, gfCount } = useMirrorData();
 
   const lacunasQuilo = lacunas?.filter(l => l.grupo_focal === 'quilombolas') || [];
   const lacunasIndig = lacunas?.filter(l => l.grupo_focal === 'indigenas') || [];
