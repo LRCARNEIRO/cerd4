@@ -10,26 +10,27 @@ import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
-  dadosDemograficos,
-  evolucaoComposicaoRacial,
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  feminicidioSerie,
-  jovensNegrosViolencia,
-  educacaoSerieHistorica,
-  analfabetismoGeral2024,
-  saudeSerieHistorica,
-  rendimentosCenso2022,
-  interseccionalidadeTrabalho,
-  deficienciaPorRaca,
-  lgbtqiaPorRaca,
-  povosTradicionais,
+  dadosDemograficos as hcDemo,
+  evolucaoComposicaoRacial as hcEvolucao,
+  indicadoresSocioeconomicos as hcSocioEco,
+  segurancaPublica as hcSeguranca,
+  feminicidioSerie as hcFeminicidio,
+  jovensNegrosViolencia as hcJovensViolencia,
+  educacaoSerieHistorica as hcEducacao,
+  analfabetismoGeral2024 as hcAnalfabetismo,
+  saudeSerieHistorica as hcSaude,
+  rendimentosCenso2022 as hcRendimentos,
+  interseccionalidadeTrabalho as hcIntersecTrabalho,
+  deficienciaPorRaca as hcDeficiencia,
+  lgbtqiaPorRaca as hcLgbtqia,
+  povosTradicionais as hcPovos,
   razaoRendaRacial,
-  violenciaInterseccional,
+  violenciaInterseccional as hcViolencia,
   radarVulnerabilidades,
-  evolucaoDesigualdade,
-  classePorRaca,
+  evolucaoDesigualdade as hcEvolDesig,
+  classePorRaca as hcClasse,
 } from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 function generateConsolidatedHTML(data: {
   indicadores: any[];
@@ -43,10 +44,31 @@ function generateConsolidatedHTML(data: {
   insightsCruzamento: InsightCruzamento[];
   sinteseExecutiva: any;
   respostas: any[];
+  mirrorData?: any;
 }) {
   const { indicadores, lacunas, lacunasStats, orcStats, orcamentarios, documentosNormativos,
-    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas } = data;
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas, mirrorData } = data;
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const m = mirrorData || {};
+  const dadosDemograficos = m.dadosDemograficos || hcDemo;
+  const evolucaoComposicaoRacial = m.evolucaoComposicaoRacial || hcEvolucao;
+  const segurancaPublica = m.segurancaPublica || hcSeguranca;
+  const feminicidioSerie = m.feminicidioSerie || hcFeminicidio;
+  const educacaoSerieHistorica = m.educacaoSerieHistorica || hcEducacao;
+  const indicadoresSocioeconomicos = m.indicadoresSocioeconomicos || hcSocioEco;
+  const analfabetismoGeral2024 = m.analfabetismoGeral2024 || hcAnalfabetismo;
+  const saudeSerieHistorica = m.saudeSerieHistorica || hcSaude;
+  const rendimentosCenso2022 = m.rendimentosCenso2022 || hcRendimentos;
+  const interseccionalidadeTrabalho = m.interseccionalidadeTrabalho || hcIntersecTrabalho;
+  const deficienciaPorRaca = m.deficienciaPorRaca || hcDeficiencia;
+  const lgbtqiaPorRaca = m.lgbtqiaPorRaca || hcLgbtqia;
+  const povosTradicionais = m.povosTradicionais || hcPovos;
+  const violenciaInterseccional = m.violenciaInterseccional || hcViolencia;
+  const evolucaoDesigualdade = m.evolucaoDesigualdade || hcEvolDesig;
+  const classePorRaca = m.classePorRaca || hcClasse;
+  const jovensNegrosViolencia = m.jovensNegrosViolencia || hcJovensViolencia;
 
   // Shorthand for comparisons
   const seg2018 = segurancaPublica[0];
@@ -676,6 +698,7 @@ export function ConsolidatedScopeReport() {
   const { data: orcStats } = useOrcamentoStats();
   const { data: orcamentarios } = useDadosOrcamentarios();
   const { data: respostas } = useRespostasLacunasCerdIII();
+  const mirrorData = useMirrorData();
 
   const {
     fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
@@ -708,6 +731,7 @@ export function ConsolidatedScopeReport() {
         insightsCruzamento,
         sinteseExecutiva,
         respostas: respostas || [],
+        mirrorData,
       });
 
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -836,6 +860,7 @@ export function ConsolidatedScopeReport() {
                     indicadores: indicadores || [], lacunas: lacunas || [], lacunasStats, orcStats,
                     orcamentarios: orcamentarios || [], documentosNormativos: documentosNormativos || [],
                     fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas: respostas || [],
+                    mirrorData,
                   });
                   downloadAsDocx(html, 'Relatorio-Consolidado-Escopo-CERD-IV');
                 } finally { setIsGenerating(false); }

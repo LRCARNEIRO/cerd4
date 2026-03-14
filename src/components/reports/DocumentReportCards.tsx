@@ -9,6 +9,7 @@ import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVHTML } from './generateCerdIVHTML';
 import { generateMethodologyHTML } from './generateMethodologyHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -16,6 +17,7 @@ export function DocumentReportCards() {
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcStats } = useOrcamentoStats();
+  const mirror = useMirrorData();
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
@@ -50,7 +52,10 @@ export function DocumentReportCards() {
   const handleGenerateCCD = async () => {
     setGeneratingCCD(true);
     try {
-      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
+        segurancaPublica: mirror.segurancaPublica,
+        ccTablesFromBD: mirror.ccTablesFromBD,
+      });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -62,7 +67,11 @@ export function DocumentReportCards() {
   const handleGenerateCERD = async () => {
     setGeneratingCERD(true);
     try {
-      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
+        segurancaPublica: mirror.segurancaPublica,
+        feminicidioSerie: mirror.feminicidioSerie,
+        educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+      });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -141,7 +150,10 @@ export function DocumentReportCards() {
               variant="outline"
               className="gap-2" 
               onClick={() => {
-                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
+                  segurancaPublica: mirror.segurancaPublica,
+                  ccTablesFromBD: mirror.ccTablesFromBD,
+                });
                 downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
               }}
             >
@@ -202,7 +214,11 @@ export function DocumentReportCards() {
               variant="outline"
               className="gap-2"
               onClick={() => {
-                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats);
+                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
+                  segurancaPublica: mirror.segurancaPublica,
+                  feminicidioSerie: mirror.feminicidioSerie,
+                  educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+                });
                 downloadAsDocx(html, 'CERD-IV-Relatorio-Periodico');
               }}
             >

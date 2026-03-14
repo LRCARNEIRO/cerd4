@@ -1,8 +1,9 @@
 import type { LacunaIdentificada, IndicadorInterseccional } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
-  dadosDemograficos, indicadoresSocioeconomicos, educacaoSerieHistorica,
-  saudeSerieHistorica, segurancaPublica, povosTradicionais
+  dadosDemograficos as hcDemo, indicadoresSocioeconomicos as hcSocioEco,
+  educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
+  segurancaPublica as hcSeguranca, povosTradicionais as hcPovos
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas, tabelasEconomicas, tabelasEducacao,
@@ -11,6 +12,12 @@ import {
   tabelasMoradia,
   type CommonCoreTable
 } from '@/components/estatisticas/CommonCoreTab';
+
+export interface CommonCoreMirrorData {
+  indicadoresSocioeconomicos?: any[];
+  segurancaPublica?: any[];
+  ccTablesFromBD?: CommonCoreTable[];
+}
 
 const STYLES = `
 @page { size: A4; margin: 2.5cm; }
@@ -105,8 +112,17 @@ export function generateCommonCoreHTML(
   indicadores: IndicadorInterseccional[],
   lacunas: LacunaIdentificada[],
   stats: any,
-  orcStats: any
+  orcStats: any,
+  mirror?: CommonCoreMirrorData
 ): string {
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
+  const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
+
+  // Local aliases for SSoT fallback
+  const dadosDemograficos = hcDemo;
+  const povosTradicionais = hcPovos;
+
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
 

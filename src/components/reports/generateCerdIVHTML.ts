@@ -1,9 +1,18 @@
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  indicadoresSocioeconomicos, povosTradicionais
+  segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
+  educacaoSerieHistorica as hcEducacao, indicadoresSocioeconomicos as hcSocioEco,
+  povosTradicionais as hcPovos
 } from '@/components/estatisticas/StatisticsData';
+
+export interface CerdIVMirrorData {
+  segurancaPublica?: any[];
+  feminicidioSerie?: any[];
+  educacaoSerieHistorica?: any[];
+  indicadoresSocioeconomicos?: any[];
+  povosTradicionais?: any;
+}
 
 const STYLES = `
 @page { size: A4; margin: 2.5cm; }
@@ -86,8 +95,16 @@ export function generateCerdIVHTML(
   respostas: RespostaLacunaCerdIII[],
   stats: any,
   indicadores: IndicadorInterseccional[],
-  orcStats: any
+  orcStats: any,
+  mirror?: CerdIVMirrorData
 ): string {
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
+  const feminicidioSerie = mirror?.feminicidioSerie?.length ? mirror.feminicidioSerie : hcFeminicidio;
+  const educacaoSerieHistorica = mirror?.educacaoSerieHistorica?.length ? mirror.educacaoSerieHistorica : hcEducacao;
+  const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
+  const povosTradicionais = mirror?.povosTradicionais || hcPovos;
+
   const cumpridas = stats?.porStatus?.cumprido || 0;
   const parciais = stats?.porStatus?.parcialmente_cumprido || 0;
   const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
