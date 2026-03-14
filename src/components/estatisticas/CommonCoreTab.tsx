@@ -326,10 +326,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '-3,3', '7.610', '36.200', '5,16'],
         ['2022', '3,0', '9.915', '47.607', '5,17'],
         ['2023', '2,9', '10.900', '52.092', '4,99'],
-        ['2024*', '3,2', '11.400', '54.180', '5,20']
+        ['2024', 'N/D — Pendente de verificação', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. Valores nominais em R$ bilhões.',
+    notas: 'Valores nominais em R$ bilhões. Dado de 2024 pendente de publicação oficial pelo IBGE.',
     tendencia: 'crescente'
   },
   {
@@ -349,10 +349,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     dados: {
       headers: ['Ano', '2010', '2015', '2018', '2020', '2021', '2022', '2023', '2024'],
       rows: [
-        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', '4,50*']
+        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', 'N/D']
       ]
     },
-    notas: '* Projeção. Pico inflacionário em 2015 e 2021.',
+    notas: 'Pico inflacionário em 2015 e 2021. Dado de 2024 pendente de consolidação pelo IBGE/SNIPC.',
     tendencia: 'estavel'
   },
   {
@@ -407,10 +407,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '341', '4.679', '61,4%'],
         ['2022', '368', '5.312', '56,1%'],
         ['2023', '378', '6.050', '60,8%'],
-        ['2024*', '390', '6.450', '62,5%']
+        ['2024', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. DLSP = Dívida Líquida do Setor Público.',
+    notas: 'DLSP = Dívida Líquida do Setor Público. Dado de 2024 pendente de publicação oficial pelo BCB.',
     tendencia: 'crescente'
   },
   {
@@ -435,10 +435,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '21,3%', '10,8%', '2,8%', '2,4%', '4,2%'],
         ['2022', '18,5%', '10,5%', '2,2%', '2,6%', '2,8%'],
         ['2023', '19,2%', '10,8%', '2,3%', '2,8%', '3,0%'],
-        ['2024*', '19,5%', '11,0%', '2,4%', '2,9%', '2,9%']
+        ['2024', 'N/D', 'N/D', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. Pico em 2020 devido ao Auxílio Emergencial na pandemia.',
+    notas: 'Pico em 2020 devido ao Auxílio Emergencial na pandemia. Dado de 2024 pendente de publicação oficial.',
     tendencia: 'crescente'
   },
   {
@@ -455,18 +455,18 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2018', '2020', '2022', '2024*'],
+      headers: ['Área', '2010', '2015', '2018', '2020', '2022'],
       rows: [
-        ['Previdência Social', '8,5%', '9,3%', '10,2%', '10,8%', '10,5%', '11,0%'],
-        ['Saúde', '1,9%', '2,1%', '2,0%', '2,8%', '2,2%', '2,4%'],
-        ['Educação e Cultura', '2,1%', '2,7%', '2,8%', '2,4%', '2,6%', '2,9%'],
-        ['Assistência Social', '1,3%', '1,5%', '1,6%', '4,2%', '2,8%', '2,9%'],
-        ['Trabalho e Emprego', '0,8%', '1,2%', '1,5%', '1,8%', '1,6%', '1,5%'],
-        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%', '0,4%'],
-        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%', '0,2%']
+        ['Previdência Social', '8,5%', '9,3%', '10,2%', '10,8%', '10,5%'],
+        ['Saúde', '1,9%', '2,1%', '2,0%', '2,8%', '2,2%'],
+        ['Educação e Cultura', '2,1%', '2,7%', '2,8%', '2,4%', '2,6%'],
+        ['Assistência Social', '1,3%', '1,5%', '1,6%', '4,2%', '2,8%'],
+        ['Trabalho e Emprego', '0,8%', '1,2%', '1,5%', '1,8%', '1,6%'],
+        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%'],
+        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%']
       ]
     },
-    notas: '* Projeção.',
+    notas: 'Coluna 2024 removida — dado pendente de publicação oficial.',
     tendencia: 'crescente'
   },
   {
@@ -483,17 +483,17 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2020', '2024*'],
+      headers: ['Área', '2010', '2015', '2020', '2022'],
       rows: [
-        ['Previdência Social', '57,1%', '53,2%', '50,7%', '52,8%'],
-        ['Saúde', '12,6%', '11,8%', '13,1%', '12,3%'],
-        ['Educação e Cultura', '13,7%', '15,4%', '11,3%', '14,9%'],
-        ['Assistência Social', '9,0%', '8,8%', '19,7%', '14,9%'],
-        ['Trabalho e Emprego', '5,4%', '6,8%', '8,5%', '7,7%'],
-        ['Outros', '2,2%', '4,0%', '-3,3%', '-2,6%']
+        ['Previdência Social', '57,1%', '53,2%', '50,7%', 'N/D'],
+        ['Saúde', '12,6%', '11,8%', '13,1%', 'N/D'],
+        ['Educação e Cultura', '13,7%', '15,4%', '11,3%', 'N/D'],
+        ['Assistência Social', '9,0%', '8,8%', '19,7%', 'N/D'],
+        ['Trabalho e Emprego', '5,4%', '6,8%', '8,5%', 'N/D'],
+        ['Outros', '2,2%', '4,0%', '-3,3%', 'N/D']
       ]
     },
-    notas: '* Projeção. Assistência Social expandiu significativamente em 2020.',
+    notas: 'Assistência Social expandiu significativamente em 2020. Dados de 2022 pendentes de consolidação oficial.',
     tendencia: 'estavel'
   }
 ];
@@ -1056,19 +1056,20 @@ export const tabelasSaude: CommonCoreTable[] = [
     urlFonte: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-mulher',
     periodoOriginal: '1996-2006',
     periodoAtualizado: '1996-2019',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'desatualizado',
     dados: {
-      headers: ['Método', '1996', '2006', '2019*'],
+      headers: ['Método', '1996', '2006', '2019'],
       rows: [
-        ['Qualquer método', '76,7%', '80,6%', '79,8%'],
-        ['Esterilização feminina', '40,1%', '29,1%', '21,2%'],
-        ['Pílula', '20,7%', '24,7%', '28,5%'],
-        ['Preservativo masculino', '4,4%', '12,2%', '18,8%'],
-        ['DIU', '1,1%', '1,9%', '3,5%'],
-        ['Esterilização masculina', '2,6%', '5,1%', '5,8%']
+        ['Qualquer método', '76,7%', '80,6%', 'N/D — Pendente de verificação'],
+        ['Esterilização feminina', '40,1%', '29,1%', 'N/D'],
+        ['Pílula', '20,7%', '24,7%', 'N/D'],
+        ['Preservativo masculino', '4,4%', '12,2%', 'N/D'],
+        ['DIU', '1,1%', '1,9%', 'N/D'],
+        ['Esterilização masculina', '2,6%', '5,1%', 'N/D']
       ]
     },
-    notas: '* Estimativa com base em dados do SISCAN e SIAB. Redução da esterilização feminina.',
+    notas: 'Dados de 2019 removidos por serem estimativas (SISCAN/SIAB). Última PNDS oficial: 2006. Aguardando nova pesquisa nacional.',
+    
     tendencia: 'estavel'
   },
   {
@@ -2047,7 +2048,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Total Brasil', '6.270', '100%', '6.472', '100%']
       ]
     },
-    notas: 'Negros representam 55,5% da população mas 59,8% do déficit habitacional. Cruzamento indireto 🔀: FJP + IBGE Censo 2022 (Tabela 9879).',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: FJP (Déficit Habitacional) + IBGE Censo 2022 (Tabela 9879). Negros representam 55,5% da população mas 59,8% do déficit habitacional. Requer validação humana.',
     tendencia: 'crescente'
   },
   {
@@ -2126,7 +2127,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Total MCMV', '64,8%', '32,0%', '3,2%', '7.020']
       ]
     },
-    notas: 'Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades.',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades. Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Requer validação humana.',
     tendencia: 'estavel'
   },
   {
@@ -2151,7 +2152,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['UH entregues (Faixa 1, mil)', '285', '142', '380']
       ]
     },
-    notas: 'Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Cruzamento indireto 🔀: SISHAB + CadÚnico.',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: SISHAB + CadÚnico. Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Requer validação humana.',
     tendencia: 'crescente'
   },
   {
@@ -2599,7 +2600,7 @@ export const CommonCoreTab = () => {
                 As 77 tabelas seguem a estrutura do documento HRI/CORE/BRA/2020, atualizadas com dados oficiais 
                 do IBGE/SIDRA, Ministério da Saúde (DataSUS), MEC/INEP, MDS/SUAS, FBSP, TSE e outras fontes 
                 governamentais. Os dados mais recentes disponíveis são de 2023/2024, conforme periodicidade de cada pesquisa.
-                Valores marcados com (*) são projeções ou estimativas.
+                Valores marcados como 'N/D' indicam dados pendentes de publicação oficial ou verificação humana. Tabelas com cruzamento indireto (🔀) são classificadas como Nível B e requerem validação.
               </p>
             </div>
           </div>
