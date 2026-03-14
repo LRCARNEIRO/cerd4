@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line, ComposedChart
 } from 'recharts';
 import { 
   Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope, Loader2, Database, HardDrive
@@ -47,35 +47,79 @@ export function RacaGeneroTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Heart className="w-5 h-5 text-destructive" />
-              Violência contra Mulheres por Raça (%)
+              Violência contra Mulheres por Raça
             </CardTitle>
-            <CardDescription>19º Anuário FBSP 2025 (dados 2024)</CardDescription>
+            <CardDescription>19º Anuário FBSP 2025 / DataSUS-SINAN 2024</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={violenciaInterseccional} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} />
-                  <YAxis dataKey="tipo" type="category" tick={{ fontSize: 11 }} width={130} />
-                  <Tooltip 
-                    formatter={(value: number) => [`${value}%`, '']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="mulherNegra" name="Mulher Negra" fill="hsl(var(--destructive))" stackId="a" />
-                  <Bar dataKey="mulherBranca" name="Mulher Branca" fill="hsl(var(--chart-1))" stackId="a" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {(() => {
+              const dadosPct = violenciaInterseccional.filter(v => !(v as any).unidadeAbsoluta);
+              const dadosAbs = violenciaInterseccional.filter(v => (v as any).unidadeAbsoluta);
+              const chartDataPct = dadosPct.map(d => ({
+                tipo: d.tipo,
+                mulherNegra: d.mulherNegra,
+                mulherBranca: d.mulherBranca,
+              }));
+              const chartDataAbs = dadosAbs.map(d => ({
+                tipo: d.tipo,
+                mulherNegra: d.mulherNegra,
+                mulherBranca: d.mulherBranca,
+              }));
+              return (
+                <div className="space-y-4">
+                  {/* Gráfico percentual */}
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Proporção de vítimas por raça (%)</p>
+                    <div className="h-40">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartDataPct} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
+                          <YAxis dataKey="tipo" type="category" tick={{ fontSize: 11 }} width={100} />
+                          <Tooltip
+                            formatter={(value: number) => [`${value}%`, '']}
+                            contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                          />
+                          <Legend />
+                          <Bar dataKey="mulherNegra" name="Mulher Negra" fill="hsl(var(--destructive))" stackId="a" />
+                          <Bar dataKey="mulherBranca" name="Mulher Branca" fill="hsl(var(--chart-1))" stackId="a" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                  {/* Gráfico absoluto */}
+                  {chartDataAbs.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Notificações — dados absolutos</p>
+                      <div className="h-32">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={chartDataAbs} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                            <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v: number) => fmt(v)} />
+                            <YAxis dataKey="tipo" type="category" tick={{ fontSize: 11 }} width={130} />
+                            <Tooltip
+                              formatter={(value: number) => [fmt(value), '']}
+                              contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                            />
+                            <Legend />
+                            <Bar dataKey="mulherNegra" name="Mulher Negra" fill="hsl(var(--destructive))" />
+                            <Bar dataKey="mulherBranca" name="Mulher Branca" fill="hsl(var(--chart-1))" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50 space-y-1">
               <p className="text-xs text-muted-foreground">
                 <FileText className="w-3 h-3 inline mr-1" />
                 Mulheres negras são 63,6% das vítimas de feminicídio (19º Anuário FBSP 2025, dados 2024). Em 2018: 61%.
+              </p>
+              <p className="text-xs text-muted-foreground">
+                <Info className="w-3 h-3 inline mr-1" />
+                Violência doméstica: notificações absolutas (DataSUS/SINAN), não percentuais — exibido em escala separada.
               </p>
               <a href="https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025 (PDF)
