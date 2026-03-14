@@ -39,10 +39,10 @@ const FONTE_DATASUS_SIM = [
 ];
 
 const FONTE_PNAD_COVID = [
-  { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados: perda de emprego, renda, acesso a serviços por raça/cor', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
-  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial e COVID-19 (PDF)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
-  { nome: 'IBGE/SIDRA — Tabela 7533: PNAD Contínua Trimestral, rendimento por cor/raça (filtro: informalidade pré-pandemia)', url: 'https://sidra.ibge.gov.br/tabela/7533' },
-  { nome: 'POF/Rede PENSSAN (2022) — Insegurança Alimentar por raça/cor', url: 'https://pesquisassan.net.br/olheparaafome/' },
+  { nome: 'PNAD COVID-19 (IBGE, 2020) — Trabalho: proporção que não procurou trabalho por pandemia, por cor/raça', url: 'https://covid19.ibge.gov.br/pnad-covid/trabalho.php' },
+  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92)', url: 'https://repositorio.ipea.gov.br/bitstreams/c5764fb9-c664-4d1c-bf0d-d3e1d1d3b88f/download' },
+  { nome: 'PNADC Trimestral (IBGE) — Microdados: massa salarial Q1×Q2 2020, decomposição Shapley por cor/raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
+  { nome: 'Filetti et al. (2022) — UNDP Background Paper: Inequalities in the times of a pandemic (HDR 2021-22)', url: 'https://hdr.undp.org/system/files/documents/background-paper-document/2021-22hdrfilletietal.pdf' },
 ];
 
 const FONTE_VACINACAO = [
@@ -133,16 +133,16 @@ const peresStudyData = {
   ],
 };
 
-// Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
-// Navegação PNAD COVID: covid19.ibge.gov.br → Microdados → filtro V0009 (raça/cor)
-// Navegação SIDRA: Tabela 7533 → rendimento habitual por cor/raça
-const impactoSocioeconomico = [
-  { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2, fonte: 'PNAD COVID/IBGE 2020 — Microdados V0009 (raça/cor)' },
-  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8, fonte: 'PNAD COVID/IBGE 2020 — Microdados filtro auxílio × raça' },
-  { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1, fonte: 'POF/Rede PENSSAN 2022 — II VIGISAN, desagregação raça/cor' },
-  { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5, fonte: 'SIDRA Tabela 7533 — PNAD Contínua 2019, posição ocupação × cor' },
-  { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2, fonte: 'PNAD Contínua 2019 — Saúde, Tabela 7670 (plano × raça)' },
-  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5, fonte: 'PNAD COVID/IBGE 2020 — Microdados domicílio × raça' },
+// Impacto no mercado de trabalho por raça — PNAD COVID-19 (IBGE) + IPEA/PNADC
+// Fontes: covid19.ibge.gov.br/pnad-covid/trabalho.php (dados nov/2020 por cor/raça)
+//         IPEA Nota Técnica DISOC nº 92 (Souza, 2020) — decomposição Shapley da massa salarial
+const impactoTrabalhoRacial = [
+  { indicador: 'Não procuraram trabalho por pandemia ou falta de trabalho (nov/2020)', negros: 9.7, brancos: 5.9, unidade: '%', fonte: 'PNAD COVID-19/IBGE — covid19.ibge.gov.br/pnad-covid/trabalho.php → filtro cor/raça' },
+  { indicador: 'Queda da massa salarial real (Q1→Q2 2020)', negros: 23, brancos: 19, unidade: '%', fonte: 'IPEA/PNADC — Souza (2020), Gráfico 1: decomposição Shapley' },
+  { indicador: 'Efeito emprego na queda da massa salarial (Q1→Q2 2020)', negros: 12, brancos: 6, unidade: 'pp', fonte: 'IPEA/PNADC — Souza (2020), Gráfico 1: componente emprego' },
+  { indicador: 'Taxa de pobreza SEM auxílio emergencial (jul/2020)', negros: 25.0, brancos: 12.8, unidade: '%', fonte: 'IPEA/PNAD-Covid — Souza (2020), linha ¼ SM per capita' },
+  { indicador: 'Taxa de pobreza COM auxílio emergencial (jul/2020)', negros: 7.7, brancos: 4.5, unidade: '%', fonte: 'IPEA/PNAD-Covid — Souza (2020), efeito redistributivo AE' },
+  { indicador: 'Renda per capita média (jul/2020, com AE)', negros: 971, brancos: 1640, unidade: 'R$', fonte: 'IPEA/PNAD-Covid — Souza (2020), Tabela A.1' },
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
@@ -505,41 +505,58 @@ export function CovidRacialSection() {
         </Card>
       </div>
 
-      {/* Impacto socioeconômico */}
+      {/* Impacto no mercado de trabalho por raça */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Impactos Socioeconômicos da Pandemia por Raça</CardTitle>
-          <CardDescription>Determinantes sociais que amplificaram a desigualdade racial na COVID-19</CardDescription>
+          <CardTitle className="text-base">Impacto da Pandemia no Mercado de Trabalho por Raça</CardTitle>
+          <CardDescription>
+            Indicadores auditáveis: PNAD COVID-19 (IBGE, nov/2020) e IPEA/PNADC (Souza, 2020 — decomposição Shapley)
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Indicador</TableHead>
-                <TableHead className="text-right">Negros (%)</TableHead>
-                <TableHead className="text-right">Brancos (%)</TableHead>
+                <TableHead className="text-right">Negros</TableHead>
+                <TableHead className="text-right">Brancos</TableHead>
                 <TableHead className="text-right">Razão</TableHead>
                 <TableHead>Fonte</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {impactoSocioeconomico.map(item => (
-                <TableRow key={item.indicador}>
-                  <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
-                  <TableCell className="text-right font-medium">{item.negros}%</TableCell>
-                  <TableCell className="text-right">{item.naoNegros}%</TableCell>
-                  <TableCell className={`text-right font-medium ${
-                    (item.negros / item.naoNegros) >= 1 ? 'text-destructive' : 'text-chart-1'
-                  }`}>
-                    {(item.negros / item.naoNegros).toFixed(1)}x
-                    {(item.negros / item.naoNegros) < 1 && ' ✓'}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{item.fonte}</TableCell>
-                </TableRow>
-              ))}
+              {impactoTrabalhoRacial.map(item => {
+                const razao = item.brancos !== 0 ? (item.negros / item.brancos) : 0;
+                const isMonetary = item.unidade === 'R$';
+                const razaoLabel = isMonetary ? `${(razao).toFixed(2)}x` : `${razao.toFixed(1)}x`;
+                const isWorse = isMonetary ? razao < 1 : razao > 1;
+                return (
+                  <TableRow key={item.indicador}>
+                    <TableCell className="font-medium text-sm">{item.indicador}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {isMonetary ? `R$ ${item.negros.toLocaleString('pt-BR')}` : `${item.negros}${item.unidade}`}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {isMonetary ? `R$ ${item.brancos.toLocaleString('pt-BR')}` : `${item.brancos}${item.unidade}`}
+                    </TableCell>
+                    <TableCell className={`text-right font-medium ${isWorse ? 'text-destructive' : 'text-chart-1'}`}>
+                      {razaoLabel}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[200px]">{item.fonte}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
-          <AuditFooter fontes={FONTE_PNAD_COVID} documentos={['PNAD COVID 2020', 'IPEA nº 29']} compact />
+          <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+            <p className="text-xs text-muted-foreground">
+              <strong>Nota metodológica:</strong> A massa salarial negra caiu <strong>23%</strong> (vs 19% brancos) entre Q1 e Q2 de 2020. 
+              A eliminação de postos de trabalho (efeito emprego) explica quase toda a diferença: negros perderam 2x mais postos. 
+              O Auxílio Emergencial beneficiou mais a população negra (⅔ dos benefícios) e reduziu a desigualdade GE(0) em 32,4% 
+              (IPEA/PNAD-Covid, Souza 2020).
+            </p>
+          </div>
+          <AuditFooter fontes={FONTE_PNAD_COVID} documentos={['PNAD COVID 2020', 'IPEA Nota Técnica DISOC nº 92', 'UNDP HDR 2021-22']} compact />
         </CardContent>
       </Card>
 
