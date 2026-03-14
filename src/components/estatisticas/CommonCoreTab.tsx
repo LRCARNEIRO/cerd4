@@ -450,7 +450,7 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Participação de cada área no gasto social como % do PIB',
     fonte: 'ME/IBGE',
     fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.gov.br/fazenda/pt-br/assuntos/orcamento-federal',
+    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
