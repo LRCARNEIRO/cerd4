@@ -1,9 +1,18 @@
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  indicadoresSocioeconomicos, povosTradicionais
+  segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
+  educacaoSerieHistorica as hcEducacao, indicadoresSocioeconomicos as hcSocioEco,
+  povosTradicionais as hcPovos
 } from '@/components/estatisticas/StatisticsData';
+
+export interface CerdIVMirrorData {
+  segurancaPublica?: any[];
+  feminicidioSerie?: any[];
+  educacaoSerieHistorica?: any[];
+  indicadoresSocioeconomicos?: any[];
+  povosTradicionais?: any;
+}
 
 const STYLES = `
 @page { size: A4; margin: 2.5cm; }
