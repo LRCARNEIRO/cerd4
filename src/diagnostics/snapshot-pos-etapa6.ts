@@ -31,19 +31,11 @@ export const FONTES_POS_ETAPA6 = {
     'SerieTemporalGrupos.tsx',
   ],
 
-  pendentes: [
-    {
-      arquivo: 'src/utils/narrativeHelpers.ts',
-      imports: ['Todas as constantes de StatisticsData.ts'],
-      uso: 'Geração de narrativas (27+ valores). Opera no nível de módulo (fora de React). Migração requer refatoração da API.',
-      nota: 'CASO ESPECIAL — dados são consumidos no module scope. Migrar para hook quebraria a API pública.',
-    },
-    {
-      arquivo: 'src/utils/countStatisticsIndicators.ts',
-      imports: ['Múltiplas constantes para contagem'],
-      uso: 'Contagem total de indicadores. Também opera no module scope.',
-      nota: 'Baixo risco — contagem não afeta narrativas.',
-    },
+  pendentes: [],
+  // ── MIGRADOS NA ETAPA 6B (final) ──
+  migradosEtapa6B: [
+    'narrativeHelpers.ts (factory createNarrativas + hook useNarrativeData)',
+    'countStatisticsIndicators.ts (factory computeStatisticsCounts)',
   ],
 };
 
