@@ -102,7 +102,7 @@ function normalizeIndicadorData(dados: Record<string, any>) {
     'por_uf_2024', 'idade_media_vitima', 'unidade', 'slug', 'formato',
     'ods_id', 'nota', 'serie', 'fonte', 'url', 'artigoCerd',
     'regra_ouro', 'status_validacao', 'nota_racial', 'nota_refugio',
-    'nota_registros', 'datamigra_bi_url',
+    'nota_registros', 'datamigra_bi_url', 'deep_links', 'lacuna_racial',
   ]);
 
   // If dados has a "series" sub-object with year keys, use that as the effective data
