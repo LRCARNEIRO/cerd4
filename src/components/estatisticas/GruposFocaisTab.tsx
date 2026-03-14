@@ -1082,7 +1082,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{indicadoresVulnerabilidade.ivjn.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome} <AuditadoBadge nota="Atlas da Violência 2025 — IVJ-N" /></CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
