@@ -123,9 +123,15 @@ function indicadorToHTML(ind: any): string {
   return html;
 }
 
-function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
+function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
+  // SSoT: destructure from mirror data
+  const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
+    rendimentosCenso2022, segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
+    analfabetismoGeral2024, saudeSerieHistorica, interseccionalidadeTrabalho,
+    violenciaInterseccional, serieAntraTrans, lgbtqiaPorRaca, deficienciaPorRaca,
+    classePorRaca, evolucaoDesigualdade, povosTradicionais } = m;
 
   const bdCategorias: Record<string, any[]> = {};
   indicadoresBD.forEach(i => {
