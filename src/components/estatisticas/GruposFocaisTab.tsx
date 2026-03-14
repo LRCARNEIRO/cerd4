@@ -47,16 +47,18 @@ const gruposFocaisData = {
   },
   ciganos: {
     nome: 'Ciganos/Roma',
-    populacao: null,
-    fonte: 'Lacuna crítica - Censo 2022 não incluiu pergunta específica',
-    tabela: 'N/A',
-    link: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
-    ultimaAtualizacao: '2022-08-30',
-    serieTemporal: [],
+    populacao: 41738, // AUDITORIA 14/03/2026: atualizado via Complemento CERD III (SIDRA 9891, Censo 2022)
+    fonte: 'IBGE/Censo 2022 — Tabela SIDRA 9891 (Pop. por povo ou comunidade tradicional × UF)',
+    tabela: 'Tabela 9891 - SIDRA',
+    link: 'https://sidra.ibge.gov.br/tabela/9891',
+    ultimaAtualizacao: '2023-10-27',
+    serieTemporal: [
+      { ano: 2022, valor: 41738, fonte: 'Censo 2022 — SIDRA 9891' },
+    ],
     observacoesONU: ['54', '55'],
     politicas: ['Decreto 8.750/2016 (CNPCT incluía ciganos)', 'Política Nacional para Povo Cigano (em elaboração)'],
-    indicadores: [],
-    notas: 'O CERD expressou preocupação específica (§54-55) sobre ausência de dados oficiais. Estimativas não-oficiais variam de 500 mil a 1,5 milhão.',
+    indicadores: ['População por região', 'Distribuição territorial'],
+    notas: 'AUDITADO: Censo 2022 realizou primeira contagem oficial (41.738). Possível sub-registro por estigma e nomadismo — organizações ciganas estimam entre 500 mil e 1 milhão. §54-55 do CERD III.',
   },
   juventude_negra: {
     nome: 'Juventude Negra (15-29 anos)',
