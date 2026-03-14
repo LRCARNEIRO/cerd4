@@ -1004,6 +1004,7 @@ export function JuventudeTab() {
 }
 
 export function ClasseSocialTab() {
+  const { classePorRaca, rendimentosCenso2022 } = useMirrorData();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
