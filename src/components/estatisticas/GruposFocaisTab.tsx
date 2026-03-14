@@ -1043,7 +1043,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.letalidadePolicial.nome} <AuditadoBadge nota="Validado contra série letalidadePolicial auditada" /></CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
