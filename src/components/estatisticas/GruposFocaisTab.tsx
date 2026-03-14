@@ -952,6 +952,7 @@ export function GruposFocaisTab() {
                       Dados do Atlas da Violência 2025 (IPEA/FBSP) e 19º Anuário FBSP 2025
                       <AuditadoBadge nota="Todos os 6 indicadores validados contra abas Segurança/Saúde/Educação (mirror SSoT)" />
                     </h3>
+                    <p className="text-sm text-muted-foreground">
                       Indicadores de violência letal com recorte racial — fontes oficiais auditáveis.
                       Juventude definida como <strong>15 a 29 anos</strong> conforme padrão ONU e Estatuto da Juventude.
                     </p>
