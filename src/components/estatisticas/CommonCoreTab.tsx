@@ -1069,7 +1069,7 @@ export const tabelasSaude: CommonCoreTable[] = [
       ]
     },
     notas: 'Dados de 2019 removidos por serem estimativas (SISCAN/SIAB). Última PNDS oficial: 2006. Aguardando nova pesquisa nacional.',
-    statusAtualizacao: 'desatualizado' as UpdateStatus,
+    
     tendencia: 'estavel'
   },
   {
