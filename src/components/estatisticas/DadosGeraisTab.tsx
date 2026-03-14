@@ -88,6 +88,27 @@ export function DadosGeraisTab() {
 
   return (
     <div className="space-y-6">
+      {/* SSoT Badge */}
+      {usandoBD && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+          <Database className="w-4 h-4 text-primary" />
+          <span className="text-xs text-primary font-medium">
+            SSoT ativo — Dados demográficos consumidos do banco de dados
+            {paragrafos && <Badge variant="outline" className="ml-2 text-[10px]">CERD {paragrafos}</Badge>}
+            {artigosConvencao.length > 0 && artigosConvencao.map(a => (
+              <Badge key={a} variant="outline" className="ml-1 text-[10px]">{a}</Badge>
+            ))}
+          </span>
+        </div>
+      )}
+      {!usandoBD && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-muted border border-border">
+          <HardDrive className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">
+            Fallback ativo — Dados demográficos do arquivo estático (espelhe para BD para ativar SSoT)
+          </span>
+        </div>
+      )}
       {/* Cards de resumo demográfico */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-primary">
