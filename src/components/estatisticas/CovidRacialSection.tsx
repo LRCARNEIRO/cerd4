@@ -287,8 +287,8 @@ export function CovidRacialSection() {
         <Card className="border-l-4 border-l-warning">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
-            <p className="text-2xl font-bold text-warning">62%</p>
-            <p className="text-xs text-muted-foreground">vs 38% brancos</p>
+            <p className="text-2xl font-bold text-warning">70,4%</p>
+            <p className="text-xs text-muted-foreground">vs 37,9% brancos (NT11, n=54)</p>
             <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
           </CardContent>
         </Card>
