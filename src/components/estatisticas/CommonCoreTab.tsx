@@ -455,18 +455,18 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2018', '2020', '2022', '2024*'],
+      headers: ['Área', '2010', '2015', '2018', '2020', '2022'],
       rows: [
-        ['Previdência Social', '8,5%', '9,3%', '10,2%', '10,8%', '10,5%', '11,0%'],
-        ['Saúde', '1,9%', '2,1%', '2,0%', '2,8%', '2,2%', '2,4%'],
-        ['Educação e Cultura', '2,1%', '2,7%', '2,8%', '2,4%', '2,6%', '2,9%'],
-        ['Assistência Social', '1,3%', '1,5%', '1,6%', '4,2%', '2,8%', '2,9%'],
-        ['Trabalho e Emprego', '0,8%', '1,2%', '1,5%', '1,8%', '1,6%', '1,5%'],
-        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%', '0,4%'],
-        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%', '0,2%']
+        ['Previdência Social', '8,5%', '9,3%', '10,2%', '10,8%', '10,5%'],
+        ['Saúde', '1,9%', '2,1%', '2,0%', '2,8%', '2,2%'],
+        ['Educação e Cultura', '2,1%', '2,7%', '2,8%', '2,4%', '2,6%'],
+        ['Assistência Social', '1,3%', '1,5%', '1,6%', '4,2%', '2,8%'],
+        ['Trabalho e Emprego', '0,8%', '1,2%', '1,5%', '1,8%', '1,6%'],
+        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%'],
+        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%']
       ]
     },
-    notas: '* Projeção.',
+    notas: 'Coluna 2024 removida — dado pendente de publicação oficial.',
     tendencia: 'crescente'
   },
   {
