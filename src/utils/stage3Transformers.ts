@@ -248,12 +248,12 @@ export function buildCovidRacialIndicators(): DbRecord[] {
     ['Art. 2', 'Art. 5'],
     {
       registros: [
-        { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2 },
-        { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8 },
-        { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1 },
-        { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5 },
-        { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2 },
-        { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5 },
+        { indicador: 'Não procuraram trabalho por pandemia (nov/2020)', negros: 9.7, brancos: 5.9, unidade: '%' },
+        { indicador: 'Queda da massa salarial real (Q1→Q2 2020)', negros: 23, brancos: 19, unidade: '%' },
+        { indicador: 'Efeito emprego na queda da massa salarial', negros: 12, brancos: 6, unidade: 'pp' },
+        { indicador: 'Taxa de pobreza SEM auxílio emergencial (jul/2020)', negros: 25.0, brancos: 12.8, unidade: '%' },
+        { indicador: 'Taxa de pobreza COM auxílio emergencial (jul/2020)', negros: 7.7, brancos: 4.5, unidade: '%' },
+        { indicador: 'Renda per capita média (jul/2020, com AE)', negros: 971, brancos: 1640, unidade: 'R$' },
       ],
       paragrafos_cerd: '§31-32',
     },
