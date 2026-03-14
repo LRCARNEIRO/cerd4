@@ -1,8 +1,9 @@
 import type { LacunaIdentificada, IndicadorInterseccional } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import {
-  dadosDemograficos, indicadoresSocioeconomicos, educacaoSerieHistorica,
-  saudeSerieHistorica, segurancaPublica, povosTradicionais
+  dadosDemograficos as hcDemo, indicadoresSocioeconomicos as hcSocioEco,
+  educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
+  segurancaPublica as hcSeguranca, povosTradicionais as hcPovos
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas, tabelasEconomicas, tabelasEducacao,
@@ -11,6 +12,12 @@ import {
   tabelasMoradia,
   type CommonCoreTable
 } from '@/components/estatisticas/CommonCoreTab';
+
+export interface CommonCoreMirrorData {
+  indicadoresSocioeconomicos?: any[];
+  segurancaPublica?: any[];
+  ccTablesFromBD?: CommonCoreTable[];
+}
 
 const STYLES = `
 @page { size: A4; margin: 2.5cm; }
