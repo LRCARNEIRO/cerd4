@@ -163,6 +163,7 @@ export const saudeIndigena: ComplementoIndicador = {
   url_fonte: 'https://www.primeirainfancia.org.br/',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'Razão de 2,44× em 2022. Pico de 3,42× em 2021 (impacto COVID).',
