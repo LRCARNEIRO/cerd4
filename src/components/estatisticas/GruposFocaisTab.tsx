@@ -347,20 +347,17 @@ export function GruposFocaisTab() {
                 <p className="text-sm font-medium">{gruposFocaisData.quilombolas.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.quilombolas.populacao?.toLocaleString('pt-BR')}</p>
               </div>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Badge variant="outline" className="text-xs">Censo 2022</Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
-                </TooltipContent>
-              </Tooltip>
-              <AuditadoBadge nota="SIDRA 9578 — Censo 2022 (universo)" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex flex-col items-end gap-1">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Badge variant="outline" className="text-xs">Censo 2022</Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
+                  </TooltipContent>
+                </Tooltip>
+                <AuditadoBadge nota="SIDRA 9578 — Censo 2022 (universo)" />
+              </div>
             </div>
             <FonteInfo 
               fonte={gruposFocaisData.quilombolas.fonte}
