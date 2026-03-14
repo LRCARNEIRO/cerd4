@@ -865,12 +865,12 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022', '2024*'],
+      headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022'],
       rows: [
-        ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60', '1,58']
+        ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60']
       ]
     },
-    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006.',
+    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006. Coluna 2024 removida — dado preliminar não publicado oficialmente.',
     tendencia: 'decrescente'
   },
   {
