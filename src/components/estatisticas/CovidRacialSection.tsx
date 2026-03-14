@@ -133,16 +133,16 @@ const peresStudyData = {
   ],
 };
 
-// Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
-// Navegação PNAD COVID: covid19.ibge.gov.br → Microdados → filtro V0009 (raça/cor)
-// Navegação SIDRA: Tabela 7533 → rendimento habitual por cor/raça
-const impactoSocioeconomico = [
-  { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2, fonte: 'PNAD COVID/IBGE 2020 — Microdados V0009 (raça/cor)' },
-  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8, fonte: 'PNAD COVID/IBGE 2020 — Microdados filtro auxílio × raça' },
-  { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1, fonte: 'POF/Rede PENSSAN 2022 — II VIGISAN, desagregação raça/cor' },
-  { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5, fonte: 'SIDRA Tabela 7533 — PNAD Contínua 2019, posição ocupação × cor' },
-  { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2, fonte: 'PNAD Contínua 2019 — Saúde, Tabela 7670 (plano × raça)' },
-  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5, fonte: 'PNAD COVID/IBGE 2020 — Microdados domicílio × raça' },
+// Impacto no mercado de trabalho por raça — PNAD COVID-19 (IBGE) + IPEA/PNADC
+// Fontes: covid19.ibge.gov.br/pnad-covid/trabalho.php (dados nov/2020 por cor/raça)
+//         IPEA Nota Técnica DISOC nº 92 (Souza, 2020) — decomposição Shapley da massa salarial
+const impactoTrabalhoRacial = [
+  { indicador: 'Não procuraram trabalho por pandemia ou falta de trabalho (nov/2020)', negros: 9.7, brancos: 5.9, unidade: '%', fonte: 'PNAD COVID-19/IBGE — covid19.ibge.gov.br/pnad-covid/trabalho.php → filtro cor/raça' },
+  { indicador: 'Queda da massa salarial real (Q1→Q2 2020)', negros: 23, brancos: 19, unidade: '%', fonte: 'IPEA/PNADC — Souza (2020), Gráfico 1: decomposição Shapley' },
+  { indicador: 'Efeito emprego na queda da massa salarial (Q1→Q2 2020)', negros: 12, brancos: 6, unidade: 'pp', fonte: 'IPEA/PNADC — Souza (2020), Gráfico 1: componente emprego' },
+  { indicador: 'Taxa de pobreza SEM auxílio emergencial (jul/2020)', negros: 25.0, brancos: 12.8, unidade: '%', fonte: 'IPEA/PNAD-Covid — Souza (2020), linha ¼ SM per capita' },
+  { indicador: 'Taxa de pobreza COM auxílio emergencial (jul/2020)', negros: 7.7, brancos: 4.5, unidade: '%', fonte: 'IPEA/PNAD-Covid — Souza (2020), efeito redistributivo AE' },
+  { indicador: 'Renda per capita média (jul/2020, com AE)', negros: 971, brancos: 1640, unidade: 'R$', fonte: 'IPEA/PNAD-Covid — Souza (2020), Tabela A.1' },
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
