@@ -15,6 +15,7 @@ import {
   fonteDados,
   trabalhoRacaGeneroFontes,
   educacaoRacaGeneroFontes,
+  povosTradicionais,
 } from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import {
