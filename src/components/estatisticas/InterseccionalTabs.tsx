@@ -24,7 +24,6 @@ import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 export function RacaGeneroTab() {
   const {
-  const {
     violenciaInterseccional, trabalhoRacaGenero, chefiaFamiliarRacaGenero,
     educacaoRacaGenero, saudeMaternaRaca, atlasViolencia2025,
   } = useMirrorData();
