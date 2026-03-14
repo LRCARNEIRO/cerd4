@@ -184,18 +184,18 @@ function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number;
   return [
     { 
       grupo: 'Mulheres negras', 
-      impacto: 'Aumento de 42% na mortalidade materna (2019→2021); sobrecarga de trabalho de cuidado; maior perda de renda',
-      fonte: 'DataSUS/SIM — TabNet → Mortalidade Materna → Coluna: Cor/Raça da mãe; IEPS Boletim Çarê Jul/2025'
+      impacto: 'RMM de mães pretas atingiu 179,4/100mil NV em 2021 (pico pandêmico); sobrecarga de trabalho de cuidado; maior perda de renda',
+      fonte: 'IEPS Boletim Çarê Jul/2025 — ieps.org.br/boletim-care-ieps-07-2025'
     },
     { 
-      grupo: 'Idosos negros (60+)', 
-      impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
-      fonte: 'SIVEP-Gripe → BigData COVID Fiocruz → filtro faixa etária 60+ × raça/cor × desfecho'
+      grupo: 'Pacientes negros hospitalizados', 
+      impacto: 'Maior mortalidade hospitalar por COVID-19 entre pacientes negros, com risco aproximadamente 1,5 vezes maior que entre brancos (Baqui et al., 2020)',
+      fonte: 'Baqui et al. (2020) — Lancet Global Health 8(8), e1018-e1026'
     },
     { 
       grupo: 'PcD negros', 
       impacto: 'Maior dificuldade de isolamento; barreiras de acesso a informação em formato acessível; exclusão digital',
-      fonte: 'IPEA Políticas Sociais nº 29, Cap. 8 — Igualdade Racial e PcD'
+      fonte: 'IPEA Políticas Sociais nº 29, Cap. 8; IPEA Nota Técnica: PcD e COVID-19'
     },
     { 
       grupo: 'LGBTQIA+ negros', 
@@ -214,8 +214,8 @@ function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number;
     },
     { 
       grupo: 'Indígenas', 
-      impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
-      fonte: 'SIVEP-Gripe → filtro raça indígena × desfecho; SESAI/MS — relatórios COVID aldeias'
+      impacto: 'Letalidade hospitalar de 70,4% na Nota Técnica 11 (amostra reduzida, n=54); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
+      fonte: 'NOIS/PUC-Rio NT11; SESAI/MS — relatórios COVID aldeias; ADPF 709'
     },
     { 
       grupo: 'Quilombolas', 
