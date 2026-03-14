@@ -476,7 +476,7 @@ export function buildMirrorIndicators(): DbRecord[] {
   return all;
 }
 
-/** Categorias únicas usadas pelos registros espelhados */
+/** Categorias únicas usadas pelos registros espelhados (Etapa 1+2) */
 export function getMirrorCategories(): string[] {
   return [
     'demografia',
@@ -491,3 +491,4 @@ export function getMirrorCategories(): string[] {
     'povos_tradicionais',
   ];
 }
+

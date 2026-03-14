@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { buildMirrorIndicators, getMirrorCategories } from '@/utils/staticToDbTransformer';
+import { buildAllStage3Indicators, getStage3Categories } from '@/utils/stage3Transformers';
 import { toast } from 'sonner';
 
 export function MirrorIngestionPanel() {
@@ -16,8 +17,12 @@ export function MirrorIngestionPanel() {
     setResult(null);
 
     try {
-      const indicators = buildMirrorIndicators();
-      const clearCategories = getMirrorCategories();
+      // Combine Stage 1+2 and Stage 3 indicators
+      const stage12 = buildMirrorIndicators();
+      const stage3 = buildAllStage3Indicators();
+      const indicators = [...stage12, ...stage3];
+
+      const clearCategories = [...getMirrorCategories(), ...getStage3Categories()];
 
       const { data, error } = await supabase.functions.invoke('ingest-static-mirror', {
         body: { indicators, clearCategories },
@@ -27,7 +32,7 @@ export function MirrorIngestionPanel() {
 
       setResult({ inserted: data.inserted, errors: data.errors });
       if (data.inserted > 0) {
-        toast.success(`${data.inserted} indicadores espelhados no banco de dados`);
+        toast.success(`${data.inserted} indicadores espelhados no banco de dados (Etapas 1-3)`);
       }
     } catch (err: any) {
       toast.error(`Erro na ingestão: ${err.message}`);
@@ -45,7 +50,7 @@ export function MirrorIngestionPanel() {
     }
   }, []);
 
-  const totalIndicators = buildMirrorIndicators().length;
+  const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length;
 
   return (
     <Card className="border-l-4 border-l-primary/60">
@@ -54,9 +59,9 @@ export function MirrorIngestionPanel() {
           <div className="flex items-center gap-3">
             <Database className="w-5 h-5 text-primary" />
             <div>
-              <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD</p>
+              <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD (Etapas 1-3)</p>
               <p className="text-xs text-muted-foreground">
-                {totalIndicators} indicadores de StatisticsData.ts · Espelhamento automático ativo ao carregar a página.
+                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais
               </p>
             </div>
           </div>
