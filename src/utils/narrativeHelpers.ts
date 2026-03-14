@@ -282,8 +282,8 @@ export const NARRATIVE_DATA_MAP = [
   // Interseccional — Chefia Familiar
   { label: 'Chefia negras %', narrativeValue: narrativaChefia.percentualNegras, sourceValue: hcChefia.percentualNegras, source: 'chefiaFamiliarRacaGenero.percentualNegras' },
   { label: 'CadÚnico negras %', narrativeValue: narrativaChefia.cadUnicoNegras, sourceValue: hcChefia.cadUnicoMulheresNegras, source: 'chefiaFamiliarRacaGenero.cadUnicoMulheresNegras' },
-  { label: 'IA domicílios femininos', narrativeValue: narrativaChefia.domiciliosIA, sourceValue: hcChefia.domiciliosFemininosIA, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosIA' },
-  { label: 'Fome domicílios femininos', narrativeValue: narrativaChefia.domiciliosFome, sourceValue: hcChefia.domiciliosFemininosFome, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosFome' },
+  { label: 'Fome mulheres negras %', narrativeValue: narrativaChefia.fomeMulheresNegras, sourceValue: hcChefia.fomeMulheresNegras, source: 'chefiaFamiliarRacaGenero.fomeMulheresNegras' },
+  { label: 'Fome crianças mulheres negras %', narrativeValue: narrativaChefia.fomeCriancas, sourceValue: hcChefia.fomeCriancasMulheresNegras, source: 'chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras' },
   // Interseccional — Saúde Materna
   { label: 'Mortes maternas negras %', narrativeValue: narrativaSaudeMaterna.mortesNegrasPct, sourceValue: hcSaudeMaterna.mortalidadeMaternaNegraPercentual, source: 'saudeMaternaRaca.mortalidadeMaternaNegraPercentual' },
   { label: 'Razão IEPS pretas/brancas', narrativeValue: narrativaSaudeMaterna.razaoIEPS, sourceValue: hcSaudeMaterna.razaoMortalidadePretasBrancas, source: 'saudeMaternaRaca.razaoMortalidadePretasBrancas' },

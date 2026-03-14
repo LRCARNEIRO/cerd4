@@ -319,9 +319,8 @@ export function RacaGeneroTab() {
             <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos {(narrativaChefia.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras 
             ({(narrativaChefia.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022).
             {narrativaChefia.cadUnicoNegras != null ? ` Respondem por ${fmt(narrativaChefia.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas).` : ' Dados CadÚnico pendentes de verificação.'}
-            {' '}A insegurança alimentar atinge {fmt(narrativaChefia.domiciliosIA, 0)}% desses domicílios, 
-            com {fmt(narrativaChefia.domiciliosFome)}% em situação de fome. O cruzamento revela um <strong>ciclo de vulnerabilidade estrutural</strong> onde 
-            gênero e raça se retroalimentam na reprodução da pobreza intergeracional.
+            {' '}A fome (IA grave) atinge {fmt(narrativaChefia.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, 
+            subindo a {fmt(narrativaChefia.fomeCriancas)}% nos lares com crianças menores de 10 anos (II VIGISAN 2022, recorte raça/gênero).
           </p>
           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022/SIDRA 10179-10182 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
         </div>
