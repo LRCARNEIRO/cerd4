@@ -1,3 +1,9 @@
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║ POLÍTICA ESPELHO SEGURO — NÃO DELETAR DADOS DESTE ARQUIVO         ║
+// ║ Este arquivo é o backup estático ("espelho") das séries históricas ║
+// ║ auditadas. Mesmo após migração para o banco de dados, os dados     ║
+// ║ aqui JAMAIS devem ser removidos — servem como fonte de restauração.║
+// ╚══════════════════════════════════════════════════════════════════════╝
 // =============================================
 // DADOS ESTATÍSTICOS OFICIAIS - SIDRA/IBGE
 // Fonte primária: SIDRA/IBGE (api.sidra.ibge.gov.br)
