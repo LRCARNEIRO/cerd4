@@ -247,6 +247,7 @@ export function EducacaoComparativaChart() {
 
 // ============== SAÚDE ==============
 export function SaudeComparativaChart() {
+  const { saudeSerieHistorica } = useMirrorData();
   const dado2018 = saudeSerieHistorica[0];
   const dado2024 = saudeSerieHistorica[saudeSerieHistorica.length - 1];
 
