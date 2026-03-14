@@ -1058,17 +1058,18 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '1996-2019',
     statusAtualizacao: 'parcial',
     dados: {
-      headers: ['Método', '1996', '2006', '2019*'],
+      headers: ['Método', '1996', '2006', '2019'],
       rows: [
-        ['Qualquer método', '76,7%', '80,6%', '79,8%'],
-        ['Esterilização feminina', '40,1%', '29,1%', '21,2%'],
-        ['Pílula', '20,7%', '24,7%', '28,5%'],
-        ['Preservativo masculino', '4,4%', '12,2%', '18,8%'],
-        ['DIU', '1,1%', '1,9%', '3,5%'],
-        ['Esterilização masculina', '2,6%', '5,1%', '5,8%']
+        ['Qualquer método', '76,7%', '80,6%', 'N/D — Pendente de verificação'],
+        ['Esterilização feminina', '40,1%', '29,1%', 'N/D'],
+        ['Pílula', '20,7%', '24,7%', 'N/D'],
+        ['Preservativo masculino', '4,4%', '12,2%', 'N/D'],
+        ['DIU', '1,1%', '1,9%', 'N/D'],
+        ['Esterilização masculina', '2,6%', '5,1%', 'N/D']
       ]
     },
-    notas: '* Estimativa com base em dados do SISCAN e SIAB. Redução da esterilização feminina.',
+    notas: 'Dados de 2019 removidos por serem estimativas (SISCAN/SIAB). Última PNDS oficial: 2006. Aguardando nova pesquisa nacional.',
+    statusAtualizacao: 'desatualizado' as UpdateStatus,
     tendencia: 'estavel'
   },
   {
