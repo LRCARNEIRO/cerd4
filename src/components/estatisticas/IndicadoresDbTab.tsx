@@ -249,7 +249,7 @@ function extractRacialComparison(ind: IndicadorData): RacialComparison | null {
   // Strategy 1: top-level keys like { Negros: { 2022: val }, Brancos: { 2022: val } }
   for (const [key, val] of Object.entries(dados)) {
     const keyLower = key.toLowerCase();
-    if (keyLower === 'unidade' || keyLower === 'nota' || keyLower.startsWith('nota_') || keyLower.startsWith('fonte_') || keyLower.endsWith('_url') || keyLower === 'slug' || keyLower === 'formato' || keyLower === 'regra_ouro') continue;
+    if (keyLower === 'unidade' || keyLower === 'nota' || keyLower.startsWith('nota_') || keyLower.startsWith('fonte_') || keyLower.endsWith('_url') || keyLower === 'slug' || keyLower === 'formato' || keyLower === 'regra_ouro' || keyLower === 'deep_links' || keyLower === 'lacuna_racial') continue;
 
     if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
       // Get last year value
