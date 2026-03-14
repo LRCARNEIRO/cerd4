@@ -923,8 +923,8 @@ export const chefiaFamiliarRacaGenero = {
   percentualBrancas: 40.2,
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
-  domiciliosFemininosIA: 63.0,
-  domiciliosFemininosFome: 18.8,
+  domiciliosFemininosIA: 63.0, // ⏳ Pendente de verificação humana — II VIGISAN 2022, p.44-48
+  domiciliosFemininosFome: 18.8, // ⏳ Pendente de verificação humana — II VIGISAN 2022
   domiciliosNegrosIA: 60.0,
   cadUnicoMulheresNegras: 38.5, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   cadUnicoMulheresBrancas: 17.0, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
@@ -933,9 +933,11 @@ export const chefiaFamiliarRacaGenero = {
     { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
     { nome: 'Censo 2022/SIDRA 10181 — Homens chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10181' },
     { nome: 'Censo 2022/SIDRA 10182 — Homens negros chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10182' },
-    { nome: 'II VIGISAN 2022 — Insegurança Alimentar (PDF)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
+    { nome: 'II VIGISAN 2022 — Inseg. Alimentar (Olhe para a Fome)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
+    { nome: 'II VIGISAN 2022 — Mirror FAO', url: 'https://www.fao.org/family-farming/detail/en/c/1601189/' },
+    { nome: 'II VIGISAN 2022 — Mirror LUPPA', url: 'https://luppa.comidadoamanha.org/biblioteca/segundo-vigisan-inseguranca-alimentar-covid9-brasil-2022/' },
   ],
-  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor do responsável. IA/Fome: II VIGISAN 2022.',
+  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor do responsável. IA/Fome: II VIGISAN 2022 (⏳ PDF original com acesso instável — verificar via mirrors FAO/LUPPA).',
 };
 
 // EDUCAÇÃO: Raça × Gênero
