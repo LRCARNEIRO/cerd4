@@ -923,9 +923,14 @@ export const chefiaFamiliarRacaGenero = {
   percentualBrancas: 40.2,
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
-  domiciliosFemininosIA: 63.0, // ⏳ Pendente de verificação humana — II VIGISAN 2022, p.44-48
-  domiciliosFemininosFome: 18.8, // ⏳ Pendente de verificação humana — II VIGISAN 2022
-  domiciliosNegrosIA: 60.0,
+  // II VIGISAN 2022 — Recorte Raça/Gênero (Fiocruz/Rede PENSSAN, jun/2023)
+  // Fonte: https://dssbr.ensp.fiocruz.br/...mulheres-pardas-ou-pretas/
+  fomeMulheresNegras: 20.6, // IA grave (fome) em domicílios chefiados por mulheres negras
+  fomeHomensNegros: 17.1, // IA grave em domicílios chefiados por homens negros (pretos+pardos)
+  iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // IA moderada+grave mesmo c/ 8+ anos estudo, mulheres negras
+  iaModeradaGraveHomensNegrosEscolarizados: 21.3, // idem homens negros
+  iaModeradaGraveMulheresBrancasEscolarizadas: 17.8, // idem mulheres brancas
+  fomeCriancasMulheresNegras: 23.8, // IA grave em domicílios c/ crianças <10 chefiados por mulheres negras
   cadUnicoMulheresNegras: 38.5, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   cadUnicoMulheresBrancas: 17.0, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   fontes: [
