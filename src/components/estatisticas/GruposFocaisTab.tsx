@@ -152,12 +152,16 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
+    // AUDITORIA 14/03/2026: alinhado com Complemento CERD III (ISA/FUNAI)
+    // terrasHomologadas = apenas homologadas (FUNAI); homologadasReservadas = ISA total (536)
     terrasTotal: 644,
     fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
     linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     terrasHomologadas: 496,
-    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento)',
+    terrasHomologadasReservadas: 536, // ISA 2025: homologadas (496) + reservadas (40)
+    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento) / ISA - terrasindigenas.org.br',
     linkTerrasHomologadas: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
+    linkISA: 'https://terrasindigenas.org.br/',
     terrasEmEstudo: 148,
     etniasIdentificadas: 391,
     fonteEtnias: 'IBGE - Censo 2022 (Brasil Indígena)',
@@ -172,7 +176,7 @@ const dadosTerritoriais = {
     link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
     linkGeo: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     ultimaAtualizacao: '2025-08-20',
-    notaFonte: 'TIs e áreas: FUNAI Geoprocessamento. Etnias/línguas: IBGE Censo 2022 (Brasil Indígena).',
+    notaFonte: 'AUDITADO: TIs e áreas: FUNAI Geoprocessamento. Homologadas+Reservadas (536): ISA. Etnias/línguas: IBGE Censo 2022.',
     fasesPeriodo1: {
       emEstudo: 27, delimitada: 2, declarada: 1, homologada: 1,
       fonte: 'FUNAI - Relatórios Anuais / ISA - Terras Indígenas no Brasil',
