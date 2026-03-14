@@ -1891,7 +1891,7 @@ export const tabelasHabitacao: CommonCoreTable[] = [
     descricao: 'Eleitores que compareceram às urnas',
     fonte: 'TSE',
     fonteCompleta: 'Tribunal Superior Eleitoral',
-    urlFonte: 'https://www.tse.jus.br/eleicoes/estatisticas/estatisticas-eleitorais',
+    urlFonte: 'https://sig.tse.jus.br/ords/dwapr/r/seai/sig-eleicao/home',
     periodoOriginal: '2010-2014',
     periodoAtualizado: '2010-2022',
     statusAtualizacao: 'atualizado',
