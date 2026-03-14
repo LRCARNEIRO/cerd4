@@ -34,6 +34,8 @@ import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionPanel';
+import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
+import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
