@@ -404,9 +404,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Quilombolas — INCRA',
     secao: 'Lacunas CERD',
-    url: 'https://www.palmares.gov.br/',
+    url: 'https://palmares.gov.br/wp-content/uploads/2016/06/COMUNIDADES-CERTIFICADAS.pdf',
     fonte: 'Palmares',
-    descricao: 'Fundação Cultural Palmares — certificações quilombolas',
+    descricao: 'Fundação Cultural Palmares — Certidões expedidas a CRQs (PDF)',
   },
 
   // ═══════════════════════════════════════════
