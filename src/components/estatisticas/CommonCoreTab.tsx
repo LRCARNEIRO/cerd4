@@ -1868,7 +1868,7 @@ export const tabelasHabitacao: CommonCoreTable[] = [
     descricao: 'População apta a votar nas eleições',
     fonte: 'TSE',
     fonteCompleta: 'Tribunal Superior Eleitoral',
-    urlFonte: 'https://www.tse.jus.br/eleicoes/estatisticas/estatisticas-eleitorais',
+    urlFonte: 'https://sig.tse.jus.br/ords/dwapr/r/seai/sig-eleicao/home',
     periodoOriginal: '2010-2016',
     periodoAtualizado: '2010-2024',
     statusAtualizacao: 'atualizado',
