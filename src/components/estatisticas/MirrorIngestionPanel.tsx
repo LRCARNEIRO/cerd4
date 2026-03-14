@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,8 +9,9 @@ import { toast } from 'sonner';
 export function MirrorIngestionPanel() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ inserted: number; errors: number } | null>(null);
+  const hasAutoRun = useRef(false);
 
-  const handleIngest = async () => {
+  const runIngest = async () => {
     setLoading(true);
     setResult(null);
 
@@ -26,7 +26,9 @@ export function MirrorIngestionPanel() {
       if (error) throw error;
 
       setResult({ inserted: data.inserted, errors: data.errors });
-      toast.success(`${data.inserted} indicadores espelhados no banco de dados`);
+      if (data.inserted > 0) {
+        toast.success(`${data.inserted} indicadores espelhados no banco de dados`);
+      }
     } catch (err: any) {
       toast.error(`Erro na ingestão: ${err.message}`);
       console.error(err);
@@ -34,6 +36,14 @@ export function MirrorIngestionPanel() {
       setLoading(false);
     }
   };
+
+  // Auto-run on mount (once per session)
+  useEffect(() => {
+    if (!hasAutoRun.current) {
+      hasAutoRun.current = true;
+      runIngest();
+    }
+  }, []);
 
   const totalIndicators = buildMirrorIndicators().length;
 
@@ -46,26 +56,22 @@ export function MirrorIngestionPanel() {
             <div>
               <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD</p>
               <p className="text-xs text-muted-foreground">
-                {totalIndicators} indicadores de StatisticsData.ts prontos para espelhar no banco com metadados CERD (§parágrafos, artigos ICERD).
+                {totalIndicators} indicadores de StatisticsData.ts · Espelhamento automático ativo ao carregar a página.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {result && (
+            {loading && (
+              <Badge variant="outline" className="gap-1 text-xs">
+                <RefreshCw className="w-3 h-3 animate-spin" /> Espelhando...
+              </Badge>
+            )}
+            {result && !loading && (
               <Badge variant={result.errors > 0 ? "destructive" : "default"} className="gap-1">
                 {result.errors > 0 ? <AlertTriangle className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
                 {result.inserted} inseridos{result.errors > 0 ? ` · ${result.errors} erros` : ''}
               </Badge>
             )}
-            <Button
-              size="sm"
-              onClick={handleIngest}
-              disabled={loading}
-              className="gap-1"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              {loading ? 'Espelhando...' : 'Espelhar para BD'}
-            </Button>
           </div>
         </div>
       </CardContent>
