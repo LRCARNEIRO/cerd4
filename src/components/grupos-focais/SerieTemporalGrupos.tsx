@@ -57,6 +57,8 @@ function buildIndicadores(
   feminicidioSerie: any[],
   saudeSerieHistorica: any[],
   povosTradicionais: any,
+  narrativaJuventude: any,
+  narrativaQuilombolas: any,
 ): Record<string, IndicadorTemporal[]> {
   const populacaoNegra: IndicadorTemporal[] = [
     {
