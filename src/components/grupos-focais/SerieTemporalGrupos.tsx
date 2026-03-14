@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 interface IndicadorTemporal {
   nome: string;
@@ -57,6 +57,8 @@ function buildIndicadores(
   feminicidioSerie: any[],
   saudeSerieHistorica: any[],
   povosTradicionais: any,
+  narrativaJuventude: any,
+  narrativaQuilombolas: any,
 ): Record<string, IndicadorTemporal[]> {
   const populacaoNegra: IndicadorTemporal[] = [
     {
@@ -294,6 +296,7 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
 
 export function SerieTemporalGrupos() {
   const mirror = useMirrorData();
+  const { narrativaJuventude, narrativaQuilombolas } = useNarrativeData();
   const indicadoresPorGrupo = buildIndicadores(
     mirror.segurancaPublica,
     mirror.educacaoSerieHistorica,
@@ -301,6 +304,8 @@ export function SerieTemporalGrupos() {
     mirror.feminicidioSerie,
     mirror.saudeSerieHistorica,
     mirror.povosTradicionais,
+    narrativaJuventude,
+    narrativaQuilombolas,
   );
 
   const grupoLabels: Record<string, string> = {

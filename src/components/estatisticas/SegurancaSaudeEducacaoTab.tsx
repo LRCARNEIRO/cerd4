@@ -5,7 +5,8 @@ import {
 } from 'recharts';
 import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink, Database, HardDrive } from 'lucide-react';
 import { fonteDados, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia, evasaoEscolarFonte } from './StatisticsData';
-import { narrativaSeguranca, fmt } from '@/utils/narrativeHelpers';
+import { fmt } from '@/utils/narrativeHelpers';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
@@ -20,6 +21,7 @@ export function SegurancaSaudeEducacaoTab() {
     evasaoEscolarSerie, fonteEvasao,
     usandoBD,
   } = useMirrorData();
+  const { narrativaSeguranca } = useNarrativeData();
   return (
     <div className="space-y-6">
       {/* Segurança Pública */}

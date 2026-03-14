@@ -15,7 +15,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuditFooter } from '@/components/ui/audit-footer';
 
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas, fmt } from '@/utils/narrativeHelpers';
+import { fmt } from '@/utils/narrativeHelpers';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 const statusColors: Record<string, string> = {
   cumprido: 'hsl(var(--success))',
@@ -71,6 +72,7 @@ export function LacunasCerdTab() {
   const { data: lacunas, isLoading: lacunasLoading } = useLacunasIdentificadas();
   const { data: respostas, isLoading: respostasLoading } = useRespostasLacunasCerdIII();
   const mirror = useMirrorData();
+  const { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas } = useNarrativeData();
 
   // SSoT: derived series from useMirrorData (BD first, fallback to hardcoded)
   const educacaoSerieHistorica = mirror.educacaoSerieHistorica;

@@ -18,18 +18,19 @@ import {
   povosTradicionais,
 } from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
-import {
-  narrativaViolencia, narrativaTrabalho, narrativaChefia,
-  narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
-  fmt,
-} from '@/utils/narrativeHelpers';
+import { fmt } from '@/utils/narrativeHelpers';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 export function RacaGeneroTab() {
   const {
     violenciaInterseccional, trabalhoRacaGenero, chefiaFamiliarRacaGenero,
     educacaoRacaGenero, saudeMaternaRaca, atlasViolencia2025,
   } = useMirrorData();
+  const {
+    narrativaViolencia, narrativaTrabalho, narrativaChefia,
+    narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
+  } = useNarrativeData();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -524,6 +525,7 @@ export function PovosTradicionaisTab() {
 
 export function LgbtqiaTab() {
   const { serieAntraTrans, lgbtqiaPorRaca } = useMirrorData();
+  const { narrativaLGBTQIA } = useNarrativeData();
   return (
     <div className="space-y-6">
       <Card className="border-l-4 border-l-destructive">

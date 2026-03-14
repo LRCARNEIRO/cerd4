@@ -31,19 +31,11 @@ export const FONTES_POS_ETAPA6 = {
     'SerieTemporalGrupos.tsx',
   ],
 
-  pendentes: [
-    {
-      arquivo: 'src/utils/narrativeHelpers.ts',
-      imports: ['Todas as constantes de StatisticsData.ts'],
-      uso: 'Geração de narrativas (27+ valores). Opera no nível de módulo (fora de React). Migração requer refatoração da API.',
-      nota: 'CASO ESPECIAL — dados são consumidos no module scope. Migrar para hook quebraria a API pública.',
-    },
-    {
-      arquivo: 'src/utils/countStatisticsIndicators.ts',
-      imports: ['Múltiplas constantes para contagem'],
-      uso: 'Contagem total de indicadores. Também opera no module scope.',
-      nota: 'Baixo risco — contagem não afeta narrativas.',
-    },
+  pendentes: [],
+  // ── MIGRADOS NA ETAPA 6B (final) ──
+  migradosEtapa6B: [
+    'narrativeHelpers.ts (factory createNarrativas + hook useNarrativeData)',
+    'countStatisticsIndicators.ts (factory computeStatisticsCounts)',
   ],
 };
 
@@ -82,9 +74,14 @@ export const COMPARACAO = {
   },
 
   narrativeHelpers: {
-    migrado: false,
-    motivo: 'Mantido em StatisticsData.ts direto (module scope). Migração futura requer refatoração para injeção de dados.',
-    impacto: 'Nenhum — os testes confirmam que os valores de narrativeHelpers ainda correspondem às constantes-fonte.',
+    migrado: true,
+    motivo: 'Refatorado com factory createNarrativas() + hook useNarrativeData(). Module-level exports preservados para backward compat e testes.',
+    impacto: 'Nenhum — testes 3/3 PASS confirmam valores idênticos.',
+  },
+
+  countStatisticsIndicators: {
+    migrado: true,
+    motivo: 'Refatorado com factory computeStatisticsCounts(). Module-level exports preservados.',
   },
 };
 
@@ -93,9 +90,9 @@ export const COMPARACAO = {
 // ══════════════════════════════════════════════
 
 export const CONTADORES_POS_ETAPA6 = {
-  totalArquivosImportandoStatisticsData: 4,  // narrativeHelpers, countStatisticsIndicators, StatisticsInventoryReport(contagem), useMirrorData(imports)
-  totalArquivosUsandoMirrorData: 18,
-  totalArquivosPendentes: 2,                 // narrativeHelpers + countStatisticsIndicators (module-level)
-  totalNarrativasMapeadas: 27,               // NARRATIVE_DATA_MAP — sem mudança
-  percentualMigrado: 90,                     // 18/20 arquivos
+  totalArquivosImportandoStatisticsData: 4,  // narrativeHelpers(factory fallback), countStatisticsIndicators(factory fallback), StatisticsInventoryReport(contagem), useMirrorData(imports)
+  totalArquivosUsandoMirrorData: 20,
+  totalArquivosPendentes: 0,
+  totalNarrativasMapeadas: 27,
+  percentualMigrado: 100,
 };
