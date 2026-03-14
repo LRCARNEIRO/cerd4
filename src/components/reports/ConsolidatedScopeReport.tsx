@@ -860,6 +860,7 @@ export function ConsolidatedScopeReport() {
                     indicadores: indicadores || [], lacunas: lacunas || [], lacunasStats, orcStats,
                     orcamentarios: orcamentarios || [], documentosNormativos: documentosNormativos || [],
                     fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas: respostas || [],
+                    mirrorData,
                   });
                   downloadAsDocx(html, 'Relatorio-Consolidado-Escopo-CERD-IV');
                 } finally { setIsGenerating(false); }
