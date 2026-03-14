@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
+import { ExternalLink, Search, Globe, Target, FileText, TrendingUp, TrendingDown, Loader2, RefreshCw } from 'lucide-react';
 import { 
   odsGroups, 
   getOdsColor, 
+  odsRacialIndicators as staticOdsIndicators,
   type OdsRacialIndicator,
   type OdsFormat
 } from '@/data/odsRacialIndicators';
 import { useOdsRacialData } from '@/hooks/useOdsRacialData';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
@@ -68,9 +73,27 @@ export function OdsRacialTab() {
   const [search, setSearch] = useState('');
   const [odsFilter, setOdsFilter] = useState<string>('todos');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [isRestoring, setIsRestoring] = useState(false);
   const { data: odsRacialIndicators = [], isLoading } = useOdsRacialData();
+  const queryClient = useQueryClient();
 
   const TOTAL_ODS_RACIAL = odsRacialIndicators.length;
+
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ingest-ods-racial', {
+        body: { indicators: staticOdsIndicators },
+      });
+      if (error) throw error;
+      toast.success(`${data.inserted} indicadores ODS Racial restaurados!`);
+      queryClient.invalidateQueries({ queryKey: ['ods-racial-db'] });
+    } catch (err: any) {
+      toast.error(`Erro ao restaurar: ${err.message}`);
+    } finally {
+      setIsRestoring(false);
+    }
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => {
@@ -85,6 +108,27 @@ export function OdsRacialTab() {
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mr-2" />
         <span className="text-muted-foreground">Carregando indicadores ODS Racial do banco...</span>
+      </div>
+    );
+  }
+
+  if (TOTAL_ODS_RACIAL === 0) {
+    return (
+      <div className="space-y-6">
+        <Card className="border-warning/50 border-l-4 border-l-warning">
+          <CardContent className="pt-6 text-center space-y-4">
+            <Globe className="w-12 h-12 text-warning mx-auto" />
+            <h3 className="font-semibold text-lg">Indicadores ODS Racial não encontrados no banco</h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Os {staticOdsIndicators.length} indicadores da Plataforma ODSR/UFPB estão disponíveis no arquivo estático.
+              Clique abaixo para restaurá-los no banco de dados.
+            </p>
+            <Button onClick={handleRestore} disabled={isRestoring} className="gap-2">
+              {isRestoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              {isRestoring ? 'Restaurando...' : `Restaurar ${staticOdsIndicators.length} indicadores`}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
