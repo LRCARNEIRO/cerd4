@@ -1158,12 +1158,13 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       {/* Novos Indicadores — Lacunas CERD III */}
       {(() => {
          const CERD_GAP_SUBCATS = new Set([
-           'Trabalho Infantil', 'Intolerância Religiosa',
-           'Distorção Idade-Série', 'Educação Indígena',
-           'Saúde Indígena', 'Justiça Racial', 'Vacinação',
-           'favelas_aglomerados', 'ciganos_saude_educacao',
-           'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
-         ]);
+            'Trabalho Infantil', 'Intolerância Religiosa',
+            'Distorção Idade-Série', 'Educação Indígena',
+            'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+            'favelas_aglomerados', 'ciganos_saude_educacao',
+            'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
+            'trabalho_escravo', 'vacinacao', 'saude_indigena', 'educacao_indigena',
+          ]);
         const cerdGapIndicadores = indicadoresFiltrados.filter(i => 
           i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)
         );
