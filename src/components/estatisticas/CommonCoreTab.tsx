@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -2431,7 +2432,10 @@ const EixoSection = ({ title, tables, icon }: { title: string; tables: CommonCor
 
 // Componente Principal
 export const CommonCoreTab = () => {
-  const allTables = [
+  const { ccTablesFromBD, ccSource, ccCount, isLoading } = useMirrorData();
+
+  // Use BD tables if available, otherwise hardcoded
+  const hardcodedTables = [
     ...tabelasDemograficas,
     ...tabelasEconomicas,
     ...tabelasEducacao,
@@ -2443,6 +2447,8 @@ export const CommonCoreTab = () => {
     ...tabelasSistemaPolitico,
     ...tabelasMoradia
   ];
+
+  const allTables = ccSource === 'bd' && ccTablesFromBD.length > 0 ? ccTablesFromBD : hardcodedTables;
 
   const totalTables = allTables.length;
   const atualizadas = allTables.filter(t => t.statusAtualizacao === 'atualizado').length;
@@ -2464,6 +2470,11 @@ export const CommonCoreTab = () => {
                 <Badge className="bg-primary text-primary-foreground">Common Core 2020</Badge>
                 <Badge variant="outline">ONU/OHCHR</Badge>
                 <Badge variant="outline">Brasil</Badge>
+                {ccSource === 'bd' ? (
+                  <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({ccCount})</Badge>
+                ) : (
+                  <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-6">

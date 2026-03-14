@@ -8,6 +8,7 @@ import {
 import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle, Network, TrendingUp, MapPin, Info, GraduationCap, Briefcase } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
@@ -132,6 +133,7 @@ const legislacaoData = estadicData.legislacaoMaisCitada.map(item => ({
 }));
 
 export function AdmPublicaSection() {
+  const { admSource } = useMirrorData();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -152,6 +154,11 @@ export function AdmPublicaSection() {
                 <Badge className="bg-primary/10 text-primary">MUNIC 2024</Badge>
                 <Badge className="bg-primary/10 text-primary">ESTADIC 2024</Badge>
                 <Badge variant="outline">Divulgação: 31/10/2025</Badge>
+                {admSource === 'bd' ? (
+                  <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD</Badge>
+                ) : (
+                  <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+                )}
               </div>
             </div>
           </div>

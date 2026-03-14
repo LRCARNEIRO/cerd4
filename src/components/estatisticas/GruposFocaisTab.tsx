@@ -1,13 +1,14 @@
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Users, MapPin, AlertTriangle, FileText, ExternalLink, Database, Calendar, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
+import { Users, MapPin, AlertTriangle, FileText, ExternalLink, Database, Calendar, TrendingUp, TrendingDown, Minus, Info, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
 import { SerieTemporalGrupos } from '@/components/grupos-focais/SerieTemporalGrupos';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 // Dados SIDRA/IBGE auditados com metadados completos
 const gruposFocaisData = {
@@ -274,6 +275,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
   const { data: stats } = useLacunasStats();
+  const { gfSource, gfCount } = useMirrorData();
 
   const lacunasQuilo = lacunas?.filter(l => l.grupo_focal === 'quilombolas') || [];
   const lacunasIndig = lacunas?.filter(l => l.grupo_focal === 'indigenas') || [];
@@ -292,6 +294,13 @@ export function GruposFocaisTab() {
               Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
               Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.227.642).
             </p>
+            <div className="flex gap-2 mt-2">
+              {gfSource === 'bd' ? (
+                <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({gfCount})</Badge>
+              ) : (
+                <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

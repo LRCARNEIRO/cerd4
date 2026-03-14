@@ -5,11 +5,12 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend 
 } from 'recharts';
-import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { povosTradicionais } from './StatisticsData';
 import { narrativaCovid } from '@/utils/narrativeHelpers';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 // =============================================
 // Fontes agrupadas por tema
@@ -164,6 +165,7 @@ const interseccionalidadeCovid = [
 const COLORS_BAR = ['hsl(var(--chart-2))', 'hsl(var(--chart-1))'];
 
 export function CovidRacialSection() {
+  const { covidSource, covidCount } = useMirrorData();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -186,6 +188,11 @@ export function CovidRacialSection() {
                 <Badge variant="destructive">Excesso de mortalidade +57%</Badge>
                 <Badge className="bg-warning/10 text-warning border border-warning">Interseccional</Badge>
                 <Badge variant="outline">2020-2022</Badge>
+                {covidSource === 'bd' ? (
+                  <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({covidCount})</Badge>
+                ) : (
+                  <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+                )}
               </div>
             </div>
           </div>
