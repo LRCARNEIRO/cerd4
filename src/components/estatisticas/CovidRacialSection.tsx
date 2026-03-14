@@ -165,6 +165,7 @@ const interseccionalidadeCovid = [
 const COLORS_BAR = ['hsl(var(--chart-2))', 'hsl(var(--chart-1))'];
 
 export function CovidRacialSection() {
+  const { covidSource, covidCount } = useMirrorData();
   return (
     <div className="space-y-6">
       {/* Header */}
