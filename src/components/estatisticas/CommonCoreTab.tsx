@@ -840,14 +840,14 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023', '2024*'],
+      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023'],
       rows: [
-        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5', '76,2'],
-        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1', '72,8'],
-        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9', '79,6']
+        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5'],
+        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1'],
+        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9']
       ]
     },
-    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva.',
+    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva. Coluna 2024 removida — dado preliminar (Tábuas de Mortalidade ainda não publicadas).',
     tendencia: 'crescente'
   },
   {
