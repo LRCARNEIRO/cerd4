@@ -293,6 +293,7 @@ export function SaudeComparativaChart() {
 
 // ============== DESIGUALDADE DE RENDA ==============
 export function RendaComparativaChart() {
+  const { indicadoresSocioeconomicos } = useMirrorData();
   const dado2018 = indicadoresSocioeconomicos[0];
   const dado2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
 
