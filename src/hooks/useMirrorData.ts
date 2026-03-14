@@ -226,7 +226,7 @@ export function useMirrorData() {
       saudeMaterna.source, deficit.source, cadUnico.source, intersecTrabalho.source,
       trabalhoRG.source, educacaoRG.source, chefia.source, deficiencia.source,
       disparidades.source, antra.source, lgbtqia.source, classe.source,
-      rendimentos.source, evolDesig.source,
+      rendimentos.source, evolDesig.source, socioeco.source, ptSource,
       ccSource, admSource, covidSource, gfSource,
     ];
     const bdCount = allSources.filter(s => s === 'bd').length;
