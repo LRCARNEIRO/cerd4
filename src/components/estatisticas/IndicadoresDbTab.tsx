@@ -1269,9 +1269,11 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
           const CERD_GAP_SUBCATS = new Set([
            'Trabalho Infantil', 'Intolerância Religiosa',
            'Distorção Idade-Série', 'Educação Indígena',
-           'Saúde Indígena', 'Justiça Racial', 'Vacinação',
+           'Saúde Indígena', 'Justiça Racial',
            'favelas_aglomerados', 'ciganos_saude_educacao',
            'quilombolas', 'demarcacao', 'titulacao', 'patrimonio',
+           'trabalho_escravo', 'saude_indigena', 'educacao_indigena',
+           'censo_2022_racial',
          ]);
         const nonGap = indicadoresFiltrados.filter(i => !(i.subcategoria && CERD_GAP_SUBCATS.has(i.subcategoria)));
         const withSeries = nonGap.filter(i => hasTimeSeries(i.dados || {}));
