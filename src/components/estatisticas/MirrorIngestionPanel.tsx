@@ -52,7 +52,7 @@ export function MirrorIngestionPanel() {
     }
   }, []);
 
-  const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length;
+  const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length + buildStage4Indicators().length;
 
   return (
     <Card className="border-l-4 border-l-primary/60">
