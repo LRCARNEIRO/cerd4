@@ -62,6 +62,8 @@ const FONTE_VACINACAO = [
 
 const FONTE_INTERSECCIONAL = [
   { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial (impactos interseccionais COVID)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'IPEA — Nota Técnica: Pessoas com Deficiência e COVID-19', url: 'https://repositorio.ipea.gov.br/server/api/core/bitstreams/da5c769c-03bb-4cfa-83d5-beb8f1f00b37/content' },
+  { nome: 'Baqui et al. (2020) — Lancet Global Health: mortalidade hospitalar COVID por raça', url: 'https://www.fsp.usp.br/site/wp-content/uploads/2020/07/1-s2.0-S2214109X20302850-main.pdf' },
   { nome: 'SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça × idade × sexo', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
   { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados interseccionais raça × gênero × classe', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
   { nome: 'IBGE/SIDRA — Tabela 9943: Quilombolas, infraestrutura por acesso à água e esgoto (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9943' },
