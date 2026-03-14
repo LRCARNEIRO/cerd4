@@ -646,7 +646,7 @@ export function LgbtqiaTab() {
               </div>
               <div className="p-3 bg-accent/10 rounded-lg border border-accent/30">
                 <p className="text-xs text-muted-foreground">Vítimas indígenas</p>
-                <p className="text-2xl font-bold text-accent-foreground">{narrativaLGBTQIA.vitimasIndigenas2025}%</p>
+                <p className="text-2xl font-bold text-foreground">{narrativaLGBTQIA.vitimasIndigenas2025}%</p>
                 <p className="text-xs text-muted-foreground">Maior % da série</p>
               </div>
             </div>
