@@ -1266,6 +1266,44 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         );
       })()}
 
+      {/* Censo 2022 — Políticas Raciais */}
+      {(() => {
+        const censoIndicadores = indicadoresFiltrados.filter(i => i.subcategoria === 'censo_2022_racial');
+        if (censoIndicadores.length === 0) return null;
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-8 w-1 bg-accent rounded-full" />
+              <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Users className="w-5 h-5 text-accent" />
+                  Censo 2022 — Dados Raciais Inéditos ({censoIndicadores.length})
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Dados que o Estado brasileiro não possuía no III Relatório CERD — quilombolas, ciganos, indígenas fora de TIs, religiões de matriz africana
+                </p>
+              </div>
+            </div>
+
+            <Card className="overflow-hidden border-none shadow-lg">
+              <div className="bg-gradient-to-br from-accent/10 via-primary/5 to-chart-3/10 p-5">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  <span className="font-bold text-foreground">📋 Contexto CERD IV: </span>
+                  O Censo 2022 produziu pela primeira vez dados oficiais sobre populações que o Comitê CERD cobrava sistematicamente ao Brasil 
+                  (§21-22, §33-36, §54-55 das Observações Finais 2022). Esses dados inéditos permitem agora uma resposta factual 
+                  às recomendações sobre quilombolas, ciganos e povos de matriz africana — substituindo estimativas por contagens oficiais.
+                </p>
+              </div>
+            </Card>
+
+            <RetratoPontualSection indicadores={censoIndicadores} />
+            {censoIndicadores.filter(i => hasTimeSeries(i.dados || {})).map(ind => (
+              <IndicadorDetail key={ind.id} indicador={ind} highlighted={highlightedId === ind.id} />
+            ))}
+          </div>
+        );
+      })()}
+
       {/* Split indicators: series vs single-point (excluding CERD gap ones already shown above) */}
       {(() => {
           const CERD_GAP_SUBCATS = new Set([
