@@ -1202,7 +1202,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Jovens 18-24', '16,8%', '18,9%', '25,3%', '29,8%', '19,2%', '15,5%']
       ]
     },
-    notas: 'Pico em 2021 devido à pandemia. Recuperação significativa em 2022-2024.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Pico em 2021 devido à pandemia. Recuperação significativa em 2022-2024.',
     tendencia: 'decrescente'
   },
   {
