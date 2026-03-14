@@ -948,8 +948,10 @@ export function GruposFocaisTab() {
                 <div className="flex items-start gap-3">
                   <Info className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold mb-1">Dados do Atlas da Violência 2025 (IPEA/FBSP) e 19º Anuário FBSP 2025</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold mb-1 flex items-center gap-2">
+                      Dados do Atlas da Violência 2025 (IPEA/FBSP) e 19º Anuário FBSP 2025
+                      <AuditadoBadge nota="Todos os 6 indicadores validados contra abas Segurança/Saúde/Educação (mirror SSoT)" />
+                    </h3>
                       Indicadores de violência letal com recorte racial — fontes oficiais auditáveis.
                       Juventude definida como <strong>15 a 29 anos</strong> conforme padrão ONU e Estatuto da Juventude.
                     </p>
