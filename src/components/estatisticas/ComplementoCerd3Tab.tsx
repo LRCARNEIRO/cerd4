@@ -107,19 +107,23 @@ function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | nul
   return results.length > 0 ? results : null;
 }
 
-/** Renders chart + always renders table below it */
-function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
-  const result = extractTimeSeries(dados);
-  if (!result || result.chartData.length < 2) return null;
-
+function SingleChart({ group }: { group: TimeSeriesResult }) {
+  if (group.chartData.length < 2) return null;
+  const isPct = group.label === '%';
   return (
-    <>
-      <div className="h-56 mt-3">
+    <div className="space-y-2">
+      <Badge variant="outline" className="text-[10px]">
+        {isPct ? '📊 Percentual (%)' : '📊 Quantitativo (absoluto)'}
+      </Badge>
+      <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={result.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <LineChart data={group.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <YAxis
+              tick={{ fontSize: 11 }}
+              tickFormatter={v => isPct ? `${v}%` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
@@ -128,41 +132,60 @@ function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
                 fontSize: '12px',
               }}
               formatter={(value: number, name: string) => [
-                typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
+                isPct
+                  ? `${typeof value === 'number' ? value.toLocaleString('pt-BR') : value}%`
+                  : typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
                 name.replace(/_/g, ' '),
               ]}
             />
             <Legend wrapperStyle={{ fontSize: '11px' }} formatter={v => v.replace(/_/g, ' ')} />
-            {result.keys.map((key, idx) => (
+            {group.keys.map((key, idx) => (
               <Line key={key} type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
             ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
-      {/* Data table below chart */}
-      <Table className="mt-3">
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="text-xs">Ano</TableHead>
-            {result.keys.map(k => (
+            {group.keys.map(k => (
               <TableHead key={k} className="text-xs text-right">{k.replace(/_/g, ' ')}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {result.chartData.map((row, i) => (
+          {group.chartData.map((row, i) => (
             <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
               <TableCell className="text-xs font-bold">{row.ano}</TableCell>
-              {result.keys.map(k => (
+              {group.keys.map(k => (
                 <TableCell key={k} className="text-xs text-right tabular-nums font-semibold">
-                  {row[k] != null ? (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]) : '—'}
+                  {row[k] != null
+                    ? (isPct
+                        ? `${typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]}%`
+                        : (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]))
+                    : '—'}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
+  );
+}
+
+/** Renders chart(s) + table(s), splitting % vs absolute */
+function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
+  const groups = extractTimeSeries(dados);
+  if (!groups || groups.length === 0) return null;
+
+  return (
+    <div className="space-y-4 mt-3">
+      {groups.map((g, i) => (
+        <SingleChart key={i} group={g} />
+      ))}
+    </div>
   );
 }
 
