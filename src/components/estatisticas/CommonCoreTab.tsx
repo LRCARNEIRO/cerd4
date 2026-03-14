@@ -1056,7 +1056,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     urlFonte: 'https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-mulher',
     periodoOriginal: '1996-2006',
     periodoAtualizado: '1996-2019',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'desatualizado',
     dados: {
       headers: ['Método', '1996', '2006', '2019'],
       rows: [
