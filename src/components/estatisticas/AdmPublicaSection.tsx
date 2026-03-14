@@ -64,9 +64,9 @@ const estadicData = {
   ufsComComiteIgualdade: 16,
   comiteMaisCitado: 'Saúde da População Negra (8 UFs)',
   gruposNaoContemplados: [
-    { grupo: 'Ciganos', estados: 'AC, PA, RR, TO, RJ, RS' },
-    { grupo: 'Indígenas', estados: 'AC, PA, CE, MA, MS, SP' },
-    { grupo: 'Quilombolas', estados: 'AC' },
+    { grupo: 'Ciganos', estados: 'AC, RO, AM, AP, PA, MA, PI, CE, RN, PB, PE, SE, RJ, RS, SC, MS, TO' },
+    { grupo: 'Indígenas', estados: 'RO, RR, AP, TO, CE, RN, PB, PE, SE, SC' },
+    { grupo: 'Quilombolas', estados: 'AC, RO, AP, TO, CE, RN, PB, PE, RJ, SP, SC, MS' },
     { grupo: 'Demais PCTs', estados: 'PA, CE, MA, PE, RN, MS, RS' },
   ],
 };
