@@ -23,7 +23,18 @@ function TendenciaBadge({ t }: { t?: string }) {
   return <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>;
 }
 
-function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years: string[]; chartData: Record<string, any>[] } | null {
+interface TimeSeriesResult {
+  keys: string[];
+  years: string[];
+  chartData: Record<string, any>[];
+  label: string; // e.g. '%' or 'absoluto'
+}
+
+function isPctKey(key: string): boolean {
+  return /^pct_|^razao_|_pct$|_razao$|_ratio$/.test(key);
+}
+
+function extractTimeSeries(dados: Record<string, any>): TimeSeriesResult[] | null {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
     'escolas_em_territorios', 'alfabetizacao', 'por_regiao', 'religioes_vitimadas_2024',
@@ -35,7 +46,8 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
     'processos_pendentes_acumulados',
   ]);
 
-  const seriesKeys: string[] = [];
+  const pctSeriesKeys: string[] = [];
+  const absSeriesKeys: string[] = [];
   const allYears = new Set<string>();
 
   for (const [k, v] of Object.entries(dados)) {
@@ -45,57 +57,73 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
       const yearsOnly = subKeys.filter(s => /^\d{4}$/.test(s));
       if (yearsOnly.length >= 2) {
         const firstVal = v[yearsOnly[0]];
-        if (typeof firstVal === 'number' || typeof firstVal === 'string') {
-          seriesKeys.push(k);
-          yearsOnly.forEach(y => allYears.add(y));
-        } else if (typeof firstVal === 'object' && firstVal !== null) {
-          seriesKeys.push(k);
+        if (typeof firstVal === 'number' || typeof firstVal === 'string' || (typeof firstVal === 'object' && firstVal !== null)) {
+          if (isPctKey(k)) {
+            pctSeriesKeys.push(k);
+          } else {
+            absSeriesKeys.push(k);
+          }
           yearsOnly.forEach(y => allYears.add(y));
         }
       }
     }
   }
 
-  if (seriesKeys.length === 0 || allYears.size < 2) return null;
+  if ((pctSeriesKeys.length + absSeriesKeys.length) === 0 || allYears.size < 2) return null;
 
   const sortedYears = Array.from(allYears).sort();
-  const flatKeys: string[] = [];
 
-  const chartData = sortedYears.map(year => {
-    const point: Record<string, any> = { ano: year };
-    for (const sk of seriesKeys) {
-      const val = dados[sk]?.[year];
-      if (val === undefined || val === null) continue;
-      if (typeof val === 'object' && !Array.isArray(val)) {
-        for (const [race, rv] of Object.entries(val as Record<string, any>)) {
-          const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
-          if (!flatKeys.includes(flatKey)) flatKeys.push(flatKey);
-          if (typeof rv === 'number') point[flatKey] = rv;
+  function buildGroup(seriesKeys: string[], label: string): TimeSeriesResult | null {
+    if (seriesKeys.length === 0) return null;
+    const flatKeys: string[] = [];
+    const chartData = sortedYears.map(year => {
+      const point: Record<string, any> = { ano: year };
+      for (const sk of seriesKeys) {
+        const val = dados[sk]?.[year];
+        if (val === undefined || val === null) continue;
+        if (typeof val === 'object' && !Array.isArray(val)) {
+          for (const [race, rv] of Object.entries(val as Record<string, any>)) {
+            const flatKey = `${sk.replace(/_/g, ' ')} — ${race}`;
+            if (!flatKeys.includes(flatKey)) flatKeys.push(flatKey);
+            if (typeof rv === 'number') point[flatKey] = rv;
+          }
+        } else {
+          const displayKey = sk.replace(/_/g, ' ');
+          if (!flatKeys.includes(displayKey)) flatKeys.push(displayKey);
+          point[displayKey] = typeof val === 'number' ? val : parseFloat(String(val));
         }
-      } else {
-        if (!flatKeys.includes(sk)) flatKeys.push(sk);
-        point[sk] = typeof val === 'number' ? val : parseFloat(String(val));
       }
-    }
-    return point;
-  });
+      return point;
+    });
+    return { keys: flatKeys, years: sortedYears, chartData, label };
+  }
 
-  return { keys: flatKeys.length > 0 ? flatKeys : seriesKeys, years: sortedYears, chartData };
+  const results: TimeSeriesResult[] = [];
+  const pctGroup = buildGroup(pctSeriesKeys, '%');
+  const absGroup = buildGroup(absSeriesKeys, 'absoluto');
+  if (pctGroup) results.push(pctGroup);
+  if (absGroup) results.push(absGroup);
+
+  return results.length > 0 ? results : null;
 }
 
-/** Renders chart + always renders table below it */
-function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
-  const result = extractTimeSeries(dados);
-  if (!result || result.chartData.length < 2) return null;
-
+function SingleChart({ group }: { group: TimeSeriesResult }) {
+  if (group.chartData.length < 2) return null;
+  const isPct = group.label === '%';
   return (
-    <>
-      <div className="h-56 mt-3">
+    <div className="space-y-2">
+      <Badge variant="outline" className="text-[10px]">
+        {isPct ? '📊 Percentual (%)' : '📊 Quantitativo (absoluto)'}
+      </Badge>
+      <div className="h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={result.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <LineChart data={group.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
+            <YAxis
+              tick={{ fontSize: 11 }}
+              tickFormatter={v => isPct ? `${v}%` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
@@ -104,41 +132,60 @@ function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
                 fontSize: '12px',
               }}
               formatter={(value: number, name: string) => [
-                typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
+                isPct
+                  ? `${typeof value === 'number' ? value.toLocaleString('pt-BR') : value}%`
+                  : typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
                 name.replace(/_/g, ' '),
               ]}
             />
             <Legend wrapperStyle={{ fontSize: '11px' }} formatter={v => v.replace(/_/g, ' ')} />
-            {result.keys.map((key, idx) => (
+            {group.keys.map((key, idx) => (
               <Line key={key} type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
             ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
-      {/* Data table below chart */}
-      <Table className="mt-3">
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="text-xs">Ano</TableHead>
-            {result.keys.map(k => (
+            {group.keys.map(k => (
               <TableHead key={k} className="text-xs text-right">{k.replace(/_/g, ' ')}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {result.chartData.map((row, i) => (
+          {group.chartData.map((row, i) => (
             <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
               <TableCell className="text-xs font-bold">{row.ano}</TableCell>
-              {result.keys.map(k => (
+              {group.keys.map(k => (
                 <TableCell key={k} className="text-xs text-right tabular-nums font-semibold">
-                  {row[k] != null ? (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]) : '—'}
+                  {row[k] != null
+                    ? (isPct
+                        ? `${typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]}%`
+                        : (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]))
+                    : '—'}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
+  );
+}
+
+/** Renders chart(s) + table(s), splitting % vs absolute */
+function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
+  const groups = extractTimeSeries(dados);
+  if (!groups || groups.length === 0) return null;
+
+  return (
+    <div className="space-y-4 mt-3">
+      {groups.map((g, i) => (
+        <SingleChart key={i} group={g} />
+      ))}
+    </div>
   );
 }
 
@@ -225,7 +272,8 @@ const areaLabels: Record<string, string> = {
 };
 
 function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
-  const hasSeries = extractTimeSeries(ind.dados) !== null;
+  const series = extractTimeSeries(ind.dados);
+  const hasSeries = series !== null && series.length > 0;
   const nota = (ind.dados as any).nota;
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
