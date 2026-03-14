@@ -57,6 +57,7 @@ const FONTE_VACINACAO = [
   { nome: 'SI-PNI/DataSUS — TabNet → Imunizações → COVID-19 Doses Aplicadas → Variável: raça/cor (⚠️ ~30% sem raça preenchida)', url: 'http://tabnet.datasus.gov.br/cgi/dhdat.exe?bd_pni/cpnibr.def' },
   { nome: 'Fiocruz/EPSJV — "Negros são os que mais morrem e menos recebem vacinas" (podcast + dados)', url: 'https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil' },
   { nome: 'IBGE/SIDRA — Tabela 9605: População por raça/cor (Censo 2022, denominador para cobertura vacinal)', url: 'https://sidra.ibge.gov.br/tabela/9605' },
+  { nome: 'PMC — COVID-19 vaccination coverage disparities by race/ethnicity in Brazil (2025)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12712384/pdf/dyaf105.pdf' },
 ];
 
 const FONTE_INTERSECCIONAL = [
