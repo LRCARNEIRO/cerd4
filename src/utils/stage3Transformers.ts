@@ -444,9 +444,7 @@ export function getStage4Categories(): string[] {
 
 /** Build Stage 4 indicators from ComplementoCerd3Data */
 export function buildStage4Indicators(): DbRecord[] {
-  // Import is static — no circular deps since ComplementoCerd3Data is pure data
-  const { complementoCerd3Indicators } = await_import();
-  return complementoCerd3Indicators.map((ind: any) => rec(
+  return complementoCerd3Indicators.map((ind) => rec(
     ind.nome, ind.categoria, ind.subcategoria,
     ind.fonte, ind.url_fonte, ind.artigos_convencao,
     ind.dados,
