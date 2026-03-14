@@ -104,14 +104,15 @@ const excessoMortalidade = [
   },
 ];
 
-// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio + Peres et al. 2021
-// Fonte primária: Peres et al. Public Health 192 (2021) 15-20 — Tabela 1 (n=228.196)
-// Navegação: SIVEP-Gripe (BigData COVID Fiocruz) → Painel SRAG → filtro raça/cor → desfecho óbito vs alta
+// Letalidade hospitalar COVID por raça — Moreira et al. (2023), Int J Equity Health 22:186
+// Fonte: https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf
+// Dados desagregados por raça/cor individual (não agrupados como "Pretos e Pardos")
 const letalidadeHospitalar = [
-  { raca: 'Pretos e Pardos', letalidade: 42, sobrevivencia: 58 },
-  { raca: 'Brancos', letalidade: 37, sobrevivencia: 63 },
-  { raca: 'Indígenas', letalidade: 43, sobrevivencia: 57 },
-  { raca: 'Asiáticos', letalidade: 39, sobrevivencia: 61 },
+  { raca: 'Brancos', letalidade: 32.2, sobrevivencia: 67.8 },
+  { raca: 'Pretos', letalidade: 37.9, sobrevivencia: 62.1 },
+  { raca: 'Pardos', letalidade: 34.0, sobrevivencia: 66.0 },
+  { raca: 'Indígenas', letalidade: 34.7, sobrevivencia: 65.3 },
+  { raca: 'Asiáticos', letalidade: 31.6, sobrevivencia: 68.4 },
 ];
 
 // Dados do estudo Peres et al. (2021) — SIVEP-Gripe, 228.196 pacientes
