@@ -128,13 +128,13 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
     totalHomensNegros: chefiaFamiliarRacaGenero.homensNegrosChefesMonoparentais,
     cadUnicoNegras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
     cadUnicoBrancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
-    domiciliosIA: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
-    domiciliosFome: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
+    fomeMulheresNegras: chefiaFamiliarRacaGenero.fomeMulheresNegras,
+    fomeCriancas: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
     get texto() {
       const cadUnicoTexto = this.cadUnicoNegras != null && this.cadUnicoBrancas != null
         ? `, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas)`
         : ' (dados CadÚnico pendentes de verificação)';
-      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A insegurança alimentar atinge ${fmt(this.domiciliosIA, 0)}% desses domicílios, com ${fmt(this.domiciliosFome)}% em situação de fome. O cruzamento revela um ciclo de vulnerabilidade estrutural onde gênero e raça se retroalimentam na reprodução da pobreza intergeracional.`;
+      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A fome (IA grave) atinge ${fmt(this.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, subindo a ${fmt(this.fomeCriancas)}% nos lares com crianças menores de 10 anos (II VIGISAN 2022, recorte raça/gênero).`;
     },
   };
 
@@ -282,8 +282,8 @@ export const NARRATIVE_DATA_MAP = [
   // Interseccional — Chefia Familiar
   { label: 'Chefia negras %', narrativeValue: narrativaChefia.percentualNegras, sourceValue: hcChefia.percentualNegras, source: 'chefiaFamiliarRacaGenero.percentualNegras' },
   { label: 'CadÚnico negras %', narrativeValue: narrativaChefia.cadUnicoNegras, sourceValue: hcChefia.cadUnicoMulheresNegras, source: 'chefiaFamiliarRacaGenero.cadUnicoMulheresNegras' },
-  { label: 'IA domicílios femininos', narrativeValue: narrativaChefia.domiciliosIA, sourceValue: hcChefia.domiciliosFemininosIA, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosIA' },
-  { label: 'Fome domicílios femininos', narrativeValue: narrativaChefia.domiciliosFome, sourceValue: hcChefia.domiciliosFemininosFome, source: 'chefiaFamiliarRacaGenero.domiciliosFemininosFome' },
+  { label: 'Fome mulheres negras %', narrativeValue: narrativaChefia.fomeMulheresNegras, sourceValue: hcChefia.fomeMulheresNegras, source: 'chefiaFamiliarRacaGenero.fomeMulheresNegras' },
+  { label: 'Fome crianças mulheres negras %', narrativeValue: narrativaChefia.fomeCriancas, sourceValue: hcChefia.fomeCriancasMulheresNegras, source: 'chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras' },
   // Interseccional — Saúde Materna
   { label: 'Mortes maternas negras %', narrativeValue: narrativaSaudeMaterna.mortesNegrasPct, sourceValue: hcSaudeMaterna.mortalidadeMaternaNegraPercentual, source: 'saudeMaternaRaca.mortalidadeMaternaNegraPercentual' },
   { label: 'Razão IEPS pretas/brancas', narrativeValue: narrativaSaudeMaterna.razaoIEPS, sourceValue: hcSaudeMaterna.razaoMortalidadePretasBrancas, source: 'saudeMaternaRaca.razaoMortalidadePretasBrancas' },
