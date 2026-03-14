@@ -1000,7 +1000,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome} <AuditadoBadge nota="Validado contra aba Segurança (mirror SSoT)" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}</CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
