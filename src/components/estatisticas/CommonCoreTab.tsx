@@ -1284,7 +1284,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Razão N/B', '57,9%', '57,0%', '56,6%', '58,8%', '58,9%']
       ]
     },
-    notas: 'Negros recebem cerca de 59% do rendimento de brancos.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Valores em R$ correntes. Negros recebem cerca de 59% do rendimento de brancos.',
     tendencia: 'crescente'
   },
   {
