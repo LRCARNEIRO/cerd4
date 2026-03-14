@@ -655,12 +655,13 @@ function downloadDOCX(html: string, fileName: string) {
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
   const { data: juventudeNegraBD } = useJuventudeAuditados();
+  const mirror = useMirrorData();
   const [generating, setGenerating] = useState<string | null>(null);
 
   const handleFullReport = (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
     try {
-      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || []);
+      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
