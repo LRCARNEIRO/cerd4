@@ -1174,6 +1174,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '46,6%', '48,1%', '50,2%', '51,6%', '52,6%', '53,0%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Dado 2024: média T1-T4.',
     tendencia: 'crescente'
   },
   {
