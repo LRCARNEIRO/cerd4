@@ -545,9 +545,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Portal Transparência — MIR',
     secao: 'Orçamento',
-    url: 'https://portaldatransparencia.gov.br/orgaos/92000-MINISTERIO-DA-IGUALDADE-RACIAL',
+    url: 'https://portaldatransparencia.gov.br/despesas?de=01%2F01%2F2024&ate=31%2F12%2F2026&orgaos=OR92000',
     fonte: 'CGU',
-    descricao: 'Portal da Transparência — Ministério da Igualdade Racial',
+    descricao: 'Portal da Transparência — Despesas do MIR (Órgão 92000) filtrado',
   },
 
   // ═══════════════════════════════════════════
