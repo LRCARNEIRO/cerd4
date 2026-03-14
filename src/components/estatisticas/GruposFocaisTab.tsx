@@ -399,7 +399,7 @@ export function GruposFocaisTab() {
                 <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <AuditadoBadge nota="SIDRA 9891 — Censo 2022 (41.738 ciganos contados)" />
+                
                 <Badge variant="outline" className="text-xs">Censo 2022</Badge>
               </div>
             </div>
