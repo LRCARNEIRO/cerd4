@@ -1111,6 +1111,7 @@ export function GruposFocaisTab() {
                   <CardTitle className="text-base flex items-center gap-2">
                     {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
                     <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: (Óbitos maternos por raça ÷ Nascidos vivos por raça) × 100.000. Fontes: SIM/DataSUS + SINASC/DataSUS. Resultado 2022: negras 57,3/100mil NV vs brancas 46,6/100mil NV = razão 1,2×." />
+                    <AuditadoBadge nota="Validado contra saudeSerieHistorica (mirror SSoT)" />
                   </CardTitle>
                   <CardDescription>DataSUS — Cruzamento SIM × SINASC | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>
