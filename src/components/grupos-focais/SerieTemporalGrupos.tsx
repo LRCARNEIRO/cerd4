@@ -296,6 +296,7 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
 
 export function SerieTemporalGrupos() {
   const mirror = useMirrorData();
+  const { narrativaJuventude, narrativaQuilombolas } = useNarrativeData();
   const indicadoresPorGrupo = buildIndicadores(
     mirror.segurancaPublica,
     mirror.educacaoSerieHistorica,
@@ -303,6 +304,8 @@ export function SerieTemporalGrupos() {
     mirror.feminicidioSerie,
     mirror.saudeSerieHistorica,
     mirror.povosTradicionais,
+    narrativaJuventude,
+    narrativaQuilombolas,
   );
 
   const grupoLabels: Record<string, string> = {
