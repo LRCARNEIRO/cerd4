@@ -39,10 +39,10 @@ const FONTE_DATASUS_SIM = [
 ];
 
 const FONTE_PNAD_COVID = [
-  { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados: perda de emprego, renda, acesso a serviços por raça/cor', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
-  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial e COVID-19 (PDF)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
-  { nome: 'IBGE/SIDRA — Tabela 7533: PNAD Contínua Trimestral, rendimento por cor/raça (filtro: informalidade pré-pandemia)', url: 'https://sidra.ibge.gov.br/tabela/7533' },
-  { nome: 'POF/Rede PENSSAN (2022) — Insegurança Alimentar por raça/cor', url: 'https://pesquisassan.net.br/olheparaafome/' },
+  { nome: 'PNAD COVID-19 (IBGE, 2020) — Trabalho: proporção que não procurou trabalho por pandemia, por cor/raça', url: 'https://covid19.ibge.gov.br/pnad-covid/trabalho.php' },
+  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92)', url: 'https://repositorio.ipea.gov.br/bitstreams/c5764fb9-c664-4d1c-bf0d-d3e1d1d3b88f/download' },
+  { nome: 'PNADC Trimestral (IBGE) — Microdados: massa salarial Q1×Q2 2020, decomposição Shapley por cor/raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
+  { nome: 'Filetti et al. (2022) — UNDP Background Paper: Inequalities in the times of a pandemic (HDR 2021-22)', url: 'https://hdr.undp.org/system/files/documents/background-paper-document/2021-22hdrfilletietal.pdf' },
 ];
 
 const FONTE_VACINACAO = [
