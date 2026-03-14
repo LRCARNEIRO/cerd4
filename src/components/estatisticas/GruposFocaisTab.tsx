@@ -288,20 +288,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
   );
 }
 
-function AuditadoBadge({ nota }: { nota?: string }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Badge variant="outline" className="text-[9px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
-          <CheckCircle2 className="w-2.5 h-2.5" /> Auditado
-        </Badge>
-      </TooltipTrigger>
-      {nota && (
-        <TooltipContent side="top" className="max-w-xs text-xs">{nota}</TooltipContent>
-      )}
-    </Tooltip>
-  );
-}
+// AuditadoBadge removido — aba ainda não auditada manualmente
 
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
