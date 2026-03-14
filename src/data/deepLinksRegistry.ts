@@ -471,9 +471,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Taxas de rendimento escolar',
     secao: 'Dados Novos',
-    url: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-rendimento',
+    url: 'https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/indicadores-educacionais/taxas-de-rendimento-escolar',
     fonte: 'INEP',
-    descricao: 'INEP — Taxas de rendimento (aprovação, reprovação, abandono)',
+    descricao: 'INEP — Taxas de rendimento escolar (aprovação, reprovação, abandono)',
   },
   {
     indicador: 'Microdados Censo Escolar',
