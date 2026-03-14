@@ -436,6 +436,27 @@ export function getStage3Categories(): string[] {
   return ['common_core', 'adm_publica', 'covid_racial', 'grupos_focais'];
 }
 
+/** Stage 4 categories (Complemento CERD 3) */
+export function getStage4Categories(): string[] {
+  return ['trabalho_renda', 'cultura_patrimonio', 'legislacao_justica', 'terra_territorio', 'Cultura'];
+}
+
+/** Build Stage 4 indicators from ComplementoCerd3Data */
+export function buildStage4Indicators(): DbRecord[] {
+  // Dynamic import to avoid circular deps — returns sync since it's static data
+  const { complementoCerd3Indicators } = require('@/components/estatisticas/ComplementoCerd3Data');
+  return complementoCerd3Indicators.map((ind: any) => rec(
+    ind.nome, ind.categoria, ind.subcategoria,
+    ind.fonte, ind.url_fonte, ind.artigos_convencao,
+    ind.dados,
+    ['espelho_estatico', 'ComplementoCerd3Data.ts'],
+    {
+      tendencia: ind.tendencia || null,
+      desagregacao_raca: true,
+    },
+  ));
+}
+
 /** Build all Stage 3 indicators */
 export function buildAllStage3Indicators(): DbRecord[] {
   return [
