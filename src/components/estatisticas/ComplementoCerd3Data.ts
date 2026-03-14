@@ -32,6 +32,8 @@ export interface ComplementoIndicador {
   documento_origem: string[];
   tendencia: string;
   dados: Record<string, any>;
+  /** 'complementar' = preenche lacunas das abas temáticas para 100% CERD III; 'novo' = sugerido por recomendações CERD */
+  tipo: 'complementar' | 'novo';
 }
 
 // ===== 1. TRABALHO INFANTIL =====
