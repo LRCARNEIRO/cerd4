@@ -294,9 +294,9 @@ export function CovidRacialSection() {
         </Card>
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Mort. Materna Negra (pico 2021)</p>
-            <p className="text-2xl font-bold">85,2</p>
-            <p className="text-xs text-muted-foreground">por 100 mil NV (+42% vs 2019)</p>
+            <p className="text-xs text-muted-foreground">RMM Mães Pretas (pico 2021)</p>
+            <p className="text-2xl font-bold">179,4</p>
+            <p className="text-xs text-muted-foreground">por 100 mil NV (IEPS Çarê)</p>
             <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
           </CardContent>
         </Card>
