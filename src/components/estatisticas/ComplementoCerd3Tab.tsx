@@ -6,6 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIndicador } from './ComplementoCerd3Data';
+import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
 import { cn } from '@/lib/utils';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
