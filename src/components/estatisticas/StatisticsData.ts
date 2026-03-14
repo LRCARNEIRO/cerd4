@@ -604,15 +604,15 @@ export const disparidadesPcd1459 = [
 // Confirmação: G1, CNN, Poder360, Revista Afirmativa (26/01/2026).
 const DOSSIE_2026_URL = 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf';
 export const serieAntraTrans = [
-  { ano: 2017, totalAssassinatos: 179, negros: 80, brancos: 20, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2018, totalAssassinatos: 163, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2019, totalAssassinatos: 124, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2020, totalAssassinatos: 175, negros: 78, brancos: 22, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2021, totalAssassinatos: 140, negros: 81, brancos: 18, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2022, totalAssassinatos: 131, negros: 76, brancos: 24, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2023, totalAssassinatos: 145, negros: 72, brancos: 27, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2024, totalAssassinatos: 122, negros: 76, brancos: 22, indigenas: 2, fonte: 'Dossiê ANTRA 2026 — série histórica', url: DOSSIE_2026_URL },
-  { ano: 2025, totalAssassinatos: 80, negros: 70, brancos: 28, indigenas: 2, fonte: 'Dossiê ANTRA 2026 (dados 2025)', url: DOSSIE_2026_URL },
+  { ano: 2017, totalAssassinatos: 181, negros: 80, brancos: 20, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2018, totalAssassinatos: 163, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2019, totalAssassinatos: 124, negros: 82, brancos: 18, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2020, totalAssassinatos: 175, negros: 78, brancos: 22, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2021, totalAssassinatos: 140, negros: 81, brancos: 18, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2022, totalAssassinatos: 131, negros: 76, brancos: 24, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2023, totalAssassinatos: 145, negros: 72, brancos: 27, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2024, totalAssassinatos: 122, negros: 76, brancos: 22, indigenas: 2, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2025, totalAssassinatos: 80, negros: 70, brancos: 26, indigenas: 4, fonte: 'Dossiê ANTRA 2026 (dados 2025), p. 66', url: DOSSIE_2026_URL },
 ];
 // Média histórica 2017-2025: Negros 77%, Brancos 22%, Indígenas 1% (Dossiê ANTRA 2026)
 

@@ -85,10 +85,11 @@ const municData = {
 };
 
 const sinapirData = {
-  totalAdesoes: 282,
+  totalAdesoes: 342,
   totalAdesoesInicioGoverno2023: 188,
-  crescimentoPercentual: 50,
-  novasAdesoes2024: 58,
+  crescimentoPercentual: 82,
+  novasAdesoes2024: 59,
+  novasAdesoes2025: 83,
   alteracoesModalidade2024: 6,
   totalEstados: 27,
   primeiraAdesao: 2014,
@@ -103,20 +104,21 @@ const sinapirData = {
     { periodo: '2014-2018', adesoes: 120 },
     { periodo: '2019-2022', adesoes: 68 },
     { periodo: '2023', adesoes: 36 },
-    { periodo: '2024', adesoes: 58 },
+    { periodo: '2024', adesoes: 59 },
+    { periodo: '2025', adesoes: 83 },
   ],
   capitaisAderidas2024: ['Porto Velho (RO)', 'Belém (PA)', 'João Pessoa (PB)', 'Manaus (AM)'],
   estadosMaisAdesoes2024: [
-    { estado: 'Maranhão', municipios: 10 },
-    { estado: 'Rio Grande do Sul', municipios: 8 },
+    { estado: 'Maranhão', municipios: 11 },
+    { estado: 'Rio Grande do Sul', municipios: 11 },
   ],
   prerequisitosAdesao: [
     'Conselho de políticas públicas de Promoção da Igualdade Racial em funcionamento',
     'Órgão público voltado à Promoção da Igualdade Racial na estrutura administrativa',
     'Listagem detalhada de ações e projetos de Promoção da Igualdade Racial',
   ],
-  municipiosAderidos: 255,
-  coberturaPercentualMunicipios: ((282 - 27) / 5570 * 100).toFixed(1),
+  municipiosAderidos: 342,
+  coberturaPercentualMunicipios: '6.1',
 };
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
