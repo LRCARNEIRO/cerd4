@@ -17,6 +17,7 @@ export function DocumentReportCards() {
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcStats } = useOrcamentoStats();
+  const mirror = useMirrorData();
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
