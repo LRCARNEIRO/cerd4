@@ -28,7 +28,7 @@ import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
-import { DadosNovosTab } from '@/components/estatisticas/DadosNovosTab';
+// DadosNovosTab removed — merged into ComplementoCerd3Tab
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
@@ -204,8 +204,8 @@ export default function Estatisticas() {
           <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
             <BookOpen className="w-4 h-4" /> Common Core (77)
           </TabsTrigger>
-          <TabsTrigger value="dados-novos" className="gap-1 bg-accent/20">
-            <PlusCircle className="w-4 h-4" /> Dados Novos
+          <TabsTrigger value="complemento-cerd3" className="gap-1 bg-chart-4/10">
+            <FileText className="w-4 h-4" /> Complemento CERD III ({COMPLEMENTO_CERD3_COUNT})
           </TabsTrigger>
           <TabsTrigger value="dados-gerais" className="gap-1">
             <Database className="w-4 h-4" /> Dados Gerais
@@ -258,11 +258,10 @@ export default function Estatisticas() {
         </TabsList>
 
         <TabsContent value="common-core"><CommonCoreTab /></TabsContent>
-        <TabsContent value="dados-novos"><DadosNovosTab /></TabsContent>
+        <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         <TabsContent value="lacunas-cerd"><LacunasCerdTab /></TabsContent>
-        <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
