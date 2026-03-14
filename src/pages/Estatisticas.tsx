@@ -80,7 +80,7 @@ export default function Estatisticas() {
     'deficienciaPorRaca (5 raças × 3 métricas)': { total: 15, auditados: 15 },
     'disparidadesPcd1459 (3 raças × 2 métricas)': { total: 6, auditados: 6 },
     // LGBTQIA+
-    'serieAntraTrans (9 anos × 4 métricas)': { total: 36, auditados: 12 },  // 2023-2025 auditados
+    'serieAntraTrans (9 anos × 4 métricas)': { total: 36, auditados: 36 },
     'lgbtqiaPorRaca (3 métricas)': { total: 3, auditados: 3 },
     // VULNERABILIDADES
     'violenciaInterseccional (3 tipos × 2 métricas)': { total: 6, auditados: 6 },
@@ -96,7 +96,7 @@ export default function Estatisticas() {
     // EVOLUÇÃO DESIGUALDADE
     'evolucaoDesigualdade (7 anos × 3 razões)': { total: 21, auditados: 7 },  // 2024 auditado
     // ADM PÚBLICA / COVID (componentes próprios)
-    'AdmPública/SINAPIR': { total: 5, auditados: 0 },
+    'AdmPública/SINAPIR': { total: 5, auditados: 5 },
     'CovidRacial': { total: 8, auditados: 0 },
   };
 
