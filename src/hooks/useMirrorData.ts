@@ -269,6 +269,12 @@ export function useMirrorData() {
       rendimentosCenso2022: rendimentos.data, fonteRendimentos: rendimentos.source,
       // Desigualdade
       evolucaoDesigualdade: evolDesig.data, fonteEvolDesig: evolDesig.source,
+      // Socioeconômico
+      indicadoresSocioeconomicos: socioeco.data, fonteSocioeco: socioeco.source,
+      // Povos Tradicionais
+      povosTradicionais: hcPovos, fontePovos: ptSource,
+      // Resumo Executivo (passthrough)
+      resumoExecutivo: hcResumoExecutivo,
 
       // ── STAGE 3 ──
       // Common Core
