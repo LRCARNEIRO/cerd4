@@ -935,7 +935,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Óbitos de menores de 5 anos por 1.000 nascidos vivos',
     fonte: 'MS/SIM-SINASC',
     fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2005-2015',
     periodoAtualizado: '2005-2023',
     statusAtualizacao: 'atualizado',
