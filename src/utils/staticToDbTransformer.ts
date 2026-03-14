@@ -492,8 +492,3 @@ export function getMirrorCategories(): string[] {
   ];
 }
 
-/** Todas as categorias combinadas (Etapas 1-3) */
-export function getAllMirrorCategories(): string[] {
-  const { getStage3Categories } = require('@/utils/stage3Transformers');
-  return [...getMirrorCategories(), ...getStage3Categories()];
-}
