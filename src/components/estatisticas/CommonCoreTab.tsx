@@ -2152,7 +2152,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['UH entregues (Faixa 1, mil)', '285', '142', '380']
       ]
     },
-    notas: 'Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Cruzamento indireto 🔀: SISHAB + CadÚnico.',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: SISHAB + CadÚnico. Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Requer validação humana.',
     tendencia: 'crescente'
   },
   {
