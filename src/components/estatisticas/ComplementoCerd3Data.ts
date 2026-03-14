@@ -85,6 +85,7 @@ export const intoleranciaReligiosa: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.5', 'Art.7'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban', 'Recomendações Gerais (RGs)'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'Crescimento 382% 2020→2025. Auditado manualmente 12/03/2026.',
