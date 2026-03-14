@@ -9,6 +9,7 @@ import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVHTML } from './generateCerdIVHTML';
 import { generateMethodologyHTML } from './generateMethodologyHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
