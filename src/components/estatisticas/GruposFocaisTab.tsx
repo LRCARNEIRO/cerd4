@@ -1046,7 +1046,7 @@ export function GruposFocaisTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome} <AuditadoBadge nota="Validado contra Atlas da Violência 2025 e feminicidioSerie auditada" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome}</CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.violenciaJuventude.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
