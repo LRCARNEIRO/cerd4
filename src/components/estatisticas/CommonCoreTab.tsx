@@ -1836,7 +1836,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     descricao: 'Mortes por lesões autoprovocadas intencionalmente',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2004-2014',
     periodoAtualizado: '2004-2023',
     statusAtualizacao: 'atualizado',
