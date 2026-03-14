@@ -52,7 +52,11 @@ export function DocumentReportCards() {
   const handleGenerateCCD = async () => {
     setGeneratingCCD(true);
     try {
-      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
+        indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+        segurancaPublica: mirror.segurancaPublica,
+        ccTablesFromBD: mirror.ccTablesFromBD,
+      });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
