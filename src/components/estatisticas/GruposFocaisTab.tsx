@@ -481,7 +481,6 @@ export function GruposFocaisTab() {
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-primary" />
                     Situação Territorial - Quilombolas
-                    <AuditadoBadge nota="Territórios/certidões validados contra INCRA PDF e Palmares" />
                   </CardTitle>
                   <CardDescription>
                     Fonte: {dadosTerritoriais.quilombolas.fonte} | Atualizado: {new Date(dadosTerritoriais.quilombolas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
