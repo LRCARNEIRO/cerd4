@@ -683,6 +683,7 @@ export function LgbtqiaTab() {
 }
 
 export function DeficienciaTab() {
+  const { deficienciaPorRaca, disparidadesPcd1459 } = useMirrorData();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
