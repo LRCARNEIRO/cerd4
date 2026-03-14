@@ -107,6 +107,7 @@ export const educacaoIndigena: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     nota: 'Indígenas em TI: 72,4% alfabetizados vs. 96,5% brancos. Gap de 24,1pp.',
