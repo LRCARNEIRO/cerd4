@@ -2,9 +2,9 @@
  * Hook: useMirrorData
  * 
  * Fornece TODOS os dados espelhados do banco de dados (indicadores_interseccionais)
- * com fallback automático para StatisticsData.ts (hardcoded).
+ * com fallback automático para arquivos hardcoded.
  * 
- * Padrão SSoT Etapa 2 — Todas as abas temáticas.
+ * Padrão SSoT Etapas 1-4 — Todas as abas temáticas + Common Core + Adm Pública + COVID + Grupos Focais.
  */
 
 import { useMemo } from 'react';
@@ -39,6 +39,8 @@ import {
   povosTradicionais as hcPovos,
 } from '@/components/estatisticas/StatisticsData';
 
+import type { CommonCoreTable } from '@/components/estatisticas/CommonCoreTab';
+
 /** Reconstruct array from mirror's { series: { year: {...} } } format */
 function rebuildSeries(dados: any, fallback: any[]): any[] {
   if (!dados?.series || typeof dados.series !== 'object') return fallback;
@@ -47,7 +49,7 @@ function rebuildSeries(dados: any, fallback: any[]): any[] {
     .sort((a, b) => a.ano - b.ano);
 }
 
-type MirrorSource = 'bd' | 'hardcoded';
+export type MirrorSource = 'bd' | 'hardcoded';
 
 export function useMirrorData() {
   const { data: indicadores, isLoading, error } = useIndicadoresInterseccionais();
@@ -59,6 +61,10 @@ export function useMirrorData() {
 
     function findMirror(cat: string, sub: string) {
       return mirrors.find((i: any) => i.categoria === cat && i.subcategoria === sub);
+    }
+
+    function findAllByCategory(cat: string) {
+      return mirrors.filter((i: any) => i.categoria === cat);
     }
 
     function resolveArray(cat: string, sub: string, fallback: any[]): { data: any[]; source: MirrorSource; paragrafos: string | null } {
@@ -147,6 +153,63 @@ export function useMirrorData() {
     // ── EVOLUÇÃO DESIGUALDADE ──
     const evolDesig = resolveArray('trabalho_renda', 'evolucao_desigualdade', hcEvolDesig);
 
+    // ══════════════════════════════════
+    // STAGE 3 — Common Core
+    // ══════════════════════════════════
+    const ccMirrors = findAllByCategory('common_core');
+    const ccSource: MirrorSource = ccMirrors.length > 0 ? 'bd' : 'hardcoded';
+    const ccCount = ccMirrors.length;
+
+    // Reconstruct CommonCoreTable[] from BD mirrors (when available)
+    const ccTablesFromBD: CommonCoreTable[] = ccMirrors.map((rec: any) => {
+      const d = rec.dados as any;
+      return {
+        id: d.id_cc || rec.id,
+        numero: d.numero || 0,
+        titulo: rec.nome.replace(/^\[CC-\d+\]\s*/, ''),
+        tituloIngles: d.tituloIngles || '',
+        categoria: d.categoria || rec.subcategoria || '',
+        descricao: rec.nome,
+        fonte: rec.fonte,
+        fonteCompleta: rec.fonte,
+        urlFonte: rec.url_fonte || undefined,
+        tabelaSidra: d.tabelaSidra || undefined,
+        periodoOriginal: d.periodoOriginal || '',
+        periodoAtualizado: d.periodoAtualizado || '',
+        statusAtualizacao: d.statusAtualizacao || 'atualizado',
+        dados: {
+          headers: d.headers || [],
+          rows: d.rows || [],
+        },
+        notas: d.notas || undefined,
+        tendencia: d.tendencia || undefined,
+      } as CommonCoreTable;
+    });
+
+    // ══════════════════════════════════
+    // STAGE 3 — Adm Pública
+    // ══════════════════════════════════
+    const admMirrors = findAllByCategory('adm_publica');
+    const admSource: MirrorSource = admMirrors.length > 0 ? 'bd' : 'hardcoded';
+
+    const estadicEstrutura = findMirror('adm_publica', 'estadic_estrutura');
+    const estadicGestores = findMirror('adm_publica', 'estadic_gestores');
+    const sinapirMirror = findMirror('adm_publica', 'sinapir');
+
+    // ══════════════════════════════════
+    // STAGE 3 — COVID Racial
+    // ══════════════════════════════════
+    const covidMirrors = findAllByCategory('covid_racial');
+    const covidSource: MirrorSource = covidMirrors.length > 0 ? 'bd' : 'hardcoded';
+    const covidCount = covidMirrors.length;
+
+    // ══════════════════════════════════
+    // STAGE 3 — Grupos Focais
+    // ══════════════════════════════════
+    const gfMirrors = findAllByCategory('grupos_focais');
+    const gfSource: MirrorSource = gfMirrors.length > 0 ? 'bd' : 'hardcoded';
+    const gfCount = gfMirrors.length;
+
     // Count sources
     const allSources = [
       fonteDemografia, evolucao.source, seguranca.source, feminicidio.source,
@@ -156,6 +219,7 @@ export function useMirrorData() {
       trabalhoRG.source, educacaoRG.source, chefia.source, deficiencia.source,
       disparidades.source, antra.source, lgbtqia.source, classe.source,
       rendimentos.source, evolDesig.source,
+      ccSource, admSource, covidSource, gfSource,
     ];
     const bdCount = allSources.filter(s => s === 'bd').length;
     const totalCount = allSources.length;
@@ -197,6 +261,34 @@ export function useMirrorData() {
       rendimentosCenso2022: rendimentos.data, fonteRendimentos: rendimentos.source,
       // Desigualdade
       evolucaoDesigualdade: evolDesig.data, fonteEvolDesig: evolDesig.source,
+
+      // ── STAGE 3 ──
+      // Common Core
+      ccTablesFromBD,
+      ccSource,
+      ccCount,
+      // Adm Pública
+      admSource,
+      estadicEstruturaData: estadicEstrutura ? (estadicEstrutura.dados as any) : null,
+      estadicGestoresData: estadicGestores ? (estadicGestores.dados as any) : null,
+      sinapirData: sinapirMirror ? (sinapirMirror.dados as any) : null,
+      // COVID Racial
+      covidSource,
+      covidCount,
+      covidMirrors: covidMirrors.map((r: any) => ({
+        subcategoria: r.subcategoria,
+        dados: r.dados,
+        nome: r.nome,
+      })),
+      // Grupos Focais
+      gfSource,
+      gfCount,
+      gfMirrors: gfMirrors.map((r: any) => ({
+        subcategoria: r.subcategoria,
+        dados: r.dados,
+        nome: r.nome,
+      })),
+
       // Meta
       bdCount,
       totalCount,
