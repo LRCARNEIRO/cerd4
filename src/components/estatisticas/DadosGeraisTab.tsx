@@ -8,22 +8,31 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend, PieChart, Pie, Cell 
 } from 'recharts';
-import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle, Wifi, WifiOff, RefreshCw, Database, HardDrive } from 'lucide-react';
 import { 
-  dadosDemograficos, 
-  evolucaoComposicaoRacial, 
-  indicadoresSocioeconomicos,
   fonteDados 
 } from './StatisticsData';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 import { useSidraRenda } from '@/hooks/useSidraRenda';
+import { useDadosGeraisBD } from '@/hooks/useDadosGeraisBD';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
   const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
+  
+  // SSoT: BD com fallback para hardcoded
+  const { 
+    dadosDemograficos, 
+    evolucaoComposicaoRacial, 
+    fonteDemografia, 
+    fonteEvolucao, 
+    paragrafos, 
+    artigosConvencao, 
+    usandoBD 
+  } = useDadosGeraisBD();
 
   // ═══════════════════════════════════════════════════════════════
   // REGRA: Dados coletados via API SIDRA são a Fonte Única de Verdade.
