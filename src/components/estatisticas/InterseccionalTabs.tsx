@@ -525,6 +525,7 @@ export function PovosTradicionaisTab() {
 
 export function LgbtqiaTab() {
   const { serieAntraTrans, lgbtqiaPorRaca } = useMirrorData();
+  const { narrativaLGBTQIA } = useNarrativeData();
   return (
     <div className="space-y-6">
       <Card className="border-l-4 border-l-destructive">
