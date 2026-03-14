@@ -7,29 +7,13 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { toast } from 'sonner';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import {
-  dadosDemograficos,
-  evolucaoComposicaoRacial,
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  feminicidioSerie,
-  educacaoSerieHistorica,
-  saudeSerieHistorica,
-  interseccionalidadeTrabalho,
-  deficienciaPorRaca,
-  serieAntraTrans,
-  lgbtqiaPorRaca,
-  classePorRaca,
-  violenciaInterseccional,
   radarVulnerabilidades,
-  evolucaoDesigualdade,
   atlasViolencia2025,
-  rendimentosCenso2022,
-  analfabetismoGeral2024,
   jovensNegrosViolencia,
   razaoRendaRacial,
   interseccionalidadeTrabalhoFontes,
-  povosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas,
@@ -139,9 +123,15 @@ function indicadorToHTML(ind: any): string {
   return html;
 }
 
-function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
+function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
+  // SSoT: destructure from mirror data
+  const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
+    rendimentosCenso2022, segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
+    analfabetismoGeral2024, saudeSerieHistorica, interseccionalidadeTrabalho,
+    violenciaInterseccional, serieAntraTrans, lgbtqiaPorRaca, deficienciaPorRaca,
+    classePorRaca, evolucaoDesigualdade, povosTradicionais } = m;
 
   const bdCategorias: Record<string, any[]> = {};
   indicadoresBD.forEach(i => {
@@ -438,8 +428,12 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[]) {
+function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
+    segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
+    interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
+    lgbtqiaPorRaca, deficienciaPorRaca, classePorRaca, evolucaoDesigualdade } = m;
 
   // Series data
   const series = [
@@ -661,12 +655,13 @@ function downloadDOCX(html: string, fileName: string) {
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
   const { data: juventudeNegraBD } = useJuventudeAuditados();
+  const mirror = useMirrorData();
   const [generating, setGenerating] = useState<string | null>(null);
 
   const handleFullReport = (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
     try {
-      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || []);
+      const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
@@ -681,7 +676,7 @@ export function StatisticsInventoryReport() {
   const handleInventory = (format: 'html' | 'docx') => {
     setGenerating(`inv-${format}`);
     try {
-      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || []);
+      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         downloadDOCX(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {

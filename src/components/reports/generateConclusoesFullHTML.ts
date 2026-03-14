@@ -1,10 +1,12 @@
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  saudeSerieHistorica, indicadoresSocioeconomicos, evolucaoDesigualdade,
-  radarVulnerabilidades, violenciaInterseccional, classePorRaca,
-  povosTradicionais, dadosDemograficos
+  segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
+  educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
+  indicadoresSocioeconomicos as hcSocioeco, evolucaoDesigualdade as hcEvolDesig,
+  radarVulnerabilidades, violenciaInterseccional as hcViolencia,
+  classePorRaca as hcClasse, povosTradicionais as hcPovos,
+  dadosDemograficos as hcDemograficos,
 } from '@/components/estatisticas/StatisticsData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 
@@ -17,6 +19,19 @@ interface GenerateParams {
   respostas: any[];
   indicadores: any[];
   orcStats: any;
+  /** Mirror data from useMirrorData — SSoT with fallback */
+  mirrorData?: {
+    segurancaPublica?: any[];
+    feminicidioSerie?: any[];
+    educacaoSerieHistorica?: any[];
+    saudeSerieHistorica?: any[];
+    indicadoresSocioeconomicos?: any[];
+    evolucaoDesigualdade?: any[];
+    violenciaInterseccional?: any[];
+    classePorRaca?: any[];
+    dadosDemograficos?: any;
+    povosTradicionais?: any;
+  };
 }
 
 // ====== SVG CHART HELPERS ======
@@ -205,9 +220,21 @@ function svgRadarChart(
 // ====== MAIN GENERATOR ======
 
 export function generateConclusoesFullHTML(params: GenerateParams): string {
-  const { fiosCondutores, conclusoesDinamicas, insightsCruzamento, stats, lacunas, respostas, indicadores, orcStats } = params;
+  const { fiosCondutores, conclusoesDinamicas, insightsCruzamento, stats, lacunas, respostas, indicadores, orcStats, mirrorData } = params;
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
+  // SSoT: use mirror data with hardcoded fallback
+  const segurancaPublica = mirrorData?.segurancaPublica ?? hcSeguranca;
+  const feminicidioSerie = mirrorData?.feminicidioSerie ?? hcFeminicidio;
+  const educacaoSerieHistorica = mirrorData?.educacaoSerieHistorica ?? hcEducacao;
+  const saudeSerieHistorica = mirrorData?.saudeSerieHistorica ?? hcSaude;
+  const indicadoresSocioeconomicos = mirrorData?.indicadoresSocioeconomicos ?? hcSocioeco;
+  const evolucaoDesigualdade = mirrorData?.evolucaoDesigualdade ?? hcEvolDesig;
+  const violenciaInterseccional = mirrorData?.violenciaInterseccional ?? hcViolencia;
+  const classePorRaca = mirrorData?.classePorRaca ?? hcClasse;
+  const dadosDemograficos = mirrorData?.dadosDemograficos ?? hcDemograficos;
+  const povosTradicionais = mirrorData?.povosTradicionais ?? hcPovos;
 
   const seg2018 = segurancaPublica[0];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];

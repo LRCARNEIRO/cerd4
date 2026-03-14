@@ -2,11 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, feminicidioSerie,
-  povosTradicionais
-} from '@/components/estatisticas/StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
 
@@ -52,10 +47,17 @@ const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'esta
   );
 };
 
-// Build indicator series from StatisticsData
+// Build indicator series from mirror data (SSoT)
 // REGRA DE OURO: PROIBIDO usar proxies multiplicadores (×1.5, ×1.8, ×2.5 etc.) ou projeções.
 // Apenas dados reais de fontes oficiais ou cruzamentos indiretos com 2+ fontes auditáveis são permitidos.
-function buildIndicadores(): Record<string, IndicadorTemporal[]> {
+function buildIndicadores(
+  segurancaPublica: any[],
+  educacaoSerieHistorica: any[],
+  indicadoresSocioeconomicos: any[],
+  feminicidioSerie: any[],
+  saudeSerieHistorica: any[],
+  povosTradicionais: any,
+): Record<string, IndicadorTemporal[]> {
   const populacaoNegra: IndicadorTemporal[] = [
     {
       nome: 'Taxa de homicídio (por 100 mil)',
@@ -291,7 +293,15 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
 }
 
 export function SerieTemporalGrupos() {
-  const indicadoresPorGrupo = buildIndicadores();
+  const mirror = useMirrorData();
+  const indicadoresPorGrupo = buildIndicadores(
+    mirror.segurancaPublica,
+    mirror.educacaoSerieHistorica,
+    mirror.indicadoresSocioeconomicos,
+    mirror.feminicidioSerie,
+    mirror.saudeSerieHistorica,
+    mirror.povosTradicionais,
+  );
 
   const grupoLabels: Record<string, string> = {
     populacao_negra: 'População Negra (Preta + Parda)',

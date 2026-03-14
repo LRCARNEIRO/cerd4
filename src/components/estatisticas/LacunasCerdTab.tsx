@@ -14,12 +14,6 @@ import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuditFooter } from '@/components/ui/audit-footer';
 
-// FONTE ÚNICA: StatisticsData.ts — elimina duplicidade de séries hardcoded
-import {
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  educacaoSerieHistorica,
-} from '@/components/estatisticas/StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas, fmt } from '@/utils/narrativeHelpers';
 
@@ -59,61 +53,7 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
-// =============================================
-// SÉRIES DERIVADAS de StatisticsData.ts (fonte única)
-// Eliminam a duplicidade anterior que causava inconsistências
-// =============================================
-
-// Educação: ensino superior e analfabetismo por raça (PNAD Contínua / SIDRA 7129 + 7125)
-const dadosEducacaoHistorico = educacaoSerieHistorica.map(d => ({
-  ano: d.ano,
-  superiorNegro: d.superiorNegroPercent,
-  superiorBranco: d.superiorBrancoPercent,
-  analfabetismoNegro: d.analfabetismoNegro,
-  analfabetismoBranco: d.analfabetismoBranco,
-  gapSuperior: +(d.superiorBrancoPercent - d.superiorNegroPercent).toFixed(1),
-}));
-
-// Desemprego: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6381)
-const dadosDesempregoHistorico = indicadoresSocioeconomicos.map(d => ({
-  ano: d.ano,
-  negros: d.desempregoNegro,
-  brancos: d.desempregoBranco,
-  diferenca: +(d.desempregoNegro - d.desempregoBranco).toFixed(1),
-  fonte: d.fonte,
-}));
-
-// Homicídio: derivado de segurancaPublica (Atlas da Violência / FBSP)
-// NOTA: "brancos" na verdade = "não negros" (metodologia Atlas/IPEA)
-const dadosHomicidioHistorico = segurancaPublica.map(d => ({
-  ano: d.ano,
-  negros: d.homicidioNegro,
-  naoNegros: d.homicidioBranco, // campo renomeado para clareza
-  razao: d.razaoRisco,
-  fonte: d.ano <= 2023 ? 'Atlas da Violência 2025' : '19º Anuário FBSP 2025',
-}));
-
-// Letalidade policial: derivado de segurancaPublica (Anuário FBSP)
-const dadosLetalidadePolicial = segurancaPublica.map(d => ({
-  ano: d.ano,
-  percentualNegros: d.letalidadePolicial,
-  percentualVitimasNegras: d.percentualVitimasNegras,
-  fonte: 'Anuário FBSP',
-}));
-
-// Renda: derivado de indicadoresSocioeconomicos (PNAD Contínua / SIDRA 6800)
-const dadosRendaHistorico = indicadoresSocioeconomicos.map(d => ({
-  ano: d.ano,
-  brancos: d.rendaMediaBranca,
-  negros: d.rendaMediaNegra,
-  razao: +(d.rendaMediaNegra / d.rendaMediaBranca).toFixed(2),
-  fonte: d.fonte,
-}));
-
 // Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente
-// AUDITADO: Certificadas corrigidas conforme FCP (DadosNovosTab ter-2: 2.523 em 2018 → 3.158 em 2025)
-// Tituladas: INCRA. Nota: "245 territórios titulados" refere-se a processos concluídos acumulados;
-// "384 títulos" inclui múltiplos títulos por território. Usando contagem de territórios.
 const dadosTerrasQuilombolasHistorico = [
   { ano: 2018, tituladas: 174, certificadas: 2523, taxa: 6.9, fonte: 'INCRA/FCP' },
   { ano: 2019, tituladas: 176, certificadas: 2745, taxa: 6.4, fonte: 'INCRA/FCP' },
@@ -130,6 +70,52 @@ export function LacunasCerdTab() {
   const { data: stats, isLoading: statsLoading } = useLacunasStats();
   const { data: lacunas, isLoading: lacunasLoading } = useLacunasIdentificadas();
   const { data: respostas, isLoading: respostasLoading } = useRespostasLacunasCerdIII();
+  const mirror = useMirrorData();
+
+  // SSoT: derived series from useMirrorData (BD first, fallback to hardcoded)
+  const educacaoSerieHistorica = mirror.educacaoSerieHistorica;
+  const indicadoresSocioeconomicos = mirror.indicadoresSocioeconomicos;
+  const segurancaPublica = mirror.segurancaPublica;
+
+  const dadosEducacaoHistorico = educacaoSerieHistorica.map((d: any) => ({
+    ano: d.ano,
+    superiorNegro: d.superiorNegroPercent,
+    superiorBranco: d.superiorBrancoPercent,
+    analfabetismoNegro: d.analfabetismoNegro,
+    analfabetismoBranco: d.analfabetismoBranco,
+    gapSuperior: +(d.superiorBrancoPercent - d.superiorNegroPercent).toFixed(1),
+  }));
+
+  const dadosDesempregoHistorico = indicadoresSocioeconomicos.map((d: any) => ({
+    ano: d.ano,
+    negros: d.desempregoNegro,
+    brancos: d.desempregoBranco,
+    diferenca: +(d.desempregoNegro - d.desempregoBranco).toFixed(1),
+    fonte: d.fonte,
+  }));
+
+  const dadosHomicidioHistorico = segurancaPublica.map((d: any) => ({
+    ano: d.ano,
+    negros: d.homicidioNegro,
+    naoNegros: d.homicidioBranco,
+    razao: d.razaoRisco,
+    fonte: d.ano <= 2023 ? 'Atlas da Violência 2025' : '19º Anuário FBSP 2025',
+  }));
+
+  const dadosLetalidadePolicial = segurancaPublica.map((d: any) => ({
+    ano: d.ano,
+    percentualNegros: d.letalidadePolicial,
+    percentualVitimasNegras: d.percentualVitimasNegras,
+    fonte: 'Anuário FBSP',
+  }));
+
+  const dadosRendaHistorico = indicadoresSocioeconomicos.map((d: any) => ({
+    ano: d.ano,
+    brancos: d.rendaMediaBranca,
+    negros: d.rendaMediaNegra,
+    razao: +(d.rendaMediaNegra / d.rendaMediaBranca).toFixed(2),
+    fonte: d.fonte,
+  }));
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['lacunas-stats'] });
