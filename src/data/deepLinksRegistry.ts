@@ -372,9 +372,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SINAPIR',
     secao: 'Administração Pública',
-    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir',
+    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/copy2_of_noticias/novas-adesoes-fortalecem-o-sistema-nacional-de-promocao-da-igualdade-racial',
     fonte: 'MIR',
-    descricao: 'SINAPIR — Sistema Nacional de Promoção da Igualdade Racial',
+    descricao: 'SINAPIR — Novas adesões ao Sistema Nacional de Promoção da Igualdade Racial (Jul/2025)',
   },
   {
     indicador: 'SINAPIR — lista entes',
