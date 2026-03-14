@@ -1,5 +1,5 @@
 /**
- * STAGE 3 — Transformadores para Common Core, Adm Pública, COVID Racial e Grupos Focais
+ * STAGE 3+4 — Transformadores para Common Core, Adm Pública, COVID Racial, Grupos Focais e Complemento CERD 3
  * Converte dados hardcoded destes módulos para o formato indicadores_interseccionais.
  */
 
