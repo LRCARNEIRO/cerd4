@@ -221,16 +221,18 @@ export function buildCovidRacialIndicators(): DbRecord[] {
   ));
 
   all.push(rec(
-    'Letalidade hospitalar COVID por raça — SIVEP-Gripe',
+    'Letalidade hospitalar COVID por raça — Moreira et al. (2023)',
     'covid_racial', 'letalidade_hospitalar',
-    'NOIS/PUC-Rio — SIVEP-Gripe',
-    'https://bigdata-covid19.icict.fiocruz.br/',
+    'Moreira et al. (2023) — Int J Equity Health 22:186',
+    'https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf',
     ['Art. 2', 'Art. 5'],
     {
       registros: [
-        { raca: 'Pretos e Pardos', letalidade: 55 },
-        { raca: 'Brancos', letalidade: 38 },
-        { raca: 'Indígenas', letalidade: 62 },
+        { raca: 'Brancos', letalidade: 32.2 },
+        { raca: 'Pretos', letalidade: 37.9 },
+        { raca: 'Pardos', letalidade: 34.0 },
+        { raca: 'Indígenas', letalidade: 34.7 },
+        { raca: 'Asiáticos', letalidade: 31.6 },
       ],
       paragrafos_cerd: '§29-30',
     },
