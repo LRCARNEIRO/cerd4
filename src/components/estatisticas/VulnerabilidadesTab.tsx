@@ -4,80 +4,14 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   BarChart, Bar
 } from 'recharts';
-import { Layers, Filter, FileText, ExternalLink, AlertTriangle, ShieldAlert, Home, Utensils } from 'lucide-react';
+import { Layers, Filter, FileText, ExternalLink, AlertTriangle, ShieldAlert, Home, Utensils, Database, HardDrive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
-  evolucaoDesigualdade, 
-  interseccionalidadeTrabalho,
   interseccionalidadeTrabalhoFontes,
-  chefiaFamiliarRacaGenero
 } from './StatisticsData';
-
-// Dados de vulnerabilidade multidimensional — DERIVADOS de chefiaFamiliarRacaGenero (single source of truth)
-// Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022 + SIS/IBGE 2024
-const vulnerabilidadeMultidimensional = [
-  {
-    dimensao: 'Chefia monoparental feminina negra',
-    indicador: `${chefiaFamiliarRacaGenero.percentualNegras}% das famílias monoparentais femininas são chefiadas por mulheres negras`,
-    valor: chefiaFamiliarRacaGenero.percentualNegras,
-    referencia: chefiaFamiliarRacaGenero.percentualBrancas,
-    unidade: '%',
-    fonte: 'RASEAM 2023',
-    url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
-    icone: Home,
-  },
-  {
-    dimensao: 'Insegurança alimentar (domicílios femininos)',
-    indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosIA}% dos domicílios chefiados por mulheres vivem com insegurança alimentar`,
-    valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
-    referencia: null,
-    unidade: '%',
-    fonte: 'II VIGISAN 2022',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    icone: Utensils,
-  },
-  {
-    dimensao: 'Inseg. alimentar (domicílios negros)',
-    indicador: `${chefiaFamiliarRacaGenero.domiciliosNegrosIA}% dos domicílios com pessoa negra de referência estão em insegurança alimentar`,
-    valor: chefiaFamiliarRacaGenero.domiciliosNegrosIA,
-    referencia: null,
-    unidade: '%',
-    fonte: 'II VIGISAN 2022',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    icone: Utensils,
-  },
-  {
-    dimensao: 'CadÚnico — mulheres negras',
-    indicador: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras != null 
-      ? `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`
-      : '⏳ Dados CadÚnico pendentes de verificação',
-    valor: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
-    referencia: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
-    unidade: '%',
-    fonte: 'Pendente verificação',
-    url: '',
-    icone: ShieldAlert,
-  },
-  {
-    dimensao: 'Fome (domicílios femininos)',
-    indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosFome}% dos domicílios chefiados por mulheres vivem em situação de fome`,
-    valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
-    referencia: null,
-    unidade: '%',
-    fonte: 'II VIGISAN 2022',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    icone: AlertTriangle,
-  },
-];
-
-const vulnerabilidadeBarData = [
-  { nome: 'Chefia monop.\n(negras)', negras: chefiaFamiliarRacaGenero.percentualNegras, brancas: chefiaFamiliarRacaGenero.percentualBrancas },
-  { nome: 'CadÚnico\n(mulheres)', negras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras, brancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas },
-  { nome: 'IA domicílios\n(negros)', negros: chefiaFamiliarRacaGenero.domiciliosNegrosIA, naoNegros: 100 - chefiaFamiliarRacaGenero.domiciliosNegrosIA },
-  { nome: 'Fome\n(dom. femininos)', valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome },
-];
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 const vulnerabilidadeFontes = [
   { nome: 'RASEAM 2024 — Chefia familiar monoparental (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
@@ -86,7 +20,77 @@ const vulnerabilidadeFontes = [
   { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
 ];
 
+function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
+  const multidimensional = [
+    {
+      dimensao: 'Chefia monoparental feminina negra',
+      indicador: `${chefiaFamiliarRacaGenero.percentualNegras}% das famílias monoparentais femininas são chefiadas por mulheres negras`,
+      valor: chefiaFamiliarRacaGenero.percentualNegras,
+      referencia: chefiaFamiliarRacaGenero.percentualBrancas,
+      unidade: '%',
+      fonte: 'RASEAM 2023',
+      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
+      icone: Home,
+    },
+    {
+      dimensao: 'Insegurança alimentar (domicílios femininos)',
+      indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosIA}% dos domicílios chefiados por mulheres vivem com insegurança alimentar`,
+      valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
+      referencia: null,
+      unidade: '%',
+      fonte: 'II VIGISAN 2022',
+      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      icone: Utensils,
+    },
+    {
+      dimensao: 'Inseg. alimentar (domicílios negros)',
+      indicador: `${chefiaFamiliarRacaGenero.domiciliosNegrosIA}% dos domicílios com pessoa negra de referência estão em insegurança alimentar`,
+      valor: chefiaFamiliarRacaGenero.domiciliosNegrosIA,
+      referencia: null,
+      unidade: '%',
+      fonte: 'II VIGISAN 2022',
+      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      icone: Utensils,
+    },
+    {
+      dimensao: 'CadÚnico — mulheres negras',
+      indicador: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras != null 
+        ? `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`
+        : '⏳ Dados CadÚnico pendentes de verificação',
+      valor: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
+      referencia: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
+      unidade: '%',
+      fonte: 'Pendente verificação',
+      url: '',
+      icone: ShieldAlert,
+    },
+    {
+      dimensao: 'Fome (domicílios femininos)',
+      indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosFome}% dos domicílios chefiados por mulheres vivem em situação de fome`,
+      valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
+      referencia: null,
+      unidade: '%',
+      fonte: 'II VIGISAN 2022',
+      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      icone: AlertTriangle,
+    },
+  ];
+
+  const barData = [
+    { nome: 'Chefia monop.\n(negras)', negras: chefiaFamiliarRacaGenero.percentualNegras, brancas: chefiaFamiliarRacaGenero.percentualBrancas },
+    { nome: 'CadÚnico\n(mulheres)', negras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras, brancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas },
+    { nome: 'IA domicílios\n(negros)', negros: chefiaFamiliarRacaGenero.domiciliosNegrosIA, naoNegros: 100 - chefiaFamiliarRacaGenero.domiciliosNegrosIA },
+    { nome: 'Fome\n(dom. femininos)', valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome },
+  ];
+
+  return { multidimensional, barData };
+}
+
 export function VulnerabilidadesTab() {
+  const { chefiaFamiliarRacaGenero, evolucaoDesigualdade, interseccionalidadeTrabalho } = useMirrorData();
+  
+  const { multidimensional: vulnerabilidadeMultidimensional, barData: vulnerabilidadeBarData } = buildVulnerabilidadeData(chefiaFamiliarRacaGenero);
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
