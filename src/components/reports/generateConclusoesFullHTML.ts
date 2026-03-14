@@ -1,10 +1,12 @@
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  saudeSerieHistorica, indicadoresSocioeconomicos, evolucaoDesigualdade,
-  radarVulnerabilidades, violenciaInterseccional, classePorRaca,
-  povosTradicionais, dadosDemograficos
+  segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
+  educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
+  indicadoresSocioeconomicos as hcSocioeco, evolucaoDesigualdade as hcEvolDesig,
+  radarVulnerabilidades, violenciaInterseccional as hcViolencia,
+  classePorRaca as hcClasse, povosTradicionais as hcPovos,
+  dadosDemograficos as hcDemograficos,
 } from '@/components/estatisticas/StatisticsData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 
@@ -17,6 +19,19 @@ interface GenerateParams {
   respostas: any[];
   indicadores: any[];
   orcStats: any;
+  /** Mirror data from useMirrorData — SSoT with fallback */
+  mirrorData?: {
+    segurancaPublica?: any[];
+    feminicidioSerie?: any[];
+    educacaoSerieHistorica?: any[];
+    saudeSerieHistorica?: any[];
+    indicadoresSocioeconomicos?: any[];
+    evolucaoDesigualdade?: any[];
+    violenciaInterseccional?: any[];
+    classePorRaca?: any[];
+    dadosDemograficos?: any;
+    povosTradicionais?: any;
+  };
 }
 
 // ====== SVG CHART HELPERS ======
