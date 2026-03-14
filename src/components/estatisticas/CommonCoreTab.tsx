@@ -478,7 +478,7 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Composição percentual do gasto social federal por área',
     fonte: 'ME/IBGE',
     fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.gov.br/fazenda/pt-br/assuntos/orcamento-federal',
+    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
