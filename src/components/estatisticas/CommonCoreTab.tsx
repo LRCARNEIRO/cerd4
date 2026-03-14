@@ -961,14 +961,14 @@ export const tabelasSaude: CommonCoreTable[] = [
     periodoAtualizado: '1989-2023',
     statusAtualizacao: 'parcial',
     dados: {
-      headers: ['Ano', '1989', '1996', '2006', '2019*', '2023*'],
+      headers: ['Ano', '1989', '1996', '2006', '2019 (SISVAN)', '2023 (SISVAN)'],
       rows: [
         ['Homens', '5,4%', '4,5%', '1,8%', '2,1%', '2,3%'],
         ['Mulheres', '5,4%', '4,0%', '2,0%', '2,0%', '2,2%'],
         ['Total', '5,4%', '4,2%', '1,9%', '2,1%', '2,2%']
       ]
     },
-    notas: '* Dados do SISVAN (crianças acompanhadas em UBS). Tendência de leve aumento pós-2019.',
+    notas: 'Dados 1989-2006: PNDS (pesquisa domiciliar representativa). Dados 2019-2023: SISVAN (crianças acompanhadas em UBS — amostra não-representativa). Metodologias distintas: comparação direta requer cautela.',
     tendencia: 'estavel'
   },
   {
