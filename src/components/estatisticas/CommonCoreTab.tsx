@@ -2431,7 +2431,10 @@ const EixoSection = ({ title, tables, icon }: { title: string; tables: CommonCor
 
 // Componente Principal
 export const CommonCoreTab = () => {
-  const allTables = [
+  const { ccTablesFromBD, ccSource, ccCount, isLoading } = useMirrorData();
+
+  // Use BD tables if available, otherwise hardcoded
+  const hardcodedTables = [
     ...tabelasDemograficas,
     ...tabelasEconomicas,
     ...tabelasEducacao,
@@ -2443,6 +2446,8 @@ export const CommonCoreTab = () => {
     ...tabelasSistemaPolitico,
     ...tabelasMoradia
   ];
+
+  const allTables = ccSource === 'bd' && ccTablesFromBD.length > 0 ? ccTablesFromBD : hardcodedTables;
 
   const totalTables = allTables.length;
   const atualizadas = allTables.filter(t => t.statusAtualizacao === 'atualizado').length;
