@@ -625,6 +625,7 @@ export function GruposFocaisTab() {
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-accent" />
                     Situação Territorial - Povos Indígenas
+                    <AuditadoBadge nota="FUNAI Geo + ISA terrasindigenas.org.br — validado contra Complemento CERD III" />
                   </CardTitle>
                   <CardDescription>
                     Fonte: {dadosTerritoriais.indigenas.fonte} | Atualizado: {new Date(dadosTerritoriais.indigenas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
