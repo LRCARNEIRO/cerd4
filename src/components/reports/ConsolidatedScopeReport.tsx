@@ -698,6 +698,7 @@ export function ConsolidatedScopeReport() {
   const { data: orcStats } = useOrcamentoStats();
   const { data: orcamentarios } = useDadosOrcamentarios();
   const { data: respostas } = useRespostasLacunasCerdIII();
+  const mirrorData = useMirrorData();
 
   const {
     fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
