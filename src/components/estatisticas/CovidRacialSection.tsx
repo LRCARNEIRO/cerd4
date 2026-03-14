@@ -26,6 +26,12 @@ const FONTE_SIVEP_NOIS = [
   { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://sites.google.com/view/naborfrancisco/publica%C3%A7%C3%B5es' },
 ];
 
+const FONTE_PERES_ETAL = [
+  { nome: 'Peres et al. (2021) — "Sociodemographic factors associated with COVID-19 in-hospital mortality in Brazil", Public Health 192:15-20, DOI: 10.1016/j.puhe.2021.01.005', url: 'https://doi.org/10.1016/j.puhe.2021.01.005' },
+  { nome: 'SIVEP-Gripe — 228.196 pacientes adultos hospitalizados, RT-qPCR confirmados (fev-ago 2020)', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'GitHub NOIS/PUC-Rio — Código e dados reprodutíveis do estudo', url: 'https://github.com/noispuc/Peres_etal_PublicHealth_Socio_demographic_COVID19_mortality' },
+];
+
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
   { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
