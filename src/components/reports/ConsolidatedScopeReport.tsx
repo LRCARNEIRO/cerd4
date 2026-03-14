@@ -10,26 +10,27 @@ import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
-  dadosDemograficos,
-  evolucaoComposicaoRacial,
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  feminicidioSerie,
-  jovensNegrosViolencia,
-  educacaoSerieHistorica,
-  analfabetismoGeral2024,
-  saudeSerieHistorica,
-  rendimentosCenso2022,
-  interseccionalidadeTrabalho,
-  deficienciaPorRaca,
-  lgbtqiaPorRaca,
-  povosTradicionais,
+  dadosDemograficos as hcDemo,
+  evolucaoComposicaoRacial as hcEvolucao,
+  indicadoresSocioeconomicos as hcSocioEco,
+  segurancaPublica as hcSeguranca,
+  feminicidioSerie as hcFeminicidio,
+  jovensNegrosViolencia as hcJovensViolencia,
+  educacaoSerieHistorica as hcEducacao,
+  analfabetismoGeral2024 as hcAnalfabetismo,
+  saudeSerieHistorica as hcSaude,
+  rendimentosCenso2022 as hcRendimentos,
+  interseccionalidadeTrabalho as hcIntersecTrabalho,
+  deficienciaPorRaca as hcDeficiencia,
+  lgbtqiaPorRaca as hcLgbtqia,
+  povosTradicionais as hcPovos,
   razaoRendaRacial,
-  violenciaInterseccional,
+  violenciaInterseccional as hcViolencia,
   radarVulnerabilidades,
-  evolucaoDesigualdade,
-  classePorRaca,
+  evolucaoDesigualdade as hcEvolDesig,
+  classePorRaca as hcClasse,
 } from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 function generateConsolidatedHTML(data: {
   indicadores: any[];
