@@ -21,6 +21,7 @@ export function SegurancaSaudeEducacaoTab() {
     evasaoEscolarSerie, fonteEvasao,
     usandoBD,
   } = useMirrorData();
+  const { narrativaSeguranca } = useNarrativeData();
   return (
     <div className="space-y-6">
       {/* Segurança Pública */}

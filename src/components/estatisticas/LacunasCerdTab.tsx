@@ -72,6 +72,7 @@ export function LacunasCerdTab() {
   const { data: lacunas, isLoading: lacunasLoading } = useLacunasIdentificadas();
   const { data: respostas, isLoading: respostasLoading } = useRespostasLacunasCerdIII();
   const mirror = useMirrorData();
+  const { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas } = useNarrativeData();
 
   // SSoT: derived series from useMirrorData (BD first, fallback to hardcoded)
   const educacaoSerieHistorica = mirror.educacaoSerieHistorica;

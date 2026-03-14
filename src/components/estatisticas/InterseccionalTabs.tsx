@@ -24,9 +24,14 @@ import { useNarrativeData } from '@/hooks/useNarrativeData';
 
 export function RacaGeneroTab() {
   const {
+  const {
     violenciaInterseccional, trabalhoRacaGenero, chefiaFamiliarRacaGenero,
     educacaoRacaGenero, saudeMaternaRaca, atlasViolencia2025,
   } = useMirrorData();
+  const {
+    narrativaViolencia, narrativaTrabalho, narrativaChefia,
+    narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
+  } = useNarrativeData();
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
