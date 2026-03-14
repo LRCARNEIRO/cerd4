@@ -485,19 +485,21 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
                   <span className="font-semibold text-foreground">💡 Conclusão: </span>
                   {avgGroupRatio !== null && avgGroupRatio > 1 ? (
                     <>
-                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
-                      que a branca (razão média {avgGroupRatio.toFixed(2)}×).
-                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×).</>}
+                      Neste eixo, a população negra apresenta indicadores {avgGroupRatio > 1.5 ? 'drasticamente' : avgGroupRatio > 1.3 ? 'significativamente' : 'moderadamente'} piores 
+                      que a branca (razão média <strong>{avgGroupRatio.toFixed(2)}×</strong>).
+                      {worstInGroup && <> O indicador mais crítico é <strong>{worstInGroup.indicador.nome}</strong> ({worstInGroup.razao!.toFixed(2)}×), evidenciando que a população negra {worstInGroup.razao! > 2 ? 'é mais do que duplamente prejudicada' : 'sofre desvantagem estrutural mensurável'} nesta dimensão.</>}
+                      {' '}Isso configura evidência de discriminação racial indireta (Art. 1º da ICERD), reforçando a necessidade de políticas afirmativas específicas.
                     </>
                   ) : avgGroupRatio !== null && avgGroupRatio < 1 ? (
                     <>
-                      Neste eixo, a população negra apresenta taxa {((1 - avgGroupRatio) * 100).toFixed(0)}% menor que a branca — 
-                      indicando déficit de acesso.
+                      Neste eixo, a população negra apresenta taxa <strong>{((1 - avgGroupRatio) * 100).toFixed(0)}% menor</strong> que a branca — 
+                      indicando déficit de acesso que perpetua desigualdades estruturais. 
+                      {worstInGroup && <> O maior hiato está em <strong>{worstInGroup.indicador.nome}</strong>, onde a sub-representação negra revela barreiras institucionais persistentes.</>}
                     </>
                   ) : hasIndigenas ? (
-                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas.</>
+                    <>Dados inéditos do Censo 2022 revelam disparidades extremas para populações indígenas em TIs e comunidades quilombolas — situação que o Estado não documentava adequadamente no III Relatório CERD e que agora exige resposta detalhada ao Comitê.</>
                   ) : (
-                    <>Dados pontuais sem comparação racial direta disponível.</>
+                    <>Dados pontuais sem comparação racial direta disponível — lacuna que limita a capacidade de resposta do Estado ao CERD.</>
                   )}
                 </p>
               </div>
