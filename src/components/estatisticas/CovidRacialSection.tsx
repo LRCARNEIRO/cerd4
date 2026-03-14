@@ -136,42 +136,42 @@ function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number;
     { 
       grupo: 'Mulheres negras', 
       impacto: 'Aumento de 42% na mortalidade materna (2019→2021); sobrecarga de trabalho de cuidado; maior perda de renda',
-      fonte: 'DataSUS/SIM; IPEA 2021'
+      fonte: 'DataSUS/SIM — TabNet → Mortalidade Materna → Coluna: Cor/Raça da mãe; IEPS Boletim Çarê Jul/2025'
     },
     { 
       grupo: 'Idosos negros (60+)', 
       impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
-      fonte: 'SIVEP-Gripe; NOIS/PUC-Rio'
+      fonte: 'SIVEP-Gripe → BigData COVID Fiocruz → filtro faixa etária 60+ × raça/cor × desfecho'
     },
     { 
       grupo: 'PcD negros', 
       impacto: 'Maior dificuldade de isolamento; barreiras de acesso a informação em formato acessível; exclusão digital',
-      fonte: 'IPEA Cap. 8 Igualdade Racial'
+      fonte: 'IPEA Políticas Sociais nº 29, Cap. 8 — Igualdade Racial e PcD'
     },
     { 
       grupo: 'LGBTQIA+ negros', 
       impacto: 'Perda de renda em atividades informais; expulsão de abrigos; interrupção de tratamentos hormonais',
-      fonte: 'ANTRA 2021; ABGLT'
+      fonte: 'ANTRA Dossiê 2021 — violência e precariedade trans na pandemia'
     },
     { 
       grupo: 'Jovens negros periféricos', 
       impacto: 'Exclusão digital na educação remota; aumento da violência policial durante lockdown; insegurança alimentar',
-      fonte: 'UNICEF 2021; Fiocruz'
+      fonte: 'UNICEF — Cenário da Exclusão Escolar 2021; Fiocruz/CEE'
     },
     { 
       grupo: 'Trabalhadores negros informais', 
       impacto: 'Impossibilidade de isolamento; 47,4% na informalidade pré-pandemia; primeiros a perder renda, últimos a recuperar',
-      fonte: 'PNAD COVID/IBGE 2020'
+      fonte: 'PNAD COVID/IBGE 2020 — Microdados V0009 (raça/cor); SIDRA Tabela 7533'
     },
     { 
       grupo: 'Indígenas', 
       impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
-      fonte: 'SIVEP-Gripe; SESAI/MS'
+      fonte: 'SIVEP-Gripe → filtro raça indígena × desfecho; SESAI/MS — relatórios COVID aldeias'
     },
     { 
       grupo: 'Quilombolas', 
       impacto: `Comunidades com pouco acesso à rede de água (${narrativaCovid.quilombolaAgua}%) e esgotamento adequado (${narrativaCovid.quilombolaEsgoto}%); dificuldade de higienização`,
-      fonte: 'IBGE Censo 2022; CONAQ'
+      fonte: 'IBGE/SIDRA Tabela 9943 — Censo 2022, infraestrutura quilombola; CONAQ'
     },
   ];
 }
