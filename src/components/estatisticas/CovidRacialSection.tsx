@@ -628,8 +628,17 @@ export function CovidRacialSection() {
               intersecção raça × gênero.
             </p>
             <p>
-              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (62%), agravada pelo 
+              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (43%), agravada pelo 
               subfinanciamento da SESAI e dificuldade de acesso.
+            </p>
+            <p>
+              • Estudo peer-reviewed (Peres et al., 2021) com <strong>228.196 pacientes</strong> comprovou que 
+              pretos/pardos tinham <strong>OR ajustado de 1,15</strong> para mortalidade, mesmo controlando comorbidades. 
+              Região Norte: OR=2,76; analfabetos: OR=1,77.
+            </p>
+            <p>
+              • Pretos/pardos foram ventilados <strong>fora da UTI</strong> em 17% dos casos (vs 11% brancos), 
+              evidenciando desigualdade no acesso a leitos de terapia intensiva.
             </p>
             <p>
               • A recuperação pós-pandemia é <strong>desigual</strong>: negros foram os últimos a recuperar emprego 
@@ -640,8 +649,9 @@ export function CovidRacialSection() {
             fontes={[
               ...FONTE_RACA_SAUDE,
               ...FONTE_PNAD_COVID,
+              ...FONTE_PERES_ETAL,
             ]} 
-            documentos={['CERD 2022 §24-25', 'RG 25']} 
+            documentos={['CERD 2022 §24-25', 'RG 25', 'ICERD Art. 5(e)(iv)']} 
             compact 
           />
         </CardContent>
