@@ -232,7 +232,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
       <CardContent className="pt-3">
         {marcos && <MarcosTable marcos={marcos} />}
         {!marcos && hasSeries && <SeriesChart dados={ind.dados} />}
-        {!marcos && !hasSeries && !isPending && <SnapshotTable dados={ind.dados} label={ind.nome} />}
+        {!marcos && !hasSeries && !isPending && <SnapshotTable dados={ind.dados} />}
         {isPending && (
           <div className="text-center py-4 text-muted-foreground text-sm">
             <AlertTriangle className="w-5 h-5 mx-auto mb-2 text-chart-4" />
