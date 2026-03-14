@@ -1341,7 +1341,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '46,3%', '54,9%', '59,6%', '62,0%', '64,2%', '65,6%']
       ]
     },
-    notas: 'Aumento consistente na formalização e contribuição previdenciária.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Aumento consistente na formalização e contribuição previdenciária.',
     tendencia: 'crescente'
   },
   {
