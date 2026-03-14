@@ -528,7 +528,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['65+ anos', '34,4%', '30,8%', '25,7%', '18,6%', '15,8%', '14,9%']
       ]
     },
-    notas: 'Queda consistente do analfabetismo, especialmente entre jovens.',
+    notas: 'PNAD Contínua Educação (anual, suplemento do 2º trimestre). Queda consistente do analfabetismo, especialmente entre jovens.',
     tendencia: 'decrescente'
   },
   {
