@@ -393,7 +393,7 @@ export function AdmPublicaSection() {
                   <li>Primeira vez que a MUNIC investiga o bloco de Igualdade Racial em seus mais de 20 anos de existência</li>
                   <li>A política de igualdade racial é recente na maioria dos municípios</li>
                   <li>"Os números são modestos da existência de estruturas" — Vânia Pacheco (IBGE)</li>
-                  <li>SINAPIR registra 255 municípios aderidos (4,6% do total de 5.570)</li>
+                  <li>SINAPIR registra {sinapirData.municipiosAderidos} municípios aderidos ({sinapirData.coberturaPercentualMunicipios}% do total de 5.570)</li>
                 </ul>
               </div>
             </div>
