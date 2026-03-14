@@ -150,7 +150,10 @@ export function DocumentReportCards() {
               variant="outline"
               className="gap-2" 
               onClick={() => {
-                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats);
+                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
+                  segurancaPublica: mirror.segurancaPublica,
+                  ccTablesFromBD: mirror.ccTablesFromBD,
+                });
                 downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
               }}
             >
