@@ -2600,7 +2600,7 @@ export const CommonCoreTab = () => {
                 As 77 tabelas seguem a estrutura do documento HRI/CORE/BRA/2020, atualizadas com dados oficiais 
                 do IBGE/SIDRA, Ministério da Saúde (DataSUS), MEC/INEP, MDS/SUAS, FBSP, TSE e outras fontes 
                 governamentais. Os dados mais recentes disponíveis são de 2023/2024, conforme periodicidade de cada pesquisa.
-                Valores marcados com (*) são projeções ou estimativas.
+                Valores marcados como 'N/D' indicam dados pendentes de publicação oficial ou verificação humana. Tabelas com cruzamento indireto (🔀) são classificadas como Nível B e requerem validação.
               </p>
             </div>
           </div>
