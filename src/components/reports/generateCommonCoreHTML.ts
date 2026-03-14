@@ -119,6 +119,10 @@ export function generateCommonCoreHTML(
   const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
   const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
 
+  // Local aliases for SSoT fallback
+  const dadosDemograficos = hcDemo;
+  const povosTradicionais = hcPovos;
+
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
 
