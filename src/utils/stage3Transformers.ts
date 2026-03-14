@@ -16,6 +16,7 @@ import {
   tabelasSistemaPolitico,
   type CommonCoreTable,
 } from '@/components/estatisticas/CommonCoreTab';
+import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
 
 type DbRecord = {
   nome: string;
