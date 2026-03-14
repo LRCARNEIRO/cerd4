@@ -938,11 +938,10 @@ export const chefiaFamiliarRacaGenero = {
     { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
     { nome: 'Censo 2022/SIDRA 10181 — Homens chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10181' },
     { nome: 'Censo 2022/SIDRA 10182 — Homens negros chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10182' },
-    { nome: 'II VIGISAN 2022 — Inseg. Alimentar (Olhe para a Fome)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
-    { nome: 'II VIGISAN 2022 — Mirror FAO', url: 'https://www.fao.org/family-farming/detail/en/c/1601189/' },
-    { nome: 'II VIGISAN 2022 — Mirror LUPPA', url: 'https://luppa.comidadoamanha.org/biblioteca/segundo-vigisan-inseguranca-alimentar-covid9-brasil-2022/' },
+    { nome: 'II VIGISAN 2022 — Recorte Raça/Gênero (Fiocruz/Rede PENSSAN)', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
+    { nome: 'Rede PENSSAN — Olhe para a Fome', url: 'https://pesquisassan.net.br/' },
   ],
-  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor do responsável. IA/Fome: II VIGISAN 2022 (⏳ PDF original com acesso instável — verificar via mirrors FAO/LUPPA).',
+  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor. IA/Fome: II VIGISAN 2022 — recorte raça/gênero publicado pela Fiocruz/Rede PENSSAN (jun/2023).',
 };
 
 // EDUCAÇÃO: Raça × Gênero
