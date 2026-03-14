@@ -237,6 +237,7 @@ export const tabelasDemograficas: CommonCoreTable[] = [
         ['% 60+ anos', '11,7%', '13,0%', '14,3%', '15,6%', '16,8%']
       ]
     },
+    notas: '⚠️ Dados de razão de dependência calculados a partir de PNAD Contínua trimestral (Tabela 7109) — valores anuais são médias dos 4 trimestres. Valores arredondados a 1 casa decimal conforme fonte.',
     tendencia: 'crescente'
   },
   {
