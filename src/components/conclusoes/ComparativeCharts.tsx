@@ -425,6 +425,7 @@ export function ViolenciaInterseccionalChart() {
 
 // ============== TABELA COMPARATIVA SÍNTESE ==============
 export function TabelaSinteseComparativa() {
+  const { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, feminicidioSerie } = useMirrorData();
   const dado2018Seg = segurancaPublica[0];
   const dado2024Seg = segurancaPublica[segurancaPublica.length - 1];
   const dado2018Edu = educacaoSerieHistorica[0];
