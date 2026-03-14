@@ -8,22 +8,31 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   LineChart, Line, Legend, PieChart, Pie, Cell 
 } from 'recharts';
-import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Building2, Landmark, MapPin, Layers, Info, AlertTriangle, Wifi, WifiOff, RefreshCw, Database, HardDrive } from 'lucide-react';
 import { 
-  dadosDemograficos, 
-  evolucaoComposicaoRacial, 
-  indicadoresSocioeconomicos,
   fonteDados 
 } from './StatisticsData';
 import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 import { useSidraRenda } from '@/hooks/useSidraRenda';
+import { useDadosGeraisBD } from '@/hooks/useDadosGeraisBD';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function DadosGeraisTab() {
   const { data: sidraData, isLoading: sidraLoading, error: sidraError, refetch: refetchSidra } = useSidraDesemprego();
   const { data: sidraRendaData, isLoading: rendaLoading, error: rendaError, refetch: refetchRenda } = useSidraRenda();
+  
+  // SSoT: BD com fallback para hardcoded
+  const { 
+    dadosDemograficos, 
+    evolucaoComposicaoRacial, 
+    fonteDemografia, 
+    fonteEvolucao, 
+    paragrafos, 
+    artigosConvencao, 
+    usandoBD 
+  } = useDadosGeraisBD();
 
   // ═══════════════════════════════════════════════════════════════
   // REGRA: Dados coletados via API SIDRA são a Fonte Única de Verdade.
@@ -79,6 +88,27 @@ export function DadosGeraisTab() {
 
   return (
     <div className="space-y-6">
+      {/* SSoT Badge */}
+      {usandoBD && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+          <Database className="w-4 h-4 text-primary" />
+          <span className="text-xs text-primary font-medium">
+            SSoT ativo — Dados demográficos consumidos do banco de dados
+            {paragrafos && <Badge variant="outline" className="ml-2 text-[10px]">CERD {paragrafos}</Badge>}
+            {artigosConvencao.length > 0 && artigosConvencao.map(a => (
+              <Badge key={a} variant="outline" className="ml-1 text-[10px]">{a}</Badge>
+            ))}
+          </span>
+        </div>
+      )}
+      {!usandoBD && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-muted border border-border">
+          <HardDrive className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">
+            Fallback ativo — Dados demográficos do arquivo estático (espelhe para BD para ativar SSoT)
+          </span>
+        </div>
+      )}
       {/* Cards de resumo demográfico */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-primary">
