@@ -448,9 +448,9 @@ export function GruposFocaisTab() {
 
       <Tabs defaultValue="serie-temporal" className="w-full">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
-          <TabsTrigger value="serie-temporal" className="gap-1">📈 Série Temporal <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ SSoT</Badge></TabsTrigger>
-          <TabsTrigger value="territoriais" className="gap-1">Direitos Territoriais <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ Auditado</Badge></TabsTrigger>
-          <TabsTrigger value="vulnerabilidade" className="gap-1">Indicadores de Vulnerabilidade <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ Auditado</Badge></TabsTrigger>
+          <TabsTrigger value="serie-temporal" className="gap-1">📈 Série Temporal</TabsTrigger>
+          <TabsTrigger value="territoriais" className="gap-1">Direitos Territoriais</TabsTrigger>
+          <TabsTrigger value="vulnerabilidade" className="gap-1">Indicadores de Vulnerabilidade</TabsTrigger>
           <TabsTrigger value="lacunas">Lacunas por Grupo ({lacunas?.length || 0})</TabsTrigger>
         </TabsList>
 
