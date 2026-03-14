@@ -6,11 +6,7 @@ import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, 
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
-import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais,
-  dadosDemograficos
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
