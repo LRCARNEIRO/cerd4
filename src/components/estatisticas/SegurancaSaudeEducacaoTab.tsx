@@ -3,14 +3,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar 
 } from 'recharts';
-import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink } from 'lucide-react';
-import { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, fonteDados, atlasViolencia2025, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia, evasaoEscolarSerie, evasaoEscolarFonte } from './StatisticsData';
+import { Shield, Heart, GraduationCap, AlertTriangle, FileText, ExternalLink, Database, HardDrive } from 'lucide-react';
+import { fonteDados, mortalidadeInfantilMetodologia, mortalidadeMaternaMetodologia, evasaoEscolarFonte } from './StatisticsData';
 import { narrativaSeguranca, fmt } from '@/utils/narrativeHelpers';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 export function SegurancaSaudeEducacaoTab() {
+  const {
+    segurancaPublica, fonteSeguranca, paragrafosSeguranca,
+    educacaoSerieHistorica, fonteEducacao, paragrafosEducacao,
+    saudeSerieHistorica, fonteSaude, paragrafosSaude,
+    atlasViolencia2025, fonteAtlas,
+    evasaoEscolarSerie, fonteEvasao,
+    usandoBD,
+  } = useMirrorData();
   return (
     <div className="space-y-6">
       {/* Segurança Pública */}

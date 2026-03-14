@@ -4,16 +4,14 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   BarChart, Bar
 } from 'recharts';
-import { Layers, Filter, FileText, ExternalLink, AlertTriangle, ShieldAlert, Home, Utensils } from 'lucide-react';
+import { Layers, Filter, FileText, ExternalLink, AlertTriangle, ShieldAlert, Home, Utensils, Database, HardDrive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
-  evolucaoDesigualdade, 
-  interseccionalidadeTrabalho,
   interseccionalidadeTrabalhoFontes,
-  chefiaFamiliarRacaGenero
 } from './StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 // Dados de vulnerabilidade multidimensional — DERIVADOS de chefiaFamiliarRacaGenero (single source of truth)
 // Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022 + SIS/IBGE 2024

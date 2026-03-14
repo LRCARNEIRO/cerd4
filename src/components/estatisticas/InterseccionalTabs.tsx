@@ -5,35 +5,24 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, LineChart, Line
 } from 'recharts';
 import { 
-  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope, Loader2
+  Heart, GraduationCap, Users, AlertTriangle, Baby, Briefcase, Rainbow, Accessibility, FileText, ExternalLink, TrendingUp, Info, Home, Stethoscope, Loader2, Database, HardDrive
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
-import { atlasViolencia2025 } from './StatisticsData';
+import { 
+  lacunasDocumentadas,
+  fonteDados,
+  trabalhoRacaGeneroFontes,
+  educacaoRacaGeneroFontes,
+} from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import {
   narrativaViolencia, narrativaTrabalho, narrativaChefia,
   narrativaSaudeMaterna, narrativaEducacao, narrativaLGBTQIA,
   fmt,
 } from '@/utils/narrativeHelpers';
-import { 
-  violenciaInterseccional, 
-  lacunasDocumentadas,
-  lgbtqiaPorRaca,
-  serieAntraTrans,
-  deficienciaPorRaca,
-  disparidadesPcd1459,
-  classePorRaca,
-  povosTradicionais,
-  fonteDados,
-  trabalhoRacaGenero,
-  trabalhoRacaGeneroFontes,
-  chefiaFamiliarRacaGenero,
-  educacaoRacaGenero,
-  educacaoRacaGeneroFontes,
-  saudeMaternaRaca,
-} from './StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 export function RacaGeneroTab() {
   const formatCurrency = (value: number) => {
