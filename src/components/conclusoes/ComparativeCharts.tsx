@@ -521,6 +521,7 @@ export function TabelaSinteseComparativa() {
 
 // ============== CLASSE POR RAÇA ==============
 export function ClassePorRacaChart() {
+  const { classePorRaca } = useMirrorData();
   return (
     <Card>
       <CardHeader className="pb-2">
