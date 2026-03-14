@@ -71,7 +71,6 @@ export function DocumentReportCards() {
         segurancaPublica: mirror.segurancaPublica,
         feminicidioSerie: mirror.feminicidioSerie,
         educacaoSerieHistorica: mirror.educacaoSerieHistorica,
-        indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
       });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
