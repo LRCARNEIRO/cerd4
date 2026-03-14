@@ -806,10 +806,15 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
                       variant="outline"
                       className={cn(
                         "text-xs",
-                        parseFloat(variation) < 0 && indicador.categoria !== 'Segurança Pública' && "text-destructive border-destructive",
-                        parseFloat(variation) > 0 && indicador.categoria !== 'Segurança Pública' && "text-success border-success",
-                        parseFloat(variation) < 0 && indicador.categoria === 'Segurança Pública' && "text-success border-success",
-                        parseFloat(variation) > 0 && indicador.categoria === 'Segurança Pública' && "text-destructive border-destructive",
+                        (() => {
+                          const lowerBetter = isLowerBetter(indicador.nome, indicador.categoria);
+                          const val = parseFloat(variation);
+                          if (lowerBetter) {
+                            return val < 0 ? "text-success border-success" : val > 0 ? "text-destructive border-destructive" : "";
+                          } else {
+                            return val > 0 ? "text-success border-success" : val < 0 ? "text-destructive border-destructive" : "";
+                          }
+                        })()
                       )}
                     >
                       {parseFloat(variation) > 0 ? '+' : ''}{variation}%
