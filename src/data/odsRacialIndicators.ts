@@ -1,3 +1,10 @@
+// ╔══════════════════════════════════════════════════════════════════════╗
+// ║ POLÍTICA ESPELHO SEGURO — NÃO DELETAR ESTE ARQUIVO                ║
+// ║ Este arquivo é o backup estático ("espelho") dos indicadores ODS   ║
+// ║ Racial. O banco de dados (indicadores_interseccionais) é a fonte   ║
+// ║ primária para consumo, mas este arquivo JAMAIS deve ser removido.  ║
+// ║ Ele serve como fonte de restauração caso o banco perca dados.      ║
+// ╚══════════════════════════════════════════════════════════════════════╝
 // Catálogo completo de indicadores da Plataforma ODS Racial (ODSR/UFPB)
 // Fonte: https://odsr.lema.ufpb.br/tabelas?region=brasil-br
 // Dados extraídos das planilhas oficiais 2018-2024 — NENHUM DADO INVENTADO OU PROJETADO
