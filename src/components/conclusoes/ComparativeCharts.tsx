@@ -5,11 +5,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell
 } from 'recharts';
-import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, evolucaoDesigualdade,
-  violenciaInterseccional, classePorRaca
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 const COLORS = {
   destructive: 'hsl(var(--destructive))',
