@@ -344,6 +344,7 @@ export function RendaComparativaChart() {
 
 // ============== EVOLUÇÃO DA DESIGUALDADE ==============
 export function DesigualdadeEvolucaoChart() {
+  const { evolucaoDesigualdade } = useMirrorData();
   return (
     <Card>
       <CardHeader className="pb-2">
