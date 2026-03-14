@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ExternalLink, AlertTriangle, TrendingUp, TrendingDown, Minus, FileText, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, AlertTriangle, TrendingUp, TrendingDown, Minus, FileText, CheckCircle2, PlusCircle, Layers } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
@@ -35,7 +33,7 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
     'presos_negros', 'pct_mulheres_negras_presas',
     'processos_pendentes_acumulados',
   ]);
-  
+
   const seriesKeys: string[] = [];
   const allYears = new Set<string>();
 
@@ -84,36 +82,62 @@ function extractTimeSeries(dados: Record<string, any>): { keys: string[]; years:
   return { keys: flatKeys.length > 0 ? flatKeys : seriesKeys, years: sortedYears, chartData };
 }
 
-function SeriesChart({ dados }: { dados: Record<string, any> }) {
+/** Renders chart + always renders table below it */
+function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
   const result = extractTimeSeries(dados);
   if (!result || result.chartData.length < 2) return null;
 
   return (
-    <div className="h-56 mt-3">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={result.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
-          <YAxis tick={{ fontSize: 11 }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px',
-              fontSize: '12px',
-            }}
-            formatter={(value: number, name: string) => [
-              typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
-              name.replace(/_/g, ' '),
-            ]}
-          />
-          <Legend wrapperStyle={{ fontSize: '11px' }} formatter={v => v.replace(/_/g, ' ')} />
-          {result.keys.map((key, idx) => (
-            <Line key={key} type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
+    <>
+      <div className="h-56 mt-3">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={result.chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="ano" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                fontSize: '12px',
+              }}
+              formatter={(value: number, name: string) => [
+                typeof value === 'number' ? value.toLocaleString('pt-BR') : value,
+                name.replace(/_/g, ' '),
+              ]}
+            />
+            <Legend wrapperStyle={{ fontSize: '11px' }} formatter={v => v.replace(/_/g, ' ')} />
+            {result.keys.map((key, idx) => (
+              <Line key={key} type="monotone" dataKey={key} stroke={COLORS[idx % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Data table below chart */}
+      <Table className="mt-3">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-xs">Ano</TableHead>
+            {result.keys.map(k => (
+              <TableHead key={k} className="text-xs text-right">{k.replace(/_/g, ' ')}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {result.chartData.map((row, i) => (
+            <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
+              <TableCell className="text-xs font-bold">{row.ano}</TableCell>
+              {result.keys.map(k => (
+                <TableCell key={k} className="text-xs text-right tabular-nums font-semibold">
+                  {row[k] != null ? (typeof row[k] === 'number' ? row[k].toLocaleString('pt-BR') : row[k]) : '—'}
+                </TableCell>
+              ))}
+            </TableRow>
           ))}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+        </TableBody>
+      </Table>
+    </>
   );
 }
 
@@ -231,7 +255,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
       </CardHeader>
       <CardContent className="pt-3">
         {marcos && <MarcosTable marcos={marcos} />}
-        {!marcos && hasSeries && <SeriesChart dados={ind.dados} />}
+        {!marcos && hasSeries && <SeriesChartWithTable dados={ind.dados} />}
         {!marcos && !hasSeries && !isPending && <SnapshotTable dados={ind.dados} />}
         {isPending && (
           <div className="text-center py-4 text-muted-foreground text-sm">
@@ -254,15 +278,45 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
   );
 }
 
-export function ComplementoCerd3Tab() {
-  const [openArea, setOpenArea] = useState<string | null>(null);
+function AreaSection({ area, indicators }: { area: string; indicators: ComplementoIndicador[] }) {
+  return (
+    <Card>
+      <CardHeader className="py-3 border-b border-border/30">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base">{areaLabels[area] || area} ({indicators.length})</CardTitle>
+          <div className="flex items-center gap-2">
+            {indicators.some(i => (i.dados as any).pendente_extracao) && (
+              <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4">
+                ⏳ {indicators.filter(i => (i.dados as any).pendente_extracao).length} pendente(s)
+              </Badge>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 pt-4">
+        {indicators.map((ind, idx) => (
+          <IndicadorCard key={idx} ind={ind} />
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
 
+function groupByArea(indicators: ComplementoIndicador[]): Record<string, ComplementoIndicador[]> {
   const byArea: Record<string, ComplementoIndicador[]> = {};
-  for (const ind of complementoCerd3Indicators) {
-    const area = ind.categoria;
-    if (!byArea[area]) byArea[area] = [];
-    byArea[area].push(ind);
+  for (const ind of indicators) {
+    if (!byArea[ind.categoria]) byArea[ind.categoria] = [];
+    byArea[ind.categoria].push(ind);
   }
+  return byArea;
+}
+
+export function ComplementoCerd3Tab() {
+  const complementares = complementoCerd3Indicators.filter(i => i.tipo === 'complementar');
+  const novos = complementoCerd3Indicators.filter(i => i.tipo === 'novo');
+
+  const complementaresByArea = groupByArea(complementares);
+  const novosByArea = groupByArea(novos);
 
   return (
     <div className="space-y-6">
@@ -274,67 +328,60 @@ export function ComplementoCerd3Tab() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Complemento CERD III — Indicadores Exclusivos</h3>
               <p className="text-sm text-muted-foreground">
-                Contém <strong>{COMPLEMENTO_CERD3_STATS.total} indicadores</strong> que <strong>NÃO existem</strong> nas 
-                abas temáticas estáticas, preenchendo lacunas dos relatórios CERD III e IV. Dados espelhados no BD (Espelho Seguro).
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Arquivo-fonte: <code className="bg-muted px-1 rounded">ComplementoCerd3Data.ts</code>
+                Contém <strong>{COMPLEMENTO_CERD3_STATS.total} indicadores</strong> que <strong>NÃO existem</strong> nas
+                abas temáticas estáticas, divididos em duas subseções:
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
+                <Badge className="bg-primary/10 text-primary border-primary/30" variant="outline">
+                  <Layers className="w-3 h-3 mr-1" />
+                  {complementares.length} Complementares — cobertura 100% CERD III
+                </Badge>
+                <Badge className="bg-chart-2/10 text-chart-2 border-chart-2/30" variant="outline">
+                  <PlusCircle className="w-3 h-3 mr-1" />
+                  {novos.length} Dados Novos — sugeridos por recomendações
+                </Badge>
                 <Badge className="bg-success/10 text-success border-success/30" variant="outline">
                   <CheckCircle2 className="w-3 h-3 mr-1" />
-                  {COMPLEMENTO_CERD3_STATS.verificados} com dados verificados
+                  {COMPLEMENTO_CERD3_STATS.verificados} verificados
                 </Badge>
                 {COMPLEMENTO_CERD3_STATS.pendentes > 0 && (
                   <Badge className="bg-chart-4/10 text-chart-4 border-chart-4/30" variant="outline">
                     <AlertTriangle className="w-3 h-3 mr-1" />
-                    {COMPLEMENTO_CERD3_STATS.pendentes} pendentes de extração
+                    {COMPLEMENTO_CERD3_STATS.pendentes} pendentes
                   </Badge>
                 )}
-                <Badge variant="outline">Lacunas CERD III + Dados Novos</Badge>
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Arquivo-fonte: <code className="bg-muted px-1 rounded">ComplementoCerd3Data.ts</code>
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* By area — collapsible */}
-      {Object.entries(byArea).map(([area, indicators]) => (
-        <Collapsible
-          key={area}
-          open={openArea === area}
-          onOpenChange={() => setOpenArea(openArea === area ? null : area)}
-        >
-          <Card>
-            <CollapsibleTrigger asChild>
-              <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors py-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="text-base">{areaLabels[area] || area} ({indicators.length})</CardTitle>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {indicators.some(i => (i.dados as any).pendente_extracao) && (
-                      <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4">
-                        ⏳ {indicators.filter(i => (i.dados as any).pendente_extracao).length} pendente(s)
-                      </Badge>
-                    )}
-                    <Badge variant="outline" className="text-[10px]">
-                      {openArea === area ? 'Fechar' : 'Expandir'}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="space-y-4 pt-0">
-                {indicators.map((ind, idx) => (
-                  <IndicadorCard key={idx} ind={ind} />
-                ))}
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
-      ))}
+      {/* SUBSEÇÃO 1: Complementares */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <Layers className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-bold text-foreground">Dados Complementares ({complementares.length})</h2>
+          <Badge variant="outline" className="text-[10px]">Preenche lacunas temáticas para cobertura 100% CERD III</Badge>
+        </div>
+        {Object.entries(complementaresByArea).map(([area, indicators]) => (
+          <AreaSection key={area} area={area} indicators={indicators} />
+        ))}
+      </div>
+
+      {/* SUBSEÇÃO 2: Dados Novos */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 px-1">
+          <PlusCircle className="w-5 h-5 text-chart-2" />
+          <h2 className="text-lg font-bold text-foreground">Dados Novos ({novos.length})</h2>
+          <Badge variant="outline" className="text-[10px]">Sugeridos por recomendações CERD / Observações Finais</Badge>
+        </div>
+        {Object.entries(novosByArea).map(([area, indicators]) => (
+          <AreaSection key={area} area={area} indicators={indicators} />
+        ))}
+      </div>
     </div>
   );
 }

@@ -7,19 +7,8 @@
  * Estes dados são espelhados no BD pela MirrorIngestionPanel (Etapa 4).
  * Arquivo-fonte: ComplementoCerd3Data.ts
  * 
- * Categorias:
- *   1. Trabalho (Infantil & Escravo)
- *   2. Cultura e Patrimônio (Intolerância Religiosa)
- *   3. Educação (Indígena, Distorção Idade-Série)
- *   4. Saúde (Indígena, Pré-natal)
- *   5. Judiciário e Justiça Racial (Disque 100 racial, CNJ, STF)
- *   6. Representatividade Política (TSE)
- *   7. Sistema Prisional (SISDEPEN/FBSP)
- *   8. Habitação (Déficit, Favelas, Saneamento, MCMV)
- *   9. Censo 2022 — Dados Raciais Inéditos
- *  10. Terra e Território
- *  11. Migração (Lacuna formal)
- *  12. Doenças Crônicas por Raça
+ * tipo 'complementar' = preenche lacunas das abas temáticas para cobertura 100% CERD III
+ * tipo 'novo' = sugerido por recomendações CERD / Observações Finais
  */
 
 export interface ComplementoIndicador {
@@ -32,6 +21,8 @@ export interface ComplementoIndicador {
   documento_origem: string[];
   tendencia: string;
   dados: Record<string, any>;
+  /** 'complementar' = preenche lacunas das abas temáticas para 100% CERD III; 'novo' = sugerido por recomendações CERD */
+  tipo: 'complementar' | 'novo';
 }
 
 // ===== 1. TRABALHO INFANTIL =====
@@ -43,6 +34,7 @@ export const trabalhoInfantil: ComplementoIndicador = {
   url_fonte: 'https://sidra.ibge.gov.br/tabela/7436',
   artigos_convencao: ['Art.5(e)(i)'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
+  tipo: 'complementar',
   tendencia: 'melhora',
   dados: {
     nota: 'Em 2022, 66,3% das crianças em situação de trabalho infantil eram pretas ou pardas.',
@@ -62,6 +54,7 @@ export const trabalhoEscravo: ComplementoIndicador = {
   url_fonte: 'https://sit.trabalho.gov.br/radar/',
   artigos_convencao: ['Art.5(e)(i)', 'Art.6'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'MTE 2025: 83% dos resgatados são pretos ou pardos. Acumulado histórico: 66% negro.',
@@ -81,6 +74,7 @@ export const intoleranciaReligiosa: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.5', 'Art.7'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban', 'Recomendações Gerais (RGs)'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'Crescimento 382% 2020→2025. Auditado manualmente 12/03/2026.',
@@ -102,6 +96,7 @@ export const educacaoIndigena: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     nota: 'Indígenas em TI: 72,4% alfabetizados vs. 96,5% brancos. Gap de 24,1pp.',
@@ -126,6 +121,7 @@ export const distorcaoIdadeSerie: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/indicadores-educacionais',
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'melhora',
   dados: {
     fundamental: {
@@ -156,6 +152,7 @@ export const saudeIndigena: ComplementoIndicador = {
   url_fonte: 'https://www.primeirainfancia.org.br/',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     nota: 'Razão de 2,44× em 2022. Pico de 3,42× em 2021 (impacto COVID).',
@@ -176,9 +173,10 @@ export const preNatalRaca: ComplementoIndicador = {
   url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
-    nota: 'Gestantes negras têm menor cobertura de 7+ consultas de pré-natal. Dados disponíveis via TabNet/SINASC com filtro raça/cor da mãe. Pendente extração série 2018-2023.',
+    nota: 'Gestantes negras têm menor cobertura de 7+ consultas de pré-natal. Pendente extração série 2018-2023.',
     pendente_extracao: true,
     fonte_extracao: 'TabNet/SINASC — filtro "Consultas pré-natal" × "Raça/Cor da mãe"',
     unidade: '% gestantes com 7+ consultas',
@@ -195,9 +193,10 @@ export const doencasCronicasRaca: ComplementoIndicador = {
   url_fonte: 'https://svs.aids.gov.br/daent/cgdnt/vigitel/',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'estável',
   dados: {
-    nota: 'Doença falciforme tem prevalência significativamente maior na população negra. Dados anuais disponíveis nos relatórios VIGITEL. Pendente extração por raça/cor.',
+    nota: 'Doença falciforme tem prevalência significativamente maior na população negra. Pendente extração por raça/cor.',
     pendente_extracao: true,
     fonte_extracao: 'Relatórios VIGITEL anuais — filtro raça/cor',
     unidade: 'Prevalência (%)',
@@ -214,6 +213,7 @@ export const denunciasDiscriminacaoRacial: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.6', 'Art.4'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'piora',
   dados: {
     nota: 'Crescimento expressivo: de 1.400 violações em 2021 para 3.426 denúncias / 5.200 violações em 2024 (10 meses). Lei 14.532/2023 equiparou injúria racial a racismo.',
@@ -233,9 +233,10 @@ export const denunciasPovosTradicionais: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100',
   artigos_convencao: ['Art.5(d)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'estável',
   dados: {
-    nota: 'Dados disponíveis no Painel ONDH com filtro por grupo vulnerável (indígenas, quilombolas, ciganos). Pendente extração série 2018-2024.',
+    nota: 'Dados disponíveis no Painel ONDH com filtro por grupo vulnerável. Pendente extração série 2018-2024.',
     pendente_extracao: true,
     fonte_extracao: 'Painel ONDH/Dados Abertos Disque 100 — filtro "grupo vulnerável"',
     unidade: 'denúncias',
@@ -252,9 +253,10 @@ export const processosRacismoCnj: ComplementoIndicador = {
   url_fonte: 'https://paineisanalytics.cnj.jus.br/single/?appid=dd3d7742-c558-4f2f-8ab1-a10a2e67c48f',
   artigos_convencao: ['Art.6'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'piora',
   dados: {
-    nota: 'Crescimento acelerado: 4.205 novos processos em 10m de 2024. Total acumulado pendente: 13.440 processos (97,4% na Justiça Estadual). Lei 14.532/2023 ampliou tipificação.',
+    nota: 'Crescimento acelerado: 4.205 novos processos em 10m de 2024. Total acumulado pendente: 13.440 processos (97,4% na Justiça Estadual).',
     processos_novos: { 2024: 4205, 2025: 7000 },
     processos_pendentes_acumulados: { 2025: 13440 },
     pct_justica_estadual: 97.4,
@@ -272,6 +274,7 @@ export const racismoInstitucionalJudiciario: ComplementoIndicador = {
   url_fonte: 'https://www.cnj.jus.br/pesquisas-judiciarias/censo-do-poder-judiciario/',
   artigos_convencao: ['Art.2', 'Art.5(c)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
     nota: 'Magistrados negros: 18,1% (2023) vs 55,5% da população. Cotas ampliadas de 20% para 30% (Resolução CNJ nov/2025).',
@@ -293,6 +296,7 @@ export const jurisprudenciaStf: ComplementoIndicador = {
   url_fonte: 'https://portal.stf.jus.br/jurisprudencia/',
   artigos_convencao: ['Art.2', 'Art.6'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
     marcos: [
@@ -315,6 +319,7 @@ export const candidatosNegros: ComplementoIndicador = {
   url_fonte: 'https://dadosabertos.tse.jus.br/dataset/candidatos-2024',
   artigos_convencao: ['Art.5(c)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
     nota: 'Candidatos negros superaram brancos pela 1ª vez em 2020 e novamente em 2024 (52,7%). Porém, eleitos negros a prefeito são apenas 33%.',
@@ -334,6 +339,7 @@ export const eleitosNegros: ComplementoIndicador = {
   url_fonte: 'https://dadosabertos.tse.jus.br/dataset/resultados-2024',
   artigos_convencao: ['Art.5(c)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
     nota: 'Deputados negros: 30,1% (2022). Prefeitos negros: 33,3% (2024, +1,4pp vs 2020). Vereadores negros: 44,2% (2024). Sub-representação persistente vs 55,5% da população.',
@@ -356,6 +362,7 @@ export const financiamentoEleitoral: ComplementoIndicador = {
   url_fonte: 'https://dadosabertos.tse.jus.br/dataset/prestacao-de-contas-eleitorais-2024',
   artigos_convencao: ['Art.5(c)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'melhora',
   dados: {
     nota: 'STF determinou (ADI 5831) distribuição proporcional de recursos a candidatos negros. Pendente verificação do percentual efetivo.',
@@ -375,6 +382,7 @@ export const sistemaPrisional: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/senappen/pt-br/centrais-de-conteudo/paineis-analise-de-dados',
   artigos_convencao: ['Art.5(a)', 'Art.2'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'piora',
   dados: {
     nota: 'Negros atingiram o maior patamar da série: de 58,4% (2005) para 68,2% (2022). Total 2024: 852 mil presos, ~70% negros.',
@@ -396,6 +404,7 @@ export const deficitHabitacionalRacial: ComplementoIndicador = {
   url_fonte: 'https://fjp.mg.gov.br/deficit-habitacional-no-brasil/',
   artigos_convencao: ['Art.5(e)(iii)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'piora',
   dados: {
     nota: 'Em 2019, 68,7% do déficit habitacional era de pessoas negras. Total 2022: 6,2M domicílios.',
@@ -415,6 +424,7 @@ export const favelasAglomerados: ComplementoIndicador = {
   url_fonte: 'https://www.ibge.gov.br/geociencias/organizacao-do-territorio/tipologias-do-territorio/15788-aglomerados-subnormais.html',
   artigos_convencao: ['Art.5(e)(iii)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'piora',
   dados: {
     nota: '69% dos moradores de favelas são negros (Censo 2022), contra 55,5% da população total — sobre-representação de 13,5pp. 16,4M pessoas.',
@@ -434,6 +444,7 @@ export const saneamentoRacial: ComplementoIndicador = {
   url_fonte: 'https://sidra.ibge.gov.br/Tabela/9605',
   artigos_convencao: ['Art.5(e)(iii)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'novo',
   tendencia: 'estável',
   dados: {
     nota: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada.',
@@ -455,6 +466,7 @@ export const quilombolasCenso: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.5', 'Art.2'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     total_brasil: { 2022: 1327193 },
@@ -478,6 +490,7 @@ export const ciganosCenso: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.1', 'Art.5'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     total_ciganos: { 2022: 41738 },
@@ -499,6 +512,7 @@ export const indigenasTisCenso: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.5', 'Art.2'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     total_indigenas: { 2022: 1694836 },
@@ -520,6 +534,7 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   url_fonte: 'https://censo2022.ibge.gov.br/panorama/',
   artigos_convencao: ['Art.5', 'Art.7'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'sub-registro',
   dados: {
     total_matriz_africana: { 2022: 1465949 },
@@ -541,6 +556,7 @@ export const migracaoInternacional: ComplementoIndicador = {
   url_fonte: 'https://portaldeimigracao.mj.gov.br/pt/dados',
   artigos_convencao: ['Art. 5(d)(ii)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     lacuna_desagregacao_racial: true,
@@ -558,6 +574,7 @@ export const demarcacaoTerras: ComplementoIndicador = {
   url_fonte: 'https://terrasindigenas.org.br/',
   artigos_convencao: ['Art.5(d)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'estável',
   dados: {
     TIs_homologadas_total: 487,
@@ -577,6 +594,7 @@ export const titulacaoQuilombola: ComplementoIndicador = {
   url_fonte: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
   artigos_convencao: ['Art.5(d)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
   tendencia: 'piora',
   dados: {
     titulos_emitidos_total: 54,
