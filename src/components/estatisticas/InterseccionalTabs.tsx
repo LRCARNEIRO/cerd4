@@ -794,6 +794,7 @@ export function DeficienciaTab() {
 }
 
 export function JuventudeTab() {
+  const { atlasViolencia2025 } = useMirrorData();
   const { data: juventudeNegra = [], isLoading: isLoadingJuventude } = useJuventudeAuditados();
   return (
     <div className="space-y-6">
