@@ -264,15 +264,15 @@ export function buildCovidRacialIndicators(): DbRecord[] {
   all.push(rec(
     'Mortalidade materna COVID por raça (2019-2022)',
     'covid_racial', 'mortalidade_materna',
-    'DataSUS/SIM + IEPS Boletim Çarê',
-    'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    'IEPS Boletim Çarê Jul/2025',
+    'https://ieps.org.br/boletim-care-ieps-07-2025/',
     ['Art. 2', 'Art. 5'],
     {
       series: {
-        '2019': { negra: 60.2, branca: 31.8, razao: 1.89 },
-        '2020': { negra: 72.5, branca: 38.2, razao: 1.90 },
-        '2021': { negra: 85.2, branca: 42.5, razao: 2.00 },
-        '2022': { negra: 58.5, branca: 30.2, razao: 1.94 },
+        '2019': { preta: 107.8, parda: 55.2, branca: 46.2 },
+        '2020': { preta: 131.5, parda: 71.8, branca: 68.5 },
+        '2021': { preta: 179.4, parda: 94.4, branca: 103.8 },
+        '2022': { preta: 105.2, parda: 53.8, branca: 44.6 },
       },
       paragrafos_cerd: '§29-30',
     },

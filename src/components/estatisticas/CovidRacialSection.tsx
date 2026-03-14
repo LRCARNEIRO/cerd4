@@ -651,16 +651,16 @@ export function CovidRacialSection() {
               emprego, renda, moradia e acesso a serviços.
             </p>
             <p>
-              • O <strong>excesso de mortalidade de 57%</strong> entre negros demonstra que o racismo estrutural é um 
+              • O <strong>excesso de mortalidade de 57%</strong> entre negros durante a pandemia demonstra que o racismo estrutural é um 
               determinante social da saúde com consequências letais.
             </p>
             <p>
-              • A <strong>mortalidade materna negra</strong> disparou 42% entre 2019 e 2021, evidenciando a 
-              intersecção raça × gênero.
+              • A <strong>RMM de mães pretas</strong> atingiu 179,4/100mil NV em 2021 (pico pandêmico), 
+              evidenciando a intersecção raça × gênero (IEPS Boletim Çarê).
             </p>
             <p>
-              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (43%), agravada pelo 
-              subfinanciamento da SESAI e dificuldade de acesso.
+              • <strong>Pretos</strong> tiveram a maior letalidade hospitalar (37,9%), seguidos por indígenas (34,7%) e pardos (34,0%) — 
+              dados de Moreira et al. (2023).
             </p>
             <p>
               • Estudo peer-reviewed (Peres et al., 2021) com <strong>228.196 pacientes</strong> comprovou que 
