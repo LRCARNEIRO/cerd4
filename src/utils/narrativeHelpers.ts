@@ -128,8 +128,8 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
     totalHomensNegros: chefiaFamiliarRacaGenero.homensNegrosChefesMonoparentais,
     cadUnicoNegras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
     cadUnicoBrancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
-    domiciliosIA: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
-    domiciliosFome: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
+    fomeMulheresNegras: chefiaFamiliarRacaGenero.fomeMulheresNegras,
+    fomeCriancas: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
     get texto() {
       const cadUnicoTexto = this.cadUnicoNegras != null && this.cadUnicoBrancas != null
         ? `, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas)`
