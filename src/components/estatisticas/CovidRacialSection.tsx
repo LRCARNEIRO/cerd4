@@ -16,33 +16,42 @@ import { useNarrativeData } from '@/hooks/useNarrativeData';
 // Fontes agrupadas por tema
 // =============================================
 const FONTE_RACA_SAUDE = [
-  { nome: 'Raça e Saúde Pública (SIM/DataSUS)', url: 'https://www.racaesaude.org.br/' },
-  { nome: 'SciELO — A cor da morte na pandemia', url: 'https://www.scielosp.org/article/physis/2024.v34/e34053/' },
+  { nome: 'Raça e Saúde Pública — Excesso de mortalidade por raça/cor (SIM/DataSUS, 2020-2021)', url: 'https://www.racaesaude.org.br/' },
+  { nome: 'SciELO — "A cor da morte": mortalidade por causas naturais desagregada por raça (Physis 2024, v.34, e34053)', url: 'https://www.scielosp.org/article/physis/2024.v34/e34053/' },
+  { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Geral → Variável: raça/cor; Período: 2020-2021', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
 ];
 
 const FONTE_SIVEP_NOIS = [
-  { nome: 'SIVEP-Gripe / NOIS PUC-Rio', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'SIVEP-Gripe (BigData COVID Fiocruz) — Internações e óbitos por SRAG, filtro raça/cor', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://sites.google.com/view/naborfrancisco/publica%C3%A7%C3%B5es' },
 ];
 
 const FONTE_DATASUS_SIM = [
-  { nome: 'DataSUS/SIM — Mortalidade Materna', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-  { nome: 'IEPS — Mortalidade Materna por Raça (2025)', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
+  { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+  { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+  { nome: 'IEPS Boletim Çarê (Jul/2025) — Mortalidade Materna por Raça: série 2010-2023, taxas pretas 108,6; pardas 56,6; brancas 46,9 /100mil NV', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
 ];
 
 const FONTE_PNAD_COVID = [
-  { nome: 'PNAD COVID-19 (IBGE, 2020)', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
-  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados: perda de emprego, renda, acesso a serviços por raça/cor', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
+  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial e COVID-19 (PDF)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'IBGE/SIDRA — Tabela 7533: PNAD Contínua Trimestral, rendimento por cor/raça (filtro: informalidade pré-pandemia)', url: 'https://sidra.ibge.gov.br/tabela/7533' },
+  { nome: 'POF/Rede PENSSAN (2022) — Insegurança Alimentar por raça/cor', url: 'https://pesquisassan.net.br/olheparaafome/' },
 ];
 
 const FONTE_VACINACAO = [
-  { nome: 'SI-PNI/DataSUS — Cobertura vacinal', url: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/' },
-  { nome: 'Fiocruz/EPSJV — Vacinação e raça', url: 'https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil' },
+  { nome: 'SI-PNI/DataSUS — TabNet → Imunizações → COVID-19 Doses Aplicadas → Variável: raça/cor (⚠️ ~30% sem raça preenchida)', url: 'http://tabnet.datasus.gov.br/cgi/dhdat.exe?bd_pni/cpnibr.def' },
+  { nome: 'Fiocruz/EPSJV — "Negros são os que mais morrem e menos recebem vacinas" (podcast + dados)', url: 'https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil' },
+  { nome: 'IBGE/SIDRA — Tabela 9605: População por raça/cor (Censo 2022, denominador para cobertura vacinal)', url: 'https://sidra.ibge.gov.br/tabela/9605' },
 ];
 
 const FONTE_INTERSECCIONAL = [
-  { nome: 'IPEA — Igualdade Racial e COVID-19', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
-  { nome: 'SIVEP-Gripe / NOIS PUC-Rio', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
-  { nome: 'PNAD COVID-19 (IBGE)', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
+  { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial (impactos interseccionais COVID)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça × idade × sexo', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
+  { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados interseccionais raça × gênero × classe', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
+  { nome: 'IBGE/SIDRA — Tabela 9943: Quilombolas, infraestrutura por acesso à água e esgoto (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9943' },
+  { nome: 'ANTRA — Dossiê 2021: violência e precariedade LGBTQIA+ durante pandemia', url: 'https://antrabrasil.org/assassinatos/' },
+  { nome: 'UNICEF Brasil — Cenário da Exclusão Escolar (2021): jovens negros periféricos na pandemia', url: 'https://www.unicef.org/brazil/relatorios/cenario-da-exclusao-escolar-no-brasil' },
 ];
 
 // Excesso de mortalidade por raça/cor - 2020-2021
