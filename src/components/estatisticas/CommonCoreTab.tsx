@@ -1007,7 +1007,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Óbitos maternos por 100.000 nascidos vivos',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2001-2011',
     periodoAtualizado: '2001-2022',
     statusAtualizacao: 'atualizado',
