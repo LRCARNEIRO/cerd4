@@ -238,12 +238,16 @@ export function RacaGeneroTab() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                <span className="text-sm">Domicílios femininos c/ insegurança alimentar</span>
-                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.domiciliosFemininosIA}%</span>
+                <span className="text-sm">Fome em lares de mulheres negras</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeMulheresNegras}%</span>
               </div>
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                <span className="text-sm">Destes, em situação de fome</span>
-                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.domiciliosFemininosFome}%</span>
+                <span className="text-sm">Fome em lares c/ crianças &lt;10 (mulheres negras)</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}%</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
+                <span className="text-sm">IA mod.+grave c/ 8+ anos estudo (mulheres negras)</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}%</span>
               </div>
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
                 <span className="text-sm">Mulheres negras no CadÚnico</span>
