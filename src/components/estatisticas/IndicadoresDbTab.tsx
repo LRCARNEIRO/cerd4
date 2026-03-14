@@ -591,7 +591,7 @@ function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }
 function extractKeyValues(dados: Record<string, any>): Array<{ label: string; value: string; sublabel?: string }> {
   const results: Array<{ label: string; value: string; sublabel?: string }> = [];
   for (const [key, val] of Object.entries(dados)) {
-    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url') || key === 'slug' || key === 'formato' || key === 'regra_ouro') continue;
+    if (key === 'unidade' || key === 'nota' || key === 'serie' || key.startsWith('nota_') || key.startsWith('fonte_') || key.endsWith('_url') || key === 'slug' || key === 'formato' || key === 'regra_ouro' || key === 'deep_links' || key === 'lacuna_racial') continue;
     if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
       for (const [subKey, subVal] of Object.entries(val as Record<string, any>)) {
         if (subVal === null || subVal === undefined || String(subVal).includes('N/D')) continue;
