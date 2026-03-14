@@ -118,54 +118,58 @@ const vacinacaoRaca = [
   { grupo: 'Indígenas', cobertura1Dose: 78.5, coberturaCompleta: 68.2 },
 ];
 
-// Interseccionalidade COVID
-const interseccionalidadeCovid = [
-  { 
-    grupo: 'Mulheres negras', 
-    impacto: 'Aumento de 42% na mortalidade materna (2019→2021); sobrecarga de trabalho de cuidado; maior perda de renda',
-    fonte: 'DataSUS/SIM; IPEA 2021'
-  },
-  { 
-    grupo: 'Idosos negros (60+)', 
-    impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
-    fonte: 'SIVEP-Gripe; NOIS/PUC-Rio'
-  },
-  { 
-    grupo: 'PcD negros', 
-    impacto: 'Maior dificuldade de isolamento; barreiras de acesso a informação em formato acessível; exclusão digital',
-    fonte: 'IPEA Cap. 8 Igualdade Racial'
-  },
-  { 
-    grupo: 'LGBTQIA+ negros', 
-    impacto: 'Perda de renda em atividades informais; expulsão de abrigos; interrupção de tratamentos hormonais',
-    fonte: 'ANTRA 2021; ABGLT'
-  },
-  { 
-    grupo: 'Jovens negros periféricos', 
-    impacto: 'Exclusão digital na educação remota; aumento da violência policial durante lockdown; insegurança alimentar',
-    fonte: 'UNICEF 2021; Fiocruz'
-  },
-  { 
-    grupo: 'Trabalhadores negros informais', 
-    impacto: 'Impossibilidade de isolamento; 47,4% na informalidade pré-pandemia; primeiros a perder renda, últimos a recuperar',
-    fonte: 'PNAD COVID/IBGE 2020'
-  },
-  { 
-    grupo: 'Indígenas', 
-    impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
-    fonte: 'SIVEP-Gripe; SESAI/MS'
-  },
-  { 
-    grupo: 'Quilombolas', 
-    impacto: `Comunidades com pouco acesso à rede de água (${narrativaCovid.quilombolaAgua}%) e esgotamento adequado (${narrativaCovid.quilombolaEsgoto}%); dificuldade de higienização`,
-    fonte: 'IBGE Censo 2022; CONAQ'
-  },
-];
+// Interseccionalidade COVID — factory function for SSoT
+function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number; quilombolaEsgoto: number }) {
+  return [
+    { 
+      grupo: 'Mulheres negras', 
+      impacto: 'Aumento de 42% na mortalidade materna (2019→2021); sobrecarga de trabalho de cuidado; maior perda de renda',
+      fonte: 'DataSUS/SIM; IPEA 2021'
+    },
+    { 
+      grupo: 'Idosos negros (60+)', 
+      impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
+      fonte: 'SIVEP-Gripe; NOIS/PUC-Rio'
+    },
+    { 
+      grupo: 'PcD negros', 
+      impacto: 'Maior dificuldade de isolamento; barreiras de acesso a informação em formato acessível; exclusão digital',
+      fonte: 'IPEA Cap. 8 Igualdade Racial'
+    },
+    { 
+      grupo: 'LGBTQIA+ negros', 
+      impacto: 'Perda de renda em atividades informais; expulsão de abrigos; interrupção de tratamentos hormonais',
+      fonte: 'ANTRA 2021; ABGLT'
+    },
+    { 
+      grupo: 'Jovens negros periféricos', 
+      impacto: 'Exclusão digital na educação remota; aumento da violência policial durante lockdown; insegurança alimentar',
+      fonte: 'UNICEF 2021; Fiocruz'
+    },
+    { 
+      grupo: 'Trabalhadores negros informais', 
+      impacto: 'Impossibilidade de isolamento; 47,4% na informalidade pré-pandemia; primeiros a perder renda, últimos a recuperar',
+      fonte: 'PNAD COVID/IBGE 2020'
+    },
+    { 
+      grupo: 'Indígenas', 
+      impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
+      fonte: 'SIVEP-Gripe; SESAI/MS'
+    },
+    { 
+      grupo: 'Quilombolas', 
+      impacto: `Comunidades com pouco acesso à rede de água (${narrativaCovid.quilombolaAgua}%) e esgotamento adequado (${narrativaCovid.quilombolaEsgoto}%); dificuldade de higienização`,
+      fonte: 'IBGE Censo 2022; CONAQ'
+    },
+  ];
+}
 
 const COLORS_BAR = ['hsl(var(--chart-2))', 'hsl(var(--chart-1))'];
 
 export function CovidRacialSection() {
   const { covidSource, covidCount } = useMirrorData();
+  const { narrativaCovid } = useNarrativeData();
+  const interseccionalidadeCovid = buildInterseccionalidadeCovid(narrativaCovid);
   return (
     <div className="space-y-6">
       {/* Header */}
