@@ -676,7 +676,7 @@ export function StatisticsInventoryReport() {
   const handleInventory = (format: 'html' | 'docx') => {
     setGenerating(`inv-${format}`);
     try {
-      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || []);
+      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         downloadDOCX(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {
