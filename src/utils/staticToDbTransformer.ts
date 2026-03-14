@@ -476,7 +476,7 @@ export function buildMirrorIndicators(): DbRecord[] {
   return all;
 }
 
-/** Categorias únicas usadas pelos registros espelhados */
+/** Categorias únicas usadas pelos registros espelhados (Etapa 1+2) */
 export function getMirrorCategories(): string[] {
   return [
     'demografia',
@@ -490,4 +490,10 @@ export function getMirrorCategories(): string[] {
     'lgbtqia',
     'povos_tradicionais',
   ];
+}
+
+/** Todas as categorias combinadas (Etapas 1-3) */
+export function getAllMirrorCategories(): string[] {
+  const { getStage3Categories } = require('@/utils/stage3Transformers');
+  return [...getMirrorCategories(), ...getStage3Categories()];
 }
