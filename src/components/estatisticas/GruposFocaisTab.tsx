@@ -288,20 +288,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
   );
 }
 
-function AuditadoBadge({ nota }: { nota?: string }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Badge variant="outline" className="text-[9px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
-          <CheckCircle2 className="w-2.5 h-2.5" /> Auditado
-        </Badge>
-      </TooltipTrigger>
-      {nota && (
-        <TooltipContent side="top" className="max-w-xs text-xs">{nota}</TooltipContent>
-      )}
-    </Tooltip>
-  );
-}
+// AuditadoBadge removido — aba ainda não auditada manualmente
 
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -356,7 +343,7 @@ export function GruposFocaisTab() {
                     <p className="text-xs max-w-xs">{gruposFocaisData.quilombolas.notas}</p>
                   </TooltipContent>
                 </Tooltip>
-                <AuditadoBadge nota="SIDRA 9578 — Censo 2022 (universo)" />
+                
               </div>
             </div>
             <FonteInfo 
@@ -389,7 +376,7 @@ export function GruposFocaisTab() {
                     <p className="text-xs max-w-xs">{gruposFocaisData.indigenas.notas}</p>
                   </TooltipContent>
                 </Tooltip>
-                <AuditadoBadge nota="SIDRA 9514 / IBGE Brasil Indígena — Censo 2022" />
+                
               </div>
             </div>
             <FonteInfo 
@@ -412,7 +399,7 @@ export function GruposFocaisTab() {
                 <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <AuditadoBadge nota="SIDRA 9891 — Censo 2022 (41.738 ciganos contados)" />
+                
                 <Badge variant="outline" className="text-xs">Censo 2022</Badge>
               </div>
             </div>
@@ -461,9 +448,9 @@ export function GruposFocaisTab() {
 
       <Tabs defaultValue="serie-temporal" className="w-full">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
-          <TabsTrigger value="serie-temporal" className="gap-1">📈 Série Temporal <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ SSoT</Badge></TabsTrigger>
-          <TabsTrigger value="territoriais" className="gap-1">Direitos Territoriais <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ Auditado</Badge></TabsTrigger>
-          <TabsTrigger value="vulnerabilidade" className="gap-1">Indicadores de Vulnerabilidade <Badge variant="outline" className="text-[8px] px-1 py-0 bg-success/10 text-success border-success/30">✓ Auditado</Badge></TabsTrigger>
+          <TabsTrigger value="serie-temporal" className="gap-1">📈 Série Temporal</TabsTrigger>
+          <TabsTrigger value="territoriais" className="gap-1">Direitos Territoriais</TabsTrigger>
+          <TabsTrigger value="vulnerabilidade" className="gap-1">Indicadores de Vulnerabilidade</TabsTrigger>
           <TabsTrigger value="lacunas">Lacunas por Grupo ({lacunas?.length || 0})</TabsTrigger>
         </TabsList>
 
@@ -494,7 +481,6 @@ export function GruposFocaisTab() {
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-primary" />
                     Situação Territorial - Quilombolas
-                    <AuditadoBadge nota="Territórios/certidões validados contra INCRA PDF e Palmares" />
                   </CardTitle>
                   <CardDescription>
                     Fonte: {dadosTerritoriais.quilombolas.fonte} | Atualizado: {new Date(dadosTerritoriais.quilombolas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
@@ -625,7 +611,6 @@ export function GruposFocaisTab() {
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-accent" />
                     Situação Territorial - Povos Indígenas
-                    <AuditadoBadge nota="FUNAI Geo + ISA terrasindigenas.org.br — validado contra Complemento CERD III" />
                   </CardTitle>
                   <CardDescription>
                     Fonte: {dadosTerritoriais.indigenas.fonte} | Atualizado: {new Date(dadosTerritoriais.indigenas.ultimaAtualizacao).toLocaleDateString('pt-BR')}
@@ -950,7 +935,6 @@ export function GruposFocaisTab() {
                   <div>
                     <h3 className="font-semibold mb-1 flex items-center gap-2">
                       Dados do Atlas da Violência 2025 (IPEA/FBSP) e 19º Anuário FBSP 2025
-                      <AuditadoBadge nota="Todos os 6 indicadores validados contra abas Segurança/Saúde/Educação (mirror SSoT)" />
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       Indicadores de violência letal com recorte racial — fontes oficiais auditáveis.
@@ -976,7 +960,7 @@ export function GruposFocaisTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.taxaHomicidio100mil.nome} <AuditadoBadge nota="Validado contra aba Segurança (mirror SSoT)" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.taxaHomicidio100mil.nome}</CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.taxaHomicidio100mil.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1016,7 +1000,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome} <AuditadoBadge nota="Validado contra aba Segurança (mirror SSoT)" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}</CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1043,7 +1027,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.letalidadePolicial.nome} <AuditadoBadge nota="Validado contra série letalidadePolicial auditada" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1062,7 +1046,7 @@ export function GruposFocaisTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome} <AuditadoBadge nota="Validado contra Atlas da Violência 2025 e feminicidioSerie auditada" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome}</CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.violenciaJuventude.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1082,7 +1066,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome} <AuditadoBadge nota="Atlas da Violência 2025 — IVJ-N" /></CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome}</CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1111,7 +1095,7 @@ export function GruposFocaisTab() {
                   <CardTitle className="text-base flex items-center gap-2">
                     {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
                     <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: (Óbitos maternos por raça ÷ Nascidos vivos por raça) × 100.000. Fontes: SIM/DataSUS + SINASC/DataSUS. Resultado 2022: negras 57,3/100mil NV vs brancas 46,6/100mil NV = razão 1,2×." />
-                    <AuditadoBadge nota="Validado contra saudeSerieHistorica (mirror SSoT)" />
+                    
                   </CardTitle>
                   <CardDescription>DataSUS — Cruzamento SIM × SINASC | {indicadoresVulnerabilidade.mortalidadeMaterna.ano}</CardDescription>
                 </CardHeader>
@@ -1142,7 +1126,7 @@ export function GruposFocaisTab() {
                 <CardTitle className="text-base flex items-center gap-2">
                   <Users className="w-5 h-5 text-accent" />
                   Indicadores Sociais — Povos Indígenas
-                  <AuditadoBadge nota="NCPI/DataSUS + INEP Censo Escolar + SESAI — cruzamento de 3 fontes" />
+                  
                 </CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   🔀 Cruzamento: NCPI/DataSUS (2024) + INEP Censo Escolar (2022) + SESAI (2024)
