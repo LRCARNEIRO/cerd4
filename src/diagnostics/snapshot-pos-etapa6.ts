@@ -74,9 +74,14 @@ export const COMPARACAO = {
   },
 
   narrativeHelpers: {
-    migrado: false,
-    motivo: 'Mantido em StatisticsData.ts direto (module scope). Migração futura requer refatoração para injeção de dados.',
-    impacto: 'Nenhum — os testes confirmam que os valores de narrativeHelpers ainda correspondem às constantes-fonte.',
+    migrado: true,
+    motivo: 'Refatorado com factory createNarrativas() + hook useNarrativeData(). Module-level exports preservados para backward compat e testes.',
+    impacto: 'Nenhum — testes 3/3 PASS confirmam valores idênticos.',
+  },
+
+  countStatisticsIndicators: {
+    migrado: true,
+    motivo: 'Refatorado com factory computeStatisticsCounts(). Module-level exports preservados.',
   },
 };
 
