@@ -1316,6 +1316,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Serviços Domésticos', '6,8%', '6,2%', '6,3%', '5,8%']
       ]
     },
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres.',
     tendencia: 'estavel'
   },
   {
