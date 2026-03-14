@@ -62,33 +62,34 @@ const excessoMortalidade = [
     negros: '57% a mais que brancos',
     naoNegros: 'Referência',
     valorNegros: 57,
-    fonte: 'Raça e Saúde/SIM'
+    fonte: 'Raça e Saúde/SIM — TabNet → Mortalidade Geral → raça/cor'
   },
   { 
     indicador: 'Óbitos em excesso de pretos e pardos (2020)',
     negros: '~36 mil óbitos a mais',
     naoNegros: '—',
     valorNegros: 36000,
-    fonte: 'Raça e Saúde/SIM'
+    fonte: 'Raça e Saúde/SIM — cálculo excedente vs linha-base 2019'
   },
   { 
     indicador: 'Idosos 80+ pretos/pardos vs brancos (2020)',
     negros: 'Quase 2x mais mortes',
     naoNegros: 'Referência',
     valorNegros: 100,
-    fonte: 'Raça e Saúde/SIM'
+    fonte: 'SIM/DataSUS — filtro faixa etária 80+ × raça/cor'
   },
   { 
     indicador: 'Homens negros vs brancos - excesso mortalidade',
     negros: '55% maior',
     naoNegros: 'Referência',
     valorNegros: 55,
-    fonte: 'Raça e Saúde/SIM'
+    fonte: 'Raça e Saúde/SIM — filtro sexo masculino × raça/cor'
   },
 ];
 
 // Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio
-// Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio)
+// Fonte: Núcleo de Operações e Inteligência em Saúde (NOIS/PUC-Rio), Nota Técnica 11
+// Navegação: SIVEP-Gripe (BigData COVID Fiocruz) → Painel SRAG → filtro raça/cor → desfecho óbito vs alta
 const letalidadeHospitalar = [
   { raca: 'Pretos e Pardos', letalidade: 55, sobrevivencia: 45 },
   { raca: 'Brancos', letalidade: 38, sobrevivencia: 62 },
@@ -96,13 +97,15 @@ const letalidadeHospitalar = [
 ];
 
 // Impacto socioeconômico da pandemia por raça - PNAD COVID 2020 / IPEA
+// Navegação PNAD COVID: covid19.ibge.gov.br → Microdados → filtro V0009 (raça/cor)
+// Navegação SIDRA: Tabela 7533 → rendimento habitual por cor/raça
 const impactoSocioeconomico = [
-  { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2, fonte: 'PNAD COVID/IBGE 2020' },
-  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8, fonte: 'PNAD COVID/IBGE 2020' },
-  { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1, fonte: 'POF/Rede PENSSAN 2022' },
-  { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5, fonte: 'PNAD Contínua 2019' },
-  { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2, fonte: 'PNAD Contínua 2019' },
-  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5, fonte: 'PNAD COVID/IBGE 2020' },
+  { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2, fonte: 'PNAD COVID/IBGE 2020 — Microdados V0009 (raça/cor)' },
+  { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8, fonte: 'PNAD COVID/IBGE 2020 — Microdados filtro auxílio × raça' },
+  { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1, fonte: 'POF/Rede PENSSAN 2022 — II VIGISAN, desagregação raça/cor' },
+  { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5, fonte: 'SIDRA Tabela 7533 — PNAD Contínua 2019, posição ocupação × cor' },
+  { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2, fonte: 'PNAD Contínua 2019 — Saúde, Tabela 7670 (plano × raça)' },
+  { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5, fonte: 'PNAD COVID/IBGE 2020 — Microdados domicílio × raça' },
 ];
 
 // Mortalidade materna na pandemia por raça (DataSUS/SIM)
