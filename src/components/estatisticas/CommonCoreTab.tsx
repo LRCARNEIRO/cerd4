@@ -2048,7 +2048,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Total Brasil', '6.270', '100%', '6.472', '100%']
       ]
     },
-    notas: 'Negros representam 55,5% da população mas 59,8% do déficit habitacional. Cruzamento indireto 🔀: FJP + IBGE Censo 2022 (Tabela 9879).',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: FJP (Déficit Habitacional) + IBGE Censo 2022 (Tabela 9879). Negros representam 55,5% da população mas 59,8% do déficit habitacional. Requer validação humana.',
     tendencia: 'crescente'
   },
   {
