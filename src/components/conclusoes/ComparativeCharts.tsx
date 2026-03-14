@@ -157,6 +157,7 @@ export function ViolenciaRacialChart() {
 
 // ============== FEMINICÍDIO ==============
 export function FeminicidioChart() {
+  const { feminicidioSerie } = useMirrorData();
   const dado2018 = feminicidioSerie[0];
   const dado2024 = feminicidioSerie[feminicidioSerie.length - 1];
 
