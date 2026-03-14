@@ -33,6 +33,7 @@ import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
+import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionPanel';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
@@ -192,6 +193,10 @@ export default function Estatisticas() {
         </CardContent>
       </Card>
 
+      {/* Espelho Seguro — Painel de Migração */}
+      <MirrorIngestionPanel />
+
+      <div className="mt-6" />
       <Tabs defaultValue="common-core" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
           <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
