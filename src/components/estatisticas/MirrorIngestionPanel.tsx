@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { buildMirrorIndicators, getMirrorCategories } from '@/utils/staticToDbTransformer';
-import { buildAllStage3Indicators, getStage3Categories } from '@/utils/stage3Transformers';
+import { buildAllStage3Indicators, getStage3Categories, buildStage4Indicators, getStage4Categories } from '@/utils/stage3Transformers';
 import { toast } from 'sonner';
 
 export function MirrorIngestionPanel() {
@@ -17,12 +17,13 @@ export function MirrorIngestionPanel() {
     setResult(null);
 
     try {
-      // Combine Stage 1+2 and Stage 3 indicators
+      // Combine Stage 1+2, Stage 3, and Stage 4 (Complemento CERD 3) indicators
       const stage12 = buildMirrorIndicators();
       const stage3 = buildAllStage3Indicators();
-      const indicators = [...stage12, ...stage3];
+      const stage4 = buildStage4Indicators();
+      const indicators = [...stage12, ...stage3, ...stage4];
 
-      const clearCategories = [...getMirrorCategories(), ...getStage3Categories()];
+      const clearCategories = [...getMirrorCategories(), ...getStage3Categories(), ...getStage4Categories()];
 
       const { data, error } = await supabase.functions.invoke('ingest-static-mirror', {
         body: { indicators, clearCategories },
@@ -50,7 +51,7 @@ export function MirrorIngestionPanel() {
     }
   }, []);
 
-  const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length;
+  const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length + buildStage4Indicators().length;
 
   return (
     <Card className="border-l-4 border-l-primary/60">
@@ -61,7 +62,7 @@ export function MirrorIngestionPanel() {
             <div>
               <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD (Etapas 1-3)</p>
               <p className="text-xs text-muted-foreground">
-                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais
+                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais + Complemento CERD 3
               </p>
             </div>
           </div>

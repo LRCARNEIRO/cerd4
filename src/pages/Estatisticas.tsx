@@ -34,6 +34,8 @@ import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection
 import { GruposFocaisTab } from '@/components/estatisticas/GruposFocaisTab';
 import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionPanel';
+import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
+import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
@@ -214,8 +216,11 @@ export default function Estatisticas() {
           <TabsTrigger value="lacunas-cerd" className="gap-1">
             <FileText className="w-4 h-4" /> Lacunas CERD
           </TabsTrigger>
+          <TabsTrigger value="complemento-cerd3" className="gap-1 bg-chart-4/10">
+            <FileText className="w-4 h-4" /> Complemento CERD 3 ({COMPLEMENTO_CERD3_COUNT})
+          </TabsTrigger>
           <TabsTrigger value="indicadores-db" className="gap-1">
-            <BarChart3 className="w-4 h-4" /> Indicadores (BD)
+            <BarChart3 className="w-4 h-4" /> Espelho Seguro (BD)
           </TabsTrigger>
           <TabsTrigger value="adm-publica" className="gap-1 bg-chart-3/10">
             <Landmark className="w-4 h-4" /> Adm Pública
@@ -257,6 +262,7 @@ export default function Estatisticas() {
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         <TabsContent value="lacunas-cerd"><LacunasCerdTab /></TabsContent>
+        <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
