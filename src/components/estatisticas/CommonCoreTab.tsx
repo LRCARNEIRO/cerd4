@@ -349,10 +349,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     dados: {
       headers: ['Ano', '2010', '2015', '2018', '2020', '2021', '2022', '2023', '2024'],
       rows: [
-        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', '4,50*']
+        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', 'N/D']
       ]
     },
-    notas: '* Projeção. Pico inflacionário em 2015 e 2021.',
+    notas: 'Pico inflacionário em 2015 e 2021. Dado de 2024 pendente de consolidação pelo IBGE/SNIPC.',
     tendencia: 'estavel'
   },
   {
