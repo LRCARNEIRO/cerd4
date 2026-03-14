@@ -47,16 +47,18 @@ const gruposFocaisData = {
   },
   ciganos: {
     nome: 'Ciganos/Roma',
-    populacao: null,
-    fonte: 'Lacuna crítica - Censo 2022 não incluiu pergunta específica',
-    tabela: 'N/A',
-    link: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
-    ultimaAtualizacao: '2022-08-30',
-    serieTemporal: [],
+    populacao: 41738, // AUDITORIA 14/03/2026: atualizado via Complemento CERD III (SIDRA 9891, Censo 2022)
+    fonte: 'IBGE/Censo 2022 — Tabela SIDRA 9891 (Pop. por povo ou comunidade tradicional × UF)',
+    tabela: 'Tabela 9891 - SIDRA',
+    link: 'https://sidra.ibge.gov.br/tabela/9891',
+    ultimaAtualizacao: '2023-10-27',
+    serieTemporal: [
+      { ano: 2022, valor: 41738, fonte: 'Censo 2022 — SIDRA 9891' },
+    ],
     observacoesONU: ['54', '55'],
     politicas: ['Decreto 8.750/2016 (CNPCT incluía ciganos)', 'Política Nacional para Povo Cigano (em elaboração)'],
-    indicadores: [],
-    notas: 'O CERD expressou preocupação específica (§54-55) sobre ausência de dados oficiais. Estimativas não-oficiais variam de 500 mil a 1,5 milhão.',
+    indicadores: ['População por região', 'Distribuição territorial'],
+    notas: 'AUDITADO: Censo 2022 realizou primeira contagem oficial (41.738). Possível sub-registro por estigma e nomadismo — organizações ciganas estimam entre 500 mil e 1 milhão. §54-55 do CERD III.',
   },
   juventude_negra: {
     nome: 'Juventude Negra (15-29 anos)',
@@ -130,6 +132,7 @@ const dadosTerritoriais = {
     comunidadesCertificadasFCP: 3158,
     fonteFCP: 'Fundação Cultural Palmares - Portarias de Certificação Quilombola',
     linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola',
+    auditadoFCP: true, // ✅ AUDITORIA 14/03/2026: validado contra Complemento CERD III (3.158)
     familiasAtendidas: 155000,
     areaTotal: 1162002,
     fonteArea: 'INCRA - Soma das áreas no PDF Títulos Expedidos (ha)',
@@ -150,12 +153,16 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
+    // AUDITORIA 14/03/2026: alinhado com Complemento CERD III (ISA/FUNAI)
+    // terrasHomologadas = apenas homologadas (FUNAI); homologadasReservadas = ISA total (536)
     terrasTotal: 644,
     fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
     linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     terrasHomologadas: 496,
-    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento)',
+    terrasHomologadasReservadas: 536, // ISA 2025: homologadas (496) + reservadas (40)
+    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento) / ISA - terrasindigenas.org.br',
     linkTerrasHomologadas: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
+    linkISA: 'https://terrasindigenas.org.br/',
     terrasEmEstudo: 148,
     etniasIdentificadas: 391,
     fonteEtnias: 'IBGE - Censo 2022 (Brasil Indígena)',
@@ -170,7 +177,7 @@ const dadosTerritoriais = {
     link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
     linkGeo: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     ultimaAtualizacao: '2025-08-20',
-    notaFonte: 'TIs e áreas: FUNAI Geoprocessamento. Etnias/línguas: IBGE Censo 2022 (Brasil Indígena).',
+    notaFonte: 'AUDITADO: TIs e áreas: FUNAI Geoprocessamento. Homologadas+Reservadas (536): ISA. Etnias/línguas: IBGE Censo 2022.',
     fasesPeriodo1: {
       emEstudo: 27, delimitada: 2, declarada: 1, homologada: 1,
       fonte: 'FUNAI - Relatórios Anuais / ISA - Terras Indígenas no Brasil',
@@ -188,6 +195,9 @@ const dadosTerritoriais = {
   },
 };
 
+// AUDITORIA 14/03/2026: todos os indicadores de vulnerabilidade validados cruzando
+// com abas Segurança/Saúde/Educação (mirror SSoT) e Atlas da Violência 2025.
+// Deep links adicionados para auditabilidade total.
 const indicadoresVulnerabilidade = {
   homicidiosPorRaca: {
     nome: 'Homicídios Dolosos — Vítimas Negras',
@@ -197,6 +207,7 @@ const indicadoresVulnerabilidade = {
     ano: 2024,
     fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    auditado: true, // ✅ Validado contra aba Segurança (mirror)
     serieTemporal: [
       { ano: 2018, negros: 75.7, brancos: 24.3 },
       { ano: 2019, negros: 76.2, brancos: 23.8 },
@@ -213,33 +224,38 @@ const indicadoresVulnerabilidade = {
     razaoRisco2018: 2.7, quedaNegros2018_2023: 23.1, quedaNaoNegros2018_2023: 24.3,
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true, // ✅ Validado contra aba Segurança (mirror)
   },
-  // AUDITORIA 12/03/2026: percentualNegrosHomens REMOVIDO — dado não verificável
   violenciaJuventude: {
     nome: 'Violência Letal — Juventude (15-29 anos)',
     percentualVitimas: 47.8,
-    feminicidioNegras: 68.2, // Atlas 2025, p.57
+    feminicidioNegras: 68.2, // Atlas 2025, p.57 — ✅ validado contra feminicidioSerie auditada
     ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true,
   },
   ivjn: {
     nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
     riscoRelativo: 2.0, riscoRelativo2017: 1.9, riscoSuperiorNegro: 3.0,
-    qualificador: 'ensino fundamental incompleto', // AUDITORIA: dado específico
+    qualificador: 'ensino fundamental incompleto',
     ano: 2021, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
     link: 'https://www.ipea.gov.br/atlasviolencia',
+    auditado: true,
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
     totalMortes: 5417, percentualNegros: 82.0,
     ano: 2024, fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
+    auditado: true, // ✅ Validado contra aba Segurança (série letalidadePolicial)
   },
   mortalidadeMaterna: {
     nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
     valorNegras: 57.3, valorBrancas: 46.6, razaoDesigualdade: 1.2,
     ano: 2022, fonte: 'DataSUS - SIM (Óbitos Maternos) / SINASC (Nascidos Vivos)',
-    link: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def',
+    link: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    auditado: true, // ✅ Validado contra aba Saúde (saudeSerieHistorica mirror)
+    notaAuditoria: 'Snapshot 2022 confirmado. Série completa 2018-2023 disponível na aba Seg/Saúde/Edu.',
   },
 };
 
