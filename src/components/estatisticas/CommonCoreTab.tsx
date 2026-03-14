@@ -2127,7 +2127,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Total MCMV', '64,8%', '32,0%', '3,2%', '7.020']
       ]
     },
-    notas: 'Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades.',
+    notas: '⚠️ Nível B — Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades. Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Requer validação humana.',
     tendencia: 'estavel'
   },
   {
