@@ -1029,7 +1029,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Distribuição percentual dos óbitos maternos por tipo de causa',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - SIM',
-    urlFonte: 'https://datasus.saude.gov.br',
+    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
     periodoOriginal: '2001-2015',
     periodoAtualizado: '2001-2022',
     statusAtualizacao: 'atualizado',
