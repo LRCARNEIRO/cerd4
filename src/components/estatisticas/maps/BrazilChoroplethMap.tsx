@@ -75,7 +75,7 @@ export function BrazilChoroplethMap({
   return (
     <div className={cn('relative', className)}>
       {title && <p className="text-xs font-semibold text-muted-foreground mb-1 text-center">{title}</p>}
-      <svg viewBox="40 10 720 740" className="w-full h-auto max-h-[420px]">
+      <svg viewBox="-5 -5 625 655" className="w-full h-auto max-h-[420px]">
         {BRAZIL_STATES.map(state => {
           const entry = dataMap.get(state.id);
           const isHovered = hovered === state.id;
