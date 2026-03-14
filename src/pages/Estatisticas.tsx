@@ -258,8 +258,7 @@ export default function Estatisticas() {
         </TabsList>
 
         <TabsContent value="common-core"><CommonCoreTab /></TabsContent>
-        <TabsContent value="dados-novos"><DadosNovosTab /></TabsContent>
-        <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
+        <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         <TabsContent value="lacunas-cerd"><LacunasCerdTab /></TabsContent>
         <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
