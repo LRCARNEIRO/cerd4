@@ -417,7 +417,10 @@ export function GruposFocaisTab() {
                 <p className="text-2xl font-bold text-destructive">S/D</p>
                 <p className="text-xs text-destructive mt-1">Lacuna crítica CERD §54-55</p>
               </div>
-              <Badge variant="destructive" className="text-xs">Sem dados</Badge>
+              <div className="flex flex-col items-end gap-1">
+                <AuditadoBadge nota="SIDRA 9891 — Censo 2022 (41.738 ciganos contados)" />
+                <Badge variant="outline" className="text-xs">Censo 2022</Badge>
+              </div>
             </div>
             <FonteInfo 
               fonte={gruposFocaisData.ciganos.fonte}
