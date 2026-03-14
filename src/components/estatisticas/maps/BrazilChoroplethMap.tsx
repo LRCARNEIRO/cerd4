@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { BRAZIL_STATES, type BrazilStateInfo } from './brazilStatePaths';
+import { useState, useMemo, useEffect } from 'react';
+import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { cn } from '@/lib/utils';
 
 export interface StateDataEntry {
@@ -10,7 +10,6 @@ export interface StateDataEntry {
 
 interface BrazilChoroplethMapProps {
   data: StateDataEntry[];
-  /** Color scale from low to high — provide 2+ HSL stops */
   colorScale?: string[];
   title?: string;
   unit?: string;
@@ -19,7 +18,6 @@ interface BrazilChoroplethMapProps {
 
 function interpolateColor(t: number, stops: string[]): string {
   if (stops.length === 2) {
-    // simple 2-stop HSL interpolation
     const [h1, s1, l1] = parseHSL(stops[0]);
     const [h2, s2, l2] = parseHSL(stops[1]);
     const h = h1 + (h2 - h1) * t;
@@ -27,7 +25,6 @@ function interpolateColor(t: number, stops: string[]): string {
     const l = l1 + (l2 - l1) * t;
     return `hsl(${h}, ${s}%, ${l}%)`;
   }
-  // multi-stop
   const segCount = stops.length - 1;
   const seg = Math.min(Math.floor(t * segCount), segCount - 1);
   const localT = (t * segCount) - seg;
@@ -39,8 +36,10 @@ function interpolateColor(t: number, stops: string[]): string {
 function parseHSL(color: string): [number, number, number] {
   const m = color.match(/hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)/);
   if (m) return [+m[1], +m[2], +m[3]];
-  return [200, 30, 85]; // fallback
+  return [200, 30, 85];
 }
+
+const GEO_URL = '/data/brazil-states.geojson';
 
 export function BrazilChoroplethMap({
   data,
@@ -62,59 +61,59 @@ export function BrazilChoroplethMap({
     return { dataMap: map, min: mn, max: mx };
   }, [data]);
 
-  const getColor = (state: BrazilStateInfo) => {
-    const entry = dataMap.get(state.id);
-    if (!entry) return 'hsl(var(--muted))';
+  const getColor = (sigla: string) => {
+    const entry = dataMap.get(sigla);
+    if (!entry) return '#e2e8f0';
     const t = max === min ? 0.5 : (entry.value - min) / (max - min);
     return interpolateColor(t, colorScale);
   };
 
   const hoveredEntry = hovered ? dataMap.get(hovered) : null;
-  const hoveredState = hovered ? BRAZIL_STATES.find(s => s.id === hovered) : null;
 
   return (
     <div className={cn('relative', className)}>
       {title && <p className="text-xs font-semibold text-muted-foreground mb-1 text-center">{title}</p>}
-      <svg viewBox="-5 -5 625 655" className="w-full h-auto max-h-[420px]">
-        {BRAZIL_STATES.map(state => {
-          const entry = dataMap.get(state.id);
-          const isHovered = hovered === state.id;
-          return (
-            <g key={state.id}
-              onMouseEnter={() => setHovered(state.id)}
-              onMouseLeave={() => setHovered(null)}
-              className="cursor-pointer transition-opacity"
-            >
-              <path
-                d={state.d}
-                fill={getColor(state)}
-                stroke="hsl(var(--background))"
-                strokeWidth={isHovered ? 2.5 : 1.2}
-                opacity={hovered && !isHovered ? 0.6 : 1}
-                className="transition-all duration-150"
-              />
-              <text
-                x={state.labelX}
-                y={state.labelY}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="pointer-events-none select-none"
-                fill="hsl(var(--foreground))"
-                fontSize={entry ? 10 : 9}
-                fontWeight={isHovered ? 700 : 500}
-                opacity={0.85}
-              >
-                {state.id}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
+      <ComposableMap
+        projection="geoMercator"
+        projectionConfig={{
+          scale: 600,
+          center: [-54, -15],
+        }}
+        width={500}
+        height={500}
+        style={{ width: '100%', height: 'auto', maxHeight: '420px' }}
+      >
+        <Geographies geography={GEO_URL}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              const sigla = geo.properties.sigla;
+              const isHovered = hovered === sigla;
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill={getColor(sigla)}
+                  stroke="hsl(0, 0%, 100%)"
+                  strokeWidth={isHovered ? 2 : 0.8}
+                  opacity={hovered && !isHovered ? 0.6 : 1}
+                  style={{
+                    default: { outline: 'none' },
+                    hover: { outline: 'none', cursor: 'pointer' },
+                    pressed: { outline: 'none' },
+                  }}
+                  onMouseEnter={() => setHovered(sigla)}
+                  onMouseLeave={() => setHovered(null)}
+                />
+              );
+            })
+          }
+        </Geographies>
+      </ComposableMap>
 
       {/* Tooltip */}
-      {hoveredEntry && hoveredState && (
+      {hoveredEntry && hovered && (
         <div className="absolute top-2 left-2 bg-card border border-border rounded-lg shadow-lg p-2.5 text-xs z-10 min-w-[140px]">
-          <p className="font-bold text-foreground">{hoveredState.name}</p>
+          <p className="font-bold text-foreground">{hovered}</p>
           <p className="text-primary font-semibold text-sm tabular-nums">
             {hoveredEntry.value.toLocaleString('pt-BR')} {unit}
           </p>
