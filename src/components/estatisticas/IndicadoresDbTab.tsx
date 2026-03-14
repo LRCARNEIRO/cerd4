@@ -143,23 +143,54 @@ function normalizeIndicadorData(dados: Record<string, any>) {
   } else {
     // Standard: top-level = groups, sub-keys = years
     const allYears = new Set<string>();
+    const flatGroups: string[] = [];
+    const isDoublyNested: Record<string, boolean> = {};
+
     objectKeys.forEach(group => {
-      Object.keys(effective[group] || {}).forEach(year => {
-        if (isYearKey(year)) allYears.add(year);
-      });
+      const sub = effective[group] || {};
+      const subKeys = Object.keys(sub);
+      const subKeysAreYears = subKeys.length > 0 && subKeys.every(isYearKey);
+
+      if (subKeysAreYears) {
+        // Check if values under years are objects (doubly nested: group → year → {race: val})
+        const firstYearVal = sub[subKeys[0]];
+        if (firstYearVal && typeof firstYearVal === 'object' && !Array.isArray(firstYearVal)) {
+          // Doubly nested — flatten: "group — race" becomes individual series
+          isDoublyNested[group] = true;
+          subKeys.forEach(year => allYears.add(year));
+          Object.keys(firstYearVal).forEach(race => {
+            const flatKey = `${formatGroupName(group)} — ${race}`;
+            if (!flatGroups.includes(flatKey)) flatGroups.push(flatKey);
+          });
+        } else {
+          subKeys.forEach(year => allYears.add(year));
+          if (!flatGroups.includes(group)) flatGroups.push(group);
+        }
+      }
     });
+
     const sortedYears = Array.from(allYears).sort();
     const chartData = sortedYears.map(year => {
       const point: Record<string, any> = { ano: year };
       objectKeys.forEach(group => {
         const val = effective[group]?.[year];
-        if (val !== undefined && val !== null) {
+        if (val === undefined || val === null) return;
+        if (isDoublyNested[group] && typeof val === 'object' && !Array.isArray(val)) {
+          // Flatten doubly nested: add each race as separate key
+          Object.entries(val).forEach(([race, raceVal]) => {
+            const flatKey = `${formatGroupName(group)} — ${race}`;
+            if (typeof raceVal === 'number' || typeof raceVal === 'string') {
+              point[flatKey] = raceVal;
+            }
+          });
+        } else if (typeof val === 'number' || typeof val === 'string') {
           point[group] = val;
         }
+        // Skip objects that aren't handled — prevents React child error
       });
       return point;
     });
-    return { groups: objectKeys, years: sortedYears, chartData };
+    return { groups: flatGroups.length > 0 ? flatGroups : objectKeys, years: sortedYears, chartData };
   }
 }
 
