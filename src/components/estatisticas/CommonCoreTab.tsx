@@ -1366,7 +1366,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '53,1%', '56,5%', '61,5%', '65,0%', '68,2%', '69,5%']
       ]
     },
-    notas: 'Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
     tendencia: 'crescente'
   }
 ];
