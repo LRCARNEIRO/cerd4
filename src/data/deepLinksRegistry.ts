@@ -379,7 +379,7 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'SINAPIR — lista entes',
     secao: 'Administração Pública',
-    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/20260105SINAPIRGeralAtualizado.pdf',
+    url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir/SINAPIRGeralAtualizado06.01.2025.pdf',
     fonte: 'MIR',
     descricao: 'SINAPIR — Lista de entes participantes (Jan/2025, PDF)',
   },
