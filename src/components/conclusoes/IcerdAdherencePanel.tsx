@@ -184,7 +184,7 @@ function generateVerdict(a: ArtigoAnalysis): string {
 }
 
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
-  const statSeriesPerArticle = useMemo(() => countStatSeriesPerArticle(), []);
+  const statSeriesPerArticle = useCountStatSeriesPerArticle();
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {

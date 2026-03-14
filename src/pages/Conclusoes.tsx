@@ -43,6 +43,7 @@ export default function Conclusoes() {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
   } = useAnalyticalInsights();
+  const { dadosDemograficos, segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais } = useMirrorData();
 
   const { data: documentosNormativos } = useQuery({
     queryKey: ['documentos_normativos_aderencia'],

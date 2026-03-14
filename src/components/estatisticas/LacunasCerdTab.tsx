@@ -15,11 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AuditFooter } from '@/components/ui/audit-footer';
 
 // FONTE ÚNICA: StatisticsData.ts — elimina duplicidade de séries hardcoded
-import {
-  indicadoresSocioeconomicos,
-  segurancaPublica,
-  educacaoSerieHistorica,
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import { narrativaSeguranca, narrativaEducacaoSerie, narrativaQuilombolas, fmt } from '@/utils/narrativeHelpers';
 
 const statusColors: Record<string, string> = {

@@ -27,6 +27,7 @@ export function ConclusoesReportGenerator() {
     isLoading, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
   } = useAnalyticalInsights();
+  const { segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos } = useMirrorData();
 
   const { data: documentosNormativos } = useQuery({
     queryKey: ['documentos_normativos_report'],
