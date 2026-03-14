@@ -104,6 +104,7 @@ const SOURCES = {
 
 // ============== SEGURANÇA PÚBLICA ==============
 export function ViolenciaRacialChart() {
+  const { segurancaPublica } = useMirrorData();
   const dado2018 = segurancaPublica[0];
   const dado2024 = segurancaPublica[segurancaPublica.length - 1];
 
