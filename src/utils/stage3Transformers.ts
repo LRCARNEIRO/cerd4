@@ -221,16 +221,18 @@ export function buildCovidRacialIndicators(): DbRecord[] {
   ));
 
   all.push(rec(
-    'Letalidade hospitalar COVID por raça — SIVEP-Gripe',
+    'Letalidade hospitalar COVID por raça — Moreira et al. (2023)',
     'covid_racial', 'letalidade_hospitalar',
-    'NOIS/PUC-Rio — SIVEP-Gripe',
-    'https://bigdata-covid19.icict.fiocruz.br/',
+    'Moreira et al. (2023) — Int J Equity Health 22:186',
+    'https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf',
     ['Art. 2', 'Art. 5'],
     {
       registros: [
-        { raca: 'Pretos e Pardos', letalidade: 55 },
-        { raca: 'Brancos', letalidade: 38 },
-        { raca: 'Indígenas', letalidade: 62 },
+        { raca: 'Brancos', letalidade: 32.2 },
+        { raca: 'Pretos', letalidade: 37.9 },
+        { raca: 'Pardos', letalidade: 34.0 },
+        { raca: 'Indígenas', letalidade: 34.7 },
+        { raca: 'Asiáticos', letalidade: 31.6 },
       ],
       paragrafos_cerd: '§29-30',
     },
@@ -246,12 +248,12 @@ export function buildCovidRacialIndicators(): DbRecord[] {
     ['Art. 2', 'Art. 5'],
     {
       registros: [
-        { indicador: 'Perda de emprego/renda', negros: 28.6, naoNegros: 18.2 },
-        { indicador: 'Sem acesso a auxílio emergencial', negros: 12.5, naoNegros: 22.8 },
-        { indicador: 'Insegurança alimentar grave', negros: 10.4, naoNegros: 5.1 },
-        { indicador: 'Informalidade pré-pandemia', negros: 47.4, naoNegros: 34.5 },
-        { indicador: 'Sem plano de saúde', negros: 78.5, naoNegros: 55.2 },
-        { indicador: 'Moradia com aglomeração (>3 p/cômodo)', negros: 8.2, naoNegros: 3.5 },
+        { indicador: 'Não procuraram trabalho por pandemia (nov/2020)', negros: 9.7, brancos: 5.9, unidade: '%' },
+        { indicador: 'Queda da massa salarial real (Q1→Q2 2020)', negros: 23, brancos: 19, unidade: '%' },
+        { indicador: 'Efeito emprego na queda da massa salarial', negros: 12, brancos: 6, unidade: 'pp' },
+        { indicador: 'Taxa de pobreza SEM auxílio emergencial (jul/2020)', negros: 25.0, brancos: 12.8, unidade: '%' },
+        { indicador: 'Taxa de pobreza COM auxílio emergencial (jul/2020)', negros: 7.7, brancos: 4.5, unidade: '%' },
+        { indicador: 'Renda per capita média (jul/2020, com AE)', negros: 971, brancos: 1640, unidade: 'R$' },
       ],
       paragrafos_cerd: '§31-32',
     },
@@ -262,15 +264,15 @@ export function buildCovidRacialIndicators(): DbRecord[] {
   all.push(rec(
     'Mortalidade materna COVID por raça (2019-2022)',
     'covid_racial', 'mortalidade_materna',
-    'DataSUS/SIM + IEPS Boletim Çarê',
-    'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
+    'IEPS Boletim Çarê Jul/2025',
+    'https://ieps.org.br/boletim-care-ieps-07-2025/',
     ['Art. 2', 'Art. 5'],
     {
       series: {
-        '2019': { negra: 60.2, branca: 31.8, razao: 1.89 },
-        '2020': { negra: 72.5, branca: 38.2, razao: 1.90 },
-        '2021': { negra: 85.2, branca: 42.5, razao: 2.00 },
-        '2022': { negra: 58.5, branca: 30.2, razao: 1.94 },
+        '2019': { preta: 107.8, parda: 55.2, branca: 46.2 },
+        '2020': { preta: 131.5, parda: 71.8, branca: 68.5 },
+        '2021': { preta: 179.4, parda: 94.4, branca: 103.8 },
+        '2022': { preta: 105.2, parda: 53.8, branca: 44.6 },
       },
       paragrafos_cerd: '§29-30',
     },

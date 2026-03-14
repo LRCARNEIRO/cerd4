@@ -32,6 +32,14 @@ const FONTE_PERES_ETAL = [
   { nome: 'GitHub NOIS/PUC-Rio — Código e dados reprodutíveis do estudo', url: 'https://github.com/noispuc/Peres_etal_PublicHealth_Socio_demographic_COVID19_mortality' },
 ];
 
+const FONTE_BAQUI_ETAL = [
+  { nome: 'Baqui et al. (2020) — "Ethnic and regional variations in hospital mortality from COVID-19 in Brazil", The Lancet Global Health 8(8), e1018-e1026', url: 'https://www.fsp.usp.br/site/wp-content/uploads/2020/07/1-s2.0-S2214109X20302850-main.pdf' },
+];
+
+const FONTE_SPRINGER_LETALIDADE = [
+  { nome: 'Moreira et al. (2023) — "Racial inequalities and COVID-19 mortality in Brazil", Int J Equity Health 22:186', url: 'https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf' },
+];
+
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
   { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
@@ -49,10 +57,13 @@ const FONTE_VACINACAO = [
   { nome: 'SI-PNI/DataSUS — TabNet → Imunizações → COVID-19 Doses Aplicadas → Variável: raça/cor (⚠️ ~30% sem raça preenchida)', url: 'http://tabnet.datasus.gov.br/cgi/dhdat.exe?bd_pni/cpnibr.def' },
   { nome: 'Fiocruz/EPSJV — "Negros são os que mais morrem e menos recebem vacinas" (podcast + dados)', url: 'https://www.epsjv.fiocruz.br/podcast/negros-sao-os-que-mais-morrem-por-covid-19-e-os-que-menos-recebem-vacinas-no-brasil' },
   { nome: 'IBGE/SIDRA — Tabela 9605: População por raça/cor (Censo 2022, denominador para cobertura vacinal)', url: 'https://sidra.ibge.gov.br/tabela/9605' },
+  { nome: 'PMC — COVID-19 vaccination coverage disparities by race/ethnicity in Brazil (2025)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12712384/pdf/dyaf105.pdf' },
 ];
 
 const FONTE_INTERSECCIONAL = [
   { nome: 'IPEA — Políticas Sociais nº 29, Cap. 8: Igualdade Racial (impactos interseccionais COVID)', url: 'https://repositorio.ipea.gov.br/bitstreams/f8a9b99e-3b0a-4bc7-bd9c-1dc4ec9bb7a8/download' },
+  { nome: 'IPEA — Nota Técnica: Pessoas com Deficiência e COVID-19', url: 'https://repositorio.ipea.gov.br/server/api/core/bitstreams/da5c769c-03bb-4cfa-83d5-beb8f1f00b37/content' },
+  { nome: 'Baqui et al. (2020) — Lancet Global Health: mortalidade hospitalar COVID por raça', url: 'https://www.fsp.usp.br/site/wp-content/uploads/2020/07/1-s2.0-S2214109X20302850-main.pdf' },
   { nome: 'SIVEP-Gripe / NOIS PUC-Rio — Letalidade hospitalar por raça × idade × sexo', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
   { nome: 'PNAD COVID-19 (IBGE, 2020) — Microdados interseccionais raça × gênero × classe', url: 'https://covid19.ibge.gov.br/pnad-covid/' },
   { nome: 'IBGE/SIDRA — Tabela 9943: Quilombolas, infraestrutura por acesso à água e esgoto (Censo 2022)', url: 'https://sidra.ibge.gov.br/tabela/9943' },
@@ -64,7 +75,7 @@ const FONTE_INTERSECCIONAL = [
 // Fonte: racaesaude.org.br (dados SIM/DataSUS + Registro Civil)
 const excessoMortalidade = [
   { 
-    indicador: 'Excesso de mortalidade (causas naturais, 2020)',
+    indicador: 'Excesso de mortalidade durante a pandemia (2020)',
     negros: '57% a mais que brancos',
     naoNegros: 'Referência',
     valorNegros: 57,
@@ -93,14 +104,15 @@ const excessoMortalidade = [
   },
 ];
 
-// Letalidade hospitalar COVID por raça - SIVEP-Gripe/NOIS PUC-Rio + Peres et al. 2021
-// Fonte primária: Peres et al. Public Health 192 (2021) 15-20 — Tabela 1 (n=228.196)
-// Navegação: SIVEP-Gripe (BigData COVID Fiocruz) → Painel SRAG → filtro raça/cor → desfecho óbito vs alta
+// Letalidade hospitalar COVID por raça — Moreira et al. (2023), Int J Equity Health 22:186
+// Fonte: https://link.springer.com/content/pdf/10.1186/s12939-023-02037-8.pdf
+// Dados desagregados por raça/cor individual (não agrupados como "Pretos e Pardos")
 const letalidadeHospitalar = [
-  { raca: 'Pretos e Pardos', letalidade: 42, sobrevivencia: 58 },
-  { raca: 'Brancos', letalidade: 37, sobrevivencia: 63 },
-  { raca: 'Indígenas', letalidade: 43, sobrevivencia: 57 },
-  { raca: 'Asiáticos', letalidade: 39, sobrevivencia: 61 },
+  { raca: 'Brancos', letalidade: 32.2, sobrevivencia: 67.8 },
+  { raca: 'Pretos', letalidade: 37.9, sobrevivencia: 62.1 },
+  { raca: 'Pardos', letalidade: 34.0, sobrevivencia: 66.0 },
+  { raca: 'Indígenas', letalidade: 34.7, sobrevivencia: 65.3 },
+  { raca: 'Asiáticos', letalidade: 31.6, sobrevivencia: 68.4 },
 ];
 
 // Dados do estudo Peres et al. (2021) — SIVEP-Gripe, 228.196 pacientes
@@ -145,15 +157,15 @@ const impactoTrabalhoRacial = [
   { indicador: 'Renda per capita média (jul/2020, com AE)', negros: 971, brancos: 1640, unidade: 'R$', fonte: 'IPEA/PNAD-Covid — Souza (2020), Tabela A.1' },
 ];
 
-// Mortalidade materna na pandemia por raça (DataSUS/SIM)
-// NOTA: Valores ano-a-ano para "negra" (pretas+pardas combinadas) são cruzamento indireto
-// baseado em DataSUS/SIM + IEPS Boletim Çarê (média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9).
-// Séries anuais interpoladas a partir do padrão publicado pelo IEPS.
+// Mortalidade materna na pandemia por raça — IEPS Boletim Çarê Jul/2025
+// Fonte: https://ieps.org.br/boletim-care-ieps-07-2025/
+// RMM por 100 mil NV, desagregada por cor/raça da mãe (pretas, pardas, brancas)
+// Pico 2021 (COVID): pretas 179,4; pardas 94,4; brancas 103,8
 const mortalidadeMaternaCovid = [
-  { ano: 2019, negra: 60.2, branca: 31.8, razao: 1.89 },
-  { ano: 2020, negra: 72.5, branca: 38.2, razao: 1.90 },
-  { ano: 2021, negra: 85.2, branca: 42.5, razao: 2.00 },
-  { ano: 2022, negra: 58.5, branca: 30.2, razao: 1.94 },
+  { ano: 2019, preta: 107.8, parda: 55.2, branca: 46.2 },
+  { ano: 2020, preta: 131.5, parda: 71.8, branca: 68.5 },
+  { ano: 2021, preta: 179.4, parda: 94.4, branca: 103.8 },
+  { ano: 2022, preta: 105.2, parda: 53.8, branca: 44.6 },
 ];
 
 // Vacinação por raça - diferenças de cobertura
@@ -172,18 +184,18 @@ function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number;
   return [
     { 
       grupo: 'Mulheres negras', 
-      impacto: 'Aumento de 42% na mortalidade materna (2019→2021); sobrecarga de trabalho de cuidado; maior perda de renda',
-      fonte: 'DataSUS/SIM — TabNet → Mortalidade Materna → Coluna: Cor/Raça da mãe; IEPS Boletim Çarê Jul/2025'
+      impacto: 'RMM de mães pretas atingiu 179,4/100mil NV em 2021 (pico pandêmico); sobrecarga de trabalho de cuidado; maior perda de renda',
+      fonte: 'IEPS Boletim Çarê Jul/2025 — ieps.org.br/boletim-care-ieps-07-2025'
     },
     { 
-      grupo: 'Idosos negros (60+)', 
-      impacto: 'Taxa de letalidade 1,5x maior que idosos brancos; menor acesso a UTI; menor cobertura vacinal inicial',
-      fonte: 'SIVEP-Gripe → BigData COVID Fiocruz → filtro faixa etária 60+ × raça/cor × desfecho'
+      grupo: 'Pacientes negros hospitalizados', 
+      impacto: 'Maior mortalidade hospitalar por COVID-19 entre pacientes negros, com risco aproximadamente 1,5 vezes maior que entre brancos (Baqui et al., 2020)',
+      fonte: 'Baqui et al. (2020) — Lancet Global Health 8(8), e1018-e1026'
     },
     { 
       grupo: 'PcD negros', 
       impacto: 'Maior dificuldade de isolamento; barreiras de acesso a informação em formato acessível; exclusão digital',
-      fonte: 'IPEA Políticas Sociais nº 29, Cap. 8 — Igualdade Racial e PcD'
+      fonte: 'IPEA Políticas Sociais nº 29, Cap. 8; IPEA Nota Técnica: PcD e COVID-19'
     },
     { 
       grupo: 'LGBTQIA+ negros', 
@@ -202,8 +214,8 @@ function buildInterseccionalidadeCovid(narrativaCovid: { quilombolaAgua: number;
     },
     { 
       grupo: 'Indígenas', 
-      impacto: 'Mortalidade hospitalar de 62% (vs 38% brancos); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
-      fonte: 'SIVEP-Gripe → filtro raça indígena × desfecho; SESAI/MS — relatórios COVID aldeias'
+      impacto: 'Letalidade hospitalar de 70,4% na Nota Técnica 11 (amostra reduzida, n=54); dificuldade de acesso a serviços de saúde; risco a aldeias isoladas',
+      fonte: 'NOIS/PUC-Rio NT11; SESAI/MS — relatórios COVID aldeias; ADPF 709'
     },
     { 
       grupo: 'Quilombolas', 
@@ -260,7 +272,7 @@ export function CovidRacialSection() {
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Excesso de Mortalidade Negra (2020)</p>
             <p className="text-2xl font-bold text-destructive">+57%</p>
-            <p className="text-xs text-muted-foreground">vs brancos (causas naturais)</p>
+            <p className="text-xs text-muted-foreground">vs brancos (durante a pandemia)</p>
             <AuditFooter fontes={FONTE_RACA_SAUDE} compact />
           </CardContent>
         </Card>
@@ -275,16 +287,16 @@ export function CovidRacialSection() {
         <Card className="border-l-4 border-l-warning">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
-            <p className="text-2xl font-bold text-warning">62%</p>
-            <p className="text-xs text-muted-foreground">vs 38% brancos</p>
+            <p className="text-2xl font-bold text-warning">70,4%</p>
+            <p className="text-xs text-muted-foreground">vs 37,9% brancos (NT11, n=54)</p>
             <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Mort. Materna Negra (pico 2021)</p>
-            <p className="text-2xl font-bold">85,2</p>
-            <p className="text-xs text-muted-foreground">por 100 mil NV (+42% vs 2019)</p>
+            <p className="text-xs text-muted-foreground">RMM Mães Pretas (pico 2021)</p>
+            <p className="text-2xl font-bold">179,4</p>
+            <p className="text-xs text-muted-foreground">por 100 mil NV (IEPS Çarê)</p>
             <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
           </CardContent>
         </Card>
@@ -428,7 +440,7 @@ export function CovidRacialSection() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Letalidade Hospitalar por COVID-19 e Raça</CardTitle>
-            <CardDescription>Peres et al. (2021) — SIVEP-Gripe, n=228.196 (fev-ago 2020)</CardDescription>
+            <CardDescription>Moreira et al. (2023) — Int J Equity Health 22:186</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
@@ -454,10 +466,10 @@ export function CovidRacialSection() {
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Indígenas hospitalizados tiveram a maior letalidade (43%), seguidos por pretos/pardos (42%) e brancos (37%).
-              Dados de Peres et al. (2021), n=228.196 pacientes com desfecho definido.
+              Pretos tiveram a maior letalidade (37,9%), seguidos por indígenas (34,7%), pardos (34,0%), brancos (32,2%) e asiáticos (31,6%).
+              Fonte: Moreira et al. (2023), Int J Equity Health.
             </p>
-            <AuditFooter fontes={[...FONTE_SIVEP_NOIS, ...FONTE_PERES_ETAL]} documentos={['CERD 2022 §24']} compact />
+            <AuditFooter fontes={[...FONTE_SPRINGER_LETALIDADE, ...FONTE_PERES_ETAL]} documentos={['CERD 2022 §24']} compact />
           </CardContent>
         </Card>
 
@@ -486,18 +498,20 @@ export function CovidRacialSection() {
                     }}
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="negra" name="Negra" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="preta" name="Preta" stroke="hsl(var(--chart-2))" strokeWidth={2} dot />
+                  <Line type="monotone" dataKey="parda" name="Parda" stroke="hsl(var(--chart-4))" strokeWidth={2} dot />
                   <Line type="monotone" dataKey="branca" name="Branca" stroke="hsl(var(--chart-1))" strokeWidth={2} dot />
                 </LineChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <p className="text-xs text-muted-foreground">
-                Pico em 2021: mortalidade materna negra atingiu 85,2/100mil NV, razão de 2,0x em relação a brancas.
+                Pico em 2021: RMM de mães pretas atingiu 179,4/100mil NV; pardas 94,4; brancas 103,8. 
+                Fonte: IEPS Boletim Çarê Jul/2025.
               </p>
               <EstimativaBadge 
                 tipo="cruzamento" 
-                metodologia="Cálculo: série mortalidade materna por raça (pretas+pardas agregadas como 'negra') a partir de: (1) SIM/DataSUS — óbitos maternos por cor/raça (tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def); (2) IEPS Boletim Çarê Jul/2025 — taxas calculadas e série temporal validada (ieps.org.br/pesquisas/boletim-care). Média 2010-2023: pretas 108,6; pardas 56,6; brancas 46,9 por 100mil NV. Pico 2021 (COVID): negra 85,2/100mil NV." 
+                metodologia="Fonte: IEPS Boletim Çarê Jul/2025 (ieps.org.br/boletim-care-ieps-07-2025). RMM desagregada por cor/raça da mãe: pretas, pardas e brancas separadamente. Pico 2021 (COVID): pretas 179,4; pardas 94,4; brancas 103,8 por 100mil NV." 
               />
             </div>
             <AuditFooter fontes={FONTE_DATASUS_SIM} documentos={['CERD 2022 §25', 'RG 25 §30']} compact />
@@ -637,16 +651,16 @@ export function CovidRacialSection() {
               emprego, renda, moradia e acesso a serviços.
             </p>
             <p>
-              • O <strong>excesso de mortalidade de 57%</strong> entre negros demonstra que o racismo estrutural é um 
+              • O <strong>excesso de mortalidade de 57%</strong> entre negros durante a pandemia demonstra que o racismo estrutural é um 
               determinante social da saúde com consequências letais.
             </p>
             <p>
-              • A <strong>mortalidade materna negra</strong> disparou 42% entre 2019 e 2021, evidenciando a 
-              intersecção raça × gênero.
+              • A <strong>RMM de mães pretas</strong> atingiu 179,4/100mil NV em 2021 (pico pandêmico), 
+              evidenciando a intersecção raça × gênero (IEPS Boletim Çarê).
             </p>
             <p>
-              • <strong>Indígenas</strong> tiveram a maior letalidade hospitalar (43%), agravada pelo 
-              subfinanciamento da SESAI e dificuldade de acesso.
+              • <strong>Pretos</strong> tiveram a maior letalidade hospitalar (37,9%), seguidos por indígenas (34,7%) e pardos (34,0%) — 
+              dados de Moreira et al. (2023).
             </p>
             <p>
               • Estudo peer-reviewed (Peres et al., 2021) com <strong>228.196 pacientes</strong> comprovou que 
