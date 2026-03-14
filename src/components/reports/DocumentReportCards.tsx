@@ -53,7 +53,6 @@ export function DocumentReportCards() {
     setGeneratingCCD(true);
     try {
       const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
-        indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
         segurancaPublica: mirror.segurancaPublica,
         ccTablesFromBD: mirror.ccTablesFromBD,
       });
