@@ -294,6 +294,13 @@ export function GruposFocaisTab() {
               Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
               Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.227.642).
             </p>
+            <div className="flex gap-2 mt-2">
+              {gfSource === 'bd' ? (
+                <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({gfCount})</Badge>
+              ) : (
+                <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
