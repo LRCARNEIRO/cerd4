@@ -201,6 +201,7 @@ export function FeminicidioChart() {
 
 // ============== EDUCAÇÃO ==============
 export function EducacaoComparativaChart() {
+  const { educacaoSerieHistorica } = useMirrorData();
   const dado2018 = educacaoSerieHistorica[0];
   const dado2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
 
