@@ -112,8 +112,13 @@ export function generateCommonCoreHTML(
   indicadores: IndicadorInterseccional[],
   lacunas: LacunaIdentificada[],
   stats: any,
-  orcStats: any
+  orcStats: any,
+  mirror?: CommonCoreMirrorData
 ): string {
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
+  const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
+
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
 

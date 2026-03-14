@@ -95,8 +95,16 @@ export function generateCerdIVHTML(
   respostas: RespostaLacunaCerdIII[],
   stats: any,
   indicadores: IndicadorInterseccional[],
-  orcStats: any
+  orcStats: any,
+  mirror?: CerdIVMirrorData
 ): string {
+  // SSoT: use mirror data from BD if available, fallback to hardcoded
+  const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
+  const feminicidioSerie = mirror?.feminicidioSerie?.length ? mirror.feminicidioSerie : hcFeminicidio;
+  const educacaoSerieHistorica = mirror?.educacaoSerieHistorica?.length ? mirror.educacaoSerieHistorica : hcEducacao;
+  const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
+  const povosTradicionais = mirror?.povosTradicionais || hcPovos;
+
   const cumpridas = stats?.porStatus?.cumprido || 0;
   const parciais = stats?.porStatus?.parcialmente_cumprido || 0;
   const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
