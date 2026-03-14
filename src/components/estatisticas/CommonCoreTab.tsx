@@ -435,10 +435,10 @@ export const tabelasEconomicas: CommonCoreTable[] = [
         ['2020', '21,3%', '10,8%', '2,8%', '2,4%', '4,2%'],
         ['2022', '18,5%', '10,5%', '2,2%', '2,6%', '2,8%'],
         ['2023', '19,2%', '10,8%', '2,3%', '2,8%', '3,0%'],
-        ['2024*', '19,5%', '11,0%', '2,4%', '2,9%', '2,9%']
+        ['2024', 'N/D', 'N/D', 'N/D', 'N/D', 'N/D']
       ]
     },
-    notas: '* Projeção. Pico em 2020 devido ao Auxílio Emergencial na pandemia.',
+    notas: 'Pico em 2020 devido ao Auxílio Emergencial na pandemia. Dado de 2024 pendente de publicação oficial.',
     tendencia: 'crescente'
   },
   {
