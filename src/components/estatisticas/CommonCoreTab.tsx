@@ -1256,7 +1256,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Negros', '49,5%', '50,5%', '46,8%', '45,5%', '43,8%']
       ]
     },
-    notas: 'Informalidade estruturalmente maior entre negros.',
+    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Informalidade estruturalmente maior entre negros.',
     tendencia: 'decrescente'
   },
   {
