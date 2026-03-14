@@ -7,6 +7,7 @@ import {
   indicadoresSocioeconomicos, feminicidioSerie,
   povosTradicionais
 } from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import { narrativaJuventude, narrativaQuilombolas } from '@/utils/narrativeHelpers';
 
 interface IndicadorTemporal {

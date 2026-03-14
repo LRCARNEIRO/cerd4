@@ -37,6 +37,8 @@ import {
   evolucaoDesigualdade as hcEvolDesig,
   rendimentosCenso2022 as hcRendimentos,
   povosTradicionais as hcPovos,
+  indicadoresSocioeconomicos as hcSocioeco,
+  resumoExecutivo as hcResumoExecutivo,
 } from '@/components/estatisticas/StatisticsData';
 
 import type { CommonCoreTable } from '@/components/estatisticas/CommonCoreTab';
@@ -153,6 +155,12 @@ export function useMirrorData() {
     // ── EVOLUÇÃO DESIGUALDADE ──
     const evolDesig = resolveArray('trabalho_renda', 'evolucao_desigualdade', hcEvolDesig);
 
+    // ── SOCIOECONÔMICO ──
+    const socioeco = resolveArray('trabalho_renda', 'socioeconomico', hcSocioeco);
+
+    // ── POVOS TRADICIONAIS (complex nested object — passthrough with source tracking) ──
+    const ptMirrors = findAllByCategory('povos_tradicionais');
+    const ptSource: MirrorSource = ptMirrors.length > 0 ? 'bd' : 'hardcoded';
     // ══════════════════════════════════
     // STAGE 3 — Common Core
     // ══════════════════════════════════
@@ -218,7 +226,7 @@ export function useMirrorData() {
       saudeMaterna.source, deficit.source, cadUnico.source, intersecTrabalho.source,
       trabalhoRG.source, educacaoRG.source, chefia.source, deficiencia.source,
       disparidades.source, antra.source, lgbtqia.source, classe.source,
-      rendimentos.source, evolDesig.source,
+      rendimentos.source, evolDesig.source, socioeco.source, ptSource,
       ccSource, admSource, covidSource, gfSource,
     ];
     const bdCount = allSources.filter(s => s === 'bd').length;
@@ -261,6 +269,12 @@ export function useMirrorData() {
       rendimentosCenso2022: rendimentos.data, fonteRendimentos: rendimentos.source,
       // Desigualdade
       evolucaoDesigualdade: evolDesig.data, fonteEvolDesig: evolDesig.source,
+      // Socioeconômico
+      indicadoresSocioeconomicos: socioeco.data, fonteSocioeco: socioeco.source,
+      // Povos Tradicionais
+      povosTradicionais: hcPovos, fontePovos: ptSource,
+      // Resumo Executivo (passthrough)
+      resumoExecutivo: hcResumoExecutivo,
 
       // ── STAGE 3 ──
       // Common Core

@@ -5,11 +5,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, 
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell
 } from 'recharts';
-import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
-  indicadoresSocioeconomicos, evolucaoDesigualdade,
-  violenciaInterseccional, classePorRaca
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 
 const COLORS = {
   destructive: 'hsl(var(--destructive))',
@@ -108,6 +104,7 @@ const SOURCES = {
 
 // ============== SEGURANÇA PÚBLICA ==============
 export function ViolenciaRacialChart() {
+  const { segurancaPublica } = useMirrorData();
   const dado2018 = segurancaPublica[0];
   const dado2024 = segurancaPublica[segurancaPublica.length - 1];
 
@@ -160,6 +157,7 @@ export function ViolenciaRacialChart() {
 
 // ============== FEMINICÍDIO ==============
 export function FeminicidioChart() {
+  const { feminicidioSerie } = useMirrorData();
   const dado2018 = feminicidioSerie[0];
   const dado2024 = feminicidioSerie[feminicidioSerie.length - 1];
 
@@ -203,6 +201,7 @@ export function FeminicidioChart() {
 
 // ============== EDUCAÇÃO ==============
 export function EducacaoComparativaChart() {
+  const { educacaoSerieHistorica } = useMirrorData();
   const dado2018 = educacaoSerieHistorica[0];
   const dado2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
 
@@ -248,6 +247,7 @@ export function EducacaoComparativaChart() {
 
 // ============== SAÚDE ==============
 export function SaudeComparativaChart() {
+  const { saudeSerieHistorica } = useMirrorData();
   const dado2018 = saudeSerieHistorica[0];
   const dado2024 = saudeSerieHistorica[saudeSerieHistorica.length - 1];
 
@@ -293,6 +293,7 @@ export function SaudeComparativaChart() {
 
 // ============== DESIGUALDADE DE RENDA ==============
 export function RendaComparativaChart() {
+  const { indicadoresSocioeconomicos } = useMirrorData();
   const dado2018 = indicadoresSocioeconomicos[0];
   const dado2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
 
@@ -343,6 +344,7 @@ export function RendaComparativaChart() {
 
 // ============== EVOLUÇÃO DA DESIGUALDADE ==============
 export function DesigualdadeEvolucaoChart() {
+  const { evolucaoDesigualdade } = useMirrorData();
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -381,6 +383,7 @@ export function DesigualdadeEvolucaoChart() {
 
 // ============== VIOLÊNCIA INTERSECCIONAL ==============
 export function ViolenciaInterseccionalChart() {
+  const { violenciaInterseccional } = useMirrorData();
   // Filtrar apenas dados percentuais para o gráfico de barras
   const dadosPercentuais = violenciaInterseccional.filter(v => !(v as any).unidadeAbsoluta);
   const dadosAbsolutos = violenciaInterseccional.filter(v => (v as any).unidadeAbsoluta);
@@ -422,6 +425,7 @@ export function ViolenciaInterseccionalChart() {
 
 // ============== TABELA COMPARATIVA SÍNTESE ==============
 export function TabelaSinteseComparativa() {
+  const { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, feminicidioSerie } = useMirrorData();
   const dado2018Seg = segurancaPublica[0];
   const dado2024Seg = segurancaPublica[segurancaPublica.length - 1];
   const dado2018Edu = educacaoSerieHistorica[0];
@@ -517,6 +521,7 @@ export function TabelaSinteseComparativa() {
 
 // ============== CLASSE POR RAÇA ==============
 export function ClassePorRacaChart() {
+  const { classePorRaca } = useMirrorData();
   return (
     <Card>
       <CardHeader className="pb-2">

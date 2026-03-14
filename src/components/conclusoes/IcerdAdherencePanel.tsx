@@ -6,11 +6,7 @@ import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, 
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
-import {
-  segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-  saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais,
-  dadosDemograficos
-} from '@/components/estatisticas/StatisticsData';
+import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
@@ -73,25 +69,19 @@ type ArtigoAnalysis = {
  * Map statistical series to ICERD articles based on thematic coverage.
  * Returns a count of distinct statistical evidence series per article.
  */
-function countStatSeriesPerArticle(): Record<ArtigoConvencao, number> {
-  const counts: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
-
-  // Segurança pública → V (segurança pessoal), VI (proteção judicial)
-  if (segurancaPublica.length > 0) { counts['V'] += 2; counts['VI'] += 2; } // homicídio + letalidade
-  // Feminicídio → V
-  if (feminicidioSerie.length > 0) { counts['V'] += 1; }
-  // Educação → V, VII
-  if (educacaoSerieHistorica.length > 0) { counts['V'] += 2; counts['VII'] += 2; } // superior + analfabetismo
-  // Saúde → V
-  if (saudeSerieHistorica.length > 0) { counts['V'] += 2; } // materna + infantil
-  // Renda/trabalho → V
-  if (indicadoresSocioeconomicos.length > 0) { counts['V'] += 3; } // renda + desemprego + pobreza
-  // Povos tradicionais → III, V
-  if (povosTradicionais) { counts['III'] += 1; counts['V'] += 1; }
-  // Dados demográficos → I, II (base para definição)
-  if (dadosDemograficos) { counts['I'] += 1; counts['II'] += 1; }
-
-  return counts;
+function useCountStatSeriesPerArticle() {
+  const { segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos } = useMirrorData();
+  return useMemo(() => {
+    const counts: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
+    if (segurancaPublica.length > 0) { counts['V'] += 2; counts['VI'] += 2; }
+    if (feminicidioSerie.length > 0) { counts['V'] += 1; }
+    if (educacaoSerieHistorica.length > 0) { counts['V'] += 2; counts['VII'] += 2; }
+    if (saudeSerieHistorica.length > 0) { counts['V'] += 2; }
+    if (indicadoresSocioeconomicos.length > 0) { counts['V'] += 3; }
+    if (povosTradicionais) { counts['III'] += 1; counts['V'] += 1; }
+    if (dadosDemograficos) { counts['I'] += 1; counts['II'] += 1; }
+    return counts;
+  }, [segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos]);
 }
 
 /**
@@ -194,7 +184,7 @@ function generateVerdict(a: ArtigoAnalysis): string {
 }
 
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
-  const statSeriesPerArticle = useMemo(() => countStatSeriesPerArticle(), []);
+  const statSeriesPerArticle = useCountStatSeriesPerArticle();
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
