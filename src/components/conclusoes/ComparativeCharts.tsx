@@ -383,6 +383,7 @@ export function DesigualdadeEvolucaoChart() {
 
 // ============== VIOLÊNCIA INTERSECCIONAL ==============
 export function ViolenciaInterseccionalChart() {
+  const { violenciaInterseccional } = useMirrorData();
   // Filtrar apenas dados percentuais para o gráfico de barras
   const dadosPercentuais = violenciaInterseccional.filter(v => !(v as any).unidadeAbsoluta);
   const dadosAbsolutos = violenciaInterseccional.filter(v => (v as any).unidadeAbsoluta);
