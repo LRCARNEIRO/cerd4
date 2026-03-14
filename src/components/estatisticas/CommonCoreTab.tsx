@@ -2219,7 +2219,7 @@ export const tabelasSistemaPolitico: CommonCoreTable[] = [
     descricao: 'Participação feminina no Congresso Nacional',
     fonte: 'TSE/Câmara',
     fonteCompleta: 'TSE e Câmara dos Deputados',
-    urlFonte: 'https://www.camara.leg.br/',
+    urlFonte: 'https://www.camara.leg.br/deputados/bancada',
     periodoOriginal: '2002-2014',
     periodoAtualizado: '2002-2022',
     statusAtualizacao: 'atualizado',
