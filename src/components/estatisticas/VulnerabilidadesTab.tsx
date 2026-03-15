@@ -244,7 +244,7 @@ export function VulnerabilidadesTab() {
               Chefia Familiar e Proteção Social
             </CardTitle>
             <CardDescription>
-              Cruzamento: RASEAM 2023 + Fiocruz/MIR 2023 + Censo 2022
+              Cruzamento: RASEAM 2025 + Fiocruz/DSBR 2023 + SIDRA 9553/2024 + MDS 2024
             </CardDescription>
           </CardHeader>
           <CardContent>
