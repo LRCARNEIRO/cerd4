@@ -38,8 +38,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
       referencia: null,
       unidade: '%',
-      fonte: 'II VIGISAN 2022',
-      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
       icone: Utensils,
     },
     {
