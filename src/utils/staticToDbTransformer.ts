@@ -306,8 +306,8 @@ export function buildMirrorIndicators(): DbRecord[] {
   all.push(rec(
     'Interseccionalidade trabalho — raça × gênero (Q2 2024)',
     'genero_raca', 'trabalho_interseccional',
-    'DIEESE — Boletim Consciência Negra Nov/2024',
-    'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
+    'DIEESE — Infográfico Consciência Negra 2025',
+    'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
     ['Art. 2', 'Art. 5'],
     { registros: interseccionalidadeTrabalho, paragrafos_cerd: '§25-26, §31-32' },
     { desagregacao_genero: true }
