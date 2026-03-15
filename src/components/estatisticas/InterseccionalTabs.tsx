@@ -236,18 +236,26 @@ export function RacaGeneroTab() {
                 <p className="text-xs font-medium text-destructive">{((chefiaFamiliarRacaGenero.homensNegrosChefesMonoparentais / chefiaFamiliarRacaGenero.homensChefesMonoparentais) * 100).toFixed(1)}% negros</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                <span className="text-sm">Fome em lares de mulheres negras</span>
-                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeMulheresNegras}%</span>
+             <div className="space-y-2">
+              <div className="flex justify-between items-center p-2 bg-destructive/10 rounded border border-destructive/20">
+                <span className="text-sm font-medium">Fome em lares de mulheres negras</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeMulheresNegras}% <span className="text-xs font-normal text-muted-foreground">(vs {chefiaFamiliarRacaGenero.fomeMulheresBrancas}% brancas)</span></span>
               </div>
-              <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                <span className="text-sm">Fome em lares c/ crianças &lt;10 (mulheres negras)</span>
+              <div className="flex justify-between items-center p-2 bg-destructive/10 rounded border border-destructive/20">
+                <span className="text-sm font-medium">Fome em lares c/ crianças &lt;10 (mulheres negras)</span>
                 <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}%</span>
               </div>
+              <div className="flex justify-between items-center p-2 bg-chart-4/10 rounded border border-chart-4/20">
+                <span className="text-sm">Segurança alimentar c/ crianças — mulheres negras vs homens brancos</span>
+                <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresNegras}% <span className="text-xs text-muted-foreground">vs {chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos}%</span></span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-destructive/10 rounded border border-destructive/20">
+                <span className="text-sm font-medium">Fome + desemprego (mulheres negras)</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras}%</span>
+              </div>
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                <span className="text-sm">IA mod.+grave c/ 8+ anos estudo (mulheres negras)</span>
-                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}%</span>
+                <span className="text-sm">IA mod.+grave c/ 8+ anos estudo (mulheres negras vs homens brancos)</span>
+                <span className="text-sm font-bold text-destructive">{chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}% <span className="text-xs text-muted-foreground">vs {chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados}%</span></span>
               </div>
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
                 <span className="text-sm">Mulheres negras no CadÚnico</span>
@@ -256,6 +264,10 @@ export function RacaGeneroTab() {
               <div className="flex justify-between items-center p-2 bg-muted/50 rounded">
                 <span className="text-sm">Mulheres brancas no CadÚnico</span>
                 <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}%</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-muted/30 rounded border border-border/30">
+                <span className="text-sm text-muted-foreground">Contexto: total em fome no Brasil (2022)</span>
+                <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.totalFomeBrasil2022Milhoes} mi</span>
               </div>
             </div>
             <AuditFooter fontes={chefiaFamiliarRacaGenero.fontes} documentos={['CERD 2022 §21', 'Common Core']} />
