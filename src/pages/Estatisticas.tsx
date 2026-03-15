@@ -77,6 +77,7 @@ export default function Estatisticas() {
     'trabalhoRacaGenero (3 indicadores × 4 grupos)': { total: 12, auditados: 12 },
     'educacaoRacaGenero (5 indicadores × 4 grupos)': { total: 20, auditados: 20 },
     'chefiaFamiliarRacaGenero (18 constantes)': { total: 18, auditados: 18 },
+    'saudeMaternaRaca (8 constantes)': { total: 8, auditados: 8 },
     // DEFICIÊNCIA
     'deficienciaPorRaca (5 raças × 3 métricas)': { total: 15, auditados: 15 },
     'disparidadesPcd1459 (3 raças × 2 métricas)': { total: 6, auditados: 6 },
