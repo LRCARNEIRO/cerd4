@@ -250,12 +250,12 @@ export function VulnerabilidadesTab() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20 text-center">
-                  <p className="text-2xl font-bold text-destructive">4,3M</p>
+                  <p className="text-2xl font-bold text-destructive">{(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / 1e6).toFixed(1)}M</p>
                   <p className="text-xs text-muted-foreground">Famílias monoparentais femininas</p>
                 </div>
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-center">
-                  <p className="text-2xl font-bold text-primary">65,8%</p>
-                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras</p>
+                  <p className="text-2xl font-bold text-primary">{chefiaFamiliarRacaGenero.percentualNegras}%</p>
+                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras (RASEAM 2025)</p>
                 </div>
               </div>
 
@@ -271,15 +271,15 @@ export function VulnerabilidadesTab() {
                 <TableBody>
                   <TableRow>
                     <TableCell className="text-sm">CadÚnico (mulheres)</TableCell>
-                    <TableCell className="text-right font-semibold text-destructive">38,5%</TableCell>
-                    <TableCell className="text-right">17,0%</TableCell>
-                    <TableCell className="text-right font-semibold">2,3×</TableCell>
+                    <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}%</TableCell>
+                    <TableCell className="text-right">{chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}%</TableCell>
+                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.cadUnicoMulheresNegras / chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas).toFixed(1)}×</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="text-sm">Chefia monoparental</TableCell>
-                    <TableCell className="text-right font-semibold text-destructive">65,8%</TableCell>
-                    <TableCell className="text-right">34,2%</TableCell>
-                    <TableCell className="text-right font-semibold">1,9×</TableCell>
+                    <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.percentualNegras}%</TableCell>
+                    <TableCell className="text-right">{chefiaFamiliarRacaGenero.percentualBrancas}%</TableCell>
+                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.percentualNegras / chefiaFamiliarRacaGenero.percentualBrancas).toFixed(1)}×</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
