@@ -293,9 +293,10 @@ export function VulnerabilidadesTab() {
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'RASEAM 2024 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
+                { nome: 'RASEAM 2025', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
+                { nome: 'SIDRA 9553 — IA 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
+                { nome: 'MDS 2024 — Fome/chefia', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
                 { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
-                { nome: 'Censo 2022 — Arranjos', url: 'https://sidra.ibge.gov.br/tabela/6403' },
               ]}
               documentos={['CERD 2022 §20', 'Durban §15']}
             />
