@@ -522,17 +522,16 @@ export const rendimentosCenso2022 = {
 //   Os dados anteriores por faixa etária (18-29, 30-49, 50+) eram FABRICADOS.
 //   Mantemos apenas o cruzamento raça × gênero, que é verificável.
 export const interseccionalidadeTrabalho = [
-  // AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme DIEESE Boletim Consciência Negra Nov/2024
-  // Fonte: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
-  // Rendimento médio: p.8 | Desocupação: p.3 | Informalidade (trabalho desprotegido): p.5
+  // AUDITORIA MANUAL 15/03/2026: Valores atualizados conforme DIEESE Infográfico Consciência Negra 2025
+  // Fonte: https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html
   // NOTA: DIEESE usa "negros" e "não negros" (e NÃO "brancos"). Labels ajustados.
-  { grupo: 'Mulher Negra', renda: 2079, desemprego: 10.1, informalidade: 46.5, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Homem Negro', renda: 2610, desemprego: 6.3, informalidade: 45.8, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Mulher Não Negra', renda: 3404, desemprego: 6.7, informalidade: 34.3, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Homem Não Negro', renda: 4492, desemprego: 4.6, informalidade: 34.1, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
+  { grupo: 'Mulher Negra', renda: 2264, desemprego: 8.0, informalidade: 39.0, fonte: 'DIEESE 2025' },
+  { grupo: 'Homem Negro', renda: 2849, desemprego: 6.3, informalidade: 45.8, fonte: 'DIEESE 2025' },
+  { grupo: 'Mulher Não Negra', renda: 3691, desemprego: 6.7, informalidade: 34.3, fonte: 'DIEESE 2025' },
+  { grupo: 'Homem Não Negro', renda: 4835, desemprego: 4.6, informalidade: 34.1, fonte: 'DIEESE 2025' },
 ];
 export const interseccionalidadeTrabalhoFontes = [
-  { nome: 'DIEESE — Boletim Trabalho e Raça Q2/2024', url: 'https://www.dieese.org.br/outraspublicacoes/2024/trabalhoeRaca.html' },
+  { nome: 'DIEESE — Infográfico Consciência Negra 2025', url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html' },
   { nome: 'SIDRA 6405 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6405' },
   { nome: 'SIDRA 6402 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6402' },
   { nome: 'SIDRA 6403 — Características gerais', url: 'https://sidra.ibge.gov.br/Tabela/6403' },

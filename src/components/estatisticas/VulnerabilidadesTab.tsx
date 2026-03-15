@@ -331,9 +331,7 @@ export function VulnerabilidadesTab() {
                     {item.grupo}
                   </TableCell>
                   <TableCell className="text-right">
-                    {item.grupo === 'Homem Negro' ? (
-                      <span className="text-muted-foreground text-xs" title="DIEESE Q2 2024 publica apenas total negros (R$2.392), sem desagregação por sexo">N/D ¹</span>
-                    ) : formatCurrency(item.renda)}
+                    {formatCurrency(item.renda)}
                   </TableCell>
                   <TableCell className={cn("text-right", item.desemprego > 15 && "text-destructive font-semibold")}>
                     {item.desemprego}%
@@ -345,7 +343,7 @@ export function VulnerabilidadesTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-[10px] text-muted-foreground mt-2">¹ DIEESE Q2 2024 publica renda média total de negros (R$2.392) sem desagregação por sexo. Valor removido — Regra de Ouro.</p>
+          <p className="text-[10px] text-muted-foreground mt-2">Fonte: DIEESE Infográfico Consciência Negra 2025.</p>
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"
