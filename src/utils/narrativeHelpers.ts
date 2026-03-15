@@ -129,12 +129,16 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
     cadUnicoNegras: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
     cadUnicoBrancas: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
     fomeMulheresNegras: chefiaFamiliarRacaGenero.fomeMulheresNegras,
+    fomeMulheresBrancas: chefiaFamiliarRacaGenero.fomeMulheresBrancas,
     fomeCriancas: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
+    fomeDesemprego: chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras,
+    segAlimentarCriancasNegras: chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresNegras,
+    segAlimentarCriancasBrancos: chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos,
     get texto() {
       const cadUnicoTexto = this.cadUnicoNegras != null && this.cadUnicoBrancas != null
         ? `, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas)`
         : ' (dados CadÚnico pendentes de verificação)';
-      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A fome (IA grave) atinge ${fmt(this.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, subindo a ${fmt(this.fomeCriancas)}% nos lares com crianças menores de 10 anos (Fiocruz/DSBR 2023, recorte raça/gênero).`;
+      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A fome (IA grave) atinge ${fmt(this.fomeMulheresNegras)}% dos lares de mulheres negras (vs ${fmt(this.fomeMulheresBrancas)}% brancas), subindo a ${fmt(this.fomeCriancas)}% nos lares com crianças <10 anos — onde apenas ${fmt(this.segAlimentarCriancasNegras)}% alcançam segurança alimentar (vs ${fmt(this.segAlimentarCriancasBrancos)}% em lares de homens brancos). Quando desempregadas, a fome chega a ${fmt(this.fomeDesemprego)}% (Fiocruz/DSBR 2023).`;
     },
   };
 

@@ -925,12 +925,28 @@ export const chefiaFamiliarRacaGenero = {
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
   // Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero (jun/2023)
   // Fonte: https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/
-  fomeMulheresNegras: 20.6, // IA grave (fome) em domicílios chefiados por mulheres negras
+  fomePardos: 17.0, // IA grave em domicílios chefiados por pardos
+  fomePretos: 20.6, // IA grave em domicílios chefiados por pretos
+  fomeBrancos: 10.6, // IA grave em domicílios chefiados por brancos
+  fomeMulheresNegras: 22.0, // IA grave (fome) em lares chefiados por MULHERES negras (pardas+pretas)
+  fomeMulheresBrancas: 13.5, // IA grave em lares chefiados por mulheres brancas
   fomeHomensNegros: 17.1, // IA grave em domicílios chefiados por homens negros (pretos+pardos)
-  iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // IA moderada+grave mesmo c/ 8+ anos estudo, mulheres negras
-  iaModeradaGraveHomensNegrosEscolarizados: 21.3, // idem homens negros
-  iaModeradaGraveMulheresBrancasEscolarizadas: 17.8, // idem mulheres brancas
+  // Escolaridade ≥8 anos — IA moderada+grave
+  iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // mulheres negras
+  iaModeradaGraveHomensNegrosEscolarizados: 21.3, // homens negros
+  iaModeradaGraveMulheresBrancasEscolarizadas: 17.8, // mulheres brancas
+  iaModeradaGraveHomensBrancosEscolarizados: 9.8, // homens brancos
+  // Crianças <10 anos
   fomeCriancasMulheresNegras: 23.8, // IA grave em domicílios c/ crianças <10 chefiados por mulheres negras
+  segAlimentarCriancasMulheresNegras: 21.3, // % em segurança alimentar (SA) — apenas 1 em 5
+  segAlimentarCriancasHomensBrancos: 52.5, // % em SA — mais que o dobro
+  segAlimentarCriancasMulheresBrancas: 39.5, // % em SA
+  // Desemprego/informalidade + fome
+  fomeDesempregoMulheresNegras: 39.5, // IA grave quando desempregadas
+  fomeDesempregoHomensNegros: 34.3, // IA grave quando desempregados
+  // Contexto nacional (2022)
+  totalFomeBrasil2022Milhoes: 33.1,
+  totalIABrasil2022Milhoes: 125.2,
   cadUnicoMulheresNegras: 38.5, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   cadUnicoMulheresBrancas: 17.0, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   fontes: [
