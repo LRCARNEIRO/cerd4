@@ -162,7 +162,7 @@ export function VulnerabilidadesTab() {
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"
-              metodologia="Cruzamento de RASEAM 2023 × II VIGISAN 2022 × Censo 2022 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
+              metodologia="Cruzamento de RASEAM 2023 × Fiocruz/DSBR 2023 × Censo 2022 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
             />
           </div>
 
