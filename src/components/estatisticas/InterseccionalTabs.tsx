@@ -325,17 +325,22 @@ export function RacaGeneroTab() {
 
       {/* Análise: Chefia Familiar + Saúde Materna */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
-          <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos {(narrativaChefia.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras 
-            ({(narrativaChefia.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022).
-            {narrativaChefia.cadUnicoNegras != null ? ` Respondem por ${fmt(narrativaChefia.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas).` : ' Dados CadÚnico pendentes de verificação.'}
-            {' '}A fome (IA grave) atinge {fmt(narrativaChefia.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, 
-             subindo a {fmt(narrativaChefia.fomeCriancas)}% nos lares com crianças menores de 10 anos (Fiocruz/DSBR 2023, recorte raça/gênero).
+         <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
+           <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
+           <p className="text-xs text-muted-foreground leading-relaxed">
+             <strong>{fmt(narrativaChefia.percentualNegras)}%</strong> dos {(narrativaChefia.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras 
+             ({(narrativaChefia.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022).
+             {narrativaChefia.cadUnicoNegras != null ? ` Respondem por ${fmt(narrativaChefia.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas).` : ' Dados CadÚnico pendentes de verificação.'}
+             {' '}A fome (IA grave) atinge <strong>{fmt(narrativaChefia.fomeMulheresNegras)}%</strong> dos lares chefiados por mulheres negras 
+             (vs {fmt(chefiaFamiliarRacaGenero.fomeMulheresBrancas)}% das brancas — razão de <strong>{(chefiaFamiliarRacaGenero.fomeMulheresNegras / chefiaFamiliarRacaGenero.fomeMulheresBrancas).toFixed(1)}×</strong>), 
+             subindo a <strong>{fmt(narrativaChefia.fomeCriancas)}%</strong> nos lares com crianças menores de 10 anos, onde apenas {fmt(chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresNegras)}% 
+             alcançam segurança alimentar plena (vs {fmt(chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos)}% em lares de homens brancos). 
+             Quando desempregadas, a fome atinge <strong>{fmt(chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras)}%</strong> dos lares de mulheres negras. 
+             Mesmo com 8+ anos de estudo, {fmt(chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas)}% sofrem IA moderada/grave 
+             (vs {fmt(chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados)}% de homens brancos escolarizados — razão de {(chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas / chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados).toFixed(1)}×).
            </p>
            <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022/SIDRA 10179-10182 + Fiocruz/DSBR 2023 · Art. 5(e)(iv) ICERD</p>
-        </div>
+         </div>
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
