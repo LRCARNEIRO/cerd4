@@ -109,7 +109,7 @@ export function VulnerabilidadesTab() {
             Vulnerabilidade Multidimensional — Raça × Gênero × Renda
           </CardTitle>
           <CardDescription>
-            Cruzamento indireto de 4 fontes oficiais: RASEAM 2023, II VIGISAN 2022, Censo 2022, Fiocruz/MIR 2023
+            Cruzamento indireto de 4 fontes oficiais: RASEAM 2023, Fiocruz/DSBR 2023, Censo 2022, Fiocruz/MIR 2023
           </CardDescription>
         </CardHeader>
         <CardContent>
