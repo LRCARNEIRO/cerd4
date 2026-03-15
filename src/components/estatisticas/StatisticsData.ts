@@ -912,7 +912,7 @@ export const trabalhoRacaGeneroFontes = [
 ];
 
 // CHEFIA FAMILIAR E VULNERABILIDADE: Raça × Gênero
-// Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022
+// Fontes: RASEAM 2023/2024 + Fiocruz/DSBR 2023 + Censo 2022
 // AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme Censo 2022 / SIDRA Tabela 10179
 // Dados anteriores (4,3M mulheres, 501K homens) eram de fontes não-verificáveis.
 // Novos valores: Censo 2022 — domicílios monoparentais por sexo e raça/cor do responsável.
