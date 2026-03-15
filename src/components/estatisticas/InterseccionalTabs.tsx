@@ -320,9 +320,9 @@ export function RacaGeneroTab() {
             ({(narrativaChefia.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022).
             {narrativaChefia.cadUnicoNegras != null ? ` Respondem por ${fmt(narrativaChefia.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(narrativaChefia.cadUnicoBrancas, 0)}% das brancas).` : ' Dados CadÚnico pendentes de verificação.'}
             {' '}A fome (IA grave) atinge {fmt(narrativaChefia.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, 
-            subindo a {fmt(narrativaChefia.fomeCriancas)}% nos lares com crianças menores de 10 anos (II VIGISAN 2022, recorte raça/gênero).
-          </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022/SIDRA 10179-10182 + II VIGISAN 2022 · Art. 5(e)(iv) ICERD</p>
+             subindo a {fmt(narrativaChefia.fomeCriancas)}% nos lares com crianças menores de 10 anos (Fiocruz/DSBR 2023, recorte raça/gênero).
+           </p>
+           <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: Censo 2022/SIDRA 10179-10182 + Fiocruz/DSBR 2023 · Art. 5(e)(iv) ICERD</p>
         </div>
         <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
           <h4 className="text-sm font-semibold text-destructive mb-1">📊 Análise: Racismo Obstétrico e Mortalidade Materna</h4>

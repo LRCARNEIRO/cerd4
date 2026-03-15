@@ -326,9 +326,9 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
   {
     indicador: 'Insegurança alimentar negra',
     secao: 'Vulnerabilidades',
-    url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
-    fonte: 'II VIGISAN / Rede PENSSAN',
-    descricao: 'II VIGISAN 2022 — Insegurança Alimentar no contexto da Covid-19 (PDF direto)',
+     url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
+     fonte: 'Fiocruz/DSBR',
+     descricao: 'Fiocruz/DSBR 2023 — Insegurança Alimentar por Raça/Gênero',
   },
   {
     indicador: 'Desocupação por cor/raça',

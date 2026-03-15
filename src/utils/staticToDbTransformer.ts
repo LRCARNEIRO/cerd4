@@ -336,7 +336,7 @@ export function buildMirrorIndicators(): DbRecord[] {
   all.push(rec(
     'Chefia familiar monoparental — raça × gênero',
     'genero_raca', 'chefia_familiar',
-    'Censo 2022 / SIDRA 10179-10182 + II VIGISAN',
+    'Censo 2022 / SIDRA 10179-10182 + Fiocruz/DSBR',
     'https://sidra.ibge.gov.br/Tabela/10179',
     ['Art. 2', 'Art. 5'],
     { ...chefiaFamiliarRacaGenero, fontes: undefined, paragrafos_cerd: '§25-26, §31-32' },
