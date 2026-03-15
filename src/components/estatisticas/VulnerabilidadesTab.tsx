@@ -312,7 +312,7 @@ export function VulnerabilidadesTab() {
             Cruzamento: Raça × Gênero (Trabalho)
           </CardTitle>
           <CardDescription>
-            Dados de Q2/2024 — DIEESE / PNAD Contínua
+            DIEESE Infográfico Consciência Negra 2025
           </CardDescription>
         </CardHeader>
         <CardContent>
