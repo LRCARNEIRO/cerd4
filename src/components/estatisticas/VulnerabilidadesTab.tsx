@@ -29,8 +29,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.percentualNegras,
       referencia: chefiaFamiliarRacaGenero.percentualBrancas,
       unidade: '%',
-      fonte: 'RASEAM 2023',
-      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
+      fonte: 'RASEAM 2025',
+      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam',
       icone: Home,
     },
     {
