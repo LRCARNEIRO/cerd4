@@ -89,7 +89,7 @@ const INDICADORES_ESTATICOS: IndicadorEstatico[] = [
     nome: 'Interseccionalidade Trabalho (4 grupos)',
     categoria: 'Trabalho e Renda',
     subcategoria: 'Interseccional',
-    fonte: 'DIEESE/PNAD Q2 2024',
+    fonte: 'DIEESE 2025',
     tipo: 'tabela',
     registros: 4,
     campos: ['grupo', 'renda', 'desemprego', 'informalidade'],
