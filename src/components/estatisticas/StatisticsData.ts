@@ -923,8 +923,8 @@ export const chefiaFamiliarRacaGenero = {
   percentualBrancas: 40.2,
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
-  // II VIGISAN 2022 — Recorte Raça/Gênero (Fiocruz/Rede PENSSAN, jun/2023)
-  // Fonte: https://dssbr.ensp.fiocruz.br/...mulheres-pardas-ou-pretas/
+  // Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero (jun/2023)
+  // Fonte: https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/
   fomeMulheresNegras: 20.6, // IA grave (fome) em domicílios chefiados por mulheres negras
   fomeHomensNegros: 17.1, // IA grave em domicílios chefiados por homens negros (pretos+pardos)
   iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // IA moderada+grave mesmo c/ 8+ anos estudo, mulheres negras
