@@ -912,7 +912,7 @@ export const trabalhoRacaGeneroFontes = [
 ];
 
 // CHEFIA FAMILIAR E VULNERABILIDADE: Raça × Gênero
-// Fontes: RASEAM 2023/2024 + II VIGISAN 2022 + Censo 2022
+// Fontes: RASEAM 2023/2024 + Fiocruz/DSBR 2023 + Censo 2022
 // AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme Censo 2022 / SIDRA Tabela 10179
 // Dados anteriores (4,3M mulheres, 501K homens) eram de fontes não-verificáveis.
 // Novos valores: Censo 2022 — domicílios monoparentais por sexo e raça/cor do responsável.
@@ -923,8 +923,8 @@ export const chefiaFamiliarRacaGenero = {
   percentualBrancas: 40.2,
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
-  // II VIGISAN 2022 — Recorte Raça/Gênero (Fiocruz/Rede PENSSAN, jun/2023)
-  // Fonte: https://dssbr.ensp.fiocruz.br/...mulheres-pardas-ou-pretas/
+  // Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero (jun/2023)
+  // Fonte: https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/
   fomeMulheresNegras: 20.6, // IA grave (fome) em domicílios chefiados por mulheres negras
   fomeHomensNegros: 17.1, // IA grave em domicílios chefiados por homens negros (pretos+pardos)
   iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // IA moderada+grave mesmo c/ 8+ anos estudo, mulheres negras
@@ -938,10 +938,9 @@ export const chefiaFamiliarRacaGenero = {
     { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
     { nome: 'Censo 2022/SIDRA 10181 — Homens chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10181' },
     { nome: 'Censo 2022/SIDRA 10182 — Homens negros chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10182' },
-    { nome: 'II VIGISAN 2022 — Recorte Raça/Gênero (Fiocruz/Rede PENSSAN)', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
-    { nome: 'Rede PENSSAN — Olhe para a Fome', url: 'https://pesquisassan.net.br/' },
+    { nome: 'Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
   ],
-  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor. IA/Fome: II VIGISAN 2022 — recorte raça/gênero publicado pela Fiocruz/Rede PENSSAN (jun/2023).',
+  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor. IA/Fome: Fiocruz/DSBR — recorte raça/gênero (jun/2023).',
 };
 
 // EDUCAÇÃO: Raça × Gênero

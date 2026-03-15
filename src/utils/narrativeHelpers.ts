@@ -134,7 +134,7 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
       const cadUnicoTexto = this.cadUnicoNegras != null && this.cadUnicoBrancas != null
         ? `, que respondem por ${fmt(this.cadUnicoNegras)}% das inscritas no CadÚnico (vs ${fmt(this.cadUnicoBrancas, 0)}% das brancas)`
         : ' (dados CadÚnico pendentes de verificação)';
-      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A fome (IA grave) atinge ${fmt(this.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, subindo a ${fmt(this.fomeCriancas)}% nos lares com crianças menores de 10 anos (II VIGISAN 2022, recorte raça/gênero).`;
+      return `${fmt(this.percentualNegras)}% dos ${(this.totalMulheres ?? 0).toLocaleString('pt-BR')} lares monoparentais femininos são chefiados por mulheres negras (${(this.totalMulheresNegras ?? 0).toLocaleString('pt-BR')} domicílios, Censo 2022)${cadUnicoTexto}. A fome (IA grave) atinge ${fmt(this.fomeMulheresNegras)}% dos domicílios chefiados por mulheres negras, subindo a ${fmt(this.fomeCriancas)}% nos lares com crianças menores de 10 anos (Fiocruz/DSBR 2023, recorte raça/gênero).`;
     },
   };
 

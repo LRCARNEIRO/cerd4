@@ -201,7 +201,7 @@ function inventoryDeepLinks(): AuditItem[] {
     { secao: 'COVID Racial', indicador: 'SciELO cor da morte', url: 'https://www.scielosp.org/article/physis/2024.v34/e34053/', fonte: 'SciELO' },
     { secao: 'COVID Racial', indicador: 'PNAD COVID-19', url: 'https://covid19.ibge.gov.br/pnad-covid/', fonte: 'IBGE' },
     { secao: 'Vulnerabilidades', indicador: 'Chefia familiar negra', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf', fonte: 'RASEAM' },
-    { secao: 'Vulnerabilidades', indicador: 'Insegurança alimentar negra', url: 'https://olheparaafome.com.br/VIGISAN_Inseguranca_alimentar.pdf', fonte: 'II VIGISAN' },
+    { secao: 'Vulnerabilidades', indicador: 'Insegurança alimentar negra', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/', fonte: 'Fiocruz/DSBR' },
     { secao: 'Adm Pública', indicador: 'ESTADIC 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao/16770-pesquisa-de-informacoes-basicas-estaduais.html', fonte: 'IBGE' },
     { secao: 'Adm Pública', indicador: 'MUNIC 2024', url: 'https://www.ibge.gov.br/estatisticas/sociais/educacao/10586-pesquisa-de-informacoes-basicas-municipais.html', fonte: 'IBGE' },
     { secao: 'Adm Pública', indicador: 'SINAPIR', url: 'https://www.gov.br/igualdaderacial/pt-br/assuntos/sinapir', fonte: 'MIR' },

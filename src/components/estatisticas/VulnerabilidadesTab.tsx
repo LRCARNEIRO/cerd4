@@ -15,8 +15,7 @@ import { useMirrorData } from '@/hooks/useMirrorData';
 
 const vulnerabilidadeFontes = [
   { nome: 'RASEAM 2024 — Chefia familiar monoparental (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
-  { nome: 'II VIGISAN 2022 — Inseg. Alimentar (PDF)', url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf' },
-  { nome: 'II VIGISAN 2022 — Mirror FAO', url: 'https://www.fao.org/family-farming/detail/en/c/1601189/' },
+  { nome: 'Fiocruz/DSBR — Inseg. Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
   { nome: 'Fiocruz/MIR — Informe Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
   { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
 ];
@@ -39,8 +38,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
       referencia: null,
       unidade: '%',
-      fonte: 'II VIGISAN 2022',
-      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
       icone: Utensils,
     },
     {
@@ -49,8 +48,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.domiciliosNegrosIA,
       referencia: null,
       unidade: '%',
-      fonte: 'II VIGISAN 2022',
-      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
       icone: Utensils,
     },
     {
@@ -71,8 +70,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
       referencia: null,
       unidade: '%',
-      fonte: 'II VIGISAN 2022',
-      url: 'https://olheparaafome.com.br/wp-content/uploads/2022/06/Relatorio-II-VIGISAN-2022.pdf',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
       icone: AlertTriangle,
     },
   ];
@@ -110,7 +109,7 @@ export function VulnerabilidadesTab() {
             Vulnerabilidade Multidimensional — Raça × Gênero × Renda
           </CardTitle>
           <CardDescription>
-            Cruzamento indireto de 4 fontes oficiais: RASEAM 2023, II VIGISAN 2022, Censo 2022, Fiocruz/MIR 2023
+            Cruzamento indireto de 4 fontes oficiais: RASEAM 2023, Fiocruz/DSBR 2023, Censo 2022, Fiocruz/MIR 2023
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -153,9 +152,9 @@ export function VulnerabilidadesTab() {
               Metodologia do cruzamento
             </p>
             <p className="text-xs text-muted-foreground">
-              <strong>🔀 Cruzamento indireto de 4 fontes:</strong> RASEAM 2023 (chefia monoparental × raça) + 
-              II VIGISAN 2022 (insegurança alimentar × sexo da pessoa de referência e × raça) + 
-              Censo 2022/SIDRA 6403 (arranjos domiciliares) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
+               <strong>🔀 Cruzamento indireto de 4 fontes:</strong> RASEAM 2023 (chefia monoparental × raça) + 
+               Fiocruz/DSBR 2023 (insegurança alimentar × sexo da pessoa de referência e × raça) + 
+               Censo 2022/SIDRA 6403 (arranjos domiciliares) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
               Nenhuma fonte publica todos os indicadores cruzados simultaneamente.
             </p>
           </div>
@@ -163,7 +162,7 @@ export function VulnerabilidadesTab() {
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"
-              metodologia="Cruzamento de RASEAM 2023 × II VIGISAN 2022 × Censo 2022 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
+              metodologia="Cruzamento de RASEAM 2023 × Fiocruz/DSBR 2023 × Censo 2022 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
             />
           </div>
 
