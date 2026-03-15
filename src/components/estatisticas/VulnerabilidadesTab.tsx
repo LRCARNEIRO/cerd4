@@ -14,9 +14,10 @@ import {
 import { useMirrorData } from '@/hooks/useMirrorData';
 
 const vulnerabilidadeFontes = [
-  { nome: 'RASEAM 2024 — Chefia familiar monoparental (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
+  { nome: 'RASEAM 2025 — Chefia familiar monoparental (Raça)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
   { nome: 'Fiocruz/DSBR — Inseg. Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
-  { nome: 'Fiocruz/MIR — Informe Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
+  { nome: 'SIDRA 9553 — Insegurança Alimentar 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
+  { nome: 'MDS 2024 — Fome em lares chefiados por mulheres', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
   { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
 ];
 
@@ -29,8 +30,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.percentualNegras,
       referencia: chefiaFamiliarRacaGenero.percentualBrancas,
       unidade: '%',
-      fonte: 'RASEAM 2023',
-      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf',
+      fonte: 'RASEAM 2025',
+      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam',
       icone: Home,
     },
     {
@@ -120,7 +121,7 @@ export function VulnerabilidadesTab() {
             Vulnerabilidade Multidimensional — Raça × Gênero × Renda
           </CardTitle>
           <CardDescription>
-            Cruzamento indireto de 4 fontes oficiais: RASEAM 2023, Fiocruz/DSBR 2023, Censo 2022, Fiocruz/MIR 2023
+            Cruzamento indireto de 5 fontes oficiais: RASEAM 2025, Fiocruz/DSBR 2023, Censo 2022, SIDRA 9553 (2024), MDS 2024
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -163,9 +164,9 @@ export function VulnerabilidadesTab() {
               Metodologia do cruzamento
             </p>
             <p className="text-xs text-muted-foreground">
-               <strong>🔀 Cruzamento indireto de 4 fontes:</strong> RASEAM 2023 (chefia monoparental × raça) + 
+               <strong>🔀 Cruzamento indireto de 5 fontes:</strong> RASEAM 2025 (chefia monoparental × raça) + 
                Fiocruz/DSBR 2023 (insegurança alimentar × sexo da pessoa de referência e × raça) + 
-               Censo 2022/SIDRA 6403 (arranjos domiciliares) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
+               SIDRA 9553/2024 (IA × raça/sexo) + MDS 2024 (fome × chefia feminina) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
               Nenhuma fonte publica todos os indicadores cruzados simultaneamente.
             </p>
           </div>
@@ -173,7 +174,7 @@ export function VulnerabilidadesTab() {
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"
-              metodologia="Cruzamento de RASEAM 2023 × Fiocruz/DSBR 2023 × Censo 2022 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
+              metodologia="Cruzamento de RASEAM 2025 × Fiocruz/DSBR 2023 × SIDRA 9553/2024 × MDS 2024 × Fiocruz/MIR 2023. Nenhuma fonte publica chefia monoparental × raça × insegurança alimentar × cadastro social conjuntamente."
             />
           </div>
 
@@ -243,19 +244,19 @@ export function VulnerabilidadesTab() {
               Chefia Familiar e Proteção Social
             </CardTitle>
             <CardDescription>
-              Cruzamento: RASEAM 2023 + Fiocruz/MIR 2023 + Censo 2022
+              Cruzamento: RASEAM 2025 + Fiocruz/DSBR 2023 + SIDRA 9553/2024 + MDS 2024
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20 text-center">
-                  <p className="text-2xl font-bold text-destructive">4,3M</p>
+                  <p className="text-2xl font-bold text-destructive">{(chefiaFamiliarRacaGenero.mulheresChefesMonoparentais / 1e6).toFixed(1)}M</p>
                   <p className="text-xs text-muted-foreground">Famílias monoparentais femininas</p>
                 </div>
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-center">
-                  <p className="text-2xl font-bold text-primary">65,8%</p>
-                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras</p>
+                  <p className="text-2xl font-bold text-primary">{chefiaFamiliarRacaGenero.percentualNegras}%</p>
+                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras (RASEAM 2025)</p>
                 </div>
               </div>
 
@@ -271,15 +272,15 @@ export function VulnerabilidadesTab() {
                 <TableBody>
                   <TableRow>
                     <TableCell className="text-sm">CadÚnico (mulheres)</TableCell>
-                    <TableCell className="text-right font-semibold text-destructive">38,5%</TableCell>
-                    <TableCell className="text-right">17,0%</TableCell>
-                    <TableCell className="text-right font-semibold">2,3×</TableCell>
+                    <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}%</TableCell>
+                    <TableCell className="text-right">{chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}%</TableCell>
+                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.cadUnicoMulheresNegras / chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas).toFixed(1)}×</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="text-sm">Chefia monoparental</TableCell>
-                    <TableCell className="text-right font-semibold text-destructive">65,8%</TableCell>
-                    <TableCell className="text-right">34,2%</TableCell>
-                    <TableCell className="text-right font-semibold">1,9×</TableCell>
+                    <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.percentualNegras}%</TableCell>
+                    <TableCell className="text-right">{chefiaFamiliarRacaGenero.percentualBrancas}%</TableCell>
+                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.percentualNegras / chefiaFamiliarRacaGenero.percentualBrancas).toFixed(1)}×</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -287,15 +288,16 @@ export function VulnerabilidadesTab() {
               <div className="mt-2 flex items-center gap-2">
                 <EstimativaBadge
                   tipo="cruzamento"
-                  metodologia="RASEAM 2023 (chefia monoparental × raça) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero) + Censo 2022 (arranjos domiciliares)."
+                  metodologia="RASEAM 2025 (chefia monoparental × raça) + SIDRA 9553/2024 (IA × raça/sexo) + MDS 2024 (fome) + CadÚnico 2023 via Fiocruz/MIR."
                 />
               </div>
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'RASEAM 2024 (PDF)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam/ministeriodasmulheres-obig-raseam-2024.pdf' },
+                { nome: 'RASEAM 2025', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
+                { nome: 'SIDRA 9553 — IA 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
+                { nome: 'MDS 2024 — Fome/chefia', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
                 { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
-                { nome: 'Censo 2022 — Arranjos', url: 'https://sidra.ibge.gov.br/tabela/6403' },
               ]}
               documentos={['CERD 2022 §20', 'Durban §15']}
             />
@@ -311,7 +313,7 @@ export function VulnerabilidadesTab() {
             Cruzamento: Raça × Gênero (Trabalho)
           </CardTitle>
           <CardDescription>
-            Dados de Q2/2024 — DIEESE / PNAD Contínua
+            DIEESE Infográfico Consciência Negra 2025
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -331,9 +333,7 @@ export function VulnerabilidadesTab() {
                     {item.grupo}
                   </TableCell>
                   <TableCell className="text-right">
-                    {item.grupo === 'Homem Negro' ? (
-                      <span className="text-muted-foreground text-xs" title="DIEESE Q2 2024 publica apenas total negros (R$2.392), sem desagregação por sexo">N/D ¹</span>
-                    ) : formatCurrency(item.renda)}
+                    {formatCurrency(item.renda)}
                   </TableCell>
                   <TableCell className={cn("text-right", item.desemprego > 15 && "text-destructive font-semibold")}>
                     {item.desemprego}%
@@ -345,7 +345,7 @@ export function VulnerabilidadesTab() {
               ))}
             </TableBody>
           </Table>
-          <p className="text-[10px] text-muted-foreground mt-2">¹ DIEESE Q2 2024 publica renda média total de negros (R$2.392) sem desagregação por sexo. Valor removido — Regra de Ouro.</p>
+          <p className="text-[10px] text-muted-foreground mt-2">Fonte: DIEESE Infográfico Consciência Negra 2025.</p>
           <div className="mt-2 flex items-center gap-2">
             <EstimativaBadge
               tipo="cruzamento"

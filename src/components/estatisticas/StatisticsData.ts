@@ -522,17 +522,16 @@ export const rendimentosCenso2022 = {
 //   Os dados anteriores por faixa etária (18-29, 30-49, 50+) eram FABRICADOS.
 //   Mantemos apenas o cruzamento raça × gênero, que é verificável.
 export const interseccionalidadeTrabalho = [
-  // AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme DIEESE Boletim Consciência Negra Nov/2024
-  // Fonte: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
-  // Rendimento médio: p.8 | Desocupação: p.3 | Informalidade (trabalho desprotegido): p.5
+  // AUDITORIA MANUAL 15/03/2026: Valores atualizados conforme DIEESE Infográfico Consciência Negra 2025
+  // Fonte: https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html
   // NOTA: DIEESE usa "negros" e "não negros" (e NÃO "brancos"). Labels ajustados.
-  { grupo: 'Mulher Negra', renda: 2079, desemprego: 10.1, informalidade: 46.5, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Homem Negro', renda: 2610, desemprego: 6.3, informalidade: 45.8, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Mulher Não Negra', renda: 3404, desemprego: 6.7, informalidade: 34.3, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
-  { grupo: 'Homem Não Negro', renda: 4492, desemprego: 4.6, informalidade: 34.1, fonte: 'DIEESE/PNAD Q2 2024, p.8/p.3/p.5' },
+  { grupo: 'Mulher Negra', renda: 2264, desemprego: 8.0, informalidade: 39.0, fonte: 'DIEESE 2025' },
+  { grupo: 'Homem Negro', renda: 2849, desemprego: 6.3, informalidade: 45.8, fonte: 'DIEESE 2025' },
+  { grupo: 'Mulher Não Negra', renda: 3691, desemprego: 6.7, informalidade: 34.3, fonte: 'DIEESE 2025' },
+  { grupo: 'Homem Não Negro', renda: 4835, desemprego: 4.6, informalidade: 34.1, fonte: 'DIEESE 2025' },
 ];
 export const interseccionalidadeTrabalhoFontes = [
-  { nome: 'DIEESE — Boletim Trabalho e Raça Q2/2024', url: 'https://www.dieese.org.br/outraspublicacoes/2024/trabalhoeRaca.html' },
+  { nome: 'DIEESE — Infográfico Consciência Negra 2025', url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html' },
   { nome: 'SIDRA 6405 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6405' },
   { nome: 'SIDRA 6402 — Desocupação por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6402' },
   { nome: 'SIDRA 6403 — Características gerais', url: 'https://sidra.ibge.gov.br/Tabela/6403' },
@@ -858,10 +857,10 @@ export const juventudeNegra = [
 // =============================================
 
 // MERCADO DE TRABALHO: Raça × Gênero
-// Fonte primária: DIEESE Boletim Consciência Negra Nov/2024 (PNAD Q2 2024)
-// + Fiocruz/MIR Informe 2023 + RASEAM 2023
-// AUDITORIA MANUAL 11/03/2026: Todos os valores corrigidos conforme DIEESE Boletim Consciência Negra Nov/2024
-// Fonte: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
+// Fonte primária: DIEESE Infográfico Consciência Negra 2025
+// + Fiocruz/MIR Informe 2023 + RASEAM 2025
+// AUDITORIA MANUAL 15/03/2026: Todos os valores corrigidos conforme planilha de auditagem Henrique
+// Fonte: https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html
 // NOTA IMPORTANTE: DIEESE usa "negros" e "não negros" (NÃO "brancos"). Labels foram ajustados.
 // Rendimento médio no 2º trimestre de 2024: p.8
 // Taxa de desocupação no 2º trimestre de 2024: p.3
@@ -899,9 +898,9 @@ export const trabalhoRacaGenero = [
     mulherNegra: 46.5,
     unidade: '%',
     razaoMulherNegraHomemBranco: 1.36, // 46.5/34.1
-    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.5',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Mulheres negras: 46,5% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
+    fonte: 'DIEESE — Infográfico Consciência Negra 2025',
+    url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
+    nota: 'Mulheres negras: 39% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
   },
 ];
 
@@ -912,15 +911,14 @@ export const trabalhoRacaGeneroFontes = [
 ];
 
 // CHEFIA FAMILIAR E VULNERABILIDADE: Raça × Gênero
-// Fontes: RASEAM 2023/2024 + Fiocruz/DSBR 2023 + Censo 2022
-// AUDITORIA MANUAL 11/03/2026: Valores corrigidos conforme Censo 2022 / SIDRA Tabela 10179
-// Dados anteriores (4,3M mulheres, 501K homens) eram de fontes não-verificáveis.
-// Novos valores: Censo 2022 — domicílios monoparentais por sexo e raça/cor do responsável.
+// Fontes: RASEAM 2025 + Fiocruz/DSBR 2023 + Censo 2022 + SIDRA 9553 (2024) + MDS 2024
+// AUDITORIA MANUAL 15/03/2026: Valores corrigidos conforme planilha de auditagem Henrique
 export const chefiaFamiliarRacaGenero = {
   mulheresChefesMonoparentais: 7810826, // Censo 2022/SIDRA 10179
   mulheresNegrasChefesMonoparentais: 4667133, // Censo 2022/SIDRA 10180
-  percentualNegras: 59.8, // 4.667.133 / 7.810.826
-  percentualBrancas: 40.2,
+  // RASEAM 2025 — atualizado de 59,8% para 69,2%
+  percentualNegras: 69.2, // RASEAM 2025
+  percentualBrancas: 29.5, // RASEAM 2025
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
   // Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero (jun/2023)
@@ -949,14 +947,21 @@ export const chefiaFamiliarRacaGenero = {
   totalIABrasil2022Milhoes: 125.2,
   cadUnicoMulheresNegras: 38.5, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
   cadUnicoMulheresBrancas: 17.0, // FPA Brasil/CadÚnico Jun/2023 — Auditado 12/03/2026
+  // SIDRA 9553 (2024) — Insegurança Alimentar por raça e sexo do responsável
+  // Auditoria 15/03/2026: substituem dados antigos de II VIGISAN
+  domiciliosFemininosIA: 59.9, // % dos domicílios com IA chefiados por mulheres (SIDRA 9553, 2024)
+  domiciliosNegrosIA: 70.3, // % dos domicílios com IA chefiados por negros (SIDRA 9553, 2024)
+  // MDS 2024 — Fome em lares chefiados por mulheres
+  // Fonte: https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia
+  domiciliosFemininosFome: 3.6, // taxa de fome em lares chefiados por mulheres (MDS 2024) — anterior: 18,8%
   fontes: [
-    { nome: 'Censo 2022/SIDRA 10179 — Mulheres chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
-    { nome: 'Censo 2022/SIDRA 10180 — Mulheres negras chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10180' },
-    { nome: 'Censo 2022/SIDRA 10181 — Homens chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10181' },
-    { nome: 'Censo 2022/SIDRA 10182 — Homens negros chefes monoparentais', url: 'https://sidra.ibge.gov.br/Tabela/10182' },
+    { nome: 'RASEAM 2025 — Chefia monoparental por raça', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
+    { nome: 'Censo 2022/SIDRA 10179-10182', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
+    { nome: 'SIDRA 9553 — Insegurança Alimentar 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
+    { nome: 'MDS 2024 — Fome e chefia feminina', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
     { nome: 'Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
   ],
-  metodologia: 'Censo 2022 (SIDRA 10179-10182): domicílios monoparentais por sexo e raça/cor. IA/Fome: Fiocruz/DSBR — recorte raça/gênero (jun/2023).',
+  metodologia: 'RASEAM 2025 (chefia monoparental × raça). SIDRA 9553/2024 (IA × raça/sexo responsável). MDS 2024 (fome × chefia feminina). Fiocruz/DSBR (fome × raça × gênero).',
 };
 
 // EDUCAÇÃO: Raça × Gênero

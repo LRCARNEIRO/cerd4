@@ -135,8 +135,8 @@ export function RacaGeneroTab() {
               Mercado de Trabalho por Raça × Gênero
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              DIEESE/PNAD Q2 2024
-              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Boletim DIEESE 'Consciência Negra' (Nov/2024, p.5-12, dados PNAD Contínua Q2/2024). O IBGE/PNAD não publica tabela única com os 3 indicadores cruzados por raça e sexo. DIEESE consolida a partir de microdados. Link: dieese.org.br/boletimespecial/2024/boletimEspecial02.html" />
+              DIEESE 2025
+              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Infográfico DIEESE 'Consciência Negra' (2025). Link: dieese.org.br/infografico/2025/conscienciaNegraInfo.html" />
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -200,7 +200,7 @@ export function RacaGeneroTab() {
             {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina branca ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
+          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE 2025 · Art. 5(e)(i) ICERD</p>
         </div>
       </div>
 
@@ -213,7 +213,7 @@ export function RacaGeneroTab() {
               Chefia Familiar e Vulnerabilidade por Raça × Gênero
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              RASEAM 2023 + Fiocruz/DSBR 2023 + CadÚnico 2023
+              RASEAM 2025 + Fiocruz/DSBR 2023 + CadÚnico 2023
               <EstimativaBadge tipo="cruzamento" metodologia={chefiaFamiliarRacaGenero.metodologia} />
             </CardDescription>
           </CardHeader>
