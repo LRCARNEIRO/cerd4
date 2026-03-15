@@ -21,6 +21,7 @@ const vulnerabilidadeFontes = [
 ];
 
 function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
+  const fiocruzUrl = 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/';
   const multidimensional = [
     {
       dimensao: 'Chefia monoparental feminina negra',
@@ -33,24 +34,44 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       icone: Home,
     },
     {
-      dimensao: 'Insegurança alimentar (domicílios femininos)',
-      indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosIA}% dos domicílios chefiados por mulheres vivem com insegurança alimentar`,
-      valor: chefiaFamiliarRacaGenero.domiciliosFemininosIA,
-      referencia: null,
+      dimensao: 'Fome — mulheres negras (gênero)',
+      indicador: `${chefiaFamiliarRacaGenero.fomeMulheresNegras}% dos lares chefiados por mulheres negras sofrem com fome (vs ${chefiaFamiliarRacaGenero.fomeMulheresBrancas}% mulheres brancas)`,
+      valor: chefiaFamiliarRacaGenero.fomeMulheresNegras,
+      referencia: chefiaFamiliarRacaGenero.fomeMulheresBrancas,
       unidade: '%',
       fonte: 'Fiocruz/DSBR 2023',
-      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
+      url: fiocruzUrl,
+      icone: AlertTriangle,
+    },
+    {
+      dimensao: 'Fome — crianças <10 (mulheres negras)',
+      indicador: `${chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}% de fome nos lares c/ crianças chefiados por mulheres negras — só ${chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresNegras}% em segurança alimentar`,
+      valor: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
+      referencia: chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos,
+      unidade: '%',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: fiocruzUrl,
       icone: Utensils,
     },
     {
-      dimensao: 'Inseg. alimentar (domicílios negros)',
-      indicador: `${chefiaFamiliarRacaGenero.domiciliosNegrosIA}% dos domicílios com pessoa negra de referência estão em insegurança alimentar`,
-      valor: chefiaFamiliarRacaGenero.domiciliosNegrosIA,
-      referencia: null,
+      dimensao: 'Fome + desemprego — mulheres negras',
+      indicador: `${chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras}% de fome quando desempregadas (vs ${chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros}% homens negros)`,
+      valor: chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras,
+      referencia: chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros,
       unidade: '%',
       fonte: 'Fiocruz/DSBR 2023',
-      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
-      icone: Utensils,
+      url: fiocruzUrl,
+      icone: AlertTriangle,
+    },
+    {
+      dimensao: 'Escolaridade não protege (mulheres negras)',
+      indicador: `${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}% de IA mod.+grave mesmo c/ 8+ anos estudo (vs ${chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados}% homens brancos)`,
+      valor: chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas,
+      referencia: chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados,
+      unidade: '%',
+      fonte: 'Fiocruz/DSBR 2023',
+      url: fiocruzUrl,
+      icone: ShieldAlert,
     },
     {
       dimensao: 'CadÚnico — mulheres negras',
@@ -60,19 +81,9 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas,
       unidade: '%',
-      fonte: 'Pendente verificação',
+      fonte: 'FPA Brasil/CadÚnico 2023',
       url: '',
       icone: ShieldAlert,
-    },
-    {
-      dimensao: 'Fome (domicílios femininos)',
-      indicador: `${chefiaFamiliarRacaGenero.domiciliosFemininosFome}% dos domicílios chefiados por mulheres vivem em situação de fome`,
-      valor: chefiaFamiliarRacaGenero.domiciliosFemininosFome,
-      referencia: null,
-      unidade: '%',
-      fonte: 'Fiocruz/DSBR 2023',
-      url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/',
-      icone: AlertTriangle,
     },
   ];
 
