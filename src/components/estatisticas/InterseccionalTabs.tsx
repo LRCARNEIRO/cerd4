@@ -200,7 +200,7 @@ export function RacaGeneroTab() {
             {fmt(narrativaTrabalho.razaoDesemprego)}× superior à masculina branca ({fmt(narrativaTrabalho.desempregoHomemBranco)}%), e a informalidade negra feminina ({fmt(narrativaTrabalho.informalidadeMulherNegra)}%) inviabiliza proteção social. 
             O cruzamento confirma o <strong>"piso pegajoso"</strong> descrito na literatura interseccional.
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE Q2/2024 · Art. 5(e)(i) ICERD</p>
+          <p className="text-[10px] text-muted-foreground mt-1 italic">Fonte: DIEESE 2025 · Art. 5(e)(i) ICERD</p>
         </div>
       </div>
 
