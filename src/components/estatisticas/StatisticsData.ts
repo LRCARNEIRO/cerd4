@@ -898,9 +898,9 @@ export const trabalhoRacaGenero = [
     mulherNegra: 46.5,
     unidade: '%',
     razaoMulherNegraHomemBranco: 1.36, // 46.5/34.1
-    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.5',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Mulheres negras: 46,5% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
+    fonte: 'DIEESE — Infográfico Consciência Negra 2025',
+    url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
+    nota: 'Mulheres negras: 39% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
   },
 ];
 
