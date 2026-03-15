@@ -152,9 +152,9 @@ export function VulnerabilidadesTab() {
               Metodologia do cruzamento
             </p>
             <p className="text-xs text-muted-foreground">
-              <strong>🔀 Cruzamento indireto de 4 fontes:</strong> RASEAM 2023 (chefia monoparental × raça) + 
-              II VIGISAN 2022 (insegurança alimentar × sexo da pessoa de referência e × raça) + 
-              Censo 2022/SIDRA 6403 (arranjos domiciliares) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
+               <strong>🔀 Cruzamento indireto de 4 fontes:</strong> RASEAM 2023 (chefia monoparental × raça) + 
+               Fiocruz/DSBR 2023 (insegurança alimentar × sexo da pessoa de referência e × raça) + 
+               Censo 2022/SIDRA 6403 (arranjos domiciliares) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero).
               Nenhuma fonte publica todos os indicadores cruzados simultaneamente.
             </p>
           </div>
