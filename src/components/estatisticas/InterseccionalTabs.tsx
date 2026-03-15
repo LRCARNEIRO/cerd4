@@ -135,8 +135,8 @@ export function RacaGeneroTab() {
               Mercado de Trabalho por Raça × Gênero
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              DIEESE/PNAD Q2 2024
-              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Boletim DIEESE 'Consciência Negra' (Nov/2024, p.5-12, dados PNAD Contínua Q2/2024). O IBGE/PNAD não publica tabela única com os 3 indicadores cruzados por raça e sexo. DIEESE consolida a partir de microdados. Link: dieese.org.br/boletimespecial/2024/boletimEspecial02.html" />
+              DIEESE 2025
+              <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: rendimento, desemprego e informalidade por raça × gênero extraídos do Infográfico DIEESE 'Consciência Negra' (2025). Link: dieese.org.br/infografico/2025/conscienciaNegraInfo.html" />
             </CardDescription>
           </CardHeader>
           <CardContent>
