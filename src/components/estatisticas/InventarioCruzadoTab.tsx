@@ -272,7 +272,7 @@ const INDICADORES_ESTATICOS: IndicadorEstatico[] = [
   {
     nome: 'Chefia Familiar Raça × Gênero',
     categoria: 'Vulnerabilidade',
-    fonte: 'RASEAM 2024 / Fiocruz/DSBR 2023',
+    fonte: 'RASEAM 2025 / Fiocruz/DSBR 2023 / SIDRA 9553',
     tipo: 'cruzamento',
     registros: 1,
     campos: ['mulheresChefes', 'percentualNegras', 'insegurancaAlimentar', 'cadUnico'],

@@ -857,10 +857,10 @@ export const juventudeNegra = [
 // =============================================
 
 // MERCADO DE TRABALHO: Raça × Gênero
-// Fonte primária: DIEESE Boletim Consciência Negra Nov/2024 (PNAD Q2 2024)
-// + Fiocruz/MIR Informe 2023 + RASEAM 2023
-// AUDITORIA MANUAL 11/03/2026: Todos os valores corrigidos conforme DIEESE Boletim Consciência Negra Nov/2024
-// Fonte: https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf
+// Fonte primária: DIEESE Infográfico Consciência Negra 2025
+// + Fiocruz/MIR Informe 2023 + RASEAM 2025
+// AUDITORIA MANUAL 15/03/2026: Todos os valores corrigidos conforme planilha de auditagem Henrique
+// Fonte: https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html
 // NOTA IMPORTANTE: DIEESE usa "negros" e "não negros" (NÃO "brancos"). Labels foram ajustados.
 // Rendimento médio no 2º trimestre de 2024: p.8
 // Taxa de desocupação no 2º trimestre de 2024: p.3

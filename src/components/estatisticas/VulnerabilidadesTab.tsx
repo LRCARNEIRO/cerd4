@@ -288,7 +288,7 @@ export function VulnerabilidadesTab() {
               <div className="mt-2 flex items-center gap-2">
                 <EstimativaBadge
                   tipo="cruzamento"
-                  metodologia="RASEAM 2023 (chefia monoparental × raça) + CadÚnico 2023 via Fiocruz/MIR (perfil beneficiários × raça × gênero) + Censo 2022 (arranjos domiciliares)."
+                  metodologia="RASEAM 2025 (chefia monoparental × raça) + SIDRA 9553/2024 (IA × raça/sexo) + MDS 2024 (fome) + CadÚnico 2023 via Fiocruz/MIR."
                 />
               </div>
             </div>
