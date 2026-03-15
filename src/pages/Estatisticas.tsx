@@ -70,8 +70,8 @@ export default function Estatisticas() {
     // SAÚDE
     'saudeSerieHistorica (7 anos × 4 métricas)': { total: 28, auditados: 28 },
     // HABITAÇÃO
-    'deficitHabitacionalSerie (3 anos × 2 raças)': { total: 6, auditados: 0 },
-    'cadUnicoPerfilRacial (8 anos × 2 raças)': { total: 16, auditados: 0 },
+    'deficitHabitacionalSerie (3 anos × 2 raças)': { total: 6, auditados: 6 },
+    'cadUnicoPerfilRacial (8 anos × 2 raças)': { total: 16, auditados: 16 },
     // RAÇA × GÊNERO
     'interseccionalidadeTrabalho (4 grupos × 3 métricas)': { total: 12, auditados: 12 },
     'trabalhoRacaGenero (3 indicadores × 4 grupos)': { total: 12, auditados: 12 },
