@@ -160,7 +160,7 @@ export function generateMethodologyHTML(): string {
           nome: 'Direitos Territoriais',
           icone: '🗺️',
           origem: 'Observações Finais §47-53 + INCRA/FUNAI',
-          motivacao: `Responde diretamente aos <strong>§47-53 das Observações Finais de 2022</strong>, que expressam preocupação com (a) a lentidão na titulação de territórios quilombolas (INCRA — 245 títulos acumulados em 2025, de 2.014 processos abertos) e (b) a paralisação de demarcações de terras indígenas (FUNAI — 496 homologadas de 644 identificadas). Apresenta série histórica comparando períodos de trava (2018-2022) e retomada (2023-2025), com deep links para documentos-fonte do INCRA e FUNAI.`,
+          motivacao: `Responde diretamente aos <strong>§47-53 das Observações Finais de 2022</strong>, que expressam preocupação com (a) a lentidão na titulação de territórios quilombolas (INCRA — 384 títulos acumulados, de 2.019 processos abertos) e (b) a paralisação de demarcações de terras indígenas (FUNAI — 496 homologadas de 646 identificadas). Apresenta série histórica comparando períodos de trava (2018-2022) e retomada (2023-2025), com deep links para documentos-fonte do INCRA e FUNAI.`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'CERD-Follow-up-Brasil-2026.pdf'],
           promptOrigem: 'Documentar direitos territoriais quilombolas (INCRA — títulos, processos, certidões FCP) e indígenas (FUNAI — TIs homologadas, em estudo, etnias, línguas) com série histórica 2018-2025 e comparação de períodos.',
           artigos: ['Art. V.d.v (Propriedade)', 'Art. V.e (Direitos econômicos)', 'Art. II (Medidas)'],

@@ -738,7 +738,7 @@ export default function GruposFocais() {
                       </div>
                       <div className="text-center">
                         <p className="text-muted-foreground">Total TIs</p>
-                        <p className="font-medium">626 → 644</p>
+                        <p className="font-medium">626 → 646</p>
                         <Badge variant="outline" className="text-success border-success/30 text-xs">+2.9%</Badge>
                       </div>
                       <div className="text-center">
