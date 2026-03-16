@@ -41,13 +41,22 @@ function isPctKey(key: string): boolean {
 function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
-    'escolas_em_territorios', 'alfabetizacao', 'por_regiao', 'religioes_vitimadas_2024',
+    'escolas_em_territorios', 'escolas_ensino_basico_em_territorios', 'escolas_ensino_fundamental_em_territorios',
+    'alfabetizacao', 'por_regiao', 'religioes_vitimadas_2024',
     'pendente_extracao', 'fonte_extracao', 'marcos', 'pct_justica_estadual',
     'pct_sem_esgoto_adequado', 'pct_sem_agua_canalizada_TIs',
     'TIs_homologadas_total', 'TIs_em_estudo', 'TIs_declaradas_sem_homologacao',
-    'titulos_emitidos_total', 'processos_abertos',
+    'TIs_homologadas_e_reservadas_total', 'TIs_em_identificacao',
+    'titulos_emitidos_total', 'processos_abertos', 'processos_abertos_total',
     'presos_negros', 'pct_mulheres_negras_presas',
     'processos_pendentes_acumulados',
+    'url_fonte_alfabetizacao_indigena', 'url_fonte_alfabetizacao_negros',
+    'url_fonte_alfabetizacao_brancos', 'url_fonte_escolas',
+    'url_nascidos_vivos', 'url_obitos_infantis',
+    'obs_2022', 'lacuna_dados_regionais',
+    'total_por_uf', 'em_territorios_por_uf', 'fora_territorios_por_uf',
+    'em_TIs_por_uf', 'fora_TIs_por_uf',
+    'naturalizados_brasileiros', 'taxa_naturalizados_pct', 'estrangeiros', 'taxa_estrangeiros_pct',
   ]);
 
   const pctSeriesKeys: string[] = [];
