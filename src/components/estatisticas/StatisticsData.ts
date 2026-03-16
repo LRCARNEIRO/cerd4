@@ -859,54 +859,51 @@ export const juventudeNegra = [
 // MERCADO DE TRABALHO: Raça × Gênero
 // Fonte primária: DIEESE Infográfico Consciência Negra 2025
 // + Fiocruz/MIR Informe 2023 + RASEAM 2025
-// AUDITORIA MANUAL 15/03/2026: Todos os valores corrigidos conforme planilha de auditagem Henrique
+// AUDITORIA MANUAL 16/03/2026: Saneamento — migrado de Q2 2024 para DIEESE Anual 2025 (canônico)
 // Fonte: https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html
 // NOTA IMPORTANTE: DIEESE usa "negros" e "não negros" (NÃO "brancos"). Labels foram ajustados.
-// Rendimento médio no 2º trimestre de 2024: p.8
-// Taxa de desocupação no 2º trimestre de 2024: p.3
-// Proporção de ocupados em trabalho desprotegido (informalidade) no 2º trimestre de 2024: p.5
 export const trabalhoRacaGenero = [
   {
-    indicador: 'Rendimento médio (Q2 2024)',
-    homemBranco: 4492, // "Homem não negro" no DIEESE
-    mulherBranca: 3404, // "Mulher não negra" no DIEESE
-    homemNegro: 2610,
-    mulherNegra: 2079,
+    indicador: 'Rendimento médio (DIEESE 2025)',
+    homemBranco: 4835, // "Homem não negro" no DIEESE
+    mulherBranca: 3691, // "Mulher não negra" no DIEESE
+    homemNegro: 2849,
+    mulherNegra: 2264,
     unidade: 'R$',
-    razaoMulherNegraHomemBranco: 0.463, // 2079/4492
-    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.8',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Mulher negra ganha 46,3% do rendimento do homem não negro. Labels "branco" = "não negro" conforme DIEESE.',
+    razaoMulherNegraHomemBranco: 0.468, // 2264/4835
+    fonte: 'DIEESE — Infográfico Consciência Negra 2025',
+    url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
+    nota: 'Mulher negra ganha 46,8% do rendimento do homem não negro. Labels "branco" = "não negro" conforme DIEESE.',
   },
   {
-    indicador: 'Taxa de desocupação (Q2 2024, %)',
+    indicador: 'Taxa de desocupação (DIEESE 2025, %)',
     homemBranco: 4.6, // "Homem não negro"
     mulherBranca: 6.7, // "Mulher não negra"
     homemNegro: 6.3,
-    mulherNegra: 10.1,
+    mulherNegra: 8.0,
     unidade: '%',
-    razaoMulherNegraHomemBranco: 2.20, // 10.1/4.6
-    fonte: 'DIEESE — Boletim Consciência Negra Nov/2024 (PNAD Q2 2024), p.3',
-    url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf',
-    nota: 'Desemprego de mulheres negras é 2,2x maior que de homens não negros',
+    razaoMulherNegraHomemBranco: 1.74, // 8.0/4.6
+    fonte: 'DIEESE — Infográfico Consciência Negra 2025',
+    url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
+    nota: 'Desemprego de mulheres negras é 1,7x maior que de homens não negros (DIEESE 2025)',
   },
   {
-    indicador: 'Informalidade (Q2 2024, %)',
+    indicador: 'Informalidade (DIEESE 2025, %)',
     homemBranco: 34.1, // "Homem não negro"
     mulherBranca: 34.3, // "Mulher não negra"
     homemNegro: 45.8,
-    mulherNegra: 46.5,
+    mulherNegra: 39.0,
     unidade: '%',
-    razaoMulherNegraHomemBranco: 1.36, // 46.5/34.1
+    razaoMulherNegraHomemBranco: 1.14, // 39.0/34.1
     fonte: 'DIEESE — Infográfico Consciência Negra 2025',
     url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
-    nota: 'Mulheres negras: 39% em trabalho desprotegido vs 34,1% homens não negros. DIEESE usa "trabalho desprotegido" (conceito similar a informalidade).',
+    nota: 'Mulheres negras: 39% em trabalho desprotegido vs 34,1% homens não negros.',
   },
 ];
 
 export const trabalhoRacaGeneroFontes = [
-  { nome: 'DIEESE — Boletim Consciência Negra Nov/2024', url: 'https://www.dieese.org.br/boletimespecial/2024/conscienciaNegra.pdf' },
-  { nome: 'DIEESE/SINESP — Pop. Negra Q2 2024', url: 'https://sinesp.org.br/images/2024/novembro/Brasil_e_regi%C3%B5es_2024_-_Popula%C3%A7%C3%A3o_negra1.pdf' },
+  { nome: 'DIEESE — Infográfico Consciência Negra 2025', url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html' },
+  { nome: 'DIEESE/SINESP — Pop. Negra 2025', url: 'https://sinesp.org.br/images/2024/novembro/Brasil_e_regi%C3%B5es_2024_-_Popula%C3%A7%C3%A3o_negra1.pdf' },
   { nome: 'Fiocruz/MIR — Mulheres Negras no Brasil', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },
 ];
 
