@@ -223,19 +223,20 @@ export const doencasCronicasRaca: ComplementoIndicador = {
 
 // ===== 9. DENÚNCIAS DISCRIMINAÇÃO RACIAL (DISQUE 100) =====
 export const denunciasDiscriminacaoRacial: ComplementoIndicador = {
-  nome: 'Denúncias de discriminação racial — Disque 100',
+  nome: 'Denúncias por discriminação, injúria racial e étnica e racismo',
   categoria: 'legislacao_justica',
   subcategoria: 'Justiça Racial',
-  fonte: 'MDHC/ONDH — Painel Disque 100 (filtro: "Discriminação racial", série 2021-2024)',
-  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados/dados-do-disque-100',
+  fonte: 'MDHC/ONDH — Painel de Dados (filtro: discriminação racial/étnica/injúria, série 2022-2025)',
+  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.6', 'Art.4'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
   dados: {
-    nota: 'Painel ONDH → Disque 100 → Violação: "Discriminação por raça/cor". Lei 14.532/2023 equiparou injúria racial a racismo.',
-    denuncias: { 2021: 1400, 2022: 1800, 2023: 3100, 2024: 3426 },
-    violacoes: { 2021: 1400, 2022: 2300, 2023: 4600, 2024: 5200 },
+    nota: 'Auditado manualmente. Painel ONDH. Dados de 2022 disponíveis apenas do 2º semestre. Lei 14.532/2023 equiparou injúria racial a racismo.',
+    denuncias: { 2022: 3535, 2023: 9738, 2024: 14543, 2025: 16245 },
+    violacoes: { 2022: 5503, 2023: 17101, 2024: 26471, 2025: 31673 },
+    obs_2022: 'dados disponíveis apenas do segundo semestre de 2022',
     unidade: 'denúncias',
     paragrafos_cerd: '§11-12',
   },
