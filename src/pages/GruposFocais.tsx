@@ -221,7 +221,7 @@ const dadosTerritoriais = {
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
       // 2019-2024: REMOVIDOS — progressão artificial (+1 a +2 por ano sem fonte individual)
-      { ano: 2025, homologadas: 496, total: 644, emEstudo: 148, areaMilHa: 117.4 },
+      { ano: 2025, homologadas: 496, total: 646, emEstudo: 148, areaMilHa: 117.4 },
     ],
   },
 };
