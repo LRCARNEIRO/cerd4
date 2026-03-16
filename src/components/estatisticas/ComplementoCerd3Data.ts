@@ -200,22 +200,23 @@ export const preNatalRaca: ComplementoIndicador = {
   },
 };
 
-// ===== 8. DOENÇAS CRÔNICAS POR RAÇA =====
+// ===== 8. ÓBITOS POR CAUSAS EVITÁVEIS POR RAÇA =====
 export const doencasCronicasRaca: ComplementoIndicador = {
-  nome: 'Doenças crônicas por raça/cor (diabetes, hipertensão, falciforme)',
+  nome: 'Óbitos por causas evitáveis por raça/cor',
   categoria: 'saude',
-  subcategoria: 'doencas_cronicas_racial',
-  fonte: 'VIGITEL/MS — Relatório Anual (Cap. "Prevalência por raça/cor")',
-  url_fonte: 'https://svs.aids.gov.br/daent/cgdnt/vigitel/',
+  subcategoria: 'obitos_evitaveis_racial',
+  fonte: 'DataSUS/SIM — TabNet (Óbitos por causas evitáveis, 5-74 anos, por cor/raça)',
+  url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/evitb10uf.def',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
-  tendencia: 'estável',
+  tendencia: 'piora',
   dados: {
-    nota: 'VIGITEL → Relatórios Anuais PDF → Tabela "Prevalência por raça/cor" (diabetes, hipertensão). Doença falciforme: PCDT/MS. Pendente extração.',
-    pendente_extracao: true,
-    fonte_extracao: 'VIGITEL Relatórios Anuais PDF → Tabela prevalência × raça/cor + PCDT Doença Falciforme/MS',
-    unidade: 'Prevalência (%)',
+    nota: 'Auditado manualmente. Indicador alterado de "doenças crônicas" para "óbitos por causas evitáveis" conforme disponibilidade no DATASUS (não foi possível desagregar por 3 doenças específicas).',
+    obitos_branca: { 2018: 334360, 2019: 337754, 2020: 386997, 2021: 514325, 2022: 373607, 2023: 354798, 2024: 368078 },
+    obitos_negra: { 2018: 384416, 2019: 389821, 2020: 471622, 2021: 550581, 2022: 443934, 2023: 435781, 2024: 455144 },
+    obitos_indigena: { 2018: 2235, 2019: 2166, 2020: 2924, 2021: 3062, 2022: 2836, 2023: 2896, 2024: 2993 },
+    unidade: 'óbitos',
     paragrafos_cerd: '§29-30',
   },
 };
