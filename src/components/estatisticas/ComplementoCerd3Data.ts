@@ -73,14 +73,14 @@ export const intoleranciaReligiosa: ComplementoIndicador = {
   nome: 'Denúncias de intolerância religiosa (Disque 100)',
   categoria: 'cultura_patrimonio',
   subcategoria: 'Intolerância Religiosa',
-  fonte: 'MDHC/ONDH — Painel Disque 100 (filtro: "Intolerância religiosa", série 2020-2025)',
-  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados/dados-do-disque-100',
+  fonte: 'MDHC/ONDH — Painel de Dados (filtro: "Intolerância religiosa", série 2020-2025)',
+  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.5', 'Art.7'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban', 'Recomendações Gerais (RGs)'],
   tipo: 'complementar',
   tendencia: 'piora',
   dados: {
-    nota: 'Crescimento 382% 2020→2025. Painel ONDH → Disque 100 → Violação: "Intolerância religiosa". Auditado 12/03/2026.',
+    nota: 'Crescimento 382% 2020→2025. Painel ONDH → Disque 100 → Violação: "Intolerância religiosa". Auditado manualmente — dados confirmados.',
     total_denuncias: { 2020: 566, 2021: 584, 2022: 898, 2023: 1482, 2024: 2472, 2025: 2723 },
     religioes_vitimadas_2024: {
       umbanda: 151, candomble: 117, evangelico: 88, catolico: 53, espirita: 36, afro_outras: 21,
