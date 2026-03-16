@@ -579,21 +579,24 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   },
 };
 
-// ===== 25. MIGRAÇÃO INTERNACIONAL (LACUNA) =====
+// ===== 25. MIGRAÇÃO / NATURALIZAÇÃO =====
 export const migracaoInternacional: ComplementoIndicador = {
-  nome: 'Imigrantes e refugiados registrados no Brasil',
+  nome: 'Naturalizados brasileiros e estrangeiros',
   categoria: 'demografia',
   subcategoria: 'Migração Internacional',
-  fonte: 'OBMigra/MJ — Portal de Imigração (Painel BI, sem filtro raça/cor disponível)',
-  url_fonte: 'https://portaldeimigracao.mj.gov.br/pt/dados/microdados',
+  fonte: 'IBGE/Censo 2022 — Tabela SIDRA 2145 (Naturalizados e estrangeiros por residência)',
+  url_fonte: 'https://sidra.ibge.gov.br/tabela/2145',
   artigos_convencao: ['Art. 5(d)(ii)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
   dados: {
+    nota: 'Auditado manualmente. SIDRA Tabela 2145 → Naturalizados e estrangeiros por grupos de anos de fixação, sexo e idade. Sem desagregação por raça/cor.',
+    naturalizados_brasileiros: { '2022-2024': 29228 },
+    taxa_naturalizados_pct: { '2022-2024': 13.51 },
+    estrangeiros: { '2022-2024': 369355 },
+    taxa_estrangeiros_pct: { '2022-2024': 46.58 },
     lacuna_desagregacao_racial: true,
-    datamigra_bi_url: 'https://portaldeimigracao.mj.gov.br/pt/dados/microdados',
-    nota: 'OBMigra → Microdados → não existe coluna raça/cor nos registros migratórios. Lacuna metodológica formal. CERD §54-55.',
   },
 };
 
