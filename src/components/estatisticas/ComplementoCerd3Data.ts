@@ -244,19 +244,19 @@ export const denunciasDiscriminacaoRacial: ComplementoIndicador = {
 
 // ===== 10. DENÚNCIAS POVOS TRADICIONAIS =====
 export const denunciasPovosTradicionais: ComplementoIndicador = {
-  nome: 'Denúncias de violência contra povos tradicionais — Disque 100',
+  nome: 'Denúncias e violações contra povos tradicionais — Disque 100',
   categoria: 'legislacao_justica',
   subcategoria: 'povos_tradicionais_denuncias',
-  fonte: 'MDHC/ONDH — Dados Abertos Disque 100 (filtro: grupo vulnerável)',
-  url_fonte: 'https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100',
+  fonte: 'MDHC/ONDH — Painel de Dados (filtro: grupo vulnerável)',
+  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.5(d)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
   dados: {
-    nota: 'Dados Abertos Disque 100 → CSV → filtro "grupo vulnerável" = indígenas, quilombolas, ciganos. Pendente extração 2018-2024.',
-    pendente_extracao: true,
-    fonte_extracao: 'Dados Abertos ONDH/Disque 100 CSV → coluna "grupo vulnerável" filtrado por indígenas/quilombolas/ciganos',
+    nota: 'Auditado manualmente. Painel ONDH → filtro grupo vulnerável = povos tradicionais. Série 2020-2025.',
+    denuncias: { 2020: 825, 2021: 1305, 2022: 543, 2023: 118, 2024: 277, 2025: 290 },
+    violacoes: { 2020: 3572, 2021: 5172, 2022: 2447, 2023: 743, 2024: 1840, 2025: 2338 },
     unidade: 'denúncias',
     paragrafos_cerd: '§21-22, §33-36',
   },
