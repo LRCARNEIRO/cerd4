@@ -173,8 +173,8 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
-    // 644 TIs totais: FUNAI - Coordenação-Geral de Geoprocessamento
-    terrasTotal: 644,
+    // 646 TIs totais: FUNAI - Coordenação-Geral de Geoprocessamento (atualizado 2026)
+    terrasTotal: 646,
     fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
     linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     // 496 homologadas: FUNAI - TIs com decreto presidencial de homologação

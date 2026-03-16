@@ -1193,7 +1193,7 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
                   <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                     <li>• <strong>Mortalidade:</strong> Crianças indígenas (0-4 anos) morrem 2,44× mais que não-indígenas; meta ODS (&lt;25‰) não alcançada</li>
                     <li>• <strong>Causas:</strong> Doenças respiratórias (18%), infecciosas (14%) e nutricionais (6%) — taxas 2-6× maiores que não-indígenas</li>
-                    <li>• <strong>Educação:</strong> 3.541 escolas em TI, mas apenas ~1% dos alunos se declaram indígenas no Censo Escolar</li>
+                    <li>• <strong>Educação:</strong> 3.553 escolas em TI (Catálogo INEP 2026), mas apenas ~1% dos alunos se declaram indígenas no Censo Escolar</li>
                     <li>• <strong>Saúde:</strong> 34 DSEIs operam em todos os estados; SESAI não publica taxa de cobertura consolidada verificável</li>
                   </ul>
                 </div>
