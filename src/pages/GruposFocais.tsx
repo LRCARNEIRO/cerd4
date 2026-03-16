@@ -173,8 +173,8 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
-    // 644 TIs totais: FUNAI - Coordenação-Geral de Geoprocessamento
-    terrasTotal: 644,
+    // 646 TIs totais: FUNAI - Coordenação-Geral de Geoprocessamento (atualizado 2026)
+    terrasTotal: 646,
     fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
     linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     // 496 homologadas: FUNAI - TIs com decreto presidencial de homologação
@@ -221,7 +221,7 @@ const dadosTerritoriais = {
     serieHistorica: [
       { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
       // 2019-2024: REMOVIDOS — progressão artificial (+1 a +2 por ano sem fonte individual)
-      { ano: 2025, homologadas: 496, total: 644, emEstudo: 148, areaMilHa: 117.4 },
+      { ano: 2025, homologadas: 496, total: 646, emEstudo: 148, areaMilHa: 117.4 },
     ],
   },
 };
@@ -738,7 +738,7 @@ export default function GruposFocais() {
                       </div>
                       <div className="text-center">
                         <p className="text-muted-foreground">Total TIs</p>
-                        <p className="font-medium">626 → 644</p>
+                        <p className="font-medium">626 → 646</p>
                         <Badge variant="outline" className="text-success border-success/30 text-xs">+2.9%</Badge>
                       </div>
                       <div className="text-center">

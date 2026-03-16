@@ -1148,12 +1148,11 @@ export function GruposFocaisTab() {
                     </a>
                   </div>
                   <div className="p-4 bg-primary/10 rounded-lg text-center">
-                    <p className="text-3xl font-bold text-primary">3.541</p>
+                    <p className="text-3xl font-bold text-primary">3.553</p>
                     <p className="text-sm text-muted-foreground">Escolas em terra indígena</p>
-                    <p className="text-xs text-muted-foreground mt-1">1,9% das 178,3 mil escolas do país</p>
-                    <p className="text-xs text-muted-foreground">3.597 oferecem educação indígena</p>
-                    <a href="https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center justify-center gap-0.5 mt-1">
-                      <ExternalLink className="w-2.5 h-2.5" /> INEP — Censo Escolar 2022
+                    <p className="text-xs text-muted-foreground mt-1">das 179,3 mil escolas de educação básica</p>
+                    <a href="https://anonymousdata.inep.gov.br/analytics/saw.dll?Dashboard&PortalPath=%2Fshared%2FCenso%20da%20Educa%C3%A7%C3%A3o%20B%C3%A1sica%2F_portal%2FCat%C3%A1logo%20de%20Escolas&Page=Lista%20das%20Escolas" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center justify-center gap-0.5 mt-1">
+                      <ExternalLink className="w-2.5 h-2.5" /> Catálogo de Escolas INEP (2026)
                     </a>
                   </div>
                   <div className="p-4 bg-warning/10 rounded-lg text-center">
@@ -1194,7 +1193,7 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
                   <ul className="text-xs text-muted-foreground mt-1 space-y-1">
                     <li>• <strong>Mortalidade:</strong> Crianças indígenas (0-4 anos) morrem 2,44× mais que não-indígenas; meta ODS (&lt;25‰) não alcançada</li>
                     <li>• <strong>Causas:</strong> Doenças respiratórias (18%), infecciosas (14%) e nutricionais (6%) — taxas 2-6× maiores que não-indígenas</li>
-                    <li>• <strong>Educação:</strong> 3.541 escolas em TI, mas apenas ~1% dos alunos se declaram indígenas no Censo Escolar</li>
+                    <li>• <strong>Educação:</strong> 3.553 escolas em TI (Catálogo INEP 2026), mas apenas ~1% dos alunos se declaram indígenas no Censo Escolar</li>
                     <li>• <strong>Saúde:</strong> 34 DSEIs operam em todos os estados; SESAI não publica taxa de cobertura consolidada verificável</li>
                   </ul>
                 </div>
