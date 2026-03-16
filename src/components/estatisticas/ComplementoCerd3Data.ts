@@ -612,10 +612,10 @@ export const demarcacaoTerras: ComplementoIndicador = {
   tipo: 'complementar',
   tendencia: 'estável',
   dados: {
-    nota: 'ISA → Mapa Terras Indígenas → filtro por fase (homologada, declarada, em estudo). Dados consolidados FUNAI 2024.',
-    TIs_homologadas_total: 487,
-    TIs_em_estudo: 114,
-    TIs_declaradas_sem_homologacao: 73,
+    nota: 'Auditado manualmente. Valores corrigidos conforme fonte oficial. "Homologadas e reservadas" inclui reservadas.',
+    TIs_homologadas_e_reservadas_total: 536,
+    TIs_em_identificacao: 166,
+    TIs_declaradas_sem_homologacao: 71,
     paragrafos_cerd: '§54-55',
   },
 };
