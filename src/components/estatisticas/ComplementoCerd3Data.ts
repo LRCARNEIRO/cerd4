@@ -181,20 +181,21 @@ export const saudeIndigena: ComplementoIndicador = {
 
 // ===== 7. PRÉ-NATAL POR RAÇA =====
 export const preNatalRaca: ComplementoIndicador = {
-  nome: 'Cobertura de pré-natal (7+ consultas) por raça/cor',
+  nome: 'Mães que tiveram acesso ao pré-natal por raça/cor',
   categoria: 'saude',
   subcategoria: 'pre_natal_racial',
-  fonte: 'DataSUS/SINASC — TabNet (NV por nº consultas pré-natal × raça/cor mãe)',
+  fonte: 'DataSUS/SINASC — TabNet (NV por consultas pré-natal × raça/cor mãe)',
   url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
-  tendencia: 'melhora',
+  tendencia: 'estável',
   dados: {
-    nota: 'TabNet → SINASC → Linha: Consultas pré-natal; Coluna: Raça/Cor da mãe; Período: 2018-2023. Pendente extração.',
-    pendente_extracao: true,
-    fonte_extracao: 'TabNet/SINASC: Linha="Consultas pré-natal" × Coluna="Raça/Cor da mãe" × Período=2018-2023',
-    unidade: '% gestantes com 7+ consultas',
+    nota: 'Auditado manualmente. TabNet → SINASC → Linha: Consultas pré-natal; Coluna: Raça/Cor da mãe. Série 2018-2024.',
+    maes_negras_pre_natal: { 2018: 1185566, 2019: 1204715, 2020: 1137098, 2021: 1180602, 2022: 1157867, 2023: 1199220, 2024: 1169888 },
+    maes_brancas_pre_natal: { 2018: 817522, 2019: 786778, 2020: 734957, 2021: 713019, 2022: 700658, 2023: 703843, 2024: 670118 },
+    maes_indigenas_pre_natal: { 2018: 9803, 2019: 10716, 2020: 10136, 2021: 12277, 2022: 12437, 2023: 14706, 2024: 15649 },
+    unidade: 'gestantes com acesso ao pré-natal',
     paragrafos_cerd: '§29-30',
   },
 };
