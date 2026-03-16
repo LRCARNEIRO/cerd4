@@ -521,11 +521,9 @@ export const ciganosCenso: ComplementoIndicador = {
   tipo: 'complementar',
   tendencia: 'estável',
   dados: {
-    nota: 'SIDRA Tabela 9891 → filtro "Cigano" em povo/comunidade tradicional. Primeira contagem oficial. Possível sub-registro por estigma.',
+    nota: 'SIDRA Tabela 9891. Auditoria manual: dados por região não foram localizados na fonte. Mantido total nacional. Possível sub-registro por estigma.',
     total_ciganos: { 2022: 41738 },
-    por_regiao: {
-      Sudeste: 18537, Nordeste: 11484, Sul: 5903, Norte: 3208, 'Centro-Oeste': 2606,
-    },
+    lacuna_dados_regionais: true,
     unidade: 'pessoas',
     paragrafos_cerd: '§54-55',
   },
