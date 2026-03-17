@@ -584,6 +584,7 @@ export const indigenasTisCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 9970 → Pop. indígena × localização (dentro/fora de TI) por UF.',
     em_TIs_por_uf: {
