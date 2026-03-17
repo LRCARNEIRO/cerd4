@@ -240,19 +240,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     };
   }, [records, sesaiRecords, summaryStats]);
 
-  if (!analysis) return null;
-
-  const varPago = analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 - analysis.totalPagoP1) / analysis.totalPagoP1 * 100) : 0;
-  const varDot = analysis.totalDotAutP1 > 0 ? ((analysis.totalDotAutP2 - analysis.totalDotAutP1) / analysis.totalDotAutP1 * 100) : 0;
-  const varLiq = analysis.totalLiqP1 > 0 ? ((analysis.totalLiqP2 - analysis.totalLiqP1) / analysis.totalLiqP1 * 100) : 0;
-  const varPagoNoSesai = analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai - analysis.pagoP1NoSesai) / analysis.pagoP1NoSesai * 100) : 0;
-  const varDotNoSesai = analysis.dotP1NoSesai > 0 ? ((analysis.dotP2NoSesai - analysis.dotP1NoSesai) / analysis.dotP1NoSesai * 100) : 0;
-  const varLiqNoSesai = analysis.liqP1NoSesai > 0 ? ((analysis.liqP2NoSesai - analysis.liqP1NoSesai) / analysis.liqP1NoSesai * 100) : 0;
-  const varOrcPago = analysis.orcPagoP1 > 0 ? ((analysis.orcPagoP2 - analysis.orcPagoP1) / analysis.orcPagoP1 * 100) : 0;
-  const varExtraPago = analysis.extraPagoP1 > 0 ? ((analysis.extraPagoP2 - analysis.extraPagoP1) / analysis.extraPagoP1 * 100) : 0;
-  const pctExtraTotal = (analysis.totalOrc + analysis.totalExtra) > 0 ? (analysis.totalExtra / (analysis.totalOrc + analysis.totalExtra) * 100) : 0;
-
-  // ICERD data
+  // ICERD data — must be before early return
   const icerdData = useMemo(() => {
     const allRecs = [...records, ...sesaiRecords];
     const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; pago: number; programas: Set<string> }>();
@@ -280,6 +268,18 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const artigosSemDados = ARTIGOS_CONVENCAO.filter(a => { const e = byArtigo.get(a.numero); return !e || e.records.length === 0; });
     return { chartData, byArtigo, unmappedCount, totalRecords: allRecs.length, totalPago, artigosSemDados };
   }, [records, sesaiRecords]);
+
+  if (!analysis) return null;
+
+  const varPago = analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 - analysis.totalPagoP1) / analysis.totalPagoP1 * 100) : 0;
+  const varDot = analysis.totalDotAutP1 > 0 ? ((analysis.totalDotAutP2 - analysis.totalDotAutP1) / analysis.totalDotAutP1 * 100) : 0;
+  const varLiq = analysis.totalLiqP1 > 0 ? ((analysis.totalLiqP2 - analysis.totalLiqP1) / analysis.totalLiqP1 * 100) : 0;
+  const varPagoNoSesai = analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai - analysis.pagoP1NoSesai) / analysis.pagoP1NoSesai * 100) : 0;
+  const varDotNoSesai = analysis.dotP1NoSesai > 0 ? ((analysis.dotP2NoSesai - analysis.dotP1NoSesai) / analysis.dotP1NoSesai * 100) : 0;
+  const varLiqNoSesai = analysis.liqP1NoSesai > 0 ? ((analysis.liqP2NoSesai - analysis.liqP1NoSesai) / analysis.liqP1NoSesai * 100) : 0;
+  const varOrcPago = analysis.orcPagoP1 > 0 ? ((analysis.orcPagoP2 - analysis.orcPagoP1) / analysis.orcPagoP1 * 100) : 0;
+  const varExtraPago = analysis.extraPagoP1 > 0 ? ((analysis.extraPagoP2 - analysis.extraPagoP1) / analysis.extraPagoP1 * 100) : 0;
+  const pctExtraTotal = (analysis.totalOrc + analysis.totalExtra) > 0 ? (analysis.totalExtra / (analysis.totalOrc + analysis.totalExtra) * 100) : 0;
 
   let sectionNum = 0;
   const nextSection = () => ++sectionNum;
