@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { LacunaIdentificada, ComplianceStatus } from '@/hooks/useLacunasData';
+import type { LacunaIdentificada, ComplianceStatus, ThematicAxis, FocalGroupType } from '@/hooks/useLacunasData';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa' | 'divergencia';
@@ -59,15 +60,25 @@ export interface DiagnosticSummary {
   progressoSensor: number;
 }
 
-// ── Helper: extract artigos from lacuna ────────────────────────────
-function getLacunaArtigos(lacuna: LacunaIdentificada): string[] {
-  // artigos_convencao is not on the TS interface but exists in DB
-  const raw = (lacuna as any).artigos_convencao;
-  if (Array.isArray(raw)) return raw.map(String);
-  return [];
+function normalizeArticle(raw: string): ArtigoConvencao | null {
+  const value = String(raw || '').toUpperCase().trim();
+  if (value.includes('VII')) return 'VII';
+  if (value.includes('VI')) return 'VI';
+  if (value.includes('V')) return 'V';
+  if (value.includes('IV')) return 'IV';
+  if (value.includes('III')) return 'III';
+  if (value.includes('II')) return 'II';
+  if (value.includes('I')) return 'I';
+  return null;
 }
 
-// ── Helper: check indicator tendency ───────────────────────────────
+function getLacunaArtigos(lacuna: LacunaIdentificada): ArtigoConvencao[] {
+  const raw = (lacuna as any).artigos_convencao;
+  const explicit = Array.isArray(raw) ? raw.map(normalizeArticle).filter(Boolean) as ArtigoConvencao[] : [];
+  if (explicit.length > 0) return [...new Set(explicit)];
+  return EIXO_PARA_ARTIGOS[lacuna.eixo_tematico as ThematicAxis] || [];
+}
+
 const NEGATIVE_INDICATORS = [
   'mortalidade', 'homicídio', 'violência', 'desemprego', 'analfabet',
   'evasão', 'abandono', 'pobreza', 'deficit', 'déficit', 'trabalho infantil',
@@ -88,6 +99,51 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
     if (t === 'estavel' || t === 'estável') return 'estavel';
   }
   return 'desconhecida';
+}
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(word => word.length >= 4);
+}
+
+function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
+  const eixoKeywords: Record<ThematicAxis, string[]> = {
+    legislacao_justica: ['justica', 'judicial', 'discriminacao', 'reparacao'],
+    politicas_institucionais: ['politica', 'institucional', 'igualdade', 'mulheres', 'genero', 'interseccional'],
+    seguranca_publica: ['violencia', 'homicidio', 'policial', 'seguranca'],
+    saude: ['saude', 'mortalidade', 'materna', 'infantil'],
+    educacao: ['educacao', 'escolar', 'analfabetismo'],
+    trabalho_renda: ['trabalho', 'renda', 'emprego', 'pobreza'],
+    terra_territorio: ['territorio', 'terra', 'quilombola', 'indigena'],
+    cultura_patrimonio: ['cultura', 'patrimonio', 'religiao'],
+    participacao_social: ['participacao', 'representacao', 'politica'],
+    dados_estatisticas: ['dados', 'estatistica', 'indicador'],
+  };
+
+  const grupoKeywords: Record<FocalGroupType, string[]> = {
+    negros: ['negros', 'negras', 'afro', 'racial'],
+    indigenas: ['indigena', 'indigenas'],
+    quilombolas: ['quilombola', 'quilombolas'],
+    ciganos: ['ciganos', 'romani'],
+    religioes_matriz_africana: ['religiao', 'matriz', 'africana'],
+    juventude_negra: ['juventude', 'jovens', 'negra'],
+    mulheres_negras: ['mulheres', 'mulher', 'negras', 'negra', 'genero', 'materna'],
+    lgbtqia_negros: ['lgbt', 'trans', 'sexualidade'],
+    pcd_negros: ['deficiencia', 'pcd'],
+    idosos_negros: ['idosos', 'idosas'],
+    geral: [],
+  };
+
+  return [...new Set([
+    ...tokenize(`${lacuna.tema} ${lacuna.descricao_lacuna}`),
+    ...(eixoKeywords[lacuna.eixo_tematico as ThematicAxis] || []),
+    ...(grupoKeywords[lacuna.grupo_focal as FocalGroupType] || []),
+  ])];
 }
 
 // ── Main Hook ──────────────────────────────────────────────────────
