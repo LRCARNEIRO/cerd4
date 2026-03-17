@@ -306,6 +306,7 @@ export const racismoInstitucionalJudiciario: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. CNJ Painel MPM Pessoal → Magistrados por cor/raça. Resolução CNJ 572/2025 ampliou cotas para 30%.',
     pct_magistrados_negros: { 2023: 18.1 },
