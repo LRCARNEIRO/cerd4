@@ -606,10 +606,19 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
               </CardContent>
             </Card>
           </div>
+
+          {/* Transition insight after Perspectiva 1 */}
+          <div className="bg-chart-1/10 rounded p-3 border border-chart-1/20 flex items-center gap-3">
+            <TrendingUp className="w-5 h-5 text-chart-1 shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              <strong>Destaque:</strong> Em apenas 3 anos (P2), o investimento total atingiu {formatCurrency(analysis.totalPagoP2)},
+              equivalente a {analysis.totalPagoP1 > 0 ? ((analysis.totalPagoP2 / analysis.totalPagoP1) * 100).toFixed(0) : '—'}% do
+              que foi pago em 5 anos (P1). Média anual: P1 = {formatCurrency(analysis.totalPagoP1 / 5)} → P2 = {formatCurrency(analysis.totalPagoP2 / 3)}
+              — multiplicador de {(analysis.totalPagoP1 / 5) > 0 ? ((analysis.totalPagoP2 / 3) / (analysis.totalPagoP1 / 5)).toFixed(1) : '—'}×.
+            </p>
+          </div>
         </CardContent>
       </Card>
-
-      {/* ═══ 4. EFEITO MASCARAMENTO SESAI ═══ */}
       <Card>
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
