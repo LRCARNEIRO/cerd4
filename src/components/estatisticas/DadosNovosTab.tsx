@@ -263,12 +263,12 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '69% dos moradores de favelas são negros (Censo 2022), contra 55,5% da população total — sobre-representação de 13,5 p.p. 16,4 milhões de pessoas em aglomerados subnormais.',
+    relevanciaRacial: '72,94% dos moradores de favelas são negros (pretos+pardos) (Censo 2022, SIDRA 9884), contra 55,5% da população total — sobre-representação de 17,4 p.p. 16.390.790 pessoas em aglomerados subnormais.',
     prioridade: 'alta',
     unidadeSerie: 'Moradores em aglomerados subnormais',
     serieHistorica: [
       { ano: 2010, valor: '11,4 milhões de pessoas (Censo 2010)', fonte: 'IBGE Censo 2010' },
-      { ano: 2022, valor: '16,4 milhões de pessoas | 69% negros', fonte: 'IBGE Censo 2022' },
+      { ano: 2022, valor: '16.390.790 pessoas | 72,94% negros (SIDRA 9884)', fonte: 'IBGE Censo 2022 — SIDRA 9884' },
     ]
   },
   {
