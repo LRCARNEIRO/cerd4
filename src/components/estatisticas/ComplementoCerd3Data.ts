@@ -679,6 +679,7 @@ export const titulacaoQuilombola: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. INCRA → Títulos expedidos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf; Processos abertos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     titulos_emitidos_total: 384,
