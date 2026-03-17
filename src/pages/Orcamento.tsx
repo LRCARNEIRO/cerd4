@@ -523,25 +523,6 @@ export default function Orcamento() {
       title="Orçamento"
       subtitle="Execução orçamentária de políticas raciais — Esfera Federal (2018–2025)"
     >
-      {/* Alerta + Ingestão */}
-      <Card className="mb-6 border-l-4 border-l-warning">
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 text-warning shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-foreground mb-1">Política de Dados: Apenas Dados Oficiais Verificados</h3>
-              <p className="text-sm text-muted-foreground">
-                Esta seção exibe <strong>exclusivamente</strong> dados inseridos no banco após verificação
-                nas fontes oficiais (SIOP, Portal da Transparência, LOAs). Dados estimados ou não auditáveis
-                não são permitidos.
-              </p>
-            </div>
-            <div className="flex gap-2 flex-wrap items-center">
-              <KeywordIngestionPanel />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* ===== SUB-ABAS ===== */}
       <Tabs defaultValue="visao-geral" className="w-full">
