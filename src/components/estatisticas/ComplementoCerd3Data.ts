@@ -286,6 +286,7 @@ export const processosRacismoCnj: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. CNJ Justiça em Números → Painel Estatísticas. Lei 14.532/2023 ampliou tipificação.',
     processos_novos: { 2020: 50, 2021: 92, 2022: 234, 2023: 973, 2024: 2874, 2025: 4633 },
