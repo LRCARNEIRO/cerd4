@@ -291,13 +291,13 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         <CardContent className="pt-4">
           <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
             <Layers className="w-4 h-4 text-primary" />
-            Programas e Ações na Base ({programaRows.length})
+            Programas na Base ({programaRows.length})
           </h4>
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-xs">Programa / Ação</TableHead>
+                  <TableHead className="text-xs">Programa</TableHead>
                   <TableHead className="text-xs">Órgão</TableHead>
                   <TableHead className="text-xs text-center">Tipo</TableHead>
                   <TableHead className="text-xs text-center">Anos</TableHead>
@@ -309,7 +309,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               <TableBody>
                 {programaRows.map((row, i) => (
                   <TableRow key={i}>
-                    <TableCell className="text-xs max-w-[300px] truncate" title={row.programa}>{row.programa}</TableCell>
+                    <TableCell className="text-xs whitespace-normal break-words">{row.programa}</TableCell>
                     <TableCell className="text-xs">{row.orgao}</TableCell>
                     <TableCell className="text-xs text-center">
                       <Badge variant={row.tipo === 'Extra' ? 'outline' : 'secondary'} className="text-[10px]">{row.tipo}</Badge>
@@ -322,6 +322,59 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                     <TableCell className="text-xs text-right font-mono font-medium">{formatCompact(row.pago)}</TableCell>
                   </TableRow>
                 ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions table (each record = action × year) */}
+      <Card>
+        <CardContent className="pt-4">
+          <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Database className="w-4 h-4 text-primary" />
+            Ações Detalhadas — Registros ({filtered.length})
+          </h4>
+          <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Programa / Ação</TableHead>
+                  <TableHead className="text-xs">Órgão</TableHead>
+                  <TableHead className="text-xs text-center">Ano</TableHead>
+                  <TableHead className="text-xs text-center">Tipo</TableHead>
+                  <TableHead className="text-xs text-right">Dotação Autorizada</TableHead>
+                  <TableHead className="text-xs text-right">Empenhado</TableHead>
+                  <TableHead className="text-xs text-right">Liquidado</TableHead>
+                  <TableHead className="text-xs text-right">Pago</TableHead>
+                  <TableHead className="text-xs text-center">Execução</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.sort((a, b) => a.ano - b.ano || a.programa.localeCompare(b.programa)).map((r, i) => {
+                  const dot = Number(r.dotacao_autorizada) || 0;
+                  const pg = Number(r.pago) || 0;
+                  const exec = dot > 0 ? (pg / dot * 100) : 0;
+                  return (
+                    <TableRow key={r.id || i}>
+                      <TableCell className="text-xs whitespace-normal break-words">{r.programa}</TableCell>
+                      <TableCell className="text-xs">{r.orgao}</TableCell>
+                      <TableCell className="text-xs text-center font-mono">{r.ano}</TableCell>
+                      <TableCell className="text-xs text-center">
+                        <Badge variant={r.tipo_dotacao === 'extraorcamentario' ? 'outline' : 'secondary'} className="text-[10px]">
+                          {r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-right font-mono">{formatCompact(dot)}</TableCell>
+                      <TableCell className="text-xs text-right font-mono">{formatCompact(Number(r.empenhado) || 0)}</TableCell>
+                      <TableCell className="text-xs text-right font-mono">{formatCompact(Number(r.liquidado) || 0)}</TableCell>
+                      <TableCell className="text-xs text-right font-mono font-medium">{formatCompact(pg)}</TableCell>
+                      <TableCell className={`text-xs text-center font-bold ${exec >= 80 ? 'text-success' : exec >= 50 ? 'text-warning' : 'text-destructive'}`}>
+                        {exec.toFixed(1)}%
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
