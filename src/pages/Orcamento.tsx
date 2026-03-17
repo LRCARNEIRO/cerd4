@@ -23,6 +23,9 @@ import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/M
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Filter } from 'lucide-react';
 
 
 import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
@@ -291,6 +294,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
+  const [incluirExtra, setIncluirExtra] = useState(true);
 
   const handleResetFederal = async () => {
     if (!confirm('Apagar todos os dados orçamentários federais? Esta ação não pode ser desfeita.')) return;
@@ -577,6 +581,41 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
+          {/* Filtro Orçamentário vs Extraorçamentário */}
+          <Card className="mb-4 border-l-4 border-l-chart-1">
+            <CardContent className="py-3 px-4">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-3">
+                  <Filter className="w-4 h-4 text-chart-1" />
+                  <div>
+                    <p className="text-sm font-semibold">Perspectiva Orçamentária</p>
+                    <p className="text-xs text-muted-foreground">
+                      {incluirExtra 
+                        ? 'Financiamento Total (LOA + Compensatório/Reativo)' 
+                        : 'Apenas Esforço do Estado (LOA)'}
+                      {stats?.splitTipoDotacao && (
+                        <span className="ml-2 text-muted-foreground/70">
+                          · Orç: {stats.splitTipoDotacao.orcamentario.total} registros 
+                          · Extra: {stats.splitTipoDotacao.extraorcamentario.total} registros
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="extra-toggle-orc" className="text-xs cursor-pointer">
+                    {incluirExtra ? 'Com extraorçamentário' : 'Sem extraorçamentário'}
+                  </Label>
+                  <Switch 
+                    id="extra-toggle-orc" 
+                    checked={incluirExtra} 
+                    onCheckedChange={setIncluirExtra} 
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Thematic filter bar */}
           <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
 
