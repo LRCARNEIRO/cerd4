@@ -23,6 +23,8 @@ export interface ComplementoIndicador {
   artigos_convencao: string[];
   documento_origem: string[];
   tendencia: string;
+  /** Polaridade do indicador: 'menor_melhor' = menos é positivo (mortalidade, violência); 'maior_melhor' = mais é positivo (renda, escolaridade); 'contextual' = depende da interpretação */
+  polaridade: 'menor_melhor' | 'maior_melhor' | 'contextual';
   dados: Record<string, any>;
   /** 'complementar' = preenche lacunas das abas temáticas para 100% CERD III; 'novo' = sugerido por recomendações CERD */
   tipo: 'complementar' | 'novo';
