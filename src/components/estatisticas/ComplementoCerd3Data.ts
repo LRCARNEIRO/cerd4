@@ -221,6 +221,7 @@ export const doencasCronicasRaca: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Indicador alterado de "doenças crônicas" para "óbitos por causas evitáveis" conforme disponibilidade no DATASUS (não foi possível desagregar por 3 doenças específicas).',
     obitos_branca: { 2018: 334360, 2019: 337754, 2020: 386997, 2021: 514325, 2022: 373607, 2023: 354798, 2024: 368078 },
