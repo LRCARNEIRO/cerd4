@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2 } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
@@ -14,6 +14,7 @@ import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
 import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
