@@ -106,6 +106,7 @@ export const educacaoIndigena: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado: Indígenas 85% (SIDRA 8181, sem desagregação dentro/fora TI); Negros 90,94% (SIDRA 9542); Brancos 95,66% (SIDRA 9543). Escolas ensino básico em TIs: 3.553 (Catálogo de Escolas INEP 2026); ensino fundamental em TIs: 3.484 (Censo Escolar/INEP 2022).',
     alfabetizacao: {
