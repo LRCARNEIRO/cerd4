@@ -287,12 +287,20 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         });
       }
 
+      // Deduplicate linked data
+      const uniqueIndicadores = Array.from(new Map(indicadoresVinculados.map(i => [i.nome, i])).values());
+      const uniqueOrcamento = Array.from(new Map(orcamentosVinculados.map(o => [`${o.programa}-${o.ano}`, o])).values());
+      const uniqueNormativos = Array.from(new Map(normativosVinculados.map(n => [n.titulo, n])).values());
+
       return {
         lacunaId: lacuna.id,
         statusManual: manual,
         statusSugerido,
         divergente,
         signals,
+        linkedIndicadores: uniqueIndicadores.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedOrcamento: uniqueOrcamento.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
+        linkedNormativos: uniqueNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
   }, [lacunas, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
