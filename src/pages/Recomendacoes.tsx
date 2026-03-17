@@ -275,7 +275,6 @@ export default function Recomendacoes() {
                 {filteredLacunas.map(lacuna => (
                   <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
                 ))}
-                ))}
               </div>
               
               {filteredLacunas.length === 0 && (
