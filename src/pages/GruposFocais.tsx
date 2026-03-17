@@ -291,11 +291,11 @@ const indicadoresVulnerabilidade = {
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
-    // 19º Anuário FBSP 2025 (dados 2024): 5.417 mortes, 82,0% negros
-    totalMortes: 5417,
+    // AUDITORIA CRUZADA 17/03/2026: Corrigido de 5.417 para 6.243 conforme 19º Anuário FBSP 2025, p.17 e 23
+    totalMortes: 6243,
     percentualNegros: 82.0,
     ano: 2024,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
+    fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024), p.17 e 23',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
   },
   mortalidadeMaterna: {
