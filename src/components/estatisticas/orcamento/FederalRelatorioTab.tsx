@@ -770,6 +770,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
               })}
             </TableBody>
           </Table>
+          {/* Transition insight after Perspectiva 2 */}
+          <div className="bg-chart-4/10 rounded p-3 border border-chart-4/20 flex items-center gap-3 mt-3">
+            <Info className="w-5 h-5 text-chart-4 shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              <strong>Curiosidade:</strong> Sem SESAI, a média anual de pagamento subiu de {formatCurrency(analysis.pagoP1NoSesai / 5)}/ano (P1) para
+              {' '}{formatCurrency(analysis.pagoP2NoSesai / 3)}/ano (P2) — um multiplicador de {analysis.pagoP1NoSesai > 0 ? ((analysis.pagoP2NoSesai / 3) / (analysis.pagoP1NoSesai / 5)).toFixed(1) : '—'}×.
+              Este é o melhor indicador do <em>esforço genuíno</em> do Estado em políticas raciais, isolado do peso da saúde indígena.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
