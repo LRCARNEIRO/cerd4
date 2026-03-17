@@ -307,6 +307,37 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const totalProgramas = new Set(allRecords.map(r => r.programa)).size;
     const anos = Array.from(new Set(allRecords.map(r => r.ano))).sort();
 
+    // Extraorçamentário analysis (always from full records)
+    const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
+    const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+    const extraByYear: Record<number, number> = {};
+    const orcByYear: Record<number, number> = {};
+    for (const r of records) {
+      const y = r.ano;
+      const val = Number(r.pago) || 0;
+      if (r.tipo_dotacao === 'extraorcamentario') {
+        extraByYear[y] = (extraByYear[y] || 0) + val;
+      } else {
+        orcByYear[y] = (orcByYear[y] || 0) + val;
+      }
+    }
+    const dualYearData = anos.map(a => ({
+      ano: a,
+      orcamentario: orcByYear[a] || 0,
+      extraorcamentario: extraByYear[a] || 0,
+      total: (orcByYear[a] || 0) + (extraByYear[a] || 0),
+      pctExtra: ((extraByYear[a] || 0) / ((orcByYear[a] || 0) + (extraByYear[a] || 0) || 1) * 100),
+    }));
+    const totalExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+    const totalOrc = orcRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+
+    // Subtipo breakdown
+    const subtipoMap: Record<string, number> = {};
+    for (const r of extraRecs) {
+      const st = r.subtipo_extraorcamentario || 'outros';
+      subtipoMap[st] = (subtipoMap[st] || 0) + (Number(r.pago) || 0);
+    }
+
     return {
       totalPagoP1, totalPagoP2, totalDotP1, totalDotP2, totalLiqP1, totalLiqP2,
       pagoP1NoSesai, pagoP2NoSesai, dotP1NoSesai, dotP2NoSesai,
@@ -315,6 +346,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       execP1, execP2,
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
+      totalExtra, totalOrc, dualYearData, subtipoMap, extraCount: extraRecs.length,
     };
   }, [records, sesaiRecords, summaryStats, incluirExtraorcamentario]);
 
