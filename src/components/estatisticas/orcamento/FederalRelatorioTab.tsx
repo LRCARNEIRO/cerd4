@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, Building, FileText, Scale, TrendingUp, Users, TreePine, MapPin, Tent, ShieldAlert, BookOpen } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import { AlertTriangle, Building, FileText, Scale, TrendingUp, Users, TreePine, MapPin, Tent, ShieldAlert, BookOpen, Filter } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
@@ -202,10 +204,12 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
 }
 
 export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
+  const [incluirExtraorcamentario, setIncluirExtraorcamentario] = useState(true);
+
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
-    const allRecords = records;
+    const allRecords = incluirExtraorcamentario ? records : records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || 0;
@@ -303,6 +307,37 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const totalProgramas = new Set(allRecords.map(r => r.programa)).size;
     const anos = Array.from(new Set(allRecords.map(r => r.ano))).sort();
 
+    // Extraorçamentário analysis (always from full records)
+    const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
+    const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+    const extraByYear: Record<number, number> = {};
+    const orcByYear: Record<number, number> = {};
+    for (const r of records) {
+      const y = r.ano;
+      const val = Number(r.pago) || 0;
+      if (r.tipo_dotacao === 'extraorcamentario') {
+        extraByYear[y] = (extraByYear[y] || 0) + val;
+      } else {
+        orcByYear[y] = (orcByYear[y] || 0) + val;
+      }
+    }
+    const dualYearData = anos.map(a => ({
+      ano: a,
+      orcamentario: orcByYear[a] || 0,
+      extraorcamentario: extraByYear[a] || 0,
+      total: (orcByYear[a] || 0) + (extraByYear[a] || 0),
+      pctExtra: ((extraByYear[a] || 0) / ((orcByYear[a] || 0) + (extraByYear[a] || 0) || 1) * 100),
+    }));
+    const totalExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+    const totalOrc = orcRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+
+    // Subtipo breakdown
+    const subtipoMap: Record<string, number> = {};
+    for (const r of extraRecs) {
+      const st = r.subtipo_extraorcamentario || 'outros';
+      subtipoMap[st] = (subtipoMap[st] || 0) + (Number(r.pago) || 0);
+    }
+
     return {
       totalPagoP1, totalPagoP2, totalDotP1, totalDotP2, totalLiqP1, totalLiqP2,
       pagoP1NoSesai, pagoP2NoSesai, dotP1NoSesai, dotP2NoSesai,
@@ -311,8 +346,9 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       execP1, execP2,
       themeData, topPrograms, annualData,
       totalProgramas, totalRegistros: allRecords.length, anos,
+      totalExtra, totalOrc, dualYearData, subtipoMap, extraCount: extraRecs.length,
     };
-  }, [records, sesaiRecords, summaryStats]);
+  }, [records, sesaiRecords, summaryStats, incluirExtraorcamentario]);
 
   if (!analysis) return null;
 
@@ -341,6 +377,145 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
           </div>
         </CardContent>
       </Card>
+
+      {/* ═══ FILTRO EXTRAORÇAMENTÁRIO ═══ */}
+      <Card className="border border-warning/30 bg-warning/5">
+        <CardContent className="pt-4 pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Filter className="w-5 h-5 text-warning shrink-0" />
+              <div>
+                <p className="font-semibold text-sm text-foreground">Perspectiva de Análise</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {incluirExtraorcamentario
+                    ? '📊 Financiamento Total — inclui compensações ambientais, indenizações e convênios (54 ações FUNAI/0151)'
+                    : '🏛️ Esforço do Estado — somente recursos aprovados via LOA (orçamento público stricto sensu)'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="extra-toggle" className="text-xs text-muted-foreground cursor-pointer">
+                {incluirExtraorcamentario ? 'Total' : 'LOA'}
+              </Label>
+              <Switch
+                id="extra-toggle"
+                checked={incluirExtraorcamentario}
+                onCheckedChange={setIncluirExtraorcamentario}
+              />
+            </div>
+          </div>
+          {analysis.extraCount > 0 && (
+            <div className="mt-2 flex gap-3 text-[10px]">
+              <Badge variant="outline" className="text-[10px]">{analysis.extraCount} registros extraorçamentários</Badge>
+              <span className="text-muted-foreground">
+                Pago extra: {formatCurrency(analysis.totalExtra)} · Pago LOA: {formatCurrency(analysis.totalOrc)} · 
+                % Extra: {(analysis.totalExtra / ((analysis.totalExtra + analysis.totalOrc) || 1) * 100).toFixed(1)}%
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ═══ ANÁLISE DUAL: ESFORÇO DO ESTADO × FINANCIAMENTO TOTAL ═══ */}
+      {analysis.totalExtra > 0 && (
+        <Card className="border-l-4 border-l-chart-3">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Scale className="w-4 h-4 text-chart-3" />
+              Leitura Alternativa: Esforço do Estado vs. Financiamento Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-muted-foreground space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="pt-3 pb-2">
+                  <p className="font-semibold text-foreground text-xs">🏛️ Esforço do Estado</p>
+                  <p className="text-lg font-bold text-primary">{formatCurrency(analysis.totalOrc)}</p>
+                  <p className="text-[10px]">Recursos LOA (orçamento público)</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-warning/5 border-warning/20">
+                <CardContent className="pt-3 pb-2">
+                  <p className="font-semibold text-foreground text-xs">🔄 Compensatório</p>
+                  <p className="text-lg font-bold text-warning">{formatCurrency(analysis.totalExtra)}</p>
+                  <p className="text-[10px]">{analysis.extraCount} ações (compensações, indenizações, royalties)</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-chart-3/5 border-chart-3/20">
+                <CardContent className="pt-3 pb-2">
+                  <p className="font-semibold text-foreground text-xs">📊 Financiamento Total</p>
+                  <p className="text-lg font-bold">{formatCurrency(analysis.totalOrc + analysis.totalExtra)}</p>
+                  <p className="text-[10px]">
+                    % Extraorçamentário: {(analysis.totalExtra / ((analysis.totalExtra + analysis.totalOrc) || 1) * 100).toFixed(1)}%
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Stacked Area Chart */}
+            {analysis.dualYearData.length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-center mb-2">Evolução: Orçamentário vs. Extraorçamentário (Pago)</p>
+                <div className="h-56">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={analysis.dualYearData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                      <Tooltip
+                        formatter={(value: number, name: string) => [
+                          formatCurrencyFull(value),
+                          name === 'orcamentario' ? 'Orçamentário (LOA)' : name === 'extraorcamentario' ? 'Extraorçamentário' : 'Total',
+                        ]}
+                        contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '10px' }} />
+                      <Area type="monotone" dataKey="orcamentario" name="Orçamentário (LOA)" stackId="1" fill="hsl(var(--primary))" stroke="hsl(var(--primary))" fillOpacity={0.6} />
+                      <Area type="monotone" dataKey="extraorcamentario" name="Extraorçamentário" stackId="1" fill="hsl(var(--chart-4))" stroke="hsl(var(--chart-4))" fillOpacity={0.6} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* Subtipo breakdown */}
+            {Object.keys(analysis.subtipoMap).length > 0 && (
+              <div className="bg-muted/50 rounded p-3">
+                <p className="text-xs font-semibold text-foreground mb-2">Composição do Financiamento Extraorçamentário</p>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(analysis.subtipoMap).sort((a, b) => b[1] - a[1]).map(([tipo, valor]) => {
+                    const labels: Record<string, string> = {
+                      compensacao_ambiental: 'Compensação Ambiental',
+                      indenizacao: 'Indenização',
+                      royalties: 'Royalties',
+                      convenio: 'Convênio',
+                      receita_propria: 'Receita Própria',
+                      outros: 'Outros',
+                    };
+                    return (
+                      <Badge key={tipo} variant="secondary" className="text-[10px]">
+                        {labels[tipo] || tipo}: {formatCurrency(valor)}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-chart-3/5 rounded p-3 border border-chart-3/20">
+              <p className="text-xs font-semibold text-foreground mb-1">
+                🔎 Insight — "Quase ninguém percebe"
+              </p>
+              <p className="text-xs">
+                O aparente aumento do orçamento indígena após 2023 pode conter um componente de <strong>reclassificação contábil</strong>:
+                recursos que antes eram executados como extraorçamentários (compensações BR-163, Belo Monte) passaram a ser incorporados
+                em ações formais do orçamento após a criação do MPI e a padronização exigida por TCU/CGU.
+                O filtro acima permite isolar o <strong>esforço genuíno do Estado</strong> do <strong>financiamento reativo</strong>.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ═══ 1. SUMÁRIO EXECUTIVO ═══ */}
       <Card>
