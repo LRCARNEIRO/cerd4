@@ -216,11 +216,16 @@ export default function Index() {
         {/* Compliance Chart - Dinâmico */}
         <div>
           <ComplianceChart 
-            data={{
+            data={sensorReady ? {
+              cumprido: sensorSummary.statusReclassificado.cumprido,
+              parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
+              naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
+              retrocesso: sensorSummary.statusReclassificado.retrocesso,
+            } : {
               cumprido: stats.recomendacoesCumpridas,
               parcial: stats.recomendacoesParciais,
               naoCumprido: stats.recomendacoesNaoCumpridas,
-              retrocesso: stats.recomendacoesRetrocesso
+              retrocesso: stats.recomendacoesRetrocesso,
             }}
           />
         </div>
