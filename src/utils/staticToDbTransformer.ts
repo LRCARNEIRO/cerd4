@@ -452,6 +452,26 @@ export function buildMirrorIndicators(): DbRecord[] {
     }
   ));
 
+  // ─── TERRAS QUILOMBOLAS HISTÓRICO §33-36 ───
+  const dadosTerrasQuilombolasHistorico = [
+    { ano: 2018, tituladas: 174, certificadas: 2523, taxa: 6.9, fonte: 'INCRA/FCP' },
+    { ano: 2019, tituladas: 176, certificadas: 2745, taxa: 6.4, fonte: 'INCRA/FCP' },
+    { ano: 2020, tituladas: 178, certificadas: 2809, taxa: 6.3, fonte: 'INCRA/FCP' },
+    { ano: 2021, tituladas: 180, certificadas: 2871, taxa: 6.3, fonte: 'INCRA/FCP' },
+    { ano: 2022, tituladas: 182, certificadas: 2948, taxa: 6.2, fonte: 'INCRA/FCP + Censo Quilombola 2022' },
+    { ano: 2023, tituladas: 200, certificadas: 3050, taxa: 6.6, fonte: 'INCRA/FCP' },
+    { ano: 2024, tituladas: 230, certificadas: 3120, taxa: 7.4, fonte: 'INCRA/FCP' },
+    { ano: 2025, tituladas: 245, certificadas: 3158, taxa: 7.8, fonte: 'INCRA/FCP (acumulado)' },
+  ];
+  all.push(rec(
+    'Terras quilombolas — série histórica (2018-2025)',
+    'povos_tradicionais', 'terras_quilombolas_historico',
+    'INCRA/Fundação Cultural Palmares',
+    null,
+    ['Art. 2', 'Art. 5'],
+    { series: serieToObj(dadosTerrasQuilombolasHistorico), paragrafos_cerd: '§33-36' }
+  ));
+
   // ─── CLASSE §31-32 ───
   all.push(rec(
     'Pobreza por raça — SIS/IBGE (2022-2024)',
