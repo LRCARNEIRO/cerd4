@@ -413,6 +413,49 @@ export default function Orcamento() {
         porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
       });
 
+      // Orçamentário vs Extraorçamentário split
+      const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+      const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
+      const orcP1 = orcRecs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const orcP2 = orcRecs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const extraP1 = extraRecs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const extraP2 = extraRecs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const orcStats = {
+        total: orcRecs.length,
+        pagoP1: orcP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: orcP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        dotP1: orcP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotP2: orcP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liqP1: orcP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liqP2: orcP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+      };
+      orcRecs.forEach(r => {
+        if (!orcStats.porAnoDetalhado[r.ano]) orcStats.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        orcStats.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        orcStats.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        orcStats.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+      const extraStats = {
+        total: extraRecs.length,
+        pagoP1: extraP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: extraP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        dotP1: extraP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotP2: extraP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liqP1: extraP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liqP2: extraP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+        subtipoMap: {} as Record<string, number>,
+      };
+      extraRecs.forEach(r => {
+        if (!extraStats.porAnoDetalhado[r.ano]) extraStats.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        extraStats.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        extraStats.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        extraStats.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+        const st = r.subtipo_extraorcamentario || 'outros';
+        extraStats.subtipoMap[st] = (extraStats.subtipoMap[st] || 0) + (Number(r.pago) || 0);
+      });
+
       return {
         // Pago (métrica principal — mede entrega real)
         totalPeriodo1: pagoP1,
@@ -438,6 +481,9 @@ export default function Orcamento() {
         // Detalhado
         porAnoDetalhado,
         semSesai,
+        // Orçamentário vs Extraorçamentário
+        orcamentario: orcStats,
+        extraorcamentario: extraStats,
       };
     };
     return {
@@ -885,6 +931,252 @@ export default function Orcamento() {
                   documentos={['Cálculo: Total − SESAI']}
                 />
               </div>
+
+              {/* PERSPECTIVA 3: ORÇAMENTÁRIO vs EXTRAORÇAMENTÁRIO */}
+              {esferaStats.federal.extraorcamentario.total > 0 && (
+                <div>
+                  <h3 className="text-base font-bold mb-3 flex items-center gap-2">
+                    <Scale className="w-5 h-5 text-chart-3" />
+                    Perspectiva 3 — Esforço do Estado (LOA) vs. Financiamento Compensatório
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Diferencia recursos aprovados na Lei Orçamentária Anual (esforço genuíno do Estado) 
+                    de financiamento compensatório/reativo (compensações ambientais, royalties, indenizações — {esferaStats.federal.extraorcamentario.total} registros).
+                  </p>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                    <Card className="border-t-4 border-t-primary">
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">🏛️ Orçamentário (LOA)</CardTitle></CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex justify-between items-end">
+                          <div><p className="text-[10px] text-muted-foreground">Pago 2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.orcamentario.pagoP1)}</p></div>
+                          <div className="text-right"><p className="text-[10px] text-muted-foreground">Pago 2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.orcamentario.pagoP2)}</p></div>
+                        </div>
+                        {(() => {
+                          const v = esferaStats.federal.orcamentario.pagoP1 > 0 ? ((esferaStats.federal.orcamentario.pagoP2 - esferaStats.federal.orcamentario.pagoP1) / esferaStats.federal.orcamentario.pagoP1 * 100) : 0;
+                          return <div className={`text-center py-1 rounded text-sm font-bold ${v >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>{v >= 0 ? '+' : ''}{v.toFixed(1)}%</div>;
+                        })()}
+                        <p className="text-[10px] text-muted-foreground text-center">{esferaStats.federal.orcamentario.total} registros</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-t-4 border-t-chart-4">
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">🔄 Extraorçamentário (Compensatório)</CardTitle></CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex justify-between items-end">
+                          <div><p className="text-[10px] text-muted-foreground">Pago 2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.extraorcamentario.pagoP1)}</p></div>
+                          <div className="text-right"><p className="text-[10px] text-muted-foreground">Pago 2023–2025</p><p className="text-lg font-bold text-chart-4">{formatCurrency(esferaStats.federal.extraorcamentario.pagoP2)}</p></div>
+                        </div>
+                        {(() => {
+                          const v = esferaStats.federal.extraorcamentario.pagoP1 > 0 ? ((esferaStats.federal.extraorcamentario.pagoP2 - esferaStats.federal.extraorcamentario.pagoP1) / esferaStats.federal.extraorcamentario.pagoP1 * 100) : 0;
+                          return <div className={`text-center py-1 rounded text-sm font-bold ${v >= 0 ? 'bg-chart-4/10 text-chart-4' : 'bg-destructive/10 text-destructive'}`}>{v >= 0 ? '+' : ''}{v.toFixed(1)}%</div>;
+                        })()}
+                        <p className="text-[10px] text-muted-foreground text-center">{esferaStats.federal.extraorcamentario.total} registros</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-t-4 border-t-chart-3">
+                      <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">📊 Financiamento Total</CardTitle></CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex justify-between items-end">
+                          <div><p className="text-[10px] text-muted-foreground">Pago 2018–2022</p><p className="text-lg font-bold">{formatCurrency(esferaStats.federal.pagoPeriodo1)}</p></div>
+                          <div className="text-right"><p className="text-[10px] text-muted-foreground">Pago 2023–2025</p><p className="text-lg font-bold text-success">{formatCurrency(esferaStats.federal.pagoPeriodo2)}</p></div>
+                        </div>
+                        {(() => {
+                          const totalPago = esferaStats.federal.orcamentario.pagoP1 + esferaStats.federal.orcamentario.pagoP2 + esferaStats.federal.extraorcamentario.pagoP1 + esferaStats.federal.extraorcamentario.pagoP2;
+                          const totalExtra = esferaStats.federal.extraorcamentario.pagoP1 + esferaStats.federal.extraorcamentario.pagoP2;
+                          const pctExtra = totalPago > 0 ? (totalExtra / totalPago * 100) : 0;
+                          return <div className="text-center py-1 rounded text-sm font-bold bg-chart-3/10 text-chart-3">{pctExtra.toFixed(1)}% extraorçam.</div>;
+                        })()}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Dotação Orçamentário vs Extra */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <Card>
+                      <CardHeader className="pb-2"><CardTitle className="text-sm">Dotação Autorizada — Apenas LOA</CardTitle></CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between items-end">
+                          <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-base font-bold">{formatCurrency(esferaStats.federal.orcamentario.dotP1)}</p></div>
+                          <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-base font-bold text-success">{formatCurrency(esferaStats.federal.orcamentario.dotP2)}</p></div>
+                        </div>
+                        {(() => {
+                          const v = esferaStats.federal.orcamentario.dotP1 > 0 ? ((esferaStats.federal.orcamentario.dotP2 - esferaStats.federal.orcamentario.dotP1) / esferaStats.federal.orcamentario.dotP1 * 100) : 0;
+                          return <div className={`text-center py-1 rounded text-xs font-semibold mt-1 ${v >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>{v >= 0 ? '+' : ''}{v.toFixed(1)}% variação dotação LOA</div>;
+                        })()}
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-2"><CardTitle className="text-sm">Liquidado — Apenas LOA</CardTitle></CardHeader>
+                      <CardContent>
+                        <div className="flex justify-between items-end">
+                          <div><p className="text-[10px] text-muted-foreground">2018–2022</p><p className="text-base font-bold">{formatCurrency(esferaStats.federal.orcamentario.liqP1)}</p></div>
+                          <div className="text-right"><p className="text-[10px] text-muted-foreground">2023–2025</p><p className="text-base font-bold text-success">{formatCurrency(esferaStats.federal.orcamentario.liqP2)}</p></div>
+                        </div>
+                        {(() => {
+                          const v = esferaStats.federal.orcamentario.liqP1 > 0 ? ((esferaStats.federal.orcamentario.liqP2 - esferaStats.federal.orcamentario.liqP1) / esferaStats.federal.orcamentario.liqP1 * 100) : 0;
+                          return <div className={`text-center py-1 rounded text-xs font-semibold mt-1 ${v >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>{v >= 0 ? '+' : ''}{v.toFixed(1)}% variação liquidado LOA</div>;
+                        })()}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Composição Extraorçamentário */}
+                  {Object.keys(esferaStats.federal.extraorcamentario.subtipoMap).length > 0 && (
+                    <Card className="mb-4">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm">Composição do Financiamento Extraorçamentário por Subtipo</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(esferaStats.federal.extraorcamentario.subtipoMap)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([tipo, valor]) => {
+                              const labels: Record<string, string> = {
+                                compensacao_ambiental: 'Compensação Ambiental',
+                                indenizacao: 'Indenização',
+                                royalties: 'Royalties',
+                                convenio: 'Convênio',
+                                receita_propria: 'Receita Própria',
+                                outros: 'Outros',
+                              };
+                              return (
+                                <Badge key={tipo} variant="secondary" className="text-xs">
+                                  {labels[tipo] || tipo}: {formatCurrency(valor)}
+                                </Badge>
+                              );
+                            })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Tabela Ano a Ano — Orçamentário vs Extra */}
+                  <Card className="mb-4">
+                    <CardHeader><CardTitle className="text-base">Evolução Ano a Ano — Orçamentário vs. Extraorçamentário (Pago, R$)</CardTitle></CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-16">Ano</TableHead>
+                            <TableHead className="text-right">Orçamentário (LOA)</TableHead>
+                            <TableHead className="text-right">Extraorçamentário</TableHead>
+                            <TableHead className="text-right">Total</TableHead>
+                            <TableHead className="text-right">% Extra</TableHead>
+                            <TableHead>Interpretação</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {[2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025].map(ano => {
+                            const orcVal = esferaStats.federal.orcamentario.porAnoDetalhado[ano]?.pago || 0;
+                            const extraVal = esferaStats.federal.extraorcamentario.porAnoDetalhado[ano]?.pago || 0;
+                            const total = orcVal + extraVal;
+                            const pctExtra = total > 0 ? (extraVal / total * 100) : 0;
+                            const prevOrc = ano > 2018 ? (esferaStats.federal.orcamentario.porAnoDetalhado[ano - 1]?.pago || 0) : 0;
+                            const varOrc = prevOrc > 0 ? ((orcVal - prevOrc) / prevOrc * 100) : 0;
+                            const interpretacao = extraVal === 0
+                              ? `LOA puro: ${formatCurrency(orcVal)}${ano > 2018 ? ` (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)` : ''}.`
+                              : `LOA: ${formatCurrency(orcVal)} + Extra: ${formatCurrency(extraVal)} (${pctExtra.toFixed(0)}% compensatório).`;
+                            return (
+                              <TableRow key={ano} className={ano === 2023 ? 'border-t-2 border-t-chart-3' : ''}>
+                                <TableCell className="font-bold">{ano}</TableCell>
+                                <TableCell className="text-right font-mono text-xs">{formatCurrencyFull(orcVal)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs text-chart-4">{formatCurrencyFull(extraVal)}</TableCell>
+                                <TableCell className="text-right font-mono text-xs font-semibold">{formatCurrencyFull(total)}</TableCell>
+                                <TableCell className="text-right text-xs">{pctExtra.toFixed(0)}%</TableCell>
+                                <TableCell className="text-xs text-muted-foreground max-w-[250px]">{interpretacao}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+
+                  {/* Gráficos comparativos Orçamentário vs Extra */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <Card>
+                      <CardHeader><CardTitle className="text-sm">Evolução Anual — Orçamentário (LOA)</CardTitle></CardHeader>
+                      <CardContent>
+                        <div className="h-56">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={Object.entries(esferaStats.federal.orcamentario.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                              <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
+                              <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                              <Tooltip formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                              <Legend wrapperStyle={{ fontSize: '10px' }} />
+                              <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--primary))" radius={[2, 2, 0, 0]} />
+                              <Bar dataKey="liquidado" name="Liquidado" fill="hsl(var(--chart-2))" radius={[2, 2, 0, 0]} />
+                              <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[2, 2, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader><CardTitle className="text-sm">Evolução Anual — Extraorçamentário</CardTitle></CardHeader>
+                      <CardContent>
+                        <div className="h-56">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={Object.entries(esferaStats.federal.extraorcamentario.porAnoDetalhado).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano)}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                              <XAxis dataKey="ano" tick={{ fontSize: 10 }} />
+                              <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => formatCurrency(v)} />
+                              <Tooltip formatter={(value: number, name: string) => [formatCurrencyFull(value), name === 'dotacao' ? 'Dotação' : name === 'liquidado' ? 'Liquidado' : 'Pago']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                              <Legend wrapperStyle={{ fontSize: '10px' }} />
+                              <Bar dataKey="dotacao" name="Dotação" fill="hsl(var(--chart-4))" radius={[2, 2, 0, 0]} />
+                              <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-5))" radius={[2, 2, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Insight analítico */}
+                  <Card className="border-l-4 border-l-chart-3">
+                    <CardContent className="pt-4 pb-3">
+                      <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                        <Scale className="w-4 h-4 text-chart-3" />
+                        🔎 Insight — "Financiamento Quase Invisível"
+                      </h4>
+                      <div className="text-xs text-muted-foreground space-y-2">
+                        <p>
+                          Os {esferaStats.federal.extraorcamentario.total} registros extraorçamentários representam ações cujo financiamento 
+                          <strong> não passa pela aprovação do Congresso via LOA</strong>. São compensações ambientais (BR-163, Belo Monte),
+                          royalties, indenizações e receitas próprias da FUNAI — recursos que financiam atividades reais (demarcação, fiscalização)
+                          mas que <em>não refletem decisão política de investimento</em>.
+                        </p>
+                        <p>
+                          <strong>Implicação para o Comitê CERD:</strong> Ao analisar o esforço do Estado brasileiro em políticas indígenas,
+                          deve-se distinguir entre o que foi <strong>planejado e aprovado democraticamente</strong> (LOA) e o que é 
+                          <strong>financiamento reativo/compensatório</strong>. A perspectiva "apenas LOA" revela o <em>esforço genuíno</em>,
+                          enquanto a perspectiva "total" revela a <em>realidade operacional</em>.
+                        </p>
+                        {(() => {
+                          const totalPago = esferaStats.federal.orcamentario.pagoP1 + esferaStats.federal.orcamentario.pagoP2 + esferaStats.federal.extraorcamentario.pagoP1 + esferaStats.federal.extraorcamentario.pagoP2;
+                          const extraTotal = esferaStats.federal.extraorcamentario.pagoP1 + esferaStats.federal.extraorcamentario.pagoP2;
+                          return (
+                            <div className="bg-chart-3/5 rounded p-3 border border-chart-3/20">
+                              <p className="text-xs font-semibold text-foreground">
+                                O financiamento compensatório representa {totalPago > 0 ? (extraTotal / totalPago * 100).toFixed(1) : '0'}% do total pago.
+                                {extraTotal > 0 && <> Sem ele, o investimento em políticas indígenas seria {formatCurrency(totalPago - extraTotal)}.</>}
+                              </p>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <AuditFooter
+                    fontes={[
+                      { nome: 'Portal da Transparência — Despesas Federais', url: 'https://portaldatransparencia.gov.br/despesas' },
+                      { nome: 'Dados Abertos — LOA', url: 'https://dados.gov.br/dados/conjuntos-dados/orcamento-despesa' },
+                    ]}
+                    documentos={['Classificação: tipo_dotacao (orçamentário vs. extraorçamentário)', 'FUNAI Programa 0151 — ações com dotação zero']}
+                  />
+                </div>
+              )}
 
               {/* Detalhamento por Grupo Focal Federal — omitted if stats unavailable */}
 
