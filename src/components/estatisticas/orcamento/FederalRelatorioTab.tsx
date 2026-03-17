@@ -984,6 +984,18 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 {analysis.totalExtra > 0 && <> Sem ele, o investimento em políticas indígenas seria {formatCurrency(analysis.totalOrc)}.</>}
               </p>
             </div>
+
+            {/* Transition insight after Perspectiva 3 */}
+            <div className="bg-chart-3/10 rounded p-3 border border-chart-3/20 flex items-center gap-3">
+              <DollarSign className="w-5 h-5 text-chart-3 shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                <strong>Resumo das 3 perspectivas:</strong> (1) Total com SESAI = {formatCurrency(analysis.totalPagoP1 + analysis.totalPagoP2)};
+                (2) Sem SESAI = {formatCurrency(analysis.pagoP1NoSesai + analysis.pagoP2NoSesai)};
+                (3) Apenas LOA = {formatCurrency(analysis.totalOrc)}.
+                A diferença entre (1) e (3) ({formatCurrency((analysis.totalPagoP1 + analysis.totalPagoP2) - analysis.totalOrc)})
+                revela o <em>gap</em> entre o financiamento total e o esforço legislativo do Estado.
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
