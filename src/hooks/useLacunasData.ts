@@ -244,6 +244,8 @@ export interface DadoOrcamentario {
   publico_alvo: string | null;
   razao_selecao: string | null;
   artigos_convencao: string[] | null;
+  tipo_dotacao: 'orcamentario' | 'extraorcamentario';
+  subtipo_extraorcamentario: string | null;
   created_at: string;
   updated_at: string;
 }
