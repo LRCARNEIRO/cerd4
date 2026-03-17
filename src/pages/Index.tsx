@@ -19,20 +19,25 @@ import {
   RefreshCw,
   Loader2,
   RotateCcw,
-  ExternalLink
+  ExternalLink,
+  Filter
 } from 'lucide-react';
 import { Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE, TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
+  const [incluirExtra, setIncluirExtra] = useState(true);
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
