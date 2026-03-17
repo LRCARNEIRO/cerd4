@@ -526,6 +526,7 @@ export const quilombolasCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 10089 → Pop. quilombola por UF, total e por localização (dentro/fora de territórios quilombolas).',
     total_por_uf: {
