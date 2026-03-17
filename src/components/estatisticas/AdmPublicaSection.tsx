@@ -63,10 +63,11 @@ const estadicData = {
   generoGestores: { mulheres: 24, homens: 3 },
   ufsComComiteIgualdade: 16,
   comiteMaisCitado: 'Saúde da População Negra (8 UFs)',
+  // AUDITORIA CRUZADA 17/03/2026: Corrigido conforme microdados ESTADIC 2024 (Henrique)
   gruposNaoContemplados: [
-    { grupo: 'Ciganos', estados: 'AC, RO, AM, AP, PA, MA, PI, CE, RN, PB, PE, SE, RJ, RS, SC, MS, TO' },
+    { grupo: 'Ciganos', estados: 'RO, AM, AP, MA, PI, CE, RN, PB, PE, SE, SC, MS' },
     { grupo: 'Indígenas', estados: 'RO, RR, AP, TO, CE, RN, PB, PE, SE, SC' },
-    { grupo: 'Quilombolas', estados: 'AC, RO, AP, TO, CE, RN, PB, PE, RJ, SP, SC, MS' },
+    { grupo: 'Quilombolas', estados: 'RO, AP, TO, CE, RN, PB, PE, RJ, SP, SC, MS' },
     { grupo: 'Demais PCTs', estados: 'PA, CE, MA, PE, RN, MS, RS' },
   ],
 };
@@ -418,8 +419,8 @@ export function AdmPublicaSection() {
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="bg-chart-2/10 text-chart-2">SINAPIR</Badge>
-                <Badge className="bg-chart-2/10 text-chart-2">282 adesões</Badge>
-                <Badge variant="outline">Atualizado: Jan/2025</Badge>
+                <Badge className="bg-chart-2/10 text-chart-2">342 adesões</Badge>
+                <Badge variant="outline">Atualizado: Fev/2026</Badge>
                 <Badge variant="outline">27/27 UFs</Badge>
               </div>
             </div>

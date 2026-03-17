@@ -209,7 +209,7 @@ export function buildCovidRacialIndicators(): DbRecord[] {
     ['Art. 2', 'Art. 5'],
     {
       registros: [
-        { indicador: 'Excesso de mortalidade (causas naturais, 2020)', negros: '+57%', naoNegros: 'Referência' },
+        { indicador: 'Excesso de mortalidade durante a pandemia de COVID-19 (2020)', negros: '+57%', naoNegros: 'Referência' },
         { indicador: 'Óbitos em excesso de pretos e pardos (2020)', negros: '~36 mil', naoNegros: '—' },
         { indicador: 'Idosos 80+ pretos/pardos vs brancos (2020)', negros: 'Quase 2x mais', naoNegros: 'Referência' },
         { indicador: 'Homens negros vs brancos', negros: '+55%', naoNegros: 'Referência' },

@@ -102,13 +102,14 @@ export const educacaoIndigena: ComplementoIndicador = {
   tipo: 'complementar',
   tendencia: 'estável',
   dados: {
-    nota: 'Auditado: Indígenas 85% (SIDRA 8181, sem desagregação dentro/fora TI); Negros 90,94% (SIDRA 9542); Brancos 95,66% (SIDRA 9543). Escolas ensino básico em TIs: 3.541; ensino fundamental em TIs: 3.484 (Censo Escolar/INEP 2022).',
+    nota: 'Auditado: Indígenas 85% (SIDRA 8181, sem desagregação dentro/fora TI); Negros 90,94% (SIDRA 9542); Brancos 95,66% (SIDRA 9543). Escolas ensino básico em TIs: 3.553 (Catálogo de Escolas INEP 2026); ensino fundamental em TIs: 3.484 (Censo Escolar/INEP 2022).',
     alfabetizacao: {
       indigenas: 85,
       negros: 90.94,
       brancos: 95.66,
     },
-    escolas_ensino_basico_em_territorios: 3541,
+    // AUDITORIA CRUZADA 17/03/2026: Atualizado de 3.541 para 3.553 conforme Catálogo de Escolas INEP (2026)
+    escolas_ensino_basico_em_territorios: 3553,
     escolas_ensino_fundamental_em_territorios: 3484,
     url_fonte_alfabetizacao_indigena: 'https://sidra.ibge.gov.br/tabela/8181',
     url_fonte_alfabetizacao_negros: 'https://sidra.ibge.gov.br/tabela/9542',

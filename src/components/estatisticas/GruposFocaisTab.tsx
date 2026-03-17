@@ -153,10 +153,10 @@ const dadosTerritoriais = {
     ],
   },
   indigenas: {
-    // AUDITORIA 14/03/2026: alinhado com Complemento CERD III (ISA/FUNAI)
+    // AUDITORIA CRUZADA 17/03/2026: alinhado com GruposFocais.tsx (646 TIs — FUNAI 2026)
     // terrasHomologadas = apenas homologadas (FUNAI); homologadasReservadas = ISA total (536)
-    terrasTotal: 644,
-    fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento',
+    terrasTotal: 646,
+    fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento (atualizado 2026)',
     linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
     terrasHomologadas: 496,
     terrasHomologadasReservadas: 536, // ISA 2025: homologadas (496) + reservadas (40)
@@ -244,8 +244,9 @@ const indicadoresVulnerabilidade = {
   },
   letalidadePolicial: {
     nome: 'Mortes por Intervenção Policial',
-    totalMortes: 5417, percentualNegros: 82.0,
-    ano: 2024, fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
+    // AUDITORIA CRUZADA 17/03/2026: Corrigido de 5.417 para 6.243 conforme 19º Anuário FBSP 2025, p.17 e 23
+    totalMortes: 6243, percentualNegros: 82.0,
+    ano: 2024, fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024), p.17 e 23',
     link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     auditado: true, // ✅ Validado contra aba Segurança (série letalidadePolicial)
   },
