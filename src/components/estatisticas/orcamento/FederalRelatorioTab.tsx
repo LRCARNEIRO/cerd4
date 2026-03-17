@@ -1140,6 +1140,21 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 </div>
               </div>
             </div>
+
+            {/* Year-by-year insight */}
+            {(() => {
+              const maxPagoYear = analysis.annualData.reduce((best, d) => d.pago > best.pago ? d : best, analysis.annualData[0]);
+              const minPagoYear = analysis.annualData.reduce((best, d) => d.pago < best.pago ? d : best, analysis.annualData[0]);
+              return (
+                <div className="bg-muted/50 rounded p-3 mt-2">
+                  <p className="text-xs">
+                    <strong>💡 Insight:</strong> O ano com maior pagamento total foi <strong>{maxPagoYear?.ano}</strong> ({formatCurrency(maxPagoYear?.pago || 0)}),
+                    enquanto o menor foi <strong>{minPagoYear?.ano}</strong> ({formatCurrency(minPagoYear?.pago || 0)}).
+                    A amplitude entre o pico e o vale é de {formatCurrency((maxPagoYear?.pago || 0) - (minPagoYear?.pago || 0))}.
+                  </p>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
       )}
