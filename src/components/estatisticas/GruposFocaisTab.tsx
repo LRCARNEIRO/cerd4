@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
 import { SerieTemporalGrupos } from '@/components/grupos-focais/SerieTemporalGrupos';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useMirrorData } from '@/hooks/useMirrorData';
+import { useGruposFocaisData } from '@/hooks/useGruposFocaisData';
 
 // Dados SIDRA/IBGE auditados com metadados completos
 const gruposFocaisData = {
