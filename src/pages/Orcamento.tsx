@@ -18,6 +18,7 @@ import { OrgaoSection } from '@/components/estatisticas/orcamento/OrgaoSection';
 import { ProgramCard } from '@/components/estatisticas/orcamento/ProgramCard';
 import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsferaCard';
 import { SesaiMaskingInfographic } from '@/components/estatisticas/orcamento/SesaiMaskingInfographic';
+import { ExtraorcamentarioMaskingInfographic } from '@/components/estatisticas/orcamento/ExtraorcamentarioMaskingInfographic';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/MetodologiaFederalSection';
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
