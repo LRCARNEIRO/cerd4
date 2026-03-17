@@ -137,6 +137,7 @@ export const distorcaoIdadeSerie: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'melhora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente via Painel InepData Censo Escolar. Série 2018-2025, anos iniciais do fundamental e ensino médio, por cor/raça.',
     fundamental: {
