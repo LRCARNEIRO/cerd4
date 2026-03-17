@@ -263,12 +263,12 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: true, idade: true, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '69% dos moradores de favelas são negros (Censo 2022), contra 55,5% da população total — sobre-representação de 13,5 p.p. 16,4 milhões de pessoas em aglomerados subnormais.',
+    relevanciaRacial: '72,94% dos moradores de favelas são negros (pretos+pardos) (Censo 2022, SIDRA 9884), contra 55,5% da população total — sobre-representação de 17,4 p.p. 16.390.790 pessoas em aglomerados subnormais.',
     prioridade: 'alta',
     unidadeSerie: 'Moradores em aglomerados subnormais',
     serieHistorica: [
       { ano: 2010, valor: '11,4 milhões de pessoas (Censo 2010)', fonte: 'IBGE Censo 2010' },
-      { ano: 2022, valor: '16,4 milhões de pessoas | 69% negros', fonte: 'IBGE Censo 2022' },
+      { ano: 2022, valor: '16.390.790 pessoas | 72,94% negros (SIDRA 9884)', fonte: 'IBGE Censo 2022 — SIDRA 9884' },
     ]
   },
   {
@@ -277,15 +277,15 @@ const indicadoresHabitacao: NovoIndicador[] = [
     descricao: 'Acesso a água, esgoto e coleta de lixo por raça/cor do domicílio',
     fonte: 'IBGE - Censo 2022 / PNAD Contínua',
     siglaFonte: 'IBGE',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/7555',
     periodicidade: 'Anual/Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Negros: 42,8% sem esgoto adequado vs 26,5% brancos (Censo 2022). Quilombos: 65,4% sem esgoto. TIs: 38,5% sem água canalizada. Vinculado ao Art. V(e)(iii) ICERD — direito à habitação.',
+    relevanciaRacial: 'Negros: 26,2% sem esgoto adequado vs 14,95% brancos (SIDRA 7555). Quilombolas: 36,21% (SIDRA 9812). TIs: 26,33% sem água canalizada (SIDRA 9956). Vinculado ao Art. V(e)(iii) ICERD.',
     prioridade: 'alta',
     unidadeSerie: '% sem esgoto adequado',
     serieHistorica: [
-      { ano: 2022, valor: 'Negros: 42,8% | Brancos: 26,5% | Quilombos: 65,4% | TIs: 38,5% sem água', fonte: 'IBGE Censo 2022' },
+      { ano: 2022, valor: 'Negros: 26,2% | Brancos: 14,95% | Quilombolas: 36,21% | TIs: 26,33% sem água', fonte: 'IBGE Censo 2022 — SIDRA 7555/9812/9956' },
       { ano: '2018-2021', valor: '⏳ N/D', nota: 'Dados PnadC disponíveis via SIDRA/IBGE — pendente extração' },
     ]
   }
