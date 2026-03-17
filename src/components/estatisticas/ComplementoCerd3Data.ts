@@ -636,6 +636,7 @@ export const migracaoInternacional: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 2145 → Naturalizados e estrangeiros por grupos de anos de fixação, sexo e idade. Sem desagregação por raça/cor.',
     naturalizados_brasileiros: { '2022-2024': 29228 },
