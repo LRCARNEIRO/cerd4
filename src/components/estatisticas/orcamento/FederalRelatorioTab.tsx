@@ -1273,10 +1273,99 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         </Card>
       )}
 
-      {/* ═══ 12. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
+      {/* ═══ 12. PARADOXOS E CURIOSIDADES ═══ */}
+      <Card>
+        <CardHeader><CardTitle className="text-sm"><SN n={nextSection()} /> Paradoxos, Curiosidades e Destaques</CardTitle></CardHeader>
+        <CardContent className="text-xs text-muted-foreground space-y-3">
+          {/* Paradoxo ICERD × Orçamento */}
+          {(() => {
+            const artigosSorted = [...icerdData.chartData].sort((a, b) => b.pago - a.pago);
+            const topArt = artigosSorted[0];
+            const bottomArt = artigosSorted.filter(d => d.pago > 0).pop();
+            const paradoxos: React.ReactNode[] = [];
+
+            // Paradoxo 1: mais dinheiro ≠ mais cumprimento
+            if (topArt && analysis.execP2 < 70) {
+              paradoxos.push(
+                <li key="p1"><strong>Mais dinheiro, mesma execução:</strong> A dotação cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(0)}%,
+                mas a taxa de execução caiu de {analysis.execP1.toFixed(0)}% para {analysis.execP2.toFixed(0)}% — evidenciando represamento orçamentário.</li>
+              );
+            }
+
+            // Paradoxo 2: SESAI mascara políticas raciais
+            if (analysis.sesaiPctP1 > 60) {
+              paradoxos.push(
+                <li key="p2"><strong>Mascaramento estatístico:</strong> Se considerássemos apenas o total bruto, concluiríamos que o Brasil investe
+                {' '}{formatCurrency(analysis.totalPagoP1 + analysis.totalPagoP2)} em políticas raciais. Na realidade, ~{((analysis.sesaiPagoP1 + analysis.sesaiPagoP2) / (analysis.totalPagoP1 + analysis.totalPagoP2) * 100).toFixed(0)}%
+                são saúde indígena (ação 20YP), que é uma <em>obrigação constitucional</em>, não uma política de igualdade racial.</li>
+              );
+            }
+
+            // Paradoxo 3: extraorçamentário
+            if (analysis.totalExtra > 0) {
+              paradoxos.push(
+                <li key="p3"><strong>Financiamento "fantasma":</strong> {formatCurrency(analysis.totalExtra)} ({pctExtraTotal.toFixed(1)}%)
+                foram executados sem aprovação legislativa (LOA). Esses recursos compensatórios (royalties, indenizações Belo Monte/BR-163) inflam
+                os números de investimento indígena sem refletir decisão política deliberada.</li>
+              );
+            }
+
+            // Curiosidade: ano com maior execução
+            const bestExecYear = analysis.annualData.reduce((best, d) => {
+              const ex = d.dotacao > 0 ? (d.pago / d.dotacao * 100) : 0;
+              const bex = best.dotacao > 0 ? (best.pago / best.dotacao * 100) : 0;
+              return ex > bex ? d : best;
+            }, analysis.annualData[0]);
+            const bestExecPct = bestExecYear?.dotacao > 0 ? (bestExecYear.pago / bestExecYear.dotacao * 100) : 0;
+
+            // Curiosidade: quilombola/ciganos
+            const ciganos = analysis.themeData.find(t => t.key === 'ciganos');
+            const quilombola = analysis.themeData.find(t => t.key === 'quilombola');
+
+            return (
+              <div className="space-y-3">
+                <div className="bg-warning/5 rounded p-4 border border-warning/20">
+                  <p className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-warning" />
+                    Paradoxos Identificados — Assimetria ICERD × Orçamento
+                  </p>
+                  <ul className="list-disc pl-4 space-y-2">{paradoxos}</ul>
+                </div>
+
+                <div className="bg-chart-2/5 rounded p-4 border border-chart-2/20">
+                  <p className="font-semibold text-foreground mb-2">🔍 Curiosidades e Destaques</p>
+                  <ul className="list-disc pl-4 space-y-1.5">
+                    <li><strong>Melhor execução anual:</strong> {bestExecYear?.ano} com {bestExecPct.toFixed(1)}% de taxa de pagamento.</li>
+                    {ciganos && <li><strong>Menor investimento:</strong> Povos Ciganos/Romani receberam apenas {formatCurrency(ciganos.pagoP1 + ciganos.pagoP2)} em todo o período — {ciganos.programas} programa(s).</li>}
+                    {quilombola && <li><strong>Quilombolas:</strong> {quilombola.programas} programas ativos, totalizando {formatCurrency(quilombola.pagoP1 + quilombola.pagoP2)}. A regularização fundiária permanece sub-executada.</li>}
+                    <li><strong>Reclassificação contábil (2023):</strong> Parte do aumento aparente pós-2023 é explicada pela formalização de recursos
+                    antes executados como extraorçamentários, seguindo exigências de transparência do TCU/CGU — não representando necessariamente dinheiro novo.</li>
+                    <li><strong>Top programa:</strong> {analysis.topPrograms[0]?.[0]} ({analysis.topPrograms[0]?.[1].orgao}) concentra {formatCurrency(analysis.topPrograms[0]?.[1].pago || 0)} do total.</li>
+                    <li><strong>Cobertura ICERD:</strong> {icerdData.chartData.length} de 7 artigos possuem ações orçamentárias mapeadas.
+                    {icerdData.artigosSemDados.length > 0 && <> Artigos sem cobertura: {icerdData.artigosSemDados.map(a => a.numero).join(', ')}.</>}</li>
+                  </ul>
+                </div>
+
+                {/* Dados de 2025 — cautela */}
+                {analysis.anos.includes(2025) && (
+                  <div className="bg-muted/50 rounded p-3 border flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+                    <p className="text-xs">
+                      <strong>Nota sobre 2025:</strong> Os dados do último exercício podem estar parciais (até o 6º bimestre).
+                      A aparente baixa execução de 2025 pode refletir processamento contínuo e não deve ser interpretada como retrocesso definitivo.
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
+
+      {/* ═══ 13. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
       {(() => {
         const allRecs = [...records, ...sesaiRecords];
-        const artigosComDados = icerdData.chartData.sort((a, b) => b.pago - a.pago);
+        const artigosComDados = [...icerdData.chartData].sort((a, b) => b.pago - a.pago);
         const topArt = artigosComDados[0];
         const bottomArt = artigosComDados.length > 1 ? artigosComDados[artigosComDados.length - 1] : null;
         const topPct = topArt ? topArt.pct.toFixed(1) : '0';
@@ -1302,6 +1391,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   {analysis.totalExtra > 0 && (
                     <li><strong>Financiamento compensatório:</strong> {formatCurrency(analysis.totalExtra)} ({pctExtraTotal.toFixed(1)}% do total) são recursos reativos (royalties, indenizações) que não refletem decisão política de investimento.</li>
                   )}
+                  <li><strong>"Efeito Tesoura":</strong> A dotação autorizada cresceu {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}% entre P1 e P2,
+                  mas o valor pago cresceu apenas {varPago >= 0 ? '+' : ''}{varPago.toFixed(1)}%. A lacuna entre planejamento e execução se amplia.</li>
                 </ul>
               </div>
 
@@ -1318,6 +1409,29 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 </ul>
               </div>
 
+              {/* Síntese quantitativa final */}
+              <div className="bg-chart-1/5 rounded p-4 border border-chart-1/20">
+                <p className="font-semibold text-foreground mb-2">📊 Síntese Quantitativa Final</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-foreground">{analysis.totalRegistros}</p>
+                    <p className="text-[10px]">Registros analisados</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-foreground">{analysis.totalProgramas}</p>
+                    <p className="text-[10px]">Programas distintos</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-foreground">{analysis.anos.length}</p>
+                    <p className="text-[10px]">Anos de cobertura</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-foreground">{icerdData.chartData.length}/7</p>
+                    <p className="text-[10px]">Artigos ICERD cobertos</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-muted/50 rounded p-3 space-y-2">
                 <p className="font-semibold text-foreground">Recomendações ao Comitê CERD:</p>
                 <ol className="list-decimal pl-4 space-y-1">
@@ -1327,6 +1441,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   <li>Incluir a análise de <strong>dupla perspectiva (com/sem SESAI)</strong> como padrão metodológico.</li>
                   <li>Incluir a análise de <strong>tripla perspectiva (LOA vs. Compensatório)</strong> para distinguir esforço genuíno do Estado.</li>
                   {icerdData.artigosSemDados.length > 0 && <li>Solicitar <strong>plano de ação</strong> para os artigos {icerdData.artigosSemDados.map(a => a.numero).join(', ')} sem cobertura orçamentária.</li>}
+                  <li>Investigar o fenômeno de <strong>"Orçamento Simbólico"</strong> — ações com dotação significativa e pagamento ≈ R$ 0.</li>
+                  <li>Monitorar o <strong>efeito de reclassificação contábil</strong> pós-2023 para distinguir investimento novo de reorganização administrativa.</li>
                 </ol>
               </div>
             </CardContent>
