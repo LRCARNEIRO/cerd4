@@ -778,24 +778,7 @@ export default function Orcamento() {
             </CardContent>
           </Card>
 
-          {/* 4) Thematic filter bar */}
-          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
-
-          {/* 5) Article filter */}
-          <div className="mb-4">
-            <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
-          </div>
-
-          {/* 6) Content */}
-          <EsferaContent
-            records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
-            isLoading={isLoading}
-            emptyMessage="Nenhum programa federal encontrado com os filtros selecionados."
-            useOrgaoSection={true}
-            showExclusions={true}
-          />
-
-          {/* Charts */}
+          {/* Charts — Evolução, Panorama, Top 10 */}
           {hasData && !isLoading && (
             <div className="mt-6 space-y-6">
               {/* Infográfico: Programas e Ações por Grupo Focal */}
@@ -938,6 +921,23 @@ export default function Orcamento() {
               </div>
             </div>
           )}
+
+          {/* 4) Thematic filter bar */}
+          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
+
+          {/* 5) Article filter */}
+          <div className="mb-4">
+            <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
+          </div>
+
+          {/* 6) Content */}
+          <EsferaContent
+            records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
+            isLoading={isLoading}
+            emptyMessage="Nenhum programa federal encontrado com os filtros selecionados."
+            useOrgaoSection={true}
+            showExclusions={true}
+          />
         </TabsContent>
 
         {/* ===== UNIVERSO DA BASE ===== */}
