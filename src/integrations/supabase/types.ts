@@ -103,6 +103,8 @@ export type Database = {
           programa: string
           publico_alvo: string | null
           razao_selecao: string | null
+          subtipo_extraorcamentario: string | null
+          tipo_dotacao: Database["public"]["Enums"]["tipo_dotacao"]
           updated_at: string
           url_fonte: string | null
         }
@@ -127,6 +129,8 @@ export type Database = {
           programa: string
           publico_alvo?: string | null
           razao_selecao?: string | null
+          subtipo_extraorcamentario?: string | null
+          tipo_dotacao?: Database["public"]["Enums"]["tipo_dotacao"]
           updated_at?: string
           url_fonte?: string | null
         }
@@ -151,6 +155,8 @@ export type Database = {
           programa?: string
           publico_alvo?: string | null
           razao_selecao?: string | null
+          subtipo_extraorcamentario?: string | null
+          tipo_dotacao?: Database["public"]["Enums"]["tipo_dotacao"]
           updated_at?: string
           url_fonte?: string | null
         }
@@ -550,6 +556,7 @@ export type Database = {
         | "cultura_patrimonio"
         | "participacao_social"
         | "dados_estatisticas"
+      tipo_dotacao: "orcamentario" | "extraorcamentario"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -717,6 +724,7 @@ export const Constants = {
         "participacao_social",
         "dados_estatisticas",
       ],
+      tipo_dotacao: ["orcamentario", "extraorcamentario"],
     },
   },
 } as const
