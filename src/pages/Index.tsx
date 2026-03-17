@@ -174,17 +174,13 @@ export default function Index() {
           sourceInfo={{ label: 'SIDRA/IBGE + DataSUS + FBSP', url: 'https://sidra.ibge.gov.br/home/pnadct/brasil' }}
         />
         <StatCard
-          title={incluirExtra ? "Registros Orçament. (Total)" : "Registros Orçament. (LOA)"}
-          value={isLoading ? '...' : (
-            incluirExtra 
-              ? stats.totalOrcamento 
-              : (orcamentoStats?.splitTipoDotacao?.orcamentario.total ?? stats.totalOrcamento)
-          )}
-          subtitle={
-            incluirExtra
-              ? `${orcamentoStats?.porEsfera ? Object.keys(orcamentoStats.porEsfera).length : 0} esferas · inclui extraorçamentário`
-              : `Apenas LOA · excluindo ${orcamentoStats?.splitTipoDotacao?.extraorcamentario.total ?? 0} extraorçamentários`
-          }
+          title="Registros Orçamentários"
+          value={isLoading ? '...' : stats.totalOrcamento}
+          subtitle={`${orcamentoStats?.porEsfera ? Object.keys(orcamentoStats.porEsfera).length : 0} esferas`}
+          icon={Database}
+          variant="default"
+          sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
+        />
           icon={Database}
           variant="default"
           sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
