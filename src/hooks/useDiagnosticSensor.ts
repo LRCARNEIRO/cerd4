@@ -13,12 +13,35 @@ export interface DiagnosticSignal {
   detail?: string;
 }
 
+export interface LinkedIndicador {
+  nome: string;
+  categoria: string;
+  tendencia: string | null;
+  dados: any;
+}
+
+export interface LinkedOrcamento {
+  programa: string;
+  orgao: string;
+  ano: number;
+  dotacao_autorizada: number | null;
+  pago: number | null;
+}
+
+export interface LinkedNormativo {
+  titulo: string;
+  status: string;
+}
+
 export interface LacunaDiagnostic {
   lacunaId: string;
   statusManual: ComplianceStatus;
   statusSugerido: ComplianceStatus | null;
   divergente: boolean;
   signals: DiagnosticSignal[];
+  linkedIndicadores: LinkedIndicador[];
+  linkedOrcamento: LinkedOrcamento[];
+  linkedNormativos: LinkedNormativo[];
 }
 
 export interface DiagnosticSummary {
