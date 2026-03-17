@@ -289,7 +289,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
   );
 }
 
-// AuditadoBadge removido — aba ainda não auditada manualmente
+// Auditado manualmente em 17/03/2026
 
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
