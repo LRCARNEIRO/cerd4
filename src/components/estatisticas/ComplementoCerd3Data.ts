@@ -403,6 +403,7 @@ export const financiamentoEleitoral: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Estudo TSE (pág. 27): "Candidaturas brancas (R$ 44.825,97) apresentam valores superiores aos das candidaturas negras (R$ 15.658,15). Essa diferença aponta para desigualdade no financiamento que prejudica a competitividade de candidatos pretos e pardos."',
     receita_media_candidatura_branca: 44825.97,
