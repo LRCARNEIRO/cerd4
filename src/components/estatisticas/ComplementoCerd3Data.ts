@@ -501,6 +501,7 @@ export const saneamentoRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. SIDRA 7555 (geral por cor/raça), SIDRA 9812 (quilombolas), SIDRA 9956 (TIs). Valores corrigidos conforme auditoria.',
     pct_sem_esgoto_adequado: {
