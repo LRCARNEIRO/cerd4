@@ -430,6 +430,21 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
               ⚠️ Assimetria temporal: P1 = 5 anos (2018–2022), P2 = 3 anos (2023–2025). A comparação bruta superestima o crescimento real.
             </p>
           </div>
+
+          {analysis.totalExtra > 0 && (
+            <div className="bg-chart-3/5 rounded p-3 border border-chart-3/20">
+              <p className="text-xs font-semibold text-foreground mb-1">
+                🔎 Nota sobre financiamento extraorçamentário ({analysis.extraCount} registros · {formatCurrency(analysis.totalExtra)})
+              </p>
+              <p className="text-xs text-muted-foreground">
+                O aparente aumento do orçamento indígena após 2023 pode conter um componente de <strong>reclassificação contábil</strong>:
+                recursos que antes eram executados como extraorçamentários (compensações BR-163, Belo Monte) passaram a ser incorporados
+                em ações formais do orçamento após a criação do MPI e a padronização exigida por TCU/CGU.
+                A base inclui {formatCurrency(analysis.totalExtra)} em financiamento compensatório (royalties, indenizações, convênios),
+                representando {(analysis.totalExtra / ((analysis.totalExtra + analysis.totalOrc) || 1) * 100).toFixed(1)}% do total.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
