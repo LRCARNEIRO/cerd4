@@ -48,8 +48,11 @@ const grupoLabels: Record<FocalGroupType, string> = {
 };
 
 export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
-  const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
-  const isParcial = lacuna.status_cumprimento === 'parcialmente_cumprido';
+  const effectiveStatus = diagnostic?.divergente && diagnostic.statusSugerido
+    ? diagnostic.statusSugerido
+    : lacuna.status_cumprimento;
+  const isNaoCumprido = effectiveStatus === 'nao_cumprido' || effectiveStatus === 'retrocesso';
+  const isParcial = effectiveStatus === 'parcialmente_cumprido';
   const [expanded, setExpanded] = useState(true);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
@@ -71,7 +74,12 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
             <Badge variant="secondary" className="text-xs">
               {grupoLabels[lacuna.grupo_focal]}
             </Badge>
-            <StatusBadge status={lacuna.status_cumprimento} size="sm" />
+            <StatusBadge status={effectiveStatus} size="sm" />
+            {diagnostic?.divergente && diagnostic.statusSugerido && (
+              <Badge variant="outline" className="text-[10px] border-destructive/30 text-destructive">
+                antes: {lacuna.status_cumprimento === 'cumprido' ? 'Cumprido' : lacuna.status_cumprimento === 'parcialmente_cumprido' ? 'Parcial' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
+              </Badge>
+            )}
           </div>
           
           <h3 className="font-medium text-sm text-foreground">
