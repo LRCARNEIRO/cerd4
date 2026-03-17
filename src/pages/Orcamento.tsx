@@ -574,7 +574,7 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
-          {/* 1) Summary Cards — Dotação, Pago, Registros, Extraorçamentárias (first!) */}
+          {/* 1) Summary Cards — organized by theme */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
             let filtered = incluirExtra ? recs : recs.filter(r => r.tipo_dotacao !== 'extraorcamentario');
@@ -586,51 +586,139 @@ export default function Orcamento() {
             const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
             const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
 
+            // Ações únicas (programa×órgão distinct)
+            const acoesUnicas = new Set(filtered.map(r => `${r.programa}||${r.orgao}`)).size;
+            const programasUnicos = new Set(filtered.map(r => r.programa)).size;
+            const orgaosUnicos = new Set(filtered.map(r => r.orgao)).size;
+
+            // Razão dotação→pago (quanto se perdeu)
+            const razaoDotPago = totalDotacao > 0 ? (totalPago / totalDotacao) : 0;
+            const perdaDotacao = totalDotacao > 0 ? ((totalDotacao - totalPago) / totalDotacao * 100) : 0;
+
+            // Extraorçamentárias
             const extraRecs = recs.filter(r => r.tipo_dotacao === 'extraorcamentario' || (!Number(r.dotacao_inicial) && !Number(r.dotacao_autorizada)));
             const extraFiltered = semSesaiMode ? extraRecs.filter(r => classifyThematic(r) !== 'sesai') : extraRecs;
             const extraPago = extraFiltered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const extraAcoes = new Set(extraFiltered.map(r => `${r.programa}||${r.orgao}`)).size;
+
+            // Orçamentárias
+            const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+            const orcAcoes = new Set(orcRecs.map(r => `${r.programa}||${r.orgao}`)).size;
 
             return (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <Card className="border-l-4 border-l-primary">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Inicial: {formatCurrency(totalDotInicial)}
-                    </p>
-                  </CardContent>
-                </Card>
+              <div className="space-y-4 mb-6">
+                {/* Grupo 1: Planejamento */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📋 Planejamento (LOA)</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-primary">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Inicial: {formatCurrency(totalDotInicial)}
+                        </p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="border-l-4 border-l-success">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Liquidado: {formatCurrency(totalLiquidado)} · Exec: {execucao.toFixed(1)}%
-                    </p>
-                  </CardContent>
-                </Card>
+                    <Card className="border-l-4 border-l-chart-2">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Orçamentárias</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{orcAcoes}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {orcRecs.length} registros (ação×ano) · {programasUnicos} programas
+                        </p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="border-l-4 border-l-chart-3">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Registros</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{filtered.length}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {new Set(filtered.map(r => r.programa)).size} programas · {new Set(filtered.map(r => r.orgao)).size} órgãos
-                    </p>
-                  </CardContent>
-                </Card>
+                    <Card className="border-l-4 border-l-chart-1">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação → Pago</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{razaoDotPago.toFixed(2)}x</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {perdaDotacao > 0 
+                            ? <span className="text-destructive">-{perdaDotacao.toFixed(1)}% da dotação não executada</span>
+                            : <span className="text-success">Execução acima da dotação</span>
+                          }
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
 
-                <Card className="border-l-4 border-l-warning">
-                  <CardContent className="pt-4 pb-3">
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{extraFiltered.length}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Pago: {formatCurrency(extraPago)} · Sem dotação LOA
-                    </p>
-                  </CardContent>
-                </Card>
+                {/* Grupo 2: Execução */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">💰 Execução</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-success">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Liquidado: {formatCurrency(totalLiquidado)}
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-chart-3">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Taxa de Execução</p>
+                        <p className={`text-2xl font-bold mt-1 ${execucao >= 80 ? 'text-success' : execucao >= 50 ? 'text-warning' : 'text-destructive'}`}>
+                          {execucao.toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Pago ÷ Dotação Autorizada
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-muted-foreground/40">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total de Registros</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{filtered.length}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {acoesUnicas} ações únicas · {orgaosUnicos} órgãos
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* Grupo 3: Extraorçamentário */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">⚖️ Extraorçamentário (Compensatório)</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-warning">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{extraAcoes}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {extraFiltered.length} registros · Sem dotação LOA
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-chart-5">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pago Extraorçamentário</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(extraPago)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {totalPago > 0 ? (extraPago / totalPago * 100).toFixed(1) : '0'}% do total pago
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-l-4 border-l-chart-4">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pago LOA (Esforço do Estado)</p>
+                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago - extraPago)}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {totalPago > 0 ? ((totalPago - extraPago) / totalPago * 100).toFixed(1) : '0'}% do total pago
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
               </div>
             );
           })()}
