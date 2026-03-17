@@ -179,17 +179,15 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
           {expanded && (
             <div className="mt-3 space-y-3">
               {/* Texto original ONU */}
-              {lacuna.texto_original_onu && (
-                <div className="p-2 bg-muted/50 rounded-md border">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Texto Original (ONU):</p>
-                  <p className="text-xs italic">{lacuna.texto_original_onu}</p>
-                </div>
-              )}
+              <div className="p-2 bg-muted/50 rounded-md border">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Texto Original (ONU):</p>
+                <p className="text-xs italic">{lacuna.texto_original_onu || <span className="text-muted-foreground">Texto original não disponível no banco de dados</span>}</p>
+              </div>
 
               {/* Ações do Brasil */}
-              {lacuna.acoes_brasil && lacuna.acoes_brasil.length > 0 && (
-                <div className="p-2 bg-success/5 rounded-md border border-success/20">
-                  <p className="text-xs font-medium text-success mb-1">Ações do Brasil:</p>
+              <div className="p-2 bg-success/5 rounded-md border border-success/20">
+                <p className="text-xs font-medium text-success mb-1">Ações do Brasil:</p>
+                {lacuna.acoes_brasil && lacuna.acoes_brasil.length > 0 ? (
                   <ul className="text-xs space-y-0.5">
                     {lacuna.acoes_brasil.map((acao, i) => (
                       <li key={i} className="flex items-start gap-1">
@@ -198,13 +196,15 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">Nenhuma ação governamental registrada</p>
+                )}
+              </div>
 
               {/* Evidências encontradas */}
-              {lacuna.evidencias_encontradas && lacuna.evidencias_encontradas.length > 0 && (
-                <div className="p-2 bg-info/5 rounded-md border border-info/20">
-                  <p className="text-xs font-medium text-info mb-1">Evidências:</p>
+              <div className="p-2 bg-info/5 rounded-md border border-info/20">
+                <p className="text-xs font-medium text-info mb-1">Evidências:</p>
+                {lacuna.evidencias_encontradas && lacuna.evidencias_encontradas.length > 0 ? (
                   <ul className="text-xs space-y-0.5">
                     {lacuna.evidencias_encontradas.map((ev, i) => (
                       <li key={i} className="flex items-start gap-1">
@@ -213,28 +213,30 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">Nenhuma evidência registrada</p>
+                )}
+              </div>
 
               {/* Fontes de dados */}
-              {lacuna.fontes_dados && lacuna.fontes_dados.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  <span className="text-xs text-muted-foreground">Fontes:</span>
-                  {lacuna.fontes_dados.map((fonte, i) => (
+              <div className="flex flex-wrap gap-1">
+                <span className="text-xs text-muted-foreground">Fontes:</span>
+                {lacuna.fontes_dados && lacuna.fontes_dados.length > 0 ? (
+                  lacuna.fontes_dados.map((fonte, i) => (
                     <span key={i} className="text-xs bg-muted px-1.5 py-0.5 rounded">
                       {fonte}
                     </span>
-                  ))}
-                </div>
-              )}
+                  ))
+                ) : (
+                  <span className="text-xs text-muted-foreground italic">Nenhuma fonte identificada</span>
+                )}
+              </div>
 
               {/* Resposta sugerida para CERD IV */}
-              {lacuna.resposta_sugerida_cerd_iv && (
-                <div className="p-2 bg-primary/5 rounded-md border border-primary/20">
-                  <p className="text-xs font-medium text-primary mb-1">Resposta sugerida (CERD IV):</p>
-                  <p className="text-xs">{lacuna.resposta_sugerida_cerd_iv}</p>
-                </div>
-              )}
+              <div className="p-2 bg-primary/5 rounded-md border border-primary/20">
+                <p className="text-xs font-medium text-primary mb-1">Resposta sugerida (CERD IV):</p>
+                <p className="text-xs">{lacuna.resposta_sugerida_cerd_iv || <span className="text-muted-foreground italic">Resposta sugerida não disponível</span>}</p>
+              </div>
             </div>
           )}
         </div>
