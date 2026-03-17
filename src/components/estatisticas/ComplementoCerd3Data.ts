@@ -359,6 +359,7 @@ export const candidatosNegros: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. TSE Dados Abertos → Candidatos → CSV consulta_cand → coluna DS_COR_RACA. Filtrar "PARDA" + "PRETA" = negros.',
     pct_candidatos_negros: { 2018: 46, 2020: 50, 2022: 50, 2024: 52 },
