@@ -23,6 +23,9 @@ import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/M
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Filter } from 'lucide-react';
 
 
 import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
