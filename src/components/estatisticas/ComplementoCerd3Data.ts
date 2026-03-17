@@ -335,6 +335,7 @@ export const jurisprudenciaStf: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'contextual',
   dados: {
     marcos: [
       { ano: 2012, descricao: 'ADPF 186 — Cotas raciais constitucionais' },
