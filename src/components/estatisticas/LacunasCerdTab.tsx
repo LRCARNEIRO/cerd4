@@ -718,7 +718,7 @@ export function LacunasCerdTab() {
                   {lacunas?.map(lacuna => (
                     <TableRow key={lacuna.id}>
                       <TableCell className="font-mono text-xs">{lacuna.paragrafo}</TableCell>
-                      <TableCell className="text-sm max-w-[200px] truncate">{lacuna.tema}</TableCell>
+                      <TableCell className="text-sm">{lacuna.tema}</TableCell>
                       <TableCell className="text-xs">{eixoLabels[lacuna.eixo_tematico] || lacuna.eixo_tematico}</TableCell>
                       <TableCell className="text-xs capitalize">{lacuna.grupo_focal.replace(/_/g, ' ')}</TableCell>
                       <TableCell>
