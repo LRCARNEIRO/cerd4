@@ -243,6 +243,7 @@ export const denunciasDiscriminacaoRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Painel ONDH. Dados de 2022 disponíveis apenas do 2º semestre. Lei 14.532/2023 equiparou injúria racial a racismo.',
     denuncias: { 2022: 3535, 2023: 9738, 2024: 14543, 2025: 16245 },
