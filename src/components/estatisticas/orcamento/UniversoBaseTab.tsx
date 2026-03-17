@@ -66,7 +66,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
       { key: 'sesai', label: 'SESAI', icon: <Building className="w-4 h-4" />, color: 'hsl(var(--chart-5))' },
     ];
     return groups.map(g => {
-      const recs = records.filter(r => classifyThematic(r) === g.key);
+      const recs = filtered.filter(r => classifyThematic(r) === g.key);
       const p1 = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
       return {
@@ -77,7 +77,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         acoesP1: p1.length, acoesP2: p2.length, acoesTotal: recs.length,
       };
     });
-  }, [records]);
+  }, [filtered]);
 
   // Evolução por ano
   const evolucaoPorAno = useMemo(() => {
