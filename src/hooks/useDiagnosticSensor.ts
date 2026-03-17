@@ -194,12 +194,14 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Build indices by artigo ──────────────────────────────────────
+  // ── Build indices by normalized artigo ───────────────────────────
   const indicadoresPorArtigo = useMemo(() => {
     if (!indicadores) return {} as Record<string, typeof indicadores>;
     const map: Record<string, typeof indicadores> = {};
     indicadores.forEach(ind => {
-      const arts = (ind.artigos_convencao as string[] | null) || [];
+      const arts = ((ind.artigos_convencao as string[] | null) || [])
+        .map(normalizeArticle)
+        .filter(Boolean) as ArtigoConvencao[];
       arts.forEach(a => {
         if (!map[a]) map[a] = [];
         map[a].push(ind);
@@ -212,7 +214,9 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     if (!orcamento) return {} as Record<string, typeof orcamento>;
     const map: Record<string, typeof orcamento> = {};
     orcamento.forEach(orc => {
-      const arts = (orc.artigos_convencao as string[] | null) || [];
+      const arts = ((orc.artigos_convencao as string[] | null) || [])
+        .map(normalizeArticle)
+        .filter(Boolean) as ArtigoConvencao[];
       arts.forEach(a => {
         if (!map[a]) map[a] = [];
         map[a].push(orc);
@@ -225,7 +229,9 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     if (!normativos) return {} as Record<string, typeof normativos>;
     const map: Record<string, typeof normativos> = {};
     normativos.forEach(doc => {
-      const arts = (doc.artigos_convencao as string[] | null) || [];
+      const arts = ((doc.artigos_convencao as string[] | null) || [])
+        .map(normalizeArticle)
+        .filter(Boolean) as ArtigoConvencao[];
       arts.forEach(a => {
         if (!map[a]) map[a] = [];
         map[a].push(doc);
@@ -240,10 +246,36 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
 
     return lacunas.map(lacuna => {
       const artigos = getLacunaArtigos(lacuna);
+      const keywords = getLacunaKeywords(lacuna);
       const signals: DiagnosticSignal[] = [];
 
+      const baseIndicadores = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
+      const baseOrcamento = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
+      const baseNormativos = artigos.flatMap(a => normativosPorArtigo[a] || []);
+
+      const keywordIndicadores = indicadores.filter(ind => {
+        const haystack = `${ind.nome} ${ind.categoria}`.toLowerCase();
+        return keywords.some(k => haystack.includes(k));
+      });
+
+      const keywordOrcamento = orcamento.filter(item => {
+        const haystack = `${item.programa} ${item.orgao}`.toLowerCase();
+        return keywords.some(k => haystack.includes(k));
+      });
+
+      const keywordNormativos = normativos.filter(doc => {
+        const haystack = `${doc.titulo}`.toLowerCase();
+        return keywords.some(k => haystack.includes(k));
+      });
+
+      const indicadoresVinculados = Array.from(new Map([...baseIndicadores, ...keywordIndicadores].map(i => [i.nome, i])).values())
+        .slice(0, 20);
+      const orcamentosVinculados = Array.from(new Map([...baseOrcamento, ...keywordOrcamento].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values())
+        .slice(0, 20);
+      const normativosVinculados = Array.from(new Map([...baseNormativos, ...keywordNormativos].map(n => [n.titulo, n])).values())
+        .slice(0, 20);
+
       // 1. 📊 Tendência dos indicadores
-      const indicadoresVinculados = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
       const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
       const pioram = tendencias.filter(t => t === 'piora').length;
       const melhoram = tendencias.filter(t => t === 'melhora').length;
@@ -256,7 +288,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
           detail: indicadoresVinculados
             .filter(i => inferTendencia(i) === 'piora')
             .map(i => i.nome)
-            .slice(0, 3)
+            .slice(0, 4)
             .join(', '),
         });
       } else if (melhoram > 0) {
@@ -264,11 +296,15 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
           type: 'tendencia',
           severity: 'info',
           message: `${melhoram} indicador(es) com tendência de melhora`,
+          detail: indicadoresVinculados
+            .filter(i => inferTendencia(i) === 'melhora')
+            .map(i => i.nome)
+            .slice(0, 4)
+            .join(', '),
         });
       }
 
       // 2. 💰 Orçamento simbólico
-      const orcamentosVinculados = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
       const simbolicos = orcamentosVinculados.filter(o => {
         const dotacao = Number(o.dotacao_autorizada) || 0;
         const pago = Number(o.pago) || 0;
@@ -283,17 +319,23 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
           message: `${simbolicos.length} ação(ões) com orçamento simbólico`,
           detail: `R$ ${(totalDotacao / 1e6).toFixed(1)}M autorizados com execução < 5%`,
         });
+      } else if (orcamentosVinculados.length > 0) {
+        signals.push({
+          type: 'orcamento_simbolico',
+          severity: 'info',
+          message: `${orcamentosVinculados.length} ação(ões) orçamentária(s) vinculada(s)`,
+        });
       }
 
       // 3. 📋 Cobertura normativa
-      const normativosVinculados = artigos.flatMap(a => normativosPorArtigo[a] || []);
       if (normativosVinculados.length > 0) {
         signals.push({
           type: 'cobertura_normativa',
           severity: 'info',
           message: `${normativosVinculados.length} norma(s) vinculada(s)`,
+          detail: normativosVinculados.slice(0, 3).map(n => n.titulo).join(', '),
         });
-      } else if (artigos.length > 0) {
+      } else {
         signals.push({
           type: 'cobertura_normativa',
           severity: 'warning',
@@ -301,40 +343,19 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         });
       }
 
-      // 4. ⚠️ Sugestão de reclassificação
+      // 4. ⚠️ Sugestão de reclassificação (exibe divergência, sem alterar badge/manual)
       let statusSugerido: ComplianceStatus | null = null;
       const manual = lacuna.status_cumprimento;
 
       if (pioram > 0 && pioram >= melhoram && simbolicos.length > 0) {
-        // Indicadores piorando + orçamento simbólico → forte sinal de não cumprimento
-        if (manual === 'cumprido' || manual === 'parcialmente_cumprido') {
-          statusSugerido = 'nao_cumprido';
-        } else if (manual === 'nao_cumprido') {
-          statusSugerido = 'retrocesso';
-        }
-      } else if (pioram > 0 && pioram >= melhoram) {
-        // Apenas indicadores piorando
-        if (manual === 'cumprido') {
-          statusSugerido = 'parcialmente_cumprido';
-        } else if (manual === 'parcialmente_cumprido') {
-          statusSugerido = 'nao_cumprido';
-        }
-      } else if (simbolicos.length > 0) {
-        // Apenas orçamento simbólico
-        if (manual === 'cumprido') {
-          statusSugerido = 'parcialmente_cumprido';
-        }
-      } else if (melhoram > 0 && pioram === 0 && normativosVinculados.length > 0 && simbolicos.length === 0) {
-        // Indicadores melhorando + marco normativo + sem orçamento simbólico → possível upgrade
-        if (manual === 'nao_cumprido') {
-          statusSugerido = 'parcialmente_cumprido';
-        } else if (manual === 'parcialmente_cumprido') {
-          statusSugerido = 'cumprido';
-        }
+        if (manual === 'cumprido' || manual === 'parcialmente_cumprido') statusSugerido = 'nao_cumprido';
+        else if (manual === 'nao_cumprido') statusSugerido = 'retrocesso';
+      } else if (melhoram > 0 && pioram === 0 && normativosVinculados.length > 0) {
+        if (manual === 'nao_cumprido') statusSugerido = 'parcialmente_cumprido';
+        else if (manual === 'parcialmente_cumprido') statusSugerido = 'cumprido';
       }
 
       const divergente = statusSugerido !== null && statusSugerido !== manual;
-
       if (divergente && statusSugerido) {
         signals.push({
           type: 'divergencia',
@@ -343,20 +364,15 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         });
       }
 
-      // Deduplicate linked data
-      const uniqueIndicadores = Array.from(new Map(indicadoresVinculados.map(i => [i.nome, i])).values());
-      const uniqueOrcamento = Array.from(new Map(orcamentosVinculados.map(o => [`${o.programa}-${o.ano}`, o])).values());
-      const uniqueNormativos = Array.from(new Map(normativosVinculados.map(n => [n.titulo, n])).values());
-
       return {
         lacunaId: lacuna.id,
         statusManual: manual,
         statusSugerido,
         divergente,
         signals,
-        linkedIndicadores: uniqueIndicadores.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
-        linkedOrcamento: uniqueOrcamento.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
-        linkedNormativos: uniqueNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
+        linkedIndicadores: indicadoresVinculados.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedOrcamento: orcamentosVinculados.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
+        linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
   }, [lacunas, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
