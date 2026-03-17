@@ -531,9 +531,9 @@ export default function Orcamento() {
             <Building className="w-4 h-4 mr-1" />
             Visão Geral
           </TabsTrigger>
-          <TabsTrigger value="fontes">
-            <ExternalLink className="w-4 h-4 mr-1" />
-            Fontes
+          <TabsTrigger value="universo">
+            <Layers className="w-4 h-4 mr-1" />
+            Universo da Base
           </TabsTrigger>
           <TabsTrigger value="resumo">
             <PieChart className="w-4 h-4 mr-1" />
