@@ -47,12 +47,47 @@ const grupoLabels: Record<FocalGroupType, string> = {
 };
 
 export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
-  const [expanded, setExpanded] = useState(false);
+  const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
+  const [expanded, setExpanded] = useState(isNaoCumprido);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
-  
+
+  // Build justification for "não cumprido" / "retrocesso"
+  const justificativas: { icon: string; text: string; severity: 'critical' | 'warning' | 'info' }[] = [];
+  if (isNaoCumprido) {
+    const hasEvidencias = lacuna.evidencias_encontradas && lacuna.evidencias_encontradas.length > 0;
+    const hasAcoes = lacuna.acoes_brasil && lacuna.acoes_brasil.length > 0;
+    const hasFontes = lacuna.fontes_dados && lacuna.fontes_dados.length > 0;
+
+    // Check diagnostic signals for justification
+    if (diagnostic) {
+      const tendenciaPiora = diagnostic.signals.find(s => s.type === 'tendencia' && s.severity === 'critical');
+      if (tendenciaPiora) {
+        justificativas.push({ icon: '📊', text: `Indicadores vinculados mostram tendência de piora: ${tendenciaPiora.detail || tendenciaPiora.message}`, severity: 'critical' });
+      }
+      const orcSimbolico = diagnostic.signals.find(s => s.type === 'orcamento_simbolico');
+      if (orcSimbolico) {
+        justificativas.push({ icon: '💰', text: `Orçamento simbólico detectado: ${orcSimbolico.detail || orcSimbolico.message}`, severity: 'warning' });
+      }
+      const semNormativa = diagnostic.signals.find(s => s.type === 'cobertura_normativa' && s.severity === 'warning');
+      if (semNormativa) {
+        justificativas.push({ icon: '📋', text: 'Sem cobertura normativa identificada para os artigos vinculados', severity: 'warning' });
+      }
+    }
+
+    if (!hasEvidencias) {
+      justificativas.push({ icon: '🔍', text: 'Nenhuma evidência quantitativa ou qualitativa encontrada que demonstre cumprimento', severity: 'critical' });
+    }
+    if (!hasAcoes || (lacuna.acoes_brasil && lacuna.acoes_brasil.length === 0)) {
+      justificativas.push({ icon: '🚫', text: 'Nenhuma ação governamental registrada em resposta à recomendação da ONU', severity: 'critical' });
+    }
+    if (!hasFontes) {
+      justificativas.push({ icon: '📭', text: 'Nenhuma fonte de dados oficial identificada para monitoramento', severity: 'warning' });
+    }
+  }
+
   return (
-    <div className="data-card">
+    <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive')}>
       <div className="flex items-start gap-3">
         <div className={cn('mt-0.5', priorityInfo.className)}>
           <PriorityIcon className="w-5 h-5" />
@@ -82,6 +117,26 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
           {/* Diagnostic Signals */}
           <DiagnosticBadges diagnostic={diagnostic} />
 
+          {/* Justificativa "Não Cumprido" — always visible */}
+          {isNaoCumprido && justificativas.length > 0 && (
+            <div className="mt-2 p-2.5 bg-destructive/5 rounded-md border border-destructive/20">
+              <p className="text-xs font-semibold text-destructive mb-1.5">
+                ⚠️ Justificativa — {lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido'}:
+              </p>
+              <ul className="text-xs space-y-1">
+                {justificativas.map((j, i) => (
+                  <li key={i} className={cn(
+                    'flex items-start gap-1.5',
+                    j.severity === 'critical' ? 'text-destructive' : 'text-warning'
+                  )}>
+                    <span>{j.icon}</span>
+                    <span>{j.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {/* Interseccionalidades */}
           {lacuna.interseccionalidades && lacuna.interseccionalidades.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
@@ -93,7 +148,7 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
             </div>
           )}
 
-          {/* Expandable section */}
+          {/* Expandable section — default open */}
           <button
             onClick={() => setExpanded(!expanded)}
             className="mt-2 flex items-center gap-1 text-xs text-primary hover:underline"
