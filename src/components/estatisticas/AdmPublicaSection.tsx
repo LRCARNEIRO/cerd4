@@ -418,8 +418,8 @@ export function AdmPublicaSection() {
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
                 <Badge className="bg-chart-2/10 text-chart-2">SINAPIR</Badge>
-                <Badge className="bg-chart-2/10 text-chart-2">282 adesões</Badge>
-                <Badge variant="outline">Atualizado: Jan/2025</Badge>
+                <Badge className="bg-chart-2/10 text-chart-2">342 adesões</Badge>
+                <Badge variant="outline">Atualizado: Fev/2026</Badge>
                 <Badge variant="outline">27/27 UFs</Badge>
               </div>
             </div>
