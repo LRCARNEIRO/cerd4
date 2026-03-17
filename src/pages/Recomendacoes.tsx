@@ -167,6 +167,39 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="lacunas">
+          {/* Sensor Diagnóstico — Resumo */}
+          {sensorReady && sensorSummary.totalDivergencias > 0 && (
+            <Card className="mb-4 border-warning/40 bg-warning/5">
+              <CardContent className="py-3">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Activity className="w-5 h-5 text-warning" />
+                  <span className="text-sm font-semibold">Sensor Diagnóstico Ativo</span>
+                  <Badge variant="destructive" className="text-xs">
+                    {sensorSummary.totalDivergencias} divergência(s)
+                  </Badge>
+                  {sensorSummary.totalOrcamentoSimbolico > 0 && (
+                    <Badge variant="outline" className="text-xs border-warning/40 text-warning">
+                      💰 {sensorSummary.totalOrcamentoSimbolico} orç. simbólico(s)
+                    </Badge>
+                  )}
+                  {sensorSummary.totalTendenciaPiora > 0 && (
+                    <Badge variant="outline" className="text-xs border-destructive/40 text-destructive">
+                      📊 {sensorSummary.totalTendenciaPiora} tendência(s) de piora
+                    </Badge>
+                  )}
+                  {sensorSummary.totalSemCoberturaNormativa > 0 && (
+                    <Badge variant="outline" className="text-xs border-muted-foreground/40">
+                      📋 {sensorSummary.totalSemCoberturaNormativa} sem cobertura normativa
+                    </Badge>
+                  )}
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    Progresso Sensor: {sensorSummary.progressoSensor}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Filtro por Artigos da Convenção ICERD */}
           <div className="mb-4">
             <ArtigoFilter selected={filterArtigo} onSelect={setFilterArtigo} counts={artigoCounts} compact />
