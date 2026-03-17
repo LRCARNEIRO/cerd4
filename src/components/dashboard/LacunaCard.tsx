@@ -59,6 +59,12 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
 
+  const dynamicResponse = useMemo(
+    () => generateSuggestedResponse(lacuna, diagnostic),
+    [lacuna, diagnostic]
+  );
+  const respostaCerdIV = lacuna.resposta_sugerida_cerd_iv || dynamicResponse;
+
   return (
     <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive', isParcial && 'border-l-4 border-l-warning')}>
       <div className="flex items-start gap-3">
