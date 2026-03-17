@@ -273,7 +273,8 @@ export default function Recomendacoes() {
             <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {filteredLacunas.map(lacuna => (
-                  <LacunaCard key={lacuna.id} lacuna={lacuna} />
+                  <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
+                ))}
                 ))}
               </div>
               
