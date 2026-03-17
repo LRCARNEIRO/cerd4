@@ -294,6 +294,7 @@ export default function Orcamento() {
   const [federalFilters, setFederalFilters] = useState<Record<ThematicFilter, boolean>>({ racial: true, indigena: true, quilombola: true, ciganos: true });
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
+  const [incluirExtra, setIncluirExtra] = useState(true);
 
   const handleResetFederal = async () => {
     if (!confirm('Apagar todos os dados orçamentários federais? Esta ação não pode ser desfeita.')) return;
