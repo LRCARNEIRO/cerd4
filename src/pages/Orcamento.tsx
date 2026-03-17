@@ -574,146 +574,142 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
-          {/* 1) Summary Cards — organized by theme */}
+          {/* 1) Dynamic Summary Cards — react to both toggles */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
             let filtered = incluirExtra ? recs : recs.filter(r => r.tipo_dotacao !== 'extraorcamentario');
             if (semSesaiMode) filtered = filtered.filter(r => classifyThematic(r) !== 'sesai');
 
+            // Totals
             const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
-            const totalDotInicial = filtered.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
             const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
             const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
             const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
+            const razao = totalDotacao > 0 ? (totalPago / totalDotacao) : 0;
 
-            // Ações únicas (programa×órgão distinct)
-            const acoesUnicas = new Set(filtered.map(r => `${r.programa}||${r.orgao}`)).size;
-            const programasUnicos = new Set(filtered.map(r => r.programa)).size;
-            const orgaosUnicos = new Set(filtered.map(r => r.orgao)).size;
+            // Period splits
+            const p1 = filtered.filter(r => r.ano >= 2018 && r.ano <= 2022);
+            const p2 = filtered.filter(r => r.ano >= 2023 && r.ano <= 2025);
+            const dotP1 = p1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+            const dotP2 = p2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+            const pagoP1 = p1.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const varDot = dotP1 > 0 ? ((dotP2 - dotP1) / dotP1 * 100) : 0;
+            const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
-            // Razão dotação→pago (quanto se perdeu)
-            const razaoDotPago = totalDotacao > 0 ? (totalPago / totalDotacao) : 0;
-            const perdaDotacao = totalDotacao > 0 ? ((totalDotacao - totalPago) / totalDotacao * 100) : 0;
+            // Structure
+            const programas = new Set(filtered.map(r => r.programa)).size;
+            const orgaos = new Set(filtered.map(r => r.orgao)).size;
+            const anosCobertura = [...new Set(filtered.map(r => r.ano))].sort();
+            const anosRange = anosCobertura.length > 0 ? `${anosCobertura[0]}–${anosCobertura[anosCobertura.length - 1]}` : '—';
 
-            // Extraorçamentárias
-            const extraRecs = recs.filter(r => r.tipo_dotacao === 'extraorcamentario' || (!Number(r.dotacao_inicial) && !Number(r.dotacao_autorizada)));
-            const extraFiltered = semSesaiMode ? extraRecs.filter(r => classifyThematic(r) !== 'sesai') : extraRecs;
-            const extraPago = extraFiltered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
-            const extraAcoes = new Set(extraFiltered.map(r => `${r.programa}||${r.orgao}`)).size;
-
-            // Orçamentárias
-            const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
-            const orcAcoes = new Set(orcRecs.map(r => `${r.programa}||${r.orgao}`)).size;
+            // Cenário label
+            const cenarioLabel = `${semSesaiMode ? 'Sem SESAI' : 'Com SESAI'} · ${incluirExtra ? 'Total' : 'Apenas LOA'}`;
 
             return (
-              <div className="space-y-4 mb-6">
-                {/* Grupo 1: Planejamento */}
+              <div className="space-y-5 mb-6">
+                {/* Cenário badge */}
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs px-3 py-1">{cenarioLabel}</Badge>
+                  <span className="text-[10px] text-muted-foreground">{filtered.length} registros · {anosRange}</span>
+                </div>
+
+                {/* ROW 1: A narrativa Planejamento → Execução */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📋 Planejamento (LOA)</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📊 Planejamento vs. Execução (acumulado)</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <Card className="border-l-4 border-l-primary">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Inicial: {formatCurrency(totalDotInicial)}
-                        </p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
+                        <p className="text-xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">O que foi planejado</p>
                       </CardContent>
                     </Card>
-
-                    <Card className="border-l-4 border-l-chart-2">
-                      <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Orçamentárias</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{orcAcoes}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {orcRecs.length} registros (ação×ano) · {programasUnicos} programas
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="border-l-4 border-l-chart-1">
-                      <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação → Pago</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{razaoDotPago.toFixed(2)}x</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {perdaDotacao > 0 
-                            ? <span className="text-destructive">-{perdaDotacao.toFixed(1)}% da dotação não executada</span>
-                            : <span className="text-success">Execução acima da dotação</span>
-                          }
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                {/* Grupo 2: Execução */}
-                <div>
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">💰 Execução</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="border-l-4 border-l-success">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Liquidado: {formatCurrency(totalLiquidado)}
-                        </p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
+                        <p className="text-xl font-bold text-foreground mt-1">{formatCurrency(totalPago)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">O que foi entregue</p>
                       </CardContent>
                     </Card>
-
-                    <Card className="border-l-4 border-l-chart-3">
+                    <Card className="border-l-4 border-l-chart-1">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Taxa de Execução</p>
-                        <p className={`text-2xl font-bold mt-1 ${execucao >= 80 ? 'text-success' : execucao >= 50 ? 'text-warning' : 'text-destructive'}`}>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Execução</p>
+                        <p className={`text-xl font-bold mt-1 ${execucao >= 80 ? 'text-success' : execucao >= 50 ? 'text-warning' : 'text-destructive'}`}>
                           {execucao.toFixed(1)}%
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Pago ÷ Dotação Autorizada
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {razao >= 1 ? `${razao.toFixed(1)}x acima da dotação` : `${razao.toFixed(2)}x da dotação executada`}
                         </p>
                       </CardContent>
                     </Card>
-
                     <Card className="border-l-4 border-l-muted-foreground/40">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total de Registros</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{filtered.length}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {acoesUnicas} ações únicas · {orgaosUnicos} órgãos
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura</p>
+                        <p className="text-xl font-bold text-foreground mt-1">{programas} <span className="text-sm font-normal text-muted-foreground">prog.</span></p>
+                        <p className="text-[10px] text-muted-foreground mt-1">{orgaos} órgãos · {filtered.length} registros</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* ROW 2: Comparação P1 vs P2 */}
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📅 Dotação por Período</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-primary/60">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2018–2022 (5 anos)</p>
+                        <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(dotP1)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Dotação autorizada</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-l-4 border-l-success/60">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2023–2025 (3 anos)</p>
+                        <p className="text-lg font-bold text-success mt-1">{formatCurrency(dotP2)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Dotação autorizada</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-l-4" style={{ borderLeftColor: varDot >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Variação Dotação</p>
+                        <p className={`text-lg font-bold mt-1 ${varDot >= 0 ? 'text-success' : 'text-destructive'}`}>
+                          {varDot >= 0 ? '+' : ''}{varDot.toFixed(1)}%
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {Math.abs(varDot) > 100 ? `${(dotP2 / (dotP1 || 1)).toFixed(1)}x` : `${varDot >= 0 ? 'aumento' : 'queda'}`} entre períodos
                         </p>
                       </CardContent>
                     </Card>
                   </div>
                 </div>
 
-                {/* Grupo 3: Extraorçamentário */}
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">⚖️ Extraorçamentário (Compensatório)</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="border-l-4 border-l-warning">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">💰 Pago por Período</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <Card className="border-l-4 border-l-chart-2/60">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{extraAcoes}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {extraFiltered.length} registros · Sem dotação LOA
-                        </p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2018–2022 (5 anos)</p>
+                        <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(pagoP1)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Valor pago</p>
                       </CardContent>
                     </Card>
-
-                    <Card className="border-l-4 border-l-chart-5">
+                    <Card className="border-l-4 border-l-chart-3/60">
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pago Extraorçamentário</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(extraPago)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {totalPago > 0 ? (extraPago / totalPago * 100).toFixed(1) : '0'}% do total pago
-                        </p>
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">2023–2025 (3 anos)</p>
+                        <p className="text-lg font-bold text-success mt-1">{formatCurrency(pagoP2)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Valor pago</p>
                       </CardContent>
                     </Card>
-
-                    <Card className="border-l-4 border-l-chart-4">
+                    <Card className="border-l-4" style={{ borderLeftColor: varPago >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))' }}>
                       <CardContent className="pt-4 pb-3">
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pago LOA (Esforço do Estado)</p>
-                        <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago - extraPago)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {totalPago > 0 ? ((totalPago - extraPago) / totalPago * 100).toFixed(1) : '0'}% do total pago
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Variação Pago</p>
+                        <p className={`text-lg font-bold mt-1 ${varPago >= 0 ? 'text-success' : 'text-destructive'}`}>
+                          {varPago >= 0 ? '+' : ''}{varPago.toFixed(1)}%
+                        </p>
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          {Math.abs(varPago) > 100 ? `${(pagoP2 / (pagoP1 || 1)).toFixed(1)}x` : `${varPago >= 0 ? 'aumento' : 'queda'}`} entre períodos
                         </p>
                       </CardContent>
                     </Card>
@@ -722,15 +718,6 @@ export default function Orcamento() {
               </div>
             );
           })()}
-
-          {/* 2) Period summary cards (P1/P2/Variação/Cobertura) */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
-            </div>
-          ) : (
-            <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
-          )}
 
           {/* 3) Toggles — Perspectiva Orçamentária + SESAI */}
           <Card className="mb-4 border-l-4 border-l-chart-1">
