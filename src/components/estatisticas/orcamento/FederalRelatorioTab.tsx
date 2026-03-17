@@ -438,11 +438,11 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
               <p className="font-semibold text-foreground text-xs mb-1">Camada 4 — SESAI (Saúde Indígena)</p>
               <p>Ações 20YP e 7684 capturadas por código de ação direto, necessário após migração da SESAI para programa genérico de saúde (5022).</p>
             </div>
-            <div className="bg-amber-500/5 rounded p-3 border border-amber-500/20">
+            <div className="bg-warning/5 rounded p-3 border border-warning/20">
               <p className="font-semibold text-foreground text-xs mb-1">Passo 5 — Dotação via Dados Abertos (LOA)</p>
               <p>Arquivos ZIP/CSV do portal dados.gov.br complementam dotação inicial e autorizada, matching por chave Programa|Ação.</p>
             </div>
-            <div className="bg-amber-500/5 rounded p-3 border border-amber-500/20">
+            <div className="bg-warning/5 rounded p-3 border border-warning/20">
               <p className="font-semibold text-foreground text-xs mb-1">Passo 6 — Ingestão Keyword-First</p>
               <p>Varredura ampla em ~40 subfunções usando 30+ palavras-chave raciais/étnicas para capturar ações dispersas não cobertas pelas 4 camadas estruturais.</p>
             </div>
