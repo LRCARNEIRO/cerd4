@@ -99,7 +99,7 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   }
 
   return (
-    <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive')}>
+    <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive', isParcial && 'border-l-4 border-l-warning')}>
       <div className="flex items-start gap-3">
         <div className={cn('mt-0.5', priorityInfo.className)}>
           <PriorityIcon className="w-5 h-5" />
