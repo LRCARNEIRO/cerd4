@@ -79,6 +79,9 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
             {lacuna.descricao_lacuna}
           </p>
           
+          {/* Diagnostic Signals */}
+          <DiagnosticBadges diagnostic={diagnostic} />
+
           {/* Interseccionalidades */}
           {lacuna.interseccionalidades && lacuna.interseccionalidades.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
