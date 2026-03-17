@@ -175,7 +175,8 @@ export const saudeIndigena: ComplementoIndicador = {
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
-  tendencia: 'piora',
+  tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. TabNet → SIM → Óbitos infantis + SINASC → Nascidos vivos, variável raça/cor da mãe. Série 2018-2024.',
     taxa_indigena_por_1000nv: { 2018: 26.35, 2019: 27.53, 2020: 22.84, 2021: 23.39, 2022: 26.17, 2023: 25.86, 2024: 24.43 },
