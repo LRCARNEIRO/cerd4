@@ -34,7 +34,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
-  const [incluirExtra, setIncluirExtra] = useState(true);
+  const [showRollback, setShowRollback] = useState(false);
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
