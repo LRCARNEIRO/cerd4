@@ -50,7 +50,7 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
   const isParcial = lacuna.status_cumprimento === 'parcialmente_cumprido';
   const needsJustification = isNaoCumprido || isParcial;
-  const [expanded, setExpanded] = useState(needsJustification);
+  const [expanded, setExpanded] = useState(true);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
 
