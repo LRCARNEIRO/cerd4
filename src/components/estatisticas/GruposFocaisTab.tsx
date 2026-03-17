@@ -8,257 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
 import { SerieTemporalGrupos } from '@/components/grupos-focais/SerieTemporalGrupos';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useMirrorData } from '@/hooks/useMirrorData';
+import { useGruposFocaisData } from '@/hooks/useGruposFocaisData';
 
-// Dados SIDRA/IBGE auditados com metadados completos
-const gruposFocaisData = {
-  quilombolas: {
-    nome: 'Quilombolas',
-    populacao: 1330186,
-    fonte: 'IBGE - Censo Demográfico 2022',
-    tabela: 'Tabela 9578 - SIDRA (Pessoas residentes em territórios quilombolas)',
-    link: 'https://sidra.ibge.gov.br/tabela/9578',
-    ultimaAtualizacao: '2023-10-27',
-    serieTemporal: [
-      { ano: 2022, valor: 1330186, fonte: 'Censo 2022' },
-    ],
-    observacoesONU: ['47', '48', '49'],
-    politicas: ['PNGTAQ (Decreto 11.786/2023)', 'Programa Brasil Quilombola', 'Titulação de Territórios (INCRA)'],
-    indicadores: ['Territórios titulados', 'Acesso a água encanada', 'Acesso a energia elétrica', 'Renda média'],
-    notas: 'Primeira contagem específica de quilombolas no Censo brasileiro. Dado do universo, não microdados.',
-  },
-  indigenas: {
-    nome: 'Indígenas',
-    populacao: 1694836,
-    fonte: 'IBGE - Censo Demográfico 2022 (Pessoas Indígenas)',
-    tabela: 'IBGE Brasil Indígena / Tabela 9514 - SIDRA',
-    link: 'https://www.ibge.gov.br/brasil-indigena/',
-    linkSidra: 'https://sidra.ibge.gov.br/tabela/9514',
-    ultimaAtualizacao: '2024-10-24',
-    serieTemporal: [
-      { ano: 2010, valor: 896917, fonte: 'Censo 2010 - Pessoas Indígenas' },
-      { ano: 2022, valor: 1694836, fonte: 'Censo 2022 - Pessoas Indígenas' },
-    ],
-    populacaoCorRaca: 1227642,
-    observacoesONU: ['50', '51', '52', '53'],
-    politicas: ['Demarcação de Terras Indígenas (FUNAI)', 'SESAI - Saúde Indígena', 'Educação Escolar Indígena'],
-    indicadores: ['Terras homologadas', 'Etnias reconhecidas', 'Línguas vivas', 'Mortalidade infantil indígena'],
-    notas: 'Censo 2022: metodologia ampliada contou 1.694.836 Pessoas Indígenas. Cor/Raça (Tab. 9605): 1.227.642. Fonte: ibge.gov.br/brasil-indigena',
-  },
-  ciganos: {
-    nome: 'Ciganos/Roma',
-    populacao: 41738, // AUDITORIA 14/03/2026: atualizado via Complemento CERD III (SIDRA 9891, Censo 2022)
-    fonte: 'IBGE/Censo 2022 — Tabela SIDRA 9891 (Pop. por povo ou comunidade tradicional × UF)',
-    tabela: 'Tabela 9891 - SIDRA',
-    link: 'https://sidra.ibge.gov.br/tabela/9891',
-    ultimaAtualizacao: '2023-10-27',
-    serieTemporal: [
-      { ano: 2022, valor: 41738, fonte: 'Censo 2022 — SIDRA 9891' },
-    ],
-    observacoesONU: ['54', '55'],
-    politicas: ['Decreto 8.750/2016 (CNPCT incluía ciganos)', 'Política Nacional para Povo Cigano (em elaboração)'],
-    indicadores: ['População por região', 'Distribuição territorial'],
-    notas: 'AUDITADO: Censo 2022 realizou primeira contagem oficial (41.738). Possível sub-registro por estigma e nomadismo — organizações ciganas estimam entre 500 mil e 1 milhão. §54-55 do CERD III.',
-  },
-  juventude_negra: {
-    nome: 'Juventude Negra (15-29 anos)',
-    populacao: 25800000,
-    fonte: 'Estimativa: IBGE Censo 2022 (Tab. 9605) × PNAD Contínua (Tab. 7113)',
-    tabela: 'Cálculo: Tab. 9605 (cor/raça) × Tab. 7113 (idade)',
-    link: 'https://sidra.ibge.gov.br/tabela/7113',
-    linkCorRaca: 'https://sidra.ibge.gov.br/tabela/9605',
-    ultimaAtualizacao: '2024-02-29',
-    serieTemporal: [
-      { ano: 2018, valor: 26200000, fonte: 'Estimativa PNAD Contínua' },
-      { ano: 2019, valor: 26100000, fonte: 'Estimativa PNAD Contínua' },
-      { ano: 2020, valor: 25900000, fonte: 'Estimativa PNAD Contínua' },
-      { ano: 2021, valor: 25800000, fonte: 'Estimativa PNAD Contínua' },
-      { ano: 2022, valor: 25700000, fonte: 'Estimativa PNAD Contínua' },
-      { ano: 2023, valor: 25800000, fonte: 'Estimativa PNAD Contínua' },
-    ],
-    observacoesONU: ['32', '33', '34', '35', '36'],
-    politicas: ['Programa Juventude Negra Viva (Decreto 11.956/2024)', 'Plano Juventude Viva'],
-    indicadores: ['Taxa de homicídios 12-29', 'Taxa de desemprego', 'Evasão escolar', 'Nem-nem'],
-    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto idade × raça para este total. Valor calculado a partir da proporção negra (55,5%) aplicada à população de 15-29 anos da PNAD Contínua. Grupo prioritário para políticas de segurança — letalidade 2,5x maior que jovens não negros.',
-  },
-  populacao_negra: {
-    nome: 'População Negra (Preta + Parda)',
-    populacao: 112739744,
-    fonte: 'IBGE - Censo Demográfico 2022',
-    tabela: 'Tabela 9605 - SIDRA',
-    link: 'https://sidra.ibge.gov.br/tabela/9605',
-    ultimaAtualizacao: '2022-12-22',
-    serieTemporal: [
-      { ano: 2010, valor: 97171614, fonte: 'Censo 2010' },
-      { ano: 2022, valor: 112739744, fonte: 'Censo 2022' },
-    ],
-    detalhamento: {
-      preta: 20656458,
-      parda: 92083286,
-    },
-    observacoesONU: ['12', '14', '15', '17', '19', '23', '28', '32'],
-    politicas: ['Estatuto da Igualdade Racial (Lei 12.288/2010)', 'Lei de Cotas (Lei 12.711/2012)', 'PNSIPN'],
-    indicadores: ['IDH por raça', 'Renda média', 'Anos de estudo', 'Taxa de desemprego'],
-    notas: 'Dados do Universo (Censo), não microdados. 55,5% da população total.',
-  },
-  mulheres_negras: {
-    nome: 'Mulheres Negras',
-    populacao: 59000000,
-    fonte: 'Estimativa: IBGE Censo 2022 (Tab. 9605 × Tab. 9514)',
-    tabela: 'Cálculo: Tab. 9605 (cor/raça) × Tab. 9514 (sexo)',
-    link: 'https://sidra.ibge.gov.br/tabela/9605',
-    linkSexo: 'https://sidra.ibge.gov.br/tabela/9514',
-    ultimaAtualizacao: '2022-12-22',
-    serieTemporal: [],
-    observacoesONU: ['15', '17', '23', '28'],
-    politicas: ['PNAISM', 'Lei Maria da Penha', 'Programa Mulher Viver sem Violência'],
-    indicadores: ['Mortalidade materna', 'Violência doméstica', 'Chefia de família', 'Renda média'],
-    notas: 'ESTIMATIVA: Não há tabela SIDRA com cruzamento direto sexo × cor como total agregado. Valor calculado: proporção feminina (~52,2%) × pop. negra (112,7 mi). Interseccionalidade gênero × raça. Maior vulnerabilidade em múltiplos indicadores.',
-  },
-};
 
-const dadosTerritoriais = {
-  quilombolas: {
-    territoriosTitulados: 245,
-    fonteTerritoriosTitulados: 'INCRA - PDF "Títulos Expedidos às Comunidades Quilombolas"',
-    linkTerritoriosTitulados: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
-    titulosExpedidos: 384,
-    fonteTitulosExpedidos: 'INCRA - Total acumulado no PDF "Títulos Expedidos"',
-    linkTitulosExpedidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
-    comunidadesAbrangidas: 395,
-    territoriosEmProcesso: 2014,
-    fonteProcessos: 'INCRA - Processos Abertos de Regularização Fundiária Quilombola',
-    linkProcessos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
-    comunidadesCertificadasFCP: 3158,
-    fonteFCP: 'Fundação Cultural Palmares - Portarias de Certificação Quilombola',
-    linkFCP: 'https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola',
-    auditadoFCP: true, // ✅ AUDITORIA 14/03/2026: validado contra Complemento CERD III (3.158)
-    familiasAtendidas: 155000,
-    areaTotal: 1162002,
-    fonteArea: 'INCRA - Soma das áreas no PDF Títulos Expedidos (ha)',
-    linkArea: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
-    fonte: 'INCRA - Títulos Expedidos / Fundação Palmares - Certificação',
-    link: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
-    linkTitulos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf',
-    ultimaAtualizacao: '2025-11-01',
-    notaFonte: 'Territórios/títulos/área: PDF "Títulos Expedidos" do INCRA (lista nominal). Certidões: Palmares - Portarias de Certificação.',
-    infraestrutura: {
-      fonte: 'IBGE - Censo 2022 (Resultados Quilombolas)',
-      link: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
-      nota: 'Censo 2022 — Panorama Quilombola (características domiciliares)',
-    },
-    serieHistorica: [
-      { ano: 2018, titulados: 155, certificacoesFCP: 2523, processosAbertos: 1690, areaHa: 980000 },
-      { ano: 2025, titulados: 245, certificacoesFCP: 3158, processosAbertos: 2014, areaHa: 1162002 },
-    ],
-  },
-  indigenas: {
-    // AUDITORIA CRUZADA 17/03/2026: alinhado com GruposFocais.tsx (646 TIs — FUNAI 2026)
-    // terrasHomologadas = apenas homologadas (FUNAI); homologadasReservadas = ISA total (536)
-    terrasTotal: 646,
-    fonteTerrasTotal: 'FUNAI - Coordenação-Geral de Geoprocessamento (atualizado 2026)',
-    linkTerrasTotal: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    terrasHomologadas: 496,
-    terrasHomologadasReservadas: 536, // ISA 2025: homologadas (496) + reservadas (40)
-    fonteTerrasHomologadas: 'FUNAI - TIs Regularizadas (Geoprocessamento) / ISA - terrasindigenas.org.br',
-    linkTerrasHomologadas: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    linkISA: 'https://terrasindigenas.org.br/',
-    terrasEmEstudo: 148,
-    etniasIdentificadas: 391,
-    fonteEtnias: 'IBGE - Censo 2022 (Brasil Indígena)',
-    linkEtnias: 'https://www.ibge.gov.br/brasil-indigena/',
-    linguasVivas: 295,
-    fonteLinguas: 'IBGE - Censo 2022 (Brasil Indígena)',
-    linkLinguas: 'https://www.ibge.gov.br/brasil-indigena/',
-    areaTotal: 117400000,
-    fonteArea: 'FUNAI - Dados Geoespaciais (soma das áreas das TIs)',
-    linkArea: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    fonte: 'FUNAI - Coordenação de Geoprocessamento (ago/2025)',
-    link: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas',
-    linkGeo: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas',
-    ultimaAtualizacao: '2025-08-20',
-    notaFonte: 'AUDITADO: TIs e áreas: FUNAI Geoprocessamento. Homologadas+Reservadas (536): ISA. Etnias/línguas: IBGE Censo 2022.',
-    fasesPeriodo1: {
-      emEstudo: 27, delimitada: 2, declarada: 1, homologada: 1,
-      fonte: 'FUNAI - Relatórios Anuais / ISA - Terras Indígenas no Brasil',
-      linkISA: 'https://terrasindigenas.org.br/',
-    },
-    fasesPeriodo2: {
-      emEstudo: 36, delimitada: 9, declarada: 21, homologada: 20,
-      fonte: 'FUNAI - Relatórios Anuais / DOU (portarias e decretos)',
-      linkISA: 'https://terrasindigenas.org.br/',
-    },
-    serieHistorica: [
-      { ano: 2018, homologadas: 487, total: 626, emEstudo: 139, areaMilHa: 115.8 },
-      { ano: 2025, homologadas: 496, total: 644, emEstudo: 148, areaMilHa: 117.4 },
-    ],
-  },
-};
-
-// AUDITORIA 14/03/2026: todos os indicadores de vulnerabilidade validados cruzando
-// com abas Segurança/Saúde/Educação (mirror SSoT) e Atlas da Violência 2025.
-// Deep links adicionados para auditabilidade total.
-const indicadoresVulnerabilidade = {
-  homicidiosPorRaca: {
-    nome: 'Homicídios Dolosos — Vítimas Negras',
-    percentualVitimasNegras: 77.0,
-    percentualVitimasBrancas: 23.0,
-    razaoRisco: 2.7,
-    ano: 2024,
-    fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024)',
-    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
-    auditado: true, // ✅ Validado contra aba Segurança (mirror)
-    serieTemporal: [
-      { ano: 2018, negros: 75.7, brancos: 24.3 },
-      { ano: 2019, negros: 76.2, brancos: 23.8 },
-      { ano: 2020, negros: 76.9, brancos: 23.1 },
-      { ano: 2021, negros: 77.0, brancos: 23.0 },
-      { ano: 2022, negros: 76.5, brancos: 23.5 },
-      { ano: 2023, negros: 76.6, brancos: 23.4 },
-      { ano: 2024, negros: 77.0, brancos: 23.0 },
-    ],
-  },
-  taxaHomicidio100mil: {
-    nome: 'Taxa de Homicídio por 100 mil hab.',
-    taxaNegros: 28.9, taxaNaoNegros: 10.6, razaoRisco: 2.7,
-    razaoRisco2018: 2.7, quedaNegros2018_2023: 23.1, quedaNaoNegros2018_2023: 24.3,
-    ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
-    link: 'https://www.ipea.gov.br/atlasviolencia',
-    auditado: true, // ✅ Validado contra aba Segurança (mirror)
-  },
-  violenciaJuventude: {
-    nome: 'Violência Letal — Juventude (15-29 anos)',
-    percentualVitimas: 47.8,
-    feminicidioNegras: 68.2, // Atlas 2025, p.57 — ✅ validado contra feminicidioSerie auditada
-    ano: 2023, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
-    link: 'https://www.ipea.gov.br/atlasviolencia',
-    auditado: true,
-  },
-  ivjn: {
-    nome: 'IVJ-N — Vulnerabilidade da Juventude Negra',
-    riscoRelativo: 2.0, riscoRelativo2017: 1.9, riscoSuperiorNegro: 3.0,
-    qualificador: 'ensino fundamental incompleto',
-    ano: 2021, fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
-    link: 'https://www.ipea.gov.br/atlasviolencia',
-    auditado: true,
-  },
-  letalidadePolicial: {
-    nome: 'Mortes por Intervenção Policial',
-    // AUDITORIA CRUZADA 17/03/2026: Corrigido de 5.417 para 6.243 conforme 19º Anuário FBSP 2025, p.17 e 23
-    totalMortes: 6243, percentualNegros: 82.0,
-    ano: 2024, fonte: 'Fórum Brasileiro de Segurança Pública - 19º Anuário (2025, dados 2024), p.17 e 23',
-    link: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
-    auditado: true, // ✅ Validado contra aba Segurança (série letalidadePolicial)
-  },
-  mortalidadeMaterna: {
-    nome: 'Razão de Mortalidade Materna (por 100 mil NV)',
-    valorNegras: 57.3, valorBrancas: 46.6, razaoDesigualdade: 1.2,
-    ano: 2022, fonte: 'DataSUS - SIM (Óbitos Maternos) / SINASC (Nascidos Vivos)',
-    link: 'https://datasus.saude.gov.br/informacoes-de-saude-tabnet/',
-    auditado: true, // ✅ Validado contra aba Saúde (saudeSerieHistorica mirror)
-    notaAuditoria: 'Snapshot 2022 confirmado. Série completa 2018-2023 disponível na aba Seg/Saúde/Edu.',
-  },
-};
 
 function TendenciaIcon({ tendencia }: { tendencia: 'up' | 'down' | 'stable' }) {
   if (tendencia === 'up') return <TrendingUp className="w-4 h-4 text-success" />;
@@ -294,7 +46,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
   const { data: stats } = useLacunasStats();
-  const { gfSource, gfCount } = useMirrorData();
+  const { gruposFocaisData, dadosTerritoriais, indicadoresVulnerabilidade, gfSource, gfCount, bdOverlayCount, totalOverlaySources } = useGruposFocaisData();
 
   const lacunasQuilo = lacunas?.filter(l => l.grupo_focal === 'quilombolas') || [];
   const lacunasIndig = lacunas?.filter(l => l.grupo_focal === 'indigenas') || [];
@@ -321,6 +73,11 @@ export function GruposFocaisTab() {
                 <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({gfCount})</Badge>
               ) : (
                 <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
+              )}
+              {bdOverlayCount > 0 && (
+                <Badge variant="outline" className="gap-1 text-[10px] bg-primary/10 text-primary border-primary/30">
+                  <Database className="w-3 h-3" /> {bdOverlayCount}/{totalOverlaySources} overlays BD
+                </Badge>
               )}
             </div>
           </div>
