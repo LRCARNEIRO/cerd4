@@ -509,6 +509,13 @@ export function MetodologiaFederalSection() {
             <AccordionContent>
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">A API retroativamente rotula registros do antigo MDHC como MIR (67000). Para anos &lt; 2023, ações genéricas são excluídas; demais exigem keywords raciais.</p>
+                <div className="bg-primary/10 rounded p-2 border border-primary/20 mb-2">
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>⚠️ Nota Passo 7:</strong> As ações 21AR e 21AT foram parcialmente recuperadas via complementação manual do SIOP (Passo 7), 
+                    filtrando apenas os Planos Orçamentários (POs) com recorte racial explícito (0001, 0003, 000J, 0007). 
+                    A exclusão nas camadas automatizadas permanece válida para evitar inflação com POs genéricos.
+                  </p>
+                </div>
                 <Table>
                   <TableHeader>
                     <TableRow>
