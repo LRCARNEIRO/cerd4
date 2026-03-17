@@ -171,40 +171,6 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Filtro Orçamentário vs Extraorçamentário */}
-      <Card className="mb-4 border-l-4 border-l-chart-1">
-        <CardContent className="py-3 px-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <Filter className="w-4 h-4 text-chart-1" />
-              <div>
-                <p className="text-sm font-semibold">Perspectiva Orçamentária</p>
-                <p className="text-xs text-muted-foreground">
-                  {incluirExtra 
-                    ? 'Financiamento Total (LOA + Compensatório/Reativo)' 
-                    : 'Apenas Esforço do Estado (LOA)'}
-                  {orcamentoStats?.splitTipoDotacao && (
-                    <span className="ml-2 text-muted-foreground/70">
-                      · Orç: {orcamentoStats.splitTipoDotacao.orcamentario.total} registros 
-                      · Extra: {orcamentoStats.splitTipoDotacao.extraorcamentario.total} registros
-                    </span>
-                  )}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="extra-toggle" className="text-xs cursor-pointer">
-                {incluirExtra ? 'Com extraorçamentário' : 'Sem extraorçamentário'}
-              </Label>
-              <Switch 
-                id="extra-toggle" 
-                checked={incluirExtra} 
-                onCheckedChange={setIncluirExtra} 
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Stats Grid - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
