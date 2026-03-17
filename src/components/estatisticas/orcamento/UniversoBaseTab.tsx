@@ -82,20 +82,20 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
   // Evolução por ano
   const evolucaoPorAno = useMemo(() => {
     const map: Record<number, number> = {};
-    for (const r of records) {
+    for (const r of filtered) {
       map[r.ano] = (map[r.ano] || 0) + (Number(r.pago) || 0);
     }
     return Object.entries(map).map(([ano, pago]) => ({ ano: Number(ano), pago })).sort((a, b) => a.ano - b.ano);
-  }, [records]);
+  }, [filtered]);
 
   // Top 10
   const top10 = useMemo(() => {
     const map: Record<string, number> = {};
-    for (const r of records) {
+    for (const r of filtered) {
       map[r.programa] = (map[r.programa] || 0) + (Number(r.pago) || 0);
     }
     return Object.entries(map).map(([programa, pago]) => ({ programa, pago })).sort((a, b) => b.pago - a.pago).slice(0, 10);
-  }, [records]);
+  }, [filtered]);
 
   // Program table
   const programaRows = useMemo(() => {
