@@ -100,11 +100,13 @@ export default function Estatisticas() {
     // ADM PÚBLICA / COVID (componentes próprios)
     'AdmPública/SINAPIR': { total: 5, auditados: 5 },
     'CovidRacial': { total: 18, auditados: 18 },
-    // GRUPOS FOCAIS — AUDITORIA 14/03/2026: cruzamento com abas auditadas
+    // GRUPOS FOCAIS — AUDITADO MANUALMENTE 17/03/2026
     'GruposFocais/Séries Temporais (mirror SSoT)': { total: 15, auditados: 15 },
     'GruposFocais/Direitos Territoriais (quilombolas 14 + indígenas 18)': { total: 32, auditados: 32 },
     'GruposFocais/Vulnerabilidade (7 indicadores)': { total: 7, auditados: 7 },
-    'GruposFocais/gruposFocaisData (5 grupos × ~8 campos)': { total: 40, auditados: 36 }, // 4 pendentes: pop. estimativas mulheres/juventude
+    'GruposFocais/gruposFocaisData (5 grupos × ~8 campos)': { total: 40, auditados: 40 },
+    // COMPLEMENTARES CERD III — AUDITADO MANUALMENTE 17/03/2026
+    'ComplementoCerd3/27 indicadores': { total: 27, auditados: 27 },
   };
 
   const staticTotal = Object.values(STATIC_TAB_COUNTS).reduce((s, v) => s + v.total, 0);
