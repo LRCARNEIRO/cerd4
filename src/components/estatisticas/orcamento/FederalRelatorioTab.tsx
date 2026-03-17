@@ -204,7 +204,7 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
 }
 
 export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
-  const [incluirExtraorcamentario, setIncluirExtraorcamentario] = useState(true);
+  const incluirExtraorcamentario = true;
 
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
