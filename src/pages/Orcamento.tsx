@@ -614,6 +614,42 @@ export default function Orcamento() {
                   <span className="text-[10px] text-muted-foreground">{filtered.length} registros · {anosRange}</span>
                 </div>
 
+                {/* ROW 0: Contagem de Registros e Ações */}
+                {(() => {
+                  const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+                  const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
+                  const acoesOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+                  const acoesExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+                  return (
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">🗂️ Composição da Base</p>
+                      <div className="grid grid-cols-3 gap-4">
+                        <Card className="border-l-4 border-l-primary">
+                          <CardContent className="pt-4 pb-3">
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Total de Registros</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">{filtered.length}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">Ação × Ano</p>
+                          </CardContent>
+                        </Card>
+                        <Card className="border-l-4 border-l-success">
+                          <CardContent className="pt-4 pb-3">
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Ações Orçamentárias</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">{acoesOrc}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">{orcRecs.length} registros · LOA/Tesouro</p>
+                          </CardContent>
+                        </Card>
+                        <Card className="border-l-4 border-l-warning">
+                          <CardContent className="pt-4 pb-3">
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">{acoesExtra}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">{extraRecs.length} registros · Compensatório</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* ROW 1: A narrativa Planejamento → Execução */}
                 <div>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📊 Planejamento vs. Execução (acumulado)</p>
