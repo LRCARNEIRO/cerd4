@@ -30,7 +30,7 @@ import { useDashboardStats } from '@/hooks/useDynamicStats';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE, TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Card, CardContent } from '@/components/ui/card';
+
 
 export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
