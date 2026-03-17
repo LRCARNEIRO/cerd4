@@ -83,6 +83,7 @@ export const intoleranciaReligiosa: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban', 'Recomendações Gerais (RGs)'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Crescimento 382% 2020→2025. Painel ONDH → Disque 100 → Violação: "Intolerância religiosa". Auditado manualmente — dados confirmados.',
     total_denuncias: { 2020: 566, 2021: 584, 2022: 898, 2023: 1482, 2024: 2472, 2025: 2723 },
