@@ -379,6 +379,7 @@ export const eleitosNegros: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'TSE Dados Abertos → Resultados → cruzar consulta_cand (DS_COR_RACA) × resultado (DS_SIT_TOT_TURNO = "ELEITO"). Sub-representação: 55,5% pop. vs 30,1% deputados.',
     pct_deputados_negros: { 2014: 20.0, 2018: 24.4, 2022: 30.1 },
