@@ -428,6 +428,27 @@ export function useOrcamentoStats() {
       const sesaiPagoP1 = sesaiP1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
       const sesaiPagoP2 = sesaiP2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0);
 
+      // === Split by tipo_dotacao ===
+      const orcamentarios = registrosLimpos.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+      const extraorcamentarios = registrosLimpos.filter(r => r.tipo_dotacao === 'extraorcamentario');
+
+      const computeGroupStats = (grupo: typeof registrosLimpos) => {
+        const p1 = grupo.filter(r => r.ano >= 2018 && r.ano <= 2022);
+        const p2 = grupo.filter(r => r.ano >= 2023 && r.ano <= 2025);
+        const pagoP1 = p1.reduce((a, r) => a + (Number(r.pago) || 0), 0);
+        const pagoP2 = p2.reduce((a, r) => a + (Number(r.pago) || 0), 0);
+        const dotP1 = p1.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
+        const dotP2 = p2.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
+        const byAno: Record<number, number> = {};
+        grupo.forEach(r => { byAno[r.ano] = (byAno[r.ano] || 0) + (Number(r.pago) || Number(r.dotacao_autorizada) || 0); });
+        return { total: grupo.length, pagoP1, pagoP2, dotP1, dotP2, porAno: byAno };
+      };
+
+      const splitTipoDotacao = {
+        orcamentario: computeGroupStats(orcamentarios),
+        extraorcamentario: computeGroupStats(extraorcamentarios),
+      };
+
       return {
         totalPeriodo1,
         totalPeriodo2,
@@ -458,6 +479,7 @@ export function useOrcamentoStats() {
           variacaoLiquidado: semSesaiVariacaoLiq,
           variacaoPago: semSesaiVariacaoPago,
         },
+        splitTipoDotacao,
       };
     },
   });
