@@ -23,6 +23,7 @@ import { AuditFooter } from '@/components/ui/audit-footer';
 import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/MetodologiaFederalSection';
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
+import { UniversoBaseTab } from '@/components/estatisticas/orcamento/UniversoBaseTab';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
