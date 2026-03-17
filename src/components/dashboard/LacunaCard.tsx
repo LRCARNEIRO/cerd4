@@ -7,6 +7,8 @@ import type { LacunaIdentificada, PriorityLevel, ThematicAxis, FocalGroupType } 
 import { DiagnosticBadges } from '@/components/dashboard/DiagnosticBadges';
 import { LacunaEnrichedJustification } from '@/components/dashboard/LacunaEnrichedJustification';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
+import { useMemo } from 'react';
 
 interface LacunaCardProps {
   lacuna: LacunaIdentificada;
