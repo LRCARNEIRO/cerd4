@@ -939,36 +939,9 @@ export default function Orcamento() {
           )}
         </TabsContent>
 
-        {/* ===== FONTES ===== */}
-        <TabsContent value="fontes">
-          <div className="space-y-6">
-            <h3 className="font-semibold text-sm flex items-center gap-2"><Building className="w-4 h-4 text-primary" /> Fontes Federais</h3>
-            <div className="space-y-4">
-              {estruturaFederal.map((cat) => (
-                <Card key={cat.categoria}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-base flex items-center gap-2">
-                        <Building className="w-5 h-5 text-primary" />
-                        {cat.categoria}
-                      </CardTitle>
-                      <Badge variant="outline">{cat.orgao}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-3">
-                      {cat.fontes.map((fonte, idx) => (
-                        <a key={idx} href={fonte.url} target="_blank" rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center gap-1 bg-primary/5 px-3 py-2 rounded-lg">
-                          <ExternalLink className="w-3.5 h-3.5" /> {fonte.nome}
-                        </a>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+        {/* ===== UNIVERSO DA BASE ===== */}
+        <TabsContent value="universo">
+          <UniversoBaseTab records={currentRecords} />
         </TabsContent>
 
         {/* ===== RESUMO COMPARATIVO ===== */}
