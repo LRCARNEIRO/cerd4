@@ -1040,6 +1040,19 @@ export default function Orcamento() {
                 />
               </div>
 
+              {/* INFOGRÁFICO: EFEITO MASCARAMENTO EXTRAORÇAMENTÁRIO */}
+              {esferaStats.federal.extraorcamentario.total > 0 && esferaStats.federal.orcamentario.porAnoDetalhado && esferaStats.federal.extraorcamentario.porAnoDetalhado && (
+                <ExtraorcamentarioMaskingInfographic
+                  orcPorAno={esferaStats.federal.orcamentario.porAnoDetalhado}
+                  extraPorAno={esferaStats.federal.extraorcamentario.porAnoDetalhado}
+                  totalPorAno={esferaStats.federal.porAnoDetalhado}
+                  orcTotal={esferaStats.federal.orcamentario.pagoP1 + esferaStats.federal.orcamentario.pagoP2}
+                  extraTotal={esferaStats.federal.extraorcamentario.pagoP1 + esferaStats.federal.extraorcamentario.pagoP2}
+                  formatCurrency={formatCurrency}
+                  formatCurrencyFull={formatCurrencyFull}
+                />
+              )}
+
               {/* PERSPECTIVA 3: ORÇAMENTÁRIO vs EXTRAORÇAMENTÁRIO */}
               {esferaStats.federal.extraorcamentario.total > 0 && (
                 <div>
