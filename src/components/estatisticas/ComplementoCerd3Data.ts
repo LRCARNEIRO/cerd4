@@ -265,6 +265,7 @@ export const denunciasPovosTradicionais: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Painel ONDH → filtro grupo vulnerável = povos tradicionais. Série 2020-2025.',
     denuncias: { 2020: 825, 2021: 1305, 2022: 543, 2023: 118, 2024: 277, 2025: 290 },
