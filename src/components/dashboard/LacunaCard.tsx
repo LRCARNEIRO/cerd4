@@ -4,9 +4,12 @@ import { cn } from '@/lib/utils';
 import { AlertCircle, AlertTriangle, Info, MinusCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import type { LacunaIdentificada, PriorityLevel, ThematicAxis, FocalGroupType } from '@/hooks/useLacunasData';
+import { DiagnosticBadges } from '@/components/dashboard/DiagnosticBadges';
+import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 
 interface LacunaCardProps {
   lacuna: LacunaIdentificada;
+  diagnostic?: LacunaDiagnostic;
 }
 
 const priorityConfig: Record<PriorityLevel, { icon: typeof AlertCircle; className: string; label: string }> = {
