@@ -54,8 +54,9 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas'
 };
 
-// Quilombolas: sem equivalente em StatisticsData.ts — mantido localmente
-const dadosTerrasQuilombolasHistorico = [
+// Quilombolas: agora consumido do BD via useMirrorData (SSoT)
+// Fallback hardcoded mantido no staticToDbTransformer.ts
+const dadosTerrasQuilombolasHistoricoFallback = [
   { ano: 2018, tituladas: 174, certificadas: 2523, taxa: 6.9, fonte: 'INCRA/FCP' },
   { ano: 2019, tituladas: 176, certificadas: 2745, taxa: 6.4, fonte: 'INCRA/FCP' },
   { ano: 2020, tituladas: 178, certificadas: 2809, taxa: 6.3, fonte: 'INCRA/FCP' },
@@ -78,6 +79,9 @@ export function LacunasCerdTab() {
   const educacaoSerieHistorica = mirror.educacaoSerieHistorica;
   const indicadoresSocioeconomicos = mirror.indicadoresSocioeconomicos;
   const segurancaPublica = mirror.segurancaPublica;
+  const dadosTerrasQuilombolasHistorico = mirror.terrasQuilombolasHistorico.length > 0
+    ? mirror.terrasQuilombolasHistorico
+    : dadosTerrasQuilombolasHistoricoFallback;
 
   const dadosEducacaoHistorico = educacaoSerieHistorica.map((d: any) => ({
     ano: d.ano,

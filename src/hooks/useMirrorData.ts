@@ -158,9 +158,33 @@ export function useMirrorData() {
     // ── SOCIOECONÔMICO ──
     const socioeco = resolveArray('trabalho_renda', 'socioeconomico', hcSocioeco);
 
-    // ── POVOS TRADICIONAIS (complex nested object — passthrough with source tracking) ──
+    // ── POVOS TRADICIONAIS (resolve from BD mirrors, fallback to hardcoded) ──
     const ptMirrors = findAllByCategory('povos_tradicionais');
     const ptSource: MirrorSource = ptMirrors.length > 0 ? 'bd' : 'hardcoded';
+    
+    // Reconstruct povosTradicionais object from BD if available
+    const ptIndigenas = findMirror('povos_tradicionais', 'indigenas_censo');
+    const ptQuilombolas = findMirror('povos_tradicionais', 'quilombolas_censo');
+    const ptPopNegra = findMirror('povos_tradicionais', 'pop_negra_infra');
+    const ptCiganos = findMirror('povos_tradicionais', 'ciganos');
+    
+    const resolvedPovosTradicionais = ptMirrors.length > 0 ? {
+      indigenas: ptIndigenas ? { ...hcPovos.indigenas, ...(ptIndigenas.dados as any) } : hcPovos.indigenas,
+      quilombolas: ptQuilombolas ? { ...hcPovos.quilombolas, ...(ptQuilombolas.dados as any) } : hcPovos.quilombolas,
+      populacaoNegra: ptPopNegra ? {
+        infraestrutura: (ptPopNegra.dados as any)?.negros || hcPovos.populacaoNegra.infraestrutura,
+        infraestruturaBrancos: (ptPopNegra.dados as any)?.brancos || hcPovos.populacaoNegra.infraestruturaBrancos,
+        mediaNacional: (ptPopNegra.dados as any)?.mediaNacional || hcPovos.populacaoNegra.mediaNacional,
+      } : hcPovos.populacaoNegra,
+      ciganos: ptCiganos ? { ...hcPovos.ciganos, ...(ptCiganos.dados as any) } : hcPovos.ciganos,
+    } : hcPovos;
+
+    // Terras quilombolas histórico
+    const terrasQuiloHistorico = findMirror('povos_tradicionais', 'terras_quilombolas_historico');
+    const terrasQuilombolasHistorico = terrasQuiloHistorico
+      ? rebuildSeries(terrasQuiloHistorico.dados as any, [])
+      : [];
+    const fonteTerrasQuilombolas: MirrorSource = terrasQuiloHistorico ? 'bd' : 'hardcoded';
     // ══════════════════════════════════
     // STAGE 3 — Common Core
     // ══════════════════════════════════
@@ -272,7 +296,8 @@ export function useMirrorData() {
       // Socioeconômico
       indicadoresSocioeconomicos: socioeco.data, fonteSocioeco: socioeco.source,
       // Povos Tradicionais
-      povosTradicionais: hcPovos, fontePovos: ptSource,
+      povosTradicionais: resolvedPovosTradicionais, fontePovos: ptSource,
+      terrasQuilombolasHistorico, fonteTerrasQuilombolas,
       // Resumo Executivo (passthrough)
       resumoExecutivo: hcResumoExecutivo,
 
