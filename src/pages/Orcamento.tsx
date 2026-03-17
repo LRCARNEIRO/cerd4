@@ -413,6 +413,49 @@ export default function Orcamento() {
         porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
       });
 
+      // Orçamentário vs Extraorçamentário split
+      const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+      const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
+      const orcP1 = orcRecs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const orcP2 = orcRecs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const extraP1 = extraRecs.filter(r => r.ano >= 2018 && r.ano <= 2022);
+      const extraP2 = extraRecs.filter(r => r.ano >= 2023 && r.ano <= 2025);
+      const orcStats = {
+        total: orcRecs.length,
+        pagoP1: orcP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: orcP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        dotP1: orcP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotP2: orcP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liqP1: orcP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liqP2: orcP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+      };
+      orcRecs.forEach(r => {
+        if (!orcStats.porAnoDetalhado[r.ano]) orcStats.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        orcStats.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        orcStats.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        orcStats.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+      });
+      const extraStats = {
+        total: extraRecs.length,
+        pagoP1: extraP1.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        pagoP2: extraP2.reduce((s, r) => s + (Number(r.pago) || 0), 0),
+        dotP1: extraP1.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        dotP2: extraP2.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0),
+        liqP1: extraP1.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        liqP2: extraP2.reduce((s, r) => s + (Number(r.liquidado) || 0), 0),
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+        subtipoMap: {} as Record<string, number>,
+      };
+      extraRecs.forEach(r => {
+        if (!extraStats.porAnoDetalhado[r.ano]) extraStats.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        extraStats.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
+        extraStats.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        extraStats.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
+        const st = r.subtipo_extraorcamentario || 'outros';
+        extraStats.subtipoMap[st] = (extraStats.subtipoMap[st] || 0) + (Number(r.pago) || 0);
+      });
+
       return {
         // Pago (métrica principal — mede entrega real)
         totalPeriodo1: pagoP1,
@@ -438,6 +481,9 @@ export default function Orcamento() {
         // Detalhado
         porAnoDetalhado,
         semSesai,
+        // Orçamentário vs Extraorçamentário
+        orcamentario: orcStats,
+        extraorcamentario: extraStats,
       };
     };
     return {
