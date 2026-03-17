@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { BookOpen, Layers, Search, Building2, Heart, FileText, ShieldAlert, TrendingUp, Database as DatabaseIcon, Filter } from 'lucide-react';
+import { ExtraorcamentarioSection } from './ExtraorcamentarioSection';
 
 /* ── Dados das camadas e ações ── */
 
