@@ -40,7 +40,8 @@ export const trabalhoInfantil: ComplementoIndicador = {
   artigos_convencao: ['Art.5(e)(i)'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
   tipo: 'complementar',
-  tendencia: 'melhora',
+  tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Em 2022, 66,3% das crianças em situação de trabalho infantil eram pretas ou pardas. Fonte: SIDRA Tabela 7436, filtro cor/raça × faixa 5-17 anos.',
     pct_negros: { 2019: 66.1, 2022: 66.3 },
