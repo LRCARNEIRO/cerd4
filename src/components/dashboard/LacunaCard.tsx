@@ -129,17 +129,17 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
           {/* Diagnostic Signals */}
           <DiagnosticBadges diagnostic={diagnostic} />
 
-          {/* Justificativa "Não Cumprido" — always visible */}
-          {isNaoCumprido && justificativas.length > 0 && (
-            <div className="mt-2 p-2.5 bg-destructive/5 rounded-md border border-destructive/20">
-              <p className="text-xs font-semibold text-destructive mb-1.5">
-                ⚠️ Justificativa — {lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido'}:
+          {/* Justificativa — always visible for não cumprido / parcial */}
+          {needsJustification && justificativas.length > 0 && (
+            <div className={cn('mt-2 p-2.5 rounded-md border', isNaoCumprido ? 'bg-destructive/5 border-destructive/20' : 'bg-warning/5 border-warning/20')}>
+              <p className={cn('text-xs font-semibold mb-1.5', isNaoCumprido ? 'text-destructive' : 'text-warning')}>
+                {isNaoCumprido ? '⚠️' : '⚡'} Justificativa — {lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : 'Parcialmente Cumprido'}:
               </p>
               <ul className="text-xs space-y-1">
                 {justificativas.map((j, i) => (
                   <li key={i} className={cn(
                     'flex items-start gap-1.5',
-                    j.severity === 'critical' ? 'text-destructive' : 'text-warning'
+                    j.severity === 'critical' ? 'text-destructive' : j.severity === 'info' ? 'text-info' : 'text-warning'
                   )}>
                     <span>{j.icon}</span>
                     <span>{j.text}</span>
