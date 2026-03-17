@@ -39,6 +39,8 @@ export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
+  const { data: allLacunas } = useLacunasIdentificadas();
+  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
 
   // Metas com progresso dinâmico
