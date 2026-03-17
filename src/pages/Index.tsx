@@ -60,14 +60,37 @@ export default function Index() {
     toast.success('Dados atualizados!', { description: 'Todas as estatísticas foram recarregadas.' });
   };
 
-  // Dados do gráfico de orçamento baseados no banco
-  const budgetTrendData = orcamentoStats?.porAno 
-    ? Object.entries(orcamentoStats.porAno).map(([ano, valor]) => ({
+  // Dados do gráfico de orçamento baseados no banco, filtrado por tipo_dotacao
+  const activeSource = incluirExtra 
+    ? orcamentoStats?.porAnoDetalhado 
+    : (() => {
+        // Rebuild porAnoDetalhado only from orcamentario split
+        const orcSplit = orcamentoStats?.splitTipoDotacao?.orcamentario?.porAno;
+        if (!orcSplit || !orcamentoStats?.porAnoDetalhado) return orcamentoStats?.porAnoDetalhado;
+        // Use full detalhado but subtract extraorcamentario proportionally
+        // Simplified: use orcamentario porAno for pago, scale others
+        const result: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
+        Object.entries(orcamentoStats.porAnoDetalhado).forEach(([ano, v]) => {
+          const year = parseInt(ano);
+          const totalAno = orcamentoStats.porAno[year] || 1;
+          const orcAno = orcSplit[year] || 0;
+          const ratio = totalAno > 0 ? orcAno / totalAno : 1;
+          result[year] = { 
+            pago: Math.round(v.pago * ratio), 
+            liquidado: Math.round(v.liquidado * ratio), 
+            dotacao: Math.round(v.dotacao * ratio) 
+          };
+        });
+        return result;
+      })();
+
+  const budgetTrendData = activeSource
+    ? Object.entries(activeSource).map(([ano, v]) => ({
         ano: parseInt(ano),
-        autorizado: valor * 1.2,
-        empenhado: valor * 1.1,
-        pago: valor
-      }))
+        autorizado: v.dotacao || 0,
+        empenhado: v.liquidado || 0,
+        pago: v.pago || 0
+      })).sort((a, b) => a.ano - b.ano)
     : [
         { ano: 2018, autorizado: 45000000, empenhado: 38000000, pago: 32000000 },
         { ano: 2019, autorizado: 52000000, empenhado: 45000000, pago: 40000000 },
