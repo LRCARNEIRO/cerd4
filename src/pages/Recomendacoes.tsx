@@ -61,6 +61,9 @@ export default function Recomendacoes() {
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
+  // Diagnostic Sensor — Level 1
+  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+
   const filteredLacunas = lacunas?.filter(lacuna => {
     // Filtro por artigo da Convenção
     if (filterArtigo) {
