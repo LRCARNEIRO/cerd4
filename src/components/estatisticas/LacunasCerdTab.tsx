@@ -776,7 +776,7 @@ export function LacunasCerdTab() {
                     {respostas.map(resp => (
                       <TableRow key={resp.id}>
                         <TableCell className="font-mono text-xs">{resp.paragrafo_cerd_iii}</TableCell>
-                        <TableCell className="text-sm max-w-[400px] truncate">{resp.critica_original}</TableCell>
+                        <TableCell className="text-sm">{resp.critica_original}</TableCell>
                         <TableCell>
                           <Badge 
                             variant="outline"
