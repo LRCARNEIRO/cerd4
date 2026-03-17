@@ -8,7 +8,7 @@ import {
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
-import { povosTradicionais } from './StatisticsData';
+// povosTradicionais agora consumido via useMirrorData (SSoT)
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useNarrativeData } from '@/hooks/useNarrativeData';
 
