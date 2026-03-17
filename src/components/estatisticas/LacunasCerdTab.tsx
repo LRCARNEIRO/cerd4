@@ -79,6 +79,9 @@ export function LacunasCerdTab() {
   const educacaoSerieHistorica = mirror.educacaoSerieHistorica;
   const indicadoresSocioeconomicos = mirror.indicadoresSocioeconomicos;
   const segurancaPublica = mirror.segurancaPublica;
+  const dadosTerrasQuilombolasHistorico = mirror.terrasQuilombolasHistorico.length > 0
+    ? mirror.terrasQuilombolasHistorico
+    : dadosTerrasQuilombolasHistoricoFallback;
 
   const dadosEducacaoHistorico = educacaoSerieHistorica.map((d: any) => ({
     ano: d.ano,
