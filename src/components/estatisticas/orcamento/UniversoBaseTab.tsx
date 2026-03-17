@@ -66,7 +66,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
       { key: 'sesai', label: 'SESAI', icon: <Building className="w-4 h-4" />, color: 'hsl(var(--chart-5))' },
     ];
     return groups.map(g => {
-      const recs = records.filter(r => classifyThematic(r) === g.key);
+      const recs = filtered.filter(r => classifyThematic(r) === g.key);
       const p1 = recs.filter(r => r.ano >= 2018 && r.ano <= 2022);
       const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
       return {
@@ -77,25 +77,25 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         acoesP1: p1.length, acoesP2: p2.length, acoesTotal: recs.length,
       };
     });
-  }, [records]);
+  }, [filtered]);
 
   // Evolução por ano
   const evolucaoPorAno = useMemo(() => {
     const map: Record<number, number> = {};
-    for (const r of records) {
+    for (const r of filtered) {
       map[r.ano] = (map[r.ano] || 0) + (Number(r.pago) || 0);
     }
     return Object.entries(map).map(([ano, pago]) => ({ ano: Number(ano), pago })).sort((a, b) => a.ano - b.ano);
-  }, [records]);
+  }, [filtered]);
 
   // Top 10
   const top10 = useMemo(() => {
     const map: Record<string, number> = {};
-    for (const r of records) {
+    for (const r of filtered) {
       map[r.programa] = (map[r.programa] || 0) + (Number(r.pago) || 0);
     }
     return Object.entries(map).map(([programa, pago]) => ({ programa, pago })).sort((a, b) => b.pago - a.pago).slice(0, 10);
-  }, [records]);
+  }, [filtered]);
 
   // Program table
   const programaRows = useMemo(() => {
