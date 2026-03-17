@@ -615,6 +615,7 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'sub-registro',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 6417 → Pessoas de 10 anos ou mais por religião × cor/raça. Sub-registro provável por intolerância.',
     total_matriz_africana: { 2022: 1849824 },
