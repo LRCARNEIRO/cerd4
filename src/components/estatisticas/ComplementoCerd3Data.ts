@@ -62,6 +62,7 @@ export const trabalhoEscravo: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'MTE 2025: 83% dos resgatados são pretos ou pardos. Painel Radar → aba "Perfil" → filtro raça/cor.',
     pct_negros_resgatados: { 2018: 55, 2019: 62, 2020: 61, 2021: 64, 2022: 69, 2023: 73, 2024: 79, 2025: 83 },
