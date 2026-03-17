@@ -96,10 +96,10 @@ export function MetodologiaFederalSection() {
       <section className="space-y-3">
         <h4 className="font-semibold text-foreground text-base flex items-center gap-2">
           <Layers className="w-4 h-4" />
-          1. Estratégia de Coleta — 4 Camadas + 2 Passos Complementares
+          1. Estratégia de Coleta — 4 Camadas + 3 Passos Complementares
         </h4>
         <p className="text-sm text-muted-foreground">
-          A base orçamentária federal (2018–2025) utiliza uma estratégia de <strong>4 camadas de filtragem estrutural</strong> complementadas por <strong>2 passos adicionais</strong> de enriquecimento, totalizando 6 etapas. Clique em cada etapa para ver as ações incorporadas.
+          A base orçamentária federal (2018–2025) utiliza uma estratégia de <strong>4 camadas de filtragem estrutural</strong> complementadas por <strong>3 passos adicionais</strong> de enriquecimento, totalizando 7 etapas. Clique em cada etapa para ver as ações incorporadas.
         </p>
 
         <Accordion type="multiple" className="w-full">
