@@ -56,7 +56,7 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
 
   // Build justification for "não cumprido" / "retrocesso"
   const justificativas: { icon: string; text: string; severity: 'critical' | 'warning' | 'info' }[] = [];
-  if (isNaoCumprido) {
+  if (needsJustification) {
     const hasEvidencias = lacuna.evidencias_encontradas && lacuna.evidencias_encontradas.length > 0;
     const hasAcoes = lacuna.acoes_brasil && lacuna.acoes_brasil.length > 0;
     const hasFontes = lacuna.fontes_dados && lacuna.fontes_dados.length > 0;
@@ -75,16 +75,26 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
       if (semNormativa) {
         justificativas.push({ icon: '📋', text: 'Sem cobertura normativa identificada para os artigos vinculados', severity: 'warning' });
       }
+      // For parcial: also flag if there ARE some positive signals but gaps remain
+      if (isParcial) {
+        const tendenciaMelhora = diagnostic.signals.find(s => s.type === 'tendencia' && s.severity === 'info');
+        if (tendenciaMelhora) {
+          justificativas.push({ icon: '📈', text: `Avanço parcial detectado: ${tendenciaMelhora.message}`, severity: 'info' });
+        }
+      }
     }
 
     if (!hasEvidencias) {
-      justificativas.push({ icon: '🔍', text: 'Nenhuma evidência quantitativa ou qualitativa encontrada que demonstre cumprimento', severity: 'critical' });
+      justificativas.push({ icon: '🔍', text: isParcial ? 'Evidências insuficientes para comprovar cumprimento integral' : 'Nenhuma evidência quantitativa ou qualitativa encontrada que demonstre cumprimento', severity: isNaoCumprido ? 'critical' : 'warning' });
     }
     if (!hasAcoes || (lacuna.acoes_brasil && lacuna.acoes_brasil.length === 0)) {
-      justificativas.push({ icon: '🚫', text: 'Nenhuma ação governamental registrada em resposta à recomendação da ONU', severity: 'critical' });
+      justificativas.push({ icon: '🚫', text: isParcial ? 'Ações governamentais insuficientes ou incompletas' : 'Nenhuma ação governamental registrada em resposta à recomendação da ONU', severity: isNaoCumprido ? 'critical' : 'warning' });
     }
     if (!hasFontes) {
       justificativas.push({ icon: '📭', text: 'Nenhuma fonte de dados oficial identificada para monitoramento', severity: 'warning' });
+    }
+    if (isParcial && hasAcoes && hasEvidencias && justificativas.length === 0) {
+      justificativas.push({ icon: '⚠️', text: 'Ações existem mas não cobrem integralmente a recomendação da ONU', severity: 'warning' });
     }
   }
 
