@@ -181,10 +181,6 @@ export default function Index() {
           variant="default"
           sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
         />
-          icon={Database}
-          variant="default"
-          sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
-        />
       </div>
 
       {/* Main Content Grid */}
