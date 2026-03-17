@@ -448,6 +448,7 @@ export const deficitHabitacionalRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Fonte: FJP — Déficit Habitacional por cor/raça do responsável. Valores em percentual do déficit total.',
     pct_branca: { 2018: 55.60, 2019: 26.60, 2023: 32.01 },
