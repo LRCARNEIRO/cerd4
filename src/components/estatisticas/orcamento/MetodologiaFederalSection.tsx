@@ -636,6 +636,9 @@ export function MetodologiaFederalSection() {
           </TableBody>
         </Table>
       </section>
+
+      {/* 7. Diferenciação Orçamentário × Extraorçamentário */}
+      <ExtraorcamentarioSection />
     </>
   );
 }
