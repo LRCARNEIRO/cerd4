@@ -7,6 +7,7 @@ import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
+import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
 import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
 import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
 import { 
@@ -27,6 +28,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
+import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE, TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -36,6 +39,8 @@ export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
+  const { data: allLacunas } = useLacunasIdentificadas();
+  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
 
   // Metas com progresso dinâmico
@@ -147,6 +152,11 @@ export default function Index() {
       </div>
 
 
+      {/* Sensor Diagnóstico — Alertas */}
+      <div className="mb-6">
+        <SensorAlertPanel summary={sensorSummary} isReady={sensorReady} />
+      </div>
+
       {/* Stats Grid - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
@@ -159,11 +169,11 @@ export default function Index() {
         />
         <StatCard
           title="Progresso Geral"
-          value={isLoading ? '...' : `${stats.progressoGeral}%`}
-          subtitle="baseado nos dados"
+          value={isLoading ? '...' : `${sensorReady ? sensorSummary.progressoSensor : stats.progressoGeral}%`}
+          subtitle={sensorReady && sensorSummary.totalDivergencias > 0 ? `⚠️ ${sensorSummary.totalDivergencias} divergência(s)` : 'baseado nos dados'}
           icon={ClipboardCheck}
           variant="default"
-          sourceInfo={{ label: 'Banco de dados — lacunas_identificadas', url: 'https://tbinternet.ohchr.org/_layouts/15/TreatyBodyExternal/countries.aspx?CountryCode=BRA&Lang=EN' }}
+          sourceInfo={{ label: 'Sensor Diagnóstico — Nível 1', url: '/recomendacoes' }}
         />
         <StatCard
           title="Indicadores"
@@ -206,11 +216,16 @@ export default function Index() {
         {/* Compliance Chart - Dinâmico */}
         <div>
           <ComplianceChart 
-            data={{
+            data={sensorReady ? {
+              cumprido: sensorSummary.statusReclassificado.cumprido,
+              parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
+              naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
+              retrocesso: sensorSummary.statusReclassificado.retrocesso,
+            } : {
               cumprido: stats.recomendacoesCumpridas,
               parcial: stats.recomendacoesParciais,
               naoCumprido: stats.recomendacoesNaoCumpridas,
-              retrocesso: stats.recomendacoesRetrocesso
+              retrocesso: stats.recomendacoesRetrocesso,
             }}
           />
         </div>

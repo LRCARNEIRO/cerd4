@@ -4,9 +4,12 @@ import { cn } from '@/lib/utils';
 import { AlertCircle, AlertTriangle, Info, MinusCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import type { LacunaIdentificada, PriorityLevel, ThematicAxis, FocalGroupType } from '@/hooks/useLacunasData';
+import { DiagnosticBadges } from '@/components/dashboard/DiagnosticBadges';
+import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 
 interface LacunaCardProps {
   lacuna: LacunaIdentificada;
+  diagnostic?: LacunaDiagnostic;
 }
 
 const priorityConfig: Record<PriorityLevel, { icon: typeof AlertCircle; className: string; label: string }> = {
@@ -43,7 +46,7 @@ const grupoLabels: Record<FocalGroupType, string> = {
   geral: 'Geral'
 };
 
-export function LacunaCard({ lacuna }: LacunaCardProps) {
+export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const [expanded, setExpanded] = useState(false);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
@@ -76,6 +79,9 @@ export function LacunaCard({ lacuna }: LacunaCardProps) {
             {lacuna.descricao_lacuna}
           </p>
           
+          {/* Diagnostic Signals */}
+          <DiagnosticBadges diagnostic={diagnostic} />
+
           {/* Interseccionalidades */}
           {lacuna.interseccionalidades && lacuna.interseccionalidades.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
