@@ -48,7 +48,9 @@ const grupoLabels: Record<FocalGroupType, string> = {
 
 export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
-  const [expanded, setExpanded] = useState(isNaoCumprido);
+  const isParcial = lacuna.status_cumprimento === 'parcialmente_cumprido';
+  const needsJustification = isNaoCumprido || isParcial;
+  const [expanded, setExpanded] = useState(needsJustification);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
 
