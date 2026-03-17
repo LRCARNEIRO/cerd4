@@ -902,10 +902,10 @@ export function GruposFocaisTab() {
                   </div>
                 </div>
 
-                <div className="p-3 bg-warning/10 rounded text-xs text-muted-foreground">
-                  <strong className="text-warning">⚠ Nota:</strong> Número absoluto muito baixo. 
-                  Anos intermediários (2019-2023) sem dados verificáveis na base IPHAN/CGID — pendente auditoria completa.
-                  Categoria "estável" devido ao volume limitado.
+                <div className="p-3 bg-destructive/10 rounded text-xs text-muted-foreground">
+                  <strong className="text-destructive">⚠ Auditoria (17/03/2026):</strong> Não foi localizada nenhuma base de dados consolidada sobre terreiros no IPHAN. 
+                  As informações parecem ter sido extraídas de notícias e divulgações institucionais avulsas. 
+                  Dados devem ser analisados com cautela — auditagem prejudicada pela ausência de fonte primária verificável.
                 </div>
 
                 <div className="mt-3 p-2 bg-muted/50 rounded text-xs">
