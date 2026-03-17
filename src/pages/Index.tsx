@@ -152,6 +152,11 @@ export default function Index() {
       </div>
 
 
+      {/* Sensor Diagnóstico — Alertas */}
+      <div className="mb-6">
+        <SensorAlertPanel summary={sensorSummary} isReady={sensorReady} />
+      </div>
+
       {/* Stats Grid - Dinâmico */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
