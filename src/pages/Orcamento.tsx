@@ -295,6 +295,7 @@ export default function Orcamento() {
   
   const [artigoFilter, setArtigoFilter] = useState<ArtigoConvencao | null>(null);
   const [incluirExtra, setIncluirExtra] = useState(true);
+  const [semSesaiMode, setSemSesaiMode] = useState(false);
 
   const handleResetFederal = async () => {
     if (!confirm('Apagar todos os dados orçamentários federais? Esta ação não pode ser desfeita.')) return;
