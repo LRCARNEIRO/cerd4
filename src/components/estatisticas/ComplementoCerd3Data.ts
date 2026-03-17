@@ -425,6 +425,7 @@ export const sistemaPrisional: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'SISDEPEN Relatório Jun/2024 → Seção "Perfil da Pop. Prisional" → Tabela "Cor/Raça". Complemento: 19º Anuário FBSP 2025.',
     pct_negros: { 2005: 58.4, 2018: 63.6, 2019: 66.7, 2021: 67.5, 2022: 68.2, 2024: 70 },
