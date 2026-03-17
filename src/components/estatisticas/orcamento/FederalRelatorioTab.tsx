@@ -204,10 +204,12 @@ function IcerdArtigosSection({ records, sesaiRecords, formatCurrency, sectionNum
 }
 
 export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
+  const [incluirExtraorcamentario, setIncluirExtraorcamentario] = useState(true);
+
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
-    const allRecords = records;
+    const allRecords = incluirExtraorcamentario ? records : records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || 0;
