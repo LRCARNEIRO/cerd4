@@ -169,11 +169,11 @@ export default function Index() {
         />
         <StatCard
           title="Progresso Geral"
-          value={isLoading ? '...' : `${stats.progressoGeral}%`}
-          subtitle="baseado nos dados"
+          value={isLoading ? '...' : `${sensorReady ? sensorSummary.progressoSensor : stats.progressoGeral}%`}
+          subtitle={sensorReady && sensorSummary.totalDivergencias > 0 ? `⚠️ ${sensorSummary.totalDivergencias} divergência(s)` : 'baseado nos dados'}
           icon={ClipboardCheck}
           variant="default"
-          sourceInfo={{ label: 'Banco de dados — lacunas_identificadas', url: 'https://tbinternet.ohchr.org/_layouts/15/TreatyBodyExternal/countries.aspx?CountryCode=BRA&Lang=EN' }}
+          sourceInfo={{ label: 'Sensor Diagnóstico — Nível 1', url: '/recomendacoes' }}
         />
         <StatCard
           title="Indicadores"
