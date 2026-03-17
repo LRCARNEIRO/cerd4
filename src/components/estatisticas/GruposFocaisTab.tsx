@@ -289,7 +289,7 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
   );
 }
 
-// AuditadoBadge removido — aba ainda não auditada manualmente
+// Auditado manualmente em 17/03/2026
 
 export function GruposFocaisTab() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -313,7 +313,10 @@ export function GruposFocaisTab() {
               Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
               Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.227.642).
             </p>
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2 mt-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] gap-1 bg-success/10 text-success border-success/30">
+                <CheckCircle2 className="w-3 h-3" /> Auditado Manualmente — 17/03/2026
+              </Badge>
               {gfSource === 'bd' ? (
                 <Badge variant="default" className="gap-1"><CheckCircle2 className="w-3 h-3" /> SSoT BD ({gfCount})</Badge>
               ) : (

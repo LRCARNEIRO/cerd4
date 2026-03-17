@@ -463,7 +463,7 @@ export function ComplementoCerd3Tab() {
                 </Badge>
                 <Badge className="bg-success/10 text-success border-success/30" variant="outline">
                   <CheckCircle2 className="w-3 h-3 mr-1" />
-                  {COMPLEMENTO_CERD3_STATS.verificados} verificados
+                  ✅ Auditado Manualmente — 17/03/2026 · {COMPLEMENTO_CERD3_STATS.verificados} verificados
                 </Badge>
                 {COMPLEMENTO_CERD3_STATS.pendentes > 0 && (
                   <Badge className="bg-chart-4/10 text-chart-4 border-chart-4/30" variant="outline">
