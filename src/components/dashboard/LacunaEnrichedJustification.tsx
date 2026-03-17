@@ -66,10 +66,15 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
 
   return (
     <div className={cn('mt-2 p-3 rounded-md border space-y-3', statusStyle)}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <p className={cn('text-xs font-bold', headerColor)}>
           {statusLabel} — Fundamentação Cruzada ({totalEvidences} evidências no sistema)
         </p>
+        {diagnostic?.divergente && diagnostic.statusSugerido && (
+          <span className="text-[10px] px-2 py-1 rounded-full border bg-destructive/10 text-destructive border-destructive/20">
+            Sensor sugere: {diagnostic.statusSugerido === 'cumprido' ? 'Cumprido' : diagnostic.statusSugerido === 'parcialmente_cumprido' ? 'Parcial' : diagnostic.statusSugerido === 'nao_cumprido' ? 'Não Cumprido' : diagnostic.statusSugerido === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
+          </span>
+        )}
       </div>
 
       {/* ── Indicadores vinculados via artigos_convencao ──────────── */}
