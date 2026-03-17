@@ -199,6 +199,7 @@ export const preNatalRaca: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. TabNet → SINASC → Linha: Consultas pré-natal; Coluna: Raça/Cor da mãe. Série 2018-2024.',
     maes_negras_pre_natal: { 2018: 1185566, 2019: 1204715, 2020: 1137098, 2021: 1180602, 2022: 1157867, 2023: 1199220, 2024: 1169888 },
