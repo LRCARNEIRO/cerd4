@@ -48,13 +48,15 @@ const grupoLabels: Record<FocalGroupType, string> = {
 
 export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
-  const [expanded, setExpanded] = useState(isNaoCumprido);
+  const isParcial = lacuna.status_cumprimento === 'parcialmente_cumprido';
+  const needsJustification = isNaoCumprido || isParcial;
+  const [expanded, setExpanded] = useState(needsJustification);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
 
   // Build justification for "não cumprido" / "retrocesso"
   const justificativas: { icon: string; text: string; severity: 'critical' | 'warning' | 'info' }[] = [];
-  if (isNaoCumprido) {
+  if (needsJustification) {
     const hasEvidencias = lacuna.evidencias_encontradas && lacuna.evidencias_encontradas.length > 0;
     const hasAcoes = lacuna.acoes_brasil && lacuna.acoes_brasil.length > 0;
     const hasFontes = lacuna.fontes_dados && lacuna.fontes_dados.length > 0;
@@ -73,21 +75,31 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
       if (semNormativa) {
         justificativas.push({ icon: '📋', text: 'Sem cobertura normativa identificada para os artigos vinculados', severity: 'warning' });
       }
+      // For parcial: also flag if there ARE some positive signals but gaps remain
+      if (isParcial) {
+        const tendenciaMelhora = diagnostic.signals.find(s => s.type === 'tendencia' && s.severity === 'info');
+        if (tendenciaMelhora) {
+          justificativas.push({ icon: '📈', text: `Avanço parcial detectado: ${tendenciaMelhora.message}`, severity: 'info' });
+        }
+      }
     }
 
     if (!hasEvidencias) {
-      justificativas.push({ icon: '🔍', text: 'Nenhuma evidência quantitativa ou qualitativa encontrada que demonstre cumprimento', severity: 'critical' });
+      justificativas.push({ icon: '🔍', text: isParcial ? 'Evidências insuficientes para comprovar cumprimento integral' : 'Nenhuma evidência quantitativa ou qualitativa encontrada que demonstre cumprimento', severity: isNaoCumprido ? 'critical' : 'warning' });
     }
     if (!hasAcoes || (lacuna.acoes_brasil && lacuna.acoes_brasil.length === 0)) {
-      justificativas.push({ icon: '🚫', text: 'Nenhuma ação governamental registrada em resposta à recomendação da ONU', severity: 'critical' });
+      justificativas.push({ icon: '🚫', text: isParcial ? 'Ações governamentais insuficientes ou incompletas' : 'Nenhuma ação governamental registrada em resposta à recomendação da ONU', severity: isNaoCumprido ? 'critical' : 'warning' });
     }
     if (!hasFontes) {
       justificativas.push({ icon: '📭', text: 'Nenhuma fonte de dados oficial identificada para monitoramento', severity: 'warning' });
     }
+    if (isParcial && hasAcoes && hasEvidencias && justificativas.length === 0) {
+      justificativas.push({ icon: '⚠️', text: 'Ações existem mas não cobrem integralmente a recomendação da ONU', severity: 'warning' });
+    }
   }
 
   return (
-    <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive')}>
+    <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive', isParcial && 'border-l-4 border-l-warning')}>
       <div className="flex items-start gap-3">
         <div className={cn('mt-0.5', priorityInfo.className)}>
           <PriorityIcon className="w-5 h-5" />
@@ -117,17 +129,17 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
           {/* Diagnostic Signals */}
           <DiagnosticBadges diagnostic={diagnostic} />
 
-          {/* Justificativa "Não Cumprido" — always visible */}
-          {isNaoCumprido && justificativas.length > 0 && (
-            <div className="mt-2 p-2.5 bg-destructive/5 rounded-md border border-destructive/20">
-              <p className="text-xs font-semibold text-destructive mb-1.5">
-                ⚠️ Justificativa — {lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido'}:
+          {/* Justificativa — always visible for não cumprido / parcial */}
+          {needsJustification && justificativas.length > 0 && (
+            <div className={cn('mt-2 p-2.5 rounded-md border', isNaoCumprido ? 'bg-destructive/5 border-destructive/20' : 'bg-warning/5 border-warning/20')}>
+              <p className={cn('text-xs font-semibold mb-1.5', isNaoCumprido ? 'text-destructive' : 'text-warning')}>
+                {isNaoCumprido ? '⚠️' : '⚡'} Justificativa — {lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : 'Parcialmente Cumprido'}:
               </p>
               <ul className="text-xs space-y-1">
                 {justificativas.map((j, i) => (
                   <li key={i} className={cn(
                     'flex items-start gap-1.5',
-                    j.severity === 'critical' ? 'text-destructive' : 'text-warning'
+                    j.severity === 'critical' ? 'text-destructive' : j.severity === 'info' ? 'text-info' : 'text-warning'
                   )}>
                     <span>{j.icon}</span>
                     <span>{j.text}</span>
