@@ -141,8 +141,17 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
 
               {/* Resposta sugerida para CERD IV */}
               <div className="p-2 bg-primary/5 rounded-md border border-primary/20">
-                <p className="text-xs font-medium text-primary mb-1">Resposta sugerida (CERD IV):</p>
-                <p className="text-xs">{lacuna.resposta_sugerida_cerd_iv || <span className="text-muted-foreground italic">Resposta sugerida não disponível</span>}</p>
+                <p className="text-xs font-medium text-primary mb-1">
+                  Resposta sugerida (CERD IV):
+                  {!lacuna.resposta_sugerida_cerd_iv && dynamicResponse && (
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">— gerada automaticamente a partir das evidências cruzadas</span>
+                  )}
+                </p>
+                {respostaCerdIV ? (
+                  <p className="text-xs whitespace-pre-line">{respostaCerdIV}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">Sem evidências cruzadas suficientes para gerar resposta automática</p>
+                )}
               </div>
             </div>
           )}
