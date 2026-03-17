@@ -563,6 +563,7 @@ export const ciganosCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'SIDRA Tabela 9891. Auditoria manual: dados por região não foram localizados na fonte. Mantido total nacional. Possível sub-registro por estigma.',
     total_ciganos: { 2022: 41738 },
