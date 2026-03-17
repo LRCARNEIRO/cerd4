@@ -122,7 +122,7 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
             {lacuna.tema}
           </h3>
           
-          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+          <p className="text-xs text-muted-foreground mt-1">
             {lacuna.descricao_lacuna}
           </p>
           
