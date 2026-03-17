@@ -333,7 +333,7 @@ export function useOrcamentoStats() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('ano, pago, empenhado, liquidado, dotacao_autorizada, dotacao_inicial, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo')
+          .select('ano, pago, empenhado, liquidado, dotacao_autorizada, dotacao_inicial, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo, tipo_dotacao, subtipo_extraorcamentario')
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) throw error;
