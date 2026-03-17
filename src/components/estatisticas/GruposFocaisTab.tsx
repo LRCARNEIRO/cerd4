@@ -74,6 +74,11 @@ export function GruposFocaisTab() {
               ) : (
                 <Badge variant="secondary" className="gap-1">Fallback estático</Badge>
               )}
+              {bdOverlayCount > 0 && (
+                <Badge variant="outline" className="gap-1 text-[10px] bg-primary/10 text-primary border-primary/30">
+                  <Database className="w-3 h-3" /> {bdOverlayCount}/{totalOverlaySources} overlays BD
+                </Badge>
+              )}
             </div>
           </div>
         </CardContent>
