@@ -23,6 +23,8 @@ export interface ComplementoIndicador {
   artigos_convencao: string[];
   documento_origem: string[];
   tendencia: string;
+  /** Polaridade do indicador: 'menor_melhor' = menos é positivo (mortalidade, violência); 'maior_melhor' = mais é positivo (renda, escolaridade); 'contextual' = depende da interpretação */
+  polaridade: 'menor_melhor' | 'maior_melhor' | 'contextual';
   dados: Record<string, any>;
   /** 'complementar' = preenche lacunas das abas temáticas para 100% CERD III; 'novo' = sugerido por recomendações CERD */
   tipo: 'complementar' | 'novo';
@@ -38,7 +40,8 @@ export const trabalhoInfantil: ComplementoIndicador = {
   artigos_convencao: ['Art.5(e)(i)'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
   tipo: 'complementar',
-  tendencia: 'melhora',
+  tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Em 2022, 66,3% das crianças em situação de trabalho infantil eram pretas ou pardas. Fonte: SIDRA Tabela 7436, filtro cor/raça × faixa 5-17 anos.',
     pct_negros: { 2019: 66.1, 2022: 66.3 },
@@ -59,6 +62,7 @@ export const trabalhoEscravo: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'MTE 2025: 83% dos resgatados são pretos ou pardos. Painel Radar → aba "Perfil" → filtro raça/cor.',
     pct_negros_resgatados: { 2018: 55, 2019: 62, 2020: 61, 2021: 64, 2022: 69, 2023: 73, 2024: 79, 2025: 83 },
@@ -79,6 +83,7 @@ export const intoleranciaReligiosa: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban', 'Recomendações Gerais (RGs)'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Crescimento 382% 2020→2025. Painel ONDH → Disque 100 → Violação: "Intolerância religiosa". Auditado manualmente — dados confirmados.',
     total_denuncias: { 2020: 566, 2021: 584, 2022: 898, 2023: 1482, 2024: 2472, 2025: 2723 },
@@ -101,6 +106,7 @@ export const educacaoIndigena: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado: Indígenas 85% (SIDRA 8181, sem desagregação dentro/fora TI); Negros 90,94% (SIDRA 9542); Brancos 95,66% (SIDRA 9543). Escolas ensino básico em TIs: 3.553 (Catálogo de Escolas INEP 2026); ensino fundamental em TIs: 3.484 (Censo Escolar/INEP 2022).',
     alfabetizacao: {
@@ -131,6 +137,7 @@ export const distorcaoIdadeSerie: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'melhora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente via Painel InepData Censo Escolar. Série 2018-2025, anos iniciais do fundamental e ensino médio, por cor/raça.',
     fundamental: {
@@ -168,7 +175,8 @@ export const saudeIndigena: ComplementoIndicador = {
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
-  tendencia: 'piora',
+  tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. TabNet → SIM → Óbitos infantis + SINASC → Nascidos vivos, variável raça/cor da mãe. Série 2018-2024.',
     taxa_indigena_por_1000nv: { 2018: 26.35, 2019: 27.53, 2020: 22.84, 2021: 23.39, 2022: 26.17, 2023: 25.86, 2024: 24.43 },
@@ -191,6 +199,7 @@ export const preNatalRaca: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. TabNet → SINASC → Linha: Consultas pré-natal; Coluna: Raça/Cor da mãe. Série 2018-2024.',
     maes_negras_pre_natal: { 2018: 1185566, 2019: 1204715, 2020: 1137098, 2021: 1180602, 2022: 1157867, 2023: 1199220, 2024: 1169888 },
@@ -212,6 +221,7 @@ export const doencasCronicasRaca: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Indicador alterado de "doenças crônicas" para "óbitos por causas evitáveis" conforme disponibilidade no DATASUS (não foi possível desagregar por 3 doenças específicas).',
     obitos_branca: { 2018: 334360, 2019: 337754, 2020: 386997, 2021: 514325, 2022: 373607, 2023: 354798, 2024: 368078 },
@@ -233,6 +243,7 @@ export const denunciasDiscriminacaoRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Painel ONDH. Dados de 2022 disponíveis apenas do 2º semestre. Lei 14.532/2023 equiparou injúria racial a racismo.',
     denuncias: { 2022: 3535, 2023: 9738, 2024: 14543, 2025: 16245 },
@@ -254,6 +265,7 @@ export const denunciasPovosTradicionais: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Painel ONDH → filtro grupo vulnerável = povos tradicionais. Série 2020-2025.',
     denuncias: { 2020: 825, 2021: 1305, 2022: 543, 2023: 118, 2024: 277, 2025: 290 },
@@ -274,6 +286,7 @@ export const processosRacismoCnj: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. CNJ Justiça em Números → Painel Estatísticas. Lei 14.532/2023 ampliou tipificação.',
     processos_novos: { 2020: 50, 2021: 92, 2022: 234, 2023: 973, 2024: 2874, 2025: 4633 },
@@ -293,6 +306,7 @@ export const racismoInstitucionalJudiciario: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. CNJ Painel MPM Pessoal → Magistrados por cor/raça. Resolução CNJ 572/2025 ampliou cotas para 30%.',
     pct_magistrados_negros: { 2023: 18.1 },
@@ -321,6 +335,7 @@ export const jurisprudenciaStf: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'contextual',
   dados: {
     marcos: [
       { ano: 2012, descricao: 'ADPF 186 — Cotas raciais constitucionais' },
@@ -344,6 +359,7 @@ export const candidatosNegros: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'Auditado manualmente. TSE Dados Abertos → Candidatos → CSV consulta_cand → coluna DS_COR_RACA. Filtrar "PARDA" + "PRETA" = negros.',
     pct_candidatos_negros: { 2018: 46, 2020: 50, 2022: 50, 2024: 52 },
@@ -363,6 +379,7 @@ export const eleitosNegros: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'melhora',
+  polaridade: 'maior_melhor',
   dados: {
     nota: 'TSE Dados Abertos → Resultados → cruzar consulta_cand (DS_COR_RACA) × resultado (DS_SIT_TOT_TURNO = "ELEITO"). Sub-representação: 55,5% pop. vs 30,1% deputados.',
     pct_deputados_negros: { 2014: 20.0, 2018: 24.4, 2022: 30.1 },
@@ -386,6 +403,7 @@ export const financiamentoEleitoral: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Estudo TSE (pág. 27): "Candidaturas brancas (R$ 44.825,97) apresentam valores superiores aos das candidaturas negras (R$ 15.658,15). Essa diferença aponta para desigualdade no financiamento que prejudica a competitividade de candidatos pretos e pardos."',
     receita_media_candidatura_branca: 44825.97,
@@ -407,6 +425,7 @@ export const sistemaPrisional: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'SISDEPEN Relatório Jun/2024 → Seção "Perfil da Pop. Prisional" → Tabela "Cor/Raça". Complemento: 19º Anuário FBSP 2025.',
     pct_negros: { 2005: 58.4, 2018: 63.6, 2019: 66.7, 2021: 67.5, 2022: 68.2, 2024: 70 },
@@ -429,6 +448,7 @@ export const deficitHabitacionalRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. Fonte: FJP — Déficit Habitacional por cor/raça do responsável. Valores em percentual do déficit total.',
     pct_branca: { 2018: 55.60, 2019: 26.60, 2023: 32.01 },
@@ -452,6 +472,7 @@ export const favelasAglomerados: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 9884. Total: 16.390.790 moradores em favelas. Pretos+Pardos = 72,94%.',
     total_moradores: { 2022: 16390790 },
@@ -480,6 +501,7 @@ export const saneamentoRacial: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'estável',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. SIDRA 7555 (geral por cor/raça), SIDRA 9812 (quilombolas), SIDRA 9956 (TIs). Valores corrigidos conforme auditoria.',
     pct_sem_esgoto_adequado: {
@@ -504,6 +526,7 @@ export const quilombolasCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 10089 → Pop. quilombola por UF, total e por localização (dentro/fora de territórios quilombolas).',
     total_por_uf: {
@@ -540,6 +563,7 @@ export const ciganosCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'SIDRA Tabela 9891. Auditoria manual: dados por região não foram localizados na fonte. Mantido total nacional. Possível sub-registro por estigma.',
     total_ciganos: { 2022: 41738 },
@@ -560,6 +584,7 @@ export const indigenasTisCenso: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 9970 → Pop. indígena × localização (dentro/fora de TI) por UF.',
     em_TIs_por_uf: {
@@ -590,6 +615,7 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'sub-registro',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 6417 → Pessoas de 10 anos ou mais por religião × cor/raça. Sub-registro provável por intolerância.',
     total_matriz_africana: { 2022: 1849824 },
@@ -610,6 +636,7 @@ export const migracaoInternacional: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 2145 → Naturalizados e estrangeiros por grupos de anos de fixação, sexo e idade. Sem desagregação por raça/cor.',
     naturalizados_brasileiros: { '2022-2024': 29228 },
@@ -631,6 +658,7 @@ export const demarcacaoTerras: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. Valores corrigidos conforme fonte oficial. "Homologadas e reservadas" inclui reservadas.',
     TIs_homologadas_e_reservadas_total: 536,
@@ -651,6 +679,7 @@ export const titulacaoQuilombola: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'piora',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. INCRA → Títulos expedidos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf; Processos abertos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     titulos_emitidos_total: 384,

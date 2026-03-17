@@ -13,7 +13,7 @@ const COLOR_ABS = 'hsl(var(--chart-1))';
 const COLOR_PCT = 'hsl(var(--chart-2))';
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
-function TendenciaBadge({ t }: { t?: string }) {
+function TendenciaBadge({ t, polaridade }: { t?: string; polaridade?: 'menor_melhor' | 'maior_melhor' | 'contextual' }) {
   if (!t) return null;
   const map: Record<string, { icon: React.ReactNode; cls: string }> = {
     melhora: { icon: <TrendingUp className="w-3 h-3" />, cls: 'bg-success/10 text-success border-success/30' },
@@ -22,7 +22,15 @@ function TendenciaBadge({ t }: { t?: string }) {
     'sub-registro': { icon: <AlertTriangle className="w-3 h-3" />, cls: 'bg-chart-4/10 text-chart-4 border-chart-4/30' },
   };
   const m = map[t] || map['estável']!;
-  return <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>;
+  const polaridadeLabel = polaridade === 'menor_melhor' ? '↓ = melhor' : polaridade === 'maior_melhor' ? '↑ = melhor' : null;
+  return (
+    <span className="inline-flex items-center gap-1">
+      <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>
+      {polaridadeLabel && (
+        <Badge variant="outline" className="text-[9px] bg-accent/50 text-muted-foreground border-border/50">{polaridadeLabel}</Badge>
+      )}
+    </span>
+  );
 }
 
 interface DualAxisData {
@@ -363,7 +371,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <TendenciaBadge t={ind.tendencia} />
+            <TendenciaBadge t={ind.tendencia} polaridade={ind.polaridade} />
             {ind.url_fonte && (
               <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-primary hover:underline inline-flex items-center gap-1">
