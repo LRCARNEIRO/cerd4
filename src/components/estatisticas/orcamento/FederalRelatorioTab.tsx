@@ -378,43 +378,6 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         </CardContent>
       </Card>
 
-      {/* ═══ FILTRO EXTRAORÇAMENTÁRIO ═══ */}
-      <Card className="border border-warning/30 bg-warning/5">
-        <CardContent className="pt-4 pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Filter className="w-5 h-5 text-warning shrink-0" />
-              <div>
-                <p className="font-semibold text-sm text-foreground">Perspectiva de Análise</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {incluirExtraorcamentario
-                    ? '📊 Financiamento Total — inclui compensações ambientais, indenizações e convênios (54 ações FUNAI/0151)'
-                    : '🏛️ Esforço do Estado — somente recursos aprovados via LOA (orçamento público stricto sensu)'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="extra-toggle" className="text-xs text-muted-foreground cursor-pointer">
-                {incluirExtraorcamentario ? 'Total' : 'LOA'}
-              </Label>
-              <Switch
-                id="extra-toggle"
-                checked={incluirExtraorcamentario}
-                onCheckedChange={setIncluirExtraorcamentario}
-              />
-            </div>
-          </div>
-          {analysis.extraCount > 0 && (
-            <div className="mt-2 flex gap-3 text-[10px]">
-              <Badge variant="outline" className="text-[10px]">{analysis.extraCount} registros extraorçamentários</Badge>
-              <span className="text-muted-foreground">
-                Pago extra: {formatCurrency(analysis.totalExtra)} · Pago LOA: {formatCurrency(analysis.totalOrc)} · 
-                % Extra: {(analysis.totalExtra / ((analysis.totalExtra + analysis.totalOrc) || 1) * 100).toFixed(1)}%
-              </span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* ═══ ANÁLISE DUAL: ESFORÇO DO ESTADO × FINANCIAMENTO TOTAL ═══ */}
       {analysis.totalExtra > 0 && (
