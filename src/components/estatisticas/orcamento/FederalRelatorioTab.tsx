@@ -409,13 +409,19 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
         </CardContent>
       </Card>
 
-      {/* ═══ 2. FUNDAMENTAÇÃO METODOLÓGICA ═══ */}
+      {/* ═══ 2. FUNDAMENTAÇÃO METODOLÓGICA DETALHADA ═══ */}
       <Card>
         <CardHeader><CardTitle className="text-sm"><SN n={nextSection()} /> Fundamentação Metodológica</CardTitle></CardHeader>
-        <CardContent className="text-xs text-muted-foreground space-y-3">
-          <p>A base foi construída através de uma estratégia de <strong>4 camadas de filtragem estrutural + 3 passos complementares de enriquecimento</strong>:</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-muted/50 rounded p-3">
+        <CardContent className="text-xs text-muted-foreground space-y-4">
+          <p>
+            A construção da base orçamentária seguiu uma <strong>estratégia de 7 passos</strong> (4 camadas estruturais + 3 etapas complementares),
+            com deduplicação automática via chave composta <code className="bg-muted px-1 rounded text-foreground">órgão|programa|ano</code>.
+            Os totais são divididos em dois baselines históricos: <strong>P1 ({formatCurrency(analysis.totalPagoP1)})</strong> e <strong>P2 ({formatCurrency(analysis.totalPagoP2)})</strong>.
+          </p>
+
+          {/* Camadas detalhadas */}
+          <div className="space-y-3">
+            <div className="bg-muted/50 rounded p-3 border-l-4 border-l-primary">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 1 — Programas Temáticos PPA</p>
               <p>
                 <strong>9 programas históricos</strong> (2034/SEPPIR, 0617/2065/5136 indígenas, 5802/5803/5804 MIR 2024+)
@@ -425,37 +431,109 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 <em>Filtro híbrido:</em> programas <strong>focais</strong> (MIR, MPI — ex: 1617, 5136) incluem todas as ações;
                 programas <strong>universais</strong> (Bolsa Família, Educação Básica, CT&I, etc.) exigem palavras-chave raciais/étnicas no título da ação.
               </p>
+              <p className="mt-1 italic text-[10px]">Fundamentação: PPA 2020–2023 (Lei nº 13.971/2019), PPA 2024–2027 (Lei nº 14.802/2024), Agendas Transversais — Igualdade Racial e Povos Indígenas.</p>
             </div>
-            <div className="bg-muted/50 rounded p-3">
+            <div className="bg-muted/50 rounded p-3 border-l-4 border-l-chart-1">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 2 — Subfunção 422</p>
-              <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais, validadas por palavras-chave.</p>
+              <p>Direitos Individuais, Coletivos e Difusos. Captura ações de igualdade racial em órgãos transversais (ex: MDH, MJ, MPF), validadas por palavras-chave raciais.</p>
+              <p className="mt-1 italic text-[10px]">Critério: Ações com subfunção 422 + validação por radical no título (quilombol*, indígen*, racial, étnic*, etc.).</p>
             </div>
-            <div className="bg-muted/50 rounded p-3">
+            <div className="bg-muted/50 rounded p-3 border-l-4 border-l-chart-2">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 3 — Órgãos MIR/MPI</p>
-              <p>MIR (67000) e MPI (92000) — todas as despesas desses órgãos, deduplicadas contra Camadas 1 e 2.</p>
+              <p>MIR (67000) e MPI (92000) — <strong>todas as despesas</strong> desses órgãos são consideradas focais por definição institucional. Deduplicadas contra Camadas 1 e 2.</p>
+              <p className="mt-1 italic text-[10px]">Nota: MIR criado em jan/2023 (ex-SEPPIR); MPI criado em jan/2023 (ex-competências FUNAI/MJ).</p>
             </div>
-            <div className="bg-muted/50 rounded p-3">
+            <div className="bg-muted/50 rounded p-3 border-l-4 border-l-chart-3">
               <p className="font-semibold text-foreground text-xs mb-1">Camada 4 — SESAI (Saúde Indígena)</p>
-              <p>Ações 20YP e 7684 capturadas por código de ação direto, necessário após migração da SESAI para programa genérico de saúde (5022).</p>
+              <p>
+                Ações <strong>20YP</strong> (Atenção à Saúde dos Povos Indígenas) e <strong>7684</strong> (Saneamento em Aldeias)
+                capturadas por código de ação direto. Necessário após migração da SESAI para programa genérico de saúde (5022), que tornaria a SESAI invisível em filtros por programa.
+              </p>
+              <p className="mt-1 italic text-[10px]">A SESAI responde por ~{analysis.sesaiPctP1.toFixed(0)}–{analysis.sesaiPctP2.toFixed(0)}% do total, gerando o "efeito mascaramento" analisado na Seção 4.</p>
             </div>
-            <div className="bg-warning/5 rounded p-3 border border-warning/20">
+            <div className="bg-warning/5 rounded p-3 border-l-4 border-l-warning">
               <p className="font-semibold text-foreground text-xs mb-1">Passo 5 — Dotação via Dados Abertos (LOA)</p>
-              <p>Arquivos ZIP/CSV do portal dados.gov.br complementam dotação inicial e autorizada, matching por chave Programa|Ação.</p>
+              <p>
+                Arquivos ZIP/CSV do portal <strong>dados.gov.br</strong> complementam dotação inicial e autorizada para cada ação,
+                matching por chave composta <code className="bg-muted px-1 rounded text-foreground">Programa|Ação|Ano</code>.
+                Preenche lacunas do Portal da Transparência, que reporta execução mas nem sempre dotação inicial.
+              </p>
             </div>
-            <div className="bg-warning/5 rounded p-3 border border-warning/20">
+            <div className="bg-warning/5 rounded p-3 border-l-4 border-l-warning">
               <p className="font-semibold text-foreground text-xs mb-1">Passo 6 — Ingestão Keyword-First</p>
-              <p>Varredura ampla em ~40 subfunções usando 30+ palavras-chave raciais/étnicas para capturar ações dispersas não cobertas pelas 4 camadas estruturais.</p>
+              <p>
+                Varredura ampla em <strong>~40 subfunções</strong> usando <strong>30+ radicais</strong> raciais/étnicos para capturar ações dispersas
+                em órgãos transversais não cobertos pelas 4 camadas estruturais. Exemplos: ações em Cultura (subfunção 392),
+                Educação Superior (subfunção 364), Assistência Social (subfunção 244) com termos como "quilombol*", "indígen*", "capoeira", "terreiro".
+              </p>
             </div>
-            <div className="bg-primary/5 rounded p-3 border border-primary/20 col-span-1 md:col-span-2">
+            <div className="bg-primary/5 rounded p-3 border-l-4 border-l-primary">
               <p className="font-semibold text-foreground text-xs mb-1">Passo 7 — Complementação Manual SIOP</p>
               <p>
-                11 registros manuais (2020–2023) que escaparam dos filtros automatizados (ex: ICMBio 20WM, SESAI 21CJ, MDHC/MIR 21AR/21AT).
-                Justificativa: redefinições de programação no SIOP e migração institucional MDHC→MIR.
+                11 registros manuais (2020–2023) que escaparam dos filtros automatizados devido a redefinições de programação no SIOP
+                e migração institucional MDHC→MIR. Exemplos: ICMBio 20WM (Gestão Ambiental em Terras Indígenas),
+                SESAI 21CJ (Saneamento em Aldeias Indígenas), MDHC/MIR 21AR/21AT (Promoção da Igualdade Racial).
               </p>
+              <p className="mt-1 italic text-[10px]">Cada inclusão manual possui campo 'razao_selecao' documentando a justificativa técnica.</p>
             </div>
           </div>
 
-          <div className="bg-destructive/10 rounded p-3 border border-destructive/30 mt-2">
+          {/* Fórmulas e critérios */}
+          <div className="bg-muted rounded p-4 border space-y-2">
+            <p className="font-semibold text-foreground text-xs">📐 Fórmulas e Critérios Técnicos</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+              <div>
+                <p className="font-medium text-foreground">Taxa de Execução:</p>
+                <code className="bg-background px-2 py-1 rounded block mt-1">% Execução = (Valor Pago / Dotação Autorizada) × 100</code>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Deduplicação:</p>
+                <code className="bg-background px-2 py-1 rounded block mt-1">Chave = órgão | programa | ano (unique constraint)</code>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Orçamento Simbólico:</p>
+                <code className="bg-background px-2 py-1 rounded block mt-1">Dotação Autorizada &gt; 0 AND Pago ≈ R$ 0</code>
+                <p className="mt-0.5 italic">Evidência de hiato entre previsão legal e entrega efetiva.</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Exclusões:</p>
+                <p className="mt-1">Restos a Pagar não são contabilizados. Programas universais sem filtro racial são excluídos integralmente.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Orçamento Simbólico detection */}
+          {(() => {
+            const simbolicos = records.filter(r => {
+              const dot = Number(r.dotacao_autorizada) || 0;
+              const pg = Number(r.pago) || 0;
+              return dot > 100000 && pg < 1000;
+            });
+            if (simbolicos.length === 0) return null;
+            const totalDotSimb = simbolicos.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+            return (
+              <div className="bg-destructive/5 rounded p-3 border border-destructive/20">
+                <p className="text-xs font-semibold text-foreground mb-1">
+                  🚨 Alerta: "Orçamento Simbólico" — {simbolicos.length} ações detectadas
+                </p>
+                <p className="text-xs">
+                  Foram identificadas <strong>{simbolicos.length} ações</strong> com dotação autorizada total de <strong>{formatCurrency(totalDotSimb)}</strong> mas
+                  valor pago ≈ R$ 0. Isso evidencia planejamento formal sem execução real — um padrão que o Comitê CERD denomina
+                  "medidas de papel" (CERD/C/BRA/CO/18-20 §14).
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {simbolicos.slice(0, 5).map((r, i) => (
+                    <Badge key={i} variant="destructive" className="text-[10px]">
+                      {r.programa.substring(0, 40)}… ({r.ano}) — Dot: {formatCurrency(Number(r.dotacao_autorizada) || 0)}
+                    </Badge>
+                  ))}
+                  {simbolicos.length > 5 && <Badge variant="outline" className="text-[10px]">+{simbolicos.length - 5} mais</Badge>}
+                </div>
+              </div>
+            );
+          })()}
+
+          <div className="bg-destructive/10 rounded p-3 border border-destructive/30">
             <p className="text-xs font-semibold text-foreground mb-1">⚠️ Tratamento de Programas Genéricos / Universais</p>
             <p className="text-xs">
               Programas de grande escala como <strong>Minha Casa Minha Vida</strong> (R$ 100+ bi/ano), <strong>Bolsa Família</strong> (R$ 160+ bi/ano),
@@ -466,9 +544,19 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
           <div className="flex flex-wrap gap-1.5 mt-2">
             <span className="text-[10px] font-medium text-foreground mr-1">Radicais de busca:</span>
-            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana', 'candomblé', 'umbanda', 'juventude negra'].map(r => (
+            {['racial', 'quilombol', 'indígen', 'cigan', 'étnic', 'palmares', 'terreiro', 'capoeira', 'matriz africana', 'candomblé', 'umbanda', 'juventude negra', 'reparação', 'etnodesenvolvimento'].map(r => (
               <Badge key={r} variant="secondary" className="text-[10px] font-mono">{r}*</Badge>
             ))}
+          </div>
+
+          {/* Transition summary */}
+          <div className="bg-chart-2/10 rounded p-3 border border-chart-2/20 flex items-center gap-3">
+            <Info className="w-5 h-5 text-chart-2 shrink-0" />
+            <p className="text-xs">
+              <strong>Até aqui:</strong> {analysis.totalRegistros} registros capturados por 7 camadas de filtragem, abrangendo {analysis.totalProgramas} programas
+              em {analysis.anos.length} anos. Total pago: <strong>{formatCurrency(analysis.totalPagoP1 + analysis.totalPagoP2)}</strong>.
+              As próximas seções exploram 3 perspectivas analíticas distintas.
+            </p>
           </div>
         </CardContent>
       </Card>
