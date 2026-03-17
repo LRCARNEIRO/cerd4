@@ -360,6 +360,99 @@ export function MetodologiaFederalSection() {
               </div>
             </AccordionContent>
           </AccordionItem>
+
+          {/* ── Passo 7: Complementação Manual SIOP ── */}
+          <AccordionItem value="passo-7">
+            <AccordionTrigger className="hover:no-underline">
+              <div className="flex items-center gap-2 text-left">
+                <Badge className="shrink-0 bg-amber-600 hover:bg-amber-700">Passo 7</Badge>
+                <span className="font-semibold">Complementação Manual (SIOP)</span>
+                <Badge variant="secondary" className="text-xs shrink-0">11 registros · ~R$ 67,5 mi</Badge>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Inclusão manual de ações orçamentárias identificadas diretamente no SIOP que escapam das camadas automatizadas 
+                  devido a reclassificações, migrações entre órgãos e mudanças de planos orçamentários ao longo do exercício.
+                </p>
+
+                <div className="bg-amber-500/10 rounded-lg p-4 border border-amber-500/30 space-y-2">
+                  <p className="text-xs font-semibold flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5" />
+                    Por que este passo é necessário?
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-xs text-muted-foreground">
+                    <li><strong>Dificuldade de rastreamento:</strong> Ações como 21AR e 21AT do programa 5034 são genéricas ("Promoção e Defesa de Direitos para Todos"), mas contêm Planos Orçamentários (POs) específicos de igualdade racial — visíveis apenas no SIOP, não na API do Portal.</li>
+                    <li><strong>Mudanças orçamentárias intra-ano:</strong> O orçamento público sofre redefinições ao longo do exercício (remanejamentos, suplementações, contingenciamentos), alterando programações e a forma como as ações são lançadas no SIOP.</li>
+                    <li><strong>Migração institucional:</strong> A transição MDHC → MIR em 2023 causou reclassificação retroativa de registros na API, sem alterar os POs no SIOP.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold mb-2">Ações incluídas (2020–2023)</p>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Ano</TableHead>
+                        <TableHead className="w-20">Órgão</TableHead>
+                        <TableHead>Ação / PO</TableHead>
+                        <TableHead className="text-right w-24">Autorizada</TableHead>
+                        <TableHead className="text-right w-24">Pago</TableHead>
+                        <TableHead className="text-right w-16">Exec %</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[
+                        { ano: 2020, orgao: 'MDHC', acao: '21AR – PO 0001 (Ações Afirmativas)', aut: 2686538, pago: 2394915 },
+                        { ano: 2020, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 229432, pago: 62327 },
+                        { ano: 2021, orgao: 'ICMBio', acao: '20WM – PO 000D (ADPF 709)', aut: 89805, pago: 89805 },
+                        { ano: 2021, orgao: 'SESAI', acao: '21CJ – Saneamento Indígena', aut: 35500000, pago: 20588223 },
+                        { ano: 2021, orgao: 'MDHC', acao: '21AR – 3 POs raciais agregados', aut: 3410120, pago: 288145 },
+                        { ano: 2021, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 389749, pago: 66608 },
+                        { ano: 2022, orgao: 'SESAI', acao: '21CJ – Saneamento Indígena', aut: 46150000, pago: 32231085 },
+                        { ano: 2022, orgao: 'MDHC', acao: '21AR – 3 POs raciais agregados', aut: 5294732, pago: 3639445 },
+                        { ano: 2022, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 261314, pago: 95711 },
+                        { ano: 2023, orgao: 'MIR', acao: '21AR – 3 POs raciais agregados', aut: 37777674, pago: 7825048 },
+                        { ano: 2023, orgao: 'MIR', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 305637, pago: 232465 },
+                      ].map((r, i) => (
+                        <TableRow key={i}>
+                          <TableCell className="text-xs font-mono">{r.ano}</TableCell>
+                          <TableCell><Badge variant="outline" className="text-[10px]">{r.orgao}</Badge></TableCell>
+                          <TableCell className="text-xs">{r.acao}</TableCell>
+                          <TableCell className="text-xs text-right font-mono">
+                            {new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(r.aut)}
+                          </TableCell>
+                          <TableCell className="text-xs text-right font-mono">
+                            {new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(r.pago)}
+                          </TableCell>
+                          <TableCell className="text-xs text-right font-mono">
+                            {r.aut > 0 ? `${((r.pago / r.aut) * 100).toFixed(0)}%` : '—'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow className="font-semibold bg-muted/50">
+                        <TableCell colSpan={3} className="text-xs">TOTAL (11 registros)</TableCell>
+                        <TableCell className="text-xs text-right font-mono">R$ 132,1 mi</TableCell>
+                        <TableCell className="text-xs text-right font-mono">R$ 67,5 mi</TableCell>
+                        <TableCell className="text-xs text-right font-mono">51%</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <div className="bg-primary/10 rounded-lg p-3 border border-primary/30 space-y-1">
+                  <p className="text-xs font-semibold">📊 Impacto na base</p>
+                  <ul className="list-disc pl-5 space-y-0.5 text-xs text-muted-foreground">
+                    <li><strong>+11 registros</strong> (261 total → base ampliada em 4,4%)</li>
+                    <li><strong>+R$ 67,5 mi em valor pago</strong> — representa 1,6% do total com SESAI e 1,6% do total sem SESAI</li>
+                    <li><strong>Valor qualitativo:</strong> Documenta ações que eram <em>invisíveis</em> às camadas automatizadas, revelando o paradoxo de políticas raciais lançadas sob ações genéricas de direitos humanos</li>
+                    <li><strong>Padrão identificado:</strong> Execução média de 51% — consistente com o represamento orçamentário do período 2020–2022</li>
+                  </ul>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
 
         <p className="text-xs text-muted-foreground mt-2">A mesclagem ocorre por par <strong>Programa–Ação × Ano</strong>, consolidando valores de execução (API) e dotação (LOA) em um único registro. Todos os passos são deduplicados.</p>
