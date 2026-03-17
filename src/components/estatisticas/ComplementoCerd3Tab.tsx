@@ -371,7 +371,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <TendenciaBadge t={ind.tendencia} />
+            <TendenciaBadge t={ind.tendencia} polaridade={ind.polaridade} />
             {ind.url_fonte && (
               <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer"
                 className="text-xs text-primary hover:underline inline-flex items-center gap-1">
