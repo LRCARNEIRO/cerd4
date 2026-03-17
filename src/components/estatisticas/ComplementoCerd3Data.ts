@@ -472,6 +472,7 @@ export const favelasAglomerados: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
+  polaridade: 'menor_melhor',
   dados: {
     nota: 'Auditado manualmente. SIDRA Tabela 9884. Total: 16.390.790 moradores em favelas. Pretos+Pardos = 72,94%.',
     total_moradores: { 2022: 16390790 },
