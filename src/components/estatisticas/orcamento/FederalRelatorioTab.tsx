@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, Building, FileText, Scale, TrendingUp, Users, TreePine, MapPin, Tent, ShieldAlert, BookOpen } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import { AlertTriangle, Building, FileText, Scale, TrendingUp, Users, TreePine, MapPin, Tent, ShieldAlert, BookOpen, Filter } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { AuditFooter } from '@/components/ui/audit-footer';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
