@@ -7,6 +7,8 @@ import type { LacunaIdentificada, PriorityLevel, ThematicAxis, FocalGroupType } 
 import { DiagnosticBadges } from '@/components/dashboard/DiagnosticBadges';
 import { LacunaEnrichedJustification } from '@/components/dashboard/LacunaEnrichedJustification';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
+import { useMemo } from 'react';
 
 interface LacunaCardProps {
   lacuna: LacunaIdentificada;
@@ -56,6 +58,12 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const [expanded, setExpanded] = useState(true);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
+
+  const dynamicResponse = useMemo(
+    () => generateSuggestedResponse(lacuna, diagnostic),
+    [lacuna, diagnostic]
+  );
+  const respostaCerdIV = lacuna.resposta_sugerida_cerd_iv || dynamicResponse;
 
   return (
     <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive', isParcial && 'border-l-4 border-l-warning')}>
@@ -133,8 +141,17 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
 
               {/* Resposta sugerida para CERD IV */}
               <div className="p-2 bg-primary/5 rounded-md border border-primary/20">
-                <p className="text-xs font-medium text-primary mb-1">Resposta sugerida (CERD IV):</p>
-                <p className="text-xs">{lacuna.resposta_sugerida_cerd_iv || <span className="text-muted-foreground italic">Resposta sugerida não disponível</span>}</p>
+                <p className="text-xs font-medium text-primary mb-1">
+                  Resposta sugerida (CERD IV):
+                  {!lacuna.resposta_sugerida_cerd_iv && dynamicResponse && (
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">— gerada automaticamente a partir das evidências cruzadas</span>
+                  )}
+                </p>
+                {respostaCerdIV ? (
+                  <p className="text-xs whitespace-pre-line">{respostaCerdIV}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">Sem evidências cruzadas suficientes para gerar resposta automática</p>
+                )}
               </div>
             </div>
           )}
