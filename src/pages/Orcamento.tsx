@@ -543,15 +543,6 @@ export default function Orcamento() {
         </CardContent>
       </Card>
 
-      {/* Key Metrics */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
-        </div>
-      ) : (
-        <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
-      )}
-
       {/* ===== SUB-ABAS ===== */}
       <Tabs defaultValue="visao-geral" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
@@ -583,63 +574,21 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
-          {/* Filtro Orçamentário vs Extraorçamentário */}
-          <Card className="mb-4 border-l-4 border-l-chart-1">
-            <CardContent className="py-3 px-4">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-3">
-                  <Filter className="w-4 h-4 text-chart-1" />
-                  <div>
-                    <p className="text-sm font-semibold">Perspectiva Orçamentária</p>
-                    <p className="text-xs text-muted-foreground">
-                      {incluirExtra 
-                        ? 'Financiamento Total (LOA + Compensatório/Reativo)' 
-                        : 'Apenas Esforço do Estado (LOA)'}
-                      {stats?.splitTipoDotacao && (
-                        <span className="ml-2 text-muted-foreground/70">
-                          · Orç: {stats.splitTipoDotacao.orcamentario.total} registros 
-                          · Extra: {stats.splitTipoDotacao.extraorcamentario.total} registros
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="extra-toggle-orc" className="text-xs cursor-pointer">
-                    {incluirExtra ? 'Com extraorçamentário' : 'Sem extraorçamentário'}
-                  </Label>
-                  <Switch 
-                    id="extra-toggle-orc" 
-                    checked={incluirExtra} 
-                    onCheckedChange={setIncluirExtra} 
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Thematic filter bar */}
-          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
-
-          {/* Article filter */}
-          <div className="mb-4">
-            <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
-          </div>
-
-          {/* Summary Cards — Dotação, Pago, Extraorçamentário */}
+          {/* 1) Summary Cards — Dotação, Pago, Registros, Extraorçamentárias (first!) */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
-            const filteredByPerspective = incluirExtra ? recs : recs.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+            let filtered = incluirExtra ? recs : recs.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+            if (semSesaiMode) filtered = filtered.filter(r => classifyThematic(r) !== 'sesai');
 
-            const totalDotacao = filteredByPerspective.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
-            const totalDotInicial = filteredByPerspective.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
-            const totalPago = filteredByPerspective.reduce((s, r) => s + (Number(r.pago) || 0), 0);
-            const totalLiquidado = filteredByPerspective.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+            const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+            const totalDotInicial = filtered.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+            const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
             const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
 
-            // Extraorçamentárias: sem dotação inicial
             const extraRecs = recs.filter(r => r.tipo_dotacao === 'extraorcamentario' || (!Number(r.dotacao_inicial) && !Number(r.dotacao_autorizada)));
-            const extraPago = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const extraFiltered = semSesaiMode ? extraRecs.filter(r => classifyThematic(r) !== 'sesai') : extraRecs;
+            const extraPago = extraFiltered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
 
             return (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -666,9 +615,9 @@ export default function Orcamento() {
                 <Card className="border-l-4 border-l-chart-3">
                   <CardContent className="pt-4 pb-3">
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Registros</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{filteredByPerspective.length}</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{filtered.length}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {new Set(filteredByPerspective.map(r => r.programa)).size} programas · {new Set(filteredByPerspective.map(r => r.orgao)).size} órgãos
+                      {new Set(filtered.map(r => r.programa)).size} programas · {new Set(filtered.map(r => r.orgao)).size} órgãos
                     </p>
                   </CardContent>
                 </Card>
@@ -676,7 +625,7 @@ export default function Orcamento() {
                 <Card className="border-l-4 border-l-warning">
                   <CardContent className="pt-4 pb-3">
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
-                    <p className="text-2xl font-bold text-foreground mt-1">{extraRecs.length}</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{extraFiltered.length}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Pago: {formatCurrency(extraPago)} · Sem dotação LOA
                     </p>
@@ -686,6 +635,65 @@ export default function Orcamento() {
             );
           })()}
 
+          {/* 2) Period summary cards (P1/P2/Variação/Cobertura) */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
+            </div>
+          ) : (
+            <EsferaSummaryCards stats={esferaStats.federal} esferaLabel="Federal" formatCurrency={formatCurrency} />
+          )}
+
+          {/* 3) Toggles — Perspectiva Orçamentária + SESAI */}
+          <Card className="mb-4 border-l-4 border-l-chart-1">
+            <CardContent className="py-3 px-4">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <Filter className="w-4 h-4 text-chart-1" />
+                  <div>
+                    <p className="text-sm font-semibold">Cenários Analíticos</p>
+                    <p className="text-xs text-muted-foreground">
+                      Alterne para ver o impacto nos cards acima
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6 flex-wrap">
+                  {/* Toggle: Extraorçamentário */}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="extra-toggle-orc" className="text-xs cursor-pointer">
+                      {incluirExtra ? 'Com extraorçamentário' : 'Sem extraorçamentário'}
+                    </Label>
+                    <Switch 
+                      id="extra-toggle-orc" 
+                      checked={incluirExtra} 
+                      onCheckedChange={setIncluirExtra} 
+                    />
+                  </div>
+                  {/* Toggle: SESAI */}
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="sesai-toggle" className="text-xs cursor-pointer">
+                      {semSesaiMode ? 'Sem SESAI' : 'Com SESAI'}
+                    </Label>
+                    <Switch 
+                      id="sesai-toggle" 
+                      checked={!semSesaiMode} 
+                      onCheckedChange={(v) => setSemSesaiMode(!v)} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 4) Thematic filter bar */}
+          <ThematicFilterBar filters={federalFilters} counts={getThemeCounts()} onToggle={toggleFilter(setFederalFilters)} />
+
+          {/* 5) Article filter */}
+          <div className="mb-4">
+            <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
+          </div>
+
+          {/* 6) Content */}
           <EsferaContent
             records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
             isLoading={isLoading}
