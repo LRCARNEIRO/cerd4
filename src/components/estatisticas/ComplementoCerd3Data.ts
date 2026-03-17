@@ -658,6 +658,7 @@ export const demarcacaoTerras: ComplementoIndicador = {
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
+  polaridade: 'contextual',
   dados: {
     nota: 'Auditado manualmente. Valores corrigidos conforme fonte oficial. "Homologadas e reservadas" inclui reservadas.',
     TIs_homologadas_e_reservadas_total: 536,
