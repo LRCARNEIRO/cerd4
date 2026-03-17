@@ -296,7 +296,8 @@ export function useMirrorData() {
       // Socioeconômico
       indicadoresSocioeconomicos: socioeco.data, fonteSocioeco: socioeco.source,
       // Povos Tradicionais
-      povosTradicionais: hcPovos, fontePovos: ptSource,
+      povosTradicionais: resolvedPovosTradicionais, fontePovos: ptSource,
+      terrasQuilombolasHistorico, fonteTerrasQuilombolas,
       // Resumo Executivo (passthrough)
       resumoExecutivo: hcResumoExecutivo,
 
