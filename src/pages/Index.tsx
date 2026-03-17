@@ -56,29 +56,8 @@ export default function Index() {
     toast.success('Dados atualizados!', { description: 'Todas as estatísticas foram recarregadas.' });
   };
 
-  // Dados do gráfico de orçamento baseados no banco, filtrado por tipo_dotacao
-  const activeSource = incluirExtra 
-    ? orcamentoStats?.porAnoDetalhado 
-    : (() => {
-        // Rebuild porAnoDetalhado only from orcamentario split
-        const orcSplit = orcamentoStats?.splitTipoDotacao?.orcamentario?.porAno;
-        if (!orcSplit || !orcamentoStats?.porAnoDetalhado) return orcamentoStats?.porAnoDetalhado;
-        // Use full detalhado but subtract extraorcamentario proportionally
-        // Simplified: use orcamentario porAno for pago, scale others
-        const result: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
-        Object.entries(orcamentoStats.porAnoDetalhado).forEach(([ano, v]) => {
-          const year = parseInt(ano);
-          const totalAno = orcamentoStats.porAno[year] || 1;
-          const orcAno = orcSplit[year] || 0;
-          const ratio = totalAno > 0 ? orcAno / totalAno : 1;
-          result[year] = { 
-            pago: Math.round(v.pago * ratio), 
-            liquidado: Math.round(v.liquidado * ratio), 
-            dotacao: Math.round(v.dotacao * ratio) 
-          };
-        });
-        return result;
-      })();
+  // Dados do gráfico de orçamento baseados no banco
+  const activeSource = orcamentoStats?.porAnoDetalhado;
 
   const budgetTrendData = activeSource
     ? Object.entries(activeSource).map(([ano, v]) => ({
