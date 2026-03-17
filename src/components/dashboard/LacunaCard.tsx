@@ -46,7 +46,7 @@ const grupoLabels: Record<FocalGroupType, string> = {
   geral: 'Geral'
 };
 
-export function LacunaCard({ lacuna }: LacunaCardProps) {
+export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   const [expanded, setExpanded] = useState(false);
   const priorityInfo = priorityConfig[lacuna.prioridade];
   const PriorityIcon = priorityInfo.icon;
