@@ -624,7 +624,66 @@ export default function Orcamento() {
             <ArtigoFilter selected={artigoFilter} onSelect={setArtigoFilter} compact />
           </div>
 
-          {/* Data listing — filtered by article */}
+          {/* Summary Cards — Dotação, Pago, Extraorçamentário */}
+          {hasData && !isLoading && (() => {
+            const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
+            const filteredByPerspective = incluirExtra ? recs : recs.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+
+            const totalDotacao = filteredByPerspective.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+            const totalDotInicial = filteredByPerspective.reduce((s, r) => s + (Number(r.dotacao_inicial) || 0), 0);
+            const totalPago = filteredByPerspective.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+            const totalLiquidado = filteredByPerspective.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+            const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
+
+            // Extraorçamentárias: sem dotação inicial
+            const extraRecs = recs.filter(r => r.tipo_dotacao === 'extraorcamentario' || (!Number(r.dotacao_inicial) && !Number(r.dotacao_autorizada)));
+            const extraPago = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <Card className="border-l-4 border-l-primary">
+                  <CardContent className="pt-4 pb-3">
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Inicial: {formatCurrency(totalDotInicial)}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-success">
+                  <CardContent className="pt-4 pb-3">
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPago)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Liquidado: {formatCurrency(totalLiquidado)} · Exec: {execucao.toFixed(1)}%
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-chart-3">
+                  <CardContent className="pt-4 pb-3">
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Registros</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{filteredByPerspective.length}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {new Set(filteredByPerspective.map(r => r.programa)).size} programas · {new Set(filteredByPerspective.map(r => r.orgao)).size} órgãos
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-l-4 border-l-warning">
+                  <CardContent className="pt-4 pb-3">
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">{extraRecs.length}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Pago: {formatCurrency(extraPago)} · Sem dotação LOA
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })()}
+
           <EsferaContent
             records={artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords}
             isLoading={isLoading}
