@@ -612,9 +612,17 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   tendencia: 'sub-registro',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. SIDRA Tabela 6417 → pessoas de 10 anos ou mais por religião × cor/raça. Valores corrigidos conforme planilha de auditagem; permanece a ressalva de provável sub-registro por intolerância religiosa.',
+    nota: 'Auditado manualmente. SIDRA Tabela 6417 → pessoas de 10 anos ou mais por religião × cor/raça. Total confirmado: 1.849.824 praticantes (Umbanda + Candomblé), correspondendo a 1,05% da população 10+. Permanece a ressalva de provável sub-registro por intolerância religiosa.',
     total_matriz_africana: { 2022: 1849824 },
     pct_populacao: { 2022: 1.05 },
+    por_raca: {
+      branca: { absoluto: 794078, pct: 1.04 },
+      preta: { absoluto: 428935, pct: 2.26 },
+      amarela: { absoluto: 6316, pct: 0.80 },
+      parda: { absoluto: 614278, pct: 0.77 },
+      indigena: { absoluto: 6175, pct: 0.64 },
+    },
+    nota_pct_por_raca: 'Percentual refere-se à proporção de praticantes dentro de cada grupo racial (ex: 2,26% dos pretos praticam religiões de matriz africana).',
     unidade: 'pessoas',
     paragrafos_cerd: '§45-46',
   },
