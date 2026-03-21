@@ -20,6 +20,8 @@ export interface ComplementoIndicador {
   subcategoria: string;
   fonte: string;
   url_fonte: string;
+  /** Multiple source URLs when indicator draws from several SIDRA/DATASUS tables */
+  urls_fonte?: { label: string; url: string }[];
   artigos_convencao: string[];
   documento_origem: string[];
   tendencia: string;
@@ -116,8 +118,15 @@ export const educacaoIndigena: ComplementoIndicador = {
   nome: 'Alfabetização e frequência escolar indígena — Censo 2022',
   categoria: 'educacao',
   subcategoria: 'educacao_indigena',
-  fonte: 'ONDH/IBGE/INEP — Painel de Dados + SIDRA 8181/9542/9543 + Censo Escolar em Territórios Indígenas',
+  fonte: 'ONDH/IBGE/INEP — Painel de Dados + SIDRA 8181/9542/9543 + Censo Escolar',
   url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
+  urls_fonte: [
+    { label: 'ONDH — Painel de Dados', url: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados' },
+    { label: 'SIDRA 8181 — Alfabetização indígena', url: 'https://sidra.ibge.gov.br/tabela/8181' },
+    { label: 'SIDRA 9542 — Alfabetização negros', url: 'https://sidra.ibge.gov.br/tabela/9542' },
+    { label: 'SIDRA 9543 — Alfabetização brancos', url: 'https://sidra.ibge.gov.br/tabela/9543' },
+    { label: 'INEP — Censo Escolar em TIs', url: 'https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar' },
+  ],
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
@@ -132,12 +141,6 @@ export const educacaoIndigena: ComplementoIndicador = {
     },
     escolas_ensino_basico_em_territorios: 3541,
     escolas_ensino_fundamental_em_territorios: 3484,
-    url_fonte_ondh: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
-    url_fonte_alfabetizacao_indigena: 'https://sidra.ibge.gov.br/tabela/8181',
-    url_fonte_alfabetizacao_negros: 'https://sidra.ibge.gov.br/tabela/9542',
-    url_fonte_alfabetizacao_brancos: 'https://sidra.ibge.gov.br/tabela/9543',
-    url_fonte_escolas: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
-    url_fonte_escolas_inep: 'https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar',
     unidade: '%',
     paragrafos_cerd: '§21-22',
   },
@@ -189,6 +192,10 @@ export const saudeIndigena: ComplementoIndicador = {
   subcategoria: 'saude_indigena',
   fonte: 'DATASUS — SINASC (nascidos vivos) + SIM (óbitos infantis), TabNet 2018-2024',
   url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
+  urls_fonte: [
+    { label: 'DATASUS — Nascidos Vivos (SINASC)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+    { label: 'DATASUS — Óbitos Infantis (SIM)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def' },
+  ],
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
@@ -198,8 +205,6 @@ export const saudeIndigena: ComplementoIndicador = {
     nota: 'Auditado manualmente com as duas bases corretas do DATASUS: SINASC para nascidos vivos e SIM para óbitos infantis, ambas por raça/cor da mãe.',
     taxa_indigena_por_1000nv: { 2018: 26.35, 2019: 27.53, 2020: 22.84, 2021: 23.39, 2022: 26.17, 2023: 25.86, 2024: 24.43 },
     taxa_nao_indigena_por_1000nv: { 2018: 12.05, 2019: 12.25, 2020: 11.41, 2021: 11.77, 2022: 12.44, 2023: 12.46, 2024: 12.42 },
-    url_nascidos_vivos: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
-    url_obitos_infantis: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def',
     unidade: 'por 1.000 NV',
     paragrafos_cerd: '§21-22',
   },
@@ -511,8 +516,13 @@ export const saneamentoRacial: ComplementoIndicador = {
   nome: 'Acesso a saneamento básico por raça/cor',
   categoria: 'habitacao',
   subcategoria: 'saneamento_racial',
-  fonte: 'IBGE/Censo 2022 — Tabelas SIDRA 7555 (geral), 9812 (quilombolas), 9956 (TIs)',
+  fonte: 'IBGE/Censo 2022 — Tabelas SIDRA 7555, 9812, 9956',
   url_fonte: 'https://sidra.ibge.gov.br/tabela/7555',
+  urls_fonte: [
+    { label: 'SIDRA 7555 — Saneamento geral por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/7555' },
+    { label: 'SIDRA 9812 — Saneamento quilombolas', url: 'https://sidra.ibge.gov.br/tabela/9812' },
+    { label: 'SIDRA 9956 — Saneamento em TIs', url: 'https://sidra.ibge.gov.br/tabela/9956' },
+  ],
   artigos_convencao: ['Art.5(e)(iii)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
@@ -524,8 +534,6 @@ export const saneamentoRacial: ComplementoIndicador = {
       brancos: 14.95, negros: 26.2, indigena: 0.51, quilombolas: 36.21,
     },
     pct_sem_agua_canalizada_TIs: 26.33,
-    url_fonte_quilombolas: 'https://sidra.ibge.gov.br/tabela/9812',
-    url_fonte_TIs: 'https://sidra.ibge.gov.br/tabela/9956',
     unidade: '%',
     paragrafos_cerd: '§31-32',
   },
@@ -642,11 +650,15 @@ export const migracaoInternacional: ComplementoIndicador = {
   polaridade: 'contextual',
   dados: {
     nota: 'Corrigido via SIDRA Tabela 2145. Totais nacionais (Censo 2022): 216.341 naturalizados brasileiros e 793.000 estrangeiros residentes no Brasil. Sem desagregação por raça/cor.',
-    naturalizados_brasileiros_total: { 2022: 216341 },
-    estrangeiros_total: { 2022: 793000 },
-    total_nascidos_exterior: { 2022: 1009341 },
-    pct_naturalizados_do_total: { 2022: 21.43 },
-    pct_estrangeiros_do_total: { 2022: 78.57 },
+    composicao_nascidos_exterior: {
+      naturalizados: 216341,
+      estrangeiros: 793000,
+    },
+    pct_composicao_nascidos_exterior: {
+      naturalizados: 21.43,
+      estrangeiros: 78.57,
+    },
+    total_nascidos_exterior: 1009341,
     lacuna_desagregacao_racial: true,
     unidade: 'pessoas',
     paragrafos_cerd: '§39-40',
@@ -681,17 +693,19 @@ export const titulacaoQuilombola: ComplementoIndicador = {
   subcategoria: 'titulacao',
   fonte: 'INCRA — Governança Fundiária (Títulos expedidos + Processos abertos)',
   url_fonte: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+  urls_fonte: [
+    { label: 'INCRA — Títulos expedidos (PDF)', url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf' },
+    { label: 'INCRA — Processos abertos (PDF)', url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf' },
+  ],
   artigos_convencao: ['Art.5(d)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'piora',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. INCRA → Títulos expedidos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf; Processos abertos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
+    nota: 'Auditado manualmente. INCRA → Títulos expedidos e Processos abertos.',
     titulos_emitidos_total: 384,
     processos_abertos_total: 2019,
-    url_titulos_emitidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf',
-    url_processos_abertos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     paragrafos_cerd: '§33-36',
   },
 };
