@@ -649,11 +649,15 @@ export const migracaoInternacional: ComplementoIndicador = {
   polaridade: 'contextual',
   dados: {
     nota: 'Corrigido via SIDRA Tabela 2145. Totais nacionais (Censo 2022): 216.341 naturalizados brasileiros e 793.000 estrangeiros residentes no Brasil. Sem desagregação por raça/cor.',
-    naturalizados_brasileiros_total: { 2022: 216341 },
-    estrangeiros_total: { 2022: 793000 },
-    total_nascidos_exterior: { 2022: 1009341 },
-    pct_naturalizados_do_total: { 2022: 21.43 },
-    pct_estrangeiros_do_total: { 2022: 78.57 },
+    composicao_nascidos_exterior: {
+      naturalizados: 216341,
+      estrangeiros: 793000,
+    },
+    pct_composicao_nascidos_exterior: {
+      naturalizados: 21.43,
+      estrangeiros: 78.57,
+    },
+    total_nascidos_exterior: 1009341,
     lacuna_desagregacao_racial: true,
     unidade: 'pessoas',
     paragrafos_cerd: '§39-40',
