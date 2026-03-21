@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ExternalLink, AlertTriangle, TrendingUp, TrendingDown, Minus, FileText, CheckCircle2, PlusCircle, Layers } from 'lucide-react';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  BarChart, Cell,
 } from 'recharts';
 import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIndicador } from './ComplementoCerd3Data';
 import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
