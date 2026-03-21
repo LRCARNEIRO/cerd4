@@ -58,13 +58,11 @@ function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
     'titulos_emitidos_total', 'processos_abertos', 'processos_abertos_total',
     'presos_negros', 'pct_mulheres_negras_presas',
     'processos_pendentes_acumulados',
-    'url_fonte_alfabetizacao_indigena', 'url_fonte_alfabetizacao_negros',
-    'url_fonte_alfabetizacao_brancos', 'url_fonte_escolas',
-    'url_nascidos_vivos', 'url_obitos_infantis',
     'obs_2022', 'lacuna_dados_regionais',
     'total_por_uf', 'em_territorios_por_uf', 'fora_territorios_por_uf',
     'em_TIs_por_uf', 'fora_TIs_por_uf',
-    'naturalizados_brasileiros', 'taxa_naturalizados_pct', 'estrangeiros', 'taxa_estrangeiros_pct',
+    'composicao_nascidos_exterior', 'pct_composicao_nascidos_exterior',
+    'total_nascidos_exterior', 'nota_pct_por_raca',
   ]);
 
   const pctSeriesKeys: string[] = [];
