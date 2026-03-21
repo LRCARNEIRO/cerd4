@@ -11,7 +11,14 @@ import { cn } from '@/lib/utils';
 
 const COLOR_ABS = 'hsl(var(--chart-1))';
 const COLOR_PCT = 'hsl(var(--chart-2))';
-const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+const COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+  'hsl(var(--primary))',
+];
 
 function TendenciaBadge({ t }: { t?: string }) {
   if (!t) return null;
@@ -496,7 +503,7 @@ export function ComplementoCerd3Tab() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
           <h2 className="text-lg font-bold text-foreground">🗺️ Mapas Demográficos — Censo 2022</h2>
-          <Badge variant="outline" className="text-[10px]">Quilombolas · Ciganos · Indígenas em TIs</Badge>
+          <Badge variant="outline" className="text-[10px]">Quilombolas · Indígenas em TIs</Badge>
         </div>
         <CensoDemografiaMapas />
       </div>

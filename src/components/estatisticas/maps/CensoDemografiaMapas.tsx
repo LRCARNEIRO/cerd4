@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ExternalLink, Users, MapPin } from 'lucide-react';
+import { ExternalLink, Users } from 'lucide-react';
 import { BrazilChoroplethMap, type StateDataEntry } from './BrazilChoroplethMap';
 import { cn } from '@/lib/utils';
 
@@ -9,67 +9,43 @@ import { cn } from '@/lib/utils';
    1. QUILOMBOLA POR UF — Censo 2022 / SIDRA 9943
    ================================================================ */
 const quilombolaPorUF: StateDataEntry[] = [
-  { uf: 'BA', value: 397059 }, { uf: 'MA', value: 269074 }, { uf: 'MG', value: 88775 },
-  { uf: 'PE', value: 78827 }, { uf: 'PA', value: 46219 }, { uf: 'PI', value: 45601 },
-  { uf: 'AL', value: 39262 }, { uf: 'RJ', value: 35420 }, { uf: 'SE', value: 32410 },
-  { uf: 'CE', value: 30714 }, { uf: 'PB', value: 25664 }, { uf: 'SP', value: 20545 },
-  { uf: 'RN', value: 16599 }, { uf: 'RS', value: 12576 }, { uf: 'PR', value: 9467 },
-  { uf: 'AM', value: 8325 }, { uf: 'ES', value: 7515 }, { uf: 'SC', value: 6183 },
-  { uf: 'GO', value: 6048 }, { uf: 'MT', value: 5921 }, { uf: 'AP', value: 4159 },
-  { uf: 'TO', value: 2881 }, { uf: 'RO', value: 2506 }, { uf: 'MS', value: 1809 },
-  { uf: 'DF', value: 1196 }, { uf: 'RR', value: 511 }, { uf: 'AC', value: 449 },
+  { uf: 'BA', value: 397502 }, { uf: 'MA', value: 269168 }, { uf: 'PA', value: 135603 },
+  { uf: 'MG', value: 135315 }, { uf: 'PE', value: 78864 }, { uf: 'AL', value: 37724 },
+  { uf: 'PI', value: 31786 }, { uf: 'GO', value: 30391 }, { uf: 'SE', value: 28163 },
+  { uf: 'CE', value: 23994 }, { uf: 'RN', value: 22371 }, { uf: 'RJ', value: 20447 },
+  { uf: 'RS', value: 17552 }, { uf: 'PB', value: 16765 }, { uf: 'ES', value: 15659 },
+  { uf: 'TO', value: 13077 }, { uf: 'AP', value: 12894 }, { uf: 'MT', value: 11729 },
+  { uf: 'SP', value: 11006 }, { uf: 'PR', value: 7113 }, { uf: 'SC', value: 4449 },
+  { uf: 'RO', value: 2925 }, { uf: 'AM', value: 2812 }, { uf: 'MS', value: 2572 },
+  { uf: 'DF', value: 305 }, { uf: 'AC', value: 0 }, { uf: 'RR', value: 0 },
 ];
 
 /* ================================================================
-   2. CIGANOS POR REGIÃO — Censo 2022 / SIDRA 9891
-   ================================================================ */
-interface RegionRow { region: string; value: number; pct: string }
-const ciganoPorRegiao: RegionRow[] = [
-  { region: 'Sudeste', value: 18537, pct: '44,4%' },
-  { region: 'Nordeste', value: 11484, pct: '27,5%' },
-  { region: 'Sul', value: 5903, pct: '14,1%' },
-  { region: 'Norte', value: 3208, pct: '7,7%' },
-  { region: 'Centro-Oeste', value: 2606, pct: '6,2%' },
-];
-const ciganoUFApprox: StateDataEntry[] = [
-  // Distribuição aproximada com base em SIDRA 9891 por UF
-  { uf: 'SP', value: 8120 }, { uf: 'MG', value: 5640 }, { uf: 'RJ', value: 3180 },
-  { uf: 'BA', value: 3950 }, { uf: 'GO', value: 1580 }, { uf: 'PR', value: 2310 },
-  { uf: 'PE', value: 1820 }, { uf: 'RS', value: 1960 }, { uf: 'CE', value: 1410 },
-  { uf: 'MA', value: 1200 }, { uf: 'PA', value: 1450 }, { uf: 'ES', value: 1597 },
-  { uf: 'SC', value: 1633 }, { uf: 'PI', value: 980 }, { uf: 'PB', value: 710 },
-  { uf: 'RN', value: 620 }, { uf: 'AL', value: 490 }, { uf: 'SE', value: 304 },
-  { uf: 'MT', value: 440 }, { uf: 'MS', value: 300 }, { uf: 'DF', value: 286 },
-  { uf: 'TO', value: 380 }, { uf: 'AM', value: 530 }, { uf: 'RO', value: 410 },
-  { uf: 'AP', value: 180 }, { uf: 'RR', value: 128 }, { uf: 'AC', value: 130 },
-];
-
-/* ================================================================
-   3. INDÍGENAS EM TIs vs FORA — Censo 2022 / SIDRA 9587
+   2. INDÍGENAS EM TIs vs FORA — Censo 2022 / SIDRA 9970
    ================================================================ */
 interface IndigenaTIRow { region: string; emTI: number; foraTI: number; total: number; pctEmTI: string }
 const indigenaTIRegiao: IndigenaTIRow[] = [
-  { region: 'Norte', emTI: 308000, foraTI: 298000, total: 606000, pctEmTI: '50,8%' },
-  { region: 'Nordeste', emTI: 127000, foraTI: 305000, total: 432000, pctEmTI: '29,4%' },
-  { region: 'Centro-Oeste', emTI: 98000, foraTI: 117000, total: 215000, pctEmTI: '45,6%' },
-  { region: 'Sudeste', emTI: 28000, foraTI: 221000, total: 249000, pctEmTI: '11,2%' },
-  { region: 'Sul', emTI: 60000, foraTI: 132000, total: 192000, pctEmTI: '31,3%' },
+  { region: 'Norte', emTI: 316827, foraTI: 436953, total: 753780, pctEmTI: '42,0%' },
+  { region: 'Nordeste', emTI: 129882, foraTI: 399246, total: 529128, pctEmTI: '24,5%' },
+  { region: 'Centro-Oeste', emTI: 114201, foraTI: 85952, total: 200153, pctEmTI: '57,1%' },
+  { region: 'Sudeste', emTI: 21525, foraTI: 101909, total: 123434, pctEmTI: '17,4%' },
+  { region: 'Sul', emTI: 40409, foraTI: 47932, total: 88341, pctEmTI: '45,7%' },
 ];
 const indigenaEmTIPorUF: StateDataEntry[] = [
-  { uf: 'AM', value: 185000, label: '52% em TI' }, { uf: 'MS', value: 53000, label: '69% em TI' },
-  { uf: 'MT', value: 42000, label: '78% em TI' }, { uf: 'RR', value: 40000, label: '66% em TI' },
-  { uf: 'BA', value: 35000, label: '37% em TI' }, { uf: 'PA', value: 48000, label: '41% em TI' },
-  { uf: 'RS', value: 25000, label: '38% em TI' }, { uf: 'PE', value: 22000, label: '28% em TI' },
-  { uf: 'SC', value: 15000, label: '44% em TI' }, { uf: 'MA', value: 18000, label: '33% em TI' },
-  { uf: 'PR', value: 17000, label: '42% em TI' }, { uf: 'TO', value: 13000, label: '55% em TI' },
-  { uf: 'AC', value: 12000, label: '61% em TI' }, { uf: 'SP', value: 8000, label: '6% em TI' },
-  { uf: 'GO', value: 3000, label: '10% em TI' }, { uf: 'RO', value: 9000, label: '60% em TI' },
-  { uf: 'AP', value: 8000, label: '70% em TI' }, { uf: 'MG', value: 12000, label: '15% em TI' },
-  { uf: 'CE', value: 15000, label: '25% em TI' }, { uf: 'SE', value: 5000, label: '22% em TI' },
-  { uf: 'AL', value: 7000, label: '32% em TI' }, { uf: 'RJ', value: 4000, label: '5% em TI' },
-  { uf: 'PB', value: 6000, label: '20% em TI' }, { uf: 'PI', value: 3000, label: '18% em TI' },
-  { uf: 'RN', value: 3500, label: '22% em TI' }, { uf: 'ES', value: 4000, label: '20% em TI' },
-  { uf: 'DF', value: 1000, label: '0% em TI' },
+  { uf: 'AM', value: 149080, label: '30,4% em TI' }, { uf: 'RR', value: 71754, label: '73,5% em TI' },
+  { uf: 'MS', value: 68682, label: '59,0% em TI' }, { uf: 'MT', value: 45175, label: '77,4% em TI' },
+  { uf: 'MA', value: 41677, label: '72,9% em TI' }, { uf: 'PA', value: 41819, label: '51,6% em TI' },
+  { uf: 'PE', value: 34314, label: '32,2% em TI' }, { uf: 'AC', value: 19583, label: '61,8% em TI' },
+  { uf: 'PB', value: 19044, label: '63,2% em TI' }, { uf: 'BA', value: 17211, label: '7,5% em TI' },
+  { uf: 'RS', value: 15724, label: '43,6% em TI' }, { uf: 'TO', value: 15213, label: '76,0% em TI' },
+  { uf: 'PR', value: 13893, label: '45,6% em TI' }, { uf: 'MG', value: 12137, label: '33,1% em TI' },
+  { uf: 'RO', value: 11525, label: '54,5% em TI' }, { uf: 'SC', value: 10792, label: '49,6% em TI' },
+  { uf: 'CE', value: 10521, label: '18,7% em TI' }, { uf: 'AP', value: 7853, label: '69,3% em TI' },
+  { uf: 'AL', value: 6672, label: '25,9% em TI' }, { uf: 'ES', value: 4663, label: '32,4% em TI' },
+  { uf: 'SP', value: 4179, label: '7,6% em TI' }, { uf: 'RJ', value: 546, label: '3,2% em TI' },
+  { uf: 'GO', value: 344, label: '1,8% em TI' }, { uf: 'SE', value: 329, label: '7,0% em TI' },
+  { uf: 'PI', value: 114, label: '1,6% em TI' }, { uf: 'DF', value: 0, label: '0% em TI' },
+  { uf: 'RN', value: 0, label: '0% em TI' },
 ];
 
 /* ================================================================
@@ -84,13 +60,13 @@ export function CensoDemografiaMapas() {
           <div className="flex items-center gap-2 flex-wrap">
             <Users className="w-5 h-5 text-chart-2" />
             <CardTitle className="text-base">População Quilombola por UF — Censo 2022</CardTitle>
-            <Badge variant="outline" className="text-[10px]">1,33 milhão</Badge>
+             <Badge variant="outline" className="text-[10px]">1,33 milhão</Badge>
           </div>
           <CardDescription className="text-xs">
             Primeiro recenseamento oficial. 80,5% concentrados no Nordeste. Fonte:{' '}
-            <a href="https://sidra.ibge.gov.br/tabela/9943#/n1/all/n3/all/v/93/p/last%201/l/v,p+t"
+             <a href="https://sidra.ibge.gov.br/tabela/10089"
               target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
-              SIDRA Tabela 9943 <ExternalLink className="w-3 h-3" />
+              SIDRA Tabela 10089 <ExternalLink className="w-3 h-3" />
             </a>
           </CardDescription>
         </CardHeader>
@@ -118,68 +94,12 @@ export function CensoDemografiaMapas() {
                         {r.value.toLocaleString('pt-BR')}
                       </TableCell>
                       <TableCell className="text-xs text-right tabular-nums text-muted-foreground">
-                        {((r.value / 1327193) * 100).toFixed(1)}%
+                        {((r.value / 1330186) * 100).toFixed(1)}%
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* CIGANOS */}
-      <Card className="border-l-4 border-l-chart-4">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <MapPin className="w-5 h-5 text-chart-4" />
-            <CardTitle className="text-base">População Cigana por Região — Censo 2022</CardTitle>
-            <Badge variant="outline" className="text-[10px]">41.738 pessoas</Badge>
-            <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4 border-chart-4/30">
-              ⚠️ Possível sub-registro
-            </Badge>
-          </div>
-          <CardDescription className="text-xs">
-            Primeira contagem oficial. Possível sub-registro por estigma e nomadismo. Fonte:{' '}
-            <a href="https://sidra.ibge.gov.br/tabela/9891"
-              target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
-              SIDRA Tabela 9891 <ExternalLink className="w-3 h-3" />
-            </a>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <BrazilChoroplethMap
-              data={ciganoUFApprox}
-              colorScale={['hsl(45, 80, 90)', 'hsl(30, 85, 50)', 'hsl(15, 90, 35)']}
-              unit="pessoas"
-            />
-            <div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Região</TableHead>
-                    <TableHead className="text-xs text-right">População</TableHead>
-                    <TableHead className="text-xs text-right">% Brasil</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ciganoPorRegiao.map((r, i) => (
-                    <TableRow key={r.region} className={cn(i % 2 === 0 && 'bg-muted/10')}>
-                      <TableCell className="text-xs font-bold">{r.region}</TableCell>
-                      <TableCell className="text-xs text-right tabular-nums font-semibold">
-                        {r.value.toLocaleString('pt-BR')}
-                      </TableCell>
-                      <TableCell className="text-xs text-right tabular-nums text-muted-foreground">{r.pct}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <p className="text-[10px] text-muted-foreground mt-3 px-1">
-                §54-55 do CERD III exige desagregação étnica para comunidades ciganas. O Censo 2022 é a primeira
-                fonte oficial, mas organizações ciganas estimam a população real entre 500 mil e 1 milhão.
-              </p>
             </div>
           </div>
         </CardContent>
@@ -191,16 +111,16 @@ export function CensoDemografiaMapas() {
           <div className="flex items-center gap-2 flex-wrap">
             <Users className="w-5 h-5 text-chart-1" />
             <CardTitle className="text-base">Indígenas em TIs vs. Fora — Censo 2022</CardTitle>
-            <Badge variant="outline" className="text-[10px]">1,69 milhão</Badge>
+             <Badge variant="outline" className="text-[10px]">1,69 milhão</Badge>
             <Badge variant="outline" className="text-[10px] bg-chart-1/10 text-chart-1 border-chart-1/30">
               63,4% fora de TIs
             </Badge>
           </div>
           <CardDescription className="text-xs">
-            Inversão do paradigma: maioria vive fora de Terras Indígenas. Fonte:{' '}
-            <a href="https://sidra.ibge.gov.br/tabela/9587#/n1/all/v/93/p/last%201/c86/2779/l/v,p+t"
+             Inversão do paradigma: maioria vive fora de Terras Indígenas. Fonte:{' '}
+             <a href="https://sidra.ibge.gov.br/tabela/9970"
               target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
-              SIDRA Tabela 9587 <ExternalLink className="w-3 h-3" />
+              SIDRA Tabela 9970 <ExternalLink className="w-3 h-3" />
             </a>
           </CardDescription>
         </CardHeader>
@@ -216,11 +136,11 @@ export function CensoDemografiaMapas() {
               {/* Summary cards */}
               <div className="grid grid-cols-2 gap-2 mb-3">
                 <div className="bg-chart-1/10 rounded-lg p-3 text-center">
-                  <p className="text-lg font-bold text-chart-1">621 mil</p>
+                   <p className="text-lg font-bold text-chart-1">623 mil</p>
                   <p className="text-[10px] text-muted-foreground">Em TIs (36,6%)</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3 text-center">
-                  <p className="text-lg font-bold text-foreground">1,07 mi</p>
+                   <p className="text-lg font-bold text-foreground">1,07 mi</p>
                   <p className="text-[10px] text-muted-foreground">Fora de TIs (63,4%)</p>
                 </div>
               </div>

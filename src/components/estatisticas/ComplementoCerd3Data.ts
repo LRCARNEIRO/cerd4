@@ -43,9 +43,10 @@ export const trabalhoInfantil: ComplementoIndicador = {
   tendencia: 'piora',
   polaridade: 'menor_melhor',
   dados: {
-    nota: 'Em 2022, 66,3% das crianças em situação de trabalho infantil eram pretas ou pardas. Fonte: SIDRA Tabela 7436, filtro cor/raça × faixa 5-17 anos.',
-    pct_negros: { 2019: 66.1, 2022: 66.3 },
-    total_criancas_trabalho: { 2019: 1768000, 2022: 1881000 },
+    nota: 'Auditagem manual MIR 13: a série histórica disponível corresponde à população de 5 a 17 anos em situação de trabalho infantil, pois o SIDRA não permite somar apenas crianças até 16 anos. Manter essa observação visível no indicador.',
+    pct_negros: { 2018: 64.8, 2019: 66.0, 2022: 66.1, 2023: 65.0, 2024: 66.0 },
+    total_criancas_trabalho: { 2018: 1911000, 2019: 1771000, 2022: 1895000, 2023: 1616000, 2024: 1650000 },
+    observacao_metodologica: 'Valores referentes à população de 5 a 17 anos, e não até 16 anos, por limitação do recorte agregável na Tabela SIDRA 9497.',
     unidade: '%',
     paragrafos_cerd: '§31-32',
   },
@@ -56,18 +57,33 @@ export const trabalhoEscravo: ComplementoIndicador = {
   nome: 'Trabalho escravo — resgatados por raça',
   categoria: 'trabalho_renda',
   subcategoria: 'trabalho_escravo',
-  fonte: 'MTE/SIT — Radar do Trabalho Escravo (Painel BI, filtro raça/cor)',
-  url_fonte: 'https://sit.trabalho.gov.br/radar/',
+  fonte: 'Observatório da Erradicação do Trabalho Escravo e do Tráfico de Pessoas — SmartLab (resgatados por cor/raça, acumulado 2002-2024)',
+  url_fonte: 'https://smartlabbr.org/trabalhoescravo/localidade/0?dimensao=perfilCasosTrabalhoEscravo',
   artigos_convencao: ['Art.5(e)(i)', 'Art.6'],
   documento_origem: ['CERD Observações Finais 2022', 'Plano de Durban'],
   tipo: 'complementar',
-  tendencia: 'piora',
+  tendencia: 'sub-registro',
   polaridade: 'menor_melhor',
   dados: {
-    nota: 'MTE 2025: 83% dos resgatados são pretos ou pardos. Painel Radar → aba "Perfil" → filtro raça/cor.',
-    pct_negros_resgatados: { 2018: 55, 2019: 62, 2020: 61, 2021: 64, 2022: 69, 2023: 73, 2024: 79, 2025: 83 },
-    total_resgatados: { 2018: 1745, 2019: 1054, 2020: 942, 2021: 1937, 2022: 2575, 2023: 3190, 2024: 2838, 2025: 812 },
-    unidade: '%',
+    nota: 'O painel Radar SIT está indisponível e a auditagem manual não localizou série anual auditável por raça/cor. Foi mantida apenas a distribuição acumulada 2002-2024 encontrada no SmartLab.',
+    resgatados_2002_2024: {
+      pardos: 13466,
+      pretos: 3596,
+      brancos: 5298,
+      amarelos: 2399,
+      indigenas: 785,
+    },
+    pct_resgatados_2002_2024: {
+      pardos: 52.7,
+      pretos: 14.1,
+      brancos: 20.7,
+      amarelos: 9.39,
+      indigenas: 3.07,
+    },
+    total_resgatados_2002_2024: 25544,
+    pct_negros_resgatados_2002_2024: 66.79,
+    observacao_metodologica: 'Sem série anual auditável por raça/cor enquanto o Radar SIT permanecer fora do ar; usar somente o acumulado 2002-2024 da fonte alternativa.',
+    unidade: 'resgatados',
     paragrafos_cerd: '§31-32',
   },
 };
@@ -100,27 +116,28 @@ export const educacaoIndigena: ComplementoIndicador = {
   nome: 'Alfabetização e frequência escolar indígena — Censo 2022',
   categoria: 'educacao',
   subcategoria: 'educacao_indigena',
-  fonte: 'IBGE/Censo 2022 — SIDRA Tabela 8181 (Alfabetização indígena) + SIDRA 9542/9543 (por cor/raça)',
-  url_fonte: 'https://sidra.ibge.gov.br/tabela/8181',
+  fonte: 'ONDH/IBGE/INEP — Painel de Dados + SIDRA 8181/9542/9543 + Censo Escolar em Territórios Indígenas',
+  url_fonte: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
   artigos_convencao: ['Art.5(e)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
   polaridade: 'maior_melhor',
   dados: {
-    nota: 'Auditado: Indígenas 85% (SIDRA 8181, sem desagregação dentro/fora TI); Negros 90,94% (SIDRA 9542); Brancos 95,66% (SIDRA 9543). Escolas ensino básico em TIs: 3.553 (Catálogo de Escolas INEP 2026); ensino fundamental em TIs: 3.484 (Censo Escolar/INEP 2022).',
+    nota: 'Auditado manualmente: indígenas 85% (SIDRA 8181, sem desagregação dentro/fora de TI), negros 90,94% (SIDRA 9542) e brancos 95,66% (SIDRA 9543). Inseridas também as fontes do Painel ONDH e dos dados de escolas em territórios indígenas.',
     alfabetizacao: {
       indigenas: 85,
       negros: 90.94,
       brancos: 95.66,
     },
-    // AUDITORIA CRUZADA 17/03/2026: Atualizado de 3.541 para 3.553 conforme Catálogo de Escolas INEP (2026)
-    escolas_ensino_basico_em_territorios: 3553,
+    escolas_ensino_basico_em_territorios: 3541,
     escolas_ensino_fundamental_em_territorios: 3484,
+    url_fonte_ondh: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
     url_fonte_alfabetizacao_indigena: 'https://sidra.ibge.gov.br/tabela/8181',
     url_fonte_alfabetizacao_negros: 'https://sidra.ibge.gov.br/tabela/9542',
     url_fonte_alfabetizacao_brancos: 'https://sidra.ibge.gov.br/tabela/9543',
-    url_fonte_escolas: 'https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar',
+    url_fonte_escolas: 'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados',
+    url_fonte_escolas_inep: 'https://www.gov.br/inep/pt-br/centrais-de-conteudo/noticias/censo-escolar/educacao-em-terras-indigenas-o-que-diz-o-censo-escolar',
     unidade: '%',
     paragrafos_cerd: '§21-22',
   },
@@ -170,15 +187,15 @@ export const saudeIndigena: ComplementoIndicador = {
   nome: 'Mortalidade infantil indígena — razão vs. não-indígena',
   categoria: 'saude',
   subcategoria: 'saude_indigena',
-  fonte: 'DataSUS/SIM-SINASC — TabNet (Óbitos infantis × raça/cor da mãe, 2018-2024)',
-  url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/inf10uf.def',
+  fonte: 'DATASUS — SINASC (nascidos vivos) + SIM (óbitos infantis), TabNet 2018-2024',
+  url_fonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
   artigos_convencao: ['Art.5(e)(iv)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'estável',
   polaridade: 'menor_melhor',
   dados: {
-    nota: 'Auditado manualmente. TabNet → SIM → Óbitos infantis + SINASC → Nascidos vivos, variável raça/cor da mãe. Série 2018-2024.',
+    nota: 'Auditado manualmente com as duas bases corretas do DATASUS: SINASC para nascidos vivos e SIM para óbitos infantis, ambas por raça/cor da mãe.',
     taxa_indigena_por_1000nv: { 2018: 26.35, 2019: 27.53, 2020: 22.84, 2021: 23.39, 2022: 26.17, 2023: 25.86, 2024: 24.43 },
     taxa_nao_indigena_por_1000nv: { 2018: 12.05, 2019: 12.25, 2020: 11.41, 2021: 11.77, 2022: 12.44, 2023: 12.46, 2024: 12.42 },
     url_nascidos_vivos: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
@@ -419,19 +436,18 @@ export const sistemaPrisional: ComplementoIndicador = {
   nome: 'População carcerária por raça/cor',
   categoria: 'seguranca_publica',
   subcategoria: 'sistema_prisional',
-  fonte: 'SENAPPEN/SISDEPEN — Levantamento Nacional (Tabela "Perfil da População Prisional por Cor/Raça")',
-  url_fonte: 'https://www.gov.br/senappen/pt-br/servicos/sisdepen/relatorios/relatorios-analiticos/br/brasil-junho-2024.pdf',
+  fonte: 'Fórum Brasileiro de Segurança Pública — Anuários Brasileiros de Segurança Pública (T128, população prisional por cor/raça)',
+  url_fonte: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444',
   artigos_convencao: ['Art.5(a)', 'Art.2'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'novo',
   tendencia: 'piora',
   polaridade: 'menor_melhor',
   dados: {
-    nota: 'SISDEPEN Relatório Jun/2024 → Seção "Perfil da Pop. Prisional" → Tabela "Cor/Raça". Complemento: 19º Anuário FBSP 2025.',
-    pct_negros: { 2005: 58.4, 2018: 63.6, 2019: 66.7, 2021: 67.5, 2022: 68.2, 2024: 70 },
-    total_presos: { 2018: 726354, 2022: 648000, 2024: 852000 },
-    presos_negros: { 2022: 442033 },
-    pct_mulheres_negras_presas: { 2024: 68 },
+    nota: 'Série refeita com base nos Anuários Brasileiros de Segurança Pública, conforme observação da auditagem manual. Valores extraídos da Tabela 128 (evolução da população prisional por cor/raça).',
+    pct_negros: { 2018: 66.04, 2019: 66.69, 2020: 66.31, 2021: 67.47, 2022: 68.23, 2023: 69.09, 2024: 68.69 },
+    total_presos: { 2018: 744216, 2019: 755274, 2020: 759518, 2021: 820689, 2022: 832295, 2023: 852086, 2024: 909594 },
+    presos_negros: { 2018: 399657, 2019: 438719, 2020: 397816, 2021: 429255, 2022: 442033, 2023: 472850, 2024: 532683 },
     unidade: '%',
     paragrafos_cerd: '§17-18',
   },
@@ -528,7 +544,7 @@ export const quilombolasCenso: ComplementoIndicador = {
   tendencia: 'estável',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. SIDRA Tabela 10089 → Pop. quilombola por UF, total e por localização (dentro/fora de territórios quilombolas).',
+    nota: 'Auditado manualmente. SIDRA Tabela 10089 → população quilombola por UF, total e por localização (dentro/fora de territórios quilombolas). Total nacional auditado: 1.330.186 pessoas.',
     total_por_uf: {
       AC: 0, AL: 37724, AM: 2812, AP: 12894, BA: 397502, CE: 23994, DF: 305,
       ES: 15659, GO: 30391, MA: 269168, MG: 135315, MS: 2572, MT: 11729,
@@ -552,28 +568,7 @@ export const quilombolasCenso: ComplementoIndicador = {
   },
 };
 
-// ===== 22. CENSO 2022 — CIGANOS =====
-export const ciganosCenso: ComplementoIndicador = {
-  nome: 'População cigana — Censo 2022',
-  categoria: 'Demografia',
-  subcategoria: 'censo_2022_racial',
-  fonte: 'IBGE/Censo 2022 — Tabela SIDRA 9891 (Pop. por povo ou comunidade tradicional × UF)',
-  url_fonte: 'https://sidra.ibge.gov.br/tabela/9891',
-  artigos_convencao: ['Art.1', 'Art.5'],
-  documento_origem: ['CERD Observações Finais 2022'],
-  tipo: 'complementar',
-  tendencia: 'estável',
-  polaridade: 'contextual',
-  dados: {
-    nota: 'SIDRA Tabela 9891. Auditoria manual: dados por região não foram localizados na fonte. Mantido total nacional. Possível sub-registro por estigma.',
-    total_ciganos: { 2022: 41738 },
-    lacuna_dados_regionais: true,
-    unidade: 'pessoas',
-    paragrafos_cerd: '§54-55',
-  },
-};
-
-// ===== 23. CENSO 2022 — INDÍGENAS EM TIs =====
+// ===== 22. CENSO 2022 — INDÍGENAS EM TIs =====
 export const indigenasTisCenso: ComplementoIndicador = {
   nome: 'Indígenas em TIs vs. fora — Censo 2022',
   categoria: 'Demografia',
@@ -586,7 +581,7 @@ export const indigenasTisCenso: ComplementoIndicador = {
   tendencia: 'estável',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. SIDRA Tabela 9970 → Pop. indígena × localização (dentro/fora de TI) por UF.',
+    nota: 'Auditado manualmente. SIDRA Tabela 9970 → população indígena por UF, com 622.844 pessoas em TIs e 1.071.992 fora de TIs no total nacional.',
     em_TIs_por_uf: {
       AC: 19583, AL: 6672, AM: 149080, AP: 7853, BA: 17211, CE: 10521, DF: 0,
       ES: 4663, GO: 344, MA: 41677, MG: 12137, MS: 68682, MT: 45175,
@@ -604,7 +599,7 @@ export const indigenasTisCenso: ComplementoIndicador = {
   },
 };
 
-// ===== 24. RELIGIÕES DE MATRIZ AFRICANA =====
+// ===== 23. RELIGIÕES DE MATRIZ AFRICANA =====
 export const religioesMatrizAfricana: ComplementoIndicador = {
   nome: 'Religiões de matriz africana — Censo 2022',
   categoria: 'Cultura',
@@ -617,7 +612,7 @@ export const religioesMatrizAfricana: ComplementoIndicador = {
   tendencia: 'sub-registro',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. SIDRA Tabela 6417 → Pessoas de 10 anos ou mais por religião × cor/raça. Sub-registro provável por intolerância.',
+    nota: 'Auditado manualmente. SIDRA Tabela 6417 → pessoas de 10 anos ou mais por religião × cor/raça. Valores corrigidos conforme planilha de auditagem; permanece a ressalva de provável sub-registro por intolerância religiosa.',
     total_matriz_africana: { 2022: 1849824 },
     pct_populacao: { 2022: 1.05 },
     unidade: 'pessoas',
@@ -684,6 +679,8 @@ export const titulacaoQuilombola: ComplementoIndicador = {
     nota: 'Auditado manualmente. INCRA → Títulos expedidos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf; Processos abertos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     titulos_emitidos_total: 384,
     processos_abertos_total: 2019,
+    url_titulos_emitidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf',
+    url_processos_abertos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     paragrafos_cerd: '§33-36',
   },
 };
