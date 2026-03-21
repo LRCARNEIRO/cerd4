@@ -512,6 +512,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
   const nota = (ind.dados as any).nota;
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
+  const hasMultipleSources = ind.urls_fonte && ind.urls_fonte.length > 0;
 
   return (
     <Card className={cn('overflow-hidden', isPending && 'border-l-4 border-l-chart-4')}>
@@ -525,17 +526,28 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <TendenciaBadge t={ind.tendencia} />
-            {ind.url_fonte && (
-              <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-primary hover:underline inline-flex items-center gap-1">
-                <ExternalLink className="w-3 h-3" /> {ind.fonte}
-              </a>
-            )}
-          </div>
+          <TendenciaBadge t={ind.tendencia} />
         </div>
         {nota && <CardDescription className="text-xs mt-1">{nota}</CardDescription>}
+        {/* Source links */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1 shrink-0">
+            <FileText className="w-3 h-3" /> <strong>Fonte{hasMultipleSources ? 's' : ''}:</strong>
+          </span>
+          {hasMultipleSources ? (
+            ind.urls_fonte!.map((f, i) => (
+              <a key={i} href={f.url} target="_blank" rel="noopener noreferrer"
+                className="text-[10px] text-primary hover:underline inline-flex items-center gap-0.5">
+                <ExternalLink className="w-2.5 h-2.5 shrink-0" /> {f.label}
+              </a>
+            ))
+          ) : ind.url_fonte ? (
+            <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer"
+              className="text-[10px] text-primary hover:underline inline-flex items-center gap-0.5">
+              <ExternalLink className="w-2.5 h-2.5 shrink-0" /> {ind.fonte}
+            </a>
+          ) : null}
+        </div>
       </CardHeader>
       <CardContent className="pt-3">
         {marcos && <MarcosTable marcos={marcos} />}
