@@ -507,6 +507,8 @@ const areaLabels: Record<string, string> = {
 function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
   const dualData = extractDualAxisData(ind.dados);
   const hasSeries = dualData !== null;
+  const distData = !hasSeries ? extractDistributionData(ind.dados) : null;
+  const hasDist = distData !== null;
   const nota = (ind.dados as any).nota;
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
@@ -538,7 +540,8 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
       <CardContent className="pt-3">
         {marcos && <MarcosTable marcos={marcos} />}
         {!marcos && hasSeries && <SeriesChartWithTable dados={ind.dados} />}
-        {!marcos && !hasSeries && !isPending && <SnapshotTable dados={ind.dados} />}
+        {!marcos && !hasSeries && hasDist && <DistributionChart data={distData!} />}
+        {!marcos && !hasSeries && !hasDist && !isPending && <SnapshotTable dados={ind.dados} />}
         {isPending && (
           <div className="text-center py-4 text-muted-foreground text-sm">
             <AlertTriangle className="w-5 h-5 mx-auto mb-2 text-chart-4" />
