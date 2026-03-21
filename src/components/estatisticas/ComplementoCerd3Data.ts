@@ -641,12 +641,15 @@ export const migracaoInternacional: ComplementoIndicador = {
   tendencia: 'estável',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. SIDRA Tabela 2145 → Naturalizados e estrangeiros por grupos de anos de fixação, sexo e idade. Sem desagregação por raça/cor.',
-    naturalizados_brasileiros: { '2022-2024': 29228 },
-    taxa_naturalizados_pct: { '2022-2024': 13.51 },
-    estrangeiros: { '2022-2024': 369355 },
-    taxa_estrangeiros_pct: { '2022-2024': 46.58 },
+    nota: 'Corrigido via SIDRA Tabela 2145. Totais nacionais (Censo 2022): 216.341 naturalizados brasileiros e 793.000 estrangeiros residentes no Brasil. Sem desagregação por raça/cor.',
+    naturalizados_brasileiros_total: { 2022: 216341 },
+    estrangeiros_total: { 2022: 793000 },
+    total_nascidos_exterior: { 2022: 1009341 },
+    pct_naturalizados_do_total: { 2022: 21.43 },
+    pct_estrangeiros_do_total: { 2022: 78.57 },
     lacuna_desagregacao_racial: true,
+    unidade: 'pessoas',
+    paragrafos_cerd: '§39-40',
   },
 };
 
