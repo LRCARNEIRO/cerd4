@@ -20,6 +20,8 @@ export interface ComplementoIndicador {
   subcategoria: string;
   fonte: string;
   url_fonte: string;
+  /** Multiple source URLs when indicator draws from several SIDRA/DATASUS tables */
+  urls_fonte?: { label: string; url: string }[];
   artigos_convencao: string[];
   documento_origem: string[];
   tendencia: string;
