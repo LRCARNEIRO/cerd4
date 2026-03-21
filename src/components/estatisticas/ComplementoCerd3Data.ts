@@ -692,17 +692,19 @@ export const titulacaoQuilombola: ComplementoIndicador = {
   subcategoria: 'titulacao',
   fonte: 'INCRA — Governança Fundiária (Títulos expedidos + Processos abertos)',
   url_fonte: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas',
+  urls_fonte: [
+    { label: 'INCRA — Títulos expedidos (PDF)', url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf' },
+    { label: 'INCRA — Processos abertos (PDF)', url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf' },
+  ],
   artigos_convencao: ['Art.5(d)(v)'],
   documento_origem: ['CERD Observações Finais 2022'],
   tipo: 'complementar',
   tendencia: 'piora',
   polaridade: 'contextual',
   dados: {
-    nota: 'Auditado manualmente. INCRA → Títulos expedidos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf; Processos abertos: https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
+    nota: 'Auditado manualmente. INCRA → Títulos expedidos e Processos abertos.',
     titulos_emitidos_total: 384,
     processos_abertos_total: 2019,
-    url_titulos_emitidos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Ttulos.expedidos.pdf',
-    url_processos_abertos: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/Quadro.ProcessosAbertos.pdf',
     paragrafos_cerd: '§33-36',
   },
 };
