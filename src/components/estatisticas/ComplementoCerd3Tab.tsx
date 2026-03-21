@@ -269,20 +269,173 @@ function SeriesChartWithTable({ dados }: { dados: Record<string, any> }) {
   );
 }
 
+/** Extract distribution/composition data (non-time-series, race-based breakdowns) for bar charts */
+interface DistributionData {
+  chartData: { name: string; value: number; pct?: number }[];
+  label: string;
+  hasPct: boolean;
+}
+
+function extractDistributionData(dados: Record<string, any>): DistributionData | null {
+  const excludeMeta = new Set([
+    'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
+    'pendente_extracao', 'fonte_extracao', 'marcos', 'observacao_metodologica',
+    'total_moradores', 'pct_negros', 'total_resgatados_2002_2024', 'pct_negros_resgatados_2002_2024',
+  ]);
+
+  // Pattern 1: paired abs + pct objects (e.g. resgatados_2002_2024 + pct_resgatados_2002_2024)
+  const absKey = Object.keys(dados).find(k =>
+    !excludeMeta.has(k) && !k.startsWith('url_') && !isPctKey(k) &&
+    typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
+    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+  );
+
+  if (absKey) {
+    const absObj = dados[absKey] as Record<string, any>;
+    // Check if values are simple numbers (not nested objects)
+    const entries = Object.entries(absObj).filter(([, v]) => typeof v === 'number');
+    if (entries.length >= 3) {
+      // Look for matching pct key
+      const pctKey = Object.keys(dados).find(k =>
+        isPctKey(k) && typeof dados[k] === 'object' && dados[k] !== null &&
+        !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+      );
+      const pctObj = pctKey ? dados[pctKey] as Record<string, number> : null;
+
+      const chartData = entries.map(([name, value]) => ({
+        name: name.replace(/_/g, ' '),
+        value: value as number,
+        pct: pctObj?.[name],
+      })).sort((a, b) => b.value - a.value);
+
+      return { chartData, label: absKey.replace(/_/g, ' '), hasPct: !!pctObj };
+    }
+  }
+
+  // Pattern 2: nested { absoluto, pct } objects (e.g. por_raca)
+  const nestedKey = Object.keys(dados).find(k =>
+    !excludeMeta.has(k) && typeof dados[k] === 'object' && dados[k] !== null &&
+    Object.values(dados[k] as Record<string, any>).some(
+      (v: any) => typeof v === 'object' && v !== null && 'absoluto' in v && 'pct' in v
+    )
+  );
+
+  if (nestedKey) {
+    const obj = dados[nestedKey] as Record<string, { absoluto: number; pct: number }>;
+    const chartData = Object.entries(obj)
+      .filter(([, v]) => typeof v === 'object' && 'absoluto' in v)
+      .map(([name, v]) => ({
+        name: name.replace(/_/g, ' '),
+        value: v.absoluto,
+        pct: v.pct,
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    if (chartData.length >= 2) {
+      return { chartData, label: nestedKey.replace(/_/g, ' '), hasPct: true };
+    }
+  }
+
+  // Pattern 3: single pct object with race keys (e.g. pct_sem_esgoto_adequado)
+  const pctOnlyKey = Object.keys(dados).find(k =>
+    !excludeMeta.has(k) && !k.startsWith('url_') && isPctKey(k) &&
+    typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
+    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+  );
+
+  if (pctOnlyKey) {
+    const obj = dados[pctOnlyKey] as Record<string, number>;
+    const entries = Object.entries(obj).filter(([, v]) => typeof v === 'number');
+    if (entries.length >= 2) {
+      const chartData = entries.map(([name, value]) => ({
+        name: name.replace(/_/g, ' '),
+        value,
+      })).sort((a, b) => b.value - a.value);
+      return { chartData, label: pctOnlyKey.replace(/_/g, ' '), hasPct: false };
+    }
+  }
+
+  return null;
+}
+
+/** Horizontal bar chart for race/category distribution data */
+function DistributionChart({ data }: { data: DistributionData }) {
+  if (data.chartData.length < 2) return null;
+
+  return (
+    <div className="space-y-3 mt-3">
+      <Badge variant="outline" className="text-[10px]">
+        📊 Distribuição por categoria — {data.label}
+      </Badge>
+      <div style={{ height: Math.max(200, data.chartData.length * 40 + 60) }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data.chartData} layout="vertical" margin={{ top: 5, right: 80, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis type="number" tick={{ fontSize: 10 }}
+              tickFormatter={v => v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+            />
+            <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={90} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                fontSize: '12px',
+              }}
+              formatter={(value: number, name: string, props: any) => {
+                const parts: string[] = [value.toLocaleString('pt-BR')];
+                if (props.payload?.pct != null) parts.push(`(${props.payload.pct}%)`);
+                return [parts.join(' '), name];
+              }}
+            />
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24} label={{ position: 'right', fontSize: 10, formatter: (v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : String(v) }}>
+              {data.chartData.map((_, idx) => (
+                <Cell key={idx} fill={COLORS[idx % COLORS.length]} fillOpacity={0.8} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Table below */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-xs">Categoria</TableHead>
+            <TableHead className="text-xs text-right">Valor</TableHead>
+            {data.hasPct && <TableHead className="text-xs text-right">%</TableHead>}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.chartData.map((r, i) => (
+            <TableRow key={i} className={cn(i % 2 === 0 && 'bg-muted/10')}>
+              <TableCell className="text-xs capitalize">{r.name}</TableCell>
+              <TableCell className="text-xs text-right font-semibold tabular-nums">{r.value.toLocaleString('pt-BR')}</TableCell>
+              {data.hasPct && <TableCell className="text-xs text-right tabular-nums">{r.pct != null ? `${r.pct}%` : '—'}</TableCell>}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
 function SnapshotTable({ dados }: { dados: Record<string, any> }) {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
-    'pendente_extracao', 'fonte_extracao', 'marcos',
+    'pendente_extracao', 'fonte_extracao', 'marcos', 'observacao_metodologica',
   ]);
   const rows: { key: string; value: string }[] = [];
 
   for (const [k, v] of Object.entries(dados)) {
     if (excludeMeta.has(k)) continue;
+    if (k.startsWith('url_')) continue;
     if (typeof v === 'number') {
       rows.push({ key: k.replace(/_/g, ' '), value: v.toLocaleString('pt-BR') });
     } else if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
       const subKeys = Object.keys(v);
       if (subKeys.length > 0 && subKeys.every(s => /^\d{4}$/.test(s))) continue;
+      // Skip objects already handled by distribution chart
+      if (subKeys.some(s => typeof (v as any)[s] === 'object' && (v as any)[s]?.absoluto != null)) continue;
       for (const [sk, sv] of Object.entries(v as Record<string, any>)) {
         if (typeof sv === 'number') {
           rows.push({ key: `${k.replace(/_/g, ' ')} — ${sk.replace(/_/g, ' ')}`, value: sv.toLocaleString('pt-BR') });
