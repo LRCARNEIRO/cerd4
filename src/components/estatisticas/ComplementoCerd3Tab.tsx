@@ -279,6 +279,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
     'pendente_extracao', 'fonte_extracao', 'marcos', 'observacao_metodologica',
     'total_moradores', 'pct_negros', 'total_resgatados_2002_2024', 'pct_negros_resgatados_2002_2024',
+    'total_nascidos_exterior', 'nota_pct_por_raca',
   ]);
 
   // Pattern 1: paired abs + pct objects (e.g. resgatados_2002_2024 + pct_resgatados_2002_2024)
