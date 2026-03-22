@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileDown, Download, Loader2 } from 'lucide-react';
-import { downloadAsDocx, getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { buildExportHtmlFromElement, downloadAsDocx } from '@/utils/reportExportToolbar';
 
 interface ExportTabButtonsProps {
   /** Function that generates the HTML content for export */
-  generateHTML: () => string;
+  generateHTML?: () => string;
+  /** Optional DOM target selector to export exactly the rendered content */
+  targetSelector?: string;
   /** Base filename for the export (no extension) */
   fileName: string;
   /** Optional label override */
@@ -18,14 +20,29 @@ interface ExportTabButtonsProps {
  * Reusable export buttons (PDF/HTML + DOCX) for any tab.
  * Pass a generateHTML function and fileName.
  */
-export function ExportTabButtons({ generateHTML, fileName, label, compact }: ExportTabButtonsProps) {
+export function ExportTabButtons({ generateHTML, targetSelector, fileName, label, compact }: ExportTabButtonsProps) {
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [generatingDocx, setGeneratingDocx] = useState(false);
+
+  const resolveHtml = () => {
+    if (targetSelector) {
+      const target = document.querySelector<HTMLElement>(targetSelector);
+      if (target) {
+        return buildExportHtmlFromElement(target, fileName, fileName.replace(/-/g, ' '));
+      }
+    }
+
+    if (!generateHTML) {
+      throw new Error('Nenhum conteúdo de exportação foi configurado.');
+    }
+
+    return generateHTML();
+  };
 
   const handlePdfHtml = () => {
     setGeneratingPdf(true);
     try {
-      const html = generateHTML();
+      const html = resolveHtml();
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       window.open(URL.createObjectURL(blob), '_blank');
     } finally {
@@ -36,7 +53,7 @@ export function ExportTabButtons({ generateHTML, fileName, label, compact }: Exp
   const handleDocx = async () => {
     setGeneratingDocx(true);
     try {
-      const html = generateHTML();
+      const html = resolveHtml();
       await downloadAsDocx(html, fileName);
     } finally {
       setGeneratingDocx(false);
