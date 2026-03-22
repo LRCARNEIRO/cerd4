@@ -8,6 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { Building, ExternalLink, AlertTriangle, TreePine, Tent, Users, Info, BookOpen, PieChart, FileText, Scale, MapPin, Layers } from 'lucide-react';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import {
+  generateVisaoGeralHTML, generateUniversoBaseHTML, generateResumoComparativoHTML,
+  generateRelatorioHTML, generateMetodologiaHTML, generateArtigosCruzamentoHTML,
+} from '@/components/estatisticas/orcamento/generateOrcamentoHTML';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
