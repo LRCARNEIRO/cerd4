@@ -158,21 +158,25 @@ export function CensoDemografiaMapas() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs">Região</TableHead>
+                    <TableHead className="text-xs">UF</TableHead>
                     <TableHead className="text-xs text-right">Em TI</TableHead>
                     <TableHead className="text-xs text-right">Fora TI</TableHead>
+                    <TableHead className="text-xs text-right">Total</TableHead>
                     <TableHead className="text-xs text-right">% em TI</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {indigenaTIRegiao.map((r, i) => (
-                    <TableRow key={r.region} className={cn(i % 2 === 0 && 'bg-muted/10')}>
-                      <TableCell className="text-xs font-bold">{r.region}</TableCell>
+                  {[...indigenaTIUF].sort((a, b) => b.total - a.total).map((r, i) => (
+                    <TableRow key={r.uf} className={cn(i % 2 === 0 && 'bg-muted/10')}>
+                      <TableCell className="text-xs font-bold">{r.uf}</TableCell>
                       <TableCell className="text-xs text-right tabular-nums font-semibold">
                         {r.emTI.toLocaleString('pt-BR')}
                       </TableCell>
                       <TableCell className="text-xs text-right tabular-nums">
                         {r.foraTI.toLocaleString('pt-BR')}
+                      </TableCell>
+                      <TableCell className="text-xs text-right tabular-nums">
+                        {r.total.toLocaleString('pt-BR')}
                       </TableCell>
                       <TableCell className="text-xs text-right tabular-nums text-muted-foreground">{r.pctEmTI}</TableCell>
                     </TableRow>
