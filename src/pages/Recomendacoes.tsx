@@ -170,16 +170,19 @@ export default function Recomendacoes() {
         </TabsList>
 
         <TabsContent value="observacoes">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-observacoes" generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
           </div>
-          <ObservacoesFinaisTab />
+          <div id="export-recomendacoes-observacoes">
+            <ObservacoesFinaisTab />
+          </div>
         </TabsContent>
 
         <TabsContent value="lacunas">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-lacunas" generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
           </div>
+          <div id="export-recomendacoes-lacunas">
           {/* Sensor Diagnóstico — Resumo */}
           {sensorReady && sensorSummary.totalDivergencias > 0 && (
             <Card className="mb-4 border-warning/40 bg-warning/5">
@@ -297,12 +300,14 @@ export default function Recomendacoes() {
               )}
             </>
           )}
+          </div>
         </TabsContent>
 
         <TabsContent value="respostas">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-respostas" generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
           </div>
+          <div id="export-recomendacoes-respostas">
           {loadingRespostas ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -315,12 +320,14 @@ export default function Recomendacoes() {
               ))}
             </div>
           )}
+          </div>
         </TabsContent>
 
         <TabsContent value="follow-up">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-followup" generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
           </div>
+          <div id="export-recomendacoes-followup">
           <Card>
             <CardHeader>
               <CardTitle>CERD/C/BRA/FCO/18-20 - Follow-up Janeiro 2026</CardTitle>
@@ -379,20 +386,25 @@ export default function Recomendacoes() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="rgs">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-rgs" generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
           </div>
-          <RecomendacoesGeraisTab />
+          <div id="export-recomendacoes-rgs">
+            <RecomendacoesGeraisTab />
+          </div>
         </TabsContent>
 
         <TabsContent value="durban">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-recomendacoes-durban" generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
           </div>
-          <DurbanTab />
+          <div id="export-recomendacoes-durban">
+            <DurbanTab />
+          </div>
         </TabsContent>
       </Tabs>
     </DashboardLayout>

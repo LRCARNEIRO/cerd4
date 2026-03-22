@@ -561,9 +561,10 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateVisaoGeralHTML(currentRecords)} fileName="Orcamento-Visao-Geral" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-visao-geral" generateHTML={() => generateVisaoGeralHTML(currentRecords)} fileName="Orcamento-Visao-Geral" compact />
           </div>
+          <div id="export-orcamento-visao-geral">
           {/* 1) Dynamic Summary Cards — react to both toggles */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
@@ -744,6 +745,7 @@ export default function Orcamento() {
               </div>
             );
           })()}
+          </div>
 
           {/* 3) Toggles — Perspectiva Orçamentária + SESAI */}
           <Card className="mb-4 border-l-4 border-l-chart-1">
@@ -807,18 +809,20 @@ export default function Orcamento() {
 
         {/* ===== UNIVERSO DA BASE ===== */}
         <TabsContent value="universo">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
           </div>
-          <UniversoBaseTab records={currentRecords} />
+          <div id="export-orcamento-universo">
+            <UniversoBaseTab records={currentRecords} />
+          </div>
         </TabsContent>
 
         {/* ===== RESUMO COMPARATIVO ===== */}
         <TabsContent value="resumo">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateResumoComparativoHTML(classified.federal.all)} fileName="Orcamento-Resumo-Comparativo" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-resumo" generateHTML={() => generateResumoComparativoHTML(classified.federal.all)} fileName="Orcamento-Resumo-Comparativo" compact />
           </div>
-          <div className="space-y-6">
+          <div id="export-orcamento-resumo" className="space-y-6">
             <div className="space-y-6">
               {/* Nota Explicativa Federal */}
               <Card className="border-l-4 border-l-warning">
@@ -1464,10 +1468,10 @@ export default function Orcamento() {
 
         {/* ===== RELATÓRIO ===== */}
         <TabsContent value="relatorio">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateRelatorioHTML(classified.federal.all)} fileName="Relatorio-Orcamentario" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-relatorio" generateHTML={() => generateRelatorioHTML(classified.federal.all)} fileName="Relatorio-Orcamentario" compact />
           </div>
-          <div className="space-y-6">
+          <div id="export-orcamento-relatorio" className="space-y-6">
             {classified.federal.all.length > 0 ? (
               <FederalRelatorioTab
                 records={classified.federal.all}
@@ -1484,18 +1488,20 @@ export default function Orcamento() {
 
         {/* ===== ARTIGOS ICERD ===== */}
         <TabsContent value="artigos">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={() => generateArtigosCruzamentoHTML(currentRecords)} fileName="Orcamento-Artigos-ICERD" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-artigos" generateHTML={() => generateArtigosCruzamentoHTML(currentRecords)} fileName="Orcamento-Artigos-ICERD" compact />
           </div>
-          <ArtigoCruzamentoTab records={currentRecords} />
+          <div id="export-orcamento-artigos">
+            <ArtigoCruzamentoTab records={currentRecords} />
+          </div>
         </TabsContent>
 
         {/* ===== METODOLOGIA ===== */}
         <TabsContent value="metodologia">
-          <div className="flex justify-end mb-3">
-            <ExportTabButtons generateHTML={generateMetodologiaHTML} fileName="Orcamento-Metodologia" compact />
+          <div className="flex justify-end mb-3" data-export-ignore="true">
+            <ExportTabButtons targetSelector="#export-orcamento-metodologia" generateHTML={generateMetodologiaHTML} fileName="Orcamento-Metodologia" compact />
           </div>
-          <div className="space-y-6">
+          <div id="export-orcamento-metodologia" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
