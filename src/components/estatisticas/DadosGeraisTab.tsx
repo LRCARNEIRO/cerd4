@@ -434,7 +434,7 @@ export function DadosGeraisTab() {
                           }}
                         />
                         <Legend />
-                        <Bar dataKey="pretos" name="Pretos" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="negros" name="Negros" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                         <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
