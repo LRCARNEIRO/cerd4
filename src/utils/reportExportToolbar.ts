@@ -4,6 +4,7 @@
  * Call injectExportToolbar() to inject toolbar into an existing HTML string.
  */
 import { toast } from 'sonner';
+import { downloadElementAsDocx, downloadHtmlVisualAsDocx } from '@/utils/docxVisualExport';
 
 function getCurrentDocumentHeadMarkup(): string {
   const styleTags = Array.from(document.querySelectorAll('style'))
@@ -54,136 +55,22 @@ export function buildExportHtmlFromElement(target: HTMLElement, fileName: string
 </html>`;
 }
 
-/**
- * Convert SVG elements in HTML to inline PNG data-URIs for Word compatibility.
- * Word cannot render SVGs, so we convert them to canvas-based images.
- */
-async function convertSvgsToImages(html: string): Promise<string> {
-  // Create a temporary container to parse HTML
-  const container = document.createElement('div');
-  container.innerHTML = html;
-  
-  const svgs = container.querySelectorAll('svg');
-  
-  for (const svg of Array.from(svgs)) {
-    try {
-      // Get SVG dimensions
-      const width = parseInt(svg.getAttribute('width') || svg.getAttribute('viewBox')?.split(' ')[2] || '600');
-      const height = parseInt(svg.getAttribute('height') || svg.getAttribute('viewBox')?.split(' ')[3] || '300');
-      
-      // Serialize SVG to string
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
-      
-      // Draw to canvas
-      const canvas = document.createElement('canvas');
-      canvas.width = width * 2; // 2x for retina quality
-      canvas.height = height * 2;
-      const ctx = canvas.getContext('2d');
-      
-      if (ctx) {
-        const img = new Image();
-        await new Promise<void>((resolve, reject) => {
-          img.onload = () => {
-            ctx.scale(2, 2);
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve();
-          };
-          img.onerror = reject;
-          img.src = url;
-        });
-        
-        const dataUri = canvas.toDataURL('image/png');
-        const imgEl = document.createElement('img');
-        imgEl.src = dataUri;
-        imgEl.style.cssText = `width:${width}px;max-width:100%;height:auto;`;
-        imgEl.alt = 'Gráfico';
-        svg.parentNode?.replaceChild(imgEl, svg);
-      }
-      
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      // If conversion fails, leave SVG as-is (will be blank in Word but won't crash)
-      console.warn('SVG conversion failed:', e);
-    }
+export async function downloadRenderedElementAsDocx(element: HTMLElement, fileName: string) {
+  try {
+    toast.info('Gerando DOCX com captura visual da aba...', { duration: 2000 });
+    await downloadElementAsDocx(element, fileName);
+    toast.success('Documento DOCX gerado com sucesso');
+  } catch (e) {
+    console.error('DOCX element generation error:', e);
+    toast.error('Erro ao gerar documento DOCX');
   }
-  
-  return container.innerHTML;
 }
 
-/** Download any HTML string as a .doc file, converting SVGs to images first */
+/** Download any HTML string as a .docx file preserving the rendered visual layout */
 export async function downloadAsDocx(html: string, fileName: string) {
   try {
-    toast.info('Convertendo gráficos para DOCX...', { duration: 2000 });
-    
-    // Parse out body content and styles
-    const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
-    
-    let bodyContent = bodyMatch ? bodyMatch[1] : html;
-    let styles = '';
-    if (styleMatch) {
-      styles = styleMatch.map(s => {
-        const inner = s.replace(/<\/?style[^>]*>/gi, '');
-        // Remove @media print and @page and export-toolbar for DOCX
-        return inner
-          .replace(/@media\s+print\s*\{[^}]*\}/g, '')
-          .replace(/@page\s*\{[^}]*\}/g, '')
-          .replace(/\.export-toolbar[\s\S]*?\}/g, '');
-      }).join('\n');
-    }
-    
-    // Remove toolbar from body
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = bodyContent;
-    const toolbar = tempDiv.querySelector('.export-toolbar');
-    if (toolbar) toolbar.remove();
-    const printInstructions = tempDiv.querySelector('.print-instructions');
-    if (printInstructions) printInstructions.remove();
-    
-    // Convert SVGs to images
-    const convertedBody = await convertSvgsToImages(tempDiv.innerHTML);
-    
-    // Build Word-compatible HTML
-    const docContent = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" 
-      xmlns:w="urn:schemas-microsoft-com:office:word" 
-      xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-  <meta charset="UTF-8">
-  <!--[if gte mso 9]>
-  <xml>
-    <w:WordDocument>
-      <w:View>Print</w:View>
-      <w:Zoom>100</w:Zoom>
-      <w:DoNotOptimizeForBrowser/>
-    </w:WordDocument>
-  </xml>
-  <![endif]-->
-  <style>
-    ${styles}
-    /* DOCX-specific overrides */
-    body { max-width: none; padding: 0; }
-    .data-grid { display: block; }
-    .data-card { display: inline-block; width: 30%; margin: 4px; vertical-align: top; }
-    .two-col { display: block; }
-    .chart-container { page-break-inside: avoid; }
-    img { max-width: 100%; }
-  </style>
-</head>
-<body>${convertedBody}</body>
-</html>`;
-    
-    const blob = new Blob(['\ufeff' + docContent], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${fileName.replace(/[^a-zA-Z0-9_-]/g, '_')}.doc`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast.info('Gerando DOCX com captura visual do relatório...', { duration: 2000 });
+    await downloadHtmlVisualAsDocx(html, fileName);
     toast.success('Documento DOCX gerado com sucesso');
   } catch (e) {
     console.error('DOCX generation error:', e);
