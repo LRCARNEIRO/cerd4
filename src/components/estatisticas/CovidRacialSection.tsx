@@ -289,7 +289,9 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
             <p className="text-2xl font-bold text-warning">70,4%</p>
             <p className="text-xs text-muted-foreground">vs 37,9% brancos (NT11, n=54)</p>
-            <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
+            <AuditFooter fontes={[
+              { nome: 'NOIS/PUC-Rio — Nota Técnica 11: Análise descritiva dos casos de COVID-19', url: 'https://ponte.org/wp-content/uploads/2020/05/NT11-An%C3%A1lise-descritiva-dos-casos-de-COVID-19.pdf' },
+            ]} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-accent">
