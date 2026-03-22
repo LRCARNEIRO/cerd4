@@ -124,6 +124,9 @@ export function RacaGeneroTab() {
               <a href="https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025 (PDF)
               </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinannet/cnv/violebr.def" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> DataSUS — Registros de violência interpessoal/autoprovocada (SINAN)
+              </a>
             </div>
           </CardContent>
         </Card>
