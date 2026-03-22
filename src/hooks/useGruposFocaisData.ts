@@ -38,8 +38,8 @@ export function useGruposFocaisData() {
         ...(ptSource === 'bd' && pt?.indigenas ? {
           populacao: pt.indigenas.populacaoPessoasIndigenas ?? gruposFocaisDataDefaults.indigenas.populacao,
           populacaoCorRaca: pt.indigenas.populacaoCorRaca ?? gruposFocaisDataDefaults.indigenas.populacaoCorRaca,
-          etnias: pt.indigenas.etnias ?? gruposFocaisDataDefaults.indigenas.etnias,
-          linguas: pt.indigenas.linguas ?? gruposFocaisDataDefaults.indigenas.linguas,
+          etnias: pt.indigenas.etnias ?? dadosTerritoriaisDefaults.indigenas.etniasIdentificadas,
+          linguas: pt.indigenas.linguas ?? dadosTerritoriaisDefaults.indigenas.linguasVivas,
         } : {}),
       },
       ciganos: {
