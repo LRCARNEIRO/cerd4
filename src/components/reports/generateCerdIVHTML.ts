@@ -305,7 +305,7 @@ function renderDemographicContext(demo: any): string {
       { value: fmtNum(comp.pardos), label: 'Pardos (45,3%)' },
       { value: fmtNum(comp.brancos), label: 'Brancos (43,5%)' },
       { value: fmtNum(comp.pretos), label: 'Pretos (10,2%)' },
-      { value: fmtNum(comp.indigenas || 1694836), label: 'Indígenas (0,8%)' },
+      { value: fmtNum(comp.indigenas || 1227642), label: 'Indígenas (0,8%)' },
     ])}` : ''}
     <p>A desagregação racial é fundamental para compreender a persistência das desigualdades: a população negra brasileira é maior que a população total de países como França, Reino Unido ou Itália, mas seus indicadores socioeconômicos sistematicamente ficam abaixo da média nacional em praticamente todas as dimensões medidas.</p>
   </div>`;
