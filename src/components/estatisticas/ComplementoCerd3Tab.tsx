@@ -375,7 +375,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
   const pctOnlyKey = Object.keys(dados).find(k =>
     !excludeMeta.has(k) && !k.startsWith('url_') && isPctKey(k) &&
     typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
-    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+    !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
   );
 
   if (pctOnlyKey) {
