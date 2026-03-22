@@ -115,7 +115,7 @@ function indicadorToHTML(ind: any): string {
       const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
       const isSeg = ind.categoria === 'Segurança Pública' || ind.categoria === 'seguranca_publica';
       const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
-      return `${formatGroup(g)}: safeNum(${first)} → safeNum(${last)} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
+      return `${formatGroup(g)}: ${safeNum(first)} → ${safeNum(last)} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
     }).filter(Boolean);
     if (interps.length > 0) {
       html += `<div class="interpretation">📊 <strong>Interpretação (${years[0]}→${years[years.length - 1]}):</strong> ${interps.join('. ')}.</div>`;
@@ -206,7 +206,7 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 <p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2025) — Gerado em ${now}</p>
 
 <div class="stats-grid">
-  <div class="stat-card"><div class="value">safeNum(${totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
+  <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
   <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
   <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">INDICADORES BD</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
@@ -239,7 +239,7 @@ ${arrayToHTMLTable(feminicidioSerie, '')}
 
 <h3>2.3. Educação — Série Histórica</h3>
 ${arrayToHTMLTable(educacaoSerieHistorica, '')}
-<div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (safeNum(${analfabetismoGeral2024.totalAnalfabetos?)} pessoas).</div>
+<div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (${safeNum(analfabetismoGeral2024.totalAnalfabetos?)} pessoas).</div>
 
 <h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
 ${arrayToHTMLTable(saudeSerieHistorica, '')}
@@ -307,43 +307,43 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
   Cada grupo focal possui diagnóstico com série temporal (2018-2024/2025), vinculação a parágrafos das Observações Finais do CERD e políticas públicas específicas.
 </div>
 
-<h3>6.1. Quilombolas — safeNum(${povosTradicionais.quilombolas.populacao)} pessoas</h3>
+<h3>6.1. Quilombolas — ${safeNum(povosTradicionais.quilombolas.populacao)} pessoas</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Quilombolas</a> | Observações ONU: §47, §48, §49</div>
 <div class="stats-grid">
-  <div class="stat-card"><div class="value">safeNum(${povosTradicionais.quilombolas.populacao)}</div><div class="label">População (Censo 2022)</div></div>
-  <div class="stat-card"><div class="value">safeNum(${povosTradicionais.quilombolas.municipiosComQuilombolas)}</div><div class="label">Municípios</div></div>
-  <div class="stat-card"><div class="value">safeNum(${povosTradicionais.quilombolas.comunidadesCertificadas)}</div><div class="label">Certidões FCP</div></div>
+  <div class="stat-card"><div class="value">${safeNum(povosTradicionais.quilombolas.populacao)}</div><div class="label">População (Censo 2022)</div></div>
+  <div class="stat-card"><div class="value">${safeNum(povosTradicionais.quilombolas.municipiosComQuilombolas)}</div><div class="label">Municípios</div></div>
+  <div class="stat-card"><div class="value">${safeNum(povosTradicionais.quilombolas.comunidadesCertificadas)}</div><div class="label">Certidões FCP</div></div>
   <div class="stat-card"><div class="value">${povosTradicionais.quilombolas.territoriosTitulados}</div><div class="label">Territórios Titulados</div></div>
 </div>
 <table>
   <tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr>
   <tr><td>Títulos expedidos (INCRA)</td><td>${povosTradicionais.quilombolas.titulosExpedidos}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf">INCRA PDF</a></td></tr>
-  <tr><td>Processos abertos (INCRA)</td><td>safeNum(${povosTradicionais.quilombolas.processosAbertosIncra)}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas">INCRA Quilombolas</a></td></tr>
-  <tr><td>Área titulada (ha)</td><td>safeNum(${povosTradicionais.quilombolas.areaHectaresTitulados)}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf">INCRA PDF</a></td></tr>
-  <tr><td>Em territórios reconhecidos</td><td>safeNum(${povosTradicionais.quilombolas.emTerritoriosReconhecidos)} (${povosTradicionais.quilombolas.percentualEmTerritorios}%)</td><td><a href="${povosTradicionais.quilombolas.urlFonte}">SIDRA 9578</a></td></tr>
+  <tr><td>Processos abertos (INCRA)</td><td>${safeNum(povosTradicionais.quilombolas.processosAbertosIncra)}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas">INCRA Quilombolas</a></td></tr>
+  <tr><td>Área titulada (ha)</td><td>${safeNum(povosTradicionais.quilombolas.areaHectaresTitulados)}</td><td><a href="https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/andamentotitulacao.pdf">INCRA PDF</a></td></tr>
+  <tr><td>Em territórios reconhecidos</td><td>${safeNum(povosTradicionais.quilombolas.emTerritoriosReconhecidos)} (${povosTradicionais.quilombolas.percentualEmTerritorios}%)</td><td><a href="${povosTradicionais.quilombolas.urlFonte}">SIDRA 9578</a></td></tr>
   <tr><td>Água rede geral</td><td>${povosTradicionais.quilombolas.acessoRedeAgua}%</td><td>Censo 2022</td></tr>
   <tr><td>Esgoto adequado</td><td>${povosTradicionais.quilombolas.esgotamentoAdequado}%</td><td>Censo 2022</td></tr>
   <tr><td>Coleta de lixo</td><td>${povosTradicionais.quilombolas.coletaLixo}%</td><td>Censo 2022</td></tr>
 </table>
 <p class="meta">Fonte primária: <a href="${povosTradicionais.quilombolas.urlFonte}">SIDRA 9578</a> | <a href="https://www.gov.br/palmares/pt-br/departamentos/protecao-preservacao-e-articulacao/certificacao-quilombola">Palmares Certificação</a></p>
 
-<h3>6.2. Indígenas — safeNum(${povosTradicionais.indigenas.populacaoPessoasIndigenas)} pessoas</h3>
+<h3>6.2. Indígenas — ${safeNum(povosTradicionais.indigenas.populacaoPessoasIndigenas)} pessoas</h3>
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Indígenas</a> | Observações ONU: §50, §51, §52, §53</div>
 <div class="stats-grid">
-  <div class="stat-card"><div class="value">safeNum(${povosTradicionais.indigenas.populacaoPessoasIndigenas)}</div><div class="label">Pessoas Indígenas</div></div>
-  <div class="stat-card"><div class="value">safeNum(${povosTradicionais.indigenas.populacaoCorRaca)}</div><div class="label">Cor/Raça Indígena</div></div>
+  <div class="stat-card"><div class="value">${safeNum(povosTradicionais.indigenas.populacaoPessoasIndigenas)}</div><div class="label">Pessoas Indígenas</div></div>
+  <div class="stat-card"><div class="value">${safeNum(povosTradicionais.indigenas.populacaoCorRaca)}</div><div class="label">Cor/Raça Indígena</div></div>
   <div class="stat-card"><div class="value">${povosTradicionais.indigenas.etnias}</div><div class="label">Etnias</div></div>
   <div class="stat-card"><div class="value">${povosTradicionais.indigenas.linguas}</div><div class="label">Línguas Vivas</div></div>
 </div>
 <table>
   <tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr>
-  <tr><td>Pop. Amazônia Legal</td><td>safeNum(${povosTradicionais.indigenas.populacaoAmazoniaLegal)} (~51%)</td><td><a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a></td></tr>
-  <tr><td>Pop. Urbana</td><td>safeNum(${povosTradicionais.indigenas.populacaoUrbana)}</td><td><a href="${povosTradicionais.indigenas.infraestrutura.link}">IBGE Censo 2022</a></td></tr>
+  <tr><td>Pop. Amazônia Legal</td><td>${safeNum(povosTradicionais.indigenas.populacaoAmazoniaLegal)} (~51%)</td><td><a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a></td></tr>
+  <tr><td>Pop. Urbana</td><td>${safeNum(povosTradicionais.indigenas.populacaoUrbana)}</td><td><a href="${povosTradicionais.indigenas.infraestrutura.link}">IBGE Censo 2022</a></td></tr>
   <tr><td>TIs Homologadas 2018-2022</td><td>${povosTradicionais.indigenas.terrasHomologadas2018_2022}</td><td>FUNAI</td></tr>
   <tr><td>TIs Homologadas 2023-2025</td><td>${povosTradicionais.indigenas.terrasHomologadas2023_2025}</td><td>FUNAI</td></tr>
   <tr><td>Mortalidade infantil</td><td>${povosTradicionais.indigenas.mortalidadeInfantil} p/1000 NV</td><td>DataSUS/SESAI</td></tr>
   <tr><td>Educação bilíngue</td><td>${povosTradicionais.indigenas.educacaoBilingue}%</td><td>INEP/Censo Educação</td></tr>
-  <tr><td>Rendimento médio</td><td>R$ safeNum(${povosTradicionais.indigenas.rendimentoMedio)}</td><td><a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a></td></tr>
+  <tr><td>Rendimento médio</td><td>R$ ${safeNum(povosTradicionais.indigenas.rendimentoMedio)}</td><td><a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a></td></tr>
 </table>
 <p class="meta">Fontes: <a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a> | <a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a> | <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas">FUNAI Geoprocessamento</a></p>
 
@@ -351,7 +351,7 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Ciganos</a> | Observações ONU: §54, §55</div>
 <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px;margin:8px 0;">
   <p style="font-size:11px;color:#991b1b;font-weight:600;">⚠️ LACUNA CRÍTICA: Censo 2022 não incluiu pergunta específica para Ciganos/Roma</p>
-  <p style="font-size:10px;color:#7f1d1d;">Estimativa não-oficial: ~safeNum(${povosTradicionais.ciganos.populacaoEstimada)} pessoas | ${povosTradicionais.ciganos.acampamentosIdentificados} acampamentos identificados</p>
+  <p style="font-size:10px;color:#7f1d1d;">Estimativa não-oficial: ~${safeNum(povosTradicionais.ciganos.populacaoEstimada)} pessoas | ${povosTradicionais.ciganos.acampamentosIdentificados} acampamentos identificados</p>
   <p style="font-size:10px;color:#7f1d1d;">O CERD expressou preocupação específica (§54-55) sobre a ausência de dados oficiais. MUNIC 2024 registra apenas presença/ausência de acampamentos por município.</p>
 </div>
 
@@ -422,7 +422,7 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 <!-- ═══════════════════════════════════════ -->
 <h2>Resumo Executivo</h2>
 <div class="stats-grid">
-  <div class="stat-card"><div class="value">safeNum(${totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
+  <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
   <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">Tabelas CC</div></div>
   <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">Indicadores BD</div></div>
   <div class="stat-card"><div class="value">${Object.keys(bdCategorias).length}</div><div class="label">Categorias</div></div>
@@ -549,7 +549,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <div class="stats-grid">
   <div class="stat-card">
-    <div class="value">safeNum(${totalGeral)}</div>
+    <div class="value">${safeNum(totalGeral)}</div>
     <div class="label">TOTAL GERAL</div>
   </div>
   <div class="stat-card">
