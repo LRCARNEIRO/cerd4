@@ -311,8 +311,8 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
     // Find related lacunas for this paragraph
     const relatedLacunas = lacunas.filter(l => l.paragrafo === r.paragrafo_cerd_iii);
     const relatedIndicators = indicadores.filter(ind => {
-      const artigos = relatedLacunas.flatMap(l => l.artigos_convencao || []);
-      return artigos.some(a => (ind.artigos_convencao || []).includes(a));
+      const artigos = relatedLacunas.flatMap(l => (l as any).artigos_convencao || []);
+      return artigos.some((a: string) => ((ind as any).artigos_convencao || []).includes(a));
     }).slice(0, 3);
 
     const lacunasRem = r.lacunas_remanescentes?.length
