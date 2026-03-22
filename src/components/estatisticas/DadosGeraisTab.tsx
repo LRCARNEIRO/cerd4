@@ -228,10 +228,10 @@ export function DadosGeraisTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Evolução da Autodeclaração Racial (2018-2024)
+              Evolução da Autodeclaração Racial (2018-2025)
             </CardTitle>
             <CardDescription>
-              % da população branca vs negra (pretos + pardos) | PNAD Contínua Trimestral - SIDRA Tabela 6403
+              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual - SIDRA Tabela 6403
             </CardDescription>
           </CardHeader>
           <CardContent>
