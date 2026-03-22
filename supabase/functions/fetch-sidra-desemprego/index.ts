@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Todos os 4 trimestres de 2018 a 2024
+    // Todos os 4 trimestres de 2018 a 2025
     const periodos = [
       '201801,201802,201803,201804',
       '201901,201902,201903,201904',
@@ -27,6 +27,7 @@ Deno.serve(async (req) => {
       '202201,202202,202203,202204',
       '202301,202302,202303,202304',
       '202401,202402,202403,202404',
+      '202501,202502,202503,202504',
     ].join(',');
 
     const apiUrl = `https://apisidra.ibge.gov.br/values/t/6402/n1/1/v/4099/p/${periodos}/c86/allxt`;

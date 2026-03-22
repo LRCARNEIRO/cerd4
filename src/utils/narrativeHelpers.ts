@@ -105,7 +105,7 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
     );
 
   const tRenda = findTrabalhoIndicador(['rendimento médio', 'rendimento medio']);
-  const tDesemprego = findTrabalhoIndicador(['desocupação', 'desocupacao']);
+  const tDesemprego = findTrabalhoIndicador(['desocupação', 'desocupacao', 'desemprego']);
   const tInformalidade = findTrabalhoIndicador(['informalidade']);
 
   const narrativaTrabalho = {
@@ -115,7 +115,7 @@ export function createNarrativas(input: NarrativeDataInput = {}) {
     razaoDesemprego: tDesemprego?.razaoMulherNegraHomemBranco ?? 0,
     informalidadeMulherNegra: tInformalidade?.mulherNegra ?? 0,
     get texto() {
-      return `A mulher negra recebe ${fmt(this.razaoRendaPct)}% do rendimento do homem branco, demonstrando que raça e gênero operam como vetores cumulativos de desigualdade. A desocupação feminina negra (${fmt(this.desempregoMulherNegra)}%) é ${fmt(this.razaoDesemprego)}× superior à masculina branca (${fmt(this.desempregoHomemBranco)}%), e a informalidade negra feminina (${fmt(this.informalidadeMulherNegra)}%) inviabiliza proteção social. O cruzamento confirma o "piso pegajoso" descrito na literatura interseccional.`;
+        return `A mulher negra recebe ${fmt(this.razaoRendaPct)}% do rendimento do homem não negro, demonstrando que raça e gênero operam como vetores cumulativos de desigualdade. A taxa de desemprego feminina negra (${fmt(this.desempregoMulherNegra)}%) é ${fmt(this.razaoDesemprego)}× superior à masculina não negra (${fmt(this.desempregoHomemBranco)}%), e a informalidade negra feminina (${fmt(this.informalidadeMulherNegra)}%) inviabiliza proteção social. O cruzamento confirma o "piso pegajoso" descrito na literatura interseccional.`;
     },
   };
 

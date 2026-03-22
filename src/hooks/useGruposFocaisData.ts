@@ -36,16 +36,31 @@ export function useGruposFocaisData() {
       indigenas: {
         ...gruposFocaisDataDefaults.indigenas,
         ...(ptSource === 'bd' && pt?.indigenas ? {
-          populacao: pt.indigenas.populacao ?? gruposFocaisDataDefaults.indigenas.populacao,
-          etniasReconhecidas: pt.indigenas.etniasReconhecidas ?? undefined,
-          linguasVivas: pt.indigenas.linguasVivas ?? undefined,
+          populacao: pt.indigenas.populacaoPessoasIndigenas ?? gruposFocaisDataDefaults.indigenas.populacao,
+          populacaoCorRaca: pt.indigenas.populacaoCorRaca ?? gruposFocaisDataDefaults.indigenas.populacaoCorRaca,
+          etnias: pt.indigenas.etnias ?? gruposFocaisDataDefaults.indigenas.etnias,
+          linguas: pt.indigenas.linguas ?? gruposFocaisDataDefaults.indigenas.linguas,
         } : {}),
       },
       ciganos: {
         ...gruposFocaisDataDefaults.ciganos,
         ...(ptSource === 'bd' && pt?.ciganos ? {
-          populacao: pt.ciganos.populacao ?? gruposFocaisDataDefaults.ciganos.populacao,
+          populacao: pt.ciganos.populacaoEstimada ?? gruposFocaisDataDefaults.ciganos.populacao,
         } : {}),
+      },
+      juventude_negra: {
+        ...gruposFocaisDataDefaults.juventude_negra,
+        ...(mirror.gfSource === 'bd' && Array.isArray(mirror.gfMirrors)
+          ? (() => {
+              const rec = mirror.gfMirrors.find((item: any) => item.subcategoria === 'juventude_negra');
+              return rec?.dados
+                ? {
+                    populacao: rec.dados.populacao ?? gruposFocaisDataDefaults.juventude_negra.populacao,
+                    serieTemporal: rec.dados.serieTemporal ?? gruposFocaisDataDefaults.juventude_negra.serieTemporal,
+                  }
+                : {};
+            })()
+          : {}),
       },
       populacao_negra: {
         ...gruposFocaisDataDefaults.populacao_negra,
@@ -64,9 +79,10 @@ export function useGruposFocaisData() {
         ...dadosTerritoriaisDefaults.quilombolas,
         ...(ptSource === 'bd' && pt?.quilombolas ? {
           territoriosTitulados: pt.quilombolas.territoriosTitulados ?? dadosTerritoriaisDefaults.quilombolas.territoriosTitulados,
-          comunidadesCertificadasFCP: pt.quilombolas.comunidadesCertificadasFCP ?? dadosTerritoriaisDefaults.quilombolas.comunidadesCertificadasFCP,
-          territoriosEmProcesso: pt.quilombolas.territoriosEmProcesso ?? dadosTerritoriaisDefaults.quilombolas.territoriosEmProcesso,
-          areaTotal: pt.quilombolas.areaHa ?? dadosTerritoriaisDefaults.quilombolas.areaTotal,
+          titulosExpedidos: pt.quilombolas.titulosExpedidos ?? dadosTerritoriaisDefaults.quilombolas.titulosExpedidos,
+          comunidadesCertificadasFCP: pt.quilombolas.comunidadesCertificadas ?? dadosTerritoriaisDefaults.quilombolas.comunidadesCertificadasFCP,
+          territoriosEmProcesso: pt.quilombolas.processosAbertosIncra ?? dadosTerritoriaisDefaults.quilombolas.territoriosEmProcesso,
+          areaTotal: pt.quilombolas.areaHectaresTitulados ?? dadosTerritoriaisDefaults.quilombolas.areaTotal,
         } : {}),
         // Série histórica from BD mirror
         ...(mirror.fonteTerrasQuilombolas === 'bd' && mirror.terrasQuilombolasHistorico.length > 0 ? {
@@ -111,8 +127,10 @@ export function useGruposFocaisData() {
       homicidiosPorRaca: {
         ...indicadoresVulnerabilidadeDefaults.homicidiosPorRaca,
         ...(mirror.fonteSeguranca === 'bd' && latestSeg ? {
-          percentualVitimasNegras: latestSeg.vitimasNegras ?? latestSeg.negros ?? indicadoresVulnerabilidadeDefaults.homicidiosPorRaca.percentualVitimasNegras,
-          percentualVitimasBrancas: latestSeg.vitimasBrancas ?? latestSeg.brancos ?? indicadoresVulnerabilidadeDefaults.homicidiosPorRaca.percentualVitimasBrancas,
+          percentualVitimasNegras: latestSeg.percentualVitimasNegras ?? indicadoresVulnerabilidadeDefaults.homicidiosPorRaca.percentualVitimasNegras,
+          percentualVitimasBrancas: latestSeg.percentualVitimasNegras != null
+            ? +(100 - latestSeg.percentualVitimasNegras).toFixed(1)
+            : indicadoresVulnerabilidadeDefaults.homicidiosPorRaca.percentualVitimasBrancas,
           ano: latestSeg.ano ?? indicadoresVulnerabilidadeDefaults.homicidiosPorRaca.ano,
         } : {}),
         ...(serieHomicidiosMirror ? { serieTemporal: serieHomicidiosMirror } : {}),
@@ -120,27 +138,22 @@ export function useGruposFocaisData() {
       taxaHomicidio100mil: {
         ...indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil,
         ...(mirror.fonteAtlas === 'bd' && atlas ? {
-          taxaNegros: atlas.taxaNegros ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.taxaNegros,
-          taxaNaoNegros: atlas.taxaNaoNegros ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.taxaNaoNegros,
-          razaoRisco: atlas.razaoRisco ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.razaoRisco,
+          taxaNegros: atlas.taxaHomicidioNegros ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.taxaNegros,
+          taxaNaoNegros: atlas.taxaHomicidioNaoNegros ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.taxaNaoNegros,
+          razaoRisco: atlas.riscoRelativo ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.razaoRisco,
+          razaoRisco2018: atlas.riscoRelativo2018 ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.razaoRisco2018,
+          quedaNegros2018_2023: atlas.quedaNegros2018_2023 ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.quedaNegros2018_2023,
+          quedaNaoNegros2018_2023: atlas.quedaNaoNegros2018_2023 ?? indicadoresVulnerabilidadeDefaults.taxaHomicidio100mil.quedaNaoNegros2018_2023,
         } : {}),
       },
       violenciaJuventude: {
         ...indicadoresVulnerabilidadeDefaults.violenciaJuventude,
-        ...(mirror.fonteJovensViolencia === 'bd' ? {
-          percentualVitimas: mirror.jovensNegrosViolencia?.percentualVitimas ?? indicadoresVulnerabilidadeDefaults.violenciaJuventude.percentualVitimas,
+        ...(mirror.fonteAtlas === 'bd' && atlas?.juventude15_29 ? {
+          percentualVitimas: atlas.juventude15_29.percentualVitimas ?? indicadoresVulnerabilidadeDefaults.violenciaJuventude.percentualVitimas,
         } : {}),
         // Feminicídio from mirror
         ...(mirror.fonteFeminicidio === 'bd' && feminicidio.length > 0 ? {
           feminicidioNegras: feminicidio[feminicidio.length - 1]?.percentualNegras ?? indicadoresVulnerabilidadeDefaults.violenciaJuventude.feminicidioNegras,
-        } : {}),
-      },
-      mortalidadeMaterna: {
-        ...indicadoresVulnerabilidadeDefaults.mortalidadeMaterna,
-        ...(mirror.fonteSaudeMaterna === 'bd' && saudeMaterna ? {
-          valorNegras: saudeMaterna.negras ?? indicadoresVulnerabilidadeDefaults.mortalidadeMaterna.valorNegras,
-          valorBrancas: saudeMaterna.brancas ?? indicadoresVulnerabilidadeDefaults.mortalidadeMaterna.valorBrancas,
-          razaoDesigualdade: saudeMaterna.razao ?? indicadoresVulnerabilidadeDefaults.mortalidadeMaterna.razaoDesigualdade,
         } : {}),
       },
     };

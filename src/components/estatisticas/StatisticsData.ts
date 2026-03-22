@@ -870,7 +870,7 @@ export const trabalhoRacaGenero = [
     nota: 'Mulher negra ganha 46,8% do rendimento do homem não negro. Labels "branco" = "não negro" conforme DIEESE.',
   },
   {
-    indicador: 'Taxa de desocupação (DIEESE 2025, %)',
+    indicador: 'Taxa de desemprego (DIEESE 2025, %)',
     homemBranco: 4.6, // "Homem não negro"
     mulherBranca: 6.7, // "Mulher não negra"
     homemNegro: 6.3,
@@ -879,7 +879,7 @@ export const trabalhoRacaGenero = [
     razaoMulherNegraHomemBranco: 1.74, // 8.0/4.6
     fonte: 'DIEESE — Infográfico Consciência Negra 2025',
     url: 'https://www.dieese.org.br/infografico/2025/conscienciaNegraInfo.html',
-    nota: 'Desemprego de mulheres negras é 1,7x maior que de homens não negros (DIEESE 2025)',
+    nota: 'Taxa de desemprego de mulheres negras é 1,7x maior que a de homens não negros (DIEESE 2025).',
   },
   {
     indicador: 'Informalidade (DIEESE 2025, %)',
