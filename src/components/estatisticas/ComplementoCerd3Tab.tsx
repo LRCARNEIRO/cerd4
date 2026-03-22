@@ -468,7 +468,7 @@ function SnapshotTable({ dados }: { dados: Record<string, any> }) {
       rows.push({ key: k.replace(/_/g, ' '), value: v.toLocaleString('pt-BR') });
     } else if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
       const subKeys = Object.keys(v);
-      if (subKeys.length > 0 && subKeys.every(s => /^\d{4}$/.test(s))) continue;
+      if (subKeys.length > 0 && subKeys.every(isTemporalKey)) continue;
       // Skip objects already handled by distribution chart
       if (subKeys.some(s => typeof (v as any)[s] === 'object' && (v as any)[s]?.absoluto != null)) continue;
       for (const [sk, sv] of Object.entries(v as Record<string, any>)) {
