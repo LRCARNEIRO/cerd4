@@ -833,12 +833,12 @@ export function GruposFocaisTab() {
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome}</CardTitle>
-                  <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
+                  <CardDescription>Atlas da Violência 2025, p. 74 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center mb-4">
                     <p className="text-4xl font-bold text-warning">{indicadoresVulnerabilidade.ivjn.riscoRelativo}x</p>
-                    <p className="text-sm text-muted-foreground"><p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p></p>
+                    <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
                     <p className="text-[10px] text-warning mt-1">({indicadoresVulnerabilidade.ivjn.qualificador})</p>
                   </div>
                   <div className="text-xs space-y-1 mb-3">
@@ -852,7 +852,10 @@ export function GruposFocaisTab() {
                       <span>Jovens negros c/ ensino superior: risco até {indicadoresVulnerabilidade.ivjn.riscoSuperiorNegro}x maior (2021)</span>
                     </p>
                   </div>
-                  <FonteInfo fonte={indicadoresVulnerabilidade.ivjn.fonte} tabela="Atlas da Violência 2025" link={indicadoresVulnerabilidade.ivjn.link} atualizacao="2025-05-01" />
+                  <div className="p-2 bg-warning/10 rounded text-xs text-muted-foreground mb-3">
+                    <strong className="text-warning">⚠ Nota:</strong> O Atlas utiliza "Não Negros" em vez de "Brancos", com exceção no IVJ-N (Escolaridade).
+                  </div>
+                  <FonteInfo fonte={indicadoresVulnerabilidade.ivjn.fonte} tabela="Atlas da Violência 2025, p. 74" link="https://g1.globo.com/saude/noticia/2026/01/23/negros-tem-ate-23-vezes-mais-risco-de-morrer-por-homicidio-no-brasil-aponta-estudo.ghtml" atualizacao="2025-05-01" />
                 </CardContent>
               </Card>
 
