@@ -296,6 +296,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="respostas">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
+          </div>
           {loadingRespostas ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
