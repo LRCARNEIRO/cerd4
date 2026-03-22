@@ -561,6 +561,9 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateVisaoGeralHTML(currentRecords)} fileName="Orcamento-Visao-Geral" compact />
+          </div>
           {/* 1) Dynamic Summary Cards — react to both toggles */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
