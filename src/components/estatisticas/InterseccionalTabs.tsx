@@ -649,7 +649,7 @@ export function LgbtqiaTab() {
           </div>
           <AuditFooter
             fontes={[
-                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 66', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 60', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
               { nome: 'ANTRA — Página Assassinatos', url: 'https://antrabrasil.org/assassinatos/' },
             ]}
             documentos={['CERD 2022', 'Plano de Durban']}
