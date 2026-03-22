@@ -12,6 +12,12 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
 import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
 import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import {
+  generateObservacoesFinaisHTML, generateLacunasExportHTML,
+  generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
+  generateRecomendacoesGeraisHTML,
+} from '@/components/recomendacoes/generateRecomendacoesHTML';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
