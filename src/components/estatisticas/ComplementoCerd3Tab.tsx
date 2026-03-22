@@ -322,7 +322,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
   const absKey = Object.keys(dados).find(k =>
     !excludeMeta.has(k) && !k.startsWith('url_') && !isPctKey(k) &&
     typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
-    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+    !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
   );
 
   if (absKey) {
@@ -333,7 +333,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
       // Look for matching pct key
       const pctKey = Object.keys(dados).find(k =>
         isPctKey(k) && typeof dados[k] === 'object' && dados[k] !== null &&
-        !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+        !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
       );
       const pctObj = pctKey ? dados[pctKey] as Record<string, number> : null;
 
