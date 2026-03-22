@@ -12,6 +12,12 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
 import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
 import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import {
+  generateObservacoesFinaisHTML, generateLacunasExportHTML,
+  generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
+  generateRecomendacoesGeraisHTML,
+} from '@/components/recomendacoes/generateRecomendacoesHTML';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
@@ -163,6 +169,9 @@ export default function Recomendacoes() {
         </TabsList>
 
         <TabsContent value="observacoes">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
+          </div>
           <ObservacoesFinaisTab />
         </TabsContent>
 
@@ -287,6 +296,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="respostas">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
+          </div>
           {loadingRespostas ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -363,10 +375,16 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="rgs">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
+          </div>
           <RecomendacoesGeraisTab />
         </TabsContent>
 
         <TabsContent value="durban">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
+          </div>
           <DurbanTab />
         </TabsContent>
       </Tabs>
