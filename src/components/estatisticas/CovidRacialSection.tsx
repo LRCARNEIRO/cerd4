@@ -23,7 +23,7 @@ const FONTE_RACA_SAUDE = [
 
 const FONTE_SIVEP_NOIS = [
   { nome: 'SIVEP-Gripe (BigData COVID Fiocruz) — Internações e óbitos por SRAG, filtro raça/cor', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
-  { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://sites.google.com/view/naborfrancisco/publica%C3%A7%C3%B5es' },
+  { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://ponte.org/wp-content/uploads/2020/05/NT11-An%C3%A1lise-descritiva-dos-casos-de-COVID-19.pdf' },
 ];
 
 const FONTE_PERES_ETAL = [
