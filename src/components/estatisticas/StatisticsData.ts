@@ -604,7 +604,7 @@ export const serieAntraTrans = [
   { ano: 2021, totalAssassinatos: 140, negros: 81, brancos: 18, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
   { ano: 2022, totalAssassinatos: 131, negros: 76, brancos: 24, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
   { ano: 2023, totalAssassinatos: 145, negros: 72, brancos: 27, indigenas: 1, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
-  { ano: 2024, totalAssassinatos: 122, negros: 76, brancos: 22, indigenas: 2, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
+  { ano: 2024, totalAssassinatos: 122, negros: 76, brancos: 24, indigenas: 0, fonte: 'Dossiê ANTRA 2026 — série histórica, p. 66', url: DOSSIE_2026_URL },
   { ano: 2025, totalAssassinatos: 80, negros: 70, brancos: 26, indigenas: 4, fonte: 'Dossiê ANTRA 2026 (dados 2025), p. 66', url: DOSSIE_2026_URL },
 ];
 // Média histórica 2017-2025: Negros 77%, Brancos 22%, Indígenas 1% (Dossiê ANTRA 2026)
@@ -1024,8 +1024,8 @@ export const educacaoRacaGeneroFontes = [
 // Nota: O RASEAM (2024 e 2025) utiliza dados do SIM/DataSUS cujo último ano consolidado é 2022.
 // O Boletim IEPS (jul/2025) apresenta dados até 2023 com razão de mortalidade materna por raça.
 export const saudeMaternaRaca = {
-  mortalidadeMaternaNegraPercentual: 68.0, // RASEAM 2025 — proporção de óbitos maternos de mulheres negras (pretas+pardas), dado SIM 2022
-  mortalidadeMaternaBrancaPercentual: 29.7, // idem
+  mortalidadeMaternaNegraPercentual: 57.3, // Mortalidade Materna por 100 mil NV — negras (SIM/SINASC 2024)
+  mortalidadeMaternaBrancaPercentual: 46.6, // Mortalidade Materna por 100 mil NV — brancas (SIM/SINASC 2024)
   anoReferencia: 2022, // último ano consolidado SIM/DataSUS; RASEAM 2025 mantém esse recorte
   // AUDITORIA MANUAL 13/03/2026 (Eduardo): Dados RASEAM 2025 para 2023 (razão por 100 mil NV):
   // Pretas: 72,9 | Pardas: 49,9 | Brancas: 46,3

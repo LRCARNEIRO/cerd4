@@ -23,7 +23,7 @@ const FONTE_RACA_SAUDE = [
 
 const FONTE_SIVEP_NOIS = [
   { nome: 'SIVEP-Gripe (BigData COVID Fiocruz) — Internações e óbitos por SRAG, filtro raça/cor', url: 'https://bigdata-covid19.icict.fiocruz.br/' },
-  { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://sites.google.com/view/naborfrancisco/publica%C3%A7%C3%B5es' },
+  { nome: 'NOIS/PUC-Rio — Nota Técnica 11: letalidade hospitalar COVID-19 por raça/cor (2020)', url: 'https://ponte.org/wp-content/uploads/2020/05/NT11-An%C3%A1lise-descritiva-dos-casos-de-COVID-19.pdf' },
 ];
 
 const FONTE_PERES_ETAL = [
@@ -43,12 +43,12 @@ const FONTE_SPRINGER_LETALIDADE = [
 const FONTE_DATASUS_SIM = [
   { nome: 'DataSUS/SIM — TabNet → Estatísticas Vitais → Mortalidade Materna → Linha: UF; Coluna: Cor/Raça; Período: 2019-2022', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
   { nome: 'DataSUS/SINASC — TabNet → Nascidos Vivos → filtro raça/cor da mãe (denominador para taxa)', url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
-  { nome: 'IEPS Boletim Çarê (Jul/2025) — Mortalidade Materna por Raça: série 2010-2023, taxas pretas 108,6; pardas 56,6; brancas 46,9 /100mil NV', url: 'https://ieps.org.br/mortalidade-materna-de-mulheres-pretas-e-duas-vezes-maior-do-que-de-brancas/' },
+  { nome: 'IEPS Boletim Çarê (Jul/2025) — Mortalidade Materna por Raça: série 2010-2023, taxas pretas 108,6; pardas 56,6; brancas 46,9 /100mil NV', url: 'https://ieps.org.br/boletim-care-ieps-07-2025/' },
 ];
 
 const FONTE_PNAD_COVID = [
   { nome: 'PNAD COVID-19 (IBGE, 2020) — Trabalho: proporção que não procurou trabalho por pandemia, por cor/raça', url: 'https://covid19.ibge.gov.br/pnad-covid/trabalho.php' },
-  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92)', url: 'https://repositorio.ipea.gov.br/bitstreams/c5764fb9-c664-4d1c-bf0d-d3e1d1d3b88f/download' },
+  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92), pp. 475, 478, 481', url: 'https://repositorio.ipea.gov.br/server/api/core/bitstreams/f63d9b9a-f3d2-4f0e-9a97-4db3894c0015/content' },
   { nome: 'PNADC Trimestral (IBGE) — Microdados: massa salarial Q1×Q2 2020, decomposição Shapley por cor/raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
   { nome: 'Filetti et al. (2022) — UNDP Background Paper: Inequalities in the times of a pandemic (HDR 2021-22)', url: 'https://hdr.undp.org/system/files/documents/background-paper-document/2021-22hdrfilletietal.pdf' },
 ];
@@ -289,7 +289,9 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">Letalidade Hospitalar (Indígenas)</p>
             <p className="text-2xl font-bold text-warning">70,4%</p>
             <p className="text-xs text-muted-foreground">vs 37,9% brancos (NT11, n=54)</p>
-            <AuditFooter fontes={FONTE_SIVEP_NOIS} compact />
+            <AuditFooter fontes={[
+              { nome: 'NOIS/PUC-Rio — Nota Técnica 11: Análise descritiva dos casos de COVID-19', url: 'https://ponte.org/wp-content/uploads/2020/05/NT11-An%C3%A1lise-descritiva-dos-casos-de-COVID-19.pdf' },
+            ]} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-accent">
@@ -297,7 +299,9 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">RMM Mães Pretas (pico 2021)</p>
             <p className="text-2xl font-bold">179,4</p>
             <p className="text-xs text-muted-foreground">por 100 mil NV (IEPS Çarê)</p>
-            <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
+            <AuditFooter fontes={[
+              { nome: 'IEPS Boletim Çarê (Jul/2025) — Mortalidade Materna por Raça', url: 'https://ieps.org.br/boletim-care-ieps-07-2025/' },
+            ]} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-3">
@@ -451,7 +455,7 @@ export function CovidRacialSection() {
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
                   <Tooltip 
                     formatter={(value: number, name: string) => [
-                      `${value}%`, name === 'letalidade' ? 'Letalidade' : 'Sobrevivência'
+                      `${value}%`, name === 'letalidade' ? 'Letalidade' : name === 'sobrevivencia' ? 'Sobrevivência' : name
                     ]}
                     contentStyle={{
                       backgroundColor: 'hsl(var(--card))',
@@ -480,7 +484,7 @@ export function CovidRacialSection() {
               <TrendingUp className="w-4 h-4 text-destructive" />
               Mortalidade Materna na Pandemia por Raça
             </CardTitle>
-            <CardDescription>Taxa por 100 mil nascidos vivos — DataSUS/SIM</CardDescription>
+            <CardDescription>Taxa por 100 mil nascidos vivos — <a href="https://ieps.org.br/boletim-care-ieps-07-2025/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">IEPS Boletim Çarê Jul/2025</a></CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">

@@ -124,6 +124,9 @@ export function RacaGeneroTab() {
               <a href="https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
                 <ExternalLink className="w-3 h-3" /> 19º Anuário FBSP 2025 (PDF)
               </a>
+              <a href="http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinannet/cnv/violebr.def" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3 h-3" /> DataSUS — Registros de violência interpessoal/autoprovocada (SINAN)
+              </a>
             </div>
           </CardContent>
         </Card>
@@ -646,7 +649,7 @@ export function LgbtqiaTab() {
           </div>
           <AuditFooter
             fontes={[
-                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 66', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
+                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 60', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
               { nome: 'ANTRA — Página Assassinatos', url: 'https://antrabrasil.org/assassinatos/' },
             ]}
             documentos={['CERD 2022', 'Plano de Durban']}
@@ -692,7 +695,7 @@ export function LgbtqiaTab() {
             </Table>
             <AuditFooter
               fontes={[
-                { nome: 'ANTRA — Todos os dossiês', url: 'https://antrabrasil.org/assassinatos/' },
+                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 66', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
               ]}
             />
           </CardContent>
@@ -891,7 +894,7 @@ export function JuventudeTab() {
         <Card className="border-l-4 border-l-warning">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Violência Letal — Juventude (15-29 anos)</CardTitle>
-            <CardDescription>Atlas da Violência 2025 | {atlasViolencia2025.juventude15_29.ano}</CardDescription>
+            <CardDescription>Atlas da Violência 2025, p. 26 | {atlasViolencia2025.juventude15_29.ano}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center mb-4">
@@ -910,6 +913,9 @@ export function JuventudeTab() {
                 <p className="text-xs text-muted-foreground italic">⏳ Percentual de jovens negros masculinos entre vítimas — Pendente de verificação humana</p>
               </div>
             )}
+            <AuditFooter fontes={[
+              { nome: 'Atlas da Violência 2025 (IPEA/FBSP), p. 26', url: 'https://www.ipea.gov.br/atlasviolencia' },
+            ]} compact />
           </CardContent>
         </Card>
 
@@ -917,12 +923,12 @@ export function JuventudeTab() {
         <Card className="border-l-4 border-l-warning">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">IVJ-N — Vulnerabilidade da Juventude Negra</CardTitle>
-            <CardDescription>Atlas da Violência 2025 | {atlasViolencia2025.ivjn.ano}</CardDescription>
+            <CardDescription>Atlas da Violência 2025, p. 74 | {atlasViolencia2025.ivjn.ano}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center mb-4">
               <p className="text-4xl font-bold text-warning">{atlasViolencia2025.ivjn.riscoRelativo}x</p>
-              <p className="text-sm text-muted-foreground"><p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs brancos</p></p>
+              <p className="text-sm text-muted-foreground">risco de homicídio para jovens negros vs não negros</p>
               <p className="text-[10px] text-warning mt-1">(ensino fundamental incompleto)</p>
             </div>
             <div className="text-xs space-y-1 mb-3">
@@ -936,6 +942,12 @@ export function JuventudeTab() {
                 Jovens negros c/ ensino superior: risco até {atlasViolencia2025.ivjn.riscoSuperiorNegro}x maior (2021)
               </p>
             </div>
+            <div className="p-2 bg-warning/10 rounded text-xs text-muted-foreground mb-3">
+              <strong className="text-warning">⚠ Nota:</strong> O Atlas utiliza "Não Negros" em vez de "Brancos", com exceção no IVJ-N (Escolaridade).
+            </div>
+            <AuditFooter fontes={[
+              { nome: 'Atlas da Violência 2025 (IPEA/FBSP), p. 74', url: 'https://www.ipea.gov.br/atlasviolencia' },
+            ]} compact />
           </CardContent>
         </Card>
       </div>
