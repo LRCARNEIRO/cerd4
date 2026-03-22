@@ -346,11 +346,11 @@ export function buildGruposFocaisIndicators(): DbRecord[] {
     'https://www.ibge.gov.br/brasil-indigena/',
     ['Art. 2', 'Art. 5'],
     {
-      populacao: 1694836,
+      populacao: 1227642,
       populacaoCorRaca: 1227642,
       serieTemporal: [
         { ano: 2010, valor: 896917 },
-        { ano: 2022, valor: 1694836 },
+        { ano: 2022, valor: 1227642 },
       ],
       etnias: 391,
       linguas: 295,

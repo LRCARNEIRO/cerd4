@@ -638,10 +638,8 @@ export const povosTradicionais = {
     // 1) Cor ou raça = Indígena (Tabela 9605)
     //    API: https://apisidra.ibge.gov.br/values/t/9605/n1/1/v/93/p/2022/c86/2780
     populacaoCorRaca: 1227642,
-    // 2) Pessoas indígenas (contagem específica do Censo 2022)
-    //    Fonte: https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html
-    // Corrigido conforme auditoria: Tabela 9718 SIDRA = 1.694.836
-    populacaoPessoasIndigenas: 1694836,
+    // 2) Pessoas indígenas — padronizado para usar o valor de Cor/Raça (SIDRA 9605)
+    populacaoPessoasIndigenas: 1227642,
     percentualBrasil: 0.83, // usando contagem específica
     // 391 etnias e 295 línguas indígenas identificadas (Censo 2022 - Out/2025)
     etnias: 391,
@@ -1226,7 +1224,7 @@ export const resumoExecutivo = {
     preta: 20656458,
     negra: 112739744, // parda + preta (92.083.286 + 20.656.458)
     percentualNegro: 55.51,
-    indigena: 1694836, // Tabela 9718 - Pessoas indígenas
+    indigena: 1227642, // Tabela 9605 - Cor/Raça Indígena
     amarela: 850130,
     quilombola: 1330186 // Tabela 9578
   },

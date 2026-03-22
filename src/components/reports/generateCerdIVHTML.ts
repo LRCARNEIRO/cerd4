@@ -299,13 +299,13 @@ function renderDemographicContext(demo: any): string {
   return `
   <h3>Contexto Demográfico (Censo 2022)</h3>
   <div class="section">
-    <p>O Brasil possui uma população de ${fmtNum(demo?.populacaoTotal || 203080756)} habitantes (Censo 2022), dos quais <strong>${fmtNum(demo?.populacaoNegra || 112700000)} (55,5%) se autodeclaram negros</strong> (pretos e pardos). A população indígena soma ${fmtNum(demo?.populacaoIndigena || 1694836)} pessoas, a quilombola ${fmtNum(demo?.populacaoQuilombola || 1327802)} e a cigana ${fmtNum(demo?.populacaoCigana || 41738)}.</p>
+    <p>O Brasil possui uma população de ${fmtNum(demo?.populacaoTotal || 203080756)} habitantes (Censo 2022), dos quais <strong>${fmtNum(demo?.populacaoNegra || 112700000)} (55,5%) se autodeclaram negros</strong> (pretos e pardos). A população indígena soma ${fmtNum(demo?.populacaoIndigena || 1227642)} pessoas, a quilombola ${fmtNum(demo?.populacaoQuilombola || 1327802)} e a cigana ${fmtNum(demo?.populacaoCigana || 41738)}.</p>
     ${comp.pardos ? `
     ${dataCards([
       { value: fmtNum(comp.pardos), label: 'Pardos (45,3%)' },
       { value: fmtNum(comp.brancos), label: 'Brancos (43,5%)' },
       { value: fmtNum(comp.pretos), label: 'Pretos (10,2%)' },
-      { value: fmtNum(comp.indigenas || 1694836), label: 'Indígenas (0,8%)' },
+      { value: fmtNum(comp.indigenas || 1227642), label: 'Indígenas (0,8%)' },
     ])}` : ''}
     <p>A desagregação racial é fundamental para compreender a persistência das desigualdades: a população negra brasileira é maior que a população total de países como França, Reino Unido ou Itália, mas seus indicadores socioeconômicos sistematicamente ficam abaixo da média nacional em praticamente todas as dimensões medidas.</p>
   </div>`;
@@ -578,7 +578,7 @@ function buildEvidenceHighlights(artigo: string, d: CerdIVFullData, seg: any[], 
 
   if (artigo === 'III') {
     blocks.push(dataCards([
-      { value: fmtNum(num(povos?.indigenas?.populacaoPessoasIndigenas || 1694836)), label: 'Povos indígenas (Censo 2022)' },
+      { value: fmtNum(num(povos?.indigenas?.populacaoPessoasIndigenas || 1227642)), label: 'Povos indígenas (Censo 2022)' },
       { value: fmtNum(num(povos?.quilombolas?.populacao || 1327802)), label: 'População quilombola' },
       { value: fmtNum(num(povos?.quilombolas?.territoriosTitulados || 52)), label: 'Territórios quilombolas titulados' },
       { value: `${num(povos?.indigenas?.terrasHomologadas2023_2025 || 0)}`, label: 'TIs homologadas 2023-2025' },
@@ -832,7 +832,7 @@ function renderTraditionalPeoples(povos: any): string {
   <div class="section">
     <h3>A. Povos Indígenas</h3>
     <div class="highlight-box">
-      <p><strong>População:</strong> ${fmtNum(povos?.indigenas?.populacaoPessoasIndigenas || 1694836)} pessoas (Censo 2022) — ${povos?.indigenas?.etnias || 305} etnias, ${povos?.indigenas?.linguas || 274} línguas</p>
+      <p><strong>População:</strong> ${fmtNum(povos?.indigenas?.populacaoPessoasIndigenas || 1227642)} pessoas (Censo 2022) — ${povos?.indigenas?.etnias || 305} etnias, ${povos?.indigenas?.linguas || 274} línguas</p>
       <p><strong>Territórios:</strong> ${povos?.indigenas?.terrasHomologadas2018_2022 || 0} terras homologadas (2018-2022), ${povos?.indigenas?.terrasHomologadas2023_2025 || 0} em 2023-2025</p>
       <p>Destaque: 63,4% da população indígena reside <strong>fora de Terras Indígenas</strong>, enfrentando vulnerabilidades urbanas e invisibilidade estatística.</p>
     </div>
