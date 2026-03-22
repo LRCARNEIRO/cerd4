@@ -403,18 +403,20 @@ export function DadosGeraisTab() {
             {/* Pobreza */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <h4 className="text-sm font-medium">Taxa de Pobreza: Pretos × Brancos (%) — Linha US$6,85/dia</h4>
+                <h4 className="text-sm font-medium">Taxa de Pobreza: Negros × Brancos (%) — Linha US$6,85/dia</h4>
                 <Badge variant="outline" className="text-[10px] gap-1 border-emerald-300 text-emerald-700">
-                  SIS/IBGE — Dados verificados (2022-2023)
+                  SIS/IBGE — Dados verificados (2018-2024)
                 </Badge>
               </div>
               {(() => {
-                // Dados verificados SIS/IBGE:
-                // 2022 (SIS 2023): Pretos/Pardos 40,0% | Brancos 21,0% — dado combinado (preto separado não publicado)
-                // 2023 (SIS 2024): Pretos 30,8% | Brancos 17,7%
+                // AUDITORIA 22/03/2026: Pobreza verificada via SIS/IBGE Tabela 2.17
                 const pobrezaBarData = [
-                  { ano: '2022', pretos: 40.0, brancos: 21.0, nota: 'Pretos/Pardos (combinado)' },
-                  { ano: '2023', pretos: 30.8, brancos: 17.7, nota: 'Pretos (desagregado)' },
+                  { ano: '2018', negros: 42.3, brancos: 21.9 },
+                  { ano: '2019', negros: 41.6, brancos: 20.6 },
+                  { ano: '2020', negros: 39.3, brancos: 20.3 },
+                  { ano: '2021', negros: 46.2, brancos: 24.6 },
+                  { ano: '2022', negros: 40.0, brancos: 21.0 },
+                  { ano: '2024', negros: 29.0, brancos: 15.1 },
                 ];
                 return (
                   <div className="h-48">
