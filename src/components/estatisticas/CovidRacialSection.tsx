@@ -484,7 +484,7 @@ export function CovidRacialSection() {
               <TrendingUp className="w-4 h-4 text-destructive" />
               Mortalidade Materna na Pandemia por Raça
             </CardTitle>
-            <CardDescription>Taxa por 100 mil nascidos vivos — DataSUS/SIM</CardDescription>
+            <CardDescription>Taxa por 100 mil nascidos vivos — <a href="https://ieps.org.br/boletim-care-ieps-07-2025/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">IEPS Boletim Çarê Jul/2025</a></CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">

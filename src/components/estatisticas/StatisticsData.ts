@@ -1024,8 +1024,8 @@ export const educacaoRacaGeneroFontes = [
 // Nota: O RASEAM (2024 e 2025) utiliza dados do SIM/DataSUS cujo último ano consolidado é 2022.
 // O Boletim IEPS (jul/2025) apresenta dados até 2023 com razão de mortalidade materna por raça.
 export const saudeMaternaRaca = {
-  mortalidadeMaternaNegraPercentual: 68.0, // RASEAM 2025 — proporção de óbitos maternos de mulheres negras (pretas+pardas), dado SIM 2022
-  mortalidadeMaternaBrancaPercentual: 29.7, // idem
+  mortalidadeMaternaNegraPercentual: 57.3, // Mortalidade Materna por 100 mil NV — negras (SIM/SINASC 2024)
+  mortalidadeMaternaBrancaPercentual: 46.6, // Mortalidade Materna por 100 mil NV — brancas (SIM/SINASC 2024)
   anoReferencia: 2022, // último ano consolidado SIM/DataSUS; RASEAM 2025 mantém esse recorte
   // AUDITORIA MANUAL 13/03/2026 (Eduardo): Dados RASEAM 2025 para 2023 (razão por 100 mil NV):
   // Pretas: 72,9 | Pardas: 49,9 | Brancas: 46,3

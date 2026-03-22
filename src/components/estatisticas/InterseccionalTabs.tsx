@@ -695,7 +695,7 @@ export function LgbtqiaTab() {
             </Table>
             <AuditFooter
               fontes={[
-                { nome: 'ANTRA — Todos os dossiês', url: 'https://antrabrasil.org/assassinatos/' },
+                { nome: 'ANTRA — Dossiê 2026 (dados 2025), p. 66', url: 'https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf' },
               ]}
             />
           </CardContent>
