@@ -18,6 +18,7 @@ import {
   generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
   generateRecomendacoesGeraisHTML,
 } from '@/components/recomendacoes/generateRecomendacoesHTML';
+import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowUpHTML';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
@@ -176,6 +177,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="lacunas">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
+          </div>
           {/* Sensor Diagnóstico — Resumo */}
           {sensorReady && sensorSummary.totalDivergencias > 0 && (
             <Card className="mb-4 border-warning/40 bg-warning/5">
@@ -314,6 +318,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="follow-up">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
+          </div>
           <Card>
             <CardHeader>
               <CardTitle>CERD/C/BRA/FCO/18-20 - Follow-up Janeiro 2026</CardTitle>

@@ -8,6 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
 import { Building, ExternalLink, AlertTriangle, TreePine, Tent, Users, Info, BookOpen, PieChart, FileText, Scale, MapPin, Layers } from 'lucide-react';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import {
+  generateVisaoGeralHTML, generateUniversoBaseHTML, generateResumoComparativoHTML,
+  generateRelatorioHTML, generateMetodologiaHTML, generateArtigosCruzamentoHTML,
+} from '@/components/estatisticas/orcamento/generateOrcamentoHTML';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -556,6 +561,9 @@ export default function Orcamento() {
 
         {/* ===== VISÃO GERAL ===== */}
         <TabsContent value="visao-geral">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateVisaoGeralHTML(currentRecords)} fileName="Orcamento-Visao-Geral" compact />
+          </div>
           {/* 1) Dynamic Summary Cards — react to both toggles */}
           {hasData && !isLoading && (() => {
             const recs = artigoFilter ? currentRecords.filter(r => inferArtigosOrcamento(r).includes(artigoFilter)) : currentRecords;
@@ -799,11 +807,17 @@ export default function Orcamento() {
 
         {/* ===== UNIVERSO DA BASE ===== */}
         <TabsContent value="universo">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
+          </div>
           <UniversoBaseTab records={currentRecords} />
         </TabsContent>
 
         {/* ===== RESUMO COMPARATIVO ===== */}
-                <TabsContent value="resumo">
+        <TabsContent value="resumo">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateResumoComparativoHTML(classified.federal.all)} fileName="Orcamento-Resumo-Comparativo" compact />
+          </div>
           <div className="space-y-6">
             <div className="space-y-6">
               {/* Nota Explicativa Federal */}
@@ -1450,6 +1464,9 @@ export default function Orcamento() {
 
         {/* ===== RELATÓRIO ===== */}
         <TabsContent value="relatorio">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateRelatorioHTML(classified.federal.all)} fileName="Relatorio-Orcamentario" compact />
+          </div>
           <div className="space-y-6">
             {classified.federal.all.length > 0 ? (
               <FederalRelatorioTab
@@ -1467,11 +1484,17 @@ export default function Orcamento() {
 
         {/* ===== ARTIGOS ICERD ===== */}
         <TabsContent value="artigos">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateArtigosCruzamentoHTML(currentRecords)} fileName="Orcamento-Artigos-ICERD" compact />
+          </div>
           <ArtigoCruzamentoTab records={currentRecords} />
         </TabsContent>
 
         {/* ===== METODOLOGIA ===== */}
         <TabsContent value="metodologia">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateMetodologiaHTML} fileName="Orcamento-Metodologia" compact />
+          </div>
           <div className="space-y-6">
             <Card>
               <CardHeader>
