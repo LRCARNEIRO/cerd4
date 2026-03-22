@@ -366,7 +366,7 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
     const naoCumprido = artigoLacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
 
     // Find related budget
-    const artigoOrc = (d.orcDados || []).filter(o => (o.artigos_convencao || []).includes(artigo));
+    const artigoOrc = (d.orcDados || []).filter(o => ((o as any).artigos_convencao || []).includes(artigo));
     const totalDotacao = artigoOrc.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
     const totalPago = artigoOrc.reduce((a, r) => a + (Number(r.pago) || 0), 0);
 
