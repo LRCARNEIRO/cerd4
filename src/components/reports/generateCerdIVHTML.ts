@@ -641,7 +641,7 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
     const artigo = info.numero;
     const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo));
     const artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
-    const artigoNormativos = (d.normativos || []).filter((n: any) => ((n.artigos_convencao || []).length ? (n.artigos_convencao || []).includes(artigo) : false);
+    const artigoNormativos = (d.normativos || []).filter((n: any) => ((n.artigos_convencao || []).length ? (n.artigos_convencao || []).includes(artigo) : false));
     const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
