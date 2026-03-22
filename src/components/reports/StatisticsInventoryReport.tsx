@@ -29,6 +29,13 @@ import {
 import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
 
+// Safe number formatter — prevents null/undefined crashes
+function safeNum(n: any): string {
+  if (n == null) return '—';
+  if (typeof n === 'number') return n.toLocaleString('pt-BR');
+  return String(n);
+}
+
 // ─── Helper: render any array of objects as HTML table ───
 function arrayToHTMLTable(data: any[], title?: string): string {
   if (!data || data.length === 0) return '';
