@@ -19,7 +19,17 @@ export function DocumentReportCards() {
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcStats } = useOrcamentoStats();
+  const { data: orcDados } = useDadosOrcamentarios();
   const mirror = useMirrorData();
+
+  // Fetch normativos for CERD IV report
+  const { data: normativos } = useQuery({
+    queryKey: ['documentos_normativos_cerdiv'],
+    queryFn: async () => {
+      const { data } = await supabase.from('documentos_normativos').select('*').order('created_at', { ascending: false });
+      return data || [];
+    },
+  });
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
@@ -27,7 +37,7 @@ export function DocumentReportCards() {
   const [generatingMethodology, setGeneratingMethodology] = useState(false);
 
   const {
-    fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
   } = useAnalyticalInsights();
 
   const totalLacunas = stats?.total || 0;
