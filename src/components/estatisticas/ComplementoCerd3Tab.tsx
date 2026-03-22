@@ -48,6 +48,40 @@ function isPctKey(key: string): boolean {
   return /^pct_|^razao_|_pct$|_razao$|_ratio$/.test(key);
 }
 
+function isTemporalKey(key: string): boolean {
+  return /^\d{4}$/.test(key) || /^(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[_\-\s]?\d{4}$/i.test(key);
+}
+
+function formatTemporalLabel(key: string): string {
+  if (/^\d{4}$/.test(key)) return key;
+  const match = key.match(/^(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[_\-\s]?(\d{4})$/i);
+  if (!match) return key.replace(/_/g, '/');
+  return `${match[1].toLowerCase()}/${match[2]}`;
+}
+
+function getTemporalSortValue(key: string): number {
+  if (/^\d{4}$/.test(key)) return Number(key) * 100 + 99;
+  const match = key.match(/^(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)[_\-\s]?(\d{4})$/i);
+  if (!match) return Number.MAX_SAFE_INTEGER;
+
+  const monthOrder: Record<string, number> = {
+    jan: 1,
+    fev: 2,
+    mar: 3,
+    abr: 4,
+    mai: 5,
+    jun: 6,
+    jul: 7,
+    ago: 8,
+    set: 9,
+    out: 10,
+    nov: 11,
+    dez: 12,
+  };
+
+  return Number(match[2]) * 100 + monthOrder[match[1].toLowerCase()];
+}
+
 function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
   const excludeMeta = new Set([
     'nota', 'unidade', 'paragrafos_cerd', 'lacuna_desagregacao_racial', 'datamigra_bi_url',
@@ -69,35 +103,35 @@ function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
 
   const pctSeriesKeys: string[] = [];
   const absSeriesKeys: string[] = [];
-  const allYears = new Set<string>();
+  const allPeriods = new Set<string>();
 
   for (const [k, v] of Object.entries(dados)) {
     if (excludeMeta.has(k)) continue;
     if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
       const subKeys = Object.keys(v);
-      const yearsOnly = subKeys.filter(s => /^\d{4}$/.test(s));
-      if (yearsOnly.length >= 2) {
-        const firstVal = v[yearsOnly[0]];
+      const temporalKeys = subKeys.filter(isTemporalKey);
+      if (temporalKeys.length >= 2) {
+        const firstVal = v[temporalKeys[0]];
         if (typeof firstVal === 'number' || typeof firstVal === 'string' || (typeof firstVal === 'object' && firstVal !== null)) {
           if (isPctKey(k)) pctSeriesKeys.push(k);
           else absSeriesKeys.push(k);
-          yearsOnly.forEach(y => allYears.add(y));
+          temporalKeys.forEach(period => allPeriods.add(period));
         }
       }
     }
   }
 
-  if ((pctSeriesKeys.length + absSeriesKeys.length) === 0 || allYears.size < 2) return null;
+  if ((pctSeriesKeys.length + absSeriesKeys.length) === 0 || allPeriods.size < 2) return null;
 
-  const sortedYears = Array.from(allYears).sort();
+  const sortedPeriods = Array.from(allPeriods).sort((a, b) => getTemporalSortValue(a) - getTemporalSortValue(b));
 
   const pctDisplayKeys: string[] = [];
   const absDisplayKeys: string[] = [];
 
-  const chartData = sortedYears.map(year => {
-    const point: Record<string, any> = { ano: year };
+  const chartData = sortedPeriods.map(period => {
+    const point: Record<string, any> = { ano: formatTemporalLabel(period) };
     for (const sk of [...pctSeriesKeys, ...absSeriesKeys]) {
-      const val = dados[sk]?.[year];
+      const val = dados[sk]?.[period];
       if (val === undefined || val === null) continue;
       const isPct = isPctKey(sk);
       if (typeof val === 'object' && !Array.isArray(val)) {
@@ -118,7 +152,7 @@ function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
   });
 
   return {
-    years: sortedYears,
+    years: sortedPeriods.map(formatTemporalLabel),
     chartData,
     pctKeys: pctDisplayKeys,
     absKeys: absDisplayKeys,
@@ -288,7 +322,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
   const absKey = Object.keys(dados).find(k =>
     !excludeMeta.has(k) && !k.startsWith('url_') && !isPctKey(k) &&
     typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
-    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+    !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
   );
 
   if (absKey) {
@@ -299,7 +333,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
       // Look for matching pct key
       const pctKey = Object.keys(dados).find(k =>
         isPctKey(k) && typeof dados[k] === 'object' && dados[k] !== null &&
-        !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+        !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
       );
       const pctObj = pctKey ? dados[pctKey] as Record<string, number> : null;
 
@@ -341,7 +375,7 @@ function extractDistributionData(dados: Record<string, any>): DistributionData |
   const pctOnlyKey = Object.keys(dados).find(k =>
     !excludeMeta.has(k) && !k.startsWith('url_') && isPctKey(k) &&
     typeof dados[k] === 'object' && dados[k] !== null && !Array.isArray(dados[k]) &&
-    !Object.keys(dados[k]).every((s: string) => /^\d{4}$/.test(s))
+    !Object.keys(dados[k]).every((s: string) => isTemporalKey(s))
   );
 
   if (pctOnlyKey) {
@@ -434,7 +468,7 @@ function SnapshotTable({ dados }: { dados: Record<string, any> }) {
       rows.push({ key: k.replace(/_/g, ' '), value: v.toLocaleString('pt-BR') });
     } else if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
       const subKeys = Object.keys(v);
-      if (subKeys.length > 0 && subKeys.every(s => /^\d{4}$/.test(s))) continue;
+      if (subKeys.length > 0 && subKeys.every(isTemporalKey)) continue;
       // Skip objects already handled by distribution chart
       if (subKeys.some(s => typeof (v as any)[s] === 'object' && (v as any)[s]?.absoluto != null)) continue;
       for (const [sk, sv] of Object.entries(v as Record<string, any>)) {
