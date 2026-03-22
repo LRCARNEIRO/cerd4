@@ -3,13 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass } from 'lucide-react';
 import { useState } from 'react';
-import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useDadosOrcamentarios } from '@/hooks/useLacunasData';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
-import { generateCerdIVHTML } from './generateCerdIVHTML';
+import { generateCerdIVFullHTML } from './generateCerdIVHTML';
 import { generateMethodologyHTML } from './generateMethodologyHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
