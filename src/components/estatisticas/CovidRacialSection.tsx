@@ -451,7 +451,7 @@ export function CovidRacialSection() {
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
                   <Tooltip 
                     formatter={(value: number, name: string) => [
-                      `${value}%`, name === 'letalidade' ? 'Letalidade' : 'Sobrevivência'
+                      `${value}%`, name === 'letalidade' ? 'Letalidade' : name === 'sobrevivencia' ? 'Sobrevivência' : name
                     ]}
                     contentStyle={{
                       backgroundColor: 'hsl(var(--card))',
