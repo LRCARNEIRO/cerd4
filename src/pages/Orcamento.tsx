@@ -814,7 +814,10 @@ export default function Orcamento() {
         </TabsContent>
 
         {/* ===== RESUMO COMPARATIVO ===== */}
-                <TabsContent value="resumo">
+        <TabsContent value="resumo">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateResumoComparativoHTML(classified.federal.all)} fileName="Orcamento-Resumo-Comparativo" compact />
+          </div>
           <div className="space-y-6">
             <div className="space-y-6">
               {/* Nota Explicativa Federal */}
