@@ -439,9 +439,14 @@ export function getStage3Categories(): string[] {
   return ['common_core', 'adm_publica', 'covid_racial', 'grupos_focais'];
 }
 
-/** Stage 4 categories (Complemento CERD 3) */
+/** Stage 4 categories (Complemento CERD 3) — must include ALL categories used by complementoCerd3Indicators */
 export function getStage4Categories(): string[] {
-  return ['trabalho_renda', 'cultura_patrimonio', 'legislacao_justica', 'terra_territorio', 'Cultura'];
+  return [
+    'trabalho_renda', 'cultura_patrimonio', 'legislacao_justica',
+    'terra_territorio', 'Cultura', 'participacao_social',
+    'saude', 'educacao', 'seguranca_publica', 'habitacao',
+    'Demografia', 'Infraestrutura',
+  ];
 }
 
 /** Build Stage 4 indicators from ComplementoCerd3Data */

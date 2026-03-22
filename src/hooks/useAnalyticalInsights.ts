@@ -392,13 +392,17 @@ function gerarFiosCondutores(
     g => !lacunas.some(l => l.grupo_focal === g)
   );
 
+  // ODS Racial — evidências transversais
+  const odsRacialIndicadores = indicadores.filter(i => i.categoria === 'ods_racial');
+  const odsGrupos = [...new Set(odsRacialIndicadores.map(i => i.subcategoria).filter(Boolean))];
+
   fios.push({
     id: 'invisibilidade-dados',
     titulo: 'Invisibilidade Estatística e Lacunas de Dados',
     tipo: 'lacuna_critica',
-    argumento: `${lacunasDados.length} observações da ONU sobre dados/estatísticas. ${gruposSemDados.length > 0 ? `Grupos sem representação nos dados: ${gruposSemDados.map(g => grupoLabels[g]).join(', ')}.` : ''} O Censo 2022 foi avanço histórico (primeira contagem de quilombolas), mas persistem lacunas em dados interseccionais sistemáticos — especialmente para povos ciganos, população LGBTQIA+ negra e PcD negros.`,
+    argumento: `${lacunasDados.length} observações da ONU sobre dados/estatísticas. ${gruposSemDados.length > 0 ? `Grupos sem representação nos dados: ${gruposSemDados.map(g => grupoLabels[g]).join(', ')}.` : ''} O Censo 2022 foi avanço histórico (primeira contagem de quilombolas), mas persistem lacunas em dados interseccionais sistemáticos — especialmente para povos ciganos, população LGBTQIA+ negra e PcD negros. O monitoramento ODS Racial (${odsRacialIndicadores.length} indicadores em ${odsGrupos.length} grupos temáticos) evidencia desigualdades persistentes nas metas da Agenda 2030.`,
     evidencias: [
-      { texto: `${indicadores.length} indicadores interseccionais no banco`, fonte: 'BD Sistema', tipo: 'quantitativa' },
+      { texto: `${indicadores.length} indicadores interseccionais no banco (incluindo ${odsRacialIndicadores.length} ODS Racial)`, fonte: 'BD Sistema', tipo: 'quantitativa' },
       { texto: `${lacunasDados.length} lacunas ONU sobre dados`, fonte: 'CERD/C/BRA/CO/18-20', tipo: 'qualitativa' },
       ...gruposSemDados.map(g => ({
         texto: `${grupoLabels[g]}: sem dados sistemáticos desagregados`,
@@ -410,6 +414,30 @@ function gerarFiosCondutores(
     grupos: gruposSemDados,
     relevancia: 'media'
   });
+
+  // FIO 11: ODS Racial — Agenda 2030 e Desigualdade Racial
+  if (odsRacialIndicadores.length > 0) {
+    const odsCrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'crescente').length;
+    const odsDecrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'decrescente').length;
+    const evidOds: EvidenciaDinamica[] = odsRacialIndicadores.slice(0, 6).map(i => ({
+      texto: `${i.nome}: tendência ${i.tendencia || 'sem dados'}`,
+      fonte: i.fonte,
+      tipo: 'quantitativa' as const,
+    }));
+
+    fios.push({
+      id: 'ods-racial-agenda-2030',
+      titulo: 'ODS e Desigualdade Racial: Agenda 2030 sob Perspectiva Étnico-Racial',
+      tipo: odsDecrescentes > odsCrescentes ? 'retrocesso' : 'correlacao',
+      argumento: `${odsRacialIndicadores.length} indicadores ODS desagregados por raça/cor revelam que a Agenda 2030 não avança de forma equitativa para a população negra e indígena. ${odsCrescentes > 0 ? `${odsCrescentes} indicadores mostram tendência positiva.` : ''} ${odsDecrescentes > 0 ? `${odsDecrescentes} indicadores registram retrocesso ou estagnação.` : ''} Os ODS com maior disparidade racial incluem saúde (ODS 3), educação (ODS 4), trabalho (ODS 8), desigualdade (ODS 10) e segurança (ODS 16). Esta análise evidencia que o cumprimento formal dos ODS mascara desigualdades raciais estruturais.`,
+      evidencias: evidOds,
+      eixos: ['dados_estatisticas', 'saude', 'educacao', 'trabalho_renda', 'seguranca_publica'],
+      grupos: ['negros', 'indigenas'],
+      relevancia: 'alta',
+      comparativo2018: `Os ODS foram adotados em 2015. Os dados de 2018-2024 mostram que indicadores agregados (nacionais) melhoraram, mas a desagregação racial revela estagnação ou piora para populações negras e indígenas em vários ODS.`,
+      artigosConvencao: ['I', 'II', 'V'],
+    });
+  }
 
   // FIO 8: Administração Pública — MUNIC/ESTADIC 2024
   fios.push({
