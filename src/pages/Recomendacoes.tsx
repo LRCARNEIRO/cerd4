@@ -169,6 +169,9 @@ export default function Recomendacoes() {
         </TabsList>
 
         <TabsContent value="observacoes">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
+          </div>
           <ObservacoesFinaisTab />
         </TabsContent>
 
