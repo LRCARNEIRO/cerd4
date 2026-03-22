@@ -23,30 +23,41 @@ const quilombolaPorUF: StateDataEntry[] = [
 /* ================================================================
    2. INDÍGENAS EM TIs vs FORA — Censo 2022 / SIDRA 9970
    ================================================================ */
-interface IndigenaTIRow { region: string; emTI: number; foraTI: number; total: number; pctEmTI: string }
-const indigenaTIRegiao: IndigenaTIRow[] = [
-  { region: 'Norte', emTI: 316827, foraTI: 436953, total: 753780, pctEmTI: '42,0%' },
-  { region: 'Nordeste', emTI: 129882, foraTI: 399246, total: 529128, pctEmTI: '24,5%' },
-  { region: 'Centro-Oeste', emTI: 114201, foraTI: 85952, total: 200153, pctEmTI: '57,1%' },
-  { region: 'Sudeste', emTI: 21525, foraTI: 101909, total: 123434, pctEmTI: '17,4%' },
-  { region: 'Sul', emTI: 40409, foraTI: 47932, total: 88341, pctEmTI: '45,7%' },
+interface IndigenaTIRow { uf: string; emTI: number; foraTI: number; total: number; pctEmTI: string }
+const indigenaTIUF: IndigenaTIRow[] = [
+  { uf: 'AC', emTI: 19583, foraTI: 12111, total: 31694, pctEmTI: '61,8%' },
+  { uf: 'AL', emTI: 6672, foraTI: 19053, total: 25725, pctEmTI: '25,9%' },
+  { uf: 'AM', emTI: 149080, foraTI: 341855, total: 490935, pctEmTI: '30,4%' },
+  { uf: 'AP', emTI: 7853, foraTI: 3481, total: 11334, pctEmTI: '69,3%' },
+  { uf: 'BA', emTI: 17211, foraTI: 212232, total: 229443, pctEmTI: '7,5%' },
+  { uf: 'CE', emTI: 10521, foraTI: 45851, total: 56372, pctEmTI: '18,7%' },
+  { uf: 'DF', emTI: 0, foraTI: 5811, total: 5811, pctEmTI: '0%' },
+  { uf: 'ES', emTI: 4663, foraTI: 9747, total: 14410, pctEmTI: '32,4%' },
+  { uf: 'GO', emTI: 344, foraTI: 19173, total: 19517, pctEmTI: '1,8%' },
+  { uf: 'MA', emTI: 41677, foraTI: 15489, total: 57166, pctEmTI: '72,9%' },
+  { uf: 'MG', emTI: 12137, foraTI: 24562, total: 36699, pctEmTI: '33,1%' },
+  { uf: 'MS', emTI: 68682, foraTI: 47787, total: 116469, pctEmTI: '59,0%' },
+  { uf: 'MT', emTI: 45175, foraTI: 13181, total: 58356, pctEmTI: '77,4%' },
+  { uf: 'PA', emTI: 41819, foraTI: 39161, total: 80980, pctEmTI: '51,6%' },
+  { uf: 'PB', emTI: 19044, foraTI: 11096, total: 30140, pctEmTI: '63,2%' },
+  { uf: 'PE', emTI: 34314, foraTI: 72332, total: 106646, pctEmTI: '32,2%' },
+  { uf: 'PI', emTI: 114, foraTI: 7088, total: 7202, pctEmTI: '1,6%' },
+  { uf: 'PR', emTI: 13893, foraTI: 16573, total: 30466, pctEmTI: '45,6%' },
+  { uf: 'RJ', emTI: 546, foraTI: 16448, total: 16994, pctEmTI: '3,2%' },
+  { uf: 'RN', emTI: 0, foraTI: 11724, total: 11724, pctEmTI: '0%' },
+  { uf: 'RO', emTI: 11525, foraTI: 9621, total: 21146, pctEmTI: '54,5%' },
+  { uf: 'RR', emTI: 71754, foraTI: 25914, total: 97668, pctEmTI: '73,5%' },
+  { uf: 'RS', emTI: 15724, foraTI: 20378, total: 36102, pctEmTI: '43,6%' },
+  { uf: 'SC', emTI: 10792, foraTI: 10981, total: 21773, pctEmTI: '49,6%' },
+  { uf: 'SE', emTI: 329, foraTI: 4381, total: 4710, pctEmTI: '7,0%' },
+  { uf: 'SP', emTI: 4179, foraTI: 51152, total: 55331, pctEmTI: '7,6%' },
+  { uf: 'TO', emTI: 15213, foraTI: 4810, total: 20023, pctEmTI: '76,0%' },
 ];
-const indigenaEmTIPorUF: StateDataEntry[] = [
-  { uf: 'AM', value: 149080, label: '30,4% em TI' }, { uf: 'RR', value: 71754, label: '73,5% em TI' },
-  { uf: 'MS', value: 68682, label: '59,0% em TI' }, { uf: 'MT', value: 45175, label: '77,4% em TI' },
-  { uf: 'MA', value: 41677, label: '72,9% em TI' }, { uf: 'PA', value: 41819, label: '51,6% em TI' },
-  { uf: 'PE', value: 34314, label: '32,2% em TI' }, { uf: 'AC', value: 19583, label: '61,8% em TI' },
-  { uf: 'PB', value: 19044, label: '63,2% em TI' }, { uf: 'BA', value: 17211, label: '7,5% em TI' },
-  { uf: 'RS', value: 15724, label: '43,6% em TI' }, { uf: 'TO', value: 15213, label: '76,0% em TI' },
-  { uf: 'PR', value: 13893, label: '45,6% em TI' }, { uf: 'MG', value: 12137, label: '33,1% em TI' },
-  { uf: 'RO', value: 11525, label: '54,5% em TI' }, { uf: 'SC', value: 10792, label: '49,6% em TI' },
-  { uf: 'CE', value: 10521, label: '18,7% em TI' }, { uf: 'AP', value: 7853, label: '69,3% em TI' },
-  { uf: 'AL', value: 6672, label: '25,9% em TI' }, { uf: 'ES', value: 4663, label: '32,4% em TI' },
-  { uf: 'SP', value: 4179, label: '7,6% em TI' }, { uf: 'RJ', value: 546, label: '3,2% em TI' },
-  { uf: 'GO', value: 344, label: '1,8% em TI' }, { uf: 'SE', value: 329, label: '7,0% em TI' },
-  { uf: 'PI', value: 114, label: '1,6% em TI' }, { uf: 'DF', value: 0, label: '0% em TI' },
-  { uf: 'RN', value: 0, label: '0% em TI' },
-];
+const indigenaEmTIPorUF: StateDataEntry[] = indigenaTIUF.map((item) => ({
+  uf: item.uf,
+  value: item.emTI,
+  label: `${item.pctEmTI} em TI`,
+}));
 
 /* ================================================================
    COMPONENT
