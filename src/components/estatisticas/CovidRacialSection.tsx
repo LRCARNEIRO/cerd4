@@ -299,7 +299,9 @@ export function CovidRacialSection() {
             <p className="text-xs text-muted-foreground">RMM Mães Pretas (pico 2021)</p>
             <p className="text-2xl font-bold">179,4</p>
             <p className="text-xs text-muted-foreground">por 100 mil NV (IEPS Çarê)</p>
-            <AuditFooter fontes={FONTE_DATASUS_SIM} compact />
+            <AuditFooter fontes={[
+              { nome: 'IEPS Boletim Çarê (Jul/2025) — Mortalidade Materna por Raça', url: 'https://ieps.org.br/boletim-care-ieps-07-2025/' },
+            ]} compact />
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-3">
