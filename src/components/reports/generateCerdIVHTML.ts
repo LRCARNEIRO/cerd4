@@ -578,7 +578,7 @@ function buildEvidenceHighlights(artigo: string, d: CerdIVFullData, seg: any[], 
 
   if (artigo === 'III') {
     blocks.push(dataCards([
-      { value: fmtNum(num(povos?.indigenas?.populacaoPessoasIndigenas || 1694836)), label: 'Povos indígenas (Censo 2022)' },
+      { value: fmtNum(num(povos?.indigenas?.populacaoPessoasIndigenas || 1227642)), label: 'Povos indígenas (Censo 2022)' },
       { value: fmtNum(num(povos?.quilombolas?.populacao || 1327802)), label: 'População quilombola' },
       { value: fmtNum(num(povos?.quilombolas?.territoriosTitulados || 52)), label: 'Territórios quilombolas titulados' },
       { value: `${num(povos?.indigenas?.terrasHomologadas2023_2025 || 0)}`, label: 'TIs homologadas 2023-2025' },
