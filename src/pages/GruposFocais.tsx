@@ -28,20 +28,17 @@ const gruposFocaisData = {
   },
   indigenas: {
     nome: 'Indígenas',
-    // Dados do Censo 2022 - critério "Pessoas Indígenas" (metodologia ampliada)
-    // Fonte oficial: https://www.ibge.gov.br/brasil-indigena/
-    populacao: 1694836,
-    fonte: 'IBGE - Censo Demográfico 2022 (Pessoas Indígenas)',
-    // Tabela correta: 9514 (População residente por cor ou raça - conceito ampliado, inclui Pessoas Indígenas)
-    // Fonte primária para o total 1.694.836: IBGE Brasil Indígena (consolidação oficial)
-    tabela: 'IBGE Brasil Indígena / Tabela 9514 - SIDRA',
-    link: 'https://www.ibge.gov.br/brasil-indigena/',
-    linkSidra: 'https://sidra.ibge.gov.br/tabela/9514',
+    // Dados do Censo 2022 - critério Cor/Raça (Tabela 9605)
+    // Fonte oficial: https://sidra.ibge.gov.br/Tabela/9605
+    populacao: 1227642,
+    fonte: 'IBGE - Censo Demográfico 2022 (Cor/Raça — SIDRA 9605)',
+    tabela: 'SIDRA 9605 - Cor ou Raça',
+    link: 'https://sidra.ibge.gov.br/Tabela/9605',
+    linkSidra: 'https://sidra.ibge.gov.br/Tabela/9605',
     ultimaAtualizacao: '2024-10-24',
-    // Série temporal com dados anteriores (Cor ou Raça) e novo critério
     serieTemporal: [
-      { ano: 2010, valor: 896917, fonte: 'Censo 2010 - Pessoas Indígenas' },
-      { ano: 2022, valor: 1694836, fonte: 'Censo 2022 - Pessoas Indígenas' },
+      { ano: 2010, valor: 896917, fonte: 'Censo 2010 - Cor/Raça Indígena' },
+      { ano: 2022, valor: 1227642, fonte: 'Censo 2022 - Cor/Raça Indígena (SIDRA 9605)' },
     ],
     populacaoCorRaca: 1227642, // Tabela 9605 - Cor ou Raça (indígena como categoria)
     observacoesONU: ['50', '51', '52', '53'],
