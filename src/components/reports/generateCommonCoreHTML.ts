@@ -64,7 +64,8 @@ li { margin-bottom: 0.2cm; }
 @media print { .print-instructions { display: none; } body { padding: 0; } }
 `;
 
-function formatNum(n: number): string {
+function formatNum(n: number | null | undefined): string {
+  if (n == null) return '—';
   return n.toLocaleString('pt-BR');
 }
 

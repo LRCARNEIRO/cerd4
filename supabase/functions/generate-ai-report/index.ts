@@ -301,7 +301,7 @@ Fontes: Fiocruz, DataSUS/SIM, SESAI, PNAD Contínua, POF/IBGE`);
       const dados = i.dados || {};
       let dadosStr = '';
       Object.entries(dados).forEach(([key, values]: [string, any]) => {
-        if (typeof values === 'object') {
+        if (values != null && typeof values === 'object') {
           const anos = Object.keys(values).sort();
           if (anos.length > 0) {
             const primeiro = anos[0];
