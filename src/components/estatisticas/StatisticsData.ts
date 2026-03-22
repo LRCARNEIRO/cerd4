@@ -1224,7 +1224,7 @@ export const resumoExecutivo = {
     preta: 20656458,
     negra: 112739744, // parda + preta (92.083.286 + 20.656.458)
     percentualNegro: 55.51,
-    indigena: 1694836, // Tabela 9718 - Pessoas indígenas
+    indigena: 1227642, // Tabela 9605 - Cor/Raça Indígena
     amarela: 850130,
     quilombola: 1330186 // Tabela 9578
   },

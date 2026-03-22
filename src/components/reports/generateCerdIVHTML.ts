@@ -832,7 +832,7 @@ function renderTraditionalPeoples(povos: any): string {
   <div class="section">
     <h3>A. Povos Indígenas</h3>
     <div class="highlight-box">
-      <p><strong>População:</strong> ${fmtNum(povos?.indigenas?.populacaoPessoasIndigenas || 1694836)} pessoas (Censo 2022) — ${povos?.indigenas?.etnias || 305} etnias, ${povos?.indigenas?.linguas || 274} línguas</p>
+      <p><strong>População:</strong> ${fmtNum(povos?.indigenas?.populacaoPessoasIndigenas || 1227642)} pessoas (Censo 2022) — ${povos?.indigenas?.etnias || 305} etnias, ${povos?.indigenas?.linguas || 274} línguas</p>
       <p><strong>Territórios:</strong> ${povos?.indigenas?.terrasHomologadas2018_2022 || 0} terras homologadas (2018-2022), ${povos?.indigenas?.terrasHomologadas2023_2025 || 0} em 2023-2025</p>
       <p>Destaque: 63,4% da população indígena reside <strong>fora de Terras Indígenas</strong>, enfrentando vulnerabilidades urbanas e invisibilidade estatística.</p>
     </div>
