@@ -239,7 +239,7 @@ ${arrayToHTMLTable(feminicidioSerie, '')}
 
 <h3>2.3. Educação — Série Histórica</h3>
 ${arrayToHTMLTable(educacaoSerieHistorica, '')}
-<div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (${safeNum(analfabetismoGeral2024.totalAnalfabetos?)} pessoas).</div>
+<div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (${safeNum(analfabetismoGeral2024.totalAnalfabetos)} pessoas).</div>
 
 <h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
 ${arrayToHTMLTable(saudeSerieHistorica, '')}
