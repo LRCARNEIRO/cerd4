@@ -442,7 +442,7 @@ export function DadosGeraisTab() {
                 );
               })()}
               <p className="text-[10px] text-muted-foreground mt-1 italic">
-                ⚠️ Linha US$6,85 PPC 2017/dia (≈ R$665/mês). 2022: dado combinado pretos/pardos (SIS 2023 não desagregou). 2023: pretos desagregado (SIS 2024). Pardos 2023: 35,5%.
+                ⚠️ Linha US$6,85 PPC 2017/dia. Fonte: SIS/IBGE Tabela 2.17 — Proporção de pessoas por classes de rendimento domiciliar per capita. 2023 não disponível por raça combinada.
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
