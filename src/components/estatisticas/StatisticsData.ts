@@ -96,17 +96,18 @@ export const dadosDemograficos = {
 // Anos 2025-2026: Projeções baseadas em tendência histórica
 // =============================================
 export const evolucaoComposicaoRacial = [
-  // Valores corrigidos conforme auditoria: PNAD Contínua Trimestral - SIDRA Tabela 6403
+  // AUDITORIA MANUAL 22/03/2026: Valores corrigidos conforme planilha de auditagem (Dados Gerais)
+  // Fonte: PNAD Contínua Anual - SIDRA Tabela 6403
   // URL: https://sidra.ibge.gov.br/tabela/6403
-  // Média simples dos trimestres de cada ano
-  { ano: 2018, branca: 42.9, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2018 (SIDRA 6403)' },
-  { ano: 2019, branca: 42.4, negra: 56.6, fonte: 'PNAD Contínua Trimestral 2019 (SIDRA 6403)' },
-  { ano: 2020, branca: 43.1, negra: 56.0, fonte: 'PNAD Contínua Trimestral 2020 (SIDRA 6403)' },
-  { ano: 2021, branca: 43.4, negra: 55.6, fonte: 'PNAD Contínua Trimestral 2021 (SIDRA 6403)' },
-  { ano: 2022, branca: 43.1, negra: 55.8, fonte: 'PNAD Contínua Trimestral 2022 (SIDRA 6403)' },
-  { ano: 2023, branca: 42.7, negra: 56.2, fonte: 'PNAD Contínua Trimestral 2023 (SIDRA 6403)' },
-  // DIEESE Q2 2024: população negra = 56,7% (SINESP/DIEESE Nov/2024)
-  { ano: 2024, branca: 42.3, negra: 56.7, fonte: 'PNAD Contínua Q2 2024 (DIEESE/SINESP Nov/2024)' },
+  // NOTA: Pop. negra = pretos + pardos. Pop. branca inclui amarelos (conforme IBGE).
+  { ano: 2018, branca: 43.39, negra: 56.93, fonte: 'PNAD Contínua Anual 2018 (SIDRA 6403)' },
+  { ano: 2019, branca: 43.16, negra: 57.73, fonte: 'PNAD Contínua Anual 2019 (SIDRA 6403)' },
+  { ano: 2020, branca: 44.12, negra: 57.35, fonte: 'PNAD Contínua Anual 2020 (SIDRA 6403)' },
+  { ano: 2021, branca: 44.67, negra: 57.19, fonte: 'PNAD Contínua Anual 2021 (SIDRA 6403)' },
+  { ano: 2022, branca: 44.59, negra: 57.72, fonte: 'PNAD Contínua Anual 2022 (SIDRA 6403)' },
+  { ano: 2023, branca: 44.40, negra: 58.35, fonte: 'PNAD Contínua Anual 2023 (SIDRA 6403)' },
+  { ano: 2024, branca: 44.18, negra: 59.07, fonte: 'PNAD Contínua Anual 2024 (SIDRA 6403)' },
+  { ano: 2025, branca: 44.48, negra: 59.21, fonte: 'PNAD Contínua Anual 2025 (SIDRA 6403)' },
 ];
 
 // =============================================
