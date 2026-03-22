@@ -136,11 +136,11 @@ export function DadosGeraisTab() {
         </Card>
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Povos Indígenas</p>
-            <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.composicaoRacial[3].populacao)}</p>
+            <p className="text-xs text-muted-foreground">Povos Indígenas (Censo 2022)</p>
+            <p className="text-2xl font-bold">{formatNumber(1694836)}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              <a href="https://www.ibge.gov.br/brasil-indigena/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                IBGE Brasil Indígena — Censo 2022 <ExternalLink className="w-3 h-3" />
+              <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                IBGE — Pessoas indígenas (Tabela 9718) <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>
@@ -228,10 +228,10 @@ export function DadosGeraisTab() {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Evolução da Autodeclaração Racial (2018-2024)
+              Evolução da Autodeclaração Racial (2018-2025)
             </CardTitle>
             <CardDescription>
-              % da população branca vs negra (pretos + pardos) | PNAD Contínua Trimestral - SIDRA Tabela 6403
+              % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual - SIDRA Tabela 6403
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -282,7 +282,7 @@ export function DadosGeraisTab() {
       {/* Indicadores socioeconômicos - série histórica */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2024)</CardTitle>
+          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2025)</CardTitle>
           <CardDescription>
             Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6405, 6402, 6403)
           </CardDescription>
@@ -403,18 +403,20 @@ export function DadosGeraisTab() {
             {/* Pobreza */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <h4 className="text-sm font-medium">Taxa de Pobreza: Pretos × Brancos (%) — Linha US$6,85/dia</h4>
+                <h4 className="text-sm font-medium">Taxa de Pobreza: Negros × Brancos (%) — Linha US$6,85/dia</h4>
                 <Badge variant="outline" className="text-[10px] gap-1 border-emerald-300 text-emerald-700">
-                  SIS/IBGE — Dados verificados (2022-2023)
+                  SIS/IBGE — Dados verificados (2018-2024)
                 </Badge>
               </div>
               {(() => {
-                // Dados verificados SIS/IBGE:
-                // 2022 (SIS 2023): Pretos/Pardos 40,0% | Brancos 21,0% — dado combinado (preto separado não publicado)
-                // 2023 (SIS 2024): Pretos 30,8% | Brancos 17,7%
+                // AUDITORIA 22/03/2026: Pobreza verificada via SIS/IBGE Tabela 2.17
                 const pobrezaBarData = [
-                  { ano: '2022', pretos: 40.0, brancos: 21.0, nota: 'Pretos/Pardos (combinado)' },
-                  { ano: '2023', pretos: 30.8, brancos: 17.7, nota: 'Pretos (desagregado)' },
+                  { ano: '2018', negros: 42.3, brancos: 21.9 },
+                  { ano: '2019', negros: 41.6, brancos: 20.6 },
+                  { ano: '2020', negros: 39.3, brancos: 20.3 },
+                  { ano: '2021', negros: 46.2, brancos: 24.6 },
+                  { ano: '2022', negros: 40.0, brancos: 21.0 },
+                  { ano: '2024', negros: 29.0, brancos: 15.1 },
                 ];
                 return (
                   <div className="h-48">
@@ -432,7 +434,7 @@ export function DadosGeraisTab() {
                           }}
                         />
                         <Legend />
-                        <Bar dataKey="pretos" name="Pretos" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="negros" name="Negros" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                         <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -440,7 +442,7 @@ export function DadosGeraisTab() {
                 );
               })()}
               <p className="text-[10px] text-muted-foreground mt-1 italic">
-                ⚠️ Linha US$6,85 PPC 2017/dia (≈ R$665/mês). 2022: dado combinado pretos/pardos (SIS 2023 não desagregou). 2023: pretos desagregado (SIS 2024). Pardos 2023: 35,5%.
+                ⚠️ Linha US$6,85 PPC 2017/dia. Fonte: SIS/IBGE Tabela 2.17 — Proporção de pessoas por classes de rendimento domiciliar per capita. 2023 não disponível por raça combinada.
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 <a href="https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
