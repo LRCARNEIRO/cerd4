@@ -150,8 +150,10 @@ export function DocumentReportCards() {
     }
   };
 
+  const [generatingBudget, setGeneratingBudget] = useState(false);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-6">
       {/* Common Core Document */}
       <Card className="border-l-4 border-l-primary">
         <CardContent className="pt-6 space-y-4">
