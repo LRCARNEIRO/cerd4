@@ -101,7 +101,7 @@ function indicadorToHTML(ind: any): string {
     }
     html += `<tr><td>${formatGroup(g)}</td>${years.map((_, yi) => {
       const v = chartData[yi]?.[g];
-      return `<td>safeNum(${v !== undefined ? (typeof v === 'number' ? v) : v) : '—'}</td>`;
+      return `<td>${v !== undefined && v !== null ? (typeof v === 'number' ? v.toLocaleString('pt-BR') : v) : '—'}</td>`;
     }).join('')}<td>${variation}</td></tr>`;
   }
   html += `</tbody></table>`;
