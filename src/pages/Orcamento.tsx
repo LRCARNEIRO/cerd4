@@ -1484,6 +1484,9 @@ export default function Orcamento() {
 
         {/* ===== ARTIGOS ICERD ===== */}
         <TabsContent value="artigos">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateArtigosCruzamentoHTML(currentRecords)} fileName="Orcamento-Artigos-ICERD" compact />
+          </div>
           <ArtigoCruzamentoTab records={currentRecords} />
         </TabsContent>
 
