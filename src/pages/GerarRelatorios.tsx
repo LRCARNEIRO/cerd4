@@ -384,6 +384,19 @@ ${(respostasCerd || []).map(r => {
 
         {/* ABA: ORÇAMENTO */}
         <TabsContent value="orcamento">
+          <Card className="mb-6 border-l-4 border-l-primary">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <DollarSign className="w-6 h-6 text-primary flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold mb-1">Relatório Orçamentário Consolidado</h3>
+                  <p className="text-sm text-muted-foreground">
+                    O relatório está nesta própria aba <strong>Produtos → Relatórios → Orçamento</strong>, no card abaixo, com geração em PDF/HTML e DOCX.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <BudgetReportGenerator />
         </TabsContent>
 
