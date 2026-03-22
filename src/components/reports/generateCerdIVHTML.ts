@@ -10,7 +10,7 @@
 
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento } from '@/utils/artigosConvencao';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
 import {
@@ -49,10 +49,22 @@ export interface CerdIVFullData {
     evolucaoDesigualdade?: any[];
     dadosDemograficos?: any;
     povosTradicionais?: any;
+     atlasViolencia2025?: any;
+     jovensNegrosViolencia?: any;
+     saudeMaternaRaca?: any;
+     analfabetismoGeral2024?: any;
     violenciaInterseccional?: any[];
+     juventudeNegra?: any[];
     classePorRaca?: any[];
     deficitHabitacionalSerie?: any[];
     evasaoEscolarSerie?: any[];
+     rendimentosCenso2022?: any;
+     terrasQuilombolasHistorico?: any[];
+     resumoExecutivo?: any;
+     ccTablesFromBD?: any[];
+     gfMirrors?: any[];
+     covidMirrors?: any[];
+     usandoBD?: boolean;
   };
 }
 
@@ -353,213 +365,309 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
   </div>`;
 }
 
-function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any): string {
-  const artigos = Object.entries(ARTIGOS_CONVENCAO);
-  
-  const sections = artigos.map(([artigo, info]) => {
-    // Find lacunas for this article
-    const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || []).includes(artigo));
-    if (artigoLacunas.length === 0 && !['Artigo II', 'Artigo V', 'Artigo VII'].includes(artigo)) return '';
+function num(v: unknown): number {
+  const parsed = Number(v);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
 
-    const cumprido = artigoLacunas.filter(l => l.status_cumprimento === 'cumprido').length;
-    const parcial = artigoLacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
-    const naoCumprido = artigoLacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
+function uniqueStrings(values: (string | null | undefined)[]): string[] {
+  return [...new Set(values.filter(Boolean) as string[])];
+}
 
-    // Find related budget
-    const artigoOrc = (d.orcDados || []).filter(o => ((o as any).artigos_convencao || []).includes(artigo));
-    const totalDotacao = artigoOrc.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
-    const totalPago = artigoOrc.reduce((a, r) => a + (Number(r.pago) || 0), 0);
+function inferArtigosIndicador(ind: IndicadorInterseccional): string[] {
+  return ((ind as any).artigos_convencao || []) as string[];
+}
 
-    // Find related normativos
-    const artigoNormativos = (d.normativos || []).filter((n: any) => (n.artigos_convencao || []).includes(artigo));
+function pickIndicadorSnapshot(ind: IndicadorInterseccional): string {
+  const dados = ind.dados as any;
+  if (!dados || typeof dados !== 'object') return '—';
 
-    // Related indicators
-    const artigoIndicadores = d.indicadores.filter(i => ((i as any).artigos_convencao || []).includes(artigo)).slice(0, 6);
+  const source = dados.series && typeof dados.series === 'object' ? dados.series : dados;
+  const yearEntries = Object.entries(source)
+    .filter(([key, value]) => /^\d{4}$/.test(key) && value && typeof value === 'object')
+    .sort((a, b) => Number(a[0]) - Number(b[0]));
 
-    // Build thematic charts
-    const chartsHTML = buildArticleCharts(artigo, seg, fem, edu, sau, eco, evolDesig);
+  if (yearEntries.length > 0) {
+    const [year, record] = yearEntries[yearEntries.length - 1] as [string, Record<string, unknown>];
+    const priorityKeys = ['valor', 'total', 'geral', 'negros', 'negro', 'pretos_pardos', 'pretos', 'pardos', 'indigenas', 'brancos', 'branco'];
+    const match = priorityKeys.find((key) => typeof record[key] === 'number');
+    if (match) return `${fmtNum(num(record[match]))} (${year})`;
+    const firstNumeric = Object.entries(record).find(([, value]) => typeof value === 'number');
+    if (firstNumeric) return `${fmtNum(num(firstNumeric[1]))} (${year})`;
+  }
 
-    // Status summary
-    const statusHTML = artigoLacunas.length > 0 ? `
+  if (Array.isArray(dados.registros)) return `${dados.registros.length} registros`;
+  if (typeof dados.valor === 'number') return fmtNum(dados.valor);
+  if (typeof dados.total === 'number') return fmtNum(dados.total);
+  return '—';
+}
+
+function renderArticleIndicatorTable(indicadores: IndicadorInterseccional[]): string {
+  if (indicadores.length === 0) return '';
+  return `
     <table>
-      <thead><tr><th>§</th><th>Tema</th><th>Grupo Focal</th><th>Status</th><th>Prioridade</th></tr></thead>
-      <tbody>${artigoLacunas.slice(0, 15).map(l => {
-        const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
-        return `<tr>
-          <td><span class="paragraph-ref">${l.paragrafo}</span></td>
-          <td>${l.tema}</td>
-          <td>${grupoLabels[l.grupo_focal] || l.grupo_focal}</td>
-          <td><span class="badge ${st.badge}">${st.label}</span></td>
-          <td>${l.prioridade}</td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>` : '';
-
-    // Budget mini-analysis
-    const budgetHTML = totalDotacao > 0 ? `
-    <div class="budget-box">
-      <h4>💰 Investimento Orçamentário Vinculado</h4>
-      <p>Foram identificados <strong>${artigoOrc.length} registros orçamentários</strong> vinculados a este artigo, totalizando <strong>${fmtBRL(totalDotacao)}</strong> em dotação autorizada e <strong>${fmtBRL(totalPago)}</strong> efetivamente pagos${totalDotacao > 0 ? ` (execução de ${(totalPago/totalDotacao*100).toFixed(1)}%)` : ''}.</p>
-    </div>` : '';
-
-    // Normative mini-analysis
-    const normHTML = artigoNormativos.length > 0 ? `
-    <div class="normative-box">
-      <h4>📜 Marco Normativo</h4>
-      <p>${artigoNormativos.length} documentos legislativos/institucionais vinculados:</p>
-      <ul>${artigoNormativos.slice(0, 5).map((n: any) => `<li><strong>${n.titulo}</strong> — ${n.categoria}</li>`).join('')}</ul>
-    </div>` : '';
-
-    // Indicators
-    const indHTML = artigoIndicadores.length > 0 ? `
-    <div class="analysis-box">
-      <h4>📊 Indicadores Vinculados</h4>
-      <table>
-        <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
-        <tbody>${artigoIndicadores.map(i => `<tr>
+      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Último valor</th><th>Fonte</th></tr></thead>
+      <tbody>${indicadores.slice(0, 10).map(i => `
+        <tr>
           <td>${i.nome}</td>
-          <td>${i.categoria}</td>
+          <td>${eixoLabels[i.categoria] || i.categoria}</td>
           <td>${i.tendencia || '—'}</td>
+          <td>${pickIndicadorSnapshot(i)}</td>
           <td style="font-size:8.5pt">${i.fonte}</td>
         </tr>`).join('')}</tbody>
-      </table>
-    </div>` : '';
+    </table>`;
+}
 
-    // Analytical paragraph
-    const analysisText = generateArticleAnalysis(artigo, artigoLacunas, cumprido, parcial, naoCumprido, artigoOrc, artigoNormativos, artigoIndicadores);
+function renderRecommendationMatrix(lacunas: LacunaIdentificada[]): string {
+  if (lacunas.length === 0) return '';
+  return `
+    <table>
+      <thead><tr><th>§</th><th>Tema</th><th>Grupo focal</th><th>Status</th><th>Evidência/ação</th></tr></thead>
+      <tbody>${lacunas.slice(0, 12).map(l => {
+        const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
+        const evidencia = l.evidencias_encontradas?.[0] || l.acoes_brasil?.[0] || l.fontes_dados?.[0] || 'Sem evidência textual cadastrada';
+        return `
+          <tr>
+            <td><span class="paragraph-ref">${l.paragrafo}</span></td>
+            <td>${l.tema}</td>
+            <td>${grupoLabels[l.grupo_focal] || l.grupo_focal}</td>
+            <td><span class="badge ${st.badge}">${st.label}</span></td>
+            <td style="font-size:8.5pt">${evidencia}</td>
+          </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+function renderBudgetProgramsTable(orcDados: DadoOrcamentario[]): string {
+  if (orcDados.length === 0) return '';
+  const ordered = [...orcDados]
+    .sort((a, b) => num(b.pago) - num(a.pago))
+    .slice(0, 8);
+
+  return `
+    <table>
+      <thead><tr><th>Programa</th><th>Órgão</th><th>Ano</th><th>Dotação</th><th>Pago</th><th>Execução</th></tr></thead>
+      <tbody>${ordered.map(row => `
+        <tr>
+          <td>${row.programa}</td>
+          <td>${row.orgao}</td>
+          <td>${row.ano}</td>
+          <td>${fmtBRL(num(row.dotacao_autorizada))}</td>
+          <td>${fmtBRL(num(row.pago))}</td>
+          <td>${row.percentual_execucao != null ? `${num(row.percentual_execucao).toFixed(1)}%` : '—'}</td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function renderNormativeDocsTable(normativos: any[]): string {
+  if (normativos.length === 0) return '';
+  return `
+    <table>
+      <thead><tr><th>Documento</th><th>Categoria</th><th>Status</th><th>Artigos</th></tr></thead>
+      <tbody>${normativos.slice(0, 8).map((n: any) => `
+        <tr>
+          <td>${n.titulo}</td>
+          <td>${n.categoria || '—'}</td>
+          <td>${n.status || '—'}</td>
+          <td>${(n.artigos_convencao || []).join(', ') || '—'}</td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function buildEvidenceHighlights(artigo: string, d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any): string {
+  const blocks: string[] = [];
+
+  if (['II', 'V', 'VI'].includes(artigo) && seg.length > 1) {
+    const first = seg[0];
+    const last = seg[seg.length - 1];
+    blocks.push(`
+      <div class="chart-container">
+        <div class="chart-title">Segurança pública: participação de vítimas negras e letalidade policial</div>
+        ${svgLineChart({
+          label: seg.map(s => s.ano).join(','),
+          series: [
+            { name: 'Vítimas negras (%)', color: '#ef4444', values: seg.map(s => num(s.percentualVitimasNegras)) },
+            { name: 'Letalidade policial (%)', color: '#f97316', values: seg.map(s => num(s.letalidadePolicial)) },
+          ],
+        })}
+        <p style="font-size:8.5pt;margin-top:0.25cm">Leitura: o percentual de vítimas negras passou de ${num(first.percentualVitimasNegras).toFixed(1)}% para ${num(last.percentualVitimasNegras).toFixed(1)}% no período, enquanto a letalidade policial negra variou de ${num(first.letalidadePolicial).toFixed(1)}% para ${num(last.letalidadePolicial).toFixed(1)}%.</p>
+      </div>`);
+  }
+
+  if (['V', 'VII'].includes(artigo) && edu.length > 1) {
+    const first = edu[0];
+    const last = edu[edu.length - 1];
+    blocks.push(`
+      <div class="chart-container">
+        <div class="chart-title">Educação: ensino superior completo por raça</div>
+        ${svgLineChart({
+          label: edu.map(e => e.ano).join(','),
+          series: [
+            { name: 'Negros (%)', color: '#2563eb', values: edu.map(e => num(e.superiorNegroPercent)) },
+            { name: 'Brancos (%)', color: '#64748b', values: edu.map(e => num(e.superiorBrancoPercent)) },
+          ],
+        })}
+        <p style="font-size:8.5pt;margin-top:0.25cm">Leitura: o ensino superior completo entre negros saiu de ${num(first.superiorNegroPercent).toFixed(1)}% para ${num(last.superiorNegroPercent).toFixed(1)}%, mas permanece abaixo do patamar branco (${num(last.superiorBrancoPercent).toFixed(1)}%).</p>
+      </div>`);
+  }
+
+  if (['II', 'V'].includes(artigo) && eco.length > 1) {
+    const first = eco[0];
+    const last = eco[eco.length - 1];
+    blocks.push(`
+      <div class="chart-container">
+        <div class="chart-title">Trabalho e renda: desemprego por raça</div>
+        ${svgLineChart({
+          label: eco.map(e => e.ano).join(','),
+          series: [
+            { name: 'Negros (%)', color: '#dc2626', values: eco.map(e => num(e.desempregoNegro)) },
+            { name: 'Brancos (%)', color: '#64748b', values: eco.map(e => num(e.desempregoBranco)) },
+          ],
+        })}
+        <p style="font-size:8.5pt;margin-top:0.25cm">Leitura: a taxa de desemprego negra foi de ${num(first.desempregoNegro).toFixed(1)}% para ${num(last.desempregoNegro).toFixed(1)}%, enquanto a branca passou de ${num(first.desempregoBranco).toFixed(1)}% para ${num(last.desempregoBranco).toFixed(1)}%.</p>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Trabalho e renda: rendimento médio mensal</div>
+        ${svgBarChart(
+          eco.map(e => String(e.ano)),
+          [
+            { name: 'Negros', color: '#2563eb', values: eco.map(e => num(e.rendaMediaNegra)) },
+            { name: 'Brancos', color: '#94a3b8', values: eco.map(e => num(e.rendaMediaBranca)) },
+          ],
+          650,
+          230,
+          0,
+          undefined,
+          (v) => `R$ ${(v / 1000).toFixed(1)}k`
+        )}
+        <p style="font-size:8.5pt;margin-top:0.25cm">Leitura: o diferencial de renda persiste no fim da série, com ${fmtBRL(num(last.rendaMediaNegra))} para negros e ${fmtBRL(num(last.rendaMediaBranca))} para brancos.</p>
+      </div>`);
+  }
+
+  if (artigo === 'V' && sau.length > 1) {
+    const first = sau[0];
+    const last = sau[sau.length - 1];
+    blocks.push(`
+      <div class="chart-container">
+        <div class="chart-title">Saúde: mortalidade materna por raça</div>
+        ${svgLineChart({
+          label: sau.map(s => s.ano).join(','),
+          series: [
+            { name: 'Negras', color: '#dc2626', values: sau.map(s => num(s.mortalidadeMaternaNegra)) },
+            { name: 'Brancas', color: '#64748b', values: sau.map(s => num(s.mortalidadeMaternaBranca)) },
+          ],
+        })}
+        <p style="font-size:8.5pt;margin-top:0.25cm">Leitura: a razão de mortalidade materna entre negras passou de ${num(first.mortalidadeMaternaNegra).toFixed(1)} para ${num(last.mortalidadeMaternaNegra).toFixed(1)}, ainda acima da observada entre brancas (${num(last.mortalidadeMaternaBranca).toFixed(1)}).</p>
+      </div>`);
+  }
+
+  if (['III', 'V'].includes(artigo) && d.mirror?.deficitHabitacionalSerie?.length) {
+    const deficit = d.mirror.deficitHabitacionalSerie;
+    blocks.push(`
+      <div class="chart-container">
+        <div class="chart-title">Habitação: déficit habitacional por raça</div>
+        ${svgLineChart({
+          label: deficit.map((row: any) => row.ano).join(','),
+          series: [
+            { name: 'Negros', color: '#b91c1c', values: deficit.map((row: any) => num(row.deficitNegros || row.negros || row.percentualNegros)) },
+            { name: 'Brancos', color: '#64748b', values: deficit.map((row: any) => num(row.deficitBrancos || row.brancos || row.percentualBrancos)) },
+          ],
+        })}
+      </div>`);
+  }
+
+  if (artigo === 'III') {
+    blocks.push(dataCards([
+      { value: fmtNum(num(povos?.indigenas?.populacaoPessoasIndigenas || 1694836)), label: 'Povos indígenas (Censo 2022)' },
+      { value: fmtNum(num(povos?.quilombolas?.populacao || 1327802)), label: 'População quilombola' },
+      { value: fmtNum(num(povos?.quilombolas?.territoriosTitulados || 52)), label: 'Territórios quilombolas titulados' },
+      { value: `${num(povos?.indigenas?.terrasHomologadas2023_2025 || 0)}`, label: 'TIs homologadas 2023-2025' },
+    ]));
+  }
+
+  if (artigo === 'VII') {
+    const odsEducacao = d.indicadores.filter(ind => ind.categoria === 'ods_racial' && inferArtigosIndicador(ind).includes('VII'));
+    if (odsEducacao.length > 0) {
+      blocks.push(`
+        <div class="analysis-box">
+          <h4>🌐 ODS racial vinculados ao Artigo VII</h4>
+          ${renderArticleIndicatorTable(odsEducacao)}
+        </div>`);
+    }
+  }
+
+  return blocks.join('');
+}
+
+function generateArticleAnalysis(
+  artigo: string,
+  titulo: string,
+  descricao: string,
+  lacunas: LacunaIdentificada[],
+  orcDados: DadoOrcamentario[],
+  normativos: any[],
+  indicadores: IndicadorInterseccional[],
+  fios: FioCondutor[]
+): string {
+  const total = lacunas.length;
+  const cumprido = lacunas.filter(l => l.status_cumprimento === 'cumprido').length;
+  const parcial = lacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+  const critico = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
+  const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
+  const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
+  const execucao = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
+  const eixos = uniqueStrings(lacunas.map(l => eixoLabels[l.eixo_tematico] || l.eixo_tematico));
+  const grupos = uniqueStrings(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal));
+  const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).map(i => i.nome);
+  const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).map(i => i.nome);
+  const fiosRelacionados = fios.filter(f => (f.artigosConvencao || []).includes(artigo as any));
+
+  if (total === 0 && indicadores.length === 0 && orcDados.length === 0 && normativos.length === 0) {
+    return `<p>O ${titulo} não concentrou recomendações formalmente vinculadas no banco, mas segue relevante como eixo interpretativo da Convenção. Ainda assim, o sistema não localizou base empírica suficiente para uma leitura robusta neste ciclo.</p>`;
+  }
+
+  return `
+    <p><strong>${titulo}</strong> — ${descricao}</p>
+    <p>No recorte deste artigo, o sistema consolidou <strong>${total}</strong> lacunas/recomendações diretamente associadas, <strong>${indicadores.length}</strong> indicadores vinculados, <strong>${normativos.length}</strong> marcos normativos e <strong>${orcDados.length}</strong> registros orçamentários rastreáveis. Os eixos mais associados são ${eixos.join(', ') || 'não identificados'}; os grupos mais afetados são ${grupos.join(', ') || 'não identificados'}.</p>
+    ${total > 0 ? `<p>Do total de recomendações vinculadas, ${cumprido} foram classificadas como cumpridas, ${parcial} como parcialmente cumpridas e ${critico} seguem em não cumprimento ou retrocesso. Isso significa que ${((cumprido + parcial) / Math.max(total, 1) * 100).toFixed(1)}% do conjunto teve algum grau de resposta estatal, porém com persistência de déficits estruturais que impedem a conclusão positiva do ciclo.</p>` : ''}
+    ${indicadores.length > 0 ? `<p>Na base estatística, os principais sinais são: ${melhorias.length ? `<strong>melhoras parciais</strong> em ${melhorias.slice(0, 4).join(', ')}` : 'sem melhoras robustas registradas'}${melhorias.length && pioras.length ? '; ' : ''}${pioras.length ? `<strong>alertas</strong> em ${pioras.slice(0, 4).join(', ')}` : ''}. A leitura do artigo não é, portanto, apenas normativa: ela se ancora em séries históricas, quadros-síntese e evidências quantitativas do sistema.</p>` : ''}
+    ${orcDados.length > 0 ? `<p>Na dimensão orçamentária, foram rastreados ${fmtBRL(totalDotacao)} em dotação autorizada e ${fmtBRL(totalPago)} pagos, com execução média de ${execucao.toFixed(1)}%. Esse dado importa porque evidencia se a promessa normativa e programática se converteu, ou não, em capacidade material de implementação.</p>` : ''}
+    ${normativos.length > 0 ? `<p>Na dimensão normativa, o artigo foi sustentado por ${normativos.length} documentos do acervo institucional. Esses marcos ajudam a explicar por que certos resultados melhoram lentamente, enquanto outros permanecem apenas no plano declaratório.</p>` : ''}
+    ${fiosRelacionados.length > 0 ? `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema</h4><p>${fiosRelacionados.slice(0, 2).map(f => f.argumento).join(' ')}</p></div>` : ''}`;
+}
+
+function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any): string {
+  const sections = ARTIGOS_CONVENCAO.map((info) => {
+    const artigo = info.numero;
+    const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo));
+    const artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
+    const artigoNormativos = (d.normativos || []).filter((n: any) => ((n.artigos_convencao || []).length ? (n.artigos_convencao || []).includes(artigo) : false));
+    const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
+    const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
+    const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
+    const indicatorMatrix = renderArticleIndicatorTable(artigoIndicadores);
+    const recommendationMatrix = renderRecommendationMatrix(artigoLacunas);
+    const budgetTable = renderBudgetProgramsTable(artigoOrc);
+    const normTable = renderNormativeDocsTable(artigoNormativos);
+
+    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML) return '';
 
     return `
-    <h3>${artigo}: ${(info as any).titulo || artigo}</h3>
-    <div class="section">
-      ${analysisText}
-      ${chartsHTML}
-      ${statusHTML}
-      ${indHTML}
-      ${budgetHTML}
-      ${normHTML}
-    </div>`;
+      <h3>Artigo ${artigo} — ${info.titulo}</h3>
+      <div class="section">
+        ${narrativeHTML}
+        ${chartsHTML}
+        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada</h4><p>Os indicadores abaixo foram efetivamente correlacionados ao artigo por vínculo explícito no sistema. Eles funcionam como base empírica para concluir se houve melhoria, estagnação ou retrocesso no período.</p>${indicatorMatrix}</div>` : ''}
+        ${recommendationMatrix ? `<div class="highlight-box"><h4>📌 Recomendações, status e fundamentação</h4><p>O quadro a seguir aproxima o texto do Comitê, o status consolidado no sistema e a primeira camada de evidências que justifica cada classificação.</p>${recommendationMatrix}</div>` : ''}
+        ${budgetTable ? `<div class="budget-box"><h4>💰 Programas e ações orçamentárias mais relevantes</h4><p>Em vez de tratar o orçamento de forma apartada, o relatório incorpora as ações que ajudam a explicar a capacidade concreta de resposta estatal neste artigo.</p>${budgetTable}</div>` : ''}
+        ${normTable ? `<div class="normative-box"><h4>📜 Base normativa entremeada à análise</h4><p>Os atos abaixo estruturam a resposta estatal formal. A leitura do relatório considera esses marcos em conjunto com resultados, não como substitutos do resultado.</p>${normTable}</div>` : ''}
+      </div>`;
   }).filter(Boolean).join('');
 
   return `
-  <h2>III. Análise Temática por Artigos da Convenção ICERD</h2>
-  <p>A análise a seguir organiza as evidências coletadas segundo os Artigos I a VII da Convenção ICERD, entrelaçando dados estatísticos, execução orçamentária, marcos normativos e status das recomendações para uma avaliação integrada do cumprimento das obrigações do Estado brasileiro.</p>
-  ${sections}`;
-}
-
-function generateArticleAnalysis(artigo: string, lacunas: LacunaIdentificada[], cumprido: number, parcial: number, naoCumprido: number, orcDados: DadoOrcamentario[], normativos: any[], indicadores: IndicadorInterseccional[]): string {
-  const total = lacunas.length;
-  if (total === 0) return '<p>Não foram identificadas lacunas específicas vinculadas a este artigo no período analisado.</p>';
-
-  const pctAvanco = ((cumprido + parcial) / total * 100).toFixed(0);
-  const totalPago = orcDados.reduce((a, r) => a + (Number(r.pago) || 0), 0);
-  
-  const eixosUnicos = [...new Set(lacunas.map(l => eixoLabels[l.eixo_tematico] || l.eixo_tematico))];
-  const gruposUnicos = [...new Set(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal))];
-  
-  const tendenciasNeg = indicadores.filter(i => i.tendencia === 'piora' || i.tendencia === 'estável_negativo');
-  const tendenciasPos = indicadores.filter(i => i.tendencia === 'melhoria' || i.tendencia === 'melhoria_lenta');
-
-  let text = `<p>No âmbito do <strong>${artigo}</strong>, foram identificadas <strong>${total} recomendações</strong> do Comitê, abrangendo os eixos de ${eixosUnicos.join(', ')} e afetando ${gruposUnicos.join(', ')}. `;
-  text += `Do total, <strong>${pctAvanco}% apresentaram algum grau de cumprimento</strong> (${cumprido} cumpridas, ${parcial} parciais), enquanto ${naoCumprido} permanecem não cumpridas ou em retrocesso.</p>`;
-
-  if (tendenciasPos.length > 0) {
-    text += `<div class="advance-box"><p><strong>✅ Avanços identificados:</strong> ${tendenciasPos.map(i => i.nome).join(', ')} apresentam tendência de melhoria, indicando progressos parciais no período.</p></div>`;
-  }
-  if (tendenciasNeg.length > 0) {
-    text += `<div class="regress-box"><p><strong>🔴 Retrocessos ou estagnação:</strong> ${tendenciasNeg.map(i => i.nome).join(', ')} mostram piora ou estagnação, evidenciando desafios estruturais persistentes.</p></div>`;
-  }
-  if (totalPago > 0) {
-    text += `<p>O investimento orçamentário identificado para ações vinculadas totaliza <strong>${fmtBRL(totalPago)}</strong> em valores pagos, sustentado por <strong>${normativos.length} marcos normativos</strong> catalogados.</p>`;
-  }
-  return text;
-}
-
-function buildArticleCharts(artigo: string, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[]): string {
-  const charts: string[] = [];
-  
-  if (['Artigo V', 'Artigo II'].includes(artigo) && seg.length > 0) {
-    charts.push(`
-    <div class="chart-container">
-      <div class="chart-title">Segurança Pública: Homicídios por Raça (${seg[0]?.ano || 2018}-${seg[seg.length-1]?.ano || 2024})</div>
-      ${svgLineChart({
-        label: seg.map(s => s.ano).join(','),
-        series: [
-          { name: 'Vítimas Negras (%)', color: '#ef4444', values: seg.map(s => s.percentualVitimasNegras || 0) },
-          { name: 'Letalidade Policial (%)', color: '#f97316', values: seg.map(s => s.letalidadePolicial || 0) },
-        ]
-      })}
-    </div>`);
-    
-    if (fem.length > 0) {
-      charts.push(`
-      <div class="chart-container">
-        <div class="chart-title">Feminicídio: Percentual de Mulheres Negras entre Vítimas</div>
-        ${svgLineChart({
-          label: fem.map(f => f.ano).join(','),
-          series: [
-            { name: 'Mulheres Negras (%)', color: '#dc2626', values: fem.map(f => f.percentualNegras || 0) },
-          ]
-        })}
-      </div>`);
-    }
-  }
-  
-  if (['Artigo V', 'Artigo VII'].includes(artigo) && edu.length > 0) {
-    charts.push(`
-    <div class="chart-container">
-      <div class="chart-title">Educação: Ensino Superior Completo por Raça (%)</div>
-      ${svgLineChart({
-        label: edu.map(e => e.ano).join(','),
-        series: [
-          { name: 'Negros (%)', color: '#2563eb', values: edu.map(e => e.superiorNegroPercent || 0) },
-          { name: 'Brancos (%)', color: '#64748b', values: edu.map(e => e.superiorBrancoPercent || 0) },
-        ]
-      })}
-    </div>`);
-  }
-
-  if (['Artigo V', 'Artigo II'].includes(artigo) && eco.length > 0) {
-    charts.push(`
-    <div class="chart-container">
-      <div class="chart-title">Indicadores Socioeconômicos: Desemprego por Raça (%)</div>
-      ${svgLineChart({
-        label: eco.map(e => e.ano).join(','),
-        series: [
-          { name: 'Negros', color: '#ef4444', values: eco.map(e => e.desempregoNegro || 0) },
-          { name: 'Brancos', color: '#64748b', values: eco.map(e => e.desempregoBranco || 0) },
-        ]
-      })}
-    </div>`);
-
-    charts.push(`
-    <div class="chart-container">
-      <div class="chart-title">Renda Média Mensal por Raça (R$)</div>
-      ${svgBarChart(
-        eco.map(e => String(e.ano)),
-        [
-          { name: 'Negros', color: '#2563eb', values: eco.map(e => e.rendaMediaNegra || 0) },
-          { name: 'Brancos', color: '#94a3b8', values: eco.map(e => e.rendaMediaBranca || 0) },
-        ],
-        600, 220, 0, undefined, (v) => `R$${(v/1000).toFixed(0)}k`
-      )}
-    </div>`);
-  }
-
-  if (['Artigo V'].includes(artigo) && sau.length > 0) {
-    charts.push(`
-    <div class="chart-container">
-      <div class="chart-title">Saúde: Mortalidade Materna por Raça (por 100 mil NV)</div>
-      ${svgLineChart({
-        label: sau.map(s => s.ano).join(','),
-        series: [
-          { name: 'Negras', color: '#dc2626', values: sau.map(s => s.mortalidadeMaternaNegra || 0) },
-          { name: 'Brancas', color: '#64748b', values: sau.map(s => s.mortalidadeMaternaBranca || 0) },
-        ]
-      })}
-    </div>`);
-  }
-
-  return charts.join('');
+    <h2>III. Análise Temática por Artigos da Convenção ICERD</h2>
+    <p>Esta seção reorganiza o sistema inteiro sob a lógica superior da Convenção: cada artigo reúne lacunas, recomendações, séries estatísticas, orçamento, normativa e leituras analíticas. Assim, o relatório deixa de separar “estatística”, “orçamento” e “normativa” em silos e passa a responder, artigo por artigo, se houve avanço substantivo, apenas movimentação formal, ou persistência da desigualdade racial.</p>
+    ${sections}`;
 }
 
 function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): string {
@@ -569,6 +677,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
   const yearLabels = years.map(String);
   const dotacaoValues = years.map(y => (orcStats.porAnoDetalhado?.[y]?.dotacao || 0));
   const pagoValues = years.map(y => (orcStats.porAnoDetalhado?.[y]?.pago || 0));
+  const topProgramas = [...orcDados].sort((a, b) => num(b.pago) - num(a.pago)).slice(0, 10);
 
   return `
   <h2>IV. Análise Orçamentária: Investimento em Igualdade Racial (2018-2025)</h2>
@@ -600,7 +709,10 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
     <div class="analysis-box">
       <h4>📊 Análise: Perspectiva LOA vs. Financiamento Total</h4>
       <p>O investimento total em igualdade racial cresceu ${(orcStats.variacaoDotacao || 0).toFixed(1)}% em dotação autorizada entre os dois períodos. Contudo, é fundamental distinguir entre o <strong>esforço direto do Tesouro Nacional (LOA)</strong> e o <strong>financiamento compensatório/reativo (extraorçamentário)</strong>. ${orcStats.splitTipoDotacao ? `O componente orçamentário representa ${fmtBRL(orcStats.splitTipoDotacao.orcamentario?.dotP1 + orcStats.splitTipoDotacao.orcamentario?.dotP2 || 0)} em dotação, enquanto o extraorçamentário soma ${fmtBRL(orcStats.splitTipoDotacao.extraorcamentario?.dotP1 + orcStats.splitTipoDotacao.extraorcamentario?.dotP2 || 0)}.` : ''}</p>
+      <p>Ao ser lida em conjunto com os artigos da Convenção e com o status das recomendações, a execução orçamentária funciona como teste material da política pública: ela mostra se a reconstrução institucional posterior a 2023 foi acompanhada de escala financeira compatível ou se permaneceu aquém da magnitude das desigualdades registradas nas bases estatísticas.</p>
     </div>
+
+    ${topProgramas.length > 0 ? `<h3>Programas com maior volume pago</h3>${renderBudgetProgramsTable(topProgramas)}` : ''}
 
     ${orcStats.sesaiTotal > 0 ? `
     <div class="budget-box">
@@ -668,6 +780,10 @@ function renderNormativeBase(normativos: any[]): string {
         <td>${n.status || '—'}</td>
       </tr>`).join('')}</tbody>
     </table>
+    <div class="analysis-box">
+      <h4>🔗 Como a base normativa entra na interpretação do relatório</h4>
+      <p>Os documentos acima não são apresentados como seção isolada ou prova autossuficiente de cumprimento. Eles são lidos em correlação com as séries estatísticas, com a execução orçamentária e com o status das recomendações: quando há norma sem melhoria estatística, o relatório registra implementação insuficiente; quando há melhora estatística sustentada por novos atos e orçamento, o relatório aponta avanço mais consistente.</p>
+    </div>
   </div>`;
 }
 
@@ -798,13 +914,22 @@ function renderGuidingThreads(fios: FioCondutor[], conclusoes: ConclusaoDinamica
 function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, parciais: number, naoCumpridas: number, retrocessos: number): string {
   const pctAvanco = total > 0 ? ((cumpridas + parciais) / total * 100).toFixed(1) : '0';
   const variacao = d.orcStats?.variacaoPago || 0;
+  const totalNormativos = d.normativos?.length || 0;
+  const totalOrc = d.orcDados?.length || 0;
+  const totalFios = d.fiosCondutores?.length || 0;
+  const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
   return `
   <h2>IX. Conclusões e Compromissos</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>Veredito Geral</h4>
-      <p>O Brasil apresenta um quadro de <strong>avanço normativo significativo a partir de 2023</strong>, com a recriação de institucionalidade (MIR, MPI), novos marcos legais (Leis 14.532 e 14.723/2023) e aumento do investimento orçamentário (${variacao > 0 ? '+' : ''}${variacao.toFixed(1)}% em valores pagos). Contudo, <strong>${naoCumpridas + retrocessos} de ${total} recomendações permanecem não cumpridas ou em retrocesso</strong> (${total > 0 ? ((naoCumpridas + retrocessos) / total * 100).toFixed(1) : 0}%), evidenciando que a desigualdade racial estrutural persiste apesar dos esforços normativos e institucionais.</p>
+      <p>O Brasil apresenta <strong>reconstrução institucional e normativa relevante a partir de 2023</strong>, refletida em ${totalNormativos} marcos normativos catalogados, ${totalOrc} registros orçamentários rastreados e ${totalFios} fios condutores produzidos pela análise cruzada do sistema. Ainda assim, <strong>${naoCumpridas + retrocessos} de ${total} recomendações permanecem não cumpridas ou em retrocesso</strong>, e ${indicadoresCriticos} indicadores seguem registrando piora, estagnação negativa ou persistência de assimetrias raciais. A conclusão, portanto, é de avanço parcial e desigual: houve melhora institucional, mas a transformação material continua incompleta.</p>
+    </div>
+
+    <div class="analysis-box">
+      <h4>Leitura final integrada</h4>
+      <p>Quando o relatório entrelaça estatística, orçamento, normativa, recomendações e narrativas analíticas, o padrão que emerge é claro: o país avançou mais na <strong>capacidade formal de responder</strong> do que na <strong>velocidade substantiva de reversão da desigualdade racial</strong>. Em educação, orçamento institucional e reconstrução ministerial, há sinais de melhora. Em segurança pública, mortalidade materna negra, desigualdade de renda, reparação e efetividade territorial, persistem déficits que impedem afirmar cumprimento robusto da Convenção.</p>
     </div>
 
     <h3>Síntese por Dimensão</h3>
