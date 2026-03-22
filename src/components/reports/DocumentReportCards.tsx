@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass } from 'lucide-react';
+import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass, DollarSign } from 'lucide-react';
 import { useState } from 'react';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useDadosOrcamentarios } from '@/hooks/useLacunasData';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
