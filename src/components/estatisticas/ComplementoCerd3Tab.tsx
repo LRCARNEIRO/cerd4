@@ -18,7 +18,9 @@ const COLORS = [
   'hsl(var(--chart-3))',
   'hsl(var(--chart-4))',
   'hsl(var(--chart-5))',
-  'hsl(var(--primary))',
+  'hsl(25 90% 55%)',       // laranja — distinto de chart-1/primary (azul escuro)
+  'hsl(190 70% 45%)',      // ciano — reserva para 7ª série
+  'hsl(320 60% 55%)',      // magenta — reserva para 8ª série
 ];
 
 function TendenciaBadge({ t }: { t?: string }) {
