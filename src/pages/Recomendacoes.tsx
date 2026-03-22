@@ -18,6 +18,7 @@ import {
   generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
   generateRecomendacoesGeraisHTML,
 } from '@/components/recomendacoes/generateRecomendacoesHTML';
+import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowUpHTML';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
