@@ -318,6 +318,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="follow-up">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
+          </div>
           <Card>
             <CardHeader>
               <CardTitle>CERD/C/BRA/FCO/18-20 - Follow-up Janeiro 2026</CardTitle>
