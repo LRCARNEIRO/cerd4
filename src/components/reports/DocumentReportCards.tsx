@@ -3,13 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass } from 'lucide-react';
 import { useState } from 'react';
-import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useDadosOrcamentarios } from '@/hooks/useLacunasData';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
-import { generateCerdIVHTML } from './generateCerdIVHTML';
+import { generateCerdIVFullHTML } from './generateCerdIVHTML';
 import { generateMethodologyHTML } from './generateMethodologyHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -17,7 +19,17 @@ export function DocumentReportCards() {
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcStats } = useOrcamentoStats();
+  const { data: orcDados } = useDadosOrcamentarios();
   const mirror = useMirrorData();
+
+  // Fetch normativos for CERD IV report
+  const { data: normativos } = useQuery({
+    queryKey: ['documentos_normativos_cerdiv'],
+    queryFn: async () => {
+      const { data } = await supabase.from('documentos_normativos').select('*').order('created_at', { ascending: false });
+      return data || [];
+    },
+  });
 
   const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
@@ -25,7 +37,7 @@ export function DocumentReportCards() {
   const [generatingMethodology, setGeneratingMethodology] = useState(false);
 
   const {
-    fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
   } = useAnalyticalInsights();
 
   const totalLacunas = stats?.total || 0;
@@ -64,14 +76,30 @@ export function DocumentReportCards() {
     }
   };
 
+  const buildCerdIVData = () => ({
+    lacunas: lacunas || [], respostas: respostas || [], stats, indicadores: indicadores || [],
+    orcStats, orcDados: orcDados || [], normativos: normativos || [],
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
+    mirror: {
+      segurancaPublica: mirror.segurancaPublica,
+      feminicidioSerie: mirror.feminicidioSerie,
+      educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+      saudeSerieHistorica: mirror.saudeSerieHistorica,
+      indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+      evolucaoDesigualdade: mirror.evolucaoDesigualdade,
+      dadosDemograficos: mirror.dadosDemograficos,
+      povosTradicionais: mirror.povosTradicionais,
+      violenciaInterseccional: mirror.violenciaInterseccional,
+      classePorRaca: mirror.classePorRaca,
+      deficitHabitacionalSerie: mirror.deficitHabitacionalSerie,
+      evasaoEscolarSerie: mirror.evasaoEscolarSerie,
+    },
+  });
+
   const handleGenerateCERD = async () => {
     setGeneratingCERD(true);
     try {
-      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
-        segurancaPublica: mirror.segurancaPublica,
-        feminicidioSerie: mirror.feminicidioSerie,
-        educacaoSerieHistorica: mirror.educacaoSerieHistorica,
-      });
+      const html = generateCerdIVFullHTML(buildCerdIVData());
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -226,11 +254,7 @@ export function DocumentReportCards() {
               variant="outline"
               className="gap-2"
               onClick={() => {
-                const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
-                  segurancaPublica: mirror.segurancaPublica,
-                  feminicidioSerie: mirror.feminicidioSerie,
-                  educacaoSerieHistorica: mirror.educacaoSerieHistorica,
-                });
+                const html = generateCerdIVFullHTML(buildCerdIVData());
                 downloadAsDocx(html, 'CERD-IV-Relatorio-Periodico');
               }}
             >
