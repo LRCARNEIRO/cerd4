@@ -5,6 +5,55 @@
  */
 import { toast } from 'sonner';
 
+function getCurrentDocumentHeadMarkup(): string {
+  const styleTags = Array.from(document.querySelectorAll('style'))
+    .map((style) => style.outerHTML)
+    .join('\n');
+
+  const stylesheetLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+    .map((link) => link.outerHTML)
+    .join('\n');
+
+  return `${stylesheetLinks}\n${styleTags}`;
+}
+
+export function buildExportHtmlFromElement(target: HTMLElement, fileName: string, title?: string): string {
+  const clone = target.cloneNode(true) as HTMLElement;
+
+  clone.querySelectorAll('[data-export-ignore="true"]').forEach((node) => node.remove());
+
+  return `<!DOCTYPE html>
+<html lang="pt-BR" class="${document.documentElement.className}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title || fileName}</title>
+  ${getCurrentDocumentHeadMarkup()}
+  <style>
+    @page { size: A4; margin: 1.6cm; }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+    .export-captured-content {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    @media print {
+      .export-toolbar { display: none !important; }
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body class="${document.body.className}">
+  <main class="export-captured-content">${clone.outerHTML}</main>
+  ${getExportToolbarHTML(fileName)}
+</body>
+</html>`;
+}
+
 /**
  * Convert SVG elements in HTML to inline PNG data-URIs for Word compatibility.
  * Word cannot render SVGs, so we convert them to canvas-based images.
