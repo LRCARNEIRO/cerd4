@@ -1492,6 +1492,9 @@ export default function Orcamento() {
 
         {/* ===== METODOLOGIA ===== */}
         <TabsContent value="metodologia">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateMetodologiaHTML} fileName="Orcamento-Metodologia" compact />
+          </div>
           <div className="space-y-6">
             <Card>
               <CardHeader>
