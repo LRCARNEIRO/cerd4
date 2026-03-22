@@ -44,7 +44,7 @@ const gruposFocaisData = {
     observacoesONU: ['50', '51', '52', '53'],
     politicas: ['Demarcação de Terras Indígenas (FUNAI)', 'SESAI - Saúde Indígena', 'Educação Escolar Indígena'],
     indicadores: ['Terras homologadas', 'Etnias reconhecidas', 'Línguas vivas', 'Mortalidade infantil indígena'],
-    notas: 'Censo 2022: metodologia ampliada contou 1.694.836 Pessoas Indígenas. Cor/Raça (Tab. 9605): 1.227.642. Fonte: ibge.gov.br/brasil-indigena',
+    notas: 'Censo 2022 — Cor/Raça Indígena (SIDRA 9605): 1.227.642. Fonte: sidra.ibge.gov.br/Tabela/9605',
   },
   ciganos: {
     nome: 'Ciganos/Roma',

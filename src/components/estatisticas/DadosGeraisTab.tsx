@@ -137,10 +137,10 @@ export function DadosGeraisTab() {
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
             <p className="text-xs text-muted-foreground">Povos Indígenas (Censo 2022)</p>
-            <p className="text-2xl font-bold">{formatNumber(1694836)}</p>
+            <p className="text-2xl font-bold">{formatNumber(1227642)}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              <a href="https://educa.ibge.gov.br/jovens/conheca-o-brasil/populacao/22326-indigenas-2.html" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
-                IBGE — Pessoas indígenas (Tabela 9718) <ExternalLink className="w-3 h-3" />
+              <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                IBGE — Cor/Raça Indígena (SIDRA 9605) <ExternalLink className="w-3 h-3" />
               </a>
             </p>
           </CardContent>
