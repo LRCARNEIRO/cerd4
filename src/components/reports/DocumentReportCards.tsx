@@ -76,14 +76,30 @@ export function DocumentReportCards() {
     }
   };
 
+  const buildCerdIVData = () => ({
+    lacunas: lacunas || [], respostas: respostas || [], stats, indicadores: indicadores || [],
+    orcStats, orcDados: orcDados || [], normativos: normativos || [],
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
+    mirror: {
+      segurancaPublica: mirror.segurancaPublica,
+      feminicidioSerie: mirror.feminicidioSerie,
+      educacaoSerieHistorica: mirror.educacaoSerieHistorica,
+      saudeSerieHistorica: mirror.saudeSerieHistorica,
+      indicadoresSocioeconomicos: mirror.indicadoresSocioeconomicos,
+      evolucaoDesigualdade: mirror.evolucaoDesigualdade,
+      dadosDemograficos: mirror.dadosDemograficos,
+      povosTradicionais: mirror.povosTradicionais,
+      violenciaInterseccional: mirror.violenciaInterseccional,
+      classePorRaca: mirror.classePorRaca,
+      deficitHabitacionalSerie: mirror.deficitHabitacionalSerie,
+      evasaoEscolarSerie: mirror.evasaoEscolarSerie,
+    },
+  });
+
   const handleGenerateCERD = async () => {
     setGeneratingCERD(true);
     try {
-      const html = generateCerdIVHTML(lacunas || [], respostas || [], stats, indicadores || [], orcStats, {
-        segurancaPublica: mirror.segurancaPublica,
-        feminicidioSerie: mirror.feminicidioSerie,
-        educacaoSerieHistorica: mirror.educacaoSerieHistorica,
-      });
+      const html = generateCerdIVFullHTML(buildCerdIVData());
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
