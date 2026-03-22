@@ -177,6 +177,9 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="lacunas">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
+          </div>
           {/* Sensor Diagnóstico — Resumo */}
           {sensorReady && sensorSummary.totalDivergencias > 0 && (
             <Card className="mb-4 border-warning/40 bg-warning/5">
