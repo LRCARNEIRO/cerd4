@@ -332,8 +332,6 @@ export const racismoInstitucionalJudiciario: ComplementoIndicador = {
   dados: {
     nota: 'Auditado manualmente. CNJ Painel MPM Pessoal → Magistrados por cor/raça. Resolução CNJ 572/2025 ampliou cotas para 30%.',
     pct_magistrados_negros: { 2023: 18.1 },
-    pct_servidores_magistrados_negros: { 2024: 24.76, 2025: 26.82 },
-    total_negros_judiciario: { 2024: 74079, 2025: 81183 },
     magistrados_negros: { 2025: 2702 },
     magistrados_por_raca: {
       'dez_2023': { amarelo: 298, branco: 12156, indigena: 30, nao_declarado: 3363, negro_pardo: 1866, negro_preto: 247 },
@@ -450,10 +448,16 @@ export const sistemaPrisional: ComplementoIndicador = {
   polaridade: 'menor_melhor',
   dados: {
     nota: 'Série refeita com base nos Anuários Brasileiros de Segurança Pública, conforme observação da auditagem manual. Valores extraídos da Tabela 128 (evolução da população prisional por cor/raça).',
-    pct_negros: { 2018: 66.04, 2019: 66.69, 2020: 66.31, 2021: 67.47, 2022: 68.23, 2023: 69.09, 2024: 68.69 },
+    pct_negros: { 2018: 66.0, 2019: 66.7, 2020: 66.3, 2021: 67.5, 2022: 68.2, 2023: 69.1, 2024: 68.7 },
+    pct_brancos: { 2018: 32.9, 2019: 32.3, 2020: 32.5, 2021: 29.0, 2022: 30.4, 2023: 29.7, 2024: 29.9 },
+    pct_amarelos: { 2018: 0.9, 2019: 0.8, 2020: 1.0, 2021: 3.0, 2022: 1.1, 2023: 1.0, 2024: 1.1 },
+    pct_indigenas: { 2018: 0.2, 2019: 0.2, 2020: 0.2, 2021: 0.5, 2022: 0.2, 2023: 0.2, 2024: 0.3 },
     total_presos: { 2018: 744216, 2019: 755274, 2020: 759518, 2021: 820689, 2022: 832295, 2023: 852086, 2024: 909594 },
     presos_negros: { 2018: 399657, 2019: 438719, 2020: 397816, 2021: 429255, 2022: 442033, 2023: 472850, 2024: 532683 },
-    unidade: '%',
+    presos_brancos: { 2018: 198804, 2019: 212444, 2020: 195085, 2021: 184682, 2022: 197084, 2023: 203126, 2024: 231812 },
+    presos_amarelos: { 2018: 5522, 2019: 5291, 2020: 5864, 2021: 19012, 2022: 7139, 2023: 6721, 2024: 8902 },
+    presos_indigenas: { 2018: 1201, 2019: 1390, 2020: 1167, 2021: 3245, 2022: 1603, 2023: 1671, 2024: 2118 },
+    unidade: '% e pessoas',
     paragrafos_cerd: '§17-18',
   },
 };

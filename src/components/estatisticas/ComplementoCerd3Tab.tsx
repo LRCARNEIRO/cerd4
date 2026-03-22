@@ -92,7 +92,7 @@ function extractDualAxisData(dados: Record<string, any>): DualAxisData | null {
     'TIs_homologadas_total', 'TIs_em_estudo', 'TIs_declaradas_sem_homologacao',
     'TIs_homologadas_e_reservadas_total', 'TIs_em_identificacao',
     'titulos_emitidos_total', 'processos_abertos', 'processos_abertos_total',
-    'presos_negros', 'pct_mulheres_negras_presas',
+    'pct_mulheres_negras_presas',
     'processos_pendentes_acumulados',
     'obs_2022', 'lacuna_dados_regionais',
     'total_por_uf', 'em_territorios_por_uf', 'fora_territorios_por_uf',

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileDown, Download, Loader2 } from 'lucide-react';
-import { buildExportHtmlFromElement, downloadAsDocx } from '@/utils/reportExportToolbar';
+import { buildExportHtmlFromElement, downloadAsDocx, downloadRenderedElementAsDocx } from '@/utils/reportExportToolbar';
 
 interface ExportTabButtonsProps {
   /** Function that generates the HTML content for export */
@@ -53,6 +53,14 @@ export function ExportTabButtons({ generateHTML, targetSelector, fileName, label
   const handleDocx = async () => {
     setGeneratingDocx(true);
     try {
+      if (targetSelector) {
+        const target = document.querySelector<HTMLElement>(targetSelector);
+        if (target) {
+          await downloadRenderedElementAsDocx(target, fileName);
+          return;
+        }
+      }
+
       const html = resolveHtml();
       await downloadAsDocx(html, fileName);
     } finally {
