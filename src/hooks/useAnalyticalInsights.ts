@@ -1075,6 +1075,9 @@ function gerarSinteseExecutiva(
   // Respostas CERD III
   const respostasNaoCumpridas = respostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso');
 
+  // ODS Racial count
+  const odsRacialCount = indicadores.filter(i => i.categoria === 'ods_racial').length;
+
   return {
     totalLacunas: total,
     percentualPositivo,
@@ -1084,9 +1087,10 @@ function gerarSinteseExecutiva(
     totalRespostasCERDIII: respostas.length,
     respostasPendentes: respostasNaoCumpridas.length,
     totalIndicadores: indicadores.length,
+    totalOdsRacial: odsRacialCount,
     totalOrcamento: orcStats?.totalRegistros || 0,
     variacaoOrcamento: orcStats?.variacao || 0,
-    narrativa: `O Brasil possui ${total} observações/recomendações do Comitê CERD mapeadas. ${percentualPositivo}% tiveram algum grau de cumprimento (${cumpridas} cumpridas + ${parciais} parciais), enquanto ${percentualNegativo}% permanecem não cumpridas (${naoCumpridas}) ou em retrocesso (${retrocesso}). ${respostasNaoCumpridas.length} de ${respostas.length} críticas do relatório anterior seguem sem resposta adequada. ${eixosMaisProblematicos.length > 0 ? `O eixo mais crítico é ${eixosMaisProblematicos[0]?.eixo} com ${Math.round(eixosMaisProblematicos[0]?.gravidade * 100)}% de não-cumprimento.` : ''}`
+    narrativa: `O Brasil possui ${total} observações/recomendações do Comitê CERD mapeadas. ${percentualPositivo}% tiveram algum grau de cumprimento (${cumpridas} cumpridas + ${parciais} parciais), enquanto ${percentualNegativo}% permanecem não cumpridas (${naoCumpridas}) ou em retrocesso (${retrocesso}). ${respostasNaoCumpridas.length} de ${respostas.length} críticas do relatório anterior seguem sem resposta adequada. ${odsRacialCount > 0 ? `${odsRacialCount} indicadores ODS desagregados por raça monitoram o cumprimento da Agenda 2030. ` : ''}${eixosMaisProblematicos.length > 0 ? `O eixo mais crítico é ${eixosMaisProblematicos[0]?.eixo} com ${Math.round(eixosMaisProblematicos[0]?.gravidade * 100)}% de não-cumprimento.` : ''}`
   };
 }
 
