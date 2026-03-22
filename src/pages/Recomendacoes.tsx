@@ -375,10 +375,16 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="rgs">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
+          </div>
           <RecomendacoesGeraisTab />
         </TabsContent>
 
         <TabsContent value="durban">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
+          </div>
           <DurbanTab />
         </TabsContent>
       </Tabs>
