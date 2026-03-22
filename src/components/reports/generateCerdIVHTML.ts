@@ -374,7 +374,7 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
     const artigoNormativos = (d.normativos || []).filter((n: any) => (n.artigos_convencao || []).includes(artigo));
 
     // Related indicators
-    const artigoIndicadores = d.indicadores.filter(i => (i.artigos_convencao || []).includes(artigo)).slice(0, 6);
+    const artigoIndicadores = d.indicadores.filter(i => ((i as any).artigos_convencao || []).includes(artigo)).slice(0, 6);
 
     // Build thematic charts
     const chartsHTML = buildArticleCharts(artigo, seg, fem, edu, sau, eco, evolDesig);
