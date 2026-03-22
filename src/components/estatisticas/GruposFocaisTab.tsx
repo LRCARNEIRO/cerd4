@@ -590,6 +590,11 @@ export function GruposFocaisTab() {
                   </p>
                   <div className="flex gap-2 flex-wrap">
                     <Button variant="outline" size="sm" asChild>
+                      <a href="https://www.correiobraziliense.com.br/economia/2024/02/6807522-censo-2022-falta-de-esgoto-e-maior-em-casas-de-pretos-e-pardos.html" target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 mr-1" /> Correio Braziliense — Esgoto por Raça
+                      </a>
+                    </Button>
+                    <Button variant="outline" size="sm" asChild>
                       <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39237-censo-2022-rede-de-esgoto-alcanca-62-5-da-populacao-mas-desigualdades-regionais-e-por-cor-e-raca-persistem" target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="w-4 h-4 mr-1" /> IBGE — Esgoto por Raça (Fev/2024)
                       </a>
