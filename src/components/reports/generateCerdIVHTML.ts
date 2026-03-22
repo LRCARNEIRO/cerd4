@@ -358,7 +358,7 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
   
   const sections = artigos.map(([artigo, info]) => {
     // Find lacunas for this article
-    const artigoLacunas = d.lacunas.filter(l => (l.artigos_convencao || []).includes(artigo));
+    const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || []).includes(artigo));
     if (artigoLacunas.length === 0 && !['Artigo II', 'Artigo V', 'Artigo VII'].includes(artigo)) return '';
 
     const cumprido = artigoLacunas.filter(l => l.status_cumprimento === 'cumprido').length;
