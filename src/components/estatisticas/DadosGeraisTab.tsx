@@ -282,7 +282,7 @@ export function DadosGeraisTab() {
       {/* Indicadores socioeconômicos - série histórica */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2024)</CardTitle>
+          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2025)</CardTitle>
           <CardDescription>
             Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6405, 6402, 6403)
           </CardDescription>
