@@ -4,7 +4,7 @@
  * Call injectExportToolbar() to inject toolbar into an existing HTML string.
  */
 import { toast } from 'sonner';
-import { downloadElementAsDocx, downloadHtmlVisualAsDocx } from '@/utils/docxVisualExport';
+import { downloadElementAsEditableDoc, downloadHtmlAsEditableDoc } from '@/utils/docxEditableExport';
 
 function getCurrentDocumentHeadMarkup(): string {
   const styleTags = Array.from(document.querySelectorAll('style'))
@@ -57,24 +57,24 @@ export function buildExportHtmlFromElement(target: HTMLElement, fileName: string
 
 export async function downloadRenderedElementAsDocx(element: HTMLElement, fileName: string) {
   try {
-    toast.info('Gerando DOCX com captura visual da aba...', { duration: 2000 });
-    await downloadElementAsDocx(element, fileName);
-    toast.success('Documento DOCX gerado com sucesso');
+    toast.info('Gerando documento Word editável...', { duration: 2000 });
+    await downloadElementAsEditableDoc(element, fileName);
+    toast.success('Documento Word gerado com sucesso');
   } catch (e) {
     console.error('DOCX element generation error:', e);
-    toast.error('Erro ao gerar documento DOCX');
+    toast.error('Erro ao gerar documento Word');
   }
 }
 
-/** Download any HTML string as a .docx file preserving the rendered visual layout */
+/** Download any HTML string as a .doc file preserving editable text and tables */
 export async function downloadAsDocx(html: string, fileName: string) {
   try {
-    toast.info('Gerando DOCX com captura visual do relatório...', { duration: 2000 });
-    await downloadHtmlVisualAsDocx(html, fileName);
-    toast.success('Documento DOCX gerado com sucesso');
+    toast.info('Gerando documento Word editável...', { duration: 2000 });
+    await downloadHtmlAsEditableDoc(html, fileName);
+    toast.success('Documento Word gerado com sucesso');
   } catch (e) {
     console.error('DOCX generation error:', e);
-    toast.error('Erro ao gerar documento DOCX');
+    toast.error('Erro ao gerar documento Word');
   }
 }
 
@@ -149,7 +149,7 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       Salvar PDF
     </button>
-    <button class="btn-docx" onclick="exportDOCX()" title="Baixar como documento Word (.docx)">
+    <button class="btn-docx" onclick="exportDOCX()" title="Baixar como documento Word (.doc) editável">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
       Salvar DOCX
     </button>
