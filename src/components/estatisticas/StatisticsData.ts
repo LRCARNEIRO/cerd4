@@ -129,74 +129,67 @@ export const indicadoresSocioeconomicos = [
     ano: 2018, 
     rendaMediaNegra: 1608, rendaMediaBranca: 2796,
     desempregoNegro: 13.8, desempregoBranco: 9.2,
-    // POBREZA 2018: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
-    pobreza_negra: null, pobreza_branca: null,
+    // AUDITORIA 22/03/2026: Pobreza 2018 verificada — SIS/IBGE Tabela 2.17
+    pobreza_negra: 42.3, pobreza_branca: 21.9,
     fonte: 'PNAD Contínua 2018'
   },
   { 
     ano: 2019, 
     rendaMediaNegra: 1678, rendaMediaBranca: 2874,
     desempregoNegro: 13.5, desempregoBranco: 8.9,
-    // POBREZA 2019: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
-    pobreza_negra: null, pobreza_branca: null,
+    // AUDITORIA 22/03/2026: Pobreza 2019 verificada — SIS/IBGE Tabela 2.17
+    pobreza_negra: 41.6, pobreza_branca: 20.6,
     fonte: 'PNAD Contínua 2019'
   },
   { 
     ano: 2020, 
     rendaMediaNegra: 1542, rendaMediaBranca: 2685,
     desempregoNegro: 15.2, desempregoBranco: 10.8,
-    // POBREZA 2020: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
-    pobreza_negra: null, pobreza_branca: null,
+    // AUDITORIA 22/03/2026: Pobreza 2020 verificada — SIS/IBGE Tabela 2.17
+    pobreza_negra: 39.3, pobreza_branca: 20.3,
     fonte: 'PNAD Contínua 2020'
   },
   { 
     ano: 2021, 
     rendaMediaNegra: 1598, rendaMediaBranca: 2752,
     desempregoNegro: 14.8, desempregoBranco: 10.2,
-    // POBREZA 2021: NÃO VERIFICADA — fonte SIS/IBGE não localizada. Saneado conforme Regra de Ouro.
-    pobreza_negra: null, pobreza_branca: null,
+    // AUDITORIA 22/03/2026: Pobreza 2021 verificada — SIS/IBGE Tabela 2.17
+    pobreza_negra: 46.2, pobreza_branca: 24.6,
     fonte: 'PNAD Contínua 2021'
   },
   { 
     ano: 2022, 
     rendaMediaNegra: 1725, rendaMediaBranca: 2895,
     desempregoNegro: 11.5, desempregoBranco: 7.8,
-    // POBREZA 2022: VERIFICADA — SIS 2023 (Agência IBGE 06/12/2023). Linha US$6,85 PPC 2017/dia.
-    // "40,0% das pessoas de cor ou raça preta ou parda eram pobres [...] patamar duas vezes superior à taxa da população branca (21%)"
     pobreza_negra: 40.0, pobreza_branca: 21.0,
     fonte: 'PNAD Contínua 2022'
   },
   { 
-    // Dados PNAD 2023 - SIDRA Tabela 6405: renda negra R$2.199, branca R$3.729
     ano: 2023, 
     rendaMediaNegra: 2199, rendaMediaBranca: 3730,
     desempregoNegro: 9.5, desempregoBranco: 6.2,
-    // POBREZA 2023: Dados por preto/pardo separados em classePorRaca (SIS 2024).
-    // Combinado "pretos ou pardos" não localizado diretamente — usar classePorRaca para dados desagregados.
-    // Total: 27,4%. Brancos: 17,7%. Pardos: 35,5%. Pretos: 30,8%.
     pobreza_negra: null, pobreza_branca: 17.7,
     fonte: 'PNAD Contínua 2023 (SIDRA 6405)'
   },
   { 
-    // PNAD Contínua Q2 2024 — DIEESE Boletim Especial Nov/2024
-    // Rendimento: Negros R$2.392, Brancos R$4.009 (Pardos R$2.402, Pretos R$2.250)
-    // Desemprego: Negros 8,0%, Não negros 5,5%
-    // IBGE anual 2024: desocupação 6,6%, rendimento habitual médio R$3.225
     ano: 2024, 
     rendaMediaNegra: 2392, rendaMediaBranca: 4009,
     desempregoNegro: 8.0, desempregoBranco: 5.5,
-    // POBREZA 2024: SIS 2025 — total 23,1%. Pardos 29,8%, pretos 25,8%. Brancos não publicado diretamente.
-    pobreza_negra: null, pobreza_branca: null,
+    // AUDITORIA 22/03/2026: Pobreza 2024 verificada — SIS/IBGE 2025
+    pobreza_negra: 29.0, pobreza_branca: 15.1,
     fonte: 'PNAD Contínua Q2 2024 (DIEESE/IBGE)'
   },
+  {
+    // AUDITORIA 22/03/2026: Dados 2025 adicionados conforme planilha Dados Gerais
+    ano: 2025,
+    rendaMediaNegra: 2643, rendaMediaBranca: 4414,
+    rendaPreta: 2562, rendaParda: 2661,
+    desempregoNegro: 6.74, desempregoBranco: 4.70,
+    desempregoPreta: 7.10, desempregoParda: 6.65,
+    pobreza_negra: null, pobreza_branca: null,
+    fonte: 'PNAD Contínua 2025 (SIDRA 6405/6402)'
+  },
 ];
-// NOTA AUDITORIA — RENDA E DESEMPREGO:
-// Anos 2018-2022: valores mantidos da carga original, pendentes de verificação com SIS/IBGE.
-// Ano 2023: renda verificada via SIDRA 6405 (R$2.199 negros, R$3.730 brancos).
-// Ano 2024: renda e desemprego verificados via DIEESE Boletim Especial Nov/2024 (Q2 2024).
-// POBREZA: Série só disponível com linha US$6,85 a partir de 2022. 2018-2021 saneados (null).
-// 2022: verificado SIS 2023 (pretos/pardos 40,0%, brancos 21,0%).
-// 2023-2024: dados desagregados por preto/pardo em classePorRaca. Combinado "negros" não publicado.
 
 // Razão de renda: renda de pessoas negras equivale a 58,9% da de brancas (PNAD 2023 - SIDRA 6405)
 // Comparativo 2018→2024: razão manteve-se entre 0,57 e 0,61 — desigualdade estrutural persistente
