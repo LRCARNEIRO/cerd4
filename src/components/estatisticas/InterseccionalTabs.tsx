@@ -894,7 +894,7 @@ export function JuventudeTab() {
         <Card className="border-l-4 border-l-warning">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Violência Letal — Juventude (15-29 anos)</CardTitle>
-            <CardDescription>Atlas da Violência 2025 | {atlasViolencia2025.juventude15_29.ano}</CardDescription>
+            <CardDescription>Atlas da Violência 2025, p. 26 | {atlasViolencia2025.juventude15_29.ano}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center mb-4">
@@ -913,6 +913,9 @@ export function JuventudeTab() {
                 <p className="text-xs text-muted-foreground italic">⏳ Percentual de jovens negros masculinos entre vítimas — Pendente de verificação humana</p>
               </div>
             )}
+            <AuditFooter fontes={[
+              { nome: 'Atlas da Violência 2025 (IPEA/FBSP), p. 26', url: 'https://www.ipea.gov.br/atlasviolencia' },
+            ]} compact />
           </CardContent>
         </Card>
 
