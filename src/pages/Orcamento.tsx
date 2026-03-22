@@ -1464,6 +1464,9 @@ export default function Orcamento() {
 
         {/* ===== RELATÓRIO ===== */}
         <TabsContent value="relatorio">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateRelatorioHTML(classified.federal.all)} fileName="Relatorio-Orcamentario" compact />
+          </div>
           <div className="space-y-6">
             {classified.federal.all.length > 0 ? (
               <FederalRelatorioTab
