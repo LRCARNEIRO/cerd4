@@ -48,7 +48,7 @@ const FONTE_DATASUS_SIM = [
 
 const FONTE_PNAD_COVID = [
   { nome: 'PNAD COVID-19 (IBGE, 2020) — Trabalho: proporção que não procurou trabalho por pandemia, por cor/raça', url: 'https://covid19.ibge.gov.br/pnad-covid/trabalho.php' },
-  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92)', url: 'https://repositorio.ipea.gov.br/bitstreams/c5764fb9-c664-4d1c-bf0d-d3e1d1d3b88f/download' },
+  { nome: 'IPEA — Souza (2020): "A pandemia de Covid-19 e a desigualdade racial de renda" (Nota Técnica DISOC nº 92), pp. 475, 478, 481', url: 'https://repositorio.ipea.gov.br/server/api/core/bitstreams/f63d9b9a-f3d2-4f0e-9a97-4db3894c0015/content' },
   { nome: 'PNADC Trimestral (IBGE) — Microdados: massa salarial Q1×Q2 2020, decomposição Shapley por cor/raça', url: 'https://www.ibge.gov.br/estatisticas/sociais/trabalho/9171-pesquisa-nacional-por-amostra-de-domicilios-continua-mensal.html' },
   { nome: 'Filetti et al. (2022) — UNDP Background Paper: Inequalities in the times of a pandemic (HDR 2021-22)', url: 'https://hdr.undp.org/system/files/documents/background-paper-document/2021-22hdrfilletietal.pdf' },
 ];
