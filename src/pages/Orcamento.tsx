@@ -807,6 +807,9 @@ export default function Orcamento() {
 
         {/* ===== UNIVERSO DA BASE ===== */}
         <TabsContent value="universo">
+          <div className="flex justify-end mb-3">
+            <ExportTabButtons generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
+          </div>
           <UniversoBaseTab records={currentRecords} />
         </TabsContent>
 
