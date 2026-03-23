@@ -900,14 +900,14 @@ export const trabalhoRacaGeneroFontes = [
 ];
 
 // CHEFIA FAMILIAR E VULNERABILIDADE: Raça × Gênero
-// Fontes: RASEAM 2025 + Fiocruz/DSBR 2023 + Censo 2022 + SIDRA 9553 (2024) + MDS 2024
+// Fontes: Censo 2022/SIDRA 10179-10182 + Fiocruz/DSBR 2023 + SIDRA 9553 (2024) + MDS 2024
 // AUDITORIA MANUAL 15/03/2026: Valores corrigidos conforme planilha de auditagem Henrique
 export const chefiaFamiliarRacaGenero = {
   mulheresChefesMonoparentais: 7810826, // Censo 2022/SIDRA 10179
   mulheresNegrasChefesMonoparentais: 4667133, // Censo 2022/SIDRA 10180
-  // RASEAM 2025 — atualizado de 59,8% para 69,2%
-  percentualNegras: 69.2, // RASEAM 2025
-  percentualBrancas: 29.5, // RASEAM 2025
+  // Auditoria manual 23/03/2026 — corrigido para os percentuais do SIDRA 10179
+  percentualNegras: 59.76, // Censo 2022/SIDRA 10179-10182
+  percentualBrancas: 39.57, // Censo 2022/SIDRA 10179-10182
   homensChefesMonoparentais: 1184615, // Censo 2022/SIDRA 10181
   homensNegrosChefesMonoparentais: 696109, // Censo 2022/SIDRA 10182
   // Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero (jun/2023)
@@ -944,13 +944,12 @@ export const chefiaFamiliarRacaGenero = {
   // Fonte: https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia
   domiciliosFemininosFome: 3.6, // taxa de fome em lares chefiados por mulheres (MDS 2024) — anterior: 18,8%
   fontes: [
-    { nome: 'RASEAM 2025 — Chefia monoparental por raça', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
-    { nome: 'Censo 2022/SIDRA 10179-10182', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
+    { nome: 'Censo 2022/SIDRA 10179-10182 — Chefia monoparental por raça', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
     { nome: 'SIDRA 9553 — Insegurança Alimentar 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
     { nome: 'MDS 2024 — Fome e chefia feminina', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
     { nome: 'Fiocruz/DSBR — Insegurança Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
   ],
-  metodologia: 'RASEAM 2025 (chefia monoparental × raça). SIDRA 9553/2024 (IA × raça/sexo responsável). MDS 2024 (fome × chefia feminina). Fiocruz/DSBR (fome × raça × gênero).',
+  metodologia: 'Censo 2022/SIDRA 10179-10182 (chefia monoparental × raça). SIDRA 9553/2024 (IA × raça/sexo responsável). MDS 2024 (fome × chefia feminina). Fiocruz/DSBR (fome × raça × gênero).',
 };
 
 // EDUCAÇÃO: Raça × Gênero

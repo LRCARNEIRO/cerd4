@@ -216,7 +216,7 @@ export function RacaGeneroTab() {
               Chefia Familiar e Vulnerabilidade por Raça × Gênero
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
-              RASEAM 2025 + Fiocruz/DSBR 2023 + CadÚnico 2023
+              Censo 2022/SIDRA 10179-10182 + Fiocruz/DSBR 2023 + CadÚnico 2023
               <EstimativaBadge tipo="cruzamento" metodologia={chefiaFamiliarRacaGenero.metodologia} />
             </CardDescription>
           </CardHeader>
