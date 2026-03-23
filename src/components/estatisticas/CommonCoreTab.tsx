@@ -123,20 +123,19 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'Distribuição da população por situação de domicílio',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9514',
-    tabelaSidra: 'Tabela 9514',
+    fonteCompleta: 'SIDRA IBGE Tabela 9923',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9923',
+    tabelaSidra: 'Tabela 9923',
     periodoOriginal: '1980-2010',
     periodoAtualizado: '1980-2022',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Situação', '1980', '1991', '2000', '2010', '2022'],
       rows: [
-        // SIDRA Tabela 9514: https://sidra.ibge.gov.br/Tabela/9514 - Valor oficial: 203.080.756
         ['Brasil (total)', '121.150.573', '146.917.459', '169.590.693', '190.755.799', '203.080.756'],
-        ['Urbana', '82.013.375', '110.875.826', '137.755.550', '160.925.792', '175.069.012'],
-        ['Rural', '39.137.198', '36.041.633', '31.835.143', '29.830.007', '28.011.744'],
-        ['% Urbana', '67,7%', '75,5%', '81,2%', '84,4%', '86,2%']
+        ['Urbana', '82.013.375', '110.875.826', '137.755.550', '160.925.792', '177.508.417'],
+        ['Rural', '39.137.198', '36.041.633', '31.835.143', '29.830.007', '25.572.339'],
+        ['% Urbana', '67,7%', '75,5%', '81,2%', '84,4%', '87,41%']
       ]
     },
     tendencia: 'crescente'
