@@ -278,22 +278,23 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Percentage distribution of the family arrangements',
     categoria: 'Demografia',
     descricao: 'Composição dos arranjos familiares por tipo e sexo do responsável',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7106',
-    tabelaSidra: 'Tabela 7106',
+    fonte: 'IBGE/SIDRA',
+    fonteCompleta: 'SIDRA IBGE Tabela 9882 - Domicílios particulares, por presença de cônjuge e filhos',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9882',
+    tabelaSidra: 'Tabela 9882',
     periodoOriginal: '2004-2014',
-    periodoAtualizado: '2004-2023',
+    periodoAtualizado: '2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Tipo de Arranjo', '2004 H', '2004 M', '2014 H', '2014 M', '2023 H', '2023 M'],
+      headers: ['Tipo de Arranjo', '2022 H (%)', '2022 M (%)'],
       rows: [
-        ['Casal sem filhos', '48,0%', '3,4%', '40,4%', '10,9%', '35,2%', '15,8%'],
-        ['Casal com filhos', '67,7%', '3,6%', '54,9%', '15,1%', '48,5%', '20,3%'],
-        ['Monoparental', '3,1%', '25,6%', '3,4%', '26,6%', '4,2%', '28,5%']
+        ['Casal sem filhos', '13,04%', '7,18%'],
+        ['Casal com filhos de ambos', '19,77%', '10,89%'],
+        ['Casal com filhos de apenas um cônjuge', '3,37%', '3,84%'],
+        ['Monoparental', '2,23%', '14,23%']
       ]
     },
-    notas: 'H = Homem responsável; M = Mulher responsável. Aumento de mulheres chefiando famílias.',
+    notas: 'H = Homem responsável; M = Mulher responsável. Censo 2022. Fonte: Tabela 9882 SIDRA.',
     tendencia: 'crescente'
   }
 ];
