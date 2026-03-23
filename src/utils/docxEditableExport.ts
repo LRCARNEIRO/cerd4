@@ -8,14 +8,40 @@ function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9_-]/g, '_');
 }
 
+function getSvgRenderSize(svg: SVGElement) {
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.getAttribute('viewBox')?.split(/\s+/).map(Number) || [];
+  const vbWidth = Number.isFinite(vb[2]) ? vb[2] : 400;
+  const vbHeight = Number.isFinite(vb[3]) ? vb[3] : 240;
+  const parsedWidth = Number.parseFloat(svg.getAttribute('width') || '');
+  const parsedHeight = Number.parseFloat(svg.getAttribute('height') || '');
+  const width = Math.max(1, Math.round(rect.width || parsedWidth || vbWidth));
+  const height = Math.max(1, Math.round(rect.height || parsedHeight || (width * vbHeight) / vbWidth));
+  return { width, height };
+}
+
+function normalizeImages(container: HTMLElement): void {
+  const images = Array.from(container.querySelectorAll('img'));
+  images.forEach((img) => {
+    const rect = img.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width || img.naturalWidth || Number.parseFloat(img.getAttribute('width') || '') || 640));
+    const height = Math.max(1, Math.round(rect.height || img.naturalHeight || Number.parseFloat(img.getAttribute('height') || '') || Math.round(width * 0.6)));
+    img.setAttribute('width', String(width));
+    img.setAttribute('height', String(height));
+    img.style.width = `${width}px`;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    img.style.objectFit = 'contain';
+    img.style.pageBreakInside = 'avoid';
+  });
+}
+
 /** Convert all SVGs in a cloned DOM to inline PNG images */
 async function convertSvgsToImages(container: HTMLElement): Promise<void> {
   const svgs = Array.from(container.querySelectorAll('svg'));
   await Promise.all(svgs.map(async (svg) => {
     try {
-      const vb = svg.getAttribute('viewBox');
-      const w = parseInt(svg.getAttribute('width') || (vb ? vb.split(' ')[2] : '400'));
-      const h = parseInt(svg.getAttribute('height') || (vb ? vb.split(' ')[3] : '200'));
+      const { width: w, height: h } = getSvgRenderSize(svg);
       const canvas = document.createElement('canvas');
       canvas.width = w * 2;
       canvas.height = h * 2;
@@ -33,7 +59,9 @@ async function convertSvgsToImages(container: HTMLElement): Promise<void> {
         ctx.drawImage(img, 0, 0, w, h);
         const imgEl = document.createElement('img');
         imgEl.src = canvas.toDataURL('image/png');
-        imgEl.style.cssText = `width:${w}px;max-width:100%;height:auto;`;
+        imgEl.setAttribute('width', String(w));
+        imgEl.setAttribute('height', String(h));
+        imgEl.style.cssText = `display:block;width:${w}px;max-width:100%;height:auto;object-fit:contain;page-break-inside:avoid;`;
         svg.parentNode?.replaceChild(imgEl, svg);
       }
     } catch (e) {
@@ -81,7 +109,9 @@ function buildWordHtml(bodyHtml: string, title: string): string {
   th { background: #0f3460; color: white; padding: 5px 7px; text-align: left; font-weight: 600; }
   td { padding: 4px 7px; border-bottom: 1px solid #e2e8f0; }
   tr:nth-child(even) { background: #f8fafc; }
-  img { max-width: 100%; height: auto; }
+  img { display: block; max-width: 100%; height: auto; object-fit: contain; page-break-inside: avoid; }
+  svg, canvas { max-width: 100%; height: auto; }
+  .chart-container, .recharts-responsive-container, .recharts-wrapper, table { page-break-inside: avoid; break-inside: avoid; }
   .data-grid, .kpi-grid { display: block; }
   .data-card, .kpi { display: inline-block; width: 23%; margin: 4px; vertical-align: top; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 8pt; font-weight: 600; }
@@ -101,6 +131,7 @@ export async function downloadElementAsEditableDoc(element: HTMLElement, fileNam
   
   // Convert SVGs to images
   await convertSvgsToImages(clone);
+  normalizeImages(clone);
   
   const docContent = buildWordHtml(clone.innerHTML, fileName.replace(/-/g, ' '));
   
@@ -145,6 +176,7 @@ export async function downloadHtmlAsEditableDoc(html: string, fileName: string) 
     
     // Convert SVGs
     await convertSvgsToImages(target);
+    normalizeImages(target);
 
     const docContent = buildWordHtml(target.innerHTML, fileName.replace(/-/g, ' '));
     
