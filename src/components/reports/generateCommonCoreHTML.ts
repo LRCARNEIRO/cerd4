@@ -248,7 +248,7 @@ export function generateCommonCoreHTML(
         <tr><td><strong>População Total</strong></td><td>${formatNum(dadosDemograficos.populacaoTotal)}</td><td>100%</td><td>Base censitária 2022</td></tr>
         <tr><td><strong>Negros (Pretos e Pardos)</strong></td><td>${formatNum(dadosDemograficos.populacaoNegra)}</td><td>${dadosDemograficos.percentualNegro}%</td><td>Maioria da população</td></tr>
         <tr><td><strong>Brancos</strong></td><td>${formatNum(dadosDemograficos.composicaoRacial[1].populacao)}</td><td>${dadosDemograficos.composicaoRacial[1].percentual}%</td><td>-</td></tr>
-        <tr><td><strong>Povos Indígenas</strong></td><td>${formatNum(povosTradicionais.indigenas.populacaoPessoasIndigenas)}</td><td>0,83%</td><td>${povosTradicionais.indigenas.etnias} etnias, ${povosTradicionais.indigenas.linguas} línguas</td></tr>
+        <tr><td><strong>Povos Indígenas</strong></td><td>${formatNum(povosTradicionais.indigenas.populacaoCorRaca)}</td><td>0,60%</td><td>${povosTradicionais.indigenas.etnias} etnias, ${povosTradicionais.indigenas.linguas} línguas</td></tr>
         <tr><td><strong>Quilombolas</strong></td><td>${formatNum(povosTradicionais.quilombolas.populacao)}</td><td>0,65%</td><td>Primeira contagem censitária</td></tr>
         <tr><td><strong>Povos Ciganos</strong></td><td>~${formatNum(povosTradicionais.ciganos.populacaoEstimada)}</td><td>0,02%</td><td>Estimativa (subnotificação)</td></tr>
       </tbody>

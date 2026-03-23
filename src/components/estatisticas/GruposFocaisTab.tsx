@@ -63,7 +63,7 @@ export function GruposFocaisTab() {
             <p className="font-medium text-primary">Nota Metodológica</p>
             <p className="text-muted-foreground">
               Todos os dados populacionais utilizam o <strong>Universo do Censo 2022 via SIDRA/IBGE</strong>, não microdados. 
-              Para povos indígenas, apresenta-se o conceito "Pessoas Indígenas" (1.694.836) e "Cor ou Raça" (1.227.642).
+              Para povos indígenas, apresenta-se o universo padronizado de cor ou raça do Censo 2022: <strong>1.227.642</strong>.
             </p>
             <div className="flex gap-2 mt-2 flex-wrap">
               <Badge variant="outline" className="text-[10px] gap-1 bg-success/10 text-success border-success/30">

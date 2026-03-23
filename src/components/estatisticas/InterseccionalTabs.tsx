@@ -434,7 +434,7 @@ export function PovosTradicionaisTab() {
           <CardHeader>
             <CardTitle className="text-base">Povos Indígenas</CardTitle>
             <CardDescription>
-              Censo 2022: {povosTradicionais.indigenas.populacaoPessoasIndigenas.toLocaleString('pt-BR')} pessoas indígenas
+              Censo 2022: {povosTradicionais.indigenas.populacaoCorRaca.toLocaleString('pt-BR')} pessoas indígenas
               <br />
               <span className="text-xs">(cor/raça: {povosTradicionais.indigenas.populacaoCorRaca.toLocaleString('pt-BR')})</span>
             </CardDescription>
