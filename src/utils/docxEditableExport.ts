@@ -26,9 +26,9 @@ function normalizeImages(container: HTMLElement): void {
     const rect = img.getBoundingClientRect();
     const width = Math.max(1, Math.round(rect.width || img.naturalWidth || Number.parseFloat(img.getAttribute('width') || '') || 640));
     const height = Math.max(1, Math.round(rect.height || img.naturalHeight || Number.parseFloat(img.getAttribute('height') || '') || Math.round(width * 0.6)));
-    img.setAttribute('width', String(width));
-    img.setAttribute('height', String(height));
-    img.style.width = `${width}px`;
+    img.setAttribute('width', String(Math.min(width, 680)));
+    img.setAttribute('height', String(Math.round(Math.min(width, 680) * height / width)));
+    img.style.width = `${Math.min(width, 680)}px`;
     img.style.maxWidth = '100%';
     img.style.height = 'auto';
     img.style.objectFit = 'contain';
@@ -36,18 +36,93 @@ function normalizeImages(container: HTMLElement): void {
   });
 }
 
+/** Resolve CSS variables (e.g. hsl(var(--chart-1))) to computed color values */
+function resolveCssVariablesInSvg(svg: SVGElement): void {
+  const rootStyles = getComputedStyle(document.documentElement);
+  
+  // Resolve CSS variables in all elements' inline styles and attributes
+  const allElements = Array.from(svg.querySelectorAll('*'));
+  allElements.push(svg as unknown as Element);
+  
+  allElements.forEach((el) => {
+    const computed = getComputedStyle(el);
+    
+    // Resolve color attributes
+    const colorAttrs = ['fill', 'stroke', 'stop-color', 'flood-color', 'lighting-color'];
+    colorAttrs.forEach((attr) => {
+      const val = el.getAttribute(attr);
+      if (val && (val.includes('var(') || val.includes('hsl(var'))) {
+        const resolved = computed.getPropertyValue(attr === 'stop-color' ? 'stop-color' : attr).trim();
+        if (resolved && resolved !== 'none' && resolved !== '') {
+          el.setAttribute(attr, resolved);
+        }
+      }
+    });
+
+    // Resolve inline style properties that use CSS variables
+    if (el instanceof HTMLElement || el instanceof SVGElement) {
+      const style = (el as HTMLElement | SVGElement).style;
+      if (style) {
+        for (let i = 0; i < style.length; i++) {
+          const prop = style[i];
+          const value = style.getPropertyValue(prop);
+          if (value && value.includes('var(')) {
+            const computedValue = computed.getPropertyValue(prop).trim();
+            if (computedValue) {
+              style.setProperty(prop, computedValue);
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  // Also resolve any hsl(var(...)) patterns in the SVG's raw markup as a fallback
+  // by setting computed fill/stroke on elements that have them via CSS
+  allElements.forEach((el) => {
+    const computed = getComputedStyle(el);
+    
+    // If element has fill set via CSS class but not attribute, inline it
+    const computedFill = computed.fill;
+    const attrFill = el.getAttribute('fill');
+    if (computedFill && computedFill !== 'none' && computedFill !== 'rgb(0, 0, 0)' && !attrFill) {
+      el.setAttribute('fill', computedFill);
+    }
+    
+    const computedStroke = computed.stroke;
+    const attrStroke = el.getAttribute('stroke');
+    if (computedStroke && computedStroke !== 'none' && !attrStroke) {
+      el.setAttribute('stroke', computedStroke);
+    }
+  });
+}
+
 /** Convert all SVGs in a cloned DOM to inline PNG images */
 async function convertSvgsToImages(container: HTMLElement): Promise<void> {
   const svgs = Array.from(container.querySelectorAll('svg'));
-  await Promise.all(svgs.map(async (svg) => {
+  for (const svg of svgs) {
     try {
       const { width: w, height: h } = getSvgRenderSize(svg);
+      // Cap maximum dimensions to avoid oversized images in Word
+      const maxW = Math.min(w, 700);
+      const maxH = Math.round(maxW * h / w);
       const canvas = document.createElement('canvas');
-      canvas.width = w * 2;
-      canvas.height = h * 2;
+      canvas.width = maxW * 2;
+      canvas.height = maxH * 2;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        const svgData = new XMLSerializer().serializeToString(svg);
+        // Resolve CSS variables to computed colors before serializing
+        resolveCssVariablesInSvg(svg);
+        
+        // Ensure the SVG has explicit width/height for rendering
+        const svgClone = svg.cloneNode(true) as SVGElement;
+        svgClone.setAttribute('width', String(maxW));
+        svgClone.setAttribute('height', String(maxH));
+        if (!svgClone.getAttribute('xmlns')) {
+          svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        }
+        
+        const svgData = new XMLSerializer().serializeToString(svgClone);
         const img = new Image();
         const svgUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
         await new Promise<void>((resolve, reject) => {
@@ -56,32 +131,18 @@ async function convertSvgsToImages(container: HTMLElement): Promise<void> {
           img.src = svgUrl;
         });
         ctx.scale(2, 2);
-        ctx.drawImage(img, 0, 0, w, h);
+        ctx.drawImage(img, 0, 0, maxW, maxH);
         const imgEl = document.createElement('img');
         imgEl.src = canvas.toDataURL('image/png');
-        imgEl.setAttribute('width', String(w));
-        imgEl.setAttribute('height', String(h));
-        imgEl.style.cssText = `display:block;width:${w}px;max-width:100%;height:auto;object-fit:contain;page-break-inside:avoid;`;
+        imgEl.setAttribute('width', String(maxW));
+        imgEl.setAttribute('height', String(maxH));
+        imgEl.style.cssText = `display:block;width:${maxW}px;max-width:100%;height:auto;object-fit:contain;page-break-inside:avoid;`;
         svg.parentNode?.replaceChild(imgEl, svg);
       }
     } catch (e) {
       console.warn('SVG conversion error:', e);
     }
-  }));
-}
-
-/** Extract inline styles from computed styles for key elements */
-function getDocStyles(): string {
-  const styles: string[] = [];
-  const styleSheets = document.querySelectorAll('style');
-  styleSheets.forEach((s) => {
-    let text = s.textContent || '';
-    // Remove print-only and @page rules
-    text = text.replace(/@media\s+print\s*\{[^}]*\}/g, '');
-    text = text.replace(/@page\s*\{[^}]*\}/g, '');
-    styles.push(text);
-  });
-  return styles.join('\n');
+  }
 }
 
 /** Build an MS Word-compatible HTML document from an HTML string */
@@ -109,8 +170,8 @@ function buildWordHtml(bodyHtml: string, title: string): string {
   th { background: #0f3460; color: white; padding: 5px 7px; text-align: left; font-weight: 600; }
   td { padding: 4px 7px; border-bottom: 1px solid #e2e8f0; }
   tr:nth-child(even) { background: #f8fafc; }
-  img { display: block; max-width: 100%; height: auto; object-fit: contain; page-break-inside: avoid; }
-  svg, canvas { max-width: 100%; height: auto; }
+  img { display: block; max-width: 680px; height: auto; object-fit: contain; page-break-inside: avoid; }
+  svg, canvas { max-width: 680px; height: auto; }
   .chart-container, .recharts-responsive-container, .recharts-wrapper, table { page-break-inside: avoid; break-inside: avoid; }
   .data-grid, .kpi-grid { display: block; }
   .data-card, .kpi { display: inline-block; width: 23%; margin: 4px; vertical-align: top; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
@@ -129,11 +190,21 @@ export async function downloadElementAsEditableDoc(element: HTMLElement, fileNam
   clone.querySelectorAll('[data-export-ignore="true"]').forEach((n) => n.remove());
   clone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
   
-  // Convert SVGs to images
-  await convertSvgsToImages(clone);
-  normalizeImages(clone);
+  // Resolve CSS variables on original SVGs (they're still in the DOM) then convert on clone
+  // We need the original SVGs for getComputedStyle, so resolve on originals first
+  const originalSvgs = Array.from(element.querySelectorAll('svg'));
+  originalSvgs.forEach((svg) => resolveCssVariablesInSvg(svg));
   
-  const docContent = buildWordHtml(clone.innerHTML, fileName.replace(/-/g, ' '));
+  // Re-clone after resolving CSS vars
+  const resolvedClone = element.cloneNode(true) as HTMLElement;
+  resolvedClone.querySelectorAll('[data-export-ignore="true"]').forEach((n) => n.remove());
+  resolvedClone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
+  
+  // Convert SVGs to images
+  await convertSvgsToImages(resolvedClone);
+  normalizeImages(resolvedClone);
+  
+  const docContent = buildWordHtml(resolvedClone.innerHTML, fileName.replace(/-/g, ' '));
   
   const blob = new Blob(['\ufeff' + docContent], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);
@@ -162,11 +233,12 @@ export async function downloadHtmlAsEditableDoc(html: string, fileName: string) 
     const iframeDoc = iframe.contentDocument;
     if (!iframeDoc) throw new Error('Falha ao preparar o conteúdo do documento.');
 
-    // Wait for fonts/images
+    // Wait for fonts/images and chart animations
     if (iframeDoc.fonts?.ready) {
       try { await iframeDoc.fonts.ready; } catch { /* ignore */ }
     }
-    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    // Wait longer for Recharts animations to complete
+    await new Promise((r) => setTimeout(r, 2000));
 
     // Remove toolbars
     iframeDoc.querySelector('.export-toolbar')?.remove();
@@ -174,7 +246,9 @@ export async function downloadHtmlAsEditableDoc(html: string, fileName: string) 
 
     const target = (iframeDoc.querySelector('.export-captured-content') || iframeDoc.querySelector('main') || iframeDoc.body) as HTMLElement;
     
-    // Convert SVGs
+    // Resolve CSS variables and convert SVGs
+    const svgs = Array.from(target.querySelectorAll('svg'));
+    svgs.forEach((svg) => resolveCssVariablesInSvg(svg));
     await convertSvgsToImages(target);
     normalizeImages(target);
 

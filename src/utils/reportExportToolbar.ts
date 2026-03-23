@@ -18,10 +18,41 @@ function getCurrentDocumentHeadMarkup(): string {
   return `${stylesheetLinks}\n${styleTags}`;
 }
 
+/** Resolve CSS custom properties to computed values for standalone HTML export */
+function getResolvedCssVariables(): string {
+  const root = document.documentElement;
+  const computed = getComputedStyle(root);
+  const vars: string[] = [];
+  
+  // Collect all CSS custom properties from :root
+  const knownVars = [
+    '--background', '--foreground', '--card', '--card-foreground',
+    '--popover', '--popover-foreground', '--primary', '--primary-foreground',
+    '--secondary', '--secondary-foreground', '--muted', '--muted-foreground',
+    '--accent', '--accent-foreground', '--destructive', '--destructive-foreground',
+    '--border', '--input', '--ring',
+    '--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5',
+    '--sidebar-background', '--sidebar-foreground',
+  ];
+  
+  knownVars.forEach((v) => {
+    const val = computed.getPropertyValue(v).trim();
+    if (val) {
+      vars.push(`  ${v}: ${val};`);
+    }
+  });
+  
+  if (vars.length === 0) return '';
+  return `:root {\n${vars.join('\n')}\n}`;
+}
+
 export function buildExportHtmlFromElement(target: HTMLElement, fileName: string, title?: string): string {
   const clone = target.cloneNode(true) as HTMLElement;
 
   clone.querySelectorAll('[data-export-ignore="true"]').forEach((node) => node.remove());
+
+  // Resolve CSS variables on original SVGs so they render correctly in standalone HTML
+  const resolvedVars = getResolvedCssVariables();
 
   return `<!DOCTYPE html>
 <html lang="pt-BR" class="${document.documentElement.className}">
@@ -31,6 +62,7 @@ export function buildExportHtmlFromElement(target: HTMLElement, fileName: string
   <title>${title || fileName}</title>
   ${getCurrentDocumentHeadMarkup()}
   <style>
+    ${resolvedVars}
     @page { size: A4; margin: 1.6cm; }
     body {
       margin: 0;
@@ -160,6 +192,39 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
       window.print();
     }
 
+    function resolveSvgColors(svg) {
+      var allEls = svg.querySelectorAll('*');
+      for (var i = 0; i < allEls.length; i++) {
+        var el = allEls[i];
+        var cs = getComputedStyle(el);
+        var fill = el.getAttribute('fill');
+        if (fill && fill.indexOf('var(') !== -1) {
+          el.setAttribute('fill', cs.fill || fill);
+        }
+        var stroke = el.getAttribute('stroke');
+        if (stroke && stroke.indexOf('var(') !== -1) {
+          el.setAttribute('stroke', cs.stroke || stroke);
+        }
+        // Also inline CSS-only fills
+        if (!fill && cs.fill && cs.fill !== 'none' && cs.fill !== 'rgb(0, 0, 0)') {
+          el.setAttribute('fill', cs.fill);
+        }
+        if (!stroke && cs.stroke && cs.stroke !== 'none') {
+          el.setAttribute('stroke', cs.stroke);
+        }
+        // Handle style properties
+        if (el.style) {
+          for (var j = 0; j < el.style.length; j++) {
+            var prop = el.style[j];
+            var val = el.style.getPropertyValue(prop);
+            if (val && val.indexOf('var(') !== -1) {
+              el.style.setProperty(prop, cs.getPropertyValue(prop));
+            }
+          }
+        }
+      }
+    }
+
     function exportDOCX() {
       var btn = document.querySelector('.btn-docx');
       var origText = btn.innerHTML;
@@ -167,25 +232,39 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
       btn.disabled = true;
 
       try {
-        // Clone the document body, removing the toolbar
         var clone = document.body.cloneNode(true);
         var toolbar = clone.querySelector('.export-toolbar');
         if (toolbar) toolbar.remove();
         var printInst = clone.querySelector('.print-instructions');
         if (printInst) printInst.remove();
 
-        // Convert SVGs to canvas images
+        // Resolve colors on original SVGs first, then convert on clone
+        var origSvgs = document.querySelectorAll('svg');
+        origSvgs.forEach(function(svg) { resolveSvgColors(svg); });
+
+        // Re-clone after resolving
+        clone = document.body.cloneNode(true);
+        toolbar = clone.querySelector('.export-toolbar');
+        if (toolbar) toolbar.remove();
+        printInst = clone.querySelector('.print-instructions');
+        if (printInst) printInst.remove();
+
         var svgs = clone.querySelectorAll('svg');
         svgs.forEach(function(svg) {
           try {
+            var rect = svg.getBoundingClientRect ? svg.getBoundingClientRect() : null;
             var vb = svg.getAttribute('viewBox');
-            var w = parseInt(svg.getAttribute('width') || (vb ? vb.split(' ')[2] : '400'));
-            var h = parseInt(svg.getAttribute('height') || (vb ? vb.split(' ')[3] : '200'));
+            var w = Math.min(parseInt(svg.getAttribute('width') || (rect && rect.width ? rect.width : '') || (vb ? vb.split(' ')[2] : '400')), 700);
+            var h = parseInt(svg.getAttribute('height') || (rect && rect.height ? rect.height : '') || (vb ? vb.split(' ')[3] : '200'));
+            h = Math.round(w * h / Math.max(w, 1));
             var canvas = document.createElement('canvas');
             canvas.width = w * 2;
             canvas.height = h * 2;
             var ctx = canvas.getContext('2d');
             if (ctx) {
+              svg.setAttribute('width', w);
+              svg.setAttribute('height', h);
+              if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
               var svgData = new XMLSerializer().serializeToString(svg);
               var img = new Image();
               img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
@@ -193,23 +272,13 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
               ctx.drawImage(img, 0, 0, w, h);
               var imgEl = document.createElement('img');
               imgEl.src = canvas.toDataURL('image/png');
-              imgEl.style.cssText = 'width:' + w + 'px;max-width:100%;height:auto;';
+              imgEl.style.cssText = 'display:block;width:' + w + 'px;max-width:100%;height:auto;';
               svg.parentNode.replaceChild(imgEl, svg);
             }
           } catch(e) { console.warn('SVG conv err', e); }
         });
 
-        // Get all styles
-        var styles = '';
-        var styleSheets = document.querySelectorAll('style');
-        styleSheets.forEach(function(s) {
-          var text = s.textContent || '';
-          text = text.replace(/@media\\s+print\\s*\\{[^}]*\\}/g, '');
-          text = text.replace(/@page\\s*\\{[^}]*\\}/g, '');
-          styles += text;
-        });
-
-        var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>' + styles + ' body{max-width:none;padding:0;} .data-grid{display:block;} .data-card{display:inline-block;width:30%;margin:4px;vertical-align:top;} img{max-width:100%;}</style></head><body>' + clone.innerHTML + '</body></html>';
+        var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;max-width:none;padding:0} h1{font-size:18pt;color:#0f3460;border-bottom:2px solid #0f3460;padding-bottom:6px} h2{font-size:15pt;color:#16213e;border-bottom:1px solid #e2e8f0;margin-top:18pt} h3{font-size:13pt;color:#0f3460;margin-top:14pt} table{width:100%;border-collapse:collapse;margin:8px 0;font-size:9pt} th{background:#0f3460;color:white;padding:5px 7px;text-align:left} td{padding:4px 7px;border-bottom:1px solid #e2e8f0} tr:nth-child(even){background:#f8fafc} img{display:block;max-width:680px;height:auto}</style></head><body>' + clone.innerHTML + '</body></html>';
 
         var blob = new Blob(['\\ufeff' + docContent], { type: 'application/msword' });
         var url = URL.createObjectURL(blob);
