@@ -5,6 +5,7 @@
  */
 import { toast } from 'sonner';
 import { downloadElementAsEditableDoc, downloadHtmlAsEditableDoc } from '@/utils/docxEditableExport';
+import { createExportClone } from '@/utils/exportLayoutSnapshot';
 
 function getCurrentDocumentHeadMarkup(): string {
   const styleTags = Array.from(document.querySelectorAll('style'))
@@ -47,9 +48,7 @@ function getResolvedCssVariables(): string {
 }
 
 export function buildExportHtmlFromElement(target: HTMLElement, fileName: string, title?: string): string {
-  const clone = target.cloneNode(true) as HTMLElement;
-
-  clone.querySelectorAll('[data-export-ignore="true"]').forEach((node) => node.remove());
+  const clone = createExportClone(target);
 
   // Resolve CSS variables on original SVGs so they render correctly in standalone HTML
   const resolvedVars = getResolvedCssVariables();
@@ -71,8 +70,19 @@ export function buildExportHtmlFromElement(target: HTMLElement, fileName: string
       color: hsl(var(--foreground));
     }
     .export-captured-content {
-      max-width: 1440px;
+      width: ${Math.max(1, Math.round(target.getBoundingClientRect().width || target.scrollWidth || 1440))}px;
+      max-width: 100%;
       margin: 0 auto;
+    }
+    .export-captured-content img,
+    .export-captured-content svg,
+    .export-captured-content canvas {
+      max-width: 100% !important;
+      height: auto;
+    }
+    .export-captured-content table {
+      width: 100% !important;
+      table-layout: fixed;
     }
     @media print {
       .export-toolbar { display: none !important; }
