@@ -20,6 +20,55 @@ function getSvgRenderSize(svg: SVGElement) {
   return { width, height };
 }
 
+function getCanvasRenderSize(canvas: HTMLCanvasElement) {
+  const rect = canvas.getBoundingClientRect();
+  const parsedWidth = Number.parseFloat(canvas.getAttribute('width') || '');
+  const parsedHeight = Number.parseFloat(canvas.getAttribute('height') || '');
+  const width = Math.max(1, Math.round(rect.width || parsedWidth || canvas.width || 640));
+  const height = Math.max(1, Math.round(rect.height || parsedHeight || canvas.height || Math.round(width * 0.6)));
+  return { width, height };
+}
+
+async function waitForImages(container: ParentNode): Promise<void> {
+  const images = Array.from(container.querySelectorAll('img'));
+  await Promise.all(images.map((img) => {
+    if (img.complete) return Promise.resolve();
+    return new Promise<void>((resolve) => {
+      const done = () => resolve();
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  }));
+}
+
+function isCanvasPainted(canvas: HTMLCanvasElement): boolean {
+  if (!canvas.width || !canvas.height) return false;
+  try {
+    return canvas.toDataURL('image/png').length > 2000;
+  } catch {
+    return true;
+  }
+}
+
+async function waitForDynamicVisuals(container: HTMLElement, win: Window = window): Promise<void> {
+  await waitForImages(container);
+
+  const canvases = Array.from(container.querySelectorAll('canvas'));
+  if (!canvases.length) {
+    await new Promise<void>((resolve) => win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve())));
+    return;
+  }
+
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < 4000) {
+    if (canvases.every(isCanvasPainted)) {
+      await new Promise<void>((resolve) => win.requestAnimationFrame(() => win.requestAnimationFrame(() => resolve())));
+      return;
+    }
+    await new Promise<void>((resolve) => win.setTimeout(resolve, 120));
+  }
+}
+
 function normalizeImages(container: HTMLElement): void {
   const images = Array.from(container.querySelectorAll('img'));
   images.forEach((img) => {
@@ -66,6 +115,24 @@ async function convertSvgsToImages(container: HTMLElement): Promise<void> {
       }
     } catch (e) {
       console.warn('SVG conversion error:', e);
+    }
+  }));
+}
+
+async function convertCanvasesToImages(container: HTMLElement): Promise<void> {
+  const canvases = Array.from(container.querySelectorAll('canvas'));
+
+  await Promise.all(canvases.map(async (canvas) => {
+    try {
+      const { width, height } = getCanvasRenderSize(canvas);
+      const imgEl = document.createElement('img');
+      imgEl.src = canvas.toDataURL('image/png');
+      imgEl.setAttribute('width', String(width));
+      imgEl.setAttribute('height', String(height));
+      imgEl.style.cssText = `display:block;width:${width}px;max-width:100%;height:auto;object-fit:contain;page-break-inside:avoid;`;
+      canvas.parentNode?.replaceChild(imgEl, canvas);
+    } catch (e) {
+      console.warn('Canvas conversion error:', e);
     }
   }));
 }
@@ -130,7 +197,9 @@ export async function downloadElementAsEditableDoc(element: HTMLElement, fileNam
   clone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
   
   // Convert SVGs to images
+  await waitForDynamicVisuals(element);
   await convertSvgsToImages(clone);
+  await convertCanvasesToImages(clone);
   normalizeImages(clone);
   
   const docContent = buildWordHtml(clone.innerHTML, fileName.replace(/-/g, ' '));
@@ -162,20 +231,21 @@ export async function downloadHtmlAsEditableDoc(html: string, fileName: string) 
     const iframeDoc = iframe.contentDocument;
     if (!iframeDoc) throw new Error('Falha ao preparar o conteúdo do documento.');
 
-    // Wait for fonts/images
+    // Wait for fonts/images/charts
     if (iframeDoc.fonts?.ready) {
       try { await iframeDoc.fonts.ready; } catch { /* ignore */ }
     }
-    await new Promise((r) => requestAnimationFrame(() => r(null)));
 
     // Remove toolbars
     iframeDoc.querySelector('.export-toolbar')?.remove();
     iframeDoc.querySelector('.print-instructions')?.remove();
 
     const target = (iframeDoc.querySelector('.export-captured-content') || iframeDoc.querySelector('main') || iframeDoc.body) as HTMLElement;
+    await waitForDynamicVisuals(target, iframe.contentWindow || window);
     
-    // Convert SVGs
+    // Convert SVGs/canvases
     await convertSvgsToImages(target);
+    await convertCanvasesToImages(target);
     normalizeImages(target);
 
     const docContent = buildWordHtml(target.innerHTML, fileName.replace(/-/g, ' '));
