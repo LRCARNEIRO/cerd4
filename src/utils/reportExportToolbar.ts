@@ -242,31 +242,35 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
       btn.disabled = true;
 
       try {
+        // Step 1: Resolve colors on original SVGs and collect their dimensions
+        var origSvgs = document.querySelectorAll('svg');
+        var svgDims = [];
+        origSvgs.forEach(function(svg) {
+          resolveSvgColors(svg);
+          var rect = svg.getBoundingClientRect();
+          var vb = svg.getAttribute('viewBox');
+          var vbParts = vb ? vb.split(/[\\s,]+/) : [];
+          var w = rect.width > 1 ? Math.round(rect.width) : (parseInt(svg.getAttribute('width')) || (vbParts[2] ? parseInt(vbParts[2]) : 400));
+          var h = rect.height > 1 ? Math.round(rect.height) : (parseInt(svg.getAttribute('height')) || (vbParts[3] ? parseInt(vbParts[3]) : 240));
+          svgDims.push({ w: Math.min(w, 660), h: Math.round(Math.min(w, 660) * h / Math.max(w, 1)) });
+        });
+
+        // Step 2: Clone AFTER resolving
         var clone = document.body.cloneNode(true);
         var toolbar = clone.querySelector('.export-toolbar');
         if (toolbar) toolbar.remove();
         var printInst = clone.querySelector('.print-instructions');
         if (printInst) printInst.remove();
 
-        // Resolve colors on original SVGs first, then convert on clone
-        var origSvgs = document.querySelectorAll('svg');
-        origSvgs.forEach(function(svg) { resolveSvgColors(svg); });
-
-        // Re-clone after resolving
-        clone = document.body.cloneNode(true);
-        toolbar = clone.querySelector('.export-toolbar');
-        if (toolbar) toolbar.remove();
-        printInst = clone.querySelector('.print-instructions');
-        if (printInst) printInst.remove();
-
-        var svgs = clone.querySelectorAll('svg');
-        svgs.forEach(function(svg) {
+        // Step 3: Convert cloned SVGs using pre-collected dimensions from originals
+        var clonedSvgs = clone.querySelectorAll('svg');
+        var idx = 0;
+        clonedSvgs.forEach(function(svg) {
           try {
-            var rect = svg.getBoundingClientRect ? svg.getBoundingClientRect() : null;
-            var vb = svg.getAttribute('viewBox');
-            var w = Math.min(parseInt(svg.getAttribute('width') || (rect && rect.width ? rect.width : '') || (vb ? vb.split(' ')[2] : '400')), 700);
-            var h = parseInt(svg.getAttribute('height') || (rect && rect.height ? rect.height : '') || (vb ? vb.split(' ')[3] : '200'));
-            h = Math.round(w * h / Math.max(w, 1));
+            var dims = svgDims[idx] || { w: 400, h: 240 };
+            idx++;
+            var w = dims.w;
+            var h = dims.h;
             var canvas = document.createElement('canvas');
             canvas.width = w * 2;
             canvas.height = h * 2;
@@ -282,13 +286,15 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
               ctx.drawImage(img, 0, 0, w, h);
               var imgEl = document.createElement('img');
               imgEl.src = canvas.toDataURL('image/png');
-              imgEl.style.cssText = 'display:block;width:' + w + 'px;max-width:100%;height:auto;';
+              imgEl.setAttribute('width', w);
+              imgEl.setAttribute('height', h);
+              imgEl.style.cssText = 'display:block;width:' + w + 'px;height:' + h + 'px;max-width:100%;object-fit:contain;page-break-inside:avoid;';
               svg.parentNode.replaceChild(imgEl, svg);
             }
           } catch(e) { console.warn('SVG conv err', e); }
         });
 
-        var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;max-width:none;padding:0} h1{font-size:18pt;color:#0f3460;border-bottom:2px solid #0f3460;padding-bottom:6px} h2{font-size:15pt;color:#16213e;border-bottom:1px solid #e2e8f0;margin-top:18pt} h3{font-size:13pt;color:#0f3460;margin-top:14pt} table{width:100%;border-collapse:collapse;margin:8px 0;font-size:9pt} th{background:#0f3460;color:white;padding:5px 7px;text-align:left} td{padding:4px 7px;border-bottom:1px solid #e2e8f0} tr:nth-child(even){background:#f8fafc} img{display:block;max-width:680px;height:auto}</style></head><body>' + clone.innerHTML + '</body></html>';
+        var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;max-width:none;padding:0} h1{font-size:18pt;color:#0f3460;border-bottom:2px solid #0f3460;padding-bottom:6px} h2{font-size:15pt;color:#16213e;border-bottom:1px solid #e2e8f0;margin-top:18pt} h3{font-size:13pt;color:#0f3460;margin-top:14pt} table{width:100%;border-collapse:collapse;margin:8px 0;font-size:9pt} th{background:#0f3460;color:white;padding:5px 7px;text-align:left} td{padding:4px 7px;border-bottom:1px solid #e2e8f0} tr:nth-child(even){background:#f8fafc} img{display:block;max-width:660px;height:auto;object-fit:contain}</style></head><body>' + clone.innerHTML + '</body></html>';
 
         var blob = new Blob(['\\ufeff' + docContent], { type: 'application/msword' });
         var url = URL.createObjectURL(blob);

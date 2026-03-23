@@ -53,9 +53,9 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'Evolução da população brasileira nos censos demográficos',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'Instituto Brasileiro de Geografia e Estatística - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9514',
-    tabelaSidra: 'Tabela 9514',
+    fonteCompleta: 'SIDRA IBGE Tabela 1209 - População, por grupos de idade',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/1209',
+    tabelaSidra: 'Tabela 1209',
     periodoOriginal: '1980-2010',
     periodoAtualizado: '1980-2022',
     statusAtualizacao: 'atualizado',
@@ -77,17 +77,17 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Gross birth rate',
     categoria: 'Demografia',
     descricao: 'Nascidos vivos por mil habitantes',
-    fonte: 'IBGE/MS',
-    fonteCompleta: 'IBGE e Ministério da Saúde - SVS/CGIAE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'MS/SINASC',
+    fonteCompleta: 'Sistema de Informação sobre Nascidos Vivos - SINASC',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
+    tabelaSidra: 'SINASC/DataSUS',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022', '2024'],
       rows: [
-        ['Taxa ‰', '20,3', '17,5', '15,8', '14,2', '13,1', '12,8', '12,5']
+        ['Taxa ‰', '20,3', '17,5', '15,8', '14,2', '13,1', '12,19', '11,28']
       ]
     },
     tendencia: 'decrescente'
@@ -99,17 +99,17 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Gross mortality rate',
     categoria: 'Demografia',
     descricao: 'Óbitos por mil habitantes',
-    fonte: 'IBGE/SIM',
-    fonteCompleta: 'IBGE e MS - Sistema de Informações sobre Mortalidade',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'MS/SIM',
+    fonteCompleta: 'Sistema de Informação sobre Mortalidade - SIM',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10br.def',
+    tabelaSidra: 'SIM/DataSUS',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2021', '2022', '2024'],
       rows: [
-        ['Taxa ‰', '6,7', '6,2', '6,0', '6,1', '7,7', '8,5', '7,2', '6,8']
+        ['Taxa ‰', '6,7', '6,2', '6,0', '6,1', '7,47', '8,75', '7,35', '7,23']
       ]
     },
     notas: 'Pico em 2021 devido à pandemia de COVID-19.',
@@ -123,20 +123,19 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'Distribuição da população por situação de domicílio',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9514',
-    tabelaSidra: 'Tabela 9514',
+    fonteCompleta: 'SIDRA IBGE Tabela 9923',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9923',
+    tabelaSidra: 'Tabela 9923',
     periodoOriginal: '1980-2010',
     periodoAtualizado: '1980-2022',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Situação', '1980', '1991', '2000', '2010', '2022'],
       rows: [
-        // SIDRA Tabela 9514: https://sidra.ibge.gov.br/Tabela/9514 - Valor oficial: 203.080.756
         ['Brasil (total)', '121.150.573', '146.917.459', '169.590.693', '190.755.799', '203.080.756'],
-        ['Urbana', '82.013.375', '110.875.826', '137.755.550', '160.925.792', '175.069.012'],
-        ['Rural', '39.137.198', '36.041.633', '31.835.143', '29.830.007', '28.011.744'],
-        ['% Urbana', '67,7%', '75,5%', '81,2%', '84,4%', '86,2%']
+        ['Urbana', '82.013.375', '110.875.826', '137.755.550', '160.925.792', '177.508.417'],
+        ['Rural', '39.137.198', '36.041.633', '31.835.143', '29.830.007', '25.572.339'],
+        ['% Urbana', '67,7%', '75,5%', '81,2%', '84,4%', '87,41%']
       ]
     },
     tendencia: 'crescente'
@@ -149,9 +148,9 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'Habitantes por km² nos censos demográficos',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censos Demográficos',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9514',
-    tabelaSidra: 'Tabela 9514',
+    fonteCompleta: 'SIDRA IBGE Tabela 4714',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/4714#resultado',
+    tabelaSidra: 'Tabela 4714',
     periodoOriginal: '1960-2010',
     periodoAtualizado: '1960-2022',
     statusAtualizacao: 'atualizado',
@@ -171,22 +170,21 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'População residente por sexo',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
-    tabelaSidra: 'Tabela 9605',
+    fonteCompleta: 'SIDRA IBGE Tabela 9514',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9514#resultado',
+    tabelaSidra: 'Tabela 9514',
     periodoOriginal: '1991-2010',
     periodoAtualizado: '1991-2022',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Sexo', '1991', '2000', '2010', '2022'],
       rows: [
-        // SIDRA Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
-        ['Homens', '72.485.122', '83.576.015', '93.406.990', '98.514.545'],
-        ['Mulheres', '74.340.353', '86.223.155', '97.348.809', '104.566.211'],
+        ['Homens', '72.485.122', '83.576.015', '93.406.990', '98.532.431'],
+        ['Mulheres', '74.340.353', '86.223.155', '97.348.809', '104.548.325'],
         ['Razão de sexo (H/M)', '0,975', '0,969', '0,959', '0,942']
       ]
     },
-    notas: 'Soma H+M = 203.080.756 (Tabela 9514). Dados Censo 2022.',
+    notas: 'Soma H+M = 203.080.756. Dados Censo 2022.',
     tendencia: 'estavel'
   },
   {
@@ -197,22 +195,22 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'População por faixa etária e sexo',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
-    tabelaSidra: 'Tabela 9605',
+    fonteCompleta: 'SIDRA IBGE Tabela 9514',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9514#resultado',
+    tabelaSidra: 'Tabela 9514',
     periodoOriginal: '1991-2010',
     periodoAtualizado: '1991-2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Faixa etária', '2010 (Total)', '2022 (Total)', '% 2022'],
+      headers: ['Faixa etária', '2022 Mulheres', '% M', '2022 Homens', '% H'],
       rows: [
-        ['0-14 anos', '45.932.294', '40.168.345', '19,8%'],
-        ['15-29 anos', '51.340.473', '45.215.842', '22,3%'],
-        ['30-59 anos', '69.957.451', '84.950.328', '41,8%'],
-        ['60+ anos', '23.525.581', '32.727.997', '16,1%']
+        ['0-14 anos', '19.663.544', '9,68%', '20.465.717', '10,08%'],
+        ['15-29 anos', '22.599.849', '11,13%', '22.712.279', '11,18%'],
+        ['30-59 anos', '44.397.195', '21,86%', '41.128.682', '20,25%'],
+        ['60+ anos', '17.887.737', '8,81%', '14.225.753', '7,00%']
       ]
     },
-    notas: 'Envelhecimento acelerado da população brasileira.',
+    notas: 'Dados do Censo 2022, separados por sexo. Envelhecimento acelerado da população brasileira.',
     tendencia: 'crescente'
   },
   {
@@ -232,13 +230,13 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     dados: {
       headers: ['Indicador', '2015', '2018', '2020', '2022', '2024'],
       rows: [
-        ['Razão dep. juvenil', '32,5', '30,8', '29,5', '28,0', '26,8'],
-        ['Razão dep. idosa', '22,2', '24,5', '26,2', '28,5', '30,2'],
-        ['Razão dep. total', '54,7', '55,3', '55,7', '56,5', '57,0'],
-        ['% 60+ anos', '11,7%', '13,0%', '14,3%', '15,6%', '16,8%']
+        ['Razão dep. juvenil', '32,5', '33,7', '—*', '31,68', '30,92'],
+        ['Razão dep. idosa', '22,2', '20,68', '—*', '23,35', '24,96'],
+        ['Razão dep. total', '54,7', '53,75', '—*', '55,03', '55,88'],
+        ['% 60+ anos', '11,7%', '13,5%', '—*', '15,1%', '16,0%']
       ]
     },
-    notas: '⚠️ Dados de razão de dependência calculados a partir de PNAD Contínua trimestral (Tabela 7109) — valores anuais são médias dos 4 trimestres. Valores arredondados a 1 casa decimal conforme fonte.',
+    notas: '⚠️ * 2020: Sem valores — PNAD Contínua interrompida pela pandemia. Dados calculados a partir de PNAD Contínua trimestral (Tabela 7109). Fonte: https://sidra.ibge.gov.br/tabela/7109',
     tendencia: 'crescente'
   },
   {
@@ -280,22 +278,23 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Percentage distribution of the family arrangements',
     categoria: 'Demografia',
     descricao: 'Composição dos arranjos familiares por tipo e sexo do responsável',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7106',
-    tabelaSidra: 'Tabela 7106',
+    fonte: 'IBGE/SIDRA',
+    fonteCompleta: 'SIDRA IBGE Tabela 9882 - Domicílios particulares, por presença de cônjuge e filhos',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9882',
+    tabelaSidra: 'Tabela 9882',
     periodoOriginal: '2004-2014',
-    periodoAtualizado: '2004-2023',
+    periodoAtualizado: '2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Tipo de Arranjo', '2004 H', '2004 M', '2014 H', '2014 M', '2023 H', '2023 M'],
+      headers: ['Tipo de Arranjo', '2022 H (%)', '2022 M (%)'],
       rows: [
-        ['Casal sem filhos', '48,0%', '3,4%', '40,4%', '10,9%', '35,2%', '15,8%'],
-        ['Casal com filhos', '67,7%', '3,6%', '54,9%', '15,1%', '48,5%', '20,3%'],
-        ['Monoparental', '3,1%', '25,6%', '3,4%', '26,6%', '4,2%', '28,5%']
+        ['Casal sem filhos', '13,04%', '7,18%'],
+        ['Casal com filhos de ambos', '19,77%', '10,89%'],
+        ['Casal com filhos de apenas um cônjuge', '3,37%', '3,84%'],
+        ['Monoparental', '2,23%', '14,23%']
       ]
     },
-    notas: 'H = Homem responsável; M = Mulher responsável. Aumento de mulheres chefiando famílias.',
+    notas: 'H = Homem responsável; M = Mulher responsável. Censo 2022. Fonte: Tabela 9882 SIDRA.',
     tendencia: 'crescente'
   }
 ];
