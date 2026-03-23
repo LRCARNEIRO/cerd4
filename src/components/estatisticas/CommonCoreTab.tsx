@@ -99,17 +99,17 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Gross mortality rate',
     categoria: 'Demografia',
     descricao: 'Óbitos por mil habitantes',
-    fonte: 'IBGE/SIM',
-    fonteCompleta: 'IBGE e MS - Sistema de Informações sobre Mortalidade',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'MS/SIM',
+    fonteCompleta: 'Sistema de Informação sobre Mortalidade - SIM',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10br.def',
+    tabelaSidra: 'SIM/DataSUS',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2021', '2022', '2024'],
       rows: [
-        ['Taxa ‰', '6,7', '6,2', '6,0', '6,1', '7,7', '8,5', '7,2', '6,8']
+        ['Taxa ‰', '6,7', '6,2', '6,0', '6,1', '7,47', '8,75', '7,35', '7,23']
       ]
     },
     notas: 'Pico em 2021 devido à pandemia de COVID-19.',
