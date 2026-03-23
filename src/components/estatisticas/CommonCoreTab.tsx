@@ -195,22 +195,22 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'População por faixa etária e sexo',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
-    tabelaSidra: 'Tabela 9605',
+    fonteCompleta: 'SIDRA IBGE Tabela 9514',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9514#resultado',
+    tabelaSidra: 'Tabela 9514',
     periodoOriginal: '1991-2010',
     periodoAtualizado: '1991-2022',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Faixa etária', '2010 (Total)', '2022 (Total)', '% 2022'],
+      headers: ['Faixa etária', '2022 Mulheres', '% M', '2022 Homens', '% H'],
       rows: [
-        ['0-14 anos', '45.932.294', '40.168.345', '19,8%'],
-        ['15-29 anos', '51.340.473', '45.215.842', '22,3%'],
-        ['30-59 anos', '69.957.451', '84.950.328', '41,8%'],
-        ['60+ anos', '23.525.581', '32.727.997', '16,1%']
+        ['0-14 anos', '19.663.544', '9,68%', '20.465.717', '10,08%'],
+        ['15-29 anos', '22.599.849', '11,13%', '22.712.279', '11,18%'],
+        ['30-59 anos', '44.397.195', '21,86%', '41.128.682', '20,25%'],
+        ['60+ anos', '17.887.737', '8,81%', '14.225.753', '7,00%']
       ]
     },
-    notas: 'Envelhecimento acelerado da população brasileira.',
+    notas: 'Dados do Censo 2022, separados por sexo. Envelhecimento acelerado da população brasileira.',
     tendencia: 'crescente'
   },
   {
