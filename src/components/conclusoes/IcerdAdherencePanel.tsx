@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users } from 'lucide-react';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
@@ -88,20 +88,33 @@ function useCountStatSeriesPerArticle() {
  * Infer which articles a normative document covers based on secoes_impactadas
  */
 function inferArtigosNormativo(doc: DocumentoNormativo): ArtigoConvencao[] {
+  return inferArtigosDocumentoNormativo(doc as Parameters<typeof inferArtigosDocumentoNormativo>[0]);
+}
+
+function inferArtigosIndicador(ind: any): ArtigoConvencao[] {
+  const explicit = (ind.artigos_convencao || []).filter((a: string) => ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].includes(a)) as ArtigoConvencao[];
+  if (explicit.length > 0) return explicit;
+
   const arts = new Set<ArtigoConvencao>();
-  (doc.secoes_impactadas || []).forEach(secao => {
-    const mapped = EIXO_PARA_ARTIGOS[secao as keyof typeof EIXO_PARA_ARTIGOS];
-    if (mapped) mapped.forEach(a => arts.add(a));
-  });
-  // keyword fallback on titulo
-  const t = doc.titulo.toLowerCase();
-  if (t.match(/injúria|racismo|discrimin|igualdade/)) { arts.add('I'); arts.add('II'); }
-  if (t.match(/cota|ação afirmativa|acao afirmativa/)) { arts.add('II'); arts.add('V'); }
-  if (t.match(/quilomb|indígena|indigena|terra|funai|incra/)) { arts.add('III'); arts.add('V'); }
-  if (t.match(/discurso de ódio|propaganda racista/)) arts.add('IV');
-  if (t.match(/saúde|saude|educaç|educac|trabalho|moradia|cultura/)) arts.add('V');
-  if (t.match(/proteção judicial|reparaç|justiça|justica/)) arts.add('VI');
-  if (t.match(/ensino|lei 10.639|formação docente|formacao docente|currículo/)) arts.add('VII');
+  const categoria = String(ind.categoria || '').toLowerCase();
+  const subcategoria = String(ind.subcategoria || '').toLowerCase();
+  const nome = String(ind.nome || '').toLowerCase();
+  const origem = Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ').toLowerCase() : '';
+  const texto = [categoria, subcategoria, nome, origem].join(' ');
+
+  const eixo = categoria as keyof typeof EIXO_PARA_ARTIGOS;
+  if (EIXO_PARA_ARTIGOS[eixo]) {
+    EIXO_PARA_ARTIGOS[eixo].forEach((a) => arts.add(a));
+  }
+  if (/seguran|viol[êe]ncia|homic|letal|pris/.test(texto)) { arts.add('V'); arts.add('VI'); }
+  if (/educa|ensino|escolar|analfabet/.test(texto)) { arts.add('V'); arts.add('VII'); }
+  if (/sa[úu]de|materna|covid|hospital/.test(texto)) arts.add('V');
+  if (/trabalho|renda|desemprego|pobreza|moradia|habita/.test(texto)) arts.add('V');
+  if (/quilomb|ind[ií]gena|indigena|territ[óo]rio|favela|aglomerado/.test(texto)) { arts.add('III'); arts.add('V'); }
+  if (/racismo|discrimin|igualdade|ação afirmativa|acao afirmativa|dados|estat[íi]st/.test(texto)) { arts.add('I'); arts.add('II'); }
+  if (/justi[çc]a|judici|repara/.test(texto)) arts.add('VI');
+  if (/cultura|patrim|lei 10.639|curr[ií]culo/.test(texto)) arts.add('VII');
+
   return [...arts];
 }
 
@@ -219,7 +232,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       const programas = new Set(artOrc.map(r => r.programa)).size;
 
       // Indicadores by article
-      const artInd = indicadores.filter((ind: any) => ind.artigos_convencao?.includes(art.numero));
+      const artInd = indicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
 
       // NEW: Respostas CERD III by article (match via lacunas paragraphs)
       const artParagraphs = new Set(artLacunas.map(l => l.paragrafo));

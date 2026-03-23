@@ -16,6 +16,8 @@ import {
 export interface CommonCoreMirrorData {
   indicadoresSocioeconomicos?: any[];
   segurancaPublica?: any[];
+  dadosDemograficos?: any;
+  povosTradicionais?: any;
   ccTablesFromBD?: CommonCoreTable[];
 }
 
@@ -121,8 +123,8 @@ export function generateCommonCoreHTML(
   const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
 
   // Local aliases for SSoT fallback
-  const dadosDemograficos = hcDemo;
-  const povosTradicionais = hcPovos;
+  const dadosDemograficos = mirror?.dadosDemograficos || hcDemo;
+  const povosTradicionais = mirror?.povosTradicionais || hcPovos;
 
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
@@ -176,12 +178,14 @@ export function generateCommonCoreHTML(
   }).join('');
 
   // Count all 77 tables
-  const allTables = [
-    ...tabelasDemograficas, ...tabelasEconomicas, ...tabelasEducacao,
-    ...tabelasSaude, ...tabelasTrabalho, ...tabelasPobreza,
-    ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico,
-    ...tabelasMoradia
-  ];
+  const allTables = mirror?.ccTablesFromBD?.length
+    ? mirror.ccTablesFromBD
+    : [
+        ...tabelasDemograficas, ...tabelasEconomicas, ...tabelasEducacao,
+        ...tabelasSaude, ...tabelasTrabalho, ...tabelasPobreza,
+        ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico,
+        ...tabelasMoradia,
+      ];
   const totalTabelas = allTables.length;
   const atualizadas = allTables.filter(t => t.statusAtualizacao === 'atualizado').length;
 

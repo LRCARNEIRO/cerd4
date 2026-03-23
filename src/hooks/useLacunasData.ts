@@ -96,6 +96,10 @@ export function useLacunasIdentificadas(filters?: {
 }) {
   return useQuery({
     queryKey: ['lacunas-identificadas', filters],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       let query = supabase
         .from('lacunas_identificadas')
@@ -127,6 +131,10 @@ export function useLacunasIdentificadas(filters?: {
 export function useIndicadoresInterseccionais(categoria?: string) {
   return useQuery({
     queryKey: ['indicadores-interseccionais', categoria],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       let query = supabase
         .from('indicadores_interseccionais')
@@ -148,6 +156,10 @@ export function useIndicadoresInterseccionais(categoria?: string) {
 export function useConclusoesAnaliticas(periodo?: string) {
   return useQuery({
     queryKey: ['conclusoes-analiticas', periodo],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       let query = supabase
         .from('conclusoes_analiticas')
@@ -169,6 +181,10 @@ export function useConclusoesAnaliticas(periodo?: string) {
 export function useRespostasLacunasCerdIII() {
   return useQuery({
     queryKey: ['respostas-lacunas-cerd-iii'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('respostas_lacunas_cerd_iii')
@@ -185,6 +201,10 @@ export function useRespostasLacunasCerdIII() {
 export function useLacunasStats() {
   return useQuery({
     queryKey: ['lacunas-stats'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('lacunas_identificadas')
@@ -259,6 +279,10 @@ export function useDadosOrcamentarios(filters?: {
 }) {
   return useQuery({
     queryKey: ['dados-orcamentarios', filters],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       let allData: any[] = [];
       let page = 0;
@@ -324,6 +348,10 @@ function is5034Distortion(r: { ano: number; programa: string; orgao?: string; de
 export function useOrcamentoStats() {
   return useQuery({
     queryKey: ['orcamento-stats'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       // Fetch in pages to overcome 1000-row limit
       let allRegistros: any[] = [];

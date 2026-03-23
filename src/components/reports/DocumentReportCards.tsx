@@ -68,6 +68,8 @@ export function DocumentReportCards() {
       const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
         segurancaPublica: mirror.segurancaPublica,
         ccTablesFromBD: mirror.ccTablesFromBD,
+        dadosDemograficos: mirror.dadosDemograficos,
+        povosTradicionais: mirror.povosTradicionais,
       });
       openHtmlPreview(html, 'Common-Core-HRI-CORE-BRA');
     } finally {
@@ -202,6 +204,8 @@ export function DocumentReportCards() {
                 const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
                   segurancaPublica: mirror.segurancaPublica,
                   ccTablesFromBD: mirror.ccTablesFromBD,
+                  dadosDemograficos: mirror.dadosDemograficos,
+                  povosTradicionais: mirror.povosTradicionais,
                 });
                 downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
               }}
