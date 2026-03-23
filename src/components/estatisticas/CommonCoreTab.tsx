@@ -170,22 +170,21 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     categoria: 'Demografia',
     descricao: 'População residente por sexo',
     fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Censo Demográfico',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9605',
-    tabelaSidra: 'Tabela 9605',
+    fonteCompleta: 'SIDRA IBGE Tabela 9514',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/9514#resultado',
+    tabelaSidra: 'Tabela 9514',
     periodoOriginal: '1991-2010',
     periodoAtualizado: '1991-2022',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Sexo', '1991', '2000', '2010', '2022'],
       rows: [
-        // SIDRA Tabela 9605: https://sidra.ibge.gov.br/Tabela/9605
-        ['Homens', '72.485.122', '83.576.015', '93.406.990', '98.514.545'],
-        ['Mulheres', '74.340.353', '86.223.155', '97.348.809', '104.566.211'],
+        ['Homens', '72.485.122', '83.576.015', '93.406.990', '98.532.431'],
+        ['Mulheres', '74.340.353', '86.223.155', '97.348.809', '104.548.325'],
         ['Razão de sexo (H/M)', '0,975', '0,969', '0,959', '0,942']
       ]
     },
-    notas: 'Soma H+M = 203.080.756 (Tabela 9514). Dados Censo 2022.',
+    notas: 'Soma H+M = 203.080.756. Dados Censo 2022.',
     tendencia: 'estavel'
   },
   {
