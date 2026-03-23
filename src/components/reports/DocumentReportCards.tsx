@@ -12,6 +12,7 @@ import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { openHtmlPreview } from '@/utils/reportPreview';
 
 export function DocumentReportCards() {
   const { data: lacunas } = useLacunasIdentificadas();
@@ -68,9 +69,7 @@ export function DocumentReportCards() {
         segurancaPublica: mirror.segurancaPublica,
         ccTablesFromBD: mirror.ccTablesFromBD,
       });
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      openHtmlPreview(html, 'Common-Core-HRI-CORE-BRA');
     } finally {
       setGeneratingCCD(false);
     }
@@ -112,9 +111,7 @@ export function DocumentReportCards() {
     setGeneratingCERD(true);
     try {
       const html = generateCerdIVFullHTML(buildCerdIVData());
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      openHtmlPreview(html, 'CERD-IV-Relatorio-Periodico');
     } finally {
       setGeneratingCERD(false);
     }
@@ -142,9 +139,7 @@ export function DocumentReportCards() {
           povosTradicionais: mirror.povosTradicionais,
         },
       });
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      openHtmlPreview(html, 'Conclusoes-Analiticas-Integral');
     } finally {
       setGeneratingConclusoes(false);
     }
@@ -420,10 +415,10 @@ export function DocumentReportCards() {
       </Card>
 
       {/* Relatório Orçamentário Consolidado */}
-      <Card className="border-l-4 border-l-emerald-600">
+      <Card className="border-l-4 border-l-chart-2">
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-start gap-3">
-            <DollarSign className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+            <DollarSign className="w-6 h-6 text-chart-2 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold">Relatório Orçamentário Consolidado</h3>
               <p className="text-sm text-muted-foreground">Período: 2018-2025</p>
@@ -450,7 +445,7 @@ export function DocumentReportCards() {
 
           <div className="grid grid-cols-2 gap-2">
             <Button
-              className="gap-2 bg-emerald-600 hover:bg-emerald-700"
+              className="gap-2 bg-chart-2 text-primary-foreground hover:opacity-90"
               onClick={async () => {
                 setGeneratingBudget(true);
                 try {
@@ -458,8 +453,7 @@ export function DocumentReportCards() {
                   if (error) throw error;
                   const { injectExportToolbar } = await import('@/utils/reportExportToolbar');
                   const html = injectExportToolbar(data, 'Relatorio-Orcamentario-Consolidado');
-                  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-                  window.open(URL.createObjectURL(blob), '_blank');
+                  openHtmlPreview(html, 'Relatorio-Orcamentario-Consolidado');
                 } catch (e) {
                   console.error('Budget report error:', e);
                 } finally {

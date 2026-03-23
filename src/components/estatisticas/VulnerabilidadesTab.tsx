@@ -14,11 +14,11 @@ import {
 import { useMirrorData } from '@/hooks/useMirrorData';
 
 const vulnerabilidadeFontes = [
-  { nome: 'RASEAM 2025 — Chefia familiar monoparental (Raça)', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
+  { nome: 'Censo 2022/SIDRA 10179 — Chefia familiar monoparental (Raça)', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
   { nome: 'Fiocruz/DSBR — Inseg. Alimentar por Raça/Gênero', url: 'https://dssbr.ensp.fiocruz.br/uma-em-cada-cinco-familias-chefiadas-por-pessoas-autodeclaradas-pardas-ou-pretas-sofre-com-a-fome-no-brasil-a-situacao-e-pior-nos-lares-chefiados-por-mulheres-pardas-ou-pretas/' },
   { nome: 'SIDRA 9553 — Insegurança Alimentar 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
   { nome: 'MDS 2024 — Fome em lares chefiados por mulheres', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
-  { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/tabela/6403' },
+  { nome: 'Censo 2022 — Arranjos domiciliares', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
 ];
 
 function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
@@ -30,8 +30,8 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       valor: chefiaFamiliarRacaGenero.percentualNegras,
       referencia: chefiaFamiliarRacaGenero.percentualBrancas,
       unidade: '%',
-      fonte: 'RASEAM 2025',
-      url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam',
+      fonte: 'Censo 2022/SIDRA 10179',
+      url: 'https://sidra.ibge.gov.br/Tabela/10179',
       icone: Home,
     },
     {
@@ -244,7 +244,7 @@ export function VulnerabilidadesTab() {
               Chefia Familiar e Proteção Social
             </CardTitle>
             <CardDescription>
-              Cruzamento: RASEAM 2025 + Fiocruz/DSBR 2023 + SIDRA 9553/2024 + MDS 2024
+              Cruzamento: Censo 2022/SIDRA 10179 + Fiocruz/DSBR 2023 + SIDRA 9553/2024 + MDS 2024
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -256,7 +256,7 @@ export function VulnerabilidadesTab() {
                 </div>
                 <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-center">
                   <p className="text-2xl font-bold text-primary">{chefiaFamiliarRacaGenero.percentualNegras}%</p>
-                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras (RASEAM 2025)</p>
+                  <p className="text-xs text-muted-foreground">Chefiadas por mulheres negras (SIDRA 10179)</p>
                 </div>
               </div>
 
@@ -288,13 +288,13 @@ export function VulnerabilidadesTab() {
               <div className="mt-2 flex items-center gap-2">
                 <EstimativaBadge
                   tipo="cruzamento"
-                  metodologia="RASEAM 2025 (chefia monoparental × raça) + SIDRA 9553/2024 (IA × raça/sexo) + MDS 2024 (fome) + CadÚnico 2023 via Fiocruz/MIR."
+                  metodologia="Censo 2022/SIDRA 10179 (chefia monoparental × raça) + SIDRA 9553/2024 (IA × raça/sexo) + MDS 2024 (fome) + CadÚnico 2023 via Fiocruz/MIR."
                 />
               </div>
             </div>
             <AuditFooter
               fontes={[
-                { nome: 'RASEAM 2025', url: 'https://www.gov.br/mulheres/pt-br/observatorio-brasil-da-igualdade-de-genero/raseam' },
+                { nome: 'Censo 2022/SIDRA 10179', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
                 { nome: 'SIDRA 9553 — IA 2024', url: 'https://sidra.ibge.gov.br/tabela/9553#resultado' },
                 { nome: 'MDS 2024 — Fome/chefia', url: 'https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/lares-chefiados-por-mulheres-negras-atingem-menor-indice-de-fome-da-historia' },
                 { nome: 'Fiocruz/MIR — Mulheres Negras', url: 'https://fiocruz.br/sites/fiocruz.br/files/documentos_2/o_que_dizem_os_dados_sobre_a_vida_das_mulheres_negras_no_brasil.pdf' },

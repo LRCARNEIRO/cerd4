@@ -9,9 +9,9 @@ function sanitizeFileName(fileName: string) {
 }
 
 /** Convert all SVGs in a cloned DOM to inline PNG images */
-function convertSvgsToImages(container: HTMLElement): void {
+async function convertSvgsToImages(container: HTMLElement): Promise<void> {
   const svgs = Array.from(container.querySelectorAll('svg'));
-  svgs.forEach((svg) => {
+  await Promise.all(svgs.map(async (svg) => {
     try {
       const vb = svg.getAttribute('viewBox');
       const w = parseInt(svg.getAttribute('width') || (vb ? vb.split(' ')[2] : '400'));
@@ -23,9 +23,14 @@ function convertSvgsToImages(container: HTMLElement): void {
       if (ctx) {
         const svgData = new XMLSerializer().serializeToString(svg);
         const img = new Image();
-        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        const svgUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject(new Error('Falha ao carregar SVG para exportação DOCX.'));
+          img.src = svgUrl;
+        });
         ctx.scale(2, 2);
-        try { ctx.drawImage(img, 0, 0, w, h); } catch { /* cross-origin fallback */ }
+        ctx.drawImage(img, 0, 0, w, h);
         const imgEl = document.createElement('img');
         imgEl.src = canvas.toDataURL('image/png');
         imgEl.style.cssText = `width:${w}px;max-width:100%;height:auto;`;
@@ -34,7 +39,7 @@ function convertSvgsToImages(container: HTMLElement): void {
     } catch (e) {
       console.warn('SVG conversion error:', e);
     }
-  });
+  }));
 }
 
 /** Extract inline styles from computed styles for key elements */
@@ -95,7 +100,7 @@ export async function downloadElementAsEditableDoc(element: HTMLElement, fileNam
   clone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
   
   // Convert SVGs to images
-  convertSvgsToImages(clone);
+  await convertSvgsToImages(clone);
   
   const docContent = buildWordHtml(clone.innerHTML, fileName.replace(/-/g, ' '));
   
@@ -139,7 +144,7 @@ export async function downloadHtmlAsEditableDoc(html: string, fileName: string) 
     const target = (iframeDoc.querySelector('.export-captured-content') || iframeDoc.querySelector('main') || iframeDoc.body) as HTMLElement;
     
     // Convert SVGs
-    convertSvgsToImages(target);
+    await convertSvgsToImages(target);
 
     const docContent = buildWordHtml(target.innerHTML, fileName.replace(/-/g, ' '));
     

@@ -6,14 +6,32 @@ import { FileDown, Loader2, Database, BarChart3, Printer } from 'lucide-react';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
-import { toast } from 'sonner';
+import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { openHtmlPreview } from '@/utils/reportPreview';
 import {
   radarVulnerabilidades,
   atlasViolencia2025,
+  dadosDemograficos as hcDadosDemograficos,
+  evolucaoComposicaoRacial as hcEvolucaoComposicaoRacial,
+  indicadoresSocioeconomicos as hcIndicadoresSocioeconomicos,
+  rendimentosCenso2022 as hcRendimentosCenso2022,
+  segurancaPublica as hcSegurancaPublica,
+  feminicidioSerie as hcFeminicidioSerie,
+  educacaoSerieHistorica as hcEducacaoSerieHistorica,
+  analfabetismoGeral2024 as hcAnalfabetismoGeral2024,
+  saudeSerieHistorica as hcSaudeSerieHistorica,
+  interseccionalidadeTrabalho as hcInterseccionalidadeTrabalho,
   jovensNegrosViolencia,
   razaoRendaRacial,
   interseccionalidadeTrabalhoFontes,
+  violenciaInterseccional as hcViolenciaInterseccional,
+  serieAntraTrans as hcSerieAntraTrans,
+  lgbtqiaPorRaca as hcLgbtqiaPorRaca,
+  deficienciaPorRaca as hcDeficienciaPorRaca,
+  classePorRaca as hcClassePorRaca,
+  evolucaoDesigualdade as hcEvolucaoDesigualdade,
+  povosTradicionais as hcPovosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
 import {
   tabelasDemograficas,
@@ -134,11 +152,23 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
   // SSoT: destructure from mirror data
-  const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
-    rendimentosCenso2022, segurancaPublica, feminicidioSerie, educacaoSerieHistorica,
-    analfabetismoGeral2024, saudeSerieHistorica, interseccionalidadeTrabalho,
-    violenciaInterseccional, serieAntraTrans, lgbtqiaPorRaca, deficienciaPorRaca,
-    classePorRaca, evolucaoDesigualdade, povosTradicionais } = m;
+  const dadosDemograficos = m?.dadosDemograficos || hcDadosDemograficos;
+  const evolucaoComposicaoRacial = m?.evolucaoComposicaoRacial || hcEvolucaoComposicaoRacial;
+  const indicadoresSocioeconomicos = m?.indicadoresSocioeconomicos?.length ? m.indicadoresSocioeconomicos : hcIndicadoresSocioeconomicos;
+  const rendimentosCenso2022 = m?.rendimentosCenso2022 || hcRendimentosCenso2022;
+  const segurancaPublica = m?.segurancaPublica?.length ? m.segurancaPublica : hcSegurancaPublica;
+  const feminicidioSerie = m?.feminicidioSerie?.length ? m.feminicidioSerie : hcFeminicidioSerie;
+  const educacaoSerieHistorica = m?.educacaoSerieHistorica?.length ? m.educacaoSerieHistorica : hcEducacaoSerieHistorica;
+  const analfabetismoGeral2024 = m?.analfabetismoGeral2024 || hcAnalfabetismoGeral2024;
+  const saudeSerieHistorica = m?.saudeSerieHistorica?.length ? m.saudeSerieHistorica : hcSaudeSerieHistorica;
+  const interseccionalidadeTrabalho = m?.interseccionalidadeTrabalho?.length ? m.interseccionalidadeTrabalho : hcInterseccionalidadeTrabalho;
+  const violenciaInterseccional = m?.violenciaInterseccional?.length ? m.violenciaInterseccional : hcViolenciaInterseccional;
+  const serieAntraTrans = m?.serieAntraTrans?.length ? m.serieAntraTrans : hcSerieAntraTrans;
+  const lgbtqiaPorRaca = m?.lgbtqiaPorRaca?.length ? m.lgbtqiaPorRaca : hcLgbtqiaPorRaca;
+  const deficienciaPorRaca = m?.deficienciaPorRaca?.length ? m.deficienciaPorRaca : hcDeficienciaPorRaca;
+  const classePorRaca = m?.classePorRaca?.length ? m.classePorRaca : hcClassePorRaca;
+  const evolucaoDesigualdade = m?.evolucaoDesigualdade?.length ? m.evolucaoDesigualdade : hcEvolucaoDesigualdade;
+  const povosTradicionais = m?.povosTradicionais || hcPovosTradicionais;
 
   const bdCategorias: Record<string, any[]> = {};
   indicadoresBD.forEach(i => {
@@ -642,53 +672,34 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 </html>`;
 }
 
-function downloadDOCX(html: string, fileName: string) {
-  try {
-    const blob = new Blob(['\ufeff' + html], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${fileName}.doc`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    toast.success('Documento DOCX gerado com sucesso');
-  } catch (e) {
-    toast.error('Erro ao gerar documento');
-  }
-}
-
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
   const { data: juventudeNegraBD } = useJuventudeAuditados();
   const mirror = useMirrorData();
   const [generating, setGenerating] = useState<string | null>(null);
 
-  const handleFullReport = (format: 'html' | 'docx') => {
+  const handleFullReport = async (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
     try {
       const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
-        downloadDOCX(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
+        await downloadAsDocx(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
-        const w = window.open('', '_blank');
-        if (w) { w.document.write(html); w.document.close(); }
+        openHtmlPreview(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       }
     } finally {
       setGenerating(null);
     }
   };
 
-  const handleInventory = (format: 'html' | 'docx') => {
+  const handleInventory = async (format: 'html' | 'docx') => {
     setGenerating(`inv-${format}`);
     try {
       const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
-        downloadDOCX(html, 'Inventario-Base-Estatistica-CERD-IV');
+        await downloadAsDocx(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {
-        const w = window.open('', '_blank');
-        if (w) { w.document.write(html); w.document.close(); }
+        openHtmlPreview(html, 'Inventario-Base-Estatistica-CERD-IV');
       }
     } finally {
       setGenerating(null);
