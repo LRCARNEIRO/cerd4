@@ -230,13 +230,13 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     dados: {
       headers: ['Indicador', '2015', '2018', '2020', '2022', '2024'],
       rows: [
-        ['Razão dep. juvenil', '32,5', '30,8', '29,5', '28,0', '26,8'],
-        ['Razão dep. idosa', '22,2', '24,5', '26,2', '28,5', '30,2'],
-        ['Razão dep. total', '54,7', '55,3', '55,7', '56,5', '57,0'],
-        ['% 60+ anos', '11,7%', '13,0%', '14,3%', '15,6%', '16,8%']
+        ['Razão dep. juvenil', '32,5', '33,7', '—*', '31,68', '30,92'],
+        ['Razão dep. idosa', '22,2', '20,68', '—*', '23,35', '24,96'],
+        ['Razão dep. total', '54,7', '53,75', '—*', '55,03', '55,88'],
+        ['% 60+ anos', '11,7%', '13,5%', '—*', '15,1%', '16,0%']
       ]
     },
-    notas: '⚠️ Dados de razão de dependência calculados a partir de PNAD Contínua trimestral (Tabela 7109) — valores anuais são médias dos 4 trimestres. Valores arredondados a 1 casa decimal conforme fonte.',
+    notas: '⚠️ * 2020: Sem valores — PNAD Contínua interrompida pela pandemia. Dados calculados a partir de PNAD Contínua trimestral (Tabela 7109). Fonte: https://sidra.ibge.gov.br/tabela/7109',
     tendencia: 'crescente'
   },
   {
