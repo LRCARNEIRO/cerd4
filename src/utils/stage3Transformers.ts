@@ -347,6 +347,7 @@ export function buildGruposFocaisIndicators(): DbRecord[] {
     ['Art. 2', 'Art. 5'],
     {
       populacao: 1227642,
+      populacaoPessoasIndigenas: 1227642,
       populacaoCorRaca: 1227642,
       serieTemporal: [
         { ano: 2010, valor: 896917 },

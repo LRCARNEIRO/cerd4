@@ -4,6 +4,8 @@
  * as fully editable Word content. Charts/SVGs are converted to inline images.
  */
 
+import { createExportClone } from '@/utils/exportLayoutSnapshot';
+
 function sanitizeFileName(fileName: string) {
   return fileName.replace(/[^a-zA-Z0-9_-]/g, '_');
 }
@@ -184,21 +186,12 @@ function buildWordHtml(bodyHtml: string, title: string): string {
 
 /** Download editable .doc from a rendered DOM element */
 export async function downloadElementAsEditableDoc(element: HTMLElement, fileName: string) {
-  const clone = element.cloneNode(true) as HTMLElement;
-  
-  // Remove export-ignore elements and toolbars
-  clone.querySelectorAll('[data-export-ignore="true"]').forEach((n) => n.remove());
-  clone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
-  
   // Resolve CSS variables on original SVGs (they're still in the DOM) then convert on clone
   // We need the original SVGs for getComputedStyle, so resolve on originals first
   const originalSvgs = Array.from(element.querySelectorAll('svg'));
   originalSvgs.forEach((svg) => resolveCssVariablesInSvg(svg));
-  
-  // Re-clone after resolving CSS vars
-  const resolvedClone = element.cloneNode(true) as HTMLElement;
-  resolvedClone.querySelectorAll('[data-export-ignore="true"]').forEach((n) => n.remove());
-  resolvedClone.querySelectorAll('.export-toolbar, .print-instructions').forEach((n) => n.remove());
+
+  const resolvedClone = createExportClone(element);
   
   // Convert SVGs to images
   await convertSvgsToImages(resolvedClone);
