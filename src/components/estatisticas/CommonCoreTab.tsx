@@ -77,17 +77,17 @@ export const tabelasDemograficas: CommonCoreTable[] = [
     tituloIngles: 'Gross birth rate',
     categoria: 'Demografia',
     descricao: 'Nascidos vivos por mil habitantes',
-    fonte: 'IBGE/MS',
-    fonteCompleta: 'IBGE e Ministério da Saúde - SVS/CGIAE',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'MS/SINASC',
+    fonteCompleta: 'Sistema de Informação sobre Nascidos Vivos - SINASC',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def',
+    tabelaSidra: 'SINASC/DataSUS',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022', '2024'],
       rows: [
-        ['Taxa ‰', '20,3', '17,5', '15,8', '14,2', '13,1', '12,8', '12,5']
+        ['Taxa ‰', '20,3', '17,5', '15,8', '14,2', '13,1', '12,19', '11,28']
       ]
     },
     tendencia: 'decrescente'
