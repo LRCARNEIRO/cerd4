@@ -18,6 +18,7 @@ import Normativa from "./pages/Normativa";
 import DocumentosBalizadores from "./pages/DocumentosBalizadores";
 import GuiaAuditoria from "./pages/GuiaAuditoria";
 import NotFound from "./pages/NotFound";
+import Ecossistema from "./pages/Ecossistema";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/ecossistema" element={<Ecossistema />} />
           <Route path="/plano-trabalho" element={<PlanoTrabalho />} />
           <Route path="/common-core" element={<CommonCore />} />
           <Route path="/estatisticas" element={<Estatisticas />} />

@@ -98,6 +98,7 @@ const escopoSubsections: NavSection[] = [
     items: [
       { title: 'Conclusões', href: '/conclusoes', icon: Lightbulb },
       { title: 'Gerar Relatórios', href: '/gerar-relatorios', icon: FileOutput },
+      { title: 'Ecossistema MIR', href: '/ecossistema', icon: Globe, badge: 'Novo' },
     ]
   }
 ];
