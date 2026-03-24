@@ -35,7 +35,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       icone: Home,
     },
     {
-      dimensao: 'Fome — mulheres negras (gênero)',
+      dimensao: 'Fome — domicílios chefiados por mulheres negras',
       indicador: `${chefiaFamiliarRacaGenero.fomeMulheresNegras}% dos lares chefiados por mulheres negras sofrem com fome (vs ${chefiaFamiliarRacaGenero.fomeMulheresBrancas}% mulheres brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.fomeMulheresBrancas,
@@ -45,24 +45,26 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
       icone: AlertTriangle,
     },
     {
-      dimensao: 'Fome — crianças <10 (mulheres negras)',
-      indicador: `${chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}% de fome nos lares c/ crianças chefiados por mulheres negras — só ${chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresNegras}% em segurança alimentar`,
+      dimensao: 'Segurança alimentar — domicílios chefiados por mulheres negras',
+      indicador: `${chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}% em segurança alimentar (negras) vs ${chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresBrancas}% (brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
-      referencia: chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos,
+      referencia: chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresBrancas,
       unidade: '%',
       fonte: 'Fiocruz/DSBR 2023',
       url: fiocruzUrl,
       icone: Utensils,
+      observacao: `Domicílios chefiados por homens brancos em segurança alimentar: ${chefiaFamiliarRacaGenero.segAlimentarCriancasHomensBrancos}%`,
     },
     {
-      dimensao: 'Fome + desemprego — mulheres negras',
-      indicador: `${chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras}% de fome quando desempregadas (vs ${chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros}% homens negros)`,
+      dimensao: 'Taxa de Vulnerabilidade — famílias chefiadas por mulheres negras',
+      indicador: `${chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras}% (negras) vs ${chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros}% (brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros,
       unidade: '%',
-      fonte: 'Fiocruz/DSBR 2023',
-      url: fiocruzUrl,
+      fonte: 'SIDRA IBGE Tabela 10179',
+      url: 'https://sidra.ibge.gov.br/Tabela/10179',
       icone: AlertTriangle,
+      observacao: 'Proporção de domicílios com rendimento mensal per capita de até 1/2 salário mínimo',
     },
     {
       dimensao: 'Escolaridade não protege (mulheres negras)',
@@ -141,6 +143,11 @@ export function VulnerabilidadesTab() {
                           <span className="ml-1 text-destructive font-medium">
                             ({(item.valor / item.referencia).toFixed(1)}×)
                           </span>
+                        </p>
+                      )}
+                      {(item as any).observacao && (
+                        <p className="text-[10px] text-warning mt-1 italic">
+                          ℹ️ {(item as any).observacao}
                         </p>
                       )}
                     </div>
