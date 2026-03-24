@@ -145,7 +145,11 @@ export function VulnerabilidadesTab() {
                           </span>
                         </p>
                       )}
-                    </div>
+                      {(item as any).observacao && (
+                        <p className="text-[10px] text-warning mt-1 italic">
+                          ℹ️ {(item as any).observacao}
+                        </p>
+                      )}
                   </div>
                   <a
                     href={item.url}

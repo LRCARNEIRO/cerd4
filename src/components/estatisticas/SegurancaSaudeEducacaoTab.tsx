@@ -409,8 +409,10 @@ export function SegurancaSaudeEducacaoTab() {
                       }}
                     />
                     <Legend />
-                    <Line type="monotone" dataKey="mortalidadeMaternaNegra" name="Negras" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                    <Line type="monotone" dataKey="mortalidadeMaternaNegra" name="Negras (agregado)" stroke="hsl(var(--destructive))" strokeWidth={2} />
                     <Line type="monotone" dataKey="mortalidadeMaternaBranca" name="Brancas" stroke="hsl(var(--chart-1))" strokeWidth={2} />
+                    <Line type="monotone" dataKey="mortalidadeMaternaPretas" name="Pretas" stroke="hsl(var(--chart-5, 0 0% 20%))" strokeWidth={2} strokeDasharray="5 5" />
+                    <Line type="monotone" dataKey="mortalidadeMaternaPardas" name="Pardas" stroke="hsl(var(--chart-4, 30 80% 55%))" strokeWidth={2} strokeDasharray="5 5" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
