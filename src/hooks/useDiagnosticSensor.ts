@@ -411,10 +411,16 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       statusReclassificado[effective]++;
     });
 
-    // Progress based on reclassified statuses
+    // Progress based on reclassified statuses (interpretação equilibrada)
+    // Cumprido = 100%, Parcial = 60%, Em Andamento = 30%, Não Cumprido = 5% (reconhece existência), Retrocesso = 0%
     const total = diagnostics.length;
     const progressoSensor = total > 0
-      ? Math.round(((statusReclassificado.cumprido * 100) + (statusReclassificado.parcialmente_cumprido * 50)) / total)
+      ? Math.round((
+          (statusReclassificado.cumprido * 100) + 
+          (statusReclassificado.parcialmente_cumprido * 60) + 
+          (statusReclassificado.em_andamento * 30) +
+          (statusReclassificado.nao_cumprido * 5)
+        ) / total)
       : 0;
 
     return {
