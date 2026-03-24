@@ -125,16 +125,23 @@ const formatCompact = (value: number) => {
 };
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Weighted: lacunas (30%), budget (15%), conclusions (15%), evidence breadth (10%), normativos (15%), respostas (10%), stats (5%)
+  // Weighted scoring with balanced interpretation:
+  // Lacunas compliance (20%), Budget (15%), Conclusions (15%), Evidence breadth (10%), 
+  // Normativos (20%), Respostas (15%), Stats (5%)
+  // 
+  // Interpretação equilibrada: reconhece esforço legislativo/institucional 
+  // mesmo quando indicadores ainda não refletem melhoras
   let score = 0;
 
-  // Lacunas compliance (0-30)
+  // Lacunas compliance (0-20) — peso reduzido para ser menos punitivo
   if (a.lacunasTotal > 0) {
-    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.5) / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.3;
-    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 30;
+    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6) / a.lacunasTotal;
+    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.2;
+    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
+    // Bônus por esforço: se há parciais, reconhece que há andamento
+    if (a.lacunasParciais > 0) score += Math.min(5, a.lacunasParciais * 1.5);
   } else {
-    score += 8;
+    score += 10;
   }
 
   // Budget coverage (0-15)
@@ -142,10 +149,13 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
     score += Math.min(15, a.orcamentoProgramas * 2.5);
   }
 
-  // Conclusions balance (0-15)
+  // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
   const totalConc = a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna;
   if (totalConc > 0) {
-    score += (a.conclusoesAvanco / totalConc) * 15;
+    const avancoRatio = a.conclusoesAvanco / totalConc;
+    score += avancoRatio * 15;
+    // Bônus: se há mais avanços que retrocessos
+    if (a.conclusoesAvanco > a.conclusoesRetrocesso) score += 2;
   }
 
   // Evidence breadth (0-10)
@@ -158,15 +168,15 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
   score += (breadth / 6) * 10;
 
-  // Normative coverage (0-15)
+  // Normative coverage (0-20) — peso aumentado para valorizar esforço legislativo
   if (a.normativosCount > 0) {
-    score += Math.min(15, a.normativosCount * 2);
+    score += Math.min(20, a.normativosCount * 2.5);
   }
 
-  // Respostas CERD III (0-10)
+  // Respostas CERD III (0-15) — peso aumentado, interpretação mais permissiva
   if (a.respostasTotal > 0) {
-    const respRatio = a.respostasCumpridas / a.respostasTotal;
-    score += respRatio * 10;
+    const respRatio = (a.respostasCumpridas * 1 + (a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas) * 0.5) / a.respostasTotal;
+    score += respRatio * 15;
   }
 
   // Statistical series (0-5)

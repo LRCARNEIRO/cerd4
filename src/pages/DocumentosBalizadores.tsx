@@ -249,6 +249,30 @@ const documentos: DocumentoBalizador[] = [
     icon: Scale,
     cor: 'text-muted-foreground',
   },
+  {
+    titulo: 'Relatório Sombra — Criola, Geledés, Coalizão Negra por Direitos e Comunidade Bahá\'í (108ª Sessão CERD)',
+    tituloOriginal: 'Shadow Report — Criola, Geledés, Coalition of Black People for Rights and Bahá\'í Community (108th Session CERD)',
+    tipo: 'Relatório Sombra',
+    data: '2022',
+    sigla: 'Relatório Sombra 2022',
+    descricao: 'Relatório alternativo da sociedade civil brasileira apresentado ao Comitê CERD na 108ª sessão. Documenta denúncias, dados independentes e lacunas nas políticas de igualdade racial a partir da perspectiva das organizações negras e de direitos humanos, servindo como contraponto ao relatório oficial do Estado.',
+    arquivo: '/documentos/Relatorio-Sombra-CERD-2022.pdf',
+    icon: Users,
+    cor: 'text-destructive',
+    paragrafosChave: ['Violência policial', 'Racismo institucional', 'Saúde da população negra', 'Educação antirracista', 'Justiça criminal']
+  },
+  {
+    titulo: 'Compilação OHCHR — Revisão Periódica Universal do Brasil 2022',
+    tituloOriginal: 'Compilation of information prepared by OHCHR — UPR Brazil 2022',
+    tipo: 'Compilação ONU',
+    data: '2022',
+    sigla: 'A/HRC/WG.6/41/BRA/2',
+    descricao: 'Compilação do Alto Comissariado da ONU para Direitos Humanos com informações de todos os mecanismos de tratados, procedimentos especiais e agências ONU sobre o Brasil para a Revisão Periódica Universal. Oferece visão transversal e consolidada das recomendações internacionais aplicáveis.',
+    arquivo: '/documentos/OHCHR-Compilation-UPR-Brasil-2022.pdf',
+    icon: Globe,
+    cor: 'text-primary',
+    paragrafosChave: ['Discriminação racial', 'Povos indígenas', 'Afrodescendentes', 'Violência policial', 'Desigualdades estruturais']
+  },
 ];
 
 export default function DocumentosBalizadores() {
