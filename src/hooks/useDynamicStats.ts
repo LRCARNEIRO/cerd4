@@ -20,9 +20,13 @@ export function useDashboardStats() {
   const naoCumpridas = lacunasStats?.porStatus.nao_cumprido || 0;
   const retrocesso = lacunasStats?.porStatus.retrocesso || 0;
 
-  // Progresso real baseado nos dados
+  // Progresso real — política de conformidade equilibrada
+  // Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=5%, Retrocesso=0%
+  const emAndamento = lacunasStats?.porStatus.em_andamento || 0;
   const progressoReal = totalRecomendacoes > 0 
-    ? Math.round(((cumpridas * 100) + (parciais * 50)) / totalRecomendacoes) 
+    ? Math.round(
+        ((cumpridas * 100) + (parciais * 60) + (emAndamento * 30) + (naoCumpridas * 5)) / totalRecomendacoes
+      ) 
     : 0;
 
   // Calcular progresso das metas baseado nos dados
