@@ -343,23 +343,36 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         });
       }
 
-      // 4. ⚠️ Sugestão de reclassificação (exibe divergência, sem alterar badge/manual)
+      // 4. ⚠️ Sugestão de reclassificação (interpretação equilibrada)
+      // Critérios mais permissivos: reconhece esforço normativo e tendências mistas
       let statusSugerido: ComplianceStatus | null = null;
       const manual = lacuna.status_cumprimento;
 
-      if (pioram > 0 && pioram >= melhoram && simbolicos.length > 0) {
-        if (manual === 'cumprido' || manual === 'parcialmente_cumprido') statusSugerido = 'nao_cumprido';
-        else if (manual === 'nao_cumprido') statusSugerido = 'retrocesso';
-      } else if (melhoram > 0 && pioram === 0 && normativosVinculados.length > 0) {
+      // Condição de piora: MAIORIA dos indicadores piora E orçamento simbólico E sem cobertura normativa
+      const pioraGrave = pioram > 0 && pioram > melhoram * 2 && simbolicos.length > 0 && normativosVinculados.length === 0;
+      // Condição de melhora: indicadores melhoram OU há cobertura normativa significativa
+      const melhoraDetectada = (melhoram > 0 && pioram === 0) || (normativosVinculados.length >= 2 && pioram === 0);
+      // Condição intermediária: há esforço normativo mesmo com indicadores mistos
+      const esforcoNormativo = normativosVinculados.length >= 1 && orcamentosVinculados.length >= 1;
+
+      if (pioraGrave) {
+        // Só rebaixa em casos graves (piora majoritária + orçamento simbólico + sem normativa)
+        if (manual === 'cumprido') statusSugerido = 'parcialmente_cumprido';
+        else if (manual === 'parcialmente_cumprido') statusSugerido = 'nao_cumprido';
+      } else if (melhoraDetectada) {
         if (manual === 'nao_cumprido') statusSugerido = 'parcialmente_cumprido';
-        else if (manual === 'parcialmente_cumprido') statusSugerido = 'cumprido';
+        else if (manual === 'retrocesso') statusSugerido = 'nao_cumprido';
+        else if (manual === 'parcialmente_cumprido' && melhoram >= 2 && normativosVinculados.length >= 2) statusSugerido = 'cumprido';
+      } else if (esforcoNormativo && manual === 'nao_cumprido') {
+        // Reconhece esforço legislativo/institucional mesmo sem melhora nos indicadores
+        statusSugerido = 'em_andamento';
       }
 
       const divergente = statusSugerido !== null && statusSugerido !== manual;
       if (divergente && statusSugerido) {
         signals.push({
           type: 'divergencia',
-          severity: 'critical',
+          severity: pioraGrave ? 'critical' : 'warning',
           message: `Sugestão: reclassificar de "${formatStatus(manual)}" para "${formatStatus(statusSugerido)}"`,
         });
       }
