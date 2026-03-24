@@ -178,16 +178,58 @@ export default function IEATSection() {
           </CardContent>
         </Card>
 
-        <div className="mt-4 flex items-start gap-2 bg-muted/50 border border-border/60 rounded-lg p-3">
-          <Gauge className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
-          <div className="text-[11px] text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Lógica de Cálculo:</strong>{' '}
-            IEAT = Variação % do Indicador Social ÷ Variação % do Orçamento Específico.
-            Quando o orçamento cresce e o indicador social estagna ou retrocede, o sistema emite
-            um <span className="text-destructive font-medium">"Alerta de Eficiência Crítica"</span>.
-            Base orçamentária: Relatório de Agendas Transversais MPO 2024. Linha de Base: Marco Zero PPA 2024-2027.
-          </div>
-        </div>
+        {/* Detalhamento Metodológico */}
+        <Card className="mt-6 border-border/60">
+          <CardContent className="p-5 space-y-4">
+            <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Gauge className="w-4 h-4 text-primary" />
+              Detalhamento Metodológico do IEAT-Racial
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-muted-foreground leading-relaxed">
+              <div className="space-y-2">
+                <p className="text-foreground font-medium text-[11px] uppercase tracking-wider">Fórmula de Cálculo</p>
+                <div className="bg-muted/50 rounded-lg p-3 font-mono text-[11px]">
+                  IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento Específico)
+                </div>
+                <p>
+                  Quando o orçamento cresce e o indicador social estagna ou retrocede, o sistema emite
+                  um <span className="text-destructive font-medium">"Alerta de Eficiência Crítica"</span>.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-foreground font-medium text-[11px] uppercase tracking-wider">Indicadores Selecionados</p>
+                <ul className="space-y-1">
+                  <li>• <strong className="text-foreground">Saúde:</strong> Mortalidade infantil negra (DataSUS/SIM) — Δ orçamento SESAI/FNS</li>
+                  <li>• <strong className="text-foreground">Educação:</strong> % ensino superior negro (INEP/PNAD) — Δ orçamento MEC/SESU</li>
+                  <li>• <strong className="text-foreground">Segurança:</strong> Taxa de homicídio negro (FBSP/Atlas) — Δ orçamento MJSP/SENASP</li>
+                  <li>• <strong className="text-foreground">Trabalho:</strong> Renda média negra (PNAD Contínua/IBGE) — Δ orçamento MTE</li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-foreground font-medium text-[11px] uppercase tracking-wider">Base Orçamentária</p>
+                <ul className="space-y-1">
+                  <li>• Relatório de Agendas Transversais — MPO 2024</li>
+                  <li>• Execução LOA via SIOP/Portal da Transparência</li>
+                  <li>• Recorte: dotações específicas por órgão responsável</li>
+                  <li>• Período de referência: PPA 2024-2027 (Marco Zero)</li>
+                </ul>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-foreground font-medium text-[11px] uppercase tracking-wider">Limitações Técnicas</p>
+                <ul className="space-y-1">
+                  <li>• 2024 é o 1º ano com dados estruturados da Agenda Transversal</li>
+                  <li>• Indicadores sociais possuem defasagem de 1-2 anos</li>
+                  <li>• Causalidade orçamento→indicador não é direta (multifatorial)</li>
+                  <li>• Valores de execução excluem Restos a Pagar</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="mt-5">
           <Button variant="outline" size="sm" className="text-xs" asChild>

@@ -24,14 +24,7 @@ const PROTOCOLS = [
     description: 'Política de conformidade equilibrada: reclassificação baseada em ações legislativas, cobertura orçamentária e evidências documentais. Esforços normativos são reconhecidos como "Em Andamento".',
     sources: ['CERD/C/BRA/CO/18-20', 'Base Normativa'],
   },
-  {
-    icon: FileCheck,
-    title: 'Integração de Bases Administrativas',
-    description: 'Protocolo de integração, harmonização e validação de dados de Saúde (DataSUS), Educação (INEP), Segurança (FBSP), Censo (IBGE) e Orçamento (SIOP/SIAFI) com recorte racial obrigatório.',
-    sources: ['IBGE', 'DataSUS', 'INEP', 'FBSP', 'SIOP'],
-  },
 ];
-
 export default function ProtocoloMetodologicoSection() {
   return (
     <section id="protocolo-metodologico" className="py-14 bg-muted/30">
@@ -72,9 +65,9 @@ export default function ProtocoloMetodologicoSection() {
 
         <div className="mt-5">
           <Button variant="outline" size="sm" className="text-xs" asChild>
-            <Link to="/fontes">
+            <Link to="/conclusoes">
               <BookOpen className="w-3.5 h-3.5 mr-1.5" />
-              Consultar Fontes e Metodologia Completa
+              Ver Detalhamento Metodológico Completo
               <ChevronRight className="w-3.5 h-3.5 ml-1" />
             </Link>
           </Button>

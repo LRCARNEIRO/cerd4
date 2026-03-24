@@ -81,10 +81,11 @@ export default function SumarioExecutivoSection() {
                 <FileText className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-foreground">Leitura Guiada do Relatório CERD IV</p>
+                <p className="text-sm font-semibold text-foreground">Atualização do Relatório CERD III → IV</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Navegue pelos eixos temáticos com visualizações interativas. Cada achado vincula-se
-                  diretamente aos gráficos, tabelas e fontes oficiais que o sustentam.
+                  O CERD IV atualiza os dados do Relatório CERD III com séries estatísticas a partir de 2018,
+                  documenta o grau de implementação das recomendações recebidas e complementa com novos indicadores
+                  e evidências coletados no período 2018-2025.
                 </p>
               </div>
             </div>
@@ -92,7 +93,7 @@ export default function SumarioExecutivoSection() {
               <Button variant="outline" size="sm" className="text-xs" asChild>
                 <Link to="/gerar-relatorios">
                   <Eye className="w-3.5 h-3.5 mr-1.5" />
-                  Gerar Sumário
+                  Gerar Relatório CERD IV
                   <ChevronRight className="w-3.5 h-3.5 ml-1" />
                 </Link>
               </Button>
