@@ -499,17 +499,24 @@ export function SegurancaSaudeEducacaoTab() {
               <strong>Atenção:</strong> A pandemia COVID-19 (2020-2021) causou pico de mortalidade materna, 
               afetando ambos os grupos. Razão negra/branca varia de 1,2x (2018) a ~1,0x (2024) na série DataSUS/SIM. Pesquisa Nascer no Brasil II (2023) reporta ~2x com metodologia própria.
             </p>
+            <p className="text-xs mt-2">
+              <strong>⚠ Nota sobre 2021:</strong> Em 2021, a mortalidade materna de mulheres brancas ultrapassou a média geral de mulheres negras (agregado pretas+pardas).
+              Isso ocorre porque a categoria "negras" junta pretas e pardas. Como o número de nascimentos de pardas é muito maior e sua taxa de mortalidade foi a menor naquele ano,
+              esse volume acabou "puxando" a média do grupo inteiro para baixo. Separando os dados, mulheres <strong>pretas</strong> isoladamente enfrentaram taxa de <strong>194,8/100 mil NV</strong> — muito superior a todas as demais categorias.
+            </p>
           </div>
 
           <Table className="mt-4">
             <TableHeader>
               <TableRow>
                 <TableHead>Ano</TableHead>
-                <TableHead className="text-right">Mort. Materna Negra</TableHead>
-                <TableHead className="text-right">Mort. Materna Branca</TableHead>
-                <TableHead className="text-right">Razão</TableHead>
-                <TableHead className="text-right">Mort. Infantil Negra</TableHead>
-                <TableHead className="text-right">Mort. Infantil Branca</TableHead>
+                <TableHead className="text-right">MM Negra</TableHead>
+                <TableHead className="text-right">MM Pretas</TableHead>
+                <TableHead className="text-right">MM Pardas</TableHead>
+                <TableHead className="text-right">MM Branca</TableHead>
+                <TableHead className="text-right">Razão N/B</TableHead>
+                <TableHead className="text-right">MI Negra</TableHead>
+                <TableHead className="text-right">MI Branca</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -517,6 +524,8 @@ export function SegurancaSaudeEducacaoTab() {
                 <TableRow key={item.ano}>
                   <TableCell className="font-medium">{item.ano}</TableCell>
                   <TableCell className="text-right text-destructive">{item.mortalidadeMaternaNegra}</TableCell>
+                  <TableCell className="text-right font-semibold text-destructive">{(item as any).mortalidadeMaternaPretas ?? '—'}</TableCell>
+                  <TableCell className="text-right">{(item as any).mortalidadeMaternaPardas ?? '—'}</TableCell>
                   <TableCell className="text-right">{item.mortalidadeMaternaBranca}</TableCell>
                   <TableCell className="text-right font-medium">
                     {(item.mortalidadeMaternaNegra / item.mortalidadeMaternaBranca).toFixed(2)}x
