@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, BarChart3, Banknote, FileText, Activity } from 'lucide-react';
 import type { DiagnosticSummary } from '@/hooks/useDiagnosticSensor';
 import { Link } from 'react-router-dom';
+import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 
 interface SensorAlertPanelProps {
   summary: DiagnosticSummary;
@@ -56,6 +57,9 @@ export function SensorAlertPanel({ summary, isReady }: SensorAlertPanelProps) {
               </div>
             </Link>
           )}
+        </div>
+        <div className="mt-3">
+          <MethodologyPanel variant="sensor" />
         </div>
       </CardContent>
     </Card>

@@ -328,7 +328,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
             <Scale className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
-            <div>
+            <div className="flex-1">
               <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
                 Avaliação consolidada integrando <strong>todas as bases do sistema</strong>:
@@ -337,6 +337,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
                 {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
                 {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
               </p>
+              <MethodologyPanel variant="full" className="mt-3" />
             </div>
           </div>
         </CardContent>

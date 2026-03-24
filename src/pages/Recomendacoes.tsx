@@ -22,6 +22,7 @@ import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowU
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -100,7 +101,10 @@ export default function Recomendacoes() {
       title="Recomendações"
       subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2025"
     >
-      {/* Stats */}
+      {/* Metodologia + Stats */}
+      <div className="mb-4">
+        <MethodologyPanel variant="sensor" />
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <Card>
           <CardContent className="pt-4 pb-4 flex items-center gap-3">
