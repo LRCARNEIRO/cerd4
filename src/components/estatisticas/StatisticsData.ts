@@ -433,19 +433,23 @@ export const saudeSerieHistorica = [
   // AUDITADO: Valores corrigidos conforme cálculo manual a partir do DataSUS
   // Mortalidade materna: (Óbitos maternos / Nascidos vivos) × 100.000
   // Mortalidade infantil: (Óbitos infantis / Nascidos vivos) × 1.000
-  // ATENÇÃO MORTALIDADE INFANTIL: A taxa branca aparece SUPERIOR à negra nos dados oficiais.
+  // ATENÇÃO MORTALIDADE INFANTIL: A taxa bruta branca aparece SUPERIOR à negra nos dados oficiais.
   // Isso é um paradoxo explicado por viés de classificação racial nos registros de óbito:
   // no nascimento a cor é autodeclarada pela mãe; no atestado de óbito é frequentemente
   // atribuída por terceiros. A correção via relacionamento de bases é inviável (LGPD).
-  { ano: 2018, mortalidadeMaternaNegra: 60.1, mortalidadeMaternaBranca: 49.9, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 13.8 },
-  { ano: 2019, mortalidadeMaternaNegra: 58.7, mortalidadeMaternaBranca: 49.2, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 14.3 },
-  { ano: 2020, mortalidadeMaternaNegra: 75.0, mortalidadeMaternaBranca: 64.8, mortalidadeInfantilNegra: 9.7, mortalidadeInfantilBranca: 12.8 },
-  { ano: 2021, mortalidadeMaternaNegra: 110.2, mortalidadeMaternaBranca: 121.0, mortalidadeInfantilNegra: 9.9, mortalidadeInfantilBranca: 13.5 },
-  { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
+  // AUDITORIA 24/03/2026: Adicionados campos mortalidadeMaternaPretas e mortalidadeMaternaPardas
+  // para evidenciar que em 2021, apesar de "negras" (pretas+pardas) terem taxa agregada inferior à de brancas,
+  // mulheres PRETAS isoladamente tiveram 194,8/100 mil NV — muito superior. O volume de nascimentos de pardas
+  // "puxa" a média do grupo "negras" para baixo.
+  { ano: 2018, mortalidadeMaternaNegra: 60.1, mortalidadeMaternaBranca: 49.9, mortalidadeMaternaPretas: 104, mortalidadeMaternaPardas: 55.5, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 13.8 },
+  { ano: 2019, mortalidadeMaternaNegra: 58.7, mortalidadeMaternaBranca: 49.2, mortalidadeMaternaPretas: 104.4, mortalidadeMaternaPardas: 53.6, mortalidadeInfantilNegra: 10.2, mortalidadeInfantilBranca: 14.3 },
+  { ano: 2020, mortalidadeMaternaNegra: 75.0, mortalidadeMaternaBranca: 64.8, mortalidadeMaternaPretas: 127.6, mortalidadeMaternaPardas: 68.8, mortalidadeInfantilNegra: 9.7, mortalidadeInfantilBranca: 12.8 },
+  { ano: 2021, mortalidadeMaternaNegra: 110.2, mortalidadeMaternaBranca: 121.0, mortalidadeMaternaPretas: 194.8, mortalidadeMaternaPardas: 100, mortalidadeInfantilNegra: 9.9, mortalidadeInfantilBranca: 13.5 },
+  { ano: 2022, mortalidadeMaternaNegra: 57.3, mortalidadeMaternaBranca: 46.6, mortalidadeMaternaPretas: 102.4, mortalidadeMaternaPardas: 51.5, mortalidadeInfantilNegra: 10.7, mortalidadeInfantilBranca: 14.4 },
   // DataSUS/SIM 2023 - dados consolidados
-  { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
-  // AUDITORIA MANUAL 11/03/2026: DataSUS 2024 — cálculo manual (Óbitos/NV × fator)
-  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
+  { ano: 2023, mortalidadeMaternaNegra: 54.0, mortalidadeMaternaBranca: 47.5, mortalidadeMaternaPretas: 73.9, mortalidadeMaternaPardas: 51.1, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.5 },
+  // AUDITORIA MANUAL 24/03/2026: DataSUS 2024 — cálculo manual (Óbitos/NV × fator)
+  { ano: 2024, mortalidadeMaternaNegra: 55.5, mortalidadeMaternaBranca: 54.2, mortalidadeMaternaPretas: 84.2, mortalidadeMaternaPardas: 51.4, mortalidadeInfantilNegra: 10.6, mortalidadeInfantilBranca: 14.6 },
 ];
 
 // Metodologia de cálculo — Mortalidade infantil por raça/cor
@@ -840,6 +844,11 @@ export const violenciaInterseccional = [
 export const juventudeNegra = [
   { indicador: 'Taxa de homicídio (por 100 mil) — GERAL', valor: 28.9, referencia: 10.6, fonte: 'Atlas da Violência 2025 (IPEA/FBSP) — p.79', url: 'https://www.ipea.gov.br/atlasviolencia', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Não Negros' },
   { indicador: 'Encarceramento (% do total)', valor: 68.7, referencia: 29.9, fonte: '19º Anuário FBSP 2025, p.19 e 399', url: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos', nota: 'Possível subnotificação (cobertura racial: 85,3%)' },
+  // AUDITORIA 24/03/2026: Adicionados 4 indicadores conforme planilha MIR 16
+  { indicador: 'Analfabetismo jovens negros 15-29 (%)', valor: 1.85, referencia: 1.14, fonte: 'SIDRA IBGE Tabela 9542', url: 'https://sidra.ibge.gov.br/Tabela/9542', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos', nota: 'O risco de um jovem negro não acessar a alfabetização básica é cerca de 62% maior do que o de um jovem branco da mesma geração.' },
+  { indicador: 'Desemprego jovens negros 18-24 (%)', valor: 13, referencia: 10, fonte: 'Fundação Itaú — Juventudes Negras e Empregabilidade', url: 'https://fundacaoitau.org.br/observatorio/biblioteca/juventudes%20negras%20e%20empregabilidade', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos' },
+  { indicador: 'Jovens em medidas socioeducativas (%)', valor: 74.2, referencia: 25.1, fonte: 'Alma Preta — Adolescentes em unidades socioeducativas', url: 'https://almapreta.com.br/sessao/cotidiano/no-brasil-74-dos-adolescentes-em-unidades-socioeducativas-sao-negros/', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos' },
+  { indicador: 'Vítimas de homicídio jovens negros (%)', valor: 68.46, referencia: 29.09, fonte: 'Sistema de Informações sobre Mortalidade - SIM', url: 'http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/obt10br.def', labelNegro: 'Jovens Negros', labelReferencia: 'Jovens Brancos' },
 ];
 
 // =============================================
@@ -919,18 +928,23 @@ export const chefiaFamiliarRacaGenero = {
   fomeMulheresBrancas: 13.5, // IA grave em lares chefiados por mulheres brancas
   fomeHomensNegros: 17.1, // IA grave em domicílios chefiados por homens negros (pretos+pardos)
   // Escolaridade ≥8 anos — IA moderada+grave
+  // AUDITORIA 24/03/2026: Corrigido brancas de 9.8% para 17.8%
   iaModeradaGraveMulheresNegrasEscolarizadas: 33.0, // mulheres negras
   iaModeradaGraveHomensNegrosEscolarizados: 21.3, // homens negros
   iaModeradaGraveMulheresBrancasEscolarizadas: 17.8, // mulheres brancas
   iaModeradaGraveHomensBrancosEscolarizados: 9.8, // homens brancos
-  // Crianças <10 anos
-  fomeCriancasMulheresNegras: 23.8, // IA grave em domicílios c/ crianças <10 chefiados por mulheres negras
-  segAlimentarCriancasMulheresNegras: 21.3, // % em segurança alimentar (SA) — apenas 1 em 5
-  segAlimentarCriancasHomensBrancos: 52.5, // % em SA — mais que o dobro
-  segAlimentarCriancasMulheresBrancas: 39.5, // % em SA
-  // Desemprego/informalidade + fome
-  fomeDesempregoMulheresNegras: 39.5, // IA grave quando desempregadas
-  fomeDesempregoHomensNegros: 34.3, // IA grave quando desempregados
+  // AUDITORIA 24/03/2026: Indicador renomeado: "Fome — crianças <10 (mulheres negras)" → "Segurança alimentar — domicílios chefiados por mulheres negras"
+  // Dados corrigidos: 21,3% (negras) vs 39,5% (brancas). Obs: domicílios chefiados por homens brancos: 52,5%
+  fomeCriancasMulheresNegras: 21.3, // Segurança alimentar em dom. chefiados por mulheres negras
+  segAlimentarCriancasMulheresNegras: 21.3, // % em segurança alimentar (SA) — mulheres negras
+  segAlimentarCriancasHomensBrancos: 52.5, // % em SA — homens brancos
+  segAlimentarCriancasMulheresBrancas: 39.5, // % em SA — mulheres brancas
+  // AUDITORIA 24/03/2026: Indicador renomeado: "Fome + desemprego — mulheres negras" →
+  // "Taxa de Vulnerabilidade — famílias chefiadas por mulheres negras"
+  // Dados corrigidos: 38,3% (negras) vs 19,6% (brancas). Fonte: SIDRA 10179
+  // Obs: mede "Proporção de domicílios com rendimento mensal per capita de até 1/2 salário mínimo"
+  fomeDesempregoMulheresNegras: 38.3, // Taxa de vulnerabilidade — famílias chefiadas por mulheres negras
+  fomeDesempregoHomensNegros: 19.6, // Taxa de vulnerabilidade — famílias chefiadas por mulheres brancas (referência)
   // Contexto nacional (2022)
   totalFomeBrasil2022Milhoes: 33.1,
   totalIABrasil2022Milhoes: 125.2,
