@@ -150,6 +150,7 @@ export function VulnerabilidadesTab() {
                           ℹ️ {(item as any).observacao}
                         </p>
                       )}
+                    </div>
                   </div>
                   <a
                     href={item.url}
