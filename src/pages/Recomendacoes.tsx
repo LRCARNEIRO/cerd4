@@ -4,12 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, RefreshCw, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
+import { useState, useMemo } from 'react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles } from 'lucide-react';
+import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresInterseccionais, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
+import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
+
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
@@ -61,7 +60,7 @@ export default function Recomendacoes() {
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
-  const [isRegeneratingAll, setIsRegeneratingAll] = useState(false);
+  
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
@@ -72,6 +71,20 @@ export default function Recomendacoes() {
 
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
+  const { data: allIndicadores } = useIndicadoresInterseccionais();
+  const { data: allOrcamento } = useDadosOrcamentarios();
+
+  // Build dynamic justificativas from real data
+  const dynamicJustificativas = useMemo(() => {
+    if (!allIndicadores || !allOrcamento) return {};
+    const normativos: any[] = []; // Will be populated if documentos_normativos hook exists
+    const map: Record<string, string | null> = {};
+    const paragrafos = ['12', '14', '16', '18', '20', '22', '24', '26'];
+    for (const p of paragrafos) {
+      map[p] = generateDynamicJustificativa(p, allIndicadores as any, allOrcamento as any, normativos);
+    }
+    return map;
+  }, [allIndicadores, allOrcamento]);
 
   // Diagnostic Sensor — Level 1
   const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
@@ -313,36 +326,9 @@ export default function Recomendacoes() {
 
         <TabsContent value="respostas">
           <div className="flex items-center justify-between mb-3" data-export-ignore="true">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                disabled={isRegeneratingAll}
-                onClick={async () => {
-                  setIsRegeneratingAll(true);
-                  const paragrafos = respostasCerd?.map(r => r.paragrafo_cerd_iii) || [];
-                  let ok = 0;
-                  for (const p of paragrafos) {
-                    try {
-                      const { data, error } = await supabase.functions.invoke('generate-justificativa', {
-                        body: { paragrafo: p },
-                      });
-                      if (!error && !data?.error) ok++;
-                    } catch {}
-                    // small delay to avoid rate limiting
-                    await new Promise(r => setTimeout(r, 1500));
-                  }
-                  setIsRegeneratingAll(false);
-                  toast.success(`${ok}/${paragrafos.length} avaliações regeneradas`, {
-                    description: 'Recarregue a página para ver os textos atualizados.',
-                  });
-                }}
-              >
-                {isRegeneratingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {isRegeneratingAll ? 'Regenerando todas...' : 'Regenerar Todas as Avaliações'}
-              </Button>
-            </div>
+            <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary">
+              <Sparkles className="w-3 h-3" /> Avaliações técnicas geradas dinamicamente a partir dos dados atuais
+            </Badge>
             <ExportTabButtons targetSelector="#export-recomendacoes-respostas" generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
           </div>
           <div id="export-recomendacoes-respostas">
@@ -354,7 +340,11 @@ export default function Recomendacoes() {
           ) : (
             <div className="space-y-4">
               {respostasCerd?.map(resposta => (
-                <RespostaCerdCard key={resposta.id} resposta={resposta} />
+                <RespostaCerdCard
+                  key={resposta.id}
+                  resposta={resposta}
+                  dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
+                />
               ))}
             </div>
           )}

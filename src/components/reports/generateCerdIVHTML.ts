@@ -12,6 +12,7 @@ import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento } from '@/utils/artigosConvencao';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
 import {
   segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
@@ -343,7 +344,11 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
     </div>
     <div class="${r.grau_atendimento === 'cumprido' ? 'advance-box' : r.grau_atendimento === 'retrocesso' || r.grau_atendimento === 'nao_cumprido' ? 'regress-box' : 'analysis-box'}">
       <p><strong>Resposta do Estado Brasileiro:</strong> ${r.resposta_brasil}</p>
-      ${r.justificativa_avaliacao ? `<p><strong>Avaliação técnica:</strong> ${r.justificativa_avaliacao}</p>` : ''}
+      ${(() => {
+        const dynJust = generateDynamicJustificativa(r.paragrafo_cerd_iii, indicadores as any, [], []);
+        const justText = dynJust || r.justificativa_avaliacao;
+        return justText ? `<p><strong>Avaliação técnica:</strong> ${justText}</p>` : '';
+      })()}
       ${indicadoresRef}
       ${lacunasRem}
     </div>`;
