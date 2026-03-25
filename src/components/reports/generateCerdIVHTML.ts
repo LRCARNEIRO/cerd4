@@ -345,7 +345,7 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
     <div class="${r.grau_atendimento === 'cumprido' ? 'advance-box' : r.grau_atendimento === 'retrocesso' || r.grau_atendimento === 'nao_cumprido' ? 'regress-box' : 'analysis-box'}">
       <p><strong>Resposta do Estado Brasileiro:</strong> ${r.resposta_brasil}</p>
       ${(() => {
-        const dynJust = generateDynamicJustificativa(r.paragrafo_cerd_iii, indicadores as any, [], []);
+        const dynJust = generateDynamicJustificativa(r.paragrafo_cerd_iii, indicadores as any, (orcDados || []) as any, (normativos || []) as any);
         const justText = dynJust || r.justificativa_avaliacao;
         return justText ? `<p><strong>Avaliação técnica:</strong> ${justText}</p>` : '';
       })()}
