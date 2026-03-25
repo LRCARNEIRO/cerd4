@@ -311,7 +311,37 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="respostas">
-          <div className="flex justify-end mb-3" data-export-ignore="true">
+          <div className="flex items-center justify-between mb-3" data-export-ignore="true">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                disabled={isRegeneratingAll}
+                onClick={async () => {
+                  setIsRegeneratingAll(true);
+                  const paragrafos = respostasCerd?.map(r => r.paragrafo_cerd_iii) || [];
+                  let ok = 0;
+                  for (const p of paragrafos) {
+                    try {
+                      const { data, error } = await supabase.functions.invoke('generate-justificativa', {
+                        body: { paragrafo: p },
+                      });
+                      if (!error && !data?.error) ok++;
+                    } catch {}
+                    // small delay to avoid rate limiting
+                    await new Promise(r => setTimeout(r, 1500));
+                  }
+                  setIsRegeneratingAll(false);
+                  toast.success(`${ok}/${paragrafos.length} avaliações regeneradas`, {
+                    description: 'Recarregue a página para ver os textos atualizados.',
+                  });
+                }}
+              >
+                {isRegeneratingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {isRegeneratingAll ? 'Regenerando todas...' : 'Regenerar Todas as Avaliações'}
+              </Button>
+            </div>
             <ExportTabButtons targetSelector="#export-recomendacoes-respostas" generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
           </div>
           <div id="export-recomendacoes-respostas">
