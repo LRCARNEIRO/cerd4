@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Search, X, ChevronRight, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 
 interface SearchResult {
   titulo: string;
@@ -18,20 +17,8 @@ interface SearchResult {
 }
 
 // Static data catalog — searches across all sub-tabs
-function buildSearchCatalog(mirror: any, indicadoresBD: any[]): SearchResult[] {
+function buildSearchCatalog(mirror: any): SearchResult[] {
   const results: SearchResult[] = [];
-
-  // BD indicators
-  (indicadoresBD || []).forEach((ind: any) => {
-    results.push({
-      titulo: ind.nome,
-      valor: typeof ind.dados === 'object' ? JSON.stringify(ind.dados).slice(0, 80) : String(ind.dados),
-      fonte: ind.fonte,
-      aba: 'Espelho Seguro (BD)',
-      abaValue: 'indicadores-db',
-      categoria: ind.categoria,
-    });
-  });
 
   // Segurança Pública
   (mirror.segurancaPublica || []).forEach((s: any) => {
@@ -189,9 +176,8 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const mirror = useMirrorData();
-  const { data: indicadoresBD } = useIndicadoresInterseccionais();
 
-  const catalog = useMemo(() => buildSearchCatalog(mirror, indicadoresBD || []), [mirror, indicadoresBD]);
+  const catalog = useMemo(() => buildSearchCatalog(mirror), [mirror]);
 
   const results = useMemo(() => {
     if (query.length < 2) return [];
