@@ -76,17 +76,26 @@ export default function Recomendacoes() {
   const { data: allIndicadores } = useIndicadoresInterseccionais();
   const { data: allOrcamento } = useDadosOrcamentarios();
 
-  // Build dynamic justificativas from real data
+  // Fetch normativos for dynamic cross-referencing
+  const { data: allNormativos } = useQuery({
+    queryKey: ['normativos-justificativa'],
+    queryFn: async () => {
+      const { data } = await supabase.from('documentos_normativos').select('titulo, categoria, status, artigos_convencao');
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Build dynamic justificativas from ALL three bases (indicadores + orçamento + normativos)
   const dynamicJustificativas = useMemo(() => {
     if (!allIndicadores || !allOrcamento) return {};
-    const normativos: any[] = []; // Will be populated if documentos_normativos hook exists
     const map: Record<string, string | null> = {};
     const paragrafos = ['12', '14', '16', '18', '20', '22', '24', '26'];
     for (const p of paragrafos) {
-      map[p] = generateDynamicJustificativa(p, allIndicadores as any, allOrcamento as any, normativos);
+      map[p] = generateDynamicJustificativa(p, allIndicadores as any, allOrcamento as any, allNormativos || []);
     }
     return map;
-  }, [allIndicadores, allOrcamento]);
+  }, [allIndicadores, allOrcamento, allNormativos]);
 
   // Diagnostic Sensor — Level 1
   const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);

@@ -313,7 +313,7 @@ function renderDemographicContext(demo: any): string {
   </div>`;
 }
 
-function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any): string {
+function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any, orcDados?: DadoOrcamentario[], normativos?: any[]): string {
   if (!respostas.length) return '';
 
   const porStatus: Record<string, number> = {};
