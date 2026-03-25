@@ -62,7 +62,8 @@ export function buildExportHtmlFromElement(target: HTMLElement, fileName: string
   ${getCurrentDocumentHeadMarkup()}
   <style>
     ${resolvedVars}
-    @page { size: A4; margin: 1.6cm; }
+    @page { size: A4; margin: 1.6cm; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
+    @page :first { @bottom-center { content: none; } }
     body {
       margin: 0;
       padding: 24px;
@@ -265,35 +266,45 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
         // Step 3: Convert cloned SVGs using pre-collected dimensions from originals
         var clonedSvgs = clone.querySelectorAll('svg');
         var idx = 0;
+        // Convert SVGs to PNG images with proper async handling
+        var svgPromises = [];
         clonedSvgs.forEach(function(svg) {
-          try {
-            var dims = svgDims[idx] || { w: 400, h: 240 };
-            idx++;
-            var w = dims.w;
-            var h = dims.h;
-            var canvas = document.createElement('canvas');
-            canvas.width = w * 2;
-            canvas.height = h * 2;
-            var ctx = canvas.getContext('2d');
-            if (ctx) {
-              svg.setAttribute('width', w);
-              svg.setAttribute('height', h);
-              if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-              var svgData = new XMLSerializer().serializeToString(svg);
-              var img = new Image();
-              img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-              ctx.scale(2, 2);
-              ctx.drawImage(img, 0, 0, w, h);
-              var imgEl = document.createElement('img');
-              imgEl.src = canvas.toDataURL('image/png');
-              imgEl.setAttribute('width', w);
-              imgEl.setAttribute('height', h);
-              imgEl.style.cssText = 'display:block;width:' + w + 'px;height:' + h + 'px;max-width:100%;object-fit:contain;page-break-inside:avoid;';
-              svg.parentNode.replaceChild(imgEl, svg);
-            }
-          } catch(e) { console.warn('SVG conv err', e); }
+          var dims = svgDims[idx] || { w: 400, h: 240 };
+          idx++;
+          var w = dims.w;
+          var h = dims.h;
+          var promise = new Promise(function(resolve) {
+            try {
+              var canvas = document.createElement('canvas');
+              canvas.width = w * 2;
+              canvas.height = h * 2;
+              var ctx = canvas.getContext('2d');
+              if (ctx) {
+                svg.setAttribute('width', w);
+                svg.setAttribute('height', h);
+                if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                var svgData = new XMLSerializer().serializeToString(svg);
+                var img = new Image();
+                img.onload = function() {
+                  ctx.scale(2, 2);
+                  ctx.drawImage(img, 0, 0, w, h);
+                  var imgEl = document.createElement('img');
+                  imgEl.src = canvas.toDataURL('image/png');
+                  imgEl.setAttribute('width', w);
+                  imgEl.setAttribute('height', h);
+                  imgEl.style.cssText = 'display:block;width:' + w + 'px;height:' + h + 'px;max-width:100%;object-fit:contain;page-break-inside:avoid;';
+                  svg.parentNode.replaceChild(imgEl, svg);
+                  resolve();
+                };
+                img.onerror = function() { resolve(); };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+              } else { resolve(); }
+            } catch(e) { console.warn('SVG conv err', e); resolve(); }
+          });
+          svgPromises.push(promise);
         });
 
+        Promise.all(svgPromises).then(function() {
         var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;max-width:none;padding:0} h1{font-size:18pt;color:#0f3460;border-bottom:2px solid #0f3460;padding-bottom:6px} h2{font-size:15pt;color:#16213e;border-bottom:1px solid #e2e8f0;margin-top:18pt} h3{font-size:13pt;color:#0f3460;margin-top:14pt} table{width:100%;border-collapse:collapse;margin:8px 0;font-size:9pt} th{background:#0f3460;color:white;padding:5px 7px;text-align:left} td{padding:4px 7px;border-bottom:1px solid #e2e8f0} tr:nth-child(even){background:#f8fafc} img{display:block;max-width:660px;height:auto;object-fit:contain}</style></head><body>' + clone.innerHTML + '</body></html>';
 
         var blob = new Blob(['\\ufeff' + docContent], { type: 'application/msword' });
