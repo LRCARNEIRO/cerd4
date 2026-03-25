@@ -1,13 +1,13 @@
 /**
  * Gerador Dinâmico de Avaliação Técnica por Parágrafo CERD III
  * 
- * Constrói justificativa_avaliacao em tempo real cruzando:
- * - indicadores_interseccionais (base estatística)
+ * Constrói justificativa_avaliacao em tempo real cruzando TODAS as bases:
+ * - indicadores_interseccionais (base estatística — todas as categorias)
  * - dados_orcamentarios (base orçamentária)  
  * - documentos_normativos (base normativa)
  * 
- * Substitui o texto estático do banco por templates dinâmicos
- * que refletem o estado atual do sistema.
+ * Usa a MESMA lógica multicamada do Sensor Diagnóstico (useDiagnosticSensor):
+ * vinculação por Artigos ICERD + Eixo Temático + Grupo Focal + Keywords.
  */
 
 interface IndicadorRow {
@@ -17,6 +17,7 @@ interface IndicadorRow {
   dados: any;
   fonte: string;
   tendencia: string | null;
+  artigos_convencao?: string[] | null;
 }
 
 interface OrcamentoRow {
@@ -28,6 +29,7 @@ interface OrcamentoRow {
   percentual_execucao: number | null;
   eixo_tematico: string | null;
   esfera: string;
+  artigos_convencao?: string[] | null;
 }
 
 interface NormativoRow {
@@ -37,62 +39,74 @@ interface NormativoRow {
   artigos_convencao: string[] | null;
 }
 
-// Mapping: parágrafo → categorias de indicadores + eixos orçamentários + artigos
-const PARAGRAFO_MAP: Record<string, {
-  categorias: string[];
-  eixos: string[];
+// Mapping: parágrafo → artigos ICERD + eixos + keywords for multi-layer matching
+const PARAGRAFO_CONFIG: Record<string, {
   artigos: string[];
+  eixos: string[];
+  keywords: string[];
   tema: string;
 }> = {
   '12': {
-    categorias: ['seguranca_publica', 'legislacao_justica'],
+    artigos: ['artigo_4', 'artigo_6', 'IV', 'VI'],
     eixos: ['seguranca_publica', 'legislacao_justica'],
-    artigos: ['artigo_4', 'artigo_6'],
-    tema: 'discriminação racial e crimes de ódio',
+    keywords: ['discriminação', 'crime', 'ódio', 'racismo', 'racial', 'denúncia', 'disque', 'ouvidoria', 'homicídio', 'letalidade'],
+    tema: 'discriminação racial, crimes de ódio e acesso à justiça',
   },
   '14': {
-    categorias: ['cultura_patrimonio', 'Cultura'],
+    artigos: ['artigo_7', 'VII'],
     eixos: ['cultura_patrimonio'],
-    artigos: ['artigo_7'],
-    tema: 'representatividade midiática',
+    keywords: ['mídia', 'cultura', 'representatividade', 'estereótipo', 'patrimônio', 'religião', 'matriz africana', 'terreiro', 'capoeira'],
+    tema: 'cultura, patrimônio e representatividade midiática',
   },
   '16': {
-    categorias: ['saude', 'covid_racial'],
+    artigos: ['artigo_5', 'V'],
     eixos: ['saude'],
-    artigos: ['artigo_5'],
+    keywords: ['saúde', 'mortalidade', 'materna', 'infantil', 'covid', 'saneamento', 'sus', 'datasus', 'pré-natal', 'óbito', 'natalidade'],
     tema: 'saúde e disparidades raciais',
   },
   '18': {
-    categorias: ['educacao'],
+    artigos: ['artigo_5', 'artigo_7', 'V', 'VII'],
     eixos: ['educacao'],
-    artigos: ['artigo_5', 'artigo_7'],
+    keywords: ['educação', 'escola', 'analfabetismo', 'evasão', 'superior', 'cotas', 'creche', 'alfabetização', 'distorção', 'etnico-racial', 'INEP'],
     tema: 'educação e relações étnico-raciais',
   },
   '20': {
-    categorias: ['terra_territorio', 'povos_tradicionais'],
+    artigos: ['artigo_5', 'V'],
     eixos: ['terra_territorio'],
-    artigos: ['artigo_5'],
+    keywords: ['indígena', 'terra', 'demarcação', 'homologação', 'FUNAI', 'TI', 'reserva', 'aldeia', 'yanomami'],
     tema: 'demarcação de terras indígenas',
   },
   '22': {
-    categorias: ['terra_territorio', 'povos_tradicionais'],
+    artigos: ['artigo_5', 'V'],
     eixos: ['terra_territorio'],
-    artigos: ['artigo_5'],
+    keywords: ['quilombola', 'quilombo', 'titulação', 'INCRA', 'território', 'certidão', 'palmares', 'comunidade remanescente'],
     tema: 'titulação de territórios quilombolas',
   },
   '24': {
-    categorias: ['seguranca_publica'],
+    artigos: ['artigo_5', 'artigo_6', 'V', 'VI'],
     eixos: ['seguranca_publica'],
-    artigos: ['artigo_5', 'artigo_6'],
+    keywords: ['violência', 'policial', 'letalidade', 'uso da força', 'arma', 'operação', 'favela', 'periferia', 'jovem negro', 'abordagem'],
     tema: 'violência policial e letalidade',
   },
   '26': {
-    categorias: ['seguranca_publica'],
+    artigos: ['artigo_5', 'artigo_6', 'V', 'VI'],
     eixos: ['seguranca_publica', 'legislacao_justica'],
-    artigos: ['artigo_5', 'artigo_6'],
-    tema: 'encarceramento em massa',
+    keywords: ['carcerário', 'encarceramento', 'prisional', 'preso', 'detento', 'penitenciário', 'DEPEN', 'audiência de custódia', 'provisório'],
+    tema: 'encarceramento em massa e sistema prisional',
   },
 };
+
+function normalizeArticle(raw: string): string {
+  return String(raw || '').toLowerCase().trim();
+}
+
+function matchesKeyword(text: string, keywords: string[]): boolean {
+  const lower = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return keywords.some(kw => {
+    const kwNorm = kw.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return lower.includes(kwNorm);
+  });
+}
 
 function fmt(n: number | null | undefined): string {
   if (n == null) return '—';
@@ -101,12 +115,76 @@ function fmt(n: number | null | undefined): string {
 
 function pct(n: number | null | undefined): string {
   if (n == null) return '—';
-  return `${n.toFixed(1)}%`;
+  return `${Number(n).toFixed(1)}%`;
+}
+
+const NEGATIVE_INDICATORS = [
+  'mortalidade', 'homicídio', 'violência', 'desemprego', 'analfabet',
+  'evasão', 'abandono', 'pobreza', 'deficit', 'déficit', 'trabalho infantil',
+  'desigualdade', 'letalidade', 'encarceramento', 'insegurança',
+];
+
+function isLowerBetter(nome: string): boolean {
+  return NEGATIVE_INDICATORS.some(kw => nome.toLowerCase().includes(kw));
+}
+
+function inferTendencia(ind: IndicadorRow): string {
+  if (!ind.tendencia) return 'desconhecida';
+  const t = ind.tendencia.toLowerCase();
+  const lowerBetter = isLowerBetter(ind.nome);
+  if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
+  if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
+  if (t === 'estavel' || t === 'estável') return 'estável';
+  return 'desconhecida';
+}
+
+/**
+ * Multi-layer matching (same as useDiagnosticSensor):
+ * 1. By artigos_convencao
+ * 2. By eixo/categoria 
+ * 3. By keywords in nome/programa/titulo
+ */
+function findLinkedIndicadores(indicadores: IndicadorRow[], config: typeof PARAGRAFO_CONFIG['12']): IndicadorRow[] {
+  const byArtigo = indicadores.filter(i =>
+    (i.artigos_convencao || []).some(a => config.artigos.includes(normalizeArticle(a)))
+  );
+  const byEixo = indicadores.filter(i =>
+    config.eixos.includes(i.categoria) ||
+    (i.subcategoria && config.eixos.includes(i.subcategoria))
+  );
+  const byKeyword = indicadores.filter(i =>
+    matchesKeyword(`${i.nome} ${i.categoria} ${i.subcategoria || ''}`, config.keywords)
+  );
+  // Deduplicate
+  return Array.from(new Map([...byArtigo, ...byEixo, ...byKeyword].map(i => [i.nome, i])).values());
+}
+
+function findLinkedOrcamento(orcamento: OrcamentoRow[], config: typeof PARAGRAFO_CONFIG['12']): OrcamentoRow[] {
+  const byArtigo = orcamento.filter(o =>
+    (o.artigos_convencao || []).some(a => config.artigos.includes(normalizeArticle(a)))
+  );
+  const byEixo = orcamento.filter(o =>
+    o.eixo_tematico && config.eixos.includes(o.eixo_tematico)
+  );
+  const byKeyword = orcamento.filter(o =>
+    matchesKeyword(`${o.programa} ${o.orgao}`, config.keywords)
+  );
+  return Array.from(new Map([...byArtigo, ...byEixo, ...byKeyword].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
+}
+
+function findLinkedNormativos(normativos: NormativoRow[], config: typeof PARAGRAFO_CONFIG['12']): NormativoRow[] {
+  const byArtigo = normativos.filter(n =>
+    (n.artigos_convencao || []).some(a => config.artigos.includes(normalizeArticle(a)))
+  );
+  const byKeyword = normativos.filter(n =>
+    matchesKeyword(n.titulo, config.keywords)
+  );
+  return Array.from(new Map([...byArtigo, ...byKeyword].map(n => [n.titulo, n])).values());
 }
 
 /**
  * Gera avaliação técnica dinâmica para um parágrafo CERD III
- * usando dados reais do sistema.
+ * usando cruzamento multicamada de TODAS as bases do sistema.
  */
 export function generateDynamicJustificativa(
   paragrafo: string,
@@ -114,260 +192,94 @@ export function generateDynamicJustificativa(
   orcamento: OrcamentoRow[],
   normativos: NormativoRow[],
 ): string | null {
-  const mapping = PARAGRAFO_MAP[paragrafo];
-  if (!mapping) return null;
+  const config = PARAGRAFO_CONFIG[paragrafo];
+  if (!config) return null;
 
-  // Filter relevant data
-  const indsRelevantes = indicadores.filter(i =>
-    mapping.categorias.includes(i.categoria) ||
-    (i.subcategoria && mapping.categorias.includes(i.subcategoria))
-  );
+  // Multi-layer matching
+  const inds = findLinkedIndicadores(indicadores, config);
+  const orcs = findLinkedOrcamento(orcamento, config);
+  const norms = findLinkedNormativos(normativos, config);
 
-  const orcRelevante = orcamento.filter(o =>
-    o.eixo_tematico && mapping.eixos.includes(o.eixo_tematico)
-  );
-
-  const normsRelevantes = normativos.filter(n =>
-    n.artigos_convencao?.some(a => mapping.artigos.includes(a))
-  );
-
-  // Count normative advances vs setbacks
-  const normAvances = normsRelevantes.filter(n => n.status === 'analisado' || n.status === 'aprovado').length;
-
-  // Budget summary (latest year)
-  const latestOrcYear = orcRelevante.length > 0
-    ? Math.max(...orcRelevante.map(o => o.ano))
-    : null;
-  const latestOrc = latestOrcYear
-    ? orcRelevante.filter(o => o.ano === latestOrcYear)
-    : [];
-  const totalPago = latestOrc.reduce((sum, o) => sum + (o.pago || 0), 0);
-  const totalAutorizado = latestOrc.reduce((sum, o) => sum + (o.dotacao_autorizada || 0), 0);
-  const execucaoMedia = totalAutorizado > 0 ? (totalPago / totalAutorizado) * 100 : null;
-
-  // Build per-paragraph assessment
-  switch (paragrafo) {
-    case '12': return buildP12(indsRelevantes, normAvances, execucaoMedia, latestOrcYear);
-    case '14': return buildP14(indsRelevantes, normAvances);
-    case '16': return buildP16(indsRelevantes, normAvances, execucaoMedia, latestOrcYear, totalPago);
-    case '18': return buildP18(indsRelevantes, normAvances, execucaoMedia, latestOrcYear);
-    case '20': return buildP20(indsRelevantes, normAvances, orcRelevante, latestOrcYear);
-    case '22': return buildP22(indsRelevantes, normAvances, orcRelevante, latestOrcYear);
-    case '24': return buildP24(indsRelevantes, normAvances);
-    case '26': return buildP26(indsRelevantes, normAvances);
-    default: return null;
-  }
-}
-
-function extractDados(inds: IndicadorRow[], nomeContains: string): any {
-  const ind = inds.find(i => i.nome.toLowerCase().includes(nomeContains.toLowerCase()));
-  return ind?.dados;
-}
-
-function buildP12(inds: IndicadorRow[], normCount: number, execucao: number | null, anoOrc: number | null): string {
   const parts: string[] = [];
 
-  // Hate crimes / discrimination data
-  const letalidade = extractDados(inds, 'letalidade policial');
-  const homicidio = extractDados(inds, 'homicíd');
-  
-  if (homicidio?.percentualVitimasNegras) {
-    parts.push(`Vítimas negras representam ${pct(homicidio.percentualVitimasNegras)} dos homicídios`);
-  }
-  if (letalidade?.percentualNegros) {
-    parts.push(`letalidade policial incide em ${pct(letalidade.percentualNegros)} sobre negros`);
-  }
-
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) vinculado(s) ao tema`);
-  }
-
-  if (parts.length === 0) {
-    return `${normCount > 0 ? normCount + ' marcos normativos registrados' : 'Sem indicadores estatísticos disponíveis para avaliação automatizada'}. Tema: ${PARAGRAFO_MAP['12'].tema}.`;
-  }
-
-  return parts.join('; ') + '.';
-}
-
-function buildP14(inds: IndicadorRow[], normCount: number): string {
-  const parts: string[] = [];
-  
-  // Media/culture indicators
+  // ── 1. Indicadores Estatísticos (detalhar dados-chave) ──
   if (inds.length > 0) {
-    parts.push(`${inds.length} indicador(es) de cultura/mídia no sistema`);
-  }
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) sobre representatividade`);
-  }
+    // Extract key numeric findings from dados
+    const findings: string[] = [];
+    for (const ind of inds.slice(0, 8)) {
+      const d = ind.dados;
+      if (!d || typeof d !== 'object') continue;
 
-  if (parts.length === 0) {
-    return 'Indicadores estatísticos limitados sobre representatividade midiática. Lacuna de dados desagregados persiste.';
-  }
+      // Generic extraction of racial disparity data
+      if (d.percentualVitimasNegras != null) {
+        findings.push(`${ind.nome}: ${pct(d.percentualVitimasNegras)} de vítimas negras`);
+      } else if (d.percentualNegros != null) {
+        findings.push(`${ind.nome}: ${pct(d.percentualNegros)} negros`);
+      } else if (d.negros != null && d.brancos != null) {
+        findings.push(`${ind.nome}: ${typeof d.negros === 'number' && d.negros < 100 ? pct(d.negros) : fmt(d.negros)} negros vs. ${typeof d.brancos === 'number' && d.brancos < 100 ? pct(d.brancos) : fmt(d.brancos)} brancos`);
+      } else if (d.razaoMortalidadeNegraBranca != null) {
+        findings.push(`${ind.nome}: razão negra/branca ${fmt(d.razaoMortalidadeNegraBranca)}x`);
+      } else if (d.terrasTotal != null) {
+        findings.push(`${ind.nome}: ${fmt(d.terrasTotal)} registradas, ${fmt(d.terrasHomologadas || d.terrasRegularizadas)} regularizadas`);
+      } else if (d.territoriosTitulados != null) {
+        findings.push(`${ind.nome}: ${fmt(d.territoriosTitulados)} titulados, ${fmt(d.comunidadesCertificadas)} certificadas`);
+      } else if (d.totalNegros != null) {
+        findings.push(`${ind.nome}: ${fmt(d.totalNegros)} negros`);
+      }
+    }
 
-  return parts.join('; ') + '. Monitoramento de estereótipos raciais requer indicadores específicos.';
-}
+    if (findings.length > 0) {
+      parts.push(`Indicadores vinculados (${inds.length} no sistema): ${findings.slice(0, 5).join('; ')}`);
+    } else {
+      parts.push(`${inds.length} indicador(es) estatístico(s) vinculado(s) ao tema`);
+    }
 
-function buildP16(inds: IndicadorRow[], normCount: number, execucao: number | null, anoOrc: number | null, totalPago: number): string {
-  const parts: string[] = [];
-
-  const materna = extractDados(inds, 'mortalidade materna');
-  const covid = inds.filter(i => i.categoria === 'covid_racial');
-
-  if (materna?.razaoMortalidadeNegraBranca) {
-    parts.push(`Razão de mortalidade materna negra/branca: ${fmt(materna.razaoMortalidadeNegraBranca)}x`);
-  }
-  if (covid.length > 0) {
-    parts.push(`${covid.length} indicador(es) COVID-racial documentados`);
-  }
-  if (totalPago > 0 && anoOrc) {
-    parts.push(`R$ ${fmt(totalPago / 1e6)}M pagos em saúde (${anoOrc}), execução ${execucao ? pct(execucao) : '—'}`);
-  }
-  if (normCount > 0) {
-    parts.push(`${normCount} norma(s) de saúde vinculada(s)`);
-  }
-
-  if (parts.length === 0) {
-    return 'Disparidades em mortalidade materna e acesso à saúde permanecem, com dados insuficientes para avaliação automatizada completa.';
-  }
-
-  return parts.join('; ') + '.';
-}
-
-function buildP18(inds: IndicadorRow[], normCount: number, execucao: number | null, anoOrc: number | null): string {
-  const parts: string[] = [];
-
-  const analfab = extractDados(inds, 'analfabet');
-  const superior = extractDados(inds, 'superior');
-  const evasao = extractDados(inds, 'evasão');
-
-  if (analfab?.negros != null && analfab?.brancos != null) {
-    parts.push(`Analfabetismo: ${pct(analfab.negros)} negros vs. ${pct(analfab.brancos)} brancos`);
-  }
-  if (superior?.negros != null) {
-    parts.push(`ensino superior negro: ${pct(superior.negros)}`);
-  }
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) de educação`);
-  }
-  if (execucao != null && anoOrc) {
-    parts.push(`execução orçamentária educação ${pct(execucao)} (${anoOrc})`);
+    // Tendência
+    const tendencias = inds.map(i => inferTendencia(i));
+    const melhoram = tendencias.filter(t => t === 'melhora').length;
+    const pioram = tendencias.filter(t => t === 'piora').length;
+    if (melhoram > 0 || pioram > 0) {
+      parts.push(`Tendências: ${melhoram} melhora(s), ${pioram} piora(s)`);
+    }
+  } else {
+    parts.push('Sem indicadores estatísticos vinculados no sistema');
   }
 
-  if (parts.length === 0) {
-    return 'Avanços na produção normativa educacional, mas implementação e dados de impacto ainda limitados no sistema.';
-  }
+  // ── 2. Base Orçamentária ──
+  if (orcs.length > 0) {
+    const latestYear = Math.max(...orcs.map(o => o.ano));
+    const latestOrcs = orcs.filter(o => o.ano === latestYear);
+    const totalPago = latestOrcs.reduce((s, o) => s + (o.pago || 0), 0);
+    const totalAutorizado = latestOrcs.reduce((s, o) => s + (o.dotacao_autorizada || 0), 0);
+    const execucao = totalAutorizado > 0 ? (totalPago / totalAutorizado) * 100 : null;
 
-  return parts.join('; ') + '.';
-}
+    const orcText = totalPago > 0
+      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução ${execucao ? pct(execucao) : '—'}`
+      : `${latestOrcs.length} ação(ões) orçamentária(s) em ${latestYear}`;
 
-function buildP20(inds: IndicadorRow[], normCount: number, orc: OrcamentoRow[], anoOrc: number | null): string {
-  const parts: string[] = [];
+    parts.push(`Orçamento (${orcs.length} ações vinculadas): ${orcText}`);
 
-  const terras = extractDados(inds, 'terras indígenas') || extractDados(inds, 'TIs');
-  const povos = inds.find(i => i.subcategoria === 'indigenas' || i.nome.toLowerCase().includes('indígena'));
-
-  if (terras?.terrasTotal) {
-    parts.push(`${fmt(terras.terrasTotal)} TIs registradas, ${fmt(terras.terrasHomologadas)} regularizadas`);
-  } else if (povos?.dados?.terrasTotal) {
-    parts.push(`${fmt(povos.dados.terrasTotal)} TIs registradas, ${fmt(povos.dados.terrasHomologadas)} regularizadas`);
-  }
-
-  // Budget for terra_territorio
-  const orcTerra = orc.filter(o => o.eixo_tematico === 'terra_territorio');
-  if (orcTerra.length > 0 && anoOrc) {
-    const totalPagoTerra = orcTerra.filter(o => o.ano === anoOrc).reduce((s, o) => s + (o.pago || 0), 0);
-    if (totalPagoTerra > 0) {
-      parts.push(`R$ ${fmt(totalPagoTerra / 1e6)}M pagos em terra/território (${anoOrc})`);
+    // Orçamento simbólico warning
+    const simbolicos = latestOrcs.filter(o => {
+      const dot = Number(o.dotacao_autorizada) || 0;
+      const pag = Number(o.pago) || 0;
+      return dot > 100000 && pag < dot * 0.05;
+    });
+    if (simbolicos.length > 0) {
+      parts.push(`⚠️ ${simbolicos.length} ação(ões) com execução inferior a 5% (orçamento simbólico)`);
     }
   }
 
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) sobre demarcação`);
+  // ── 3. Base Normativa ──
+  if (norms.length > 0) {
+    parts.push(`${norms.length} marco(s) normativo(s) vinculado(s): ${norms.slice(0, 3).map(n => n.titulo).join('; ')}`);
+  } else {
+    parts.push('Sem cobertura normativa identificada');
   }
 
   if (parts.length === 0) {
-    return 'Reversão da paralisia nas demarcações a partir de 2023, com criação do MPI. Dados quantitativos no sistema em construção.';
+    return `Dados insuficientes para avaliação automatizada do tema: ${config.tema}.`;
   }
 
-  return parts.join('; ') + '. Processos pendentes de homologação persistem como dívida histórica.';
-}
-
-function buildP22(inds: IndicadorRow[], normCount: number, orc: OrcamentoRow[], anoOrc: number | null): string {
-  const parts: string[] = [];
-
-  const quilombolas = inds.find(i =>
-    i.subcategoria === 'quilombolas' || i.nome.toLowerCase().includes('quilombol')
-  );
-
-  if (quilombolas?.dados) {
-    const d = quilombolas.dados;
-    if (d.territoriosTitulados) parts.push(`${fmt(d.territoriosTitulados)} territórios titulados`);
-    if (d.comunidadesCertificadas) parts.push(`${fmt(d.comunidadesCertificadas)} comunidades certificadas`);
-    if (d.processosAbertosIncra) parts.push(`${fmt(d.processosAbertosIncra)} processos abertos no INCRA`);
-  }
-
-  if (normCount > 0) {
-    parts.push(`${normCount} norma(s) vinculada(s)`);
-  }
-
-  if (parts.length === 0) {
-    return 'Período 2019-2022 marcado por paralisia. Ritmo de titulação permanece aquém da demanda. Dados do Censo 2022 trazem primeira contagem oficial.';
-  }
-
-  const titulados = quilombolas?.dados?.territoriosTitulados || 0;
-  const processos = quilombolas?.dados?.processosAbertosIncra || 1;
-  const percentual = processos > 0 ? ((titulados / processos) * 100).toFixed(0) : '—';
-
-  return parts.join('; ') + `. Taxa de titulação: ~${percentual}% dos processos concluídos.`;
-}
-
-function buildP24(inds: IndicadorRow[], normCount: number): string {
-  const parts: string[] = [];
-
-  const letalidade = extractDados(inds, 'letalidade policial');
-  const homicidio = extractDados(inds, 'homicíd');
-
-  if (letalidade?.percentualNegros) {
-    parts.push(`Letalidade policial: ${pct(letalidade.percentualNegros)} das vítimas são negras`);
-  }
-  if (homicidio?.taxaNegros && homicidio?.taxaBrancos) {
-    parts.push(`taxa de homicídio negros ${fmt(homicidio.taxaNegros)} vs. brancos ${fmt(homicidio.taxaBrancos)} por 100 mil`);
-  }
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) sobre uso da força`);
-  }
-
-  if (parts.length === 0) {
-    return 'Violência policial letal contra jovens negros persiste como padrão estrutural. Medidas normativas não alteraram o quadro de desproporcionalidade racial.';
-  }
-
-  return parts.join('; ') + '. Desproporcionalidade racial na violência institucional persiste.';
-}
-
-function buildP26(inds: IndicadorRow[], normCount: number): string {
-  const parts: string[] = [];
-
-  const carceraria = inds.find(i =>
-    i.nome.toLowerCase().includes('carcerár') || i.nome.toLowerCase().includes('encarcer') || i.nome.toLowerCase().includes('prisional')
-  );
-
-  if (carceraria?.dados) {
-    const d = carceraria.dados;
-    if (d.percentualNegros) {
-      parts.push(`Negros representam ${pct(d.percentualNegros)} da população carcerária`);
-    }
-    if (d.totalNegros && d.totalBrancos) {
-      parts.push(`${fmt(d.totalNegros)} negros vs. ${fmt(d.totalBrancos)} brancos encarcerados`);
-    }
-  }
-
-  if (normCount > 0) {
-    parts.push(`${normCount} marco(s) normativo(s) sobre sistema prisional`);
-  }
-
-  if (parts.length === 0) {
-    return 'Perfil do encarceramento em massa com viés racial permanece inalterado. Dados do sistema em construção para avaliação automatizada.';
-  }
-
-  return parts.join('; ') + '. Viés racial no sistema prisional persiste.';
+  return parts.join('. ') + '.';
 }
