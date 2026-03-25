@@ -214,7 +214,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
-  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats)}
+  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
   ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
