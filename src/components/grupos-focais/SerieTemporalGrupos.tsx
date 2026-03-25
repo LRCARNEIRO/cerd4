@@ -157,16 +157,16 @@ function buildIndicadores(
       metodologia: 'Índice de Vulnerabilidade Juvenil à Violência — razão entre taxas de homicídio de jovens negros e não negros (ensino fundamental incompleto). Jovens negros c/ ensino superior: até 3x maior risco (2021).',
     },
     {
-      nome: 'Taxa de homicídio jovens negros (por 100 mil)',
+      nome: 'Encarceramento juvenil negro (%)',
       grupo: 'juventude_negra',
       dados: [
-        { ano: 2018, valor: 98.5 },
-        { ano: 2023, valor: 28.0 },
+        { ano: 2018, valor: 64.0 },
+        { ano: 2024, valor: 68.7 },
       ],
-      unidade: 'por 100 mil',
-      fonte: 'Atlas da Violência 2025 — Jovens 15-29 anos',
+      unidade: '%',
+      fonte: '19º Anuário FBSP 2025',
       interpretacao: 'menor_melhor',
-      metodologia: 'Taxa específica de homicídio para jovens negros 15-29 anos. Queda absoluta significativa, mas desigualdade racial persiste (2.7x vs não negros).',
+      metodologia: 'Percentual de jovens negros na população carcerária. Brancos: 29,9% (2024). Medidas socioeducativas: 74,2% negros vs 25,1% brancos.',
     },
   ];
 
