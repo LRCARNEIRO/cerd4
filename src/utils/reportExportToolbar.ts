@@ -307,18 +307,24 @@ export function getExportToolbarHTML(fileName: string = 'relatorio'): string {
         Promise.all(svgPromises).then(function() {
         var docContent = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.5;max-width:none;padding:0} h1{font-size:18pt;color:#0f3460;border-bottom:2px solid #0f3460;padding-bottom:6px} h2{font-size:15pt;color:#16213e;border-bottom:1px solid #e2e8f0;margin-top:18pt} h3{font-size:13pt;color:#0f3460;margin-top:14pt} table{width:100%;border-collapse:collapse;margin:8px 0;font-size:9pt} th{background:#0f3460;color:white;padding:5px 7px;text-align:left} td{padding:4px 7px;border-bottom:1px solid #e2e8f0} tr:nth-child(even){background:#f8fafc} img{display:block;max-width:660px;height:auto;object-fit:contain}</style></head><body>' + clone.innerHTML + '</body></html>';
 
-        var blob = new Blob(['\\ufeff' + docContent], { type: 'application/msword' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = '${safeFileName}.doc';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+          var blob = new Blob(['\\ufeff' + docContent], { type: 'application/msword' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = '${safeFileName}.doc';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        }).catch(function(e) {
+          alert('Erro ao gerar DOCX: ' + e.message);
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        });
       } catch(e) {
         alert('Erro ao gerar DOCX: ' + e.message);
-      } finally {
         btn.innerHTML = origText;
         btn.disabled = false;
       }
