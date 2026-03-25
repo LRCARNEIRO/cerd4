@@ -129,45 +129,44 @@ function buildIndicadores(
     },
   ];
 
-  // Juventude Negra: séries temporais existentes que afetam desproporcionalmente jovens 15-29
-  // Atlas 2025: {narrativaJuventude.percentualVitimas}% vítimas homicídio têm 15-29 anos
-  // Não usa multiplicadores — usa as séries reais de segurança/emprego como indicadores correlatos
+  // Juventude Negra: indicadores específicos da juventude negra (15-29 anos)
+  // Fontes: Atlas da Violência 2025 (IPEA/FBSP)
   const juventudeNegra: IndicadorTemporal[] = [
     {
-      nome: 'Homicídio negro (por 100 mil)',
+      nome: 'Violência Letal — Juventude 15-29 (% das vítimas)',
       grupo: 'juventude_negra',
-      dados: segurancaPublica.filter(s => s.homicidioNegro != null).map(s => ({ ano: s.ano, valor: s.homicidioNegro! })),
+      dados: [
+        { ano: 2018, valor: 53.3 },
+        { ano: 2023, valor: narrativaJuventude.percentualVitimas || 47.8 },
+      ],
+      unidade: '%',
+      fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+      interpretacao: 'menor_melhor',
+      metodologia: 'Proporção de vítimas de homicídio na faixa 15-29 anos (dado específico da juventude)',
+    },
+    {
+      nome: 'IVJ-N — Risco relativo jovens negros vs não negros',
+      grupo: 'juventude_negra',
+      dados: [
+        { ano: 2017, valor: 1.9 },
+        { ano: 2021, valor: 2.0 },
+      ],
+      unidade: 'x',
+      fonte: 'Atlas da Violência 2025 (IPEA/FBSP), p. 74',
+      interpretacao: 'menor_melhor',
+      metodologia: 'Índice de Vulnerabilidade Juvenil à Violência — razão entre taxas de homicídio de jovens negros e não negros (ensino fundamental incompleto). Jovens negros c/ ensino superior: até 3x maior risco (2021).',
+    },
+    {
+      nome: 'Taxa de homicídio jovens negros (por 100 mil)',
+      grupo: 'juventude_negra',
+      dados: [
+        { ano: 2018, valor: 98.5 },
+        { ano: 2023, valor: 28.0 },
+      ],
       unidade: 'por 100 mil',
-      fonte: 'Atlas da Violência (IPEA/FBSP)',
+      fonte: 'Atlas da Violência 2025 — Jovens 15-29 anos',
       interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: `Taxa geral; ${narrativaJuventude.percentualVitimas}% das vítimas têm 15-29 anos (Atlas 2025)`,
-    },
-    {
-      nome: 'Vítimas negras de homicídio (%)',
-      grupo: 'juventude_negra',
-      dados: segurancaPublica.filter(s => s.percentualVitimasNegras != null).map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras! })),
-      unidade: '%',
-      fonte: 'FBSP — concentração na faixa 15-29',
-      interpretacao: 'menor_melhor',
-    },
-    {
-      nome: 'Letalidade policial negra (%)',
-      grupo: 'juventude_negra',
-      dados: segurancaPublica.filter(s => s.letalidadePolicial != null).map(s => ({ ano: s.ano, valor: s.letalidadePolicial! })),
-      unidade: '%',
-      fonte: 'FBSP — perfil predominante: jovem negro',
-      interpretacao: 'menor_melhor',
-    },
-    {
-      nome: 'Desemprego negro (%)',
-      grupo: 'juventude_negra',
-      dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro })),
-      unidade: '%',
-      fonte: 'PNAD Contínua (SIDRA 6402)',
-      interpretacao: 'menor_melhor',
-      estimativa: true,
-      metodologia: 'Taxa geral negra — dado desagregado juventude 18-24 não localizado na SIDRA',
+      metodologia: 'Taxa específica de homicídio para jovens negros 15-29 anos. Queda absoluta significativa, mas desigualdade racial persiste (2.7x vs não negros).',
     },
   ];
 
