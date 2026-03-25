@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -36,9 +36,12 @@ import { OdsRacialTab } from '@/components/estatisticas/OdsRacialTab';
 import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionPanel';
 import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
 import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
+import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
+  const [activeTab, setActiveTab] = useState('common-core');
+  const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
   
@@ -205,8 +208,13 @@ export default function Estatisticas() {
       {/* Espelho Seguro — Painel de Migração */}
       <MirrorIngestionPanel />
 
-      <div className="mt-6" />
-      <Tabs defaultValue="common-core" className="w-full">
+      {/* Busca por Palavra-Chave */}
+      <div className="mt-6 mb-4">
+        <KeywordSearch onNavigateTab={handleSearchNav} />
+      </div>
+
+      <div className="mt-2" />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
           <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
             <BookOpen className="w-4 h-4" /> Common Core (77)
