@@ -18,20 +18,8 @@ interface SearchResult {
 }
 
 // Static data catalog — searches across all sub-tabs
-function buildSearchCatalog(mirror: any, indicadoresBD: any[]): SearchResult[] {
+function buildSearchCatalog(mirror: any): SearchResult[] {
   const results: SearchResult[] = [];
-
-  // BD indicators
-  (indicadoresBD || []).forEach((ind: any) => {
-    results.push({
-      titulo: ind.nome,
-      valor: typeof ind.dados === 'object' ? JSON.stringify(ind.dados).slice(0, 80) : String(ind.dados),
-      fonte: ind.fonte,
-      aba: 'Espelho Seguro (BD)',
-      abaValue: 'indicadores-db',
-      categoria: ind.categoria,
-    });
-  });
 
   // Segurança Pública
   (mirror.segurancaPublica || []).forEach((s: any) => {
