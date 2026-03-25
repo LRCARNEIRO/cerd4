@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Search, X, ChevronRight, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 
 interface SearchResult {
   titulo: string;
@@ -177,9 +176,8 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const mirror = useMirrorData();
-  const { data: indicadoresBD } = useIndicadoresInterseccionais();
 
-  const catalog = useMemo(() => buildSearchCatalog(mirror, indicadoresBD || []), [mirror, indicadoresBD]);
+  const catalog = useMemo(() => buildSearchCatalog(mirror), [mirror]);
 
   const results = useMemo(() => {
     if (query.length < 2) return [];
