@@ -266,7 +266,8 @@ export function generateMethodologyHTML(): string {
   .legenda li { margin: 3px 0; font-size: 10px; }
   .source { font-size: 9px; color: #94a3b8; font-style: italic; margin-top: 20px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
   @media print { .no-print { display: none; } body { padding: 0; } }
-  @page { size: A4; margin: 2cm; }
+  @page { size: A4; margin: 2cm; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
+  @page :first { @bottom-center { content: none; } }
 </style></head><body>
 ${getExportToolbarHTML('Metodologia-Escopo-Projeto')}
 

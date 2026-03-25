@@ -73,7 +73,8 @@ export interface CerdIVFullData {
 // ═══════════════════════════════════════════
 
 const STYLES = `
-@page { size: A4; margin: 2cm; }
+@page { size: A4; margin: 2cm; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
+@page :first { @bottom-center { content: none; } }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Open Sans', sans-serif; font-size: 10.5pt; line-height: 1.65; color: #1a1a2e; max-width: 21cm; margin: 0 auto; padding: 2cm; background: white; }
 .header { text-align: center; margin-bottom: 2cm; border-bottom: 3px solid #1e3a5f; padding-bottom: 1.5cm; }
