@@ -61,6 +61,7 @@ export default function Recomendacoes() {
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
+  const [isRegeneratingAll, setIsRegeneratingAll] = useState(false);
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
