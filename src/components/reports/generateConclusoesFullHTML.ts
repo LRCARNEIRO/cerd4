@@ -454,7 +454,8 @@ export function generateConclusoesFullHTML(params: GenerateParams): string {
   .stat-card .lbl { font-size: 9px; color: #64748b; }
   .stat-card .sub { font-size: 8px; color: #94a3b8; }
   @media print { .no-print { display: none; } body { padding: 0; } .card, .chart-container { page-break-inside: avoid; } }
-  @page { size: A4; margin: 2cm; }
+  @page { size: A4; margin: 2cm; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
+  @page :first { @bottom-center { content: none; } }
 </style></head><body>
 ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 

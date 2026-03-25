@@ -16,7 +16,8 @@ export function generateSectionPDF(section: PDFSection) {
   <meta charset="UTF-8">
   <title>${section.titulo} — Sistema CERD IV</title>
   <style>
-    @page { margin: 2cm 2.5cm; size: A4; }
+    @page { margin: 2cm 2.5cm; size: A4; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
+    @page :first { @bottom-center { content: none; } }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a2e; }
     .header { border-bottom: 3px solid #1a1a2e; padding-bottom: 12px; margin-bottom: 20px; }
