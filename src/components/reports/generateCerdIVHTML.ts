@@ -214,7 +214,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
-  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats)}
+  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
   ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
@@ -313,7 +313,7 @@ function renderDemographicContext(demo: any): string {
   </div>`;
 }
 
-function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any): string {
+function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any, orcDados?: DadoOrcamentario[], normativos?: any[]): string {
   if (!respostas.length) return '';
 
   const porStatus: Record<string, number> = {};
@@ -345,7 +345,7 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
     <div class="${r.grau_atendimento === 'cumprido' ? 'advance-box' : r.grau_atendimento === 'retrocesso' || r.grau_atendimento === 'nao_cumprido' ? 'regress-box' : 'analysis-box'}">
       <p><strong>Resposta do Estado Brasileiro:</strong> ${r.resposta_brasil}</p>
       ${(() => {
-        const dynJust = generateDynamicJustificativa(r.paragrafo_cerd_iii, indicadores as any, [], []);
+        const dynJust = generateDynamicJustificativa(r.paragrafo_cerd_iii, indicadores as any, (orcDados || []) as any, (normativos || []) as any);
         const justText = dynJust || r.justificativa_avaliacao;
         return justText ? `<p><strong>Avaliação técnica:</strong> ${justText}</p>` : '';
       })()}
