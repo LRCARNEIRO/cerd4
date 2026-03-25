@@ -5,7 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, RefreshCw, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
@@ -58,6 +61,7 @@ export default function Recomendacoes() {
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
+  const [isRegeneratingAll, setIsRegeneratingAll] = useState(false);
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
@@ -308,7 +312,37 @@ export default function Recomendacoes() {
         </TabsContent>
 
         <TabsContent value="respostas">
-          <div className="flex justify-end mb-3" data-export-ignore="true">
+          <div className="flex items-center justify-between mb-3" data-export-ignore="true">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                disabled={isRegeneratingAll}
+                onClick={async () => {
+                  setIsRegeneratingAll(true);
+                  const paragrafos = respostasCerd?.map(r => r.paragrafo_cerd_iii) || [];
+                  let ok = 0;
+                  for (const p of paragrafos) {
+                    try {
+                      const { data, error } = await supabase.functions.invoke('generate-justificativa', {
+                        body: { paragrafo: p },
+                      });
+                      if (!error && !data?.error) ok++;
+                    } catch {}
+                    // small delay to avoid rate limiting
+                    await new Promise(r => setTimeout(r, 1500));
+                  }
+                  setIsRegeneratingAll(false);
+                  toast.success(`${ok}/${paragrafos.length} avaliações regeneradas`, {
+                    description: 'Recarregue a página para ver os textos atualizados.',
+                  });
+                }}
+              >
+                {isRegeneratingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {isRegeneratingAll ? 'Regenerando todas...' : 'Regenerar Todas as Avaliações'}
+              </Button>
+            </div>
             <ExportTabButtons targetSelector="#export-recomendacoes-respostas" generateHTML={() => generateRespostasCerdIIIExportHTML(respostasCerd || [])} fileName="Respostas-CERD-III" compact />
           </div>
           <div id="export-recomendacoes-respostas">
