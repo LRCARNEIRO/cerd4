@@ -1,47 +1,20 @@
-import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { CheckCircle2, AlertTriangle, RefreshCw, Loader2, Sparkles } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react';
 import type { RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 
 interface RespostaCerdCardProps {
   resposta: RespostaLacunaCerdIII;
-  onRefreshed?: (paragrafo: string, newText: string) => void;
+  dynamicJustificativa?: string | null;
 }
 
-export function RespostaCerdCard({ resposta, onRefreshed }: RespostaCerdCardProps) {
-  const [isRegenerating, setIsRegenerating] = useState(false);
-  const [localJustificativa, setLocalJustificativa] = useState<string | null>(null);
+export function RespostaCerdCard({ resposta, dynamicJustificativa }: RespostaCerdCardProps) {
   const evidenciasQuant = resposta.evidencias_quantitativas as Record<string, string | number> | null;
-
-  const justificativa = localJustificativa ?? resposta.justificativa_avaliacao;
-
-  const handleRegenerate = async () => {
-    setIsRegenerating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-justificativa', {
-        body: { paragrafo: resposta.paragrafo_cerd_iii },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setLocalJustificativa(data.justificativa);
-      onRefreshed?.(resposta.paragrafo_cerd_iii, data.justificativa);
-      toast.success(`§${resposta.paragrafo_cerd_iii} atualizado`, {
-        description: `Cruzou ${data.fontes.indicadores} indicadores, ${data.fontes.orcamento} registros orçamentários, ${data.fontes.normativos} normativos`,
-      });
-    } catch (e: any) {
-      console.error(e);
-      toast.error('Erro ao regenerar avaliação', { description: e.message });
-    } finally {
-      setIsRegenerating(false);
-    }
-  };
+  
+  // Prefer dynamic justificativa over static DB value
+  const justificativa = dynamicJustificativa || resposta.justificativa_avaliacao;
+  const isDynamic = !!dynamicJustificativa;
   
   return (
     <Card>
@@ -96,37 +69,19 @@ export function RespostaCerdCard({ resposta, onRefreshed }: RespostaCerdCardProp
             )}
 
             {/* Justificativa / Avaliação Técnica */}
-            <div className="p-3 bg-muted rounded-lg mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5">
+            {justificativa && (
+              <div className="p-3 bg-muted rounded-lg mb-3">
+                <div className="flex items-center gap-1.5 mb-1">
                   <p className="text-xs font-medium text-muted-foreground">Avaliação Técnica:</p>
-                  {localJustificativa && (
+                  {isDynamic && (
                     <Badge variant="outline" className="text-[10px] h-4 gap-0.5 border-primary/30 text-primary">
-                      <Sparkles className="w-2.5 h-2.5" /> Atualizada
+                      <Sparkles className="w-2.5 h-2.5" /> Dinâmica
                     </Badge>
                   )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 px-2 text-xs gap-1"
-                  onClick={handleRegenerate}
-                  disabled={isRegenerating}
-                >
-                  {isRegenerating ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <RefreshCw className="w-3 h-3" />
-                  )}
-                  {isRegenerating ? 'Gerando...' : 'Regenerar'}
-                </Button>
-              </div>
-              {justificativa ? (
                 <p className="text-sm">{justificativa}</p>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">Sem avaliação técnica. Clique em "Regenerar" para gerar com base nos dados atuais.</p>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Lacunas remanescentes */}
             {resposta.lacunas_remanescentes && resposta.lacunas_remanescentes.length > 0 && (
