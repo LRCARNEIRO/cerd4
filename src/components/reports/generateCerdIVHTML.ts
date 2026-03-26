@@ -19,7 +19,20 @@ import {
   educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
   indicadoresSocioeconomicos as hcSocioEco, povosTradicionais as hcPovos,
   dadosDemograficos as hcDemograficos, evolucaoDesigualdade as hcEvolDesig,
+  atlasViolencia2025 as hcAtlas, jovensNegrosViolencia as hcJovens,
+  violenciaInterseccional as hcViolIntersec, juventudeNegra as hcJuventude,
+  saudeMaternaRaca as hcSaudeMaterna, analfabetismoGeral2024 as hcAnalfabetismo,
+  evasaoEscolarSerie as hcEvasao, educacaoRacaGenero as hcEduRG,
+  interseccionalidadeTrabalho as hcTrabalhoRG, classePorRaca as hcClasse,
+  cadUnicoPerfilRacial as hcCadUnico, chefiaFamiliarRacaGenero as hcChefia,
+  deficitHabitacionalSerie as hcDeficit, serieAntraTrans as hcAntra,
+  lgbtqiaPorRaca as hcLgbtqia, deficienciaPorRaca as hcDeficiencia,
 } from '@/components/estatisticas/StatisticsData';
+import {
+  renderSecurityNarrative, renderHealthNarrative, renderEducationNarrative,
+  renderLaborNarrative, renderTerritoryNarrative, renderLGBTandDisabilityNarrative,
+  renderAllRecommendations,
+} from './cerdiv/thematicNarratives';
 
 // ═══════════════════════════════════════════
 // TIPOS
