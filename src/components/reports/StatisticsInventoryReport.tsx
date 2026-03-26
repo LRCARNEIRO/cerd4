@@ -9,6 +9,7 @@ import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { openHtmlPreview } from '@/utils/reportPreview';
+import { svgLineChart, svgBarChart } from '@/components/reports/cerdiv/chartUtils';
 import {
   radarVulnerabilidades,
   atlasViolencia2025,
@@ -198,7 +199,9 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
     { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
   ];
 
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBD.length;
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Relatório Completo — Base Estatística CERD IV</title>
@@ -241,7 +244,7 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
   <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
-  <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">INDICADORES BD</div></div>
+  <div class="stat-card"><div class="value">${indicadoresBDUnicos.length}</div><div class="label">INDICADORES BD (exclusivos)</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
 </div>
 
@@ -266,16 +269,45 @@ ${arrayToHTMLTable(rendimentosCenso2022.rendimentoPorRaca || [], '')}
 
 <h3>2.1. Segurança Pública — Série Histórica (FBSP)</h3>
 ${arrayToHTMLTable(segurancaPublica, '')}
+<div class="chart-inline">${svgLineChart({
+  label: segurancaPublica.map((d: any) => String(d.ano)).join(','),
+  series: [
+    { name: 'Vítimas Negras (%)', color: '#dc2626', values: segurancaPublica.map((d: any) => d.percentualVitimasNegras) },
+    { name: 'Letalidade Policial (%)', color: '#7c3aed', values: segurancaPublica.map((d: any) => d.letalidadePolicial) },
+  ]
+}, 700, 240)}</div>
 
 <h3>2.2. Feminicídio — Série Histórica</h3>
 ${arrayToHTMLTable(feminicidioSerie, '')}
+<div class="chart-inline">${svgLineChart({
+  label: feminicidioSerie.map((d: any) => String(d.ano)).join(','),
+  series: [
+    { name: 'Total', color: '#0f3460', values: feminicidioSerie.map((d: any) => d.total) },
+    { name: '% Negras', color: '#dc2626', values: feminicidioSerie.map((d: any) => d.percentualNegras) },
+  ]
+}, 700, 240)}</div>
 
 <h3>2.3. Educação — Série Histórica</h3>
 ${arrayToHTMLTable(educacaoSerieHistorica, '')}
+<div class="chart-inline">${svgLineChart({
+  label: educacaoSerieHistorica.map((d: any) => String(d.ano)).join(','),
+  series: [
+    { name: 'Analfab. Negro (%)', color: '#dc2626', values: educacaoSerieHistorica.map((d: any) => d.analfabetismoNegro) },
+    { name: 'Analfab. Branco (%)', color: '#3b82f6', values: educacaoSerieHistorica.map((d: any) => d.analfabetismoBranco) },
+    { name: 'Superior Negro (%)', color: '#16a34a', values: educacaoSerieHistorica.map((d: any) => d.superiorNegroPercent) },
+  ]
+}, 700, 240)}</div>
 <div class="section-summary">Analfabetismo geral 2024: <strong>${analfabetismoGeral2024.taxaGeral}%</strong> (${safeNum(analfabetismoGeral2024.totalAnalfabetos)} pessoas).</div>
 
 <h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
 ${arrayToHTMLTable(saudeSerieHistorica, '')}
+<div class="chart-inline">${svgLineChart({
+  label: saudeSerieHistorica.map((d: any) => String(d.ano)).join(','),
+  series: [
+    { name: 'Mort. Materna Negra', color: '#dc2626', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaNegra) },
+    { name: 'Mort. Materna Branca', color: '#3b82f6', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaBranca) },
+  ]
+}, 700, 240)}</div>
 
 <!-- ═══════════════════════════════════════ -->
 <h2>3. INTERSECCIONALIDADES</h2>
@@ -319,6 +351,13 @@ ${arrayToHTMLTable(radarVulnerabilidades, '')}
 
 <h3>4.2. Evolução da Desigualdade</h3>
 ${arrayToHTMLTable(evolucaoDesigualdade, '')}
+<div class="chart-inline">${svgLineChart({
+  label: evolucaoDesigualdade.map((d: any) => String(d.ano)).join(','),
+  series: [
+    { name: 'Renda Negra (R$)', color: '#dc2626', values: evolucaoDesigualdade.map((d: any) => d.rendaMediaNegra || d.rendaNegra || 0) },
+    { name: 'Renda Branca (R$)', color: '#3b82f6', values: evolucaoDesigualdade.map((d: any) => d.rendaMediaBranca || d.rendaBranca || 0) },
+  ]
+}, 700, 240)}</div>
 
 <!-- ═══════════════════════════════════════ -->
 <h2>5. INFRAESTRUTURA POR GRUPO ÉTNICO-RACIAL (Censo 2022)</h2>
@@ -535,7 +574,9 @@ function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m:
     habitacao: 'Habitação',
   };
 
-  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBD.length;
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -709,7 +750,8 @@ export function StatisticsInventoryReport() {
     }
   };
 
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + (indicadoresBD?.length || 0);
+  const indicadoresBDUnicos = (indicadoresBD || []).filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return (
     <Card className="border-l-4 border-l-chart-3">
@@ -722,7 +764,7 @@ export function StatisticsInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
-          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBD?.length || 0} indicadores BD, 
+          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBDUnicos.length} indicadores BD exclusivos, 
           interseccionalidades, vulnerabilidades) ou o inventário resumido.
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
