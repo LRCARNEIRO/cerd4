@@ -950,13 +950,30 @@ tr:nth-child(even){background:#f8fafc;}
     const insights: string[] = [];
     crossRows.forEach(r => {
       if (r.pagoEixo > 0 && r.tendPiora > r.tendMelhora && r.tendPiora > 0) {
-        insights.push('⚠️ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos, mas ' + r.tendPiora + ' indicador(es) em piora — investimento pode não estar gerando retorno social.');
+        insights.push('⚠️ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos, mas ' + r.tendPiora + ' indicador(es) em piora contra ' + r.tendMelhora + ' em melhora — investimento pode não estar gerando retorno social proporcional. Recomenda-se análise qualitativa dos programas.');
       }
       if (r.pagoEixo === 0 && r.lacunasTotal > 0) {
-        insights.push('🔴 <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + r.lacunasTotal + ' lacuna(s) ONU sem orçamento vinculado identificado.');
+        insights.push('🔴 <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + r.lacunasTotal + ' lacuna(s) ONU sem orçamento vinculado. Configura potencial descumprimento dos Artigos 2 e 5 da ICERD.');
+      }
+      if (r.pagoEixo > 0 && r.tendMelhora > r.tendPiora && r.tendMelhora > 0) {
+        insights.push('✅ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos com ' + r.tendMelhora + ' indicador(es) em melhora — correlação positiva entre investimento e resultado social.');
       }
     });
-    return insights.length > 0 ? insights.map(i => '<div class="insight-card"><p>' + i + '</p></div>').join('') : '';
+
+    const totalMelhora = crossRows.reduce((s, r) => s + r.tendMelhora, 0);
+    const totalPioraInd = crossRows.reduce((s, r) => s + r.tendPiora, 0);
+    const totalLac = crossRows.reduce((s, r) => s + r.lacunasTotal, 0);
+    const totalCumpr = crossRows.reduce((s, r) => s + r.lacunasCumpridas, 0);
+    const pctCumprGeral = totalLac > 0 ? Math.round(totalCumpr / totalLac * 100) : 0;
+
+    const analysisHtml = '<div style="background:white;border:2px solid var(--primary);border-radius:12px;padding:20px;margin-top:20px;line-height:1.7;">' +
+      '<h4 style="color:var(--primary);margin-bottom:10px;">📝 Análise Integrada do Cruzamento</h4>' +
+      '<p style="font-size:.9rem;margin-bottom:8px;">O cruzamento entre os <strong>' + crossRows.length + ' eixos temáticos</strong> monitorados revela um panorama ' + (totalMelhora > totalPioraInd ? 'predominantemente positivo' : 'com desafios significativos') + ': <strong>' + totalMelhora + ' indicadores</strong> em melhora contra <strong>' + totalPioraInd + ' em piora</strong>, sugerindo que ' + (totalMelhora > totalPioraInd ? 'o investimento público está, em média, gerando retorno social mensurável.' : 'os investimentos não estão se convertendo adequadamente em melhoria dos indicadores sociais.') + '</p>' +
+      '<p style="font-size:.9rem;margin-bottom:8px;">No <strong>cumprimento das recomendações ONU</strong>, ' + pctCumprGeral + '% das ' + totalLac + ' lacunas encontram-se em cumprimento ou andamento (' + totalCumpr + '/' + totalLac + '). ' + (pctCumprGeral > 70 ? 'Este patamar demonstra engajamento institucional robusto.' : pctCumprGeral > 40 ? 'Embora haja avanços, a taxa indica necessidade de aceleração.' : 'Revela lacunas estruturais na implementação.') + '</p>' +
+      '<p style="font-size:.9rem;">A correlação entre <strong>volume orçamentário</strong> e <strong>resultado nos indicadores</strong> não é linear — fatores como capacidade de gestão, focalização e continuidade das políticas determinam a eficácia do gasto público racial.</p>' +
+      '</div>';
+
+    return (insights.length > 0 ? insights.map(i => '<div class="insight-card"><p>' + i + '</p></div>').join('') : '') + analysisHtml;
   })()}`;
   })()}
 </div>
