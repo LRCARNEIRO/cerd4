@@ -913,19 +913,21 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Infant mortality rate (IMR)',
     categoria: 'Saúde',
     descricao: 'Óbitos de menores de 1 ano por 1.000 nascidos vivos',
-    fonte: 'MS/SIM-SINASC',
-    fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    fonte: 'IBGE/Tábuas',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2000', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Ano', '1940', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['TMI ‰', '29,0', '22,2', '16,4', '13,8', '12,4', '11,9', '11,5']
+        ['TMI ‰', '146,6', '28,1', '15,0', '12,1', '11,4', '12,2', '12,4', '12,5'],
+        ['Homens ‰', '-', '-', '-', '-', '-', '-', '-', '13,5'],
+        ['Mulheres ‰', '-', '-', '-', '-', '-', '-', '-', '11,4']
       ]
     },
-    notas: 'Brasil superou meta do ODM (15,7‰ em 2015). Queda consistente. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE Tábuas de Mortalidade 2023 (divulgação 29/11/2024). TMI 2023 = 12,5‰. Queda de 91,5% desde 1940 (146,6‰). Piora leve em 2021 por COVID-19.',
     tendencia: 'decrescente'
   },
   {
@@ -935,18 +937,19 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Number of deaths of children under 5 per 1,000 live births',
     categoria: 'Saúde',
     descricao: 'Óbitos de menores de 5 anos por 1.000 nascidos vivos',
-    fonte: 'MS/SIM-SINASC',
-    fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    fonte: 'IBGE/Tábuas',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
     periodoOriginal: '2005-2015',
-    periodoAtualizado: '2005-2023',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2000-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Ano', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['Taxa ‰', '19,9', '16,4', '14,3', '13,5', '13,0', '12,6']
+        ['Taxa ‰', '32,6', '17,5', '14,1', '13,0', '13,9', '14,7', '14,7']
       ]
     },
+    notas: '✅ Fonte: IBGE Tábuas de Mortalidade 2023. Mortalidade na infância estável em 14,7‰ em 2022-2023. 85% dos óbitos concentram-se no 1º ano de vida. Queda de 93,1% desde 1940 (212,1‰).',
     tendencia: 'decrescente'
   },
   {
@@ -1549,23 +1552,23 @@ export const tabelasPobreza: CommonCoreTable[] = [
     tituloIngles: 'Percentage distribution by household food security situation',
     categoria: 'Pobreza',
     descricao: 'Situação de segurança alimentar domiciliar',
-    fonte: 'IBGE/POF-PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua / POF',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7437',
-    tabelaSidra: 'Tabela 7437',
+    fonte: 'IBGE/PNAD',
+    fonteCompleta: 'IBGE - PNAD Contínua — Módulo Segurança Alimentar 4ºT/2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39838-seguranca-alimentar-nos-domicilios-brasileiros-volta-a-crescer-em-2023',
+    tabelaSidra: 'PNAD Contínua 2023',
     periodoOriginal: '2004-2013',
     periodoAtualizado: '2004-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Situação', '2004', '2013', '2018', '2022', '2023'],
+      headers: ['Situação', '2004', '2009', '2013', '2018 (POF)', '2023 (PNAD)'],
       rows: [
-        ['Segurança alimentar', '60,1%', '74,2%', '63,3%', '58,8%', '72,5%'],
-        ['Inseg. leve', '18,0%', '17,1%', '24,0%', '28,0%', '18,2%'],
-        ['Inseg. moderada', '14,1%', '5,1%', '8,1%', '8,8%', '6,0%'],
-        ['Inseg. grave', '7,7%', '3,6%', '4,6%', '4,4%', '3,3%']
+        ['Segurança alimentar', '64,8%', '69,8%', '77,4%', '63,3%', '72,4%'],
+        ['Inseg. leve', '18,0%', '18,7%', '14,8%', '24,0%', '18,2%'],
+        ['Inseg. moderada', '9,9%', '6,5%', '4,6%', '8,1%', '5,3%'],
+        ['Inseg. grave', '7,3%', '5,0%', '3,2%', '4,6%', '4,1%']
       ]
     },
-    notas: 'Piora durante pandemia (2020-2022), com recuperação significativa em 2023. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE PNAD Contínua — Módulo Segurança Alimentar, 4ºT/2023 (divulgação 25/04/2024). Segurança alimentar subiu de 63,3% (POF 2018) para 72,4% (2023). Total de 78,3M domicílios; 21,6M (27,6%) com algum grau de insegurança. Inseg. moderada/grave: 9,4% (vs 12,7% em 2018). Responsáveis negros: 54,5% dos domicílios com insegurança (vs 44,7% do total).',
     tendencia: 'decrescente'
   }
 ];
@@ -1734,21 +1737,24 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     categoria: 'Segurança',
     descricao: 'Registros de violência doméstica contra mulheres',
     fonte: 'FBSP',
-    fonteCompleta: 'Fórum Brasileiro de Segurança Pública',
+    fonteCompleta: 'Fórum Brasileiro de Segurança Pública — 19º Anuário 2025',
     urlFonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     periodoOriginal: '2015',
-    periodoAtualizado: '2015-2023',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2015-2024',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Indicador', '2015', '2019', '2022', '2023'],
+      headers: ['Indicador', '2015', '2019', '2023', '2024'],
       rows: [
-        ['Lesão corporal (dom.)', '188.215', '266.310', '245.713', '252.480'],
-        ['Ameaça (dom.)', '340.543', '398.254', '388.652', '395.120'],
-        ['Feminicídio', '1.017', '1.326', '1.410', '1.463'],
-        ['Medidas protetivas', '289.432', '358.612', '412.580', '428.650']
+        ['Estupro/Estupro vuln.', '47.646', '66.123', 'N/D', '87.545'],
+        ['Feminicídio', '1.017', '1.326', 'N/D', '1.492'],
+        ['Tentativas feminicídio', '-', '-', 'N/D', '3.870'],
+        ['Medidas protetivas', '-', '-', 'N/D', '555.001'],
+        ['MPUs descumpridas', '-', '-', 'N/D', '101.656'],
+        ['Chamadas 190 (dom.)', '-', '-', 'N/D', '1.067.556'],
+        ['Stalking', '-', '-', 'N/D', '95.026']
       ]
     },
-    notas: 'Feminicídios em alta. Medidas protetivas em expansão. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: 19º Anuário FBSP 2025 (dados de 2024). Estupros: 87.545 (recorde histórico). 77% das vítimas < 14 anos. 56% das vítimas são negras. Feminicídios: 1.492 (maior desde 2015). 64% das vítimas são negras. Medidas protetivas: 555.001 (+7% vs 2023).',
     tendencia: 'crescente'
   },
   {
