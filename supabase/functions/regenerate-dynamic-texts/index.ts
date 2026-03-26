@@ -77,7 +77,11 @@ function generateJustificativa(paragrafo: string, indicadores: any[], orcamento:
       const d = ind.dados;
       if (!d || typeof d !== 'object') continue;
       if (d.percentualVitimasNegras != null) findings.push(`${ind.nome}: ${pct(d.percentualVitimasNegras)} de vítimas negras`);
-      else if (d.negros != null && d.brancos != null) findings.push(`${ind.nome}: ${typeof d.negros === 'number' && d.negros < 100 ? pct(d.negros) : fmt(d.negros)} negros vs. ${typeof d.brancos === 'number' && d.brancos < 100 ? pct(d.brancos) : fmt(d.brancos)} brancos`);
+      else if (d.negros != null && d.brancos != null) {
+        const vn = typeof d.negros === 'object' ? JSON.stringify(d.negros) : (typeof d.negros === 'number' && d.negros < 100 ? pct(d.negros) : fmt(d.negros));
+        const vb = typeof d.brancos === 'object' ? JSON.stringify(d.brancos) : (typeof d.brancos === 'number' && d.brancos < 100 ? pct(d.brancos) : fmt(d.brancos));
+        findings.push(`${ind.nome}: ${vn} negros vs. ${vb} brancos`);
+      }
       else if (d.razaoMortalidadeNegraBranca != null) findings.push(`${ind.nome}: razão negra/branca ${fmt(d.razaoMortalidadeNegraBranca)}x`);
       else if (d.terrasTotal != null) findings.push(`${ind.nome}: ${fmt(d.terrasTotal)} registradas`);
       else if (d.territoriosTitulados != null) findings.push(`${ind.nome}: ${fmt(d.territoriosTitulados)} titulados`);
