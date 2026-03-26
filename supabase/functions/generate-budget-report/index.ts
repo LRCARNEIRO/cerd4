@@ -34,6 +34,142 @@ const fmtFull = (v: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 };
 
+// ═══════════════ INLINE SVG CHART GENERATORS ═══════════════
+
+function svgBarChart(
+  labels: string[], series: { name: string; color: string; values: number[] }[],
+  width = 650, height = 260, stacked = false
+): string {
+  const pad = { top: 30, right: 20, bottom: 55, left: 70 };
+  const w = width - pad.left - pad.right;
+  const h = height - pad.top - pad.bottom;
+  const allValues = stacked
+    ? labels.map((_, i) => series.reduce((s, sr) => s + (sr.values[i] || 0), 0))
+    : series.flatMap(s => s.values);
+  if (allValues.length === 0) return '';
+  const max = Math.ceil(Math.max(...allValues) * 1.15) || 1;
+  const n = labels.length;
+  const gw = w / n;
+  const barW = stacked ? Math.min(gw * 0.6, 40) : Math.min(gw / (series.length + 1), 28);
+  const fmtV = (v: number) => v >= 1e9 ? `${(v/1e9).toFixed(1)}B` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : String(Math.round(v));
+  const yScale = (v: number) => pad.top + h - (v / max) * h;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:auto;background:#fafbfc;border:1px solid #e2e8f0;border-radius:8px;">`;
+  // Grid lines
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (h / 4) * i;
+    const val = max - (max / 4) * i;
+    svg += `<line x1="${pad.left}" y1="${y}" x2="${width - pad.right}" y2="${y}" stroke="#e2e8f0" stroke-dasharray="3,3"/>`;
+    svg += `<text x="${pad.left - 6}" y="${y + 4}" text-anchor="end" font-size="9" fill="#94a3b8">${fmtV(val)}</text>`;
+  }
+  // Bars
+  labels.forEach((l, li) => {
+    const gx = pad.left + gw * li + gw / 2;
+    if (stacked) {
+      let cumY = 0;
+      series.forEach(s => {
+        const v = s.values[li] || 0;
+        const barH = (v / max) * h;
+        const y = yScale(cumY + v);
+        svg += `<rect x="${gx - barW/2}" y="${y}" width="${barW}" height="${barH}" fill="${s.color}" opacity="0.85"/>`;
+        if (barH > 14) {
+          svg += `<text x="${gx}" y="${y + barH/2 + 4}" text-anchor="middle" font-size="8" font-weight="600" fill="white">${fmtV(v)}</text>`;
+        }
+        cumY += v;
+      });
+      // Total label above
+      svg += `<text x="${gx}" y="${yScale(cumY) - 4}" text-anchor="middle" font-size="8" font-weight="700" fill="#334155">${fmtV(cumY)}</text>`;
+    } else {
+      series.forEach((s, si) => {
+        const x = gx - (series.length * barW) / 2 + si * barW;
+        const v = s.values[li] || 0;
+        const barH = (v / max) * h;
+        const y = yScale(v);
+        svg += `<rect x="${x}" y="${y}" width="${barW - 2}" height="${barH}" rx="2" fill="${s.color}" opacity="0.85"/>`;
+        svg += `<text x="${x + (barW - 2)/2}" y="${y - 4}" text-anchor="middle" font-size="7.5" font-weight="600" fill="${s.color}">${fmtV(v)}</text>`;
+      });
+    }
+    svg += `<text x="${gx}" y="${height - 12}" text-anchor="middle" font-size="9" fill="#64748b">${l}</text>`;
+  });
+  // Legend
+  let lx = pad.left;
+  series.forEach(s => {
+    svg += `<rect x="${lx}" y="${pad.top - 22}" width="12" height="10" rx="2" fill="${s.color}"/>`;
+    svg += `<text x="${lx + 16}" y="${pad.top - 14}" font-size="9" fill="#64748b">${s.name}</text>`;
+    lx += s.name.length * 5.5 + 30;
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+function svgDonutChart(segments: { label: string; value: number; color: string }[], width = 350, height = 350): string {
+  const cx = width / 2, cy = height / 2 - 20;
+  const r = Math.min(cx, cy) - 40;
+  const innerR = r * 0.55;
+  const total = segments.reduce((a, s) => a + s.value, 0);
+  if (total === 0) return '';
+  const fmtV = (v: number) => v >= 1e9 ? `${(v/1e9).toFixed(1)}B` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : String(Math.round(v));
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" style="width:100%;max-width:${width}px;height:auto;background:#fafbfc;border:1px solid #e2e8f0;border-radius:8px;">`;
+  let startAngle = -Math.PI / 2;
+  segments.forEach(seg => {
+    const angle = (seg.value / total) * 2 * Math.PI;
+    const endAngle = startAngle + angle;
+    const large = angle > Math.PI ? 1 : 0;
+    const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
+    const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+    const ix1 = cx + innerR * Math.cos(endAngle), iy1 = cy + innerR * Math.sin(endAngle);
+    const ix2 = cx + innerR * Math.cos(startAngle), iy2 = cy + innerR * Math.sin(startAngle);
+    svg += `<path d="M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${ix1} ${iy1} A${innerR} ${innerR} 0 ${large} 0 ${ix2} ${iy2} Z" fill="${seg.color}"/>`;
+    if (seg.value > 0 && angle > 0.2) {
+      const midAngle = startAngle + angle / 2;
+      const labelR = (r + innerR) / 2;
+      const lx = cx + labelR * Math.cos(midAngle);
+      const ly = cy + labelR * Math.sin(midAngle);
+      const pct = ((seg.value / total) * 100).toFixed(0);
+      svg += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="9" font-weight="700" fill="white">${pct}%</text>`;
+    }
+    startAngle = endAngle;
+  });
+  svg += `<text x="${cx}" y="${cy - 5}" text-anchor="middle" font-size="18" font-weight="700" fill="#047857">${fmtV(total)}</text>`;
+  svg += `<text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="9" fill="#64748b">Total (R$ mi)</text>`;
+  // Legend
+  let ly = height - 50;
+  let lx = 10;
+  segments.forEach(seg => {
+    if (seg.value === 0) return;
+    svg += `<rect x="${lx}" y="${ly}" width="10" height="10" rx="2" fill="${seg.color}"/>`;
+    svg += `<text x="${lx + 14}" y="${ly + 9}" font-size="8" fill="#334155">${seg.label}</text>`;
+    lx += seg.label.length * 4.5 + 25;
+    if (lx > width - 50) { lx = 10; ly += 14; }
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+function svgHBarChart(items: { label: string; value: number; color: string }[], width = 650, height?: number): string {
+  const n = items.length;
+  const rowH = 30;
+  const h = height || (n * rowH + 60);
+  const pad = { top: 10, right: 80, bottom: 10, left: 200 };
+  const w = width - pad.left - pad.right;
+  const max = Math.max(...items.map(i => i.value)) || 1;
+  const fmtV = (v: number) => v >= 1e9 ? `${(v/1e9).toFixed(1)}B` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : String(Math.round(v));
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${h}" style="width:100%;max-width:${width}px;height:auto;background:#fafbfc;border:1px solid #e2e8f0;border-radius:8px;">`;
+  items.forEach((item, i) => {
+    const y = pad.top + i * rowH + 5;
+    const barW = (item.value / max) * w;
+    svg += `<text x="${pad.left - 8}" y="${y + 16}" text-anchor="end" font-size="9" fill="#334155">${item.label.length > 30 ? item.label.slice(0,30) + '…' : item.label}</text>`;
+    svg += `<rect x="${pad.left}" y="${y + 2}" width="${barW}" height="${rowH - 8}" rx="3" fill="${item.color}" opacity="0.85"/>`;
+    svg += `<text x="${pad.left + barW + 4}" y="${y + 16}" font-size="9" font-weight="600" fill="${item.color}">${fmtV(item.value)}</text>`;
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+// ═══════════════════════════════════════
+
 function isSesai(r: any): boolean {
   const prog = (r.programa || '').toLowerCase();
   const orgao = (r.orgao || '').toUpperCase();
@@ -76,7 +212,6 @@ serve(async (req) => {
 
     console.log(`Data: ${orcamento.length} budget, ${indicadores.length} indicators, ${lacunas.length} gaps`);
 
-    // Classify
     const all = orcamento;
     const nonSesai = all.filter(r => !isSesai(r));
     const sesaiOnly = all.filter(r => isSesai(r));
@@ -89,7 +224,6 @@ serve(async (req) => {
     const sOrc = periodStats(orcOnly);
     const sExtra = periodStats(extraOrc);
 
-    // Year-by-year
     const byAno: Record<number, any[]> = {};
     all.forEach(r => { if (!byAno[r.ano]) byAno[r.ano] = []; byAno[r.ano].push(r); });
     const anos = Object.keys(byAno).map(Number).sort();
@@ -104,7 +238,6 @@ serve(async (req) => {
       };
     });
 
-    // Programs
     const byPrograma: Record<string, { orgao: string; pago: number; dotacao: number; anos: Set<number>; artigos: Set<string>; grupo: string }> = {};
     all.forEach(r => {
       if (!byPrograma[r.programa]) byPrograma[r.programa] = { orgao: r.orgao, pago: 0, dotacao: 0, anos: new Set(), artigos: new Set(), grupo: r.grupo_focal || 'geral' };
@@ -114,14 +247,11 @@ serve(async (req) => {
       (r.artigos_convencao || []).forEach((a: string) => byPrograma[r.programa].artigos.add(a));
     });
 
-    // By Grupo
     const byGrupo: Record<string, any[]> = {};
     all.forEach(r => { const g = r.grupo_focal || 'geral'; if (!byGrupo[g]) byGrupo[g] = []; byGrupo[g].push(r); });
 
-    // Orçamento Simbólico
     const simbolicos = all.filter(r => parseFloat(r.dotacao_autorizada || 0) > 100000 && parseFloat(r.pago || 0) === 0);
 
-    // Artigos ICERD mapping
     const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string> }> = {};
     all.forEach(r => {
       (r.artigos_convencao || []).forEach((a: string) => {
@@ -132,7 +262,6 @@ serve(async (req) => {
       });
     });
 
-    // Sources
     const fontes = [...new Set(all.map(r => r.fonte_dados).filter(Boolean))];
     const urls = [...new Set(all.map(r => r.url_fonte).filter(Boolean))];
 
@@ -144,12 +273,85 @@ serve(async (req) => {
 
     const dataGeracao = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
+    // ═══════════ Generate SVG Charts ═══════════
+
+    const chartEvolucao = svgBarChart(
+      evolucao.map(e => String(e.ano)),
+      [
+        { name: 'Dotação Autorizada', color: '#93c5fd', values: evolucao.map(e => e.dotacao / 1e6) },
+        { name: 'Pago', color: '#047857', values: evolucao.map(e => e.pago / 1e6) },
+      ],
+      700, 280
+    );
+
+    const maskingData = anos.map(a => {
+      const recs = byAno[a] || [];
+      return {
+        orc: recs.filter((r: any) => r.tipo_dotacao !== 'extraorcamentario').reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6,
+        extra: recs.filter((r: any) => r.tipo_dotacao === 'extraorcamentario').reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6,
+      };
+    });
+    const chartMasking = svgBarChart(
+      anos.map(String),
+      [
+        { name: 'LOA (Orçamentário)', color: '#047857', values: maskingData.map(d => d.orc) },
+        { name: 'Extraorçamentário', color: '#f97316', values: maskingData.map(d => d.extra) },
+      ],
+      700, 280, true
+    );
+
+    const grupoChartData = Object.entries(byGrupo)
+      .map(([g, recs]) => ({
+        label: grupoLabels[g] || g,
+        value: Math.round((recs as any[]).reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6),
+        color: ['#047857','#1e40af','#7c3aed','#dc2626','#eab308','#ec4899','#06b6d4','#f97316','#84cc16','#6366f1'][Object.keys(byGrupo).indexOf(g) % 10],
+      }))
+      .filter(s => s.value > 0)
+      .sort((a, b) => b.value - a.value);
+    const chartGrupo = svgDonutChart(grupoChartData, 380, 380);
+
+    const artigoChartItems = Object.entries(byArtigo)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([art, data]) => ({
+        label: art,
+        value: data.pago,
+        color: '#047857',
+      }));
+    const chartArtigos = artigoChartItems.length > 0 ? svgHBarChart(artigoChartItems, 650) : '';
+
+    // Top programs bar chart
+    const topProgs = Object.entries(byPrograma)
+      .sort(([,a], [,b]) => b.pago - a.pago)
+      .slice(0, 10)
+      .map(([prog, data]) => ({
+        label: prog.length > 35 ? prog.slice(0, 35) + '…' : prog,
+        value: data.pago,
+        color: '#1e40af',
+      }));
+    const chartTopProgs = svgHBarChart(topProgs, 700);
+
+    // ═══════════ Evolução sem SESAI ═══════════
+    const evolNS = anos.map(a => {
+      const recs = (byAno[a] || []).filter((r: any) => !isSesai(r));
+      return {
+        dotacao: recs.reduce((s: number, r: any) => s + parseFloat(r.dotacao_autorizada || 0), 0),
+        pago: recs.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0),
+      };
+    });
+    const chartEvolNS = svgBarChart(
+      anos.map(String),
+      [
+        { name: 'Dotação (sem SESAI)', color: '#93c5fd', values: evolNS.map(e => e.dotacao / 1e6) },
+        { name: 'Pago (sem SESAI)', color: '#1e40af', values: evolNS.map(e => e.pago / 1e6) },
+      ],
+      700, 260
+    );
+
     const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <title>Relatório Orçamentário Consolidado — Políticas de Igualdade Racial (2018–2025)</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#047857;--primary-dark:#065f46;--accent:#c7a82b;--success:#22c55e;--warning:#eab308;--danger:#ef4444;--text:#1a1a2e;--muted:#64748b;--bg:#f8fafc;--border:#e2e8f0;}
@@ -191,7 +393,6 @@ tr:nth-child(even){background:#f8fafc;}
 .chart-title{font-weight:600;color:var(--primary);font-size:1rem;margin-bottom:4px;}
 .chart-subtitle{font-size:.75rem;color:var(--muted);}
 .chart-source{font-size:.7rem;color:var(--muted);margin-top:12px;font-style:italic;padding-top:8px;border-top:1px solid var(--border);}
-.chart-wrapper{height:300px;position:relative;}
 .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
@@ -219,8 +420,10 @@ tr:nth-child(even){background:#f8fafc;}
 .sources-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;list-style:none;padding:0;}
 .sources-list li{font-size:.8rem;color:var(--muted);padding-left:16px;position:relative;}
 .sources-list li::before{content:"→";position:absolute;left:0;color:var(--primary);}
-@media print{body{font-size:10pt;}.hero{padding:30px 0;}.section{padding:20px 0;page-break-inside:avoid;}.chart-wrapper{height:200px;}}
+@media print{body{font-size:10pt;}.hero{padding:30px 0;}.section{padding:20px 0;page-break-inside:avoid;}}
 @media(max-width:768px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}.hero-stats{grid-template-columns:repeat(2,1fr);}}
+@page { size: A4; margin: 1.5cm; @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #64748b; } }
+@page :first { @bottom-center { content: none; } }
 </style>
 </head>
 <body>
@@ -251,9 +454,10 @@ tr:nth-child(even){background:#f8fafc;}
       <li><a href="#metodologia">Metodologia de Levantamento</a></li>
       <li><a href="#visao-geral">Visão Geral — Cards e Indicadores</a></li>
       <li><a href="#evolucao">Evolução Ano a Ano</a></li>
-      <li><a href="#resumo-comparativo">Resumo Comparativo — Dupla Perspectiva</a></li>
+      <li><a href="#resumo-comparativo">Resumo Comparativo — Tripla Perspectiva</a></li>
       <li><a href="#mascaramento">Efeito Mascaramento Extraorçamentário</a></li>
       <li><a href="#orcamento-simbolico">Orçamento Simbólico</a></li>
+      <li><a href="#top-programas">Top 10 Programas</a></li>
       <li><a href="#grupos-focais">Análise por Grupo Focal</a></li>
       <li><a href="#artigos-icerd">Cruzamento × Artigos ICERD</a></li>
       <li><a href="#cruzamento-indicadores">Cruzamento × Indicadores Sociais</a></li>
@@ -350,9 +554,14 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
   
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">Execução Orçamentária Anual</div><div class="chart-subtitle">Dotação Autorizada × Pago (milhões R$)</div></div>
-    <div class="chart-wrapper"><canvas id="evolucaoChart"></canvas></div>
+    <div class="chart-header"><div class="chart-title">Execução Orçamentária Anual — Total (com SESAI)</div><div class="chart-subtitle">Dotação Autorizada × Pago (milhões R$)</div></div>
+    ${chartEvolucao}
     <p class="chart-source"><strong>Fontes:</strong> ${fontes.slice(0,3).join(', ') || 'SIOP/Portal da Transparência'}</p>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">Evolução Sem SESAI (stricto sensu)</div><div class="chart-subtitle">Perspectiva de políticas raciais isoladas (milhões R$)</div></div>
+    ${chartEvolNS}
   </div>
 
   <div class="table-container">
@@ -380,17 +589,17 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 4. RESUMO COMPARATIVO — DUPLA PERSPECTIVA ═══════════════ -->
+<!-- ═══════════════ 4. RESUMO COMPARATIVO — TRIPLA PERSPECTIVA ═══════════════ -->
 <section class="section" id="resumo-comparativo">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">⚖️</div>
-    <div><h2 class="section-title">4. Resumo Comparativo — Dupla Perspectiva</h2>
-    <p class="section-subtitle">Total (com SESAI) vs. Políticas Raciais stricto sensu (sem SESAI)</p></div>
+    <div><h2 class="section-title">4. Resumo Comparativo — Tripla Perspectiva</h2>
+    <p class="section-subtitle">Total (com SESAI) vs. Sem SESAI vs. Apenas SESAI</p></div>
   </div>
 
   <div class="insight-card">
-    <p>🔍 <strong>Por que duas perspectivas?</strong> A SESAI (Secretaria Especial de Saúde Indígena) movimenta volumes expressivos (${fmtC(sSesai.pagoP1 + sSesai.pagoP2)} acumulados), o que pode mascarar a real evolução do investimento em políticas de igualdade racial stricto sensu.</p>
+    <p>🔍 <strong>Por que três perspectivas?</strong> A SESAI (Secretaria Especial de Saúde Indígena) movimenta volumes expressivos (${fmtC(sSesai.pagoP1 + sSesai.pagoP2)} acumulados), o que pode mascarar a real evolução do investimento em políticas de igualdade racial stricto sensu.</p>
   </div>
 
   <div class="perspective-card" style="border-color:#047857">
@@ -422,7 +631,7 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   <div class="perspective-card" style="border-color:#f97316">
-    <h3>🟠 Apenas SESAI</h3>
+    <h3>🟠 Perspectiva 3 — Apenas SESAI</h3>
     <div class="grid-3">
       <div class="stat-card"><div class="stat-card-value">${fmtC(sSesai.pagoP1)}</div><div class="stat-card-label">Pago P1</div></div>
       <div class="stat-card"><div class="stat-card-value" style="color:#166534">${fmtC(sSesai.pagoP2)}</div><div class="stat-card-label">Pago P2</div></div>
@@ -446,6 +655,11 @@ tr:nth-child(even){background:#f8fafc;}
     <p style="font-size:.9rem;color:#7c2d12;">Fundos reativos (royalties, indenizações judiciais, compensações ambientais) podem inflar a percepção de investimento público em políticas indígenas e quilombolas, enquanto a dotação orçamentária direta (LOA) permanece estagnada ou decrescente. Este relatório distingue as duas naturezas para uma análise mais precisa.</p>
   </div>
 
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">Orçamentário × Extraorçamentário por Ano (empilhado)</div><div class="chart-subtitle">Valores pagos em milhões R$</div></div>
+    ${chartMasking}
+  </div>
+
   <div class="grid-2">
     <div class="perspective-card">
       <h3>💰 Esforço do Estado (LOA)</h3>
@@ -463,11 +677,6 @@ tr:nth-child(even){background:#f8fafc;}
       </div>
       <p style="text-align:center;margin-top:8px;font-weight:700;color:${sExtra.varPago >= 0 ? '#166534' : '#991b1b'}">Variação: ${sExtra.varPago >= 0 ? '+' : ''}${sExtra.varPago.toFixed(1)}%</p>
     </div>
-  </div>
-
-  <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">Orçamentário × Extraorçamentário por Ano</div></div>
-    <div class="chart-wrapper"><canvas id="maskingChart"></canvas></div>
   </div>
 </div>
 </section>
@@ -501,19 +710,34 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 7. GRUPOS FOCAIS ═══════════════ -->
-<section class="section section-alt" id="grupos-focais">
+<!-- ═══════════════ 7. TOP 10 PROGRAMAS ═══════════════ -->
+<section class="section section-alt" id="top-programas">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">🏆</div>
+    <div><h2 class="section-title">7. Top 10 Programas por Valor Pago</h2>
+    <p class="section-subtitle">Programas com maior execução orçamentária acumulada</p></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">Ranking dos Programas (R$ pago total)</div></div>
+    ${chartTopProgs}
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ 8. GRUPOS FOCAIS ═══════════════ -->
+<section class="section" id="grupos-focais">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">👥</div>
-    <div><h2 class="section-title">7. Distribuição por Grupo Focal</h2>
+    <div><h2 class="section-title">8. Distribuição por Grupo Focal</h2>
     <p class="section-subtitle">Orçamento destinado a cada grupo populacional — P1 vs P2</p></div>
   </div>
 
   <div class="grid-2">
     <div class="chart-container">
-      <div class="chart-header"><div class="chart-title">Distribuição por Grupo Focal</div><div class="chart-subtitle">Total pago (2018–2025)</div></div>
-      <div class="chart-wrapper"><canvas id="grupoChart"></canvas></div>
+      <div class="chart-header"><div class="chart-title">Distribuição por Grupo Focal</div><div class="chart-subtitle">Total pago 2018–2025 (R$ milhões)</div></div>
+      ${chartGrupo}
     </div>
 
     <div class="table-container">
@@ -534,16 +758,21 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 8. ARTIGOS ICERD ═══════════════ -->
-<section class="section" id="artigos-icerd">
+<!-- ═══════════════ 9. ARTIGOS ICERD ═══════════════ -->
+<section class="section section-alt" id="artigos-icerd">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">⚖️</div>
-    <div><h2 class="section-title">8. Cruzamento Orçamentário × Artigos ICERD</h2>
+    <div><h2 class="section-title">9. Cruzamento Orçamentário × Artigos ICERD</h2>
     <p class="section-subtitle">Mapeamento dos programas aos artigos da Convenção Internacional</p></div>
   </div>
 
   ${Object.keys(byArtigo).length > 0 ? `
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD (R$)</div></div>
+    ${chartArtigos}
+  </div>
+
   <div class="table-container">
     <div class="table-header"><h3>Investimento por Artigo da Convenção</h3><p>Mapeamento financeiro dos artigos I–VII da ICERD</p></div>
     <table>
@@ -556,31 +785,26 @@ tr:nth-child(even){background:#f8fafc;}
       </tbody>
     </table>
   </div>
-
-  <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD</div></div>
-    <div class="chart-wrapper"><canvas id="artigoChart"></canvas></div>
-  </div>
-  ` : `<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD. Recomenda-se a classificação temática dos programas.</p></div>`}
+  ` : `<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD.</p></div>`}
 </div>
 </section>
 
-<!-- ═══════════════ 9. CRUZAMENTO COM INDICADORES ═══════════════ -->
-<section class="section section-alt" id="cruzamento-indicadores">
+<!-- ═══════════════ 10. CRUZAMENTO INDICADORES ═══════════════ -->
+<section class="section" id="cruzamento-indicadores">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">🔗</div>
-    <div><h2 class="section-title">9. Cruzamento: Orçamento × Indicadores Sociais</h2>
-    <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores da população negra</p></div>
+    <div><h2 class="section-title">10. Cruzamento: Orçamento × Indicadores Sociais</h2>
+    <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores</p></div>
   </div>
 
   <div class="table-container">
-    <div class="table-header"><h3>Indicadores Socioeconômicos × Execução Orçamentária</h3><p>Primeiros 15 indicadores do sistema</p></div>
+    <div class="table-header"><h3>Indicadores Socioeconômicos × Execução Orçamentária</h3><p>${indicadores.length} indicadores no sistema</p></div>
     <table>
       <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
       <tbody>
-      ${indicadores.slice(0, 15).map((ind: any) =>
-        `<tr><td><strong>${ind.nome}</strong></td><td>${ind.categoria}</td><td class="${ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : ''}">${ind.tendencia || '—'}</td><td style="font-size:.8rem">${ind.fonte}</td></tr>`
+      ${indicadores.slice(0, 20).map((ind: any) =>
+        `<tr><td><strong>${ind.nome}</strong></td><td>${eixoLabels[ind.categoria] || ind.categoria}</td><td class="${ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : ''}">${ind.tendencia || '—'}</td><td style="font-size:.8rem">${ind.fonte}</td></tr>`
       ).join('')}
       </tbody>
     </table>
@@ -595,12 +819,12 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 10. CONCLUSÃO ANALÍTICA ═══════════════ -->
-<section class="section" id="conclusao">
+<!-- ═══════════════ 11. CONCLUSÃO ANALÍTICA ═══════════════ -->
+<section class="section section-alt" id="conclusao">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">📝</div>
-    <div><h2 class="section-title">10. Conclusão Analítica</h2>
+    <div><h2 class="section-title">11. Conclusão Analítica</h2>
     <p class="section-subtitle">Síntese sobre a evolução das políticas raciais sob a ótica orçamentária</p></div>
   </div>
 
@@ -618,8 +842,8 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 11. FONTES ═══════════════ -->
-<section class="section section-alt" id="fontes">
+<!-- ═══════════════ 12. FONTES ═══════════════ -->
+<section class="section" id="fontes">
 <div class="container">
   <div class="sources-section">
     <h4>📚 Fontes de Dados e Referências</h4>
@@ -635,7 +859,7 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 12. ANEXO ═══════════════ -->
+<!-- ═══════════════ 13. ANEXO ═══════════════ -->
 <section class="section" id="anexo">
 <div class="container">
   <div class="section-header">
@@ -665,7 +889,6 @@ tr:nth-child(even){background:#f8fafc;}
     </table>
   </div>
 
-  <!-- Detalhamento por Ação × Ano -->
   <div class="table-container">
     <div class="table-header"><h3>Detalhamento — Ação × Ano</h3><p>${all.length} registros completos</p></div>
     <table>
@@ -691,7 +914,6 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ FOOTER ═══════════════ -->
 <footer class="footer">
 <div class="container footer-content">
   <p><strong>Relatório Orçamentário Consolidado — Políticas de Igualdade Racial (2018–2025)</strong></p>
@@ -701,90 +923,6 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </footer>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // 1. Evolução Anual (dual axis)
-  const evolCtx = document.getElementById('evolucaoChart');
-  if (evolCtx) {
-    new Chart(evolCtx, {
-      type: 'bar',
-      data: {
-        labels: ${JSON.stringify(evolucao.map(e => e.ano))},
-        datasets: [
-          { label: 'Dotação Autorizada', data: ${JSON.stringify(evolucao.map(e => e.dotacao / 1e6))}, backgroundColor: '#bfdbfe', order: 2 },
-          { label: 'Pago', data: ${JSON.stringify(evolucao.map(e => e.pago / 1e6))}, backgroundColor: '#047857', order: 1 },
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true, title: { display: true, text: 'Milhões (R$)' } } }
-      }
-    });
-  }
-
-  // 2. Masking chart
-  const maskCtx = document.getElementById('maskingChart');
-  if (maskCtx) {
-    const maskData = ${JSON.stringify(anos.map(a => {
-      const recs = byAno[a] || [];
-      return {
-        ano: a,
-        orc: recs.filter((r: any) => r.tipo_dotacao !== 'extraorcamentario').reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6,
-        extra: recs.filter((r: any) => r.tipo_dotacao === 'extraorcamentario').reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6,
-      };
-    }))};
-    new Chart(maskCtx, {
-      type: 'bar',
-      data: {
-        labels: maskData.map(d => d.ano),
-        datasets: [
-          { label: 'LOA (Orçamentário)', data: maskData.map(d => d.orc), backgroundColor: '#047857', stack: 's' },
-          { label: 'Extraorçamentário', data: maskData.map(d => d.extra), backgroundColor: '#f97316', stack: 's' },
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } },
-        scales: { y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Milhões (R$)' } }, x: { stacked: true } }
-      }
-    });
-  }
-
-  // 3. Grupo focal doughnut
-  const grupoData = ${JSON.stringify(Object.entries(byGrupo).map(([g, recs]) => ({
-    label: grupoLabels[g] || g,
-    value: (recs as any[]).reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0) / 1e6
-  })))};
-  const grupoCtx = document.getElementById('grupoChart');
-  if (grupoCtx) {
-    new Chart(grupoCtx, {
-      type: 'doughnut',
-      data: {
-        labels: grupoData.map(g => g.label),
-        datasets: [{ data: grupoData.map(g => g.value), backgroundColor: ['#047857','#1e40af','#7c3aed','#dc2626','#eab308','#ec4899','#06b6d4','#f97316','#84cc16','#6366f1'] }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 } } } } }
-    });
-  }
-
-  // 4. Artigos ICERD bar
-  const artigoData = ${JSON.stringify(Object.entries(byArtigo).sort(([a], [b]) => a.localeCompare(b)).map(([art, data]) => ({ label: art, pago: data.pago / 1e6, dotacao: data.dotacao / 1e6 })))};
-  const artCtx = document.getElementById('artigoChart');
-  if (artCtx && artigoData.length > 0) {
-    new Chart(artCtx, {
-      type: 'bar',
-      data: {
-        labels: artigoData.map(a => a.label),
-        datasets: [
-          { label: 'Dotação', data: artigoData.map(a => a.dotacao), backgroundColor: '#bfdbfe' },
-          { label: 'Pago', data: artigoData.map(a => a.pago), backgroundColor: '#047857' },
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { position: 'bottom' } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Milhões (R$)' } } } }
-    });
-  }
-});
-</script>
 </body>
 </html>`;
 
