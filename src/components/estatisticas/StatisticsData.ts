@@ -780,6 +780,15 @@ export const povosTradicionais = {
 // As faixas "Vulnerável", "Classe média" e "Alta renda" da versão anterior eram FABRICADAS — removidas.
 // Indígenas: SIS NÃO publica dados de pobreza para indígenas. Removido.
 export const classePorRaca = [
+  // ---- DADOS 2018 (SIS 2019) ----
+  // AUDITORIA 26/03/2026: Série histórica adicionada conforme Tabela 2.17 SIS/IBGE
+  { faixa: 'Pobreza 2018 (< US$6,85/dia)', branca: 21.9, parda: null, preta: null, total: null, ano: 2018, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 42.3 },
+  // ---- DADOS 2019 (SIS 2020) ----
+  { faixa: 'Pobreza 2019 (< US$6,85/dia)', branca: 20.6, parda: null, preta: null, total: null, ano: 2019, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 41.6 },
+  // ---- DADOS 2020 (SIS 2021) ----
+  { faixa: 'Pobreza 2020 (< US$6,85/dia)', branca: 20.3, parda: null, preta: null, total: null, ano: 2020, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 39.3 },
+  // ---- DADOS 2021 (SIS 2022) ----
+  { faixa: 'Pobreza 2021 (< US$6,85/dia)', branca: 24.6, parda: null, preta: null, total: null, ano: 2021, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 46.2 },
   // ---- DADOS 2022 (SIS 2023) ----
   // VERIFICADO: SIS/IBGE 2023 (dados 2022) — Agência IBGE 06/12/2023
   // "5,9% extremamente pobres" e "31,6% pobres" (total). Pretos/pardos: 7,7% EP, 40,0% P. Brancos: 3,5% EP, 21,0% P.
