@@ -291,7 +291,7 @@ export const atlasViolencia2025 = {
     percentualVitimas: 47.8,
     ano: 2023,
     percentualNegrosHomens: null as number | null, // REMOVIDO — dado não verificável no Atlas 2025
-    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte: 'Atlas da Violência 2025, p. 26 (IPEA/FBSP)',
   },
   // IVJ-N: Jovens negros têm risco 2x maior de homicídio que jovens brancos (2021)
   ivjn: {
@@ -299,7 +299,8 @@ export const atlasViolencia2025 = {
     riscoRelativo2017: 1.9,
     ano: 2021,
     riscoSuperiorNegro: 3.0, // entre jovens com ensino superior, risco até 3x maior para negros
-    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte: 'Atlas da Violência 2025, p. 74 (IPEA/FBSP)',
+    url: 'https://g1.globo.com/saude/noticia/2025/06/17/atlas-da-violencia-2025.ghtml',
   },
   fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
   link: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf',
@@ -595,7 +596,7 @@ export const disparidadesPcd1459 = [
 //   Raça/cor (57 casos com dados): 70% negras, ~28% brancas, ~2% indígenas (Dossiê 2026 p.66)
 //   Fonte: Revista Afirmativa (revistaafirmativa.com.br/9a-edicao-do-dossie-marsha-trans/)
 //   Média histórica 2017-2025: 77% negras, 22% brancas, 1% indígenas (Dossiê 2026)
-// Fonte ÚNICA: Dossiê ANTRA 2026 — série histórica consolidada (p.30, p.66).
+// Fonte ÚNICA: Dossiê ANTRA 2026 — série histórica consolidada (p.60, p.66).
 // Todos os dados de assassinatos e perfil racial extraídos exclusivamente do Dossiê 2026.
 // URL: https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf
 // Confirmação: G1, CNN, Poder360, Revista Afirmativa (26/01/2026).
@@ -779,6 +780,15 @@ export const povosTradicionais = {
 // As faixas "Vulnerável", "Classe média" e "Alta renda" da versão anterior eram FABRICADAS — removidas.
 // Indígenas: SIS NÃO publica dados de pobreza para indígenas. Removido.
 export const classePorRaca = [
+  // ---- DADOS 2018 (SIS 2019) ----
+  // AUDITORIA 26/03/2026: Série histórica adicionada conforme Tabela 2.17 SIS/IBGE
+  { faixa: 'Pobreza 2018 (< US$6,85/dia)', branca: 21.9, parda: null, preta: null, total: null, ano: 2018, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 42.3 },
+  // ---- DADOS 2019 (SIS 2020) ----
+  { faixa: 'Pobreza 2019 (< US$6,85/dia)', branca: 20.6, parda: null, preta: null, total: null, ano: 2019, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 41.6 },
+  // ---- DADOS 2020 (SIS 2021) ----
+  { faixa: 'Pobreza 2020 (< US$6,85/dia)', branca: 20.3, parda: null, preta: null, total: null, ano: 2020, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 39.3 },
+  // ---- DADOS 2021 (SIS 2022) ----
+  { faixa: 'Pobreza 2021 (< US$6,85/dia)', branca: 24.6, parda: null, preta: null, total: null, ano: 2021, fonte: 'SIS/IBGE Tabela 2.17', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html', pretosOuPardos: 46.2 },
   // ---- DADOS 2022 (SIS 2023) ----
   // VERIFICADO: SIS/IBGE 2023 (dados 2022) — Agência IBGE 06/12/2023
   // "5,9% extremamente pobres" e "31,6% pobres" (total). Pretos/pardos: 7,7% EP, 40,0% P. Brancos: 3,5% EP, 21,0% P.
