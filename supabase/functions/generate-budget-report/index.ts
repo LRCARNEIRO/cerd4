@@ -518,30 +518,80 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 2. VISÃO GERAL ═══════════════ -->
+<!-- ═══════════════ 2. VISÃO GERAL — QUADRO EXECUTIVO ═══════════════ -->
 <section class="section" id="visao-geral">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">📋</div>
-    <div><h2 class="section-title">2. Visão Geral</h2>
-    <p class="section-subtitle">Panorama consolidado da execução orçamentária</p></div>
+    <div><h2 class="section-title">2. Quadro Executivo — Visão Geral</h2>
+    <p class="section-subtitle">Panorama consolidado da execução orçamentária com destaques</p></div>
   </div>
 
-  <div class="grid-4">
-    <div class="stat-card"><div class="stat-card-value">${fmtC(totalDot)}</div><div class="stat-card-label">Dotação Total</div></div>
-    <div class="stat-card"><div class="stat-card-value" style="color:#166534">${fmtC(totalPago)}</div><div class="stat-card-label">Total Pago</div></div>
-    <div class="stat-card"><div class="stat-card-value">${execGeral}%</div><div class="stat-card-label">Execução Geral</div></div>
-    <div class="stat-card"><div class="stat-card-value">${orcOnly.length}</div><div class="stat-card-label">Registros Orçamentários</div></div>
+  <!-- KPI Tags Row 1 -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #22c55e;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#166534;font-weight:600;margin-bottom:4px;">💰 Dotação Total</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#166534;">${fmtC(totalDot)}</div>
+      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">LOA + Créditos Adicionais</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #22c55e;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#166534;font-weight:600;margin-bottom:4px;">✅ Total Pago</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#166534;">${fmtC(totalPago)}</div>
+      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">Transferência efetiva</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#1e40af;font-weight:600;margin-bottom:4px;">📊 Execução Geral</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#1e40af;">${execGeral}%</div>
+      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">Pago ÷ Dotação</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:2px solid #94a3b8;border-radius:12px;padding:20px;text-align:center;">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#475569;font-weight:600;margin-bottom:4px;">📁 Registros</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#475569;">${orcOnly.length}</div>
+      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">Ação × Ano (orçamentário)</div>
+    </div>
   </div>
-  <div class="grid-3" style="margin-top:16px;">
-    <div class="stat-card"><div class="stat-card-value">${fmtC(sAll.pagoP1)}</div><div class="stat-card-label">Pago 2018–2022 (P1)</div></div>
-    <div class="stat-card"><div class="stat-card-value" style="color:#166534">${fmtC(sAll.pagoP2)}</div><div class="stat-card-label">Pago 2023–2025 (P2)</div></div>
-    <div class="stat-card"><div class="stat-card-value" style="color:${sAll.varPago >= 0 ? '#166534' : '#991b1b'}">${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</div><div class="stat-card-label">Variação Pago</div></div>
+
+  <!-- KPI Tags Row 2: Períodos -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:16px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#991b1b;font-weight:600;">Pago 2018–2022 (P1)</div>
+      <div style="font-size:1.3rem;font-weight:800;color:#991b1b;margin:4px 0;">${fmtC(sAll.pagoP1)}</div>
+      <div style="font-size:.65rem;color:#64748b;">5 anos · Governo anterior</div>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#166534;font-weight:600;">Pago 2023–2025 (P2)</div>
+      <div style="font-size:1.3rem;font-weight:800;color:#166534;margin:4px 0;">${fmtC(sAll.pagoP2)}</div>
+      <div style="font-size:.65rem;color:#64748b;">3 anos · Governo atual</div>
+    </div>
+    <div style="background:${sAll.varPago >= 0 ? '#f0fdf4' : '#fef2f2'};border:2px solid ${sAll.varPago >= 0 ? '#22c55e' : '#ef4444'};border-radius:10px;padding:16px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:${sAll.varPago >= 0 ? '#166534' : '#991b1b'};font-weight:600;">Variação Pago</div>
+      <div style="font-size:1.3rem;font-weight:800;color:${sAll.varPago >= 0 ? '#166534' : '#991b1b'};margin:4px 0;">${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</div>
+      <div style="font-size:.65rem;color:#64748b;">P2 vs P1 (acumulado)</div>
+    </div>
   </div>
-  <div class="grid-3" style="margin-top:16px;">
-    <div class="stat-card"><div class="stat-card-value">${fmtC(sAll.dotP1)}</div><div class="stat-card-label">Dotação 2018–2022</div></div>
-    <div class="stat-card"><div class="stat-card-value" style="color:#166534">${fmtC(sAll.dotP2)}</div><div class="stat-card-label">Dotação 2023–2025</div></div>
-    <div class="stat-card"><div class="stat-card-value" style="color:${sAll.varDot >= 0 ? '#166534' : '#991b1b'}">${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</div><div class="stat-card-label">Variação Dotação</div></div>
+
+  <!-- KPI Tags Row 3: Dotação -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#475569;font-weight:600;">Dotação 2018–2022</div>
+      <div style="font-size:1.2rem;font-weight:700;color:#475569;margin:4px 0;">${fmtC(sAll.dotP1)}</div>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#475569;font-weight:600;">Dotação 2023–2025</div>
+      <div style="font-size:1.2rem;font-weight:700;color:#475569;margin:4px 0;">${fmtC(sAll.dotP2)}</div>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;text-align:center;">
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:${sAll.varDot >= 0 ? '#166534' : '#991b1b'};font-weight:600;">Variação Dotação</div>
+      <div style="font-size:1.2rem;font-weight:700;color:${sAll.varDot >= 0 ? '#166534' : '#991b1b'};margin:4px 0;">${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</div>
+    </div>
+  </div>
+
+  <!-- Análise textual do Quadro Executivo -->
+  <div style="background:white;border:2px solid var(--primary);border-radius:12px;padding:20px;line-height:1.7;">
+    <h4 style="color:var(--primary);margin-bottom:8px;">📝 Análise do Quadro Executivo</h4>
+    <p style="font-size:.9rem;margin-bottom:8px;">O volume total de recursos pagos (<strong>${fmtC(totalPago)}</strong>) representa <strong>${execGeral}%</strong> da dotação autorizada (<strong>${fmtC(totalDot)}</strong>), indicando ${Number(execGeral) > 80 ? 'uma taxa de execução robusta, acima da média federal' : Number(execGeral) > 60 ? 'uma execução moderada, com espaço para melhoria na absorção dos recursos autorizados' : 'uma taxa de execução preocupantemente baixa, sugerindo entraves na implementação das políticas'}.</p>
+    <p style="font-size:.9rem;margin-bottom:8px;">A variação entre P1 e P2 (<strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> no pago) deve ser contextualizada: P1 compreende <strong>5 anos</strong> de execução enquanto P2 abrange <strong>3 anos</strong> — portanto, a ${sAll.varPago > 0 ? 'expansão é proporcionalmente ainda mais expressiva quando anualizada' : 'contração reflete uma reversão real na priorização orçamentária'}.</p>
+    <p style="font-size:.9rem;">Na perspectiva de dotação autorizada, a variação de <strong>${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</strong> ${Math.abs(sAll.varDot - sAll.varPago) > 15 ? 'apresenta divergência significativa em relação à variação do pago, indicando que a capacidade de execução não acompanhou a ampliação orçamentária prevista na LOA' : 'acompanha de perto a variação do pago, demonstrando coerência entre planejamento e execução'}.</p>
   </div>
 </div>
 </section>
@@ -900,13 +950,30 @@ tr:nth-child(even){background:#f8fafc;}
     const insights: string[] = [];
     crossRows.forEach(r => {
       if (r.pagoEixo > 0 && r.tendPiora > r.tendMelhora && r.tendPiora > 0) {
-        insights.push('⚠️ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos, mas ' + r.tendPiora + ' indicador(es) em piora — investimento pode não estar gerando retorno social.');
+        insights.push('⚠️ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos, mas ' + r.tendPiora + ' indicador(es) em piora contra ' + r.tendMelhora + ' em melhora — investimento pode não estar gerando retorno social proporcional. Recomenda-se análise qualitativa dos programas.');
       }
       if (r.pagoEixo === 0 && r.lacunasTotal > 0) {
-        insights.push('🔴 <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + r.lacunasTotal + ' lacuna(s) ONU sem orçamento vinculado identificado.');
+        insights.push('🔴 <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + r.lacunasTotal + ' lacuna(s) ONU sem orçamento vinculado. Configura potencial descumprimento dos Artigos 2 e 5 da ICERD.');
+      }
+      if (r.pagoEixo > 0 && r.tendMelhora > r.tendPiora && r.tendMelhora > 0) {
+        insights.push('✅ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos com ' + r.tendMelhora + ' indicador(es) em melhora — correlação positiva entre investimento e resultado social.');
       }
     });
-    return insights.length > 0 ? insights.map(i => '<div class="insight-card"><p>' + i + '</p></div>').join('') : '';
+
+    const totalMelhora = crossRows.reduce((s, r) => s + r.tendMelhora, 0);
+    const totalPioraInd = crossRows.reduce((s, r) => s + r.tendPiora, 0);
+    const totalLac = crossRows.reduce((s, r) => s + r.lacunasTotal, 0);
+    const totalCumpr = crossRows.reduce((s, r) => s + r.lacunasCumpridas, 0);
+    const pctCumprGeral = totalLac > 0 ? Math.round(totalCumpr / totalLac * 100) : 0;
+
+    const analysisHtml = '<div style="background:white;border:2px solid var(--primary);border-radius:12px;padding:20px;margin-top:20px;line-height:1.7;">' +
+      '<h4 style="color:var(--primary);margin-bottom:10px;">📝 Análise Integrada do Cruzamento</h4>' +
+      '<p style="font-size:.9rem;margin-bottom:8px;">O cruzamento entre os <strong>' + crossRows.length + ' eixos temáticos</strong> monitorados revela um panorama ' + (totalMelhora > totalPioraInd ? 'predominantemente positivo' : 'com desafios significativos') + ': <strong>' + totalMelhora + ' indicadores</strong> em melhora contra <strong>' + totalPioraInd + ' em piora</strong>, sugerindo que ' + (totalMelhora > totalPioraInd ? 'o investimento público está, em média, gerando retorno social mensurável.' : 'os investimentos não estão se convertendo adequadamente em melhoria dos indicadores sociais.') + '</p>' +
+      '<p style="font-size:.9rem;margin-bottom:8px;">No <strong>cumprimento das recomendações ONU</strong>, ' + pctCumprGeral + '% das ' + totalLac + ' lacunas encontram-se em cumprimento ou andamento (' + totalCumpr + '/' + totalLac + '). ' + (pctCumprGeral > 70 ? 'Este patamar demonstra engajamento institucional robusto.' : pctCumprGeral > 40 ? 'Embora haja avanços, a taxa indica necessidade de aceleração.' : 'Revela lacunas estruturais na implementação.') + '</p>' +
+      '<p style="font-size:.9rem;">A correlação entre <strong>volume orçamentário</strong> e <strong>resultado nos indicadores</strong> não é linear — fatores como capacidade de gestão, focalização e continuidade das políticas determinam a eficácia do gasto público racial.</p>' +
+      '</div>';
+
+    return (insights.length > 0 ? insights.map(i => '<div class="insight-card"><p>' + i + '</p></div>').join('') : '') + analysisHtml;
   })()}`;
   })()}
 </div>
