@@ -68,9 +68,9 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'Escolaridade não protege (mulheres negras)',
-      indicador: `${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}% de IA mod.+grave mesmo c/ 8+ anos estudo (vs ${chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados}% homens brancos)`,
+      indicador: `${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}% de IA mod.+grave mesmo c/ 8+ anos estudo (vs ${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresBrancasEscolarizadas}% brancas)`,
       valor: chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas,
-      referencia: chefiaFamiliarRacaGenero.iaModeradaGraveHomensBrancosEscolarizados,
+      referencia: chefiaFamiliarRacaGenero.iaModeradaGraveMulheresBrancasEscolarizadas,
       unidade: '%',
       fonte: 'Fiocruz/DSBR 2023',
       url: fiocruzUrl,
