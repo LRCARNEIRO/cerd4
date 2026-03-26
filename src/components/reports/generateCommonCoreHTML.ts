@@ -274,7 +274,51 @@ export function generateCommonCoreHTML(
       <div class="data-card">
         <div class="data-card-value" style="color:#ef4444">${(eco2024.rendaMediaBranca / eco2024.rendaMediaNegra).toFixed(2)}x</div>
         <div class="data-card-label">Razão renda branca/negra</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5cm;margin:0.5cm 0;">
+      <div class="chart-inline">
+        <h4 style="font-size:10pt;">Renda Média por Raça (2018→2024)</h4>
+        ${svgLineChart({
+          label: indicadoresSocioeconomicos.map((d: any) => String(d.ano)).join(','),
+          series: [
+            { name: 'Negra (R$)', color: '#dc2626', values: indicadoresSocioeconomicos.map((d: any) => d.rendaMediaNegra) },
+            { name: 'Branca (R$)', color: '#3b82f6', values: indicadoresSocioeconomicos.map((d: any) => d.rendaMediaBranca) },
+          ]
+        }, 400, 200)}
       </div>
+      <div class="chart-inline">
+        <h4 style="font-size:10pt;">Segurança — Vítimas Negras (%)</h4>
+        ${svgLineChart({
+          label: segurancaPublica.map((d: any) => String(d.ano)).join(','),
+          series: [
+            { name: 'Homicídio (%)', color: '#dc2626', values: segurancaPublica.map((d: any) => d.percentualVitimasNegras) },
+          ]
+        }, 400, 200)}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5cm;margin:0.5cm 0;">
+      <div class="chart-inline">
+        <h4 style="font-size:10pt;">Educação — Analfabetismo e Ensino Superior</h4>
+        ${svgLineChart({
+          label: educacaoSerieHistorica.map((d: any) => String(d.ano)).join(','),
+          series: [
+            { name: 'Analfab. Negro', color: '#dc2626', values: educacaoSerieHistorica.map((d: any) => d.analfabetismoNegro) },
+            { name: 'Superior Negro', color: '#16a34a', values: educacaoSerieHistorica.map((d: any) => d.superiorNegroPercent) },
+          ]
+        }, 400, 200)}
+      </div>
+      <div class="chart-inline">
+        <h4 style="font-size:10pt;">Saúde Materna — Mort. por 100mil NV</h4>
+        ${svgLineChart({
+          label: saudeSerieHistorica.map((d: any) => String(d.ano)).join(','),
+          series: [
+            { name: 'Negra', color: '#dc2626', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaNegra) },
+            { name: 'Branca', color: '#3b82f6', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaBranca) },
+          ]
+        }, 400, 200)}
+      </div>
+    </div>
       <div class="data-card">
         <div class="data-card-value">${eco2024.desempregoNegro}%</div>
         <div class="data-card-label">Desemprego negro</div>
