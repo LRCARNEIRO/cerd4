@@ -48,6 +48,7 @@ import {
 import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
 import { prepareHtmlPreview } from '@/utils/reportPreview';
+import { toast } from 'sonner';
 
 // Safe number formatter — prevents null/undefined crashes
 function safeNum(n: any): string {
@@ -736,6 +737,10 @@ export function StatisticsInventoryReport() {
       } else {
         openHtmlPreview(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV', previewWindow);
       }
+    } catch (error) {
+      console.error('Erro ao exportar relatório completo da Base Estatística:', error);
+      toast.error('Falha ao gerar o relatório de Base Estatística');
+      previewWindow?.close();
     } finally {
       setGenerating(null);
     }
@@ -754,6 +759,10 @@ export function StatisticsInventoryReport() {
       } else {
         openHtmlPreview(html, 'Inventario-Base-Estatistica-CERD-IV', previewWindow);
       }
+    } catch (error) {
+      console.error('Erro ao exportar inventário da Base Estatística:', error);
+      toast.error('Falha ao gerar o inventário da Base Estatística');
+      previewWindow?.close();
     } finally {
       setGenerating(null);
     }
