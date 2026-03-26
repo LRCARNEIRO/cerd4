@@ -1,10 +1,14 @@
 import { toCanvas } from 'html-to-image';
 import {
   Document as DocxDocument,
+  Footer,
   ImageRun,
   Packer,
   PageBreak,
+  PageNumber,
   Paragraph,
+  TextRun,
+  AlignmentType,
 } from 'docx';
 
 const A4_PAGE = {
@@ -146,6 +150,20 @@ async function buildDocxFromSlices(slices: CanvasSlice[], fileName: string) {
               left: A4_PAGE.margin,
             },
           },
+        },
+        footers: {
+          default: new Footer({
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [
+                  new TextRun({ children: [PageNumber.CURRENT], font: 'Calibri', size: 18, color: '888888' }),
+                  new TextRun({ text: ' / ', font: 'Calibri', size: 18, color: '888888' }),
+                  new TextRun({ children: [PageNumber.TOTAL_PAGES], font: 'Calibri', size: 18, color: '888888' }),
+                ],
+              }),
+            ],
+          }),
         },
         children,
       },
