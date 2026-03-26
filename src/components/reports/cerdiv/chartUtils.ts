@@ -119,6 +119,14 @@ export function svgDonutChart(
     const ix1 = cx + innerR * Math.cos(endAngle), iy1 = cy + innerR * Math.sin(endAngle);
     const ix2 = cx + innerR * Math.cos(startAngle), iy2 = cy + innerR * Math.sin(startAngle);
     svg += `<path d="M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${ix1} ${iy1} A${innerR} ${innerR} 0 ${large} 0 ${ix2} ${iy2} Z" fill="${seg.color}"/>`;
+    // Value label on segment midpoint
+    if (seg.value > 0) {
+      const midAngle = startAngle + angle / 2;
+      const labelR = (r + innerR) / 2;
+      const lx = cx + labelR * Math.cos(midAngle);
+      const ly = cy + labelR * Math.sin(midAngle);
+      svg += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="white">${seg.value}</text>`;
+    }
     startAngle = endAngle;
   });
   // Center text
