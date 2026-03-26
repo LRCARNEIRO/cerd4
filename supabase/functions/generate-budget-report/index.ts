@@ -1107,12 +1107,121 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   <div class="methodology-box">
-    <h4>Fluxograma de Levantamento</h4>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;text-align:center;">
-      ${['1. PPAs\nAgendas\nTransversais', '2. Subfunção\n422', '3. Órgãos\nMIR/MPI', '4. SESAI\n20YP/7684', '5. FUNAI\nINCRA', '6. Filtro\nKeywords', '7. SIOP\nManual'].map((step, i) => 
-        `<div style="background:${i < 4 ? '#dcfce7' : i < 6 ? '#dbeafe' : '#fef3c7'};border:1px solid ${i < 4 ? '#86efac' : i < 6 ? '#93c5fd' : '#fbbf24'};border-radius:8px;padding:10px 6px;font-size:.7rem;line-height:1.3;white-space:pre-line;">${step}</div>`
-      ).join('<div style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#94a3b8;">→</div>').replace(/(→<\/div>)(<div style="display:flex)/g, '$1$2')}
-    </div>
+    <h4>Fluxograma de Levantamento — 7 Camadas + 2 Passos Complementares</h4>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" style="width:100%;max-width:900px;height:auto;margin:16px auto;display:block;">
+      <!-- Title -->
+      <text x="450" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">Metodologia de Coleta Orçamentária Federal — Políticas de Igualdade Racial (2018–2025)</text>
+      
+      <!-- Layer 1: PPAs + Agendas -->
+      <rect x="10" y="45" width="180" height="70" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="100" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">Camada 1</text>
+      <text x="100" y="80" text-anchor="middle" font-size="9" fill="#166534">PPAs Focais + Agendas</text>
+      <text x="100" y="93" text-anchor="middle" font-size="8" fill="#15803d">5804, 5803, 5802, 5136</text>
+      <text x="100" y="105" text-anchor="middle" font-size="8" fill="#15803d">+ 14 Agendas Transversais</text>
+      
+      <!-- Arrow 1→2 -->
+      <line x1="190" y1="80" x2="210" y2="80" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Layer 2: Subfunção 422 -->
+      <rect x="210" y="45" width="140" height="70" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="280" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">Camada 2</text>
+      <text x="280" y="80" text-anchor="middle" font-size="9" fill="#166534">Subfunção 422</text>
+      <text x="280" y="93" text-anchor="middle" font-size="8" fill="#15803d">Dir. Individuais,</text>
+      <text x="280" y="105" text-anchor="middle" font-size="8" fill="#15803d">Coletivos e Difusos</text>
+      
+      <!-- Arrow 2→3 -->
+      <line x1="350" y1="80" x2="370" y2="80" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Layer 3: Órgãos -->
+      <rect x="370" y="45" width="140" height="70" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+      <text x="440" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">Camada 3</text>
+      <text x="440" y="80" text-anchor="middle" font-size="9" fill="#166534">Órgãos MIR/MPI</text>
+      <text x="440" y="93" text-anchor="middle" font-size="8" fill="#15803d">67000 (MIR) + 92000 (MPI)</text>
+      <text x="440" y="105" text-anchor="middle" font-size="8" fill="#15803d">Inclusão integral</text>
+      
+      <!-- Arrow 3→4 -->
+      <line x1="510" y1="80" x2="530" y2="80" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Layer 4: SESAI -->
+      <rect x="530" y="45" width="140" height="70" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="600" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">Camada 4</text>
+      <text x="600" y="80" text-anchor="middle" font-size="9" fill="#92400e">SESAI (Saúde Indígena)</text>
+      <text x="600" y="93" text-anchor="middle" font-size="8" fill="#a16207">Ações 20YP + 7684</text>
+      <text x="600" y="105" text-anchor="middle" font-size="8" fill="#a16207">~R$ 1,3-1,5 bi/ano</text>
+      
+      <!-- Arrow 4→5 -->
+      <line x1="670" y1="80" x2="690" y2="80" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Layer 5: FUNAI/INCRA -->
+      <rect x="690" y="45" width="190" height="70" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="785" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1e40af">Camada 5</text>
+      <text x="785" y="80" text-anchor="middle" font-size="9" fill="#1e40af">FUNAI + INCRA</text>
+      <text x="785" y="93" text-anchor="middle" font-size="8" fill="#2563eb">20UF, 2384, 215O, 215Q</text>
+      <text x="785" y="105" text-anchor="middle" font-size="8" fill="#2563eb">20G7, 0859 (Quilombolas)</text>
+      
+      <!-- Row 2: Filtros e Complementação -->
+      <!-- Arrow down from row 1 center -->
+      <line x1="450" y1="115" x2="450" y2="145" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Deduplication box -->
+      <rect x="200" y="145" width="500" height="40" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="450" y="163" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">DEDUPLICAÇÃO: Chave composta órgão|programa|ano — eliminação de sobreposições entre camadas</text>
+      <text x="450" y="177" text-anchor="middle" font-size="9" fill="#64748b">Resultado: ${all.length} registros únicos</text>
+      
+      <!-- Arrow down -->
+      <line x1="450" y1="185" x2="450" y2="210" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Row 3: Complementary steps -->
+      <rect x="50" y="210" width="350" height="65" rx="8" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="225" y="230" text-anchor="middle" font-size="11" font-weight="700" fill="#6b21a8">Passo 6: Filtro por Keywords Raciais</text>
+      <text x="225" y="245" text-anchor="middle" font-size="8" fill="#7c3aed">racial, racismo, negro/a, afro, palmares, indígen, quilombol, cigano</text>
+      <text x="225" y="258" text-anchor="middle" font-size="8" fill="#7c3aed">Aplicado a programas universais capturados por Subfunção 422</text>
+      <text x="225" y="270" text-anchor="middle" font-size="7" fill="#9333ea">Campos: programa, orgao, descritivo (publico_alvo ignorado)</text>
+      
+      <rect x="420" y="210" width="430" height="65" rx="8" fill="#fff7ed" stroke="#f97316" stroke-width="1.5"/>
+      <text x="635" y="230" text-anchor="middle" font-size="11" font-weight="700" fill="#9a3412">Passo 7: Complementação Manual SIOP</text>
+      <text x="635" y="245" text-anchor="middle" font-size="8" fill="#ea580c">Ações 21AR (POs 0001,0003,000J) + 21AT (PO 0007)</text>
+      <text x="635" y="258" text-anchor="middle" font-size="8" fill="#ea580c">Registros invisíveis às camadas automatizadas</text>
+      <text x="635" y="270" text-anchor="middle" font-size="7" fill="#c2410c">+11 registros / +R$ 67,5 mi em valor pago</text>
+      
+      <!-- Arrow down to classification -->
+      <line x1="450" y1="275" x2="450" y2="305" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Classification -->
+      <rect x="80" y="305" width="740" height="55" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+      <text x="450" y="325" text-anchor="middle" font-size="11" font-weight="700" fill="#166534">CLASSIFICAÇÃO TEMÁTICA</text>
+      <text x="150" y="343" text-anchor="middle" font-size="8" fill="#15803d">Política Racial</text>
+      <text x="270" y="343" text-anchor="middle" font-size="8" fill="#15803d">Povos Indígenas</text>
+      <text x="390" y="343" text-anchor="middle" font-size="8" fill="#15803d">Quilombolas</text>
+      <text x="510" y="343" text-anchor="middle" font-size="8" fill="#15803d">SESAI</text>
+      <text x="620" y="343" text-anchor="middle" font-size="8" fill="#15803d">Ciganos/Roma</text>
+      <text x="740" y="343" text-anchor="middle" font-size="8" fill="#15803d">Juventude Negra</text>
+      <text x="450" y="355" text-anchor="middle" font-size="7" fill="#16a34a">Mapeamento para Artigos ICERD I-VII + Eixos Temáticos + Grupos Focais</text>
+      
+      <!-- Arrow down to exclusions -->
+      <line x1="450" y1="360" x2="450" y2="385" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+      
+      <!-- Exclusions -->
+      <rect x="120" y="385" width="300" height="55" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="270" y="405" text-anchor="middle" font-size="10" font-weight="700" fill="#991b1b">EXCLUSÕES</text>
+      <text x="270" y="418" text-anchor="middle" font-size="8" fill="#b91c1c">Programas universais: Bolsa Família, SUS, SUAS</text>
+      <text x="270" y="430" text-anchor="middle" font-size="8" fill="#b91c1c">MIR retroativo pre-2023 / Restos a Pagar</text>
+      
+      <!-- Outputs -->
+      <rect x="480" y="385" width="300" height="55" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="630" y="405" text-anchor="middle" font-size="10" font-weight="700" fill="#1e40af">ANÁLISES GERADAS</text>
+      <text x="630" y="418" text-anchor="middle" font-size="8" fill="#2563eb">P1 (2018-2022) vs P2 (2023-2025)</text>
+      <text x="630" y="430" text-anchor="middle" font-size="8" fill="#2563eb">IEAT-Racial / Orç. Simbólico / Mascaramento</text>
+      
+      <!-- Bottom: Metrics -->
+      <rect x="200" y="460" width="500" height="45" rx="8" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/>
+      <text x="450" y="478" text-anchor="middle" font-size="10" font-weight="700" fill="#854d0e">MÉTRICAS: Pago (entrega real) vs Dotação (intenção legislativa)</text>
+      <text x="450" y="493" text-anchor="middle" font-size="8" fill="#a16207">Alerta: Orçamento Simbólico = Dotação > R$ 100 mil + Pago zero</text>
+      <text x="450" y="505" text-anchor="middle" font-size="7" fill="#92400e">Padrão TCU + Portal da Transparência | Cautela: 2025 dados parciais</text>
+      
+      <!-- Arrowhead marker -->
+      <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/></marker></defs>
+    </svg>
   </div>
 
   <div class="grid-2" style="margin-top:16px;">

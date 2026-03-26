@@ -7,6 +7,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -72,6 +73,7 @@ type ArtigoAnalysis = {
  */
 function useCountStatSeriesPerArticle() {
   const m = useMirrorData();
+  const { data: allIndicadores } = useIndicadoresInterseccionais();
   return useMemo(() => {
     const c: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
 
@@ -131,11 +133,19 @@ function useCountStatSeriesPerArticle() {
     // ── POVOS TRADICIONAIS (Art III segregação, V território) ──
     add(m.povosTradicionais, ['III', 'V'], 2);
 
-    // ── DISCURSO DE ÓDIO / Art IV — contabiliza normativos e indicadores sobre o tema ──
+    // ── ODS RACIAL (93 indicadores do BD) — distribuir por artigo via inferência ──
+    const odsIndicadores = (allIndicadores || []).filter(
+      (i: any) => i.categoria === 'ods_racial'
+    );
+    odsIndicadores.forEach((ind: any) => {
+      const arts = inferArtigosIndicador(ind);
+      arts.forEach(a => { c[a] += 1; });
+    });
+
     // Art IV não tem séries estatísticas diretas no sistema, mas a cobertura normativa já preenche
 
     return c;
-  }, [m]);
+  }, [m, allIndicadores]);
 }
 
 /**
