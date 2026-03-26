@@ -7,6 +7,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
