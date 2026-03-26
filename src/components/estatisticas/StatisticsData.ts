@@ -595,7 +595,7 @@ export const disparidadesPcd1459 = [
 //   Raça/cor (57 casos com dados): 70% negras, ~28% brancas, ~2% indígenas (Dossiê 2026 p.66)
 //   Fonte: Revista Afirmativa (revistaafirmativa.com.br/9a-edicao-do-dossie-marsha-trans/)
 //   Média histórica 2017-2025: 77% negras, 22% brancas, 1% indígenas (Dossiê 2026)
-// Fonte ÚNICA: Dossiê ANTRA 2026 — série histórica consolidada (p.30, p.66).
+// Fonte ÚNICA: Dossiê ANTRA 2026 — série histórica consolidada (p.60, p.66).
 // Todos os dados de assassinatos e perfil racial extraídos exclusivamente do Dossiê 2026.
 // URL: https://antrabrasil.org/wp-content/uploads/2026/01/dossie-antra-2026.pdf
 // Confirmação: G1, CNN, Poder360, Revista Afirmativa (26/01/2026).
