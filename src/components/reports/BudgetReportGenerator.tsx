@@ -147,6 +147,33 @@ export function BudgetReportGenerator() {
             </Card>
           </div>
 
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Quadro Executivo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency((stats?.dotacaoPeriodo1 || 0) + (stats?.dotacaoPeriodo2 || 0))}<br />Dotação Total</Badge>
+                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency((stats?.pagoPeriodo1 || 0) + (stats?.pagoPeriodo2 || 0))}<br />Total Pago</Badge>
+                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : `${(((stats?.pagoPeriodo1 || 0) + (stats?.pagoPeriodo2 || 0)) / Math.max((stats?.dotacaoPeriodo1 || 0) + (stats?.dotacaoPeriodo2 || 0), 1) * 100).toFixed(1)}%`}<br />Execução Geral</Badge>
+                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : stats?.totalRegistros || 0}<br />Registros Orçamentários</Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency(stats?.pagoPeriodo1 || 0)}<br />Pago 2018–2022</Badge>
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency(stats?.pagoPeriodo2 || 0)}<br />Pago 2023–2025</Badge>
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : `${(stats?.variacaoPago || 0) >= 0 ? '+' : ''}${(stats?.variacaoPago || 0).toFixed(1)}%`}<br />Variação Pago</Badge>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency(stats?.dotacaoPeriodo1 || 0)}<br />Dotação 2018–2022</Badge>
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency(stats?.dotacaoPeriodo2 || 0)}<br />Dotação 2023–2025</Badge>
+                  <Badge variant="secondary" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : `${(stats?.variacaoDotacao || 0) >= 0 ? '+' : ''}${(stats?.variacaoDotacao || 0).toFixed(1)}%`}<br />Variação Dotação</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Programs breakdown */}
           {stats?.porPrograma && (
             <Card>
