@@ -1167,16 +1167,14 @@ export const tabelasTrabalho: CommonCoreTable[] = [
     tabelaSidra: 'Tabela 6318',
     periodoOriginal: '2004-2014',
     periodoAtualizado: '2004-2024',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', '2004', '2010', '2015', '2019', '2022', '2024'],
+      headers: ['Grupo', '2019', '2022', '2024'],
       rows: [
-        ['Total', '58,9%', '59,7%', '61,4%', '61,8%', '62,5%', '62,8%'],
-        ['Homens', '72,1%', '72,3%', '73,5%', '72,8%', '73,2%', '73,5%'],
-        ['Mulheres', '46,6%', '48,1%', '50,2%', '51,6%', '52,6%', '53,0%']
+        ['Total', '55,8%', '56,5%', '58,0%']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Dado 2024: média T1-T4. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ SIDRA 6402 v=4097 — Nível de ocupação (% PIA), médias anuais dos 4 trimestres. Desagregação por sexo não disponível via API programática. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
     tendencia: 'crescente'
   },
   {
@@ -1192,19 +1190,17 @@ export const tabelasTrabalho: CommonCoreTable[] = [
     tabelaSidra: 'Tabela 6318',
     periodoOriginal: '2004-2014',
     periodoAtualizado: '2004-2024',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', '2010', '2015', '2019', '2021', '2022', '2024'],
+      headers: ['Grupo', '2015', '2019', '2021', '2022', '2024'],
       rows: [
-        ['Total', '7,1%', '8,5%', '11,9%', '13,5%', '9,3%', '6,8%'],
-        ['Homens', '5,7%', '6,8%', '9,7%', '11,0%', '7,5%', '5,5%'],
-        ['Mulheres', '9,1%', '10,8%', '14,7%', '16,5%', '11,6%', '8,5%'],
-        ['Brancos', '5,8%', '6,9%', '9,8%', '11,3%', '7,5%', '5,2%'],
-        ['Negros', '8,1%', '9,9%', '13,8%', '15,6%', '10,9%', '8,2%'],
-        ['Jovens 18-24', '16,8%', '18,9%', '25,3%', '29,8%', '19,2%', '15,5%']
+        ['Total', '8,6%', '12,0%', '13,2%', '9,2%', '6,9%'],
+        ['Brancos', '7,0%', '9,5%', '10,8%', '7,3%', '5,4%'],
+        ['Negros (Pretos+Pardos)', '10,0%', '14,0%', '15,2%', '10,8%', '7,9%'],
+        ['Razão N/B', '1,43x', '1,47x', '1,41x', '1,48x', '1,46x']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Pico em 2021 devido à pandemia. Recuperação significativa em 2022-2024. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ SIDRA 6402 — Médias anuais dos 4 trimestres. Dados por sexo removidos (não disponíveis via API; requerem suplemento PNAD). Pico em 2021 devido à pandemia. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
     tendencia: 'decrescente'
   },
   {
@@ -1274,19 +1270,14 @@ export const tabelasTrabalho: CommonCoreTable[] = [
     tabelaSidra: 'Tabela 6387',
     periodoOriginal: '2005-2015',
     periodoAtualizado: '2012-2024',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', '2012', '2015', '2019', '2022', '2024'],
+      headers: ['Grupo', '2019', '2022', '2024'],
       rows: [
-        ['Total', 'R$ 1.893', 'R$ 2.180', 'R$ 2.415', 'R$ 2.787', 'R$ 3.225'],
-        ['Homens', 'R$ 2.152', 'R$ 2.478', 'R$ 2.782', 'R$ 3.180', 'R$ 3.680'],
-        ['Mulheres', 'R$ 1.552', 'R$ 1.793', 'R$ 1.972', 'R$ 2.305', 'R$ 2.685'],
-        ['Brancos', 'R$ 2.396', 'R$ 2.785', 'R$ 3.115', 'R$ 3.548', 'R$ 4.120'],
-        ['Negros', 'R$ 1.388', 'R$ 1.588', 'R$ 1.762', 'R$ 2.085', 'R$ 2.425'],
-        ['Razão N/B', '57,9%', '57,0%', '56,6%', '58,8%', '58,9%']
+        ['Total', 'R$ 2.264', 'R$ 2.520', 'R$ 3.098']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Valores em R$ correntes. Negros recebem cerca de 59% do rendimento de brancos. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ SIDRA 6390 — Médias anuais dos 4 trimestres. Valores nominais em R$ correntes. Desagregação por sexo e raça não disponível via API programática (requer tabulação especial IBGE). ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
     tendencia: 'crescente'
   },
   {
