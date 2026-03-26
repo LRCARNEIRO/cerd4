@@ -314,22 +314,23 @@ function renderTOC(): string {
     <h3>Sumário</h3>
     <ul>
       <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
-      <li><strong>II.</strong> Quadro Completo de Cumprimento das Recomendações (87 Lacunas)</li>
-      <li><strong>III.</strong> Respostas às Observações Finais do CERD III (CERD/C/BRA/CO/18-20)</li>
-      <li><strong>IV.</strong> Narrativa Temática — Evolução dos Indicadores 2018-2025</li>
-      <li style="padding-left:2cm">A. Segurança Pública e Violência Racial</li>
-      <li style="padding-left:2cm">B. Saúde — Mortalidade Materna e Infantil</li>
-      <li style="padding-left:2cm">C. Educação — Acesso, Permanência e Qualidade</li>
-      <li style="padding-left:2cm">D. Trabalho, Renda e Pobreza</li>
-      <li style="padding-left:2cm">E. Terra, Território e Habitação</li>
-      <li style="padding-left:2cm">F. Interseccionalidades Específicas — LGBTQIA+ e Deficiência</li>
-      <li><strong>V.</strong> Análise Temática por Artigos da Convenção ICERD (I-VII)</li>
-      <li><strong>VI.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
-      <li><strong>VII.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
-      <li><strong>VIII.</strong> Análise Interseccional</li>
-      <li><strong>IX.</strong> Povos Tradicionais: Indígenas, Quilombolas e Comunidades Específicas</li>
-      <li><strong>X.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>XI.</strong> Conclusões e Compromissos</li>
+      <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
+      <li style="padding-left:2cm">Artigo I — Definição de Discriminação Racial</li>
+      <li style="padding-left:2cm">Artigo II — Condenação e Políticas de Eliminação</li>
+      <li style="padding-left:2cm">Artigo III — Segregação Racial</li>
+      <li style="padding-left:2cm">Artigo IV — Propaganda e Organizações Racistas</li>
+      <li style="padding-left:2cm">Artigo V — Direitos Civis, Políticos, Econômicos, Sociais e Culturais</li>
+      <li style="padding-left:2cm">Artigo VI — Recursos Efetivos e Reparação</li>
+      <li style="padding-left:2cm">Artigo VII — Educação e Cultura Antirracista</li>
+      <li><strong>III.</strong> Quadro Resumido: Recomendações × Evidências</li>
+      <li><strong>IV.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
+      <li><strong>V.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
+      <li><strong>VI.</strong> Análise Interseccional</li>
+      <li><strong>VII.</strong> Povos Tradicionais</li>
+      <li><strong>VIII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>IX.</strong> Conclusões e Compromissos</li>
+      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
+      <li><strong>ANEXO B</strong> — Respostas do Estado Brasileiro às Observações Finais (CERD III)</li>
     </ul>
   </div>`;
 }
