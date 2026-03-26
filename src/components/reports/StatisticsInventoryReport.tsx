@@ -47,6 +47,7 @@ import {
 } from '@/components/estatisticas/CommonCoreTab';
 import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
+import { prepareHtmlPreview } from '@/utils/reportPreview';
 
 // Safe number formatter — prevents null/undefined crashes
 function safeNum(n: any): string {
@@ -724,12 +725,16 @@ export function StatisticsInventoryReport() {
 
   const handleFullReport = async (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
+    const previewWindow = format === 'html'
+      ? prepareHtmlPreview('Relatorio-Completo-Base-Estatistica-CERD-IV')
+      : null;
+
     try {
       const html = generateFullStatisticsHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
       } else {
-        openHtmlPreview(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV');
+        openHtmlPreview(html, 'Relatorio-Completo-Base-Estatistica-CERD-IV', previewWindow);
       }
     } finally {
       setGenerating(null);
@@ -738,12 +743,16 @@ export function StatisticsInventoryReport() {
 
   const handleInventory = async (format: 'html' | 'docx') => {
     setGenerating(`inv-${format}`);
+    const previewWindow = format === 'html'
+      ? prepareHtmlPreview('Inventario-Base-Estatistica-CERD-IV')
+      : null;
+
     try {
       const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {
-        openHtmlPreview(html, 'Inventario-Base-Estatistica-CERD-IV');
+        openHtmlPreview(html, 'Inventario-Base-Estatistica-CERD-IV', previewWindow);
       }
     } finally {
       setGenerating(null);
