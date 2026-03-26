@@ -17,6 +17,8 @@ import {
 export interface CommonCoreMirrorData {
   indicadoresSocioeconomicos?: any[];
   segurancaPublica?: any[];
+  educacaoSerieHistorica?: any[];
+  saudeSerieHistorica?: any[];
   dadosDemograficos?: any;
   povosTradicionais?: any;
   ccTablesFromBD?: CommonCoreTable[];
@@ -63,6 +65,7 @@ li { margin-bottom: 0.2cm; }
 .eixo-header h3 { color: white; margin: 0; font-size: 12pt; }
 .table-meta { font-size: 8pt; color: #64748b; margin-top: 0.2cm; }
 .table-meta a { color: #2563eb; text-decoration: underline; }
+.chart-inline { margin: 0.5cm 0; page-break-inside: avoid; }
 .print-instructions { background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 0.8cm; margin-bottom: 1cm; border: 1px solid #3b82f6; border-radius: 8px; }
 .print-instructions strong { color: #1e40af; }
 @media print { .print-instructions { display: none; } body { padding: 0; } }
@@ -123,6 +126,8 @@ export function generateCommonCoreHTML(
   // SSoT: use mirror data from BD if available, fallback to hardcoded
   const indicadoresSocioeconomicos = mirror?.indicadoresSocioeconomicos?.length ? mirror.indicadoresSocioeconomicos : hcSocioEco;
   const segurancaPublica = mirror?.segurancaPublica?.length ? mirror.segurancaPublica : hcSeguranca;
+  const educacaoSerieHistorica = mirror?.educacaoSerieHistorica?.length ? mirror.educacaoSerieHistorica : hcEducacao;
+  const saudeSerieHistorica = mirror?.saudeSerieHistorica?.length ? mirror.saudeSerieHistorica : hcSaude;
 
   // Local aliases for SSoT fallback
   const dadosDemograficos = mirror?.dadosDemograficos || hcDemo;
