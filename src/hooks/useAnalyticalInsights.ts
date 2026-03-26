@@ -4,7 +4,7 @@ import {
   useLacunasStats, 
   useRespostasLacunasCerdIII, 
   useOrcamentoStats, 
-  useIndicadoresInterseccionais,
+  useIndicadoresAnaliticos,
   useDadosOrcamentarios,
   type LacunaIdentificada,
   type RespostaLacunaCerdIII,
@@ -122,7 +122,7 @@ export function useAnalyticalInsights() {
   const { data: stats, isLoading: l2, isFetching: f2 } = useLacunasStats();
   const { data: respostas, isLoading: l3, isFetching: f3 } = useRespostasLacunasCerdIII();
   const { data: orcStats, isLoading: l4, isFetching: f4 } = useOrcamentoStats();
-  const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresInterseccionais();
+  const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresAnaliticos();
   const { data: orcDados, isLoading: l6, isFetching: f6 } = useDadosOrcamentarios();
 
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;

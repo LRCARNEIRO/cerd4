@@ -7,7 +7,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
-import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -73,7 +73,7 @@ type ArtigoAnalysis = {
  */
 function useCountStatSeriesPerArticle() {
   const m = useMirrorData();
-  const { data: allIndicadores } = useIndicadoresInterseccionais();
+  const { data: allIndicadores } = useIndicadoresAnaliticos();
   return useMemo(() => {
     const c: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
 
