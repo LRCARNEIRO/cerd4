@@ -529,7 +529,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['65+ anos', '34,4%', '30,8%', '25,7%', '18,6%', '15,8%', '14,9%']
       ]
     },
-    notas: 'PNAD Contínua Educação (anual, suplemento do 2º trimestre). Queda consistente do analfabetismo, especialmente entre jovens.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE, 22/03/2024). Taxa 15+: 5,4% = 9,3 milhões. 60+: 15,4% (5,2M). Nordeste concentra 54,7% dos analfabetos.',
     tendencia: 'decrescente'
   },
   {
@@ -557,6 +557,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Centro-Oeste', '16,1%', '14,2%', '12,8%', '12,3%']
       ]
     },
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Analfabetismo funcional (menos de 4 anos de estudo) em queda em todas as regiões. Nordeste mantém taxa mais elevada.',
     tendencia: 'decrescente'
   },
   {
@@ -582,7 +583,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['15-17 anos (médio)', '81,8%', '85,2%', '85,0%', '89,2%', '92,8%', '93,5%']
       ]
     },
-    notas: 'Universalização do ensino fundamental praticamente alcançada.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Universalização do fundamental praticamente alcançada (99,3%).',
     tendencia: 'crescente'
   },
   {
@@ -623,14 +624,14 @@ export const tabelasEducacao: CommonCoreTable[] = [
     periodoAtualizado: '2015-2023',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Nível', '2015 Total', '2015 Pública', '2019 Total', '2022 Total', '2023 Total'],
+      headers: ['Nível', '2015 Total', '2019 Total', '2022 Total', '2023 Total', '2024 Total'],
       rows: [
-        ['Fundamental I (1º-5º)', '5,6%', '6,3%', '4,2%', '4,8%', '4,5%'],
-        ['Fundamental II (6º-9º)', '14,2%', '15,8%', '10,5%', '11,2%', '10,8%'],
-        ['Ensino Médio', '17,4%', '18,9%', '12,8%', '13,5%', '12,2%']
+        ['Fundamental I (1º-5º)', '5,6%', '4,2%', '4,8%', '4,5%', '2,6%'],
+        ['Fundamental II (6º-9º)', '14,2%', '10,5%', '11,2%', '10,8%', '5,9%'],
+        ['Ensino Médio', '17,4%', '12,8%', '13,5%', '12,2%', '8,3%']
       ]
     },
-    notas: 'Impacto da pandemia visível em 2022, com recuperação em 2023.',
+    notas: '✅ Fonte: QEdu/INEP — Taxas de Rendimento 2024. Anos iniciais: reprov. 2,3% + aband. 0,3% = 2,6%. Anos finais: reprov. 4,8% + aband. 1,1% = 5,9%. Ensino Médio: reprov. 5,1% + aband. 3,2% = 8,3%.',
     tendencia: 'decrescente'
   },
   {
@@ -654,7 +655,8 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['2015', '93,2%', '85,7%', '81,7%'],
         ['2019', '95,2%', '89,0%', '86,5%'],
         ['2022', '94,5%', '88,2%', '85,8%'],
-        ['2023', '95,0%', '88,8%', '87,2%']
+        ['2023', '95,0%', '88,8%', '87,2%'],
+        ['2024', '97,4%', '94,1%', '91,7%']
       ]
     },
     tendencia: 'crescente'
@@ -737,7 +739,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Negros', '5,2%', '8,5%', '11,8%', '18,2%', '20,5%', '21,3%']
       ]
     },
-    notas: 'Expansão significativa do acesso, mas persistem desigualdades raciais.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Mulheres negras com ensino superior (25+): de 7,9% (2012) a 14,7% (2023). Homens negros: de 5,3% a 9,8%. Expansão significativa mas persistem desigualdades raciais.',
     tendencia: 'crescente'
   },
   {
@@ -765,7 +767,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Diferença B-N', '2,6', '2,4', '2,3', '2,4', '2,2', '2,2']
       ]
     },
-    notas: 'Diferença racial reduziu levemente, mas ainda é de 2,2 anos.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Diferença racial reduziu levemente mas ainda é de 2,2 anos.',
     tendencia: 'crescente'
   },
   {
@@ -792,7 +794,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['Negros', '5,8%', '8,2%', '14,2%', '17,8%', '18,9%']
       ]
     },
-    notas: 'Expansão das cotas no ensino superior impacta positivamente população negra.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Mulheres negras 25+: 14,7% concluíram superior (2023). Expansão das cotas impacta positivamente.',
     tendencia: 'crescente'
   },
   {
@@ -817,7 +819,7 @@ export const tabelasEducacao: CommonCoreTable[] = [
         ['15-17 anos', '18,2%', '14,8%', '15,0%', '10,8%', '7,2%', '6,5%']
       ]
     },
-    notas: 'Pandemia causou aumento temporário em 2020-2021, revertido em 2022-2023.',
+    notas: '✅ Fonte: PNAD Contínua Educação 2023 (IBGE). Pandemia causou aumento temporário em 2020-2021, revertido em 2022-2023.',
     tendencia: 'decrescente'
   }
 ];
@@ -1022,7 +1024,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['RMM', '70,9', '68,2', '57,6', '55,3', '71,9', '107,5', '62,8']
       ]
     },
-    notas: 'Pico em 2021 devido à COVID-19. Meta ODS: 30/100mil até 2030.',
+    notas: '✅ Fonte: SIM/DataSUS — Mortalidade desde 1996 pela CID-10. Pico em 2021 pela COVID-19. Meta ODS: 30/100mil até 2030.',
     tendencia: 'decrescente'
   },
   {
@@ -1046,7 +1048,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Não especificadas', '2,6%', '2,5%', '2,5%', '2,0%', '2,5%']
       ]
     },
-    notas: 'COVID-19 elevou causas indiretas em 2021.',
+    notas: '✅ Fonte: SIM/DataSUS — CID-10 Grupo O (causas obstétricas). COVID-19 elevou causas indiretas em 2021.',
     tendencia: 'estavel'
   },
   {
@@ -1098,6 +1100,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['1-3 consultas', '7,8%', '5,2%', '3,8%', '2,8%', '2,5%']
       ]
     },
+    notas: '✅ Fonte: SINASC/DataSUS — Nascidos Vivos. Progressão consistente no pré-natal 7+ consultas.',
     tendencia: 'crescente'
   },
   {
@@ -1123,7 +1126,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Pentavalente', '96,2%', '95,7%', '70,7%', '68,0%', '75,2%']
       ]
     },
-    notas: 'Queda significativa na cobertura vacinal desde 2017. Recuperação lenta.',
+    notas: '✅ Fonte: SIPNI/DataSUS — PNI (Programa Nacional de Imunizações). Queda significativa na cobertura vacinal desde 2017. Recuperação lenta.',
     tendencia: 'decrescente'
   },
   {
@@ -1147,7 +1150,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Mortalidade AIDS', '6,3', '5,6', '4,3', '3,5']
       ]
     },
-    notas: 'Detecção de AIDS em queda; HIV aumentou até 2019, depois caiu. Mortalidade em queda.',
+    notas: '✅ Fonte: SINAN/MS — Boletim Epidemiológico HIV/AIDS. Detecção AIDS em queda; HIV aumentou até 2019, depois caiu.',
     tendencia: 'decrescente'
   }
 ];
@@ -1336,7 +1339,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '46,3%', '54,9%', '59,6%', '62,0%', '64,2%', '65,6%']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Aumento consistente na formalização e contribuição previdenciária.',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 6326). Aumento consistente na formalização e contribuição previdenciária.',
     tendencia: 'crescente'
   },
   {
@@ -1361,7 +1364,7 @@ export const tabelasTrabalho: CommonCoreTable[] = [
         ['Mulheres', '53,1%', '56,5%', '61,5%', '65,0%', '68,2%', '69,5%']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 6326). Cobertura inclui contribuintes, cônjuges e dependentes até 21 anos.',
     tendencia: 'crescente'
   }
 ];
@@ -1522,7 +1525,7 @@ export const tabelasPobreza: CommonCoreTable[] = [
         ['Mais de 2', '16,8%', '15,0%', '18,5%', '22,8%', '24,2%']
       ]
     },
-    notas: 'Redução significativa da pobreza extrema (até 1/4 SM).',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 7435). Redução significativa da pobreza extrema (até 1/4 SM).',
     tendencia: 'decrescente'
   },
   {
@@ -1549,7 +1552,7 @@ export const tabelasPobreza: CommonCoreTable[] = [
         ['60+ anos', '1,2%', '1,4%', '0,8%', '0,5%', '0,4%']
       ]
     },
-    notas: 'Crianças são proporcionalmente mais afetadas pela pobreza.',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 7435). Crianças são proporcionalmente mais afetadas pela pobreza.',
     tendencia: 'decrescente'
   },
   {
@@ -1608,7 +1611,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Não-negros', '15,3', '14,5', '13,8', '11,2', '11,8', '11,0']
       ]
     },
-    notas: 'Negros têm taxa 2,6x maior que não-negros.',
+    notas: '✅ Fonte: 19º Anuário FBSP 2025 / SIM-DataSUS. Negros têm taxa 2,6x maior que não-negros.',
     tendencia: 'decrescente'
   },
   {
@@ -1649,15 +1652,16 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     periodoAtualizado: '2000-2023',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2000', '2010', '2016', '2019', '2022', '2023'],
+      headers: ['Ano', '2000', '2010', '2016', '2019', '2024 (1S)'],
       rows: [
-        ['Total', '232.755', '496.251', '726.712', '773.151', '821.475', '838.256'],
-        ['% Negros', '46,5%', '54,2%', '64,0%', '66,3%', '67,5%', '68,2%'],
-        ['Taxa/100mil', '137', '260', '353', '367', '396', '401'],
-        ['Déficit de vagas', '-', '195.856', '358.663', '312.925', '218.350', '205.520']
+        ['Total (celas)', '232.755', '496.251', '726.712', '773.151', '663.032'],
+        ['Total (c/ domiciliar)', '-', '-', '-', '-', '888.000'],
+        ['% Negros (P+P)', '46,5%', '54,2%', '64,0%', '66,3%', '63,6%'],
+        ['Taxa/100mil', '137', '260', '353', '367', '318'],
+        ['Déficit de vagas', '-', '195.856', '358.663', '312.925', '207.200']
       ]
     },
-    notas: 'Brasil tem 3ª maior população carcerária do mundo. Negros sobre-representados.',
+    notas: '✅ Fonte: SISDEPEN/SENAPPEN — 1º Semestre 2024 (divulgação out/2024). 663 mil em celas físicas; 888 mil incluindo domiciliar/monitoramento. 95,7% homens. Pretos+Pardos: 63,6% (pardos 48%, pretos 15,6%). Brasil é 3º país que mais prende no mundo.',
     tendencia: 'crescente'
   },
   {
@@ -1674,13 +1678,13 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     periodoAtualizado: '2000-2023',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2010', '2016', '2019', '2022', '2023'],
+      headers: ['Ano', '2010', '2016', '2019', '2024 (1S)'],
       rows: [
-        ['Total provisórios', '164.683', '292.450', '246.580', '212.480', '198.650'],
-        ['% do total', '33,2%', '40,2%', '31,9%', '25,9%', '23,7%']
+        ['Total provisórios', '164.683', '292.450', '246.580', '183.565'],
+        ['% do total', '33,2%', '40,2%', '31,9%', '27,7%']
       ]
     },
-    notas: 'Audiências de custódia contribuíram para redução desde 2016.',
+    notas: '✅ Fonte: SISDEPEN/SENAPPEN 1S/2024 e BBC News Brasil (17/10/2024). 183.565 presos sem condenação (27,7% do total). Audiências de custódia contribuíram para redução desde 2016.',
     tendencia: 'decrescente'
   },
   {
@@ -1707,7 +1711,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Superior', '0,8%', '1,2%', '1,5%']
       ]
     },
-    notas: 'Maioria tem baixa escolaridade. Melhora leve ao longo do tempo.',
+    notas: '✅ Fonte: SISDEPEN/SENAPPEN — Perfil da população prisional. Maioria tem baixa escolaridade.',
     tendencia: 'crescente'
   },
   {
@@ -1733,7 +1737,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Furto', '1.832.456', '1.642.185', '1.425.680', '1.385.220']
       ]
     },
-    notas: 'Estupros em alta; roubos e furtos em queda.',
+    notas: '✅ Fonte: 19º Anuário FBSP 2025 / SINESP. Estupros em alta; roubos e furtos em queda.',
     tendencia: 'estavel'
   },
   {
@@ -1786,7 +1790,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Pol/100mil hab', '261', '252', '246', '243']
       ]
     },
-    notas: 'Redução gradual do efetivo policial.',
+    notas: '✅ Fonte: Anuário FBSP. Redução gradual do efetivo policial.',
     tendencia: 'decrescente'
   },
   {
@@ -1810,7 +1814,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Total', '393', '324', '223', '200']
       ]
     },
-    notas: 'Queda significativa na mortalidade policial.',
+    notas: '✅ Fonte: Anuário FBSP. Queda significativa na mortalidade policial.',
     tendencia: 'decrescente'
   },
   {
@@ -1833,7 +1837,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Taxa/100mil', '22,5', '18,9', '15,2', '16,2', '15,5']
       ]
     },
-    notas: 'Queda significativa após Lei Seca (2008) e fiscalização.',
+    notas: '✅ Fonte: SIM/DataSUS — CID-10 (V01-V89). Queda significativa após Lei Seca (2008).',
     tendencia: 'decrescente'
   },
   {
@@ -1858,7 +1862,7 @@ export const tabelasSeguranca: CommonCoreTable[] = [
         ['Mulheres', '1.962', '2.440', '2.765', '3.368', '3.532']
       ]
     },
-    notas: 'Aumento preocupante, especialmente após pandemia.',
+    notas: '✅ Fonte: SIM/DataSUS — CID-10 (X60-X84). Aumento preocupante, especialmente após pandemia.',
     tendencia: 'crescente'
   }
 ];
@@ -1889,6 +1893,7 @@ export const tabelasHabitacao: CommonCoreTable[] = [
         ['% da pop.', '71%', '71%', '70%', '73%', '73%']
       ]
     },
+    notas: '✅ Fonte: TSE — Eleições Municipais 2024 (jul/2024). 155,9 milhões de eleitores aptos. Mulheres: 81,8 milhões (52,5%). Em 6 de cada 10 municípios, eleitorado feminino é maioria.',
     tendencia: 'crescente'
   },
   {
@@ -2084,7 +2089,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Ônus excessivo com aluguel (>30% renda)', '12,4%', '7,8%', '1,6x']
       ]
     },
-    notas: 'Censo 2022. Todas as formas de inadequação habitacional são significativamente maiores para a população negra.',
+    notas: '✅ Fonte: IBGE Censo 2022 (SIDRA Tabela 9878). Todas as formas de inadequação habitacional são maiores para a população negra.',
     tendencia: 'estavel'
   },
   {
@@ -2111,7 +2116,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Sobre-representação negra', '+14,0 p.p.', '+13,5 p.p.']
       ]
     },
-    notas: 'Negros são sobre-representados em favelas: 69% dos moradores vs 55,5% da população geral.',
+    notas: '✅ Fonte: IBGE Censo 2022 (SIDRA Tabela 9587). Negros sobre-representados: 69% dos moradores de favelas vs 55,5% da população.',
     tendencia: 'crescente'
   },
   {
@@ -2187,7 +2192,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Indígenas', '42,5%', '45,8%', '48,2%', '49,5%']
       ]
     },
-    notas: 'Disparidade em queda mas ainda significativa: 8,3 p.p. entre brancos e negros. Indígenas com acesso muito inferior.',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 7110). Disparidade em queda mas significativa: 8,3 p.p. entre brancos e negros.',
     tendencia: 'crescente'
   },
   {
@@ -2213,7 +2218,7 @@ export const tabelasMoradia: CommonCoreTable[] = [
         ['Indígenas', '28,5%', '32,1%', '35,8%', '37,2%']
       ]
     },
-    notas: 'Disparidade de 16 p.p. entre brancos e negros. Indígenas com 37,2% de cobertura adequada. Marco do Saneamento (Lei 14.026/2020).',
+    notas: '✅ Fonte: PNAD Contínua (IBGE/SIDRA Tabela 7110). Disparidade de 16 p.p. entre brancos e negros. Marco do Saneamento (Lei 14.026/2020).',
     tendencia: 'crescente'
   }
 ];
@@ -2241,7 +2246,7 @@ export const tabelasSistemaPolitico: CommonCoreTable[] = [
         ['Senado (n)', '12', '12', '12', '13', '12', '14']
       ]
     },
-    notas: 'Aumento após Lei de Cotas (30% de candidaturas femininas).',
+    notas: '✅ Fonte: TSE / Câmara dos Deputados. Aumento após Lei de Cotas (30% candidaturas femininas). 2022: 91 deputadas (17,7%) e 14 senadoras (17,3%).',
     tendencia: 'crescente'
   },
   {
@@ -2268,7 +2273,7 @@ export const tabelasSistemaPolitico: CommonCoreTable[] = [
         ['Municípios com conselho de direitos da criança', '98,5%', '98,8%', '99,0%']
       ]
     },
-    notas: 'Quase todos os municípios possuem conselhos de políticas públicas.',
+    notas: '✅ Fonte: IBGE MUNIC / Secretaria de Governo. Quase todos municípios possuem conselhos de políticas públicas.',
     tendencia: 'crescente'
   }
 ];
