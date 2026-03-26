@@ -1240,25 +1240,24 @@ export const tabelasTrabalho: CommonCoreTable[] = [
     tituloIngles: 'Informality rate',
     categoria: 'Trabalho',
     descricao: 'Trabalhadores informais em relação ao total de ocupados',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/6323',
-    tabelaSidra: 'Tabela 6323',
+    fonte: 'IBGE/SIS',
+    fonteCompleta: 'IBGE - Síntese de Indicadores Sociais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42043-em-2023-pobreza-no-pais-cai-ao-menor-nivel-desde-2012',
+    tabelaSidra: 'SIS 2024',
     periodoOriginal: '2012-2014',
-    periodoAtualizado: '2012-2024',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2012-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', '2012', '2015', '2019', '2022', '2024'],
+      headers: ['Grupo', '2022', '2023'],
       rows: [
-        ['Total', '43,8%', '44,6%', '41,1%', '39,8%', '38,2%'],
-        ['Homens', '41,8%', '42,5%', '39,2%', '38,0%', '36,5%'],
-        ['Mulheres', '46,3%', '47,2%', '43,5%', '42,0%', '40,2%'],
-        ['Brancos', '37,5%', '38,2%', '35,0%', '33,5%', '32,1%'],
-        ['Negros', '49,5%', '50,5%', '46,8%', '45,5%', '43,8%']
+        ['Total', '40,9%', '40,7%'],
+        ['Brancos', '-', '34,3%'],
+        ['Negros (Pretos+Pardos)', '-', '45,8%'],
+        ['Diferença N-B', '-', '11,5 p.p.']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Informalidade estruturalmente maior entre negros. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
-    tendencia: 'decrescente'
+    notas: '✅ Fonte: IBGE SIS 2024 (divulgação 04/12/2024). Informalidade estável (40,9% → 40,7%). Negros: 45,8% vs Brancos: 34,3% — diferença de 11,5 p.p. reflete desigualdades historicamente constituídas.',
+    tendencia: 'estavel'
   },
   {
     id: 'cc-47',
@@ -1474,21 +1473,29 @@ export const tabelasPobreza: CommonCoreTable[] = [
     tituloIngles: 'Social inequality ratios by sex and race',
     categoria: 'Pobreza',
     descricao: 'Razão de rendimento entre grupos',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7435',
-    tabelaSidra: 'Tabela 7435',
+    fonte: 'IBGE/SIS',
+    fonteCompleta: 'IBGE - Síntese de Indicadores Sociais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42043-em-2023-pobreza-no-pais-cai-ao-menor-nivel-desde-2012',
+    tabelaSidra: 'SIS 2024',
     periodoOriginal: '2005-2015',
     periodoAtualizado: '2005-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Razão', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Indicador', '2023 (SIS 2024)'],
       rows: [
-        ['Homens/Mulheres', '1,51', '1,49', '1,50', '1,45', '1,42', '1,40'],
-        ['Brancos/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
+        ['Rend./hora Brancos', 'R$ 23,02'],
+        ['Rend./hora Negros', 'R$ 13,73'],
+        ['Razão Brancos/Negros (rend./hora)', '1,677x (+67,7%)'],
+        ['Rend./hora Homens', 'R$ 18,81'],
+        ['Rend./hora Mulheres', 'R$ 16,70'],
+        ['Razão H/M (rend./hora)', '1,126x (+12,6%)'],
+        ['Gini', '0,518'],
+        ['Renda 10% ricos / 40% pobres', '3,6x'],
+        ['Pobreza (US$ 6,85 PPC/dia)', '27,4% (59,0 mi)'],
+        ['Extrema pobreza (US$ 2,15 PPC/dia)', '4,4% (9,5 mi)']
       ]
     },
-    notas: 'Redução lenta das desigualdades de gênero e raça na renda. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE SIS 2024 (divulgação 04/12/2024). Rend./hora brancos 67,7% maior que negros. Gini estável (0,518). Pobreza caiu de 31,6% (2022) para 27,4% (2023). Extrema pobreza: menor desde 2012, pela 1ª vez < 5%. Sem programas sociais, Gini teria subido de 0,518 para 0,555.',
     tendencia: 'decrescente'
   },
   {
