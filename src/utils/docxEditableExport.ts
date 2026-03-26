@@ -204,6 +204,7 @@ function buildWordHtml(bodyHtml: string, title: string): string {
 <title>${title}</title>
 <style>
   @page { size: A4; margin: 2cm; }
+  @page { @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #888; } }
   body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a1a2e; max-width: none; padding: 0; }
   h1 { font-size: 18pt; color: #0f3460; border-bottom: 2px solid #0f3460; padding-bottom: 6px; }
   h2 { font-size: 15pt; color: #16213e; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-top: 18pt; }
