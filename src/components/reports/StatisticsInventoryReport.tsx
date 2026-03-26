@@ -228,7 +228,10 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
   .section-summary { background: #f0f4ff; border-left: 3px solid #1e3a5f; padding: 8px 12px; margin: 8px 0; font-size: 11px; }
   .footer { margin-top: 30px; padding-top: 12px; border-top: 2px solid #e8e8e8; font-size: 10px; color: #888; }
   @media print { .no-print { display: none !important; } body { padding: 10px; } }
-  @page { margin: 1.5cm; size: A4; }
+  @page { margin: 1.5cm; size: A4; @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #64748b; } }
+  @page :first { @bottom-center { content: none; } }
+  .lacuna-box { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 8px 10px; margin: 6px 0; font-size: 10px; color: #991b1b; }
+  .chart-inline { margin: 10px 0; page-break-inside: avoid; }
 </style></head><body>
 ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 
