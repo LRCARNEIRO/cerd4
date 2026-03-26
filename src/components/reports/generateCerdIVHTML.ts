@@ -229,7 +229,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderDemographicContext(demo)}
   ${renderAllRecommendations(d.lacunas)}
   ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
-  ${renderThematicNarratives(d, seg, fem, edu, sau, eco, povos)}
+  ${renderThematicNarrativesSection(d, seg, fem, edu, sau, eco, povos)}
   ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
