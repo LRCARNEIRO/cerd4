@@ -247,7 +247,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
     const lgbtqia = hcLgbtqia;
     const defic = hcDeficiencia;
     return `
-      <h2>III. Narrativa Temática — Evolução dos Indicadores 2018-2025</h2>
+      <h2>IV. Narrativa Temática — Evolução dos Indicadores 2018-2025</h2>
       <p>Esta seção atualiza a narrativa do relatório CERD III (período até 2018), contando a história da evolução dos indicadores de desigualdade racial no Brasil até 2025. Os dados são extraídos integralmente das bases estatísticas do sistema, com fontes oficiais verificadas.</p>
       ${renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude)}
       ${renderHealthNarrative(sau, saudeMaterna)}
@@ -304,14 +304,22 @@ function renderTOC(): string {
     <h3>Sumário</h3>
     <ul>
       <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
-      <li><strong>II.</strong> Respostas às Observações Finais do CERD III (CERD/C/BRA/CO/18-20)</li>
-      <li><strong>III.</strong> Análise Temática por Artigos da Convenção ICERD (I-VII)</li>
-      <li><strong>IV.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
-      <li><strong>V.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
-      <li><strong>VI.</strong> Análise Interseccional</li>
-      <li><strong>VII.</strong> Povos Tradicionais: Indígenas, Quilombolas e Comunidades Específicas</li>
-      <li><strong>VIII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>IX.</strong> Conclusões, Vereditos e Compromissos</li>
+      <li><strong>II.</strong> Quadro Completo de Cumprimento das Recomendações (87 Lacunas)</li>
+      <li><strong>III.</strong> Respostas às Observações Finais do CERD III (CERD/C/BRA/CO/18-20)</li>
+      <li><strong>IV.</strong> Narrativa Temática — Evolução dos Indicadores 2018-2025</li>
+      <li style="padding-left:2cm">A. Segurança Pública e Violência Racial</li>
+      <li style="padding-left:2cm">B. Saúde — Mortalidade Materna e Infantil</li>
+      <li style="padding-left:2cm">C. Educação — Acesso, Permanência e Qualidade</li>
+      <li style="padding-left:2cm">D. Trabalho, Renda e Pobreza</li>
+      <li style="padding-left:2cm">E. Terra, Território e Habitação</li>
+      <li style="padding-left:2cm">F. Interseccionalidades Específicas — LGBTQIA+ e Deficiência</li>
+      <li><strong>V.</strong> Análise Temática por Artigos da Convenção ICERD (I-VII)</li>
+      <li><strong>VI.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
+      <li><strong>VII.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
+      <li><strong>VIII.</strong> Análise Interseccional</li>
+      <li><strong>IX.</strong> Povos Tradicionais: Indígenas, Quilombolas e Comunidades Específicas</li>
+      <li><strong>X.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>XI.</strong> Conclusões e Compromissos</li>
     </ul>
   </div>`;
 }
@@ -397,7 +405,7 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
   }).join('');
 
   return `
-  <h2>II. Respostas às Observações Finais (CERD/C/BRA/CO/18-20)</h2>
+  <h2>III. Respostas às Observações Finais (CERD/C/BRA/CO/18-20)</h2>
   <div class="section">
     <p>Em agosto de 2022, o Comitê emitiu ${respostas.length} observações finais sobre o relatório anterior do Brasil. A análise sistemática dessas recomendações revela o seguinte quadro de cumprimento:</p>
     
@@ -713,7 +721,7 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
   }).filter(Boolean).join('');
 
   return `
-    <h2>III. Análise Temática por Artigos da Convenção ICERD</h2>
+    <h2>V. Análise Temática por Artigos da Convenção ICERD</h2>
     <p>Esta seção reorganiza o sistema inteiro sob a lógica superior da Convenção: cada artigo reúne lacunas, recomendações, séries estatísticas, orçamento, normativa e leituras analíticas. Assim, o relatório deixa de separar “estatística”, “orçamento” e “normativa” em silos e passa a responder, artigo por artigo, se houve avanço substantivo, apenas movimentação formal, ou persistência da desigualdade racial.</p>
     ${sections}`;
 }
@@ -728,7 +736,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
   const topProgramas = [...orcDados].sort((a, b) => num(b.pago) - num(a.pago)).slice(0, 10);
 
   return `
-  <h2>IV. Análise Orçamentária: Investimento em Igualdade Racial (2018-2025)</h2>
+  <h2>VI. Análise Orçamentária: Investimento em Igualdade Racial (2018-2025)</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>📋 Nota Metodológica</h4>
@@ -778,7 +786,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
 function renderNormativeBase(normativos: any[]): string {
   if (normativos.length === 0) {
     return `
-    <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
+    <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
     <div class="section">
       <p>O período 2018-2025 foi marcado por intensas transformações legislativas e institucionais, que podem ser divididas em duas fases distintas:</p>
       <h3>Fase 1: Desmonte Institucional (2019-2022)</h3>
@@ -810,7 +818,7 @@ function renderNormativeBase(normativos: any[]): string {
   });
 
   return `
-  <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
+  <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
   <div class="section">
     <p>O acervo normativo catalogado compreende <strong>${normativos.length} documentos</strong> entre legislações, políticas públicas, atos administrativos e compromissos internacionais. A análise distingue duas fases: o desmonte institucional (2019-2022) e a reconstrução (2023-2025), com a criação do MIR e MPI como marcos fundamentais.</p>
     ${dataCards([
@@ -847,7 +855,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
   lacunas.forEach(l => { gruposLacunas[l.grupo_focal] = (gruposLacunas[l.grupo_focal] || 0) + 1; });
 
   return `
-  <h2>VI. Análise Interseccional</h2>
+  <h2>VIII. Análise Interseccional</h2>
   <div class="section">
     <p>O Brasil mantém <strong>${indicadores.length} indicadores estatísticos</strong> desagregados no sistema de monitoramento, dos quais ${comDesagRaca} possuem desagregação por raça/cor, ${comDesagGenero} por gênero e ${comDesagIdade} por idade. Esta capacidade de desagregação é essencial para a identificação de disparidades interseccionais conforme recomendação reiterada do Comitê.</p>
 
@@ -876,7 +884,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
 
 function renderTraditionalPeoples(povos: any): string {
   return `
-  <h2>VII. Povos Tradicionais</h2>
+  <h2>IX. Povos Tradicionais</h2>
   <div class="section">
     <h3>A. Povos Indígenas</h3>
     <div class="highlight-box">
@@ -945,7 +953,7 @@ function renderGuidingThreads(fios: FioCondutor[], conclusoes: ConclusaoDinamica
   ` : '';
 
   return `
-  <h2>VIII. Fios Condutores Analíticos e Síntese Cruzada</h2>
+  <h2>X. Fios Condutores Analíticos e Síntese Cruzada</h2>
   <div class="section">
     <p>A análise cruzada entre as bases estatística, orçamentária, normativa e de recomendações revela <strong>${fios.length} fios condutores</strong> que estruturam a narrativa do período, junto a ${conclusoes.filter(c => c.tipo === 'avanco').length} avanços, ${conclusoes.filter(c => c.tipo === 'retrocesso').length} retrocessos e ${conclusoes.filter(c => c.tipo === 'lacuna_persistente').length} lacunas persistentes.</p>
     
@@ -968,7 +976,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
   return `
-  <h2>IX. Conclusões e Compromissos</h2>
+  <h2>XI. Conclusões e Compromissos</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>Veredito Geral</h4>
