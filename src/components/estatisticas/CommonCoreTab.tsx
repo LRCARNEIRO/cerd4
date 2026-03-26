@@ -310,27 +310,27 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     titulo: 'Indicadores Macroeconômicos',
     tituloIngles: 'Macroeconomic Indicators',
     categoria: 'Economia',
-    descricao: 'PIB, variação real, PIB per capita e crescimento global',
+    descricao: 'PIB, variação real, PIB per capita e câmbio',
     fonte: 'IBGE/BCB',
-    fonteCompleta: 'IBGE - Contas Nacionais e Banco Central do Brasil',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/6612',
-    tabelaSidra: 'Tabela 6612',
+    fonteCompleta: 'IBGE - Contas Nacionais Trimestrais (Tabela 6784) e Banco Central do Brasil (SGS Série 3695)',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/6784',
+    tabelaSidra: 'Tabela 6784 / SGS 3695',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', 'Var. Real %', 'PIB (R$ bi)', 'PIB per capita (R$)', 'Câmbio (US$)'],
+      headers: ['Ano', 'Var. Real %', 'PIB (R$ milhões)', 'PIB per capita (R$)', 'Câmbio (US$)'],
       rows: [
-        ['2010', '7,5', '3.822', '19.878', '1,76'],
-        ['2015', '-3,8', '6.001', '29.349', '3,90'],
-        ['2018', '1,8', '7.004', '33.594', '3,87'],
-        ['2020', '-3,3', '7.610', '36.200', '5,16'],
-        ['2022', '3,0', '9.915', '47.607', '5,17'],
-        ['2023', '2,9', '10.900', '52.092', '4,99'],
-        ['2024', 'N/D — Pendente de verificação', 'N/D', 'N/D', 'N/D']
+        ['2010', '7,5', '3.822.000', '19.878', '1,76'],
+        ['2015', '-3,8', '6.001.000', '29.349', '3,90'],
+        ['2018', '1,7', '6.996.861', '33.878,35', '3,65'],
+        ['2020', '-3,3', '7.609.597', '36.380,83', '5,16'],
+        ['2022', '3,0', '10.079.677', '47.802,02', '5,16'],
+        ['2023', '3,2', '10.943.345', '51.693,92', '4,99'],
+        ['2024', 'N/D', 'N/D', 'N/D', '5,39']
       ]
     },
-    notas: 'Valores nominais em R$ bilhões. Dado de 2024 pendente de publicação oficial pelo IBGE.',
+    notas: 'PIB em milhões de reais correntes (SIDRA 6784). Câmbio: média anual (BCB SGS 3695). 2024: PIB pendente; câmbio disponível.',
     tendencia: 'crescente'
   },
   {
@@ -342,18 +342,18 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Variação acumulada do IPCA por ano',
     fonte: 'IBGE/SNIPC',
     fonteCompleta: 'IBGE - Sistema Nacional de Índices de Preços ao Consumidor',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/1419',
-    tabelaSidra: 'Tabela 1419',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/7060',
+    tabelaSidra: 'Tabela 7060',
     periodoOriginal: '2005-2016',
-    periodoAtualizado: '2005-2024',
+    periodoAtualizado: '2005-2025',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2010', '2015', '2018', '2020', '2021', '2022', '2023', '2024'],
+      headers: ['Ano', '2010', '2015', '2018', '2020', '2021', '2022', '2023', '2024', '2025'],
       rows: [
-        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', 'N/D']
+        ['IPCA %', '5,91', '10,67', '3,75', '4,52', '10,06', '5,79', '4,62', '4,83', '4,26']
       ]
     },
-    notas: 'Pico inflacionário em 2015 e 2021. Dado de 2024 pendente de consolidação pelo IBGE/SNIPC.',
+    notas: 'Pico inflacionário em 2015 e 2021. Fonte: SIDRA Tabela 7060.',
     tendencia: 'estavel'
   },
   {
@@ -365,25 +365,26 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     descricao: 'Composição da inflação por categoria de consumo',
     fonte: 'IBGE/SNIPC',
     fonteCompleta: 'IBGE - Sistema Nacional de Índices de Preços ao Consumidor',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7060',
-    tabelaSidra: 'Tabela 7060',
+    urlFonte: 'https://sidra.ibge.gov.br/tabela/1419',
+    tabelaSidra: 'Tabela 1419',
     periodoOriginal: '2016',
-    periodoAtualizado: '2023',
+    periodoAtualizado: '2025',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', 'Variação 2023 %', 'Peso Médio %'],
+      headers: ['Grupo', 'Variação 2025 %', 'Peso Médio %'],
       rows: [
-        ['Alimentação e bebidas', '1,03', '21,67'],
-        ['Habitação', '4,41', '15,87'],
-        ['Artigos de residência', '3,88', '3,71'],
-        ['Vestuário', '6,25', '4,80'],
-        ['Transportes', '3,35', '20,81'],
-        ['Saúde e cuidados pessoais', '6,85', '14,18'],
-        ['Despesas pessoais', '8,21', '10,22'],
-        ['Educação', '7,44', '5,80'],
-        ['Comunicação', '1,85', '2,94']
+        ['Alimentação e bebidas', '2,95', '21,72'],
+        ['Habitação', '6,79', '15,15'],
+        ['Artigos de residência', '-0,28', '3,59'],
+        ['Vestuário', '4,99', '4,65'],
+        ['Transportes', '3,07', '20,49'],
+        ['Saúde e cuidados pessoais', '6,09', '13,96'],
+        ['Despesas pessoais', '5,07', '10,58'],
+        ['Educação', '6,04', '5,99'],
+        ['Comunicação', '3,41', '3,87']
       ]
     },
+    notas: 'Dados acumulados de 2025. Fonte: SIDRA Tabela 1419.',
     tendencia: 'estavel'
   },
   {
@@ -394,24 +395,24 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     categoria: 'Economia',
     descricao: 'Evolução da dívida externa e dívida líquida do setor público',
     fonte: 'BCB',
-    fonteCompleta: 'Banco Central do Brasil',
-    urlFonte: 'https://www.bcb.gov.br/estatisticas/tabelasespeciais',
+    fonteCompleta: 'Banco Central do Brasil - SGS',
+    urlFonte: 'https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do?method=prepararTelaLocalizarSeries',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2024',
     statusAtualizacao: 'atualizado',
     dados: {
       headers: ['Ano', 'Dívida Externa (US$ bi)', 'Dívida Líquida SP (R$ bi)', 'DLSP % PIB'],
       rows: [
-        ['2010', '352', '1.476', '38,0%'],
-        ['2015', '335', '2.137', '35,6%'],
-        ['2018', '318', '3.405', '52,8%'],
-        ['2020', '341', '4.679', '61,4%'],
-        ['2022', '368', '5.312', '56,1%'],
-        ['2023', '378', '6.050', '60,8%'],
-        ['2024', 'N/D', 'N/D', 'N/D']
+        ['2010', '352,0', '1.476', '38,0%'],
+        ['2015', '335,0', '2.137', '35,6%'],
+        ['2018', '559,2', '3.695,8', '52,8%'],
+        ['2020', '554,9', '4.675,0', '62,6%'],
+        ['2022', '576,4', '6.167,2', '57,5%'],
+        ['2023', '607,2', '6.660,6', '60,4%'],
+        ['2024', '603,9*', '7.221,0*', '61,1%*']
       ]
     },
-    notas: 'DLSP = Dívida Líquida do Setor Público. Dado de 2024 pendente de publicação oficial pelo BCB.',
+    notas: '* 2024: dados do relatório de fechamento BCB início de 2025, sujeitos a ajustes marginais. DLSP = Dívida Líquida do Setor Público.',
     tendencia: 'crescente'
   },
   {
@@ -421,9 +422,9 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     tituloIngles: 'Federal Social Spending, GDP, GSF/GDP',
     categoria: 'Economia',
     descricao: 'Gasto social federal em relação ao PIB',
-    fonte: 'ME/IBGE',
-    fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
+    fonte: 'Senado/SIGA',
+    fonteCompleta: 'SIGA Brasil — Painel Especialista (Senado Federal)',
+    urlFonte: 'https://www9.senado.leg.br/QvAJAXZfc/opendoc.htm?document=Senado%2FSigaBrasilPainelEspecialista.qvw&host=QVS%40www9a&anonymous=true',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
@@ -432,14 +433,14 @@ export const tabelasEconomicas: CommonCoreTable[] = [
       rows: [
         ['2010', '14,0%', '8,5%', '1,9%', '2,1%', '1,3%'],
         ['2015', '15,7%', '9,3%', '2,1%', '2,7%', '1,5%'],
-        ['2018', '17,2%', '10,2%', '2,0%', '2,8%', '1,6%'],
-        ['2020', '21,3%', '10,8%', '2,8%', '2,4%', '4,2%'],
-        ['2022', '18,5%', '10,5%', '2,2%', '2,6%', '2,8%'],
-        ['2023', '19,2%', '10,8%', '2,3%', '2,8%', '3,0%'],
-        ['2024', 'N/D', 'N/D', 'N/D', 'N/D', 'N/D']
+        ['2018', '13,31%', '9,18%', '1,54%', '1,36%', '1,23%'],
+        ['2020', '17,97%', '9,45%', '1,98%', '1,16%', '5,39%'],
+        ['2022', '12,91%', '8,48%', '1,38%', '1,11%', '1,95%'],
+        ['2023', '13,50%', '8,42%', '1,49%', '1,19%', '2,37%'],
+        ['2024', '13,55%', '8,37%', '1,65%', '1,17%', '2,37%']
       ]
     },
-    notas: 'Pico em 2020 devido ao Auxílio Emergencial na pandemia. Dado de 2024 pendente de publicação oficial.',
+    notas: 'Pico em 2020 devido ao Auxílio Emergencial. Fonte: SIGA Brasil — Painel Especialista (Senado Federal).',
     tendencia: 'crescente'
   },
   {
@@ -449,25 +450,25 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     tituloIngles: 'Trajectory of the Federal Social Spending by field',
     categoria: 'Economia',
     descricao: 'Participação de cada área no gasto social como % do PIB',
-    fonte: 'ME/IBGE',
-    fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
+    fonte: 'Senado/SIGA',
+    fonteCompleta: 'SIGA Brasil — Painel Especialista (Senado Federal)',
+    urlFonte: 'https://www9.senado.leg.br/QvAJAXZfc/opendoc.htm?document=Senado%2FSigaBrasilPainelEspecialista.qvw&host=QVS%40www9a&anonymous=true',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2018', '2020', '2022'],
+      headers: ['Área', '2010', '2015', '2018', '2020', '2022', '2024'],
       rows: [
-        ['Previdência Social', '8,5%', '9,3%', '10,2%', '10,8%', '10,5%'],
-        ['Saúde', '1,9%', '2,1%', '2,0%', '2,8%', '2,2%'],
-        ['Educação e Cultura', '2,1%', '2,7%', '2,8%', '2,4%', '2,6%'],
-        ['Assistência Social', '1,3%', '1,5%', '1,6%', '4,2%', '2,8%'],
-        ['Trabalho e Emprego', '0,8%', '1,2%', '1,5%', '1,8%', '1,6%'],
-        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%'],
-        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%']
+        ['Previdência Social', '8,5%', '9,3%', '9,18%', '9,45%', '8,48%', '8,37%'],
+        ['Saúde', '1,9%', '2,1%', '1,54%', '1,98%', '1,38%', '1,65%'],
+        ['Educação e Cultura', '2,1%', '2,7%', '1,37%', '1,17%', '1,12%', '1,19%'],
+        ['Assistência Social', '1,3%', '1,5%', '1,23%', '5,39%', '1,95%', '2,37%'],
+        ['Trabalho', '0,8%', '1,2%', '1,00%', '1,00%', '0,88%', '0,97%'],
+        ['Saneamento e Habitação', '0,2%', '0,5%', '0,3%', '0,2%', '0,3%', '0,3%'],
+        ['Organização Agrária', '0,1%', '0,2%', '0,1%', '0,1%', '0,2%', '0,2%']
       ]
     },
-    notas: 'Coluna 2024 removida — dado pendente de publicação oficial.',
+    notas: 'Fonte: SIGA Brasil — Painel Especialista (Senado Federal).',
     tendencia: 'crescente'
   },
   {
@@ -477,24 +478,24 @@ export const tabelasEconomicas: CommonCoreTable[] = [
     tituloIngles: 'Percentage share of each field in total Federal Social Spending',
     categoria: 'Economia',
     descricao: 'Composição percentual do gasto social federal por área',
-    fonte: 'ME/IBGE',
-    fonteCompleta: 'Ministério da Economia e IBGE',
-    urlFonte: 'https://www.tesourotransparente.gov.br/visualizacao/painel-de-monitoramento-dos-gastos-com-pessoal',
+    fonte: 'Senado/SIGA',
+    fonteCompleta: 'SIGA Brasil — Painel Especialista (Senado Federal)',
+    urlFonte: 'https://www9.senado.leg.br/QvAJAXZfc/opendoc.htm?document=Senado%2FSigaBrasilPainelEspecialista.qvw&host=QVS%40www9a&anonymous=true',
     periodoOriginal: '2002-2015',
     periodoAtualizado: '2002-2024',
     statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Área', '2010', '2015', '2020', '2022'],
+      headers: ['Área', '2020', '2022', '2024'],
       rows: [
-        ['Previdência Social', '57,1%', '53,2%', '50,7%', 'N/D'],
-        ['Saúde', '12,6%', '11,8%', '13,1%', 'N/D'],
-        ['Educação e Cultura', '13,7%', '15,4%', '11,3%', 'N/D'],
-        ['Assistência Social', '9,0%', '8,8%', '19,7%', 'N/D'],
-        ['Trabalho e Emprego', '5,4%', '6,8%', '8,5%', 'N/D'],
-        ['Outros', '2,2%', '4,0%', '-3,3%', 'N/D']
+        ['Previdência Social', '49,72%', '61,10%', '57,65%'],
+        ['Assistência Social', '28,35%', '14,07%', '16,31%'],
+        ['Saúde', '10,41%', '9,95%', '11,34%'],
+        ['Educação e Cultura', '6,13%', '8,02%', '8,15%'],
+        ['Trabalho', '5,25%', '6,73%', '6,38%'],
+        ['Outros (Saneamento, Habitação e Org. Agrária)', '0,14%', '0,13%', '0,17%']
       ]
     },
-    notas: 'Assistência Social expandiu significativamente em 2020. Dados de 2022 pendentes de consolidação oficial.',
+    notas: 'Assistência Social expandiu significativamente em 2020 (Auxílio Emergencial). Fonte: SIGA Brasil — Painel Especialista (Senado Federal).',
     tendencia: 'estavel'
   }
 ];
