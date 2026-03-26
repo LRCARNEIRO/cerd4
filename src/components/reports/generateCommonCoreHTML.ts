@@ -1,5 +1,6 @@
 import type { LacunaIdentificada, IndicadorInterseccional } from '@/hooks/useLacunasData';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { svgLineChart, svgBarChart, dataCards } from '@/components/reports/cerdiv/chartUtils';
 import {
   dadosDemograficos as hcDemo, indicadoresSocioeconomicos as hcSocioEco,
   educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
