@@ -797,26 +797,117 @@ tr:nth-child(even){background:#f8fafc;}
   <div class="section-header">
     <div class="section-icon">🔗</div>
     <div><h2 class="section-title">10. Cruzamento: Orçamento × Indicadores Sociais</h2>
-    <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores</p></div>
-  </div>
-
-  <div class="table-container">
-    <div class="table-header"><h3>Indicadores Socioeconômicos × Execução Orçamentária</h3><p>${indicadores.length} indicadores no sistema</p></div>
-    <table>
-      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
-      <tbody>
-      ${indicadores.slice(0, 20).map((ind: any) =>
-        `<tr><td><strong>${ind.nome}</strong></td><td>${eixoLabels[ind.categoria] || ind.categoria}</td><td class="${ind.tendencia === 'reducao' ? 'trend-up' : ind.tendencia === 'aumento' ? 'trend-down' : ''}">${ind.tendencia || '—'}</td><td style="font-size:.8rem">${ind.fonte}</td></tr>`
-      ).join('')}
-      </tbody>
-    </table>
+    <p class="section-subtitle">Correlação entre investimento público e evolução dos indicadores — ${indicadores.length} indicadores no sistema</p></div>
   </div>
 
   ${(() => {
-    const lacunasTrabalho = lacunas.filter((l: any) => l.eixo_tematico === 'trabalho_renda');
-    const naoCumpridas = lacunasTrabalho.filter((l: any) => l.status_cumprimento === 'nao_cumprido').length;
-    return lacunasTrabalho.length > 0 ? `
-    <div class="insight-card"><p>⚠️ Das ${lacunasTrabalho.length} recomendações da ONU sobre Trabalho e Renda, <strong>${naoCumpridas} ainda não foram cumpridas</strong>, apesar dos investimentos realizados.</p></div>` : '';
+    // Group indicators by category and compute summary
+    const catMap: Record<string, { total: number; crescente: number; decrescente: number; estavel: number; items: any[] }> = {};
+    indicadores.forEach((ind: any) => {
+      const cat = ind.categoria || 'outros';
+      if (!catMap[cat]) catMap[cat] = { total: 0, crescente: 0, decrescente: 0, estavel: 0, items: [] };
+      catMap[cat].total++;
+      if (ind.tendencia === 'crescente') catMap[cat].crescente++;
+      else if (ind.tendencia === 'decrescente') catMap[cat].decrescente++;
+      else if (ind.tendencia === 'estavel' || ind.tendencia === 'estável') catMap[cat].estavel++;
+      catMap[cat].items.push(ind);
+    });
+
+    // Categories with budget crossover
+    const eixoToCat: Record<string, string[]> = {
+      saude: ['saude', 'covid_racial'],
+      educacao: ['educacao'],
+      seguranca_publica: ['seguranca_publica'],
+      trabalho_renda: ['trabalho_renda'],
+      terra_territorio: ['terra_territorio', 'povos_tradicionais'],
+      cultura_patrimonio: ['cultura_patrimonio', 'Cultura'],
+      participacao_social: ['adm_publica'],
+    };
+
+    const crossRows = Object.entries(eixoToCat).map(([eixo, cats]) => {
+      const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
+      const pagoEixo = orcEixo.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
+      const totalInd = cats.reduce((s, c) => s + (catMap[c]?.total || 0), 0);
+      const tendMelhora = cats.reduce((s, c) => {
+        const cm = catMap[c];
+        if (!cm) return s;
+        return s + cm.items.filter((i: any) => {
+          const t = (i.tendencia || '').toLowerCase();
+          const nome = (i.nome || '').toLowerCase();
+          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
+          if (t === 'decrescente' && negative) return true;
+          if (t === 'crescente' && !negative) return true;
+          return false;
+        }).length;
+      }, 0);
+      const tendPiora = cats.reduce((s, c) => {
+        const cm = catMap[c];
+        if (!cm) return s;
+        return s + cm.items.filter((i: any) => {
+          const t = (i.tendencia || '').toLowerCase();
+          const nome = (i.nome || '').toLowerCase();
+          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
+          if (t === 'crescente' && negative) return true;
+          if (t === 'decrescente' && !negative) return true;
+          return false;
+        }).length;
+      }, 0);
+      const lacunasEixo = lacunas.filter((l: any) => l.eixo_tematico === eixo);
+      const cumpridas = lacunasEixo.filter((l: any) => ['cumprido', 'parcialmente_cumprido', 'em_andamento'].includes(l.status_cumprimento)).length;
+
+      return { eixo, pagoEixo, totalInd, tendMelhora, tendPiora, lacunasTotal: lacunasEixo.length, lacunasCumpridas: cumpridas };
+    }).filter(r => r.totalInd > 0 || r.pagoEixo > 0);
+
+    return `
+  <div class="table-container">
+    <div class="table-header"><h3>Painel Cruzado: Orçamento × Indicadores × Lacunas por Eixo</h3><p>Visão integrada do investimento, evolução dos indicadores e cumprimento das recomendações</p></div>
+    <table>
+      <thead><tr><th>Eixo Temático</th><th>Orç. Pago</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>Lacunas</th><th>Cumprimento</th></tr></thead>
+      <tbody>
+      ${crossRows.map(r => {
+        const execLabel = r.lacunasTotal > 0 ? `${r.lacunasCumpridas}/${r.lacunasTotal}` : '—';
+        const pctCumpr = r.lacunasTotal > 0 ? Math.round(r.lacunasCumpridas / r.lacunasTotal * 100) : 0;
+        const cumprColor = pctCumpr >= 60 ? '#166534' : pctCumpr >= 30 ? '#92400e' : '#991b1b';
+        return `<tr>
+          <td><strong>${eixoLabels[r.eixo] || r.eixo}</strong></td>
+          <td style="text-align:right;font-family:monospace">${fmtC(r.pagoEixo)}</td>
+          <td style="text-align:center">${r.totalInd}</td>
+          <td class="trend-up" style="text-align:center">${r.tendMelhora > 0 ? '+' + r.tendMelhora : '—'}</td>
+          <td class="trend-down" style="text-align:center">${r.tendPiora > 0 ? r.tendPiora : '—'}</td>
+          <td style="text-align:center">${r.lacunasTotal || '—'}</td>
+          <td style="text-align:center;font-weight:600;color:${cumprColor}">${execLabel} (${pctCumpr}%)</td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    <div class="table-footer">Cruzamento automático: eixo_tematico (lacunas e orçamento) × categoria (indicadores)</div>
+  </div>
+
+  <div class="table-container" style="margin-top:20px;">
+    <div class="table-header"><h3>Indicadores com Tendência Identificada</h3><p>Amostra dos indicadores com tendência crescente, decrescente ou estável</p></div>
+    <table>
+      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
+      <tbody>
+      ${indicadores.filter((ind: any) => ind.tendencia).slice(0, 30).map((ind: any) =>
+        '<tr><td><strong>' + ind.nome + '</strong></td><td>' + (eixoLabels[ind.categoria] || ind.categoria) + '</td><td class="' + (ind.tendencia === 'decrescente' ? 'trend-down' : ind.tendencia === 'crescente' ? 'trend-up' : 'trend-stable') + '">' + (ind.tendencia || '—') + '</td><td style="font-size:.8rem">' + ind.fonte + '</td></tr>'
+      ).join('')}
+      </tbody>
+    </table>
+    <div class="table-footer">Total de indicadores no banco: ${indicadores.length} | Com tendência definida: ${indicadores.filter((i: any) => i.tendencia).length}</div>
+  </div>
+
+  ${(() => {
+    const insights: string[] = [];
+    crossRows.forEach(r => {
+      if (r.pagoEixo > 0 && r.tendPiora > r.tendMelhora && r.tendPiora > 0) {
+        insights.push('⚠️ <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + fmtC(r.pagoEixo) + ' pagos, mas ' + r.tendPiora + ' indicador(es) em piora — investimento pode não estar gerando retorno social.');
+      }
+      if (r.pagoEixo === 0 && r.lacunasTotal > 0) {
+        insights.push('🔴 <strong>' + (eixoLabels[r.eixo] || r.eixo) + ':</strong> ' + r.lacunasTotal + ' lacuna(s) ONU sem orçamento vinculado identificado.');
+      }
+    });
+    return insights.length > 0 ? insights.map(i => '<div class="insight-card"><p>' + i + '</p></div>').join('') : '';
+  })()}`;
   })()}
 </div>
 </section>
