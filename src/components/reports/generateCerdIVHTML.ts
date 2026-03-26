@@ -209,6 +209,34 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   const emAndamento = d.stats?.porStatus?.em_andamento || 0;
   const total = d.stats?.total || 0;
 
+  // Thematic narrative data
+  const atlas = d.mirror?.atlasViolencia2025 || hcAtlas;
+  const jovens = d.mirror?.jovensNegrosViolencia || hcJovens;
+  const violIntersec = d.mirror?.violenciaInterseccional?.length ? d.mirror.violenciaInterseccional : hcViolIntersec;
+  const juventude = d.mirror?.juventudeNegra?.length ? d.mirror.juventudeNegra : hcJuventude;
+  const saudeMaterna = d.mirror?.saudeMaternaRaca || hcSaudeMaterna;
+  const analfab = d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo;
+  const evasao = hcEvasao;
+  const eduRG = hcEduRG;
+  const trabalhoRG = hcTrabalhoRG;
+  const classe = hcClasse;
+  const cadUnico = hcCadUnico;
+  const chefia = hcChefia;
+  const deficit = d.mirror?.deficitHabitacionalSerie?.length ? d.mirror.deficitHabitacionalSerie : hcDeficit;
+  const antra = hcAntra;
+  const lgbtqia = hcLgbtqia;
+  const defic = hcDeficiencia;
+
+  // Build thematic narratives map for embedding in articles
+  const thematicNarratives: Record<string, string> = {
+    security: renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude),
+    health: renderHealthNarrative(sau, saudeMaterna),
+    education: renderEducationNarrative(edu, evasao, analfab, eduRG),
+    labor: renderLaborNarrative(eco, classe, trabalhoRG, cadUnico, chefia),
+    territory: renderTerritoryNarrative(povos, deficit),
+    lgbtDisability: renderLGBTandDisabilityNarrative(antra, lgbtqia, defic),
+  };
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -227,43 +255,25 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
-  ${renderAllRecommendations(d.lacunas)}
-  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
-  ${(() => {
-    const atlas = d.mirror?.atlasViolencia2025 || hcAtlas;
-    const jovens = d.mirror?.jovensNegrosViolencia || hcJovens;
-    const violIntersec = d.mirror?.violenciaInterseccional?.length ? d.mirror.violenciaInterseccional : hcViolIntersec;
-    const juventude = d.mirror?.juventudeNegra?.length ? d.mirror.juventudeNegra : hcJuventude;
-    const saudeMaterna = d.mirror?.saudeMaternaRaca || hcSaudeMaterna;
-    const analfab = d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo;
-    const evasao = hcEvasao;
-    const eduRG = hcEduRG;
-    const trabalhoRG = hcTrabalhoRG;
-    const classe = hcClasse;
-    const cadUnico = hcCadUnico;
-    const chefia = hcChefia;
-    const deficit = d.mirror?.deficitHabitacionalSerie?.length ? d.mirror.deficitHabitacionalSerie : hcDeficit;
-    const antra = hcAntra;
-    const lgbtqia = hcLgbtqia;
-    const defic = hcDeficiencia;
-    return `
-      <h2>IV. Narrativa Temática — Evolução dos Indicadores 2018-2025</h2>
-      <p>Esta seção atualiza a narrativa do relatório CERD III (período até 2018), contando a história da evolução dos indicadores de desigualdade racial no Brasil até 2025. Os dados são extraídos integralmente das bases estatísticas do sistema, com fontes oficiais verificadas.</p>
-      ${renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude)}
-      ${renderHealthNarrative(sau, saudeMaterna)}
-      ${renderEducationNarrative(edu, evasao, analfab, eduRG)}
-      ${renderLaborNarrative(eco, classe, trabalhoRG, cadUnico, chefia)}
-      ${renderTerritoryNarrative(povos, deficit)}
-      ${renderLGBTandDisabilityNarrative(antra, lgbtqia, defic)}
-    `;
-  })()}
-  ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
+  ${renderArticleAnalysisExpanded(d, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
+  ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
   ${renderIntersectionalAnalysis(d.indicadores, d.lacunas)}
   ${renderTraditionalPeoples(povos)}
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
+
+  <!-- ANEXOS -->
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO A — Quadro Detalhado: 87 Recomendações × Evidências</h2>
+  <p>O quadro a seguir apresenta o detalhamento completo de todas as recomendações das Observações Finais de 2022, com status, evidências, ações do Brasil e lacunas remanescentes.</p>
+  ${renderAllRecommendations(d.lacunas)}
+
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO B — Respostas do Estado Brasileiro às Observações Finais (CERD III)</h2>
+  <p>Registro das respostas oficiais do Brasil a cada parágrafo das Observações Finais, incluindo avaliação técnica dinâmica do sistema.</p>
+  ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
