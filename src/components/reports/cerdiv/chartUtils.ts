@@ -35,6 +35,9 @@ export function svgLineChart(
     svg += `<polyline points="${points}" fill="none" stroke="${s.color}" stroke-width="2.5"/>`;
     s.values.forEach((v, i) => {
       svg += `<circle cx="${xScale(i)}" cy="${yScale(v)}" r="3.5" fill="${s.color}"/>`;
+      // Data label above each point
+      const labelY = yScale(v) - 8;
+      svg += `<text x="${xScale(i)}" y="${labelY}" text-anchor="middle" font-size="8" font-weight="600" fill="${s.color}">${v % 1 === 0 ? v : v.toFixed(1)}</text>`;
     });
   });
   let lx = padding.left;
@@ -77,7 +80,11 @@ export function svgBarChart(
     series.forEach((s, si) => {
       const x = groupX - (series.length * barWidth) / 2 + si * barWidth;
       const barH = ((s.values[li] - min) / range) * h;
-      svg += `<rect x="${x}" y="${yScale(s.values[li])}" width="${barWidth - 2}" height="${barH}" rx="2" fill="${s.color}" opacity="0.85"/>`;
+      const barY = yScale(s.values[li]);
+      svg += `<rect x="${x}" y="${barY}" width="${barWidth - 2}" height="${barH}" rx="2" fill="${s.color}" opacity="0.85"/>`;
+      // Data label above bar
+      const labelVal = fmt(s.values[li]);
+      svg += `<text x="${x + (barWidth - 2) / 2}" y="${barY - 4}" text-anchor="middle" font-size="7.5" font-weight="600" fill="${s.color}">${labelVal}</text>`;
     });
     svg += `<text x="${groupX}" y="${height - 10}" text-anchor="middle" font-size="9" fill="#94a3b8">${l}</text>`;
   });

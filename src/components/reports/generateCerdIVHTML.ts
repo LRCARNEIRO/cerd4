@@ -786,7 +786,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
 function renderNormativeBase(normativos: any[]): string {
   if (normativos.length === 0) {
     return `
-    <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
+    <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
     <div class="section">
       <p>O período 2018-2025 foi marcado por intensas transformações legislativas e institucionais, que podem ser divididas em duas fases distintas:</p>
       <h3>Fase 1: Desmonte Institucional (2019-2022)</h3>
@@ -818,7 +818,7 @@ function renderNormativeBase(normativos: any[]): string {
   });
 
   return `
-  <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
+  <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
   <div class="section">
     <p>O acervo normativo catalogado compreende <strong>${normativos.length} documentos</strong> entre legislações, políticas públicas, atos administrativos e compromissos internacionais. A análise distingue duas fases: o desmonte institucional (2019-2022) e a reconstrução (2023-2025), com a criação do MIR e MPI como marcos fundamentais.</p>
     ${dataCards([
@@ -855,7 +855,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
   lacunas.forEach(l => { gruposLacunas[l.grupo_focal] = (gruposLacunas[l.grupo_focal] || 0) + 1; });
 
   return `
-  <h2>VI. Análise Interseccional</h2>
+  <h2>VIII. Análise Interseccional</h2>
   <div class="section">
     <p>O Brasil mantém <strong>${indicadores.length} indicadores estatísticos</strong> desagregados no sistema de monitoramento, dos quais ${comDesagRaca} possuem desagregação por raça/cor, ${comDesagGenero} por gênero e ${comDesagIdade} por idade. Esta capacidade de desagregação é essencial para a identificação de disparidades interseccionais conforme recomendação reiterada do Comitê.</p>
 
@@ -884,7 +884,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
 
 function renderTraditionalPeoples(povos: any): string {
   return `
-  <h2>VII. Povos Tradicionais</h2>
+  <h2>IX. Povos Tradicionais</h2>
   <div class="section">
     <h3>A. Povos Indígenas</h3>
     <div class="highlight-box">
@@ -953,7 +953,7 @@ function renderGuidingThreads(fios: FioCondutor[], conclusoes: ConclusaoDinamica
   ` : '';
 
   return `
-  <h2>VIII. Fios Condutores Analíticos e Síntese Cruzada</h2>
+  <h2>X. Fios Condutores Analíticos e Síntese Cruzada</h2>
   <div class="section">
     <p>A análise cruzada entre as bases estatística, orçamentária, normativa e de recomendações revela <strong>${fios.length} fios condutores</strong> que estruturam a narrativa do período, junto a ${conclusoes.filter(c => c.tipo === 'avanco').length} avanços, ${conclusoes.filter(c => c.tipo === 'retrocesso').length} retrocessos e ${conclusoes.filter(c => c.tipo === 'lacuna_persistente').length} lacunas persistentes.</p>
     
@@ -976,7 +976,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
   return `
-  <h2>IX. Conclusões e Compromissos</h2>
+  <h2>XI. Conclusões e Compromissos</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>Veredito Geral</h4>
