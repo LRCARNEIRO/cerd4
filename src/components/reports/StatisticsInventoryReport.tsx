@@ -764,7 +764,7 @@ export function StatisticsInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
-          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBD?.length || 0} indicadores BD, 
+          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBDUnicos.length} indicadores BD exclusivos, 
           interseccionalidades, vulnerabilidades) ou o inventário resumido.
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
