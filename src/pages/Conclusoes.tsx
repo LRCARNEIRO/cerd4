@@ -41,7 +41,7 @@ export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
-    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
+    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados, lastUpdated,
   } = useAnalyticalInsights();
   const { dadosDemograficos, segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais } = useMirrorData();
 
