@@ -461,6 +461,8 @@ tr:nth-child(even){background:#f8fafc;}
       <li><a href="#grupos-focais">Análise por Grupo Focal</a></li>
       <li><a href="#artigos-icerd">Cruzamento × Artigos ICERD</a></li>
       <li><a href="#cruzamento-indicadores">Cruzamento × Indicadores Sociais</a></li>
+      <li><a href="#ieat-racial">IEAT-Racial — Índice de Eficácia da Agenda Transversal</a></li>
+      <li><a href="#metodologia-detalhada">Metodologia Detalhada — Passo a Passo</a></li>
       <li><a href="#conclusao">Conclusão Analítica</a></li>
       <li><a href="#fontes">Fontes e Referências</a></li>
       <li><a href="#anexo">ANEXO — Listagem Completa de Programas/Ações</a></li>
