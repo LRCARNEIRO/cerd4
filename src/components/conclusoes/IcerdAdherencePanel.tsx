@@ -71,18 +71,71 @@ type ArtigoAnalysis = {
  * Returns a count of distinct statistical evidence series per article.
  */
 function useCountStatSeriesPerArticle() {
-  const { segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos } = useMirrorData();
+  const m = useMirrorData();
   return useMemo(() => {
-    const counts: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
-    if (segurancaPublica.length > 0) { counts['V'] += 2; counts['VI'] += 2; }
-    if (feminicidioSerie.length > 0) { counts['V'] += 1; }
-    if (educacaoSerieHistorica.length > 0) { counts['V'] += 2; counts['VII'] += 2; }
-    if (saudeSerieHistorica.length > 0) { counts['V'] += 2; }
-    if (indicadoresSocioeconomicos.length > 0) { counts['V'] += 3; }
-    if (povosTradicionais) { counts['III'] += 1; counts['V'] += 1; }
-    if (dadosDemograficos) { counts['I'] += 1; counts['II'] += 1; }
-    return counts;
-  }, [segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos]);
+    const c: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
+
+    // Helper: add to articles if data exists
+    const add = (data: any, arts: ArtigoConvencao[], n = 1) => {
+      const has = Array.isArray(data) ? data.length > 0 : !!data;
+      if (has) arts.forEach(a => { c[a] += n; });
+    };
+
+    // ── DEMOGRAFIA (Art I, II — definição e obrigações) ──
+    add(m.dadosDemograficos, ['I', 'II'], 2);
+    add(m.evolucaoComposicaoRacial, ['I', 'II']);
+
+    // ── SEGURANÇA (Art V-b, VI) ──
+    add(m.segurancaPublica, ['V', 'VI'], 2);
+    add(m.feminicidioSerie, ['V', 'VI']);
+    add(m.atlasViolencia2025, ['V', 'VI']);
+    add(m.jovensNegrosViolencia, ['V', 'VI']);
+    add(m.violenciaInterseccional, ['V', 'VI']);
+
+    // ── EDUCAÇÃO (Art V-e-v, VII) ──
+    add(m.educacaoSerieHistorica, ['V', 'VII'], 2);
+    add(m.analfabetismoGeral2024, ['V', 'VII']);
+    add(m.evasaoEscolarSerie, ['V', 'VII']);
+
+    // ── SAÚDE (Art V-e-iv) ──
+    add(m.saudeSerieHistorica, ['V'], 2);
+    add(m.saudeMaternaRaca, ['V']);
+
+    // ── HABITAÇÃO / RENDA (Art V-e-iii, V-e-i) ──
+    add(m.deficitHabitacionalSerie, ['V']);
+    add(m.cadUnicoPerfilRacial, ['V']);
+    add(m.indicadoresSocioeconomicos, ['V'], 2);
+    add(m.rendimentosCenso2022, ['I', 'V']);
+    add(m.evolucaoDesigualdade, ['I', 'II', 'V']);
+
+    // ── RAÇA × GÊNERO (Art I interseccionalidade, V DESCA) ──
+    add(m.interseccionalidadeTrabalho, ['I', 'V']);
+    add(m.trabalhoRacaGenero, ['I', 'V']);
+    add(m.educacaoRacaGenero, ['I', 'V', 'VII']);
+    add(m.chefiaFamiliarRacaGenero, ['I', 'V']);
+
+    // ── DEFICIÊNCIA (Art I interseccionalidade, II medidas especiais) ──
+    add(m.deficienciaPorRaca, ['I', 'II', 'V']);
+    add(m.disparidadesPcd1459, ['I', 'V']);
+
+    // ── LGBTQIA+ (Art I, V) ──
+    add(m.serieAntraTrans, ['I', 'V', 'VI']);
+    add(m.lgbtqiaPorRaca, ['I', 'V']);
+
+    // ── JUVENTUDE (Art V, VI) ──
+    add(m.juventudeNegra, ['V', 'VI'], 2);
+
+    // ── CLASSE / POBREZA (Art V-e) ──
+    add(m.classePorRaca, ['I', 'V']);
+
+    // ── POVOS TRADICIONAIS (Art III segregação, V território) ──
+    add(m.povosTradicionais, ['III', 'V'], 2);
+
+    // ── DISCURSO DE ÓDIO / Art IV — contabiliza normativos e indicadores sobre o tema ──
+    // Art IV não tem séries estatísticas diretas no sistema, mas a cobertura normativa já preenche
+
+    return c;
+  }, [m]);
 }
 
 /**
