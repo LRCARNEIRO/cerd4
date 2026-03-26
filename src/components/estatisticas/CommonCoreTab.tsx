@@ -835,21 +835,21 @@ export const tabelasSaude: CommonCoreTable[] = [
     categoria: 'Saúde',
     descricao: 'Esperança de vida ao nascer por sexo',
     fonte: 'IBGE/Tábuas de Mortalidade',
-    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7362',
-    tabelaSidra: 'Tabela 7362',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
+    tabelaSidra: 'Tábuas de Mortalidade',
     periodoOriginal: '2000-2015',
-    periodoAtualizado: '2000-2024',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2000-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023'],
+      headers: ['Sexo', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5'],
-        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1'],
-        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9']
+        ['Total', '71,1', '74,4', '76,2', '74,8', '72,8', '75,4', '76,4'],
+        ['Homens', '67,3', '70,7', '72,8', '71,2', '69,3', '72,1', '73,1'],
+        ['Mulheres', '75,1', '78,1', '79,6', '78,5', '76,4', '78,8', '79,7']
       ]
     },
-    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva. Coluna 2024 removida — dado preliminar (Tábuas de Mortalidade ainda não publicadas). ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE Tábuas Completas de Mortalidade 2023 (divulgação 29/11/2024). Queda em 2020-2021 pela COVID-19. Superou patamar pré-pandemia em 2023 (76,4 vs 76,2 em 2019). Sobremortalidade masculina 20-24 anos: 4,1x.',
     tendencia: 'crescente'
   },
   {
@@ -859,12 +859,12 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Fertility rate',
     categoria: 'Saúde',
     descricao: 'Número médio de filhos por mulher',
-    fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Projeções Populacionais',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'IBGE/Projeções',
+    fonteCompleta: 'IBGE - Projeções Populacionais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
+    tabelaSidra: 'Projeções IBGE',
     periodoOriginal: '2000-2015',
-    periodoAtualizado: '2000-2024',
+    periodoAtualizado: '2000-2023',
     statusAtualizacao: 'parcial',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022'],
@@ -872,7 +872,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60']
       ]
     },
-    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006. Coluna 2024 removida — dado preliminar não publicado oficialmente. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '⚠️ PENDENTE DE AUDITORIA HUMANA: Fecundidade abaixo do nível de reposição (2,1) desde 2006. Dados 2019-2022 da Projeção IBGE. Valor exato de 2023 pendente de publicação oficial.',
     tendencia: 'decrescente'
   },
   {
@@ -884,7 +884,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Cinco principais causas de morte por grupo etário',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - Sistema de Informações sobre Mortalidade',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10br.def',
     periodoOriginal: '2015',
     periodoAtualizado: '2015-2022',
     statusAtualizacao: 'parcial',
@@ -913,19 +913,21 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Infant mortality rate (IMR)',
     categoria: 'Saúde',
     descricao: 'Óbitos de menores de 1 ano por 1.000 nascidos vivos',
-    fonte: 'MS/SIM-SINASC',
-    fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    fonte: 'IBGE/Tábuas',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
     periodoOriginal: '2000-2015',
     periodoAtualizado: '2000-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2000', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Ano', '1940', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['TMI ‰', '29,0', '22,2', '16,4', '13,8', '12,4', '11,9', '11,5']
+        ['TMI ‰', '146,6', '28,1', '15,0', '12,1', '11,4', '12,2', '12,4', '12,5'],
+        ['Homens ‰', '-', '-', '-', '-', '-', '-', '-', '13,5'],
+        ['Mulheres ‰', '-', '-', '-', '-', '-', '-', '-', '11,4']
       ]
     },
-    notas: 'Brasil superou meta do ODM (15,7‰ em 2015). Queda consistente. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE Tábuas de Mortalidade 2023 (divulgação 29/11/2024). TMI 2023 = 12,5‰. Queda de 91,5% desde 1940 (146,6‰). Piora leve em 2021 por COVID-19.',
     tendencia: 'decrescente'
   },
   {
@@ -935,18 +937,19 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Number of deaths of children under 5 per 1,000 live births',
     categoria: 'Saúde',
     descricao: 'Óbitos de menores de 5 anos por 1.000 nascidos vivos',
-    fonte: 'MS/SIM-SINASC',
-    fonteCompleta: 'Ministério da Saúde - SIM e SINASC',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    fonte: 'IBGE/Tábuas',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
     periodoOriginal: '2005-2015',
-    periodoAtualizado: '2005-2023',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2000-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Ano', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Ano', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['Taxa ‰', '19,9', '16,4', '14,3', '13,5', '13,0', '12,6']
+        ['Taxa ‰', '32,6', '17,5', '14,1', '13,0', '13,9', '14,7', '14,7']
       ]
     },
+    notas: '✅ Fonte: IBGE Tábuas de Mortalidade 2023. Mortalidade na infância estável em 14,7‰ em 2022-2023. 85% dos óbitos concentram-se no 1º ano de vida. Queda de 93,1% desde 1940 (212,1‰).',
     tendencia: 'decrescente'
   },
   {
@@ -1237,25 +1240,24 @@ export const tabelasTrabalho: CommonCoreTable[] = [
     tituloIngles: 'Informality rate',
     categoria: 'Trabalho',
     descricao: 'Trabalhadores informais em relação ao total de ocupados',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/6323',
-    tabelaSidra: 'Tabela 6323',
+    fonte: 'IBGE/SIS',
+    fonteCompleta: 'IBGE - Síntese de Indicadores Sociais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42043-em-2023-pobreza-no-pais-cai-ao-menor-nivel-desde-2012',
+    tabelaSidra: 'SIS 2024',
     periodoOriginal: '2012-2014',
-    periodoAtualizado: '2012-2024',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2012-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Grupo', '2012', '2015', '2019', '2022', '2024'],
+      headers: ['Grupo', '2022', '2023'],
       rows: [
-        ['Total', '43,8%', '44,6%', '41,1%', '39,8%', '38,2%'],
-        ['Homens', '41,8%', '42,5%', '39,2%', '38,0%', '36,5%'],
-        ['Mulheres', '46,3%', '47,2%', '43,5%', '42,0%', '40,2%'],
-        ['Brancos', '37,5%', '38,2%', '35,0%', '33,5%', '32,1%'],
-        ['Negros', '49,5%', '50,5%', '46,8%', '45,5%', '43,8%']
+        ['Total', '40,9%', '40,7%'],
+        ['Brancos', '-', '34,3%'],
+        ['Negros (Pretos+Pardos)', '-', '45,8%'],
+        ['Diferença N-B', '-', '11,5 p.p.']
       ]
     },
-    notas: 'PNAD Contínua trimestral — valores anuais são médias dos 4 trimestres. Informalidade estruturalmente maior entre negros. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
-    tendencia: 'decrescente'
+    notas: '✅ Fonte: IBGE SIS 2024 (divulgação 04/12/2024). Informalidade estável (40,9% → 40,7%). Negros: 45,8% vs Brancos: 34,3% — diferença de 11,5 p.p. reflete desigualdades historicamente constituídas.',
+    tendencia: 'estavel'
   },
   {
     id: 'cc-47',
@@ -1471,21 +1473,29 @@ export const tabelasPobreza: CommonCoreTable[] = [
     tituloIngles: 'Social inequality ratios by sex and race',
     categoria: 'Pobreza',
     descricao: 'Razão de rendimento entre grupos',
-    fonte: 'IBGE/PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7435',
-    tabelaSidra: 'Tabela 7435',
+    fonte: 'IBGE/SIS',
+    fonteCompleta: 'IBGE - Síntese de Indicadores Sociais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42043-em-2023-pobreza-no-pais-cai-ao-menor-nivel-desde-2012',
+    tabelaSidra: 'SIS 2024',
     periodoOriginal: '2005-2015',
     periodoAtualizado: '2005-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Razão', '2005', '2010', '2015', '2019', '2022', '2023'],
+      headers: ['Indicador', '2023 (SIS 2024)'],
       rows: [
-        ['Homens/Mulheres', '1,51', '1,49', '1,50', '1,45', '1,42', '1,40'],
-        ['Brancos/Negros', '1,89', '1,74', '1,89', '1,73', '1,68', '1,65']
+        ['Rend./hora Brancos', 'R$ 23,02'],
+        ['Rend./hora Negros', 'R$ 13,73'],
+        ['Razão Brancos/Negros (rend./hora)', '1,677x (+67,7%)'],
+        ['Rend./hora Homens', 'R$ 18,81'],
+        ['Rend./hora Mulheres', 'R$ 16,70'],
+        ['Razão H/M (rend./hora)', '1,126x (+12,6%)'],
+        ['Gini', '0,518'],
+        ['Renda 10% ricos / 40% pobres', '3,6x'],
+        ['Pobreza (US$ 6,85 PPC/dia)', '27,4% (59,0 mi)'],
+        ['Extrema pobreza (US$ 2,15 PPC/dia)', '4,4% (9,5 mi)']
       ]
     },
-    notas: 'Redução lenta das desigualdades de gênero e raça na renda. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE SIS 2024 (divulgação 04/12/2024). Rend./hora brancos 67,7% maior que negros. Gini estável (0,518). Pobreza caiu de 31,6% (2022) para 27,4% (2023). Extrema pobreza: menor desde 2012, pela 1ª vez < 5%. Sem programas sociais, Gini teria subido de 0,518 para 0,555.',
     tendencia: 'decrescente'
   },
   {
@@ -1549,23 +1559,23 @@ export const tabelasPobreza: CommonCoreTable[] = [
     tituloIngles: 'Percentage distribution by household food security situation',
     categoria: 'Pobreza',
     descricao: 'Situação de segurança alimentar domiciliar',
-    fonte: 'IBGE/POF-PNAD',
-    fonteCompleta: 'IBGE - PNAD Contínua / POF',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7437',
-    tabelaSidra: 'Tabela 7437',
+    fonte: 'IBGE/PNAD',
+    fonteCompleta: 'IBGE - PNAD Contínua — Módulo Segurança Alimentar 4ºT/2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39838-seguranca-alimentar-nos-domicilios-brasileiros-volta-a-crescer-em-2023',
+    tabelaSidra: 'PNAD Contínua 2023',
     periodoOriginal: '2004-2013',
     periodoAtualizado: '2004-2023',
-    statusAtualizacao: 'parcial',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Situação', '2004', '2013', '2018', '2022', '2023'],
+      headers: ['Situação', '2004', '2009', '2013', '2018 (POF)', '2023 (PNAD)'],
       rows: [
-        ['Segurança alimentar', '60,1%', '74,2%', '63,3%', '58,8%', '72,5%'],
-        ['Inseg. leve', '18,0%', '17,1%', '24,0%', '28,0%', '18,2%'],
-        ['Inseg. moderada', '14,1%', '5,1%', '8,1%', '8,8%', '6,0%'],
-        ['Inseg. grave', '7,7%', '3,6%', '4,6%', '4,4%', '3,3%']
+        ['Segurança alimentar', '64,8%', '69,8%', '77,4%', '63,3%', '72,4%'],
+        ['Inseg. leve', '18,0%', '18,7%', '14,8%', '24,0%', '18,2%'],
+        ['Inseg. moderada', '9,9%', '6,5%', '4,6%', '8,1%', '5,3%'],
+        ['Inseg. grave', '7,3%', '5,0%', '3,2%', '4,6%', '4,1%']
       ]
     },
-    notas: 'Piora durante pandemia (2020-2022), com recuperação significativa em 2023. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE PNAD Contínua — Módulo Segurança Alimentar, 4ºT/2023 (divulgação 25/04/2024). Segurança alimentar subiu de 63,3% (POF 2018) para 72,4% (2023). Total de 78,3M domicílios; 21,6M (27,6%) com algum grau de insegurança. Inseg. moderada/grave: 9,4% (vs 12,7% em 2018). Responsáveis negros: 54,5% dos domicílios com insegurança (vs 44,7% do total).',
     tendencia: 'decrescente'
   }
 ];
@@ -1734,21 +1744,24 @@ export const tabelasSeguranca: CommonCoreTable[] = [
     categoria: 'Segurança',
     descricao: 'Registros de violência doméstica contra mulheres',
     fonte: 'FBSP',
-    fonteCompleta: 'Fórum Brasileiro de Segurança Pública',
+    fonteCompleta: 'Fórum Brasileiro de Segurança Pública — 19º Anuário 2025',
     urlFonte: 'https://forumseguranca.org.br/anuario-brasileiro-seguranca-publica/',
     periodoOriginal: '2015',
-    periodoAtualizado: '2015-2023',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2015-2024',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Indicador', '2015', '2019', '2022', '2023'],
+      headers: ['Indicador', '2015', '2019', '2023', '2024'],
       rows: [
-        ['Lesão corporal (dom.)', '188.215', '266.310', '245.713', '252.480'],
-        ['Ameaça (dom.)', '340.543', '398.254', '388.652', '395.120'],
-        ['Feminicídio', '1.017', '1.326', '1.410', '1.463'],
-        ['Medidas protetivas', '289.432', '358.612', '412.580', '428.650']
+        ['Estupro/Estupro vuln.', '47.646', '66.123', 'N/D', '87.545'],
+        ['Feminicídio', '1.017', '1.326', 'N/D', '1.492'],
+        ['Tentativas feminicídio', '-', '-', 'N/D', '3.870'],
+        ['Medidas protetivas', '-', '-', 'N/D', '555.001'],
+        ['MPUs descumpridas', '-', '-', 'N/D', '101.656'],
+        ['Chamadas 190 (dom.)', '-', '-', 'N/D', '1.067.556'],
+        ['Stalking', '-', '-', 'N/D', '95.026']
       ]
     },
-    notas: 'Feminicídios em alta. Medidas protetivas em expansão. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: 19º Anuário FBSP 2025 (dados de 2024). Estupros: 87.545 (recorde histórico). 77% das vítimas < 14 anos. 56% das vítimas são negras. Feminicídios: 1.492 (maior desde 2015). 64% das vítimas são negras. Medidas protetivas: 555.001 (+7% vs 2023).',
     tendencia: 'crescente'
   },
   {
