@@ -10,7 +10,7 @@
 
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtigosDocumentoNormativo } from '@/utils/artigosConvencao';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
