@@ -291,7 +291,7 @@ export const atlasViolencia2025 = {
     percentualVitimas: 47.8,
     ano: 2023,
     percentualNegrosHomens: null as number | null, // REMOVIDO — dado não verificável no Atlas 2025
-    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte: 'Atlas da Violência 2025, p. 26 (IPEA/FBSP)',
   },
   // IVJ-N: Jovens negros têm risco 2x maior de homicídio que jovens brancos (2021)
   ivjn: {
@@ -299,7 +299,8 @@ export const atlasViolencia2025 = {
     riscoRelativo2017: 1.9,
     ano: 2021,
     riscoSuperiorNegro: 3.0, // entre jovens com ensino superior, risco até 3x maior para negros
-    fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
+    fonte: 'Atlas da Violência 2025, p. 74 (IPEA/FBSP)',
+    url: 'https://g1.globo.com/saude/noticia/2025/06/17/atlas-da-violencia-2025.ghtml',
   },
   fonte: 'Atlas da Violência 2025 (IPEA/FBSP)',
   link: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf',
