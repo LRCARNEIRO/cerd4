@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react';
 import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresInterseccionais, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresAnaliticos, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
@@ -73,7 +73,7 @@ export default function Recomendacoes() {
 
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
-  const { data: allIndicadores } = useIndicadoresInterseccionais();
+  const { data: allIndicadores } = useIndicadoresAnaliticos();
   const { data: allOrcamento } = useDadosOrcamentarios();
 
   // Fetch normativos for dynamic cross-referencing

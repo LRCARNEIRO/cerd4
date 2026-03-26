@@ -41,7 +41,7 @@ export default function Conclusoes() {
   const queryClient = useQueryClient();
   const {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
-    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
+    sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados, lastUpdated,
   } = useAnalyticalInsights();
   const { dadosDemograficos, segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais } = useMirrorData();
 
@@ -209,7 +209,13 @@ export default function Conclusoes() {
           <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />MUNIC/ESTADIC</Badge>
           <Badge variant="outline" className="gap-1 bg-destructive/10"><Heart className="w-3 h-3" />COVID-19</Badge>
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} lacunas ONU</Badge>
-          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores</Badge>
+          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores analíticos</Badge>
+          {lastUpdated && (
+            <Badge variant="secondary" className="gap-1 text-[10px]">
+              <Zap className="w-3 h-3" />
+              Dados atualizados: {new Date(lastUpdated).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </Badge>
+          )}
         </div>
         <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
           <RefreshCw className={cn("w-4 h-4 mr-1", isLoading && "animate-spin")} />

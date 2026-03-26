@@ -152,6 +152,30 @@ export function useIndicadoresInterseccionais(categoria?: string) {
   });
 }
 
+/**
+ * Hook analítico: retorna indicadores EXCLUINDO common_core.
+ * Usado nas seções de cruzamento (Aderência ICERD, Lacunas, Sensor Diagnóstico,
+ * Conclusões) para que apenas indicadores temáticos e ODS-Racial participem.
+ */
+export function useIndicadoresAnaliticos() {
+  return useQuery({
+    queryKey: ['indicadores-analiticos-sem-cc'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('indicadores_interseccionais')
+        .select('*')
+        .neq('categoria', 'common_core')
+        .order('categoria', { ascending: true });
+      if (error) throw error;
+      return data as IndicadorInterseccional[];
+    },
+  });
+}
+
 // Hook para buscar conclusões analíticas
 export function useConclusoesAnaliticas(periodo?: string) {
   return useQuery({
