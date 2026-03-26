@@ -199,7 +199,9 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
     { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
   ];
 
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBD.length;
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Relatório Completo — Base Estatística CERD IV</title>
@@ -242,7 +244,7 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
   <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
-  <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">INDICADORES BD</div></div>
+  <div class="stat-card"><div class="value">${indicadoresBDUnicos.length}</div><div class="label">INDICADORES BD (exclusivos)</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
 </div>
 
@@ -572,7 +574,9 @@ function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m:
     habitacao: 'Habitação',
   };
 
-  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBD.length;
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -746,7 +750,8 @@ export function StatisticsInventoryReport() {
     }
   };
 
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + (indicadoresBD?.length || 0);
+  const indicadoresBDUnicos = (indicadoresBD || []).filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return (
     <Card className="border-l-4 border-l-chart-3">
