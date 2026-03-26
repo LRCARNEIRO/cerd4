@@ -442,7 +442,26 @@ function uniqueStrings(values: (string | null | undefined)[]): string[] {
 }
 
 function inferArtigosIndicador(ind: IndicadorInterseccional): string[] {
-  return ((ind as any).artigos_convencao || []) as string[];
+  const explicit = ((ind as any).artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+  if (explicit.length > 0) return explicit;
+
+  // Fallback: infer from categoria/subcategoria keywords
+  const txt = [ind.nome, ind.categoria, ind.subcategoria || ''].join(' ').toLowerCase();
+  const arts: string[] = [];
+  if (txt.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) { arts.push('V', 'VII'); }
+  if (txt.match(/saúde|saude|mortalidade|nascidos|sinasc|datasus/)) arts.push('V');
+  if (txt.match(/trabalho|emprego|renda|salário|salario|desemprego|rendimento/)) arts.push('V');
+  if (txt.match(/terra|territór|territor|quilomb|indígena|indigena|funai/)) { arts.push('III', 'V'); }
+  if (txt.match(/justiça|justica|judiciár|judiciar|encarceramento|prisão|prisao|homicíd|homicid|violência|violencia|segurança|seguranca|polícia|policia|letal/)) { arts.push('V', 'VI'); }
+  if (txt.match(/cultur|patrimôn|patrimon|candomblé|candomble|matriz africana/)) { arts.push('V', 'VII'); }
+  if (txt.match(/igualdade|discrimin|racis|preconceito/)) { arts.push('I', 'II'); }
+  if (txt.match(/ódio|odio|propaganda|extremism/)) arts.push('IV');
+  if (txt.match(/segregaç|segregac|favela|periferi|saneamento|habitaç|habitac|moradia|deficit/)) { arts.push('III', 'V'); }
+  if (txt.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|participaç|participac/)) arts.push('II');
+  if (txt.match(/dado|estatístic|estatistic|censo|indicador|desagrega/)) { arts.push('I', 'II'); }
+  if (txt.match(/mulher|gênero|genero|feminicíd|feminicid|lgbtqia|trans/)) arts.push('V');
+  if (txt.match(/ods|objetivo.*sustentável|objetivo.*sustentavel/)) { arts.push('II', 'V'); }
+  return [...new Set(arts)];
 }
 
 function pickIndicadorSnapshot(ind: IndicadorInterseccional): string {
@@ -716,9 +735,20 @@ function renderArticleAnalysisExpanded(
 ): string {
   const sections = ARTIGOS_CONVENCAO.map((info) => {
     const artigo = info.numero;
-    const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo));
+    const artigoLacunas = d.lacunas.filter(l => {
+      const explicit = ((l as any).artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+      if (explicit.length > 0) return explicit.includes(artigo);
+      // Fallback to eixo_tematico mapping
+      return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo as any);
+    });
     const artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
-    const artigoNormativos = (d.normativos || []).filter((n: any) => ((n.artigos_convencao || []).length ? (n.artigos_convencao || []).includes(artigo) : false));
+    const artigoNormativos = (d.normativos || []).filter((n: any) => {
+      const explicit = (n.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+      if (explicit.length > 0) return explicit.includes(artigo);
+      // Fallback: use inferArtigosDocumentoNormativo
+      const inferred = inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas });
+      return inferred.includes(artigo as any);
+    });
     const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
