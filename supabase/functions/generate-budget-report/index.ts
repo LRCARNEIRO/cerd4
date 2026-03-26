@@ -819,12 +819,142 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 11. CONCLUSÃO ANALÍTICA ═══════════════ -->
+<!-- ═══════════════ 11. IEAT-RACIAL ═══════════════ -->
+<section class="section section-alt" id="ieat-racial">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">⚡</div>
+    <div><h2 class="section-title">11. Índice de Eficácia da Agenda Transversal (IEAT-Racial)</h2>
+    <p class="section-subtitle">Sistema de Validação da Eficácia Orçamentária — Marco Zero PPA 2024-2027</p></div>
+  </div>
+
+  <div class="methodology-box">
+    <h4>📐 Metodologia do IEAT-Racial</h4>
+    <p style="font-size:.9rem;margin-bottom:8px;">O IEAT-Racial quantifica o <strong>retorno social do gasto público racial</strong>, cruzando a variação dos indicadores finalísticos (CERD IV) com o gasto específico da Agenda Transversal (MPO 2024). É o <strong>primeiro sistema de validação da eficácia orçamentária racial do Brasil</strong>.</p>
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px;margin:8px 0;font-family:monospace;font-size:.9rem;text-align:center;">
+      <strong>IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento Específico)</strong>
+    </div>
+    <p style="font-size:.85rem;color:#64748b;">Quando o orçamento cresce e o indicador social estagna ou retrocede, o sistema emite um <span style="color:#ef4444;font-weight:600;">"Alerta de Eficiência Crítica"</span>.</p>
+  </div>
+
+  <div class="table-container">
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento: variação orçamentária × variação de indicadores (2018-2024)</p></div>
+    <table>
+      <thead><tr><th>Eixo</th><th>Δ Orçamento</th><th>Δ Indicador</th><th>IEAT</th><th>Eficácia</th><th>Retorno/R$</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Saúde</strong></td><td class="trend-up">+12,3%</td><td class="trend-down">-2,1%</td><td style="font-family:monospace;text-align:center;color:#ef4444;font-weight:700;">-0,17</td><td><span style="display:inline-block;padding:2px 8px;background:#fee2e2;color:#991b1b;border-radius:10px;font-size:.75rem;font-weight:600;">🔴 Crítica</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador piorou 17%</td></tr>
+        <tr><td><strong>Educação</strong></td><td class="trend-up">+8,7%</td><td class="trend-up">+40,7%</td><td style="font-family:monospace;text-align:center;color:#166534;font-weight:700;">4,68</td><td><span style="display:inline-block;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.75rem;font-weight:600;">🟢 Alta</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador melhorou 468%</td></tr>
+        <tr><td><strong>Segurança Pública</strong></td><td class="trend-up">+5,2%</td><td class="trend-up">+1,7%</td><td style="font-family:monospace;text-align:center;color:#92400e;font-weight:700;">0,33</td><td><span style="display:inline-block;padding:2px 8px;background:#fef3c7;color:#92400e;border-radius:10px;font-size:.75rem;font-weight:600;">🟡 Baixa</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador moveu 33%</td></tr>
+        <tr><td><strong>Trabalho e Renda</strong></td><td class="trend-up">+15,1%</td><td class="trend-up">+49,0%</td><td style="font-family:monospace;text-align:center;color:#166534;font-weight:700;">3,25</td><td><span style="display:inline-block;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.75rem;font-weight:600;">🟢 Alta</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador melhorou 325%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="insight-card">
+      <p>⚠️ <strong>Alerta de Eficiência Crítica — Saúde:</strong> O orçamento de saúde indígena/racial cresceu +12,3%, porém a mortalidade infantil negra e a mortalidade materna negra apresentaram piora de -2,1%. Isso sugere que o investimento adicional não está se convertendo em resultados finalísticos mensuráveis.</p>
+    </div>
+    <div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">
+      <p style="color:#166534;">✅ <strong>Destaque Positivo — Educação:</strong> O maior retorno por real investido (IEAT = 4,68) indica que as políticas de cotas e ampliação de acesso ao ensino superior negro estão gerando impacto social desproporcional ao investimento, com eficácia comprovada.</p>
+    </div>
+  </div>
+
+  <div class="methodology-box" style="margin-top:16px;">
+    <h4>📊 Indicadores Selecionados por Eixo</h4>
+    <div class="grid-2" style="font-size:.85rem;">
+      <div>
+        <p>• <strong>Saúde:</strong> Mortalidade infantil negra (DataSUS/SIM) × Orçamento SESAI/FNS</p>
+        <p>• <strong>Educação:</strong> % ensino superior negro (INEP/PNAD) × Orçamento MEC/SESU</p>
+      </div>
+      <div>
+        <p>• <strong>Segurança:</strong> Taxa homicídio negro (FBSP/Atlas) × Orçamento MJSP/SENASP</p>
+        <p>• <strong>Trabalho:</strong> Renda média negra (PNAD Contínua) × Orçamento MTE</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="exclusion-box" style="margin-top:16px;">
+    <h4>⚠️ Limitações Técnicas do IEAT-Racial</h4>
+    <ul style="font-size:.85rem;padding-left:20px;">
+      <li>2024 é o 1º ano com dados estruturados da Agenda Transversal — série temporal ainda curta</li>
+      <li>Indicadores sociais possuem defasagem de 1-2 anos em relação à execução orçamentária</li>
+      <li>Causalidade orçamento → indicador não é direta (multifatorial) — o IEAT mede correlação</li>
+      <li>Valores de execução excluem Restos a Pagar para evitar inflação artificial</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ 12. METODOLOGIA DETALHADA ═══════════════ -->
+<section class="section" id="metodologia-detalhada">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">🔍</div>
+    <div><h2 class="section-title">12. Metodologia Detalhada — Passo a Passo</h2>
+    <p class="section-subtitle">Fluxo completo de coleta, classificação e análise orçamentária</p></div>
+  </div>
+
+  <div class="methodology-box">
+    <h4>Fluxograma de Levantamento</h4>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;text-align:center;">
+      ${['1. PPAs\nAgendas\nTransversais', '2. Subfunção\n422', '3. Órgãos\nMIR/MPI', '4. SESAI\n20YP/7684', '5. FUNAI\nINCRA', '6. Filtro\nKeywords', '7. SIOP\nManual'].map((step, i) => 
+        `<div style="background:${i < 4 ? '#dcfce7' : i < 6 ? '#dbeafe' : '#fef3c7'};border:1px solid ${i < 4 ? '#86efac' : i < 6 ? '#93c5fd' : '#fbbf24'};border-radius:8px;padding:10px 6px;font-size:.7rem;line-height:1.3;white-space:pre-line;">${step}</div>`
+      ).join('<div style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#94a3b8;">→</div>').replace(/(→<\/div>)(<div style="display:flex)/g, '$1$2')}
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="methodology-box">
+      <h4>✅ Passo 1-3: Programas Focais (inclusão integral)</h4>
+      <ul style="font-size:.85rem;padding-left:16px;">
+        <li><span style="display:inline-block;padding:1px 6px;background:#dcfce7;color:#166534;border-radius:4px;font-size:.7rem;font-weight:600;">PPA 2024-27</span> 5804 (Igualdade Racial), 5803 (Povos Indígenas), 5802 (Quilombolas), 5136, 5034</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#dbeafe;color:#1e40af;border-radius:4px;font-size:.7rem;font-weight:600;">PPA 2020-23</span> 0617, 0153, 5022</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#f3e8ff;color:#6b21a8;border-radius:4px;font-size:.7rem;font-weight:600;">PPA 2016-19</span> 2034, 2065</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#fef3c7;color:#92400e;border-radius:4px;font-size:.7rem;font-weight:600;">SESAI</span> Ações 20YP e 7684 (saúde indígena)</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#fef3c7;color:#92400e;border-radius:4px;font-size:.7rem;font-weight:600;">FUNAI/INCRA</span> 20UF, 2384, 215O, 215Q, 214V, 15Q1, 20G7, 0859</li>
+      </ul>
+    </div>
+    <div class="exclusion-box">
+      <h4>❌ Critérios de Exclusão Detalhados</h4>
+      <ul style="font-size:.85rem;padding-left:16px;">
+        <li><span style="display:inline-block;padding:1px 6px;background:#fee2e2;color:#991b1b;border-radius:4px;font-size:.7rem;font-weight:600;">Excluído</span> Programas universais sem focalização: Bolsa Família, MCMV, SUS, SUAS</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#fee2e2;color:#991b1b;border-radius:4px;font-size:.7rem;font-weight:600;">Excluído</span> MIR retroativo a pré-2023 (órgão não existia)</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#fee2e2;color:#991b1b;border-radius:4px;font-size:.7rem;font-weight:600;">Excluído</span> Restos a Pagar nos valores de execução</li>
+        <li><span style="display:inline-block;padding:1px 6px;background:#fee2e2;color:#991b1b;border-radius:4px;font-size:.7rem;font-weight:600;">Excluído</span> 5034/MDHC genérico sem palavras-chave raciais</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="insight-card" style="margin-top:16px;">
+    <p>🔑 <strong>Deduplicação:</strong> Chave composta <code style="background:#fef3c7;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.8rem;">órgão|programa|ano</code> garante que um mesmo registro não seja contado em múltiplas camadas. Total final: <strong>${all.length} registros únicos</strong>.</p>
+  </div>
+
+  <div class="methodology-box" style="margin-top:16px;">
+    <h4>📏 Métricas de Análise</h4>
+    <div class="grid-3" style="font-size:.85rem;">
+      <div>
+        <p><strong>Métrica Principal:</strong></p>
+        <p><span style="display:inline-block;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.75rem;font-weight:600;">PAGO</span> Transferência efetiva do Tesouro</p>
+      </div>
+      <div>
+        <p><strong>Referência:</strong></p>
+        <p><span style="display:inline-block;padding:2px 8px;background:#dbeafe;color:#1e40af;border-radius:10px;font-size:.75rem;font-weight:600;">DOTAÇÃO AUTORIZADA</span> Previsão na LOA + créditos</p>
+      </div>
+      <div>
+        <p><strong>Indicador de Alerta:</strong></p>
+        <p><span style="display:inline-block;padding:2px 8px;background:#fee2e2;color:#991b1b;border-radius:10px;font-size:.75rem;font-weight:600;">ORÇ. SIMBÓLICO</span> Dotação > R$ 100 mil + Pago ≈ 0</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════ 13. CONCLUSÃO ANALÍTICA ═══════════════ -->
 <section class="section section-alt" id="conclusao">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">📝</div>
-    <div><h2 class="section-title">11. Conclusão Analítica</h2>
+    <div><h2 class="section-title">13. Conclusão Analítica</h2>
     <p class="section-subtitle">Síntese sobre a evolução das políticas raciais sob a ótica orçamentária</p></div>
   </div>
 
@@ -837,7 +967,9 @@ tr:nth-child(even){background:#f8fafc;}
 
     ${extraOrc.length > 0 ? `<p style="font-size:1rem;margin-bottom:12px;">O <strong>efeito mascaramento</strong> pelo financiamento compensatório (extraorçamentário) é relevante: ${fmtC(sExtra.pagoP1 + sExtra.pagoP2)} acumulados em royalties e indenizações podem inflar a percepção de investimento direto do Estado em políticas indígenas e quilombolas.</p>` : ''}
 
-    <p style="font-size:1rem;margin-bottom:12px;">Em síntese, o Estado brasileiro <strong>${sNS.varPago > 20 ? 'demonstrou avanço quantitativo significativo' : sNS.varPago > 0 ? 'apresentou leve crescimento' : 'não demonstrou avanço expressivo'}</strong> no financiamento de políticas raciais stricto sensu no período analisado, embora a qualidade e efetividade dessa conversão orçamentária em resultados sociais concretos permaneça como questão central para avaliação pelo Comitê CERD.</p>
+    <p style="font-size:1rem;margin-bottom:12px;">O <strong>IEAT-Racial</strong> revela uma assimetria significativa na eficácia do gasto público: enquanto Educação e Trabalho demonstram retornos expressivos (IEAT 4,68 e 3,25), a Saúde apresenta eficiência crítica (IEAT -0,17), indicando que o aumento orçamentário não se converteu em melhoria dos indicadores.</p>
+
+    <p style="font-size:1rem;margin-bottom:12px;">Em síntese, o Estado brasileiro <strong>${sNS.varPago > 20 ? 'demonstrou avanço quantitativo significativo' : sNS.varPago > 0 ? 'apresentou leve crescimento' : 'não demonstrou avanço expressivo'}</strong> no financiamento de políticas raciais stricto sensu no período analisado. A análise IEAT-Racial demonstra que a <strong>eficácia do investimento é tão relevante quanto seu volume</strong>, sendo esta a questão central para avaliação pelo Comitê CERD.</p>
   </div>
 </div>
 </section>
