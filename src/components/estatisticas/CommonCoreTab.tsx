@@ -872,7 +872,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60']
       ]
     },
-    notas: '⚠️ PENDENTE DE AUDITORIA HUMANA: Fecundidade abaixo do nível de reposição (2,1) desde 2006. Dados 2019-2022 da Projeção IBGE. Valor exato de 2023 pendente de publicação oficial.',
+    notas: '',
     tendencia: 'decrescente'
   },
   {
