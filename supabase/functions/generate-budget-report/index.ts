@@ -930,27 +930,79 @@ tr:nth-child(even){background:#f8fafc;}
     <p style="font-size:.85rem;color:#64748b;">Quando o orçamento cresce e o indicador social estagna ou retrocede, o sistema emite um <span style="color:#ef4444;font-weight:600;">"Alerta de Eficiência Crítica"</span>.</p>
   </div>
 
+  ${(() => {
+    // Dynamic IEAT calculation per eixo
+    const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda', 'terra_territorio'];
+    const eixoToCats: Record<string, string[]> = {
+      saude: ['saude', 'covid_racial'],
+      educacao: ['educacao'],
+      seguranca_publica: ['seguranca_publica'],
+      trabalho_renda: ['trabalho_renda'],
+      terra_territorio: ['terra_territorio', 'povos_tradicionais'],
+    };
+
+    const ieatRows = eixosIEAT.map(eixo => {
+      const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
+      const p1 = orcEixo.filter((r: any) => r.ano <= 2022);
+      const p2 = orcEixo.filter((r: any) => r.ano >= 2023);
+      const pagoP1 = p1.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
+      const pagoP2 = p2.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
+      const varOrc = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
+
+      const cats = eixoToCats[eixo] || [];
+      const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria));
+      let melhora = 0, piora = 0;
+      indsEixo.forEach((i: any) => {
+        const t = (i.tendencia || '').toLowerCase();
+        const nome = (i.nome || '').toLowerCase();
+        const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
+        if ((t === 'decrescente' && negative) || (t === 'crescente' && !negative)) melhora++;
+        if ((t === 'crescente' && negative) || (t === 'decrescente' && !negative)) piora++;
+      });
+
+      const totalTend = melhora + piora;
+      const varInd = totalTend > 0 ? ((melhora - piora) / totalTend * 100) : 0;
+      const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
+      const eficacia = ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica';
+      const efColor = ieat > 1 ? '#166534' : ieat > 0.3 ? '#92400e' : ieat > 0 ? '#92400e' : '#991b1b';
+      const efBg = ieat > 1 ? '#dcfce7' : ieat > 0.3 ? '#fef3c7' : ieat > 0 ? '#fef3c7' : '#fee2e2';
+      const efEmoji = ieat > 1 ? '🟢' : ieat > 0.3 ? '🟡' : ieat > 0 ? '🟡' : '🔴';
+
+      return { eixo, varOrc, varInd, ieat, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora, piora, pagoTotal: pagoP1 + pagoP2 };
+    }).filter(r => r.pagoTotal > 0 || r.totalInd > 0);
+
+    const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
+    const highlights = ieatRows.filter(r => r.ieat > 1);
+
+    return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento: variação orçamentária × variação de indicadores (2018-2024)</p></div>
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária × tendência dos indicadores (P1 vs P2)</p></div>
     <table>
-      <thead><tr><th>Eixo</th><th>Δ Orçamento</th><th>Δ Indicador</th><th>IEAT</th><th>Eficácia</th><th>Retorno/R$</th></tr></thead>
+      <thead><tr><th>Eixo</th><th>Δ Orçamento</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
       <tbody>
-        <tr><td><strong>Saúde</strong></td><td class="trend-up">+12,3%</td><td class="trend-down">-2,1%</td><td style="font-family:monospace;text-align:center;color:#ef4444;font-weight:700;">-0,17</td><td><span style="display:inline-block;padding:2px 8px;background:#fee2e2;color:#991b1b;border-radius:10px;font-size:.75rem;font-weight:600;">🔴 Crítica</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador piorou 17%</td></tr>
-        <tr><td><strong>Educação</strong></td><td class="trend-up">+8,7%</td><td class="trend-up">+40,7%</td><td style="font-family:monospace;text-align:center;color:#166534;font-weight:700;">4,68</td><td><span style="display:inline-block;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.75rem;font-weight:600;">🟢 Alta</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador melhorou 468%</td></tr>
-        <tr><td><strong>Segurança Pública</strong></td><td class="trend-up">+5,2%</td><td class="trend-up">+1,7%</td><td style="font-family:monospace;text-align:center;color:#92400e;font-weight:700;">0,33</td><td><span style="display:inline-block;padding:2px 8px;background:#fef3c7;color:#92400e;border-radius:10px;font-size:.75rem;font-weight:600;">🟡 Baixa</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador moveu 33%</td></tr>
-        <tr><td><strong>Trabalho e Renda</strong></td><td class="trend-up">+15,1%</td><td class="trend-up">+49,0%</td><td style="font-family:monospace;text-align:center;color:#166534;font-weight:700;">3,25</td><td><span style="display:inline-block;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:10px;font-size:.75rem;font-weight:600;">🟢 Alta</span></td><td style="font-size:.8rem;">Para cada R$ 1 investido, indicador melhorou 325%</td></tr>
+      ${ieatRows.map(r => `<tr>
+        <td><strong>${eixoLabels[r.eixo] || r.eixo}</strong></td>
+        <td class="${r.varOrc >= 0 ? 'trend-up' : 'trend-down'}">${r.varOrc >= 0 ? '+' : ''}${r.varOrc.toFixed(1)}%</td>
+        <td style="text-align:center">${r.totalInd}</td>
+        <td class="trend-up" style="text-align:center">${r.melhora || '—'}</td>
+        <td class="trend-down" style="text-align:center">${r.piora || '—'}</td>
+        <td style="font-family:monospace;text-align:center;color:${r.efColor};font-weight:700;">${r.ieat.toFixed(2)}</td>
+        <td><span style="display:inline-block;padding:2px 8px;background:${r.efBg};color:${r.efColor};border-radius:10px;font-size:.75rem;font-weight:600;">${r.efEmoji} ${r.eficacia}</span></td>
+      </tr>`).join('')}
       </tbody>
     </table>
+    <div class="table-footer">IEAT = (Δ% Indicador) ÷ (Δ% Orçamento). Valores > 1 indicam retorno social superior ao investimento.</div>
   </div>
 
   <div class="grid-2" style="margin-top:16px;">
-    <div class="insight-card">
-      <p>⚠️ <strong>Alerta de Eficiência Crítica — Saúde:</strong> O orçamento de saúde indígena/racial cresceu +12,3%, porém a mortalidade infantil negra e a mortalidade materna negra apresentaram piora de -2,1%. Isso sugere que o investimento adicional não está se convertendo em resultados finalísticos mensuráveis.</p>
-    </div>
-    <div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">
-      <p style="color:#166534;">✅ <strong>Destaque Positivo — Educação:</strong> O maior retorno por real investido (IEAT = 4,68) indica que as políticas de cotas e ampliação de acesso ao ensino superior negro estão gerando impacto social desproporcional ao investimento, com eficácia comprovada.</p>
-    </div>
-  </div>
+    ${alerts.map(a => `<div class="insight-card">
+      <p>⚠️ <strong>Alerta de Eficiência Crítica — ${eixoLabels[a.eixo] || a.eixo}:</strong> Orçamento variou ${a.varOrc >= 0 ? '+' : ''}${a.varOrc.toFixed(1)}%, mas ${a.piora} indicador(es) pioraram contra ${a.melhora} em melhora. IEAT = ${a.ieat.toFixed(2)}.</p>
+    </div>`).join('')}
+    ${highlights.map(h => `<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">
+      <p style="color:#166534;">✅ <strong>Destaque Positivo — ${eixoLabels[h.eixo] || h.eixo}:</strong> IEAT = ${h.ieat.toFixed(2)} — retorno social ${h.ieat > 3 ? 'excepcional' : 'positivo'} em relação ao investimento. ${h.melhora} indicador(es) em melhora.</p>
+    </div>`).join('')}
+  </div>`;
+  })()}
 
   <div class="methodology-box" style="margin-top:16px;">
     <h4>📊 Indicadores Selecionados por Eixo</h4>
