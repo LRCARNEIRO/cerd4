@@ -835,21 +835,21 @@ export const tabelasSaude: CommonCoreTable[] = [
     categoria: 'Saúde',
     descricao: 'Esperança de vida ao nascer por sexo',
     fonte: 'IBGE/Tábuas de Mortalidade',
-    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7362',
-    tabelaSidra: 'Tabela 7362',
+    fonteCompleta: 'IBGE - Tábuas Completas de Mortalidade 2023',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
+    tabelaSidra: 'Tábuas de Mortalidade',
     periodoOriginal: '2000-2015',
-    periodoAtualizado: '2000-2024',
-    statusAtualizacao: 'parcial',
+    periodoAtualizado: '2000-2023',
+    statusAtualizacao: 'atualizado',
     dados: {
-      headers: ['Sexo', '2000', '2010', '2015', '2019', '2021', '2023'],
+      headers: ['Sexo', '2000', '2010', '2019', '2020', '2021', '2022', '2023'],
       rows: [
-        ['Total', '69,7', '73,4', '75,2', '76,6', '73,0', '75,5'],
-        ['Homens', '66,0', '69,7', '71,7', '73,1', '69,8', '72,1'],
-        ['Mulheres', '73,5', '77,0', '78,6', '80,1', '76,2', '78,9']
+        ['Total', '71,1', '74,4', '76,2', '74,8', '72,8', '75,4', '76,4'],
+        ['Homens', '67,3', '70,7', '72,8', '71,2', '69,3', '72,1', '73,1'],
+        ['Mulheres', '75,1', '78,1', '79,6', '78,5', '76,4', '78,8', '79,7']
       ]
     },
-    notas: 'Queda abrupta em 2021 devido à COVID-19. Recuperação progressiva. Coluna 2024 removida — dado preliminar (Tábuas de Mortalidade ainda não publicadas). ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '✅ Fonte: IBGE Tábuas Completas de Mortalidade 2023 (divulgação 29/11/2024). Queda em 2020-2021 pela COVID-19. Superou patamar pré-pandemia em 2023 (76,4 vs 76,2 em 2019). Sobremortalidade masculina 20-24 anos: 4,1x.',
     tendencia: 'crescente'
   },
   {
@@ -859,12 +859,12 @@ export const tabelasSaude: CommonCoreTable[] = [
     tituloIngles: 'Fertility rate',
     categoria: 'Saúde',
     descricao: 'Número médio de filhos por mulher',
-    fonte: 'IBGE/SIDRA',
-    fonteCompleta: 'IBGE - Projeções Populacionais',
-    urlFonte: 'https://sidra.ibge.gov.br/tabela/7358',
-    tabelaSidra: 'Tabela 7358',
+    fonte: 'IBGE/Projeções',
+    fonteCompleta: 'IBGE - Projeções Populacionais 2024',
+    urlFonte: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/41984-em-2023-expectativa-de-vida-chega-aos-76-4-anos-e-supera-patamar-pre-pandemia',
+    tabelaSidra: 'Projeções IBGE',
     periodoOriginal: '2000-2015',
-    periodoAtualizado: '2000-2024',
+    periodoAtualizado: '2000-2023',
     statusAtualizacao: 'parcial',
     dados: {
       headers: ['Brasil', '2000', '2005', '2010', '2015', '2020', '2022'],
@@ -872,7 +872,7 @@ export const tabelasSaude: CommonCoreTable[] = [
         ['Filhos/mulher', '2,38', '2,06', '1,87', '1,72', '1,65', '1,60']
       ]
     },
-    notas: 'Fecundidade abaixo do nível de reposição (2,1) desde 2006. Coluna 2024 removida — dado preliminar não publicado oficialmente. ⚠️ PENDENTE DE AUDITORIA HUMANA: Valores pós-2015 podem conter dados interpolados pela IA original. Verificar diretamente na fonte oficial antes de utilizar em relatórios.',
+    notas: '⚠️ PENDENTE DE AUDITORIA HUMANA: Fecundidade abaixo do nível de reposição (2,1) desde 2006. Dados 2019-2022 da Projeção IBGE. Valor exato de 2023 pendente de publicação oficial.',
     tendencia: 'decrescente'
   },
   {
@@ -884,7 +884,7 @@ export const tabelasSaude: CommonCoreTable[] = [
     descricao: 'Cinco principais causas de morte por grupo etário',
     fonte: 'MS/SIM',
     fonteCompleta: 'Ministério da Saúde - Sistema de Informações sobre Mortalidade',
-    urlFonte: 'https://datasus.saude.gov.br/mortalidade-desde-1996-pela-cid-10',
+    urlFonte: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/obt10br.def',
     periodoOriginal: '2015',
     periodoAtualizado: '2015-2022',
     statusAtualizacao: 'parcial',
