@@ -19,7 +19,20 @@ import {
   educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
   indicadoresSocioeconomicos as hcSocioEco, povosTradicionais as hcPovos,
   dadosDemograficos as hcDemograficos, evolucaoDesigualdade as hcEvolDesig,
+  atlasViolencia2025 as hcAtlas, jovensNegrosViolencia as hcJovens,
+  violenciaInterseccional as hcViolIntersec, juventudeNegra as hcJuventude,
+  saudeMaternaRaca as hcSaudeMaterna, analfabetismoGeral2024 as hcAnalfabetismo,
+  evasaoEscolarSerie as hcEvasao, educacaoRacaGenero as hcEduRG,
+  interseccionalidadeTrabalho as hcTrabalhoRG, classePorRaca as hcClasse,
+  cadUnicoPerfilRacial as hcCadUnico, chefiaFamiliarRacaGenero as hcChefia,
+  deficitHabitacionalSerie as hcDeficit, serieAntraTrans as hcAntra,
+  lgbtqiaPorRaca as hcLgbtqia, deficienciaPorRaca as hcDeficiencia,
 } from '@/components/estatisticas/StatisticsData';
+import {
+  renderSecurityNarrative, renderHealthNarrative, renderEducationNarrative,
+  renderLaborNarrative, renderTerritoryNarrative, renderLGBTandDisabilityNarrative,
+  renderAllRecommendations,
+} from './cerdiv/thematicNarratives';
 
 // ═══════════════════════════════════════════
 // TIPOS
@@ -214,7 +227,36 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
+  ${renderAllRecommendations(d.lacunas)}
   ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
+  ${(() => {
+    const atlas = d.mirror?.atlasViolencia2025 || hcAtlas;
+    const jovens = d.mirror?.jovensNegrosViolencia || hcJovens;
+    const violIntersec = d.mirror?.violenciaInterseccional?.length ? d.mirror.violenciaInterseccional : hcViolIntersec;
+    const juventude = d.mirror?.juventudeNegra?.length ? d.mirror.juventudeNegra : hcJuventude;
+    const saudeMaterna = d.mirror?.saudeMaternaRaca || hcSaudeMaterna;
+    const analfab = d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo;
+    const evasao = hcEvasao;
+    const eduRG = hcEduRG;
+    const trabalhoRG = hcTrabalhoRG;
+    const classe = hcClasse;
+    const cadUnico = hcCadUnico;
+    const chefia = hcChefia;
+    const deficit = d.mirror?.deficitHabitacionalSerie?.length ? d.mirror.deficitHabitacionalSerie : hcDeficit;
+    const antra = hcAntra;
+    const lgbtqia = hcLgbtqia;
+    const defic = hcDeficiencia;
+    return `
+      <h2>III. Narrativa Temática — Evolução dos Indicadores 2018-2025</h2>
+      <p>Esta seção atualiza a narrativa do relatório CERD III (período até 2018), contando a história da evolução dos indicadores de desigualdade racial no Brasil até 2025. Os dados são extraídos integralmente das bases estatísticas do sistema, com fontes oficiais verificadas.</p>
+      ${renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude)}
+      ${renderHealthNarrative(sau, saudeMaterna)}
+      ${renderEducationNarrative(edu, evasao, analfab, eduRG)}
+      ${renderLaborNarrative(eco, classe, trabalhoRG, cadUnico, chefia)}
+      ${renderTerritoryNarrative(povos, deficit)}
+      ${renderLGBTandDisabilityNarrative(antra, lgbtqia, defic)}
+    `;
+  })()}
   ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
