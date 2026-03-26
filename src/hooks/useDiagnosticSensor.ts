@@ -154,7 +154,8 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
-        .select('nome, categoria, tendencia, dados, artigos_convencao');
+        .select('nome, categoria, tendencia, dados, artigos_convencao')
+        .neq('categoria', 'common_core');
       if (error) throw error;
       return data || [];
     },
