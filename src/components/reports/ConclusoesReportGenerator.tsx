@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FileDown, Download, Scale, Loader2 } from 'lucide-react';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
+import { svgLineChart, svgBarChart } from '@/components/reports/cerdiv/chartUtils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
@@ -131,8 +132,10 @@ export function ConclusoesReportGenerator() {
   .toc a:hover { text-decoration: underline; }
   .stat-pos { color: #16a34a; font-weight: 600; }
   .stat-neg { color: #dc2626; font-weight: 600; }
+  .chart-inline { margin: 10px 0; page-break-inside: avoid; }
   @media print { .no-print { display: none; } body { padding: 0; } .card { page-break-inside: avoid; } }
-  @page { size: A4; margin: 2cm; }
+  @page { size: A4; margin: 2cm; @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #64748b; } }
+  @page :first { @bottom-center { content: none; } }
 </style></head><body>
 ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 
@@ -222,6 +225,50 @@ ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 ? `
     <tr><td>Gap absoluto renda (R$)</td><td>R$ ${eco2018.rendaMediaBranca-eco2018.rendaMediaNegra}</td><td>R$ ${eco2024.rendaMediaBranca-eco2024.rendaMediaNegra}</td><td class="stat-neg">+R$ ${(eco2024.rendaMediaBranca-eco2024.rendaMediaNegra)-(eco2018.rendaMediaBranca-eco2018.rendaMediaNegra)}</td><td><span class="badge badge-destructive">Retrocesso</span></td></tr>
   </tbody>
 </table>
+
+<div class="grid-2">
+  <div class="chart-inline">
+    <h3 style="font-size:11px;color:#0f3460;">Segurança Pública — Série 2018→2024</h3>
+    ${svgLineChart({
+      label: segurancaPublica.map((d: any) => String(d.ano)).join(','),
+      series: [
+        { name: 'Vítimas Negras (%)', color: '#dc2626', values: segurancaPublica.map((d: any) => d.percentualVitimasNegras) },
+        { name: 'Letalidade Policial (%)', color: '#7c3aed', values: segurancaPublica.map((d: any) => d.letalidadePolicial) },
+      ]
+    }, 450, 200)}
+  </div>
+  <div class="chart-inline">
+    <h3 style="font-size:11px;color:#0f3460;">Educação — Série 2018→2024</h3>
+    ${svgLineChart({
+      label: educacaoSerieHistorica.map((d: any) => String(d.ano)).join(','),
+      series: [
+        { name: 'Analfab. Negro', color: '#dc2626', values: educacaoSerieHistorica.map((d: any) => d.analfabetismoNegro) },
+        { name: 'Superior Negro', color: '#16a34a', values: educacaoSerieHistorica.map((d: any) => d.superiorNegroPercent) },
+      ]
+    }, 450, 200)}
+  </div>
+</div>
+<div class="grid-2">
+  <div class="chart-inline">
+    <h3 style="font-size:11px;color:#0f3460;">Saúde Materna — Mortalidade por 100mil NV</h3>
+    ${svgLineChart({
+      label: saudeSerieHistorica.map((d: any) => String(d.ano)).join(','),
+      series: [
+        { name: 'Negra', color: '#dc2626', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaNegra) },
+        { name: 'Branca', color: '#3b82f6', values: saudeSerieHistorica.map((d: any) => d.mortalidadeMaternaBranca) },
+      ]
+    }, 450, 200)}
+  </div>
+  <div class="chart-inline">
+    <h3 style="font-size:11px;color:#0f3460;">Feminicídio — % Mulheres Negras</h3>
+    ${svgLineChart({
+      label: feminicidioSerie.map((d: any) => String(d.ano)).join(','),
+      series: [
+        { name: '% Negras', color: '#dc2626', values: feminicidioSerie.map((d: any) => d.percentualNegras) },
+      ]
+    }, 450, 200)}
+  </div>
+</div>
 
 <!-- 4. FIOS CONDUTORES -->
 <h2 id="sec4">4. Fios Condutores (${fiosCondutores.length})</h2>
