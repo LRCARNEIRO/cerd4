@@ -209,6 +209,34 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   const emAndamento = d.stats?.porStatus?.em_andamento || 0;
   const total = d.stats?.total || 0;
 
+  // Thematic narrative data
+  const atlas = d.mirror?.atlasViolencia2025 || hcAtlas;
+  const jovens = d.mirror?.jovensNegrosViolencia || hcJovens;
+  const violIntersec = d.mirror?.violenciaInterseccional?.length ? d.mirror.violenciaInterseccional : hcViolIntersec;
+  const juventude = d.mirror?.juventudeNegra?.length ? d.mirror.juventudeNegra : hcJuventude;
+  const saudeMaterna = d.mirror?.saudeMaternaRaca || hcSaudeMaterna;
+  const analfab = d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo;
+  const evasao = hcEvasao;
+  const eduRG = hcEduRG;
+  const trabalhoRG = hcTrabalhoRG;
+  const classe = hcClasse;
+  const cadUnico = hcCadUnico;
+  const chefia = hcChefia;
+  const deficit = d.mirror?.deficitHabitacionalSerie?.length ? d.mirror.deficitHabitacionalSerie : hcDeficit;
+  const antra = hcAntra;
+  const lgbtqia = hcLgbtqia;
+  const defic = hcDeficiencia;
+
+  // Build thematic narratives map for embedding in articles
+  const thematicNarratives: Record<string, string> = {
+    security: renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude),
+    health: renderHealthNarrative(sau, saudeMaterna),
+    education: renderEducationNarrative(edu, evasao, analfab, eduRG),
+    labor: renderLaborNarrative(eco, classe, trabalhoRG, cadUnico, chefia),
+    territory: renderTerritoryNarrative(povos, deficit),
+    lgbtDisability: renderLGBTandDisabilityNarrative(antra, lgbtqia, defic),
+  };
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -227,43 +255,25 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
-  ${renderAllRecommendations(d.lacunas)}
-  ${renderRespostasCerdIII(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
-  ${(() => {
-    const atlas = d.mirror?.atlasViolencia2025 || hcAtlas;
-    const jovens = d.mirror?.jovensNegrosViolencia || hcJovens;
-    const violIntersec = d.mirror?.violenciaInterseccional?.length ? d.mirror.violenciaInterseccional : hcViolIntersec;
-    const juventude = d.mirror?.juventudeNegra?.length ? d.mirror.juventudeNegra : hcJuventude;
-    const saudeMaterna = d.mirror?.saudeMaternaRaca || hcSaudeMaterna;
-    const analfab = d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo;
-    const evasao = hcEvasao;
-    const eduRG = hcEduRG;
-    const trabalhoRG = hcTrabalhoRG;
-    const classe = hcClasse;
-    const cadUnico = hcCadUnico;
-    const chefia = hcChefia;
-    const deficit = d.mirror?.deficitHabitacionalSerie?.length ? d.mirror.deficitHabitacionalSerie : hcDeficit;
-    const antra = hcAntra;
-    const lgbtqia = hcLgbtqia;
-    const defic = hcDeficiencia;
-    return `
-      <h2>IV. Narrativa Temática — Evolução dos Indicadores 2018-2025</h2>
-      <p>Esta seção atualiza a narrativa do relatório CERD III (período até 2018), contando a história da evolução dos indicadores de desigualdade racial no Brasil até 2025. Os dados são extraídos integralmente das bases estatísticas do sistema, com fontes oficiais verificadas.</p>
-      ${renderSecurityNarrative(seg, fem, atlas, jovens, violIntersec, juventude)}
-      ${renderHealthNarrative(sau, saudeMaterna)}
-      ${renderEducationNarrative(edu, evasao, analfab, eduRG)}
-      ${renderLaborNarrative(eco, classe, trabalhoRG, cadUnico, chefia)}
-      ${renderTerritoryNarrative(povos, deficit)}
-      ${renderLGBTandDisabilityNarrative(antra, lgbtqia, defic)}
-    `;
-  })()}
-  ${renderArticleAnalysis(d, seg, fem, edu, sau, eco, evolDesig, povos)}
+  ${renderArticleAnalysisExpanded(d, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
+  ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
   ${renderIntersectionalAnalysis(d.indicadores, d.lacunas)}
   ${renderTraditionalPeoples(povos)}
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
+
+  <!-- ANEXOS -->
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO A — Quadro Detalhado: 87 Recomendações × Evidências</h2>
+  <p>O quadro a seguir apresenta o detalhamento completo de todas as recomendações das Observações Finais de 2022, com status, evidências, ações do Brasil e lacunas remanescentes.</p>
+  ${renderAllRecommendations(d.lacunas)}
+
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO B — Respostas do Estado Brasileiro às Observações Finais (CERD III)</h2>
+  <p>Registro das respostas oficiais do Brasil a cada parágrafo das Observações Finais, incluindo avaliação técnica dinâmica do sistema.</p>
+  ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
@@ -304,22 +314,23 @@ function renderTOC(): string {
     <h3>Sumário</h3>
     <ul>
       <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
-      <li><strong>II.</strong> Quadro Completo de Cumprimento das Recomendações (87 Lacunas)</li>
-      <li><strong>III.</strong> Respostas às Observações Finais do CERD III (CERD/C/BRA/CO/18-20)</li>
-      <li><strong>IV.</strong> Narrativa Temática — Evolução dos Indicadores 2018-2025</li>
-      <li style="padding-left:2cm">A. Segurança Pública e Violência Racial</li>
-      <li style="padding-left:2cm">B. Saúde — Mortalidade Materna e Infantil</li>
-      <li style="padding-left:2cm">C. Educação — Acesso, Permanência e Qualidade</li>
-      <li style="padding-left:2cm">D. Trabalho, Renda e Pobreza</li>
-      <li style="padding-left:2cm">E. Terra, Território e Habitação</li>
-      <li style="padding-left:2cm">F. Interseccionalidades Específicas — LGBTQIA+ e Deficiência</li>
-      <li><strong>V.</strong> Análise Temática por Artigos da Convenção ICERD (I-VII)</li>
-      <li><strong>VI.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
-      <li><strong>VII.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
-      <li><strong>VIII.</strong> Análise Interseccional</li>
-      <li><strong>IX.</strong> Povos Tradicionais: Indígenas, Quilombolas e Comunidades Específicas</li>
-      <li><strong>X.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>XI.</strong> Conclusões e Compromissos</li>
+      <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
+      <li style="padding-left:2cm">Artigo I — Definição de Discriminação Racial</li>
+      <li style="padding-left:2cm">Artigo II — Condenação e Políticas de Eliminação</li>
+      <li style="padding-left:2cm">Artigo III — Segregação Racial</li>
+      <li style="padding-left:2cm">Artigo IV — Propaganda e Organizações Racistas</li>
+      <li style="padding-left:2cm">Artigo V — Direitos Civis, Políticos, Econômicos, Sociais e Culturais</li>
+      <li style="padding-left:2cm">Artigo VI — Recursos Efetivos e Reparação</li>
+      <li style="padding-left:2cm">Artigo VII — Educação e Cultura Antirracista</li>
+      <li><strong>III.</strong> Quadro Resumido: Recomendações × Evidências</li>
+      <li><strong>IV.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
+      <li><strong>V.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
+      <li><strong>VI.</strong> Análise Interseccional</li>
+      <li><strong>VII.</strong> Povos Tradicionais</li>
+      <li><strong>VIII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>IX.</strong> Conclusões e Compromissos</li>
+      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
+      <li><strong>ANEXO B</strong> — Respostas do Estado Brasileiro às Observações Finais (CERD III)</li>
     </ul>
   </div>`;
 }
@@ -692,7 +703,17 @@ function generateArticleAnalysis(
     ${fiosRelacionados.length > 0 ? `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema</h4><p>${fiosRelacionados.slice(0, 2).map(f => f.argumento).join(' ')}</p></div>` : ''}`;
 }
 
-function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any): string {
+// Map articles to thematic narrative keys
+const ARTICLE_THEMATIC_MAP: Record<string, string[]> = {
+  'I': [], 'II': ['security'], 'III': ['territory'],
+  'IV': ['security'], 'V': ['security', 'health', 'education', 'labor', 'territory', 'lgbtDisability'],
+  'VI': ['security'], 'VII': ['education'],
+};
+
+function renderArticleAnalysisExpanded(
+  d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any,
+  thematicNarratives: Record<string, string>
+): string {
   const sections = ARTIGOS_CONVENCAO.map((info) => {
     const artigo = info.numero;
     const artigoLacunas = d.lacunas.filter(l => ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo));
@@ -702,28 +723,158 @@ function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: a
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
     const indicatorMatrix = renderArticleIndicatorTable(artigoIndicadores);
-    const recommendationMatrix = renderRecommendationMatrix(artigoLacunas);
     const budgetTable = renderBudgetProgramsTable(artigoOrc);
     const normTable = renderNormativeDocsTable(artigoNormativos);
 
-    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML) return '';
+    // Embed thematic narratives directly into article sections
+    const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
+    const embeddedNarratives = thematicKeys
+      .map(key => thematicNarratives[key])
+      .filter(Boolean)
+      .join('');
+    // Mark used narratives to avoid duplication
+    thematicKeys.forEach(key => { thematicNarratives[key] = ''; });
+
+    // Brief recommendation summary for this article (not full detail)
+    const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
+
+    // Conclusion assessment for this article
+    const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
+
+    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML && !embeddedNarratives) return '';
 
     return `
       <h3>Artigo ${artigo} — ${info.titulo}</h3>
       <div class="section">
         ${narrativeHTML}
+
+        ${embeddedNarratives ? `
+        <h4>📈 Evolução dos Indicadores Vinculados (2018-2025)</h4>
+        <p>Os dados a seguir fundamentam empiricamente a avaliação de avanço ou retrocesso neste artigo. Cada série apresenta a trajetória completa do período.</p>
+        ${embeddedNarratives}` : ''}
+
         ${chartsHTML}
-        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada</h4><p>Os indicadores abaixo foram efetivamente correlacionados ao artigo por vínculo explícito no sistema. Eles funcionam como base empírica para concluir se houve melhoria, estagnação ou retrocesso no período.</p>${indicatorMatrix}</div>` : ''}
-        ${recommendationMatrix ? `<div class="highlight-box"><h4>📌 Recomendações, status e fundamentação</h4><p>O quadro a seguir aproxima o texto do Comitê, o status consolidado no sistema e a primeira camada de evidências que justifica cada classificação.</p>${recommendationMatrix}</div>` : ''}
-        ${budgetTable ? `<div class="budget-box"><h4>💰 Programas e ações orçamentárias mais relevantes</h4><p>Em vez de tratar o orçamento de forma apartada, o relatório incorpora as ações que ajudam a explicar a capacidade concreta de resposta estatal neste artigo.</p>${budgetTable}</div>` : ''}
-        ${normTable ? `<div class="normative-box"><h4>📜 Base normativa entremeada à análise</h4><p>Os atos abaixo estruturam a resposta estatal formal. A leitura do relatório considera esses marcos em conjunto com resultados, não como substitutos do resultado.</p>${normTable}</div>` : ''}
+
+        ${assessmentHTML}
+
+        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada (${artigoIndicadores.length} indicadores)</h4>${indicatorMatrix}</div>` : ''}
+        ${recSummary}
+        ${budgetTable ? `<div class="budget-box"><h4>💰 Investimento vinculado ao artigo</h4>${budgetTable}</div>` : ''}
+        ${normTable ? `<div class="normative-box"><h4>📜 Marco normativo de sustentação</h4>${normTable}</div>` : ''}
       </div>`;
   }).filter(Boolean).join('');
 
   return `
-    <h2>V. Análise Temática por Artigos da Convenção ICERD</h2>
-    <p>Esta seção reorganiza o sistema inteiro sob a lógica superior da Convenção: cada artigo reúne lacunas, recomendações, séries estatísticas, orçamento, normativa e leituras analíticas. Assim, o relatório deixa de separar “estatística”, “orçamento” e “normativa” em silos e passa a responder, artigo por artigo, se houve avanço substantivo, apenas movimentação formal, ou persistência da desigualdade racial.</p>
+    <h2>II. Fundamentação por Artigos da Convenção ICERD</h2>
+    <div class="section">
+      <p>Esta seção constitui o <strong>eixo central do relatório</strong>. Cada artigo da Convenção é analisado de forma integrada, reunindo séries estatísticas, execução orçamentária, marcos normativos e leituras analíticas para fundamentar se houve <strong>avanço substantivo, movimentação apenas formal, ou persistência da desigualdade racial</strong> no período 2018-2025.</p>
+      <p>As recomendações do Comitê são referenciadas dentro de cada artigo como evidência complementar. O detalhamento completo de cada uma das 87 recomendações está disponível nos <strong>Anexos A e B</strong>.</p>
+    </div>
     ${sections}`;
+}
+
+function renderArticleRecSummary(lacunas: LacunaIdentificada[]): string {
+  const porStatus: Record<string, number> = {};
+  lacunas.forEach(l => { porStatus[l.status_cumprimento] = (porStatus[l.status_cumprimento] || 0) + 1; });
+  const total = lacunas.length;
+  const cumprido = (porStatus.cumprido || 0) + (porStatus.parcialmente_cumprido || 0);
+  const critico = (porStatus.nao_cumprido || 0) + (porStatus.retrocesso || 0);
+
+  return `
+    <div class="highlight-box">
+      <h4>📌 Recomendações vinculadas ao artigo (${total})</h4>
+      <p>
+        ${porStatus.cumprido ? `<span class="badge badge-success">${porStatus.cumprido} cumprida(s)</span> ` : ''}
+        ${porStatus.parcialmente_cumprido ? `<span class="badge badge-warning">${porStatus.parcialmente_cumprido} parcial(is)</span> ` : ''}
+        ${porStatus.em_andamento ? `<span class="badge badge-info">${porStatus.em_andamento} em andamento</span> ` : ''}
+        ${porStatus.nao_cumprido ? `<span class="badge badge-danger">${porStatus.nao_cumprido} não cumprida(s)</span> ` : ''}
+        ${porStatus.retrocesso ? `<span class="badge badge-danger">${porStatus.retrocesso} retrocesso(s)</span> ` : ''}
+      </p>
+      <p style="font-size:9.5pt">Taxa de resposta: <strong>${((cumprido / Math.max(total, 1)) * 100).toFixed(0)}%</strong> com algum grau de atendimento | <strong>${((critico / Math.max(total, 1)) * 100).toFixed(0)}%</strong> em déficit crítico.</p>
+      <table style="font-size:9pt">
+        <thead><tr><th>§</th><th>Tema</th><th>Status</th></tr></thead>
+        <tbody>${lacunas.slice(0, 8).map(l => {
+          const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
+          return `<tr><td><span class="paragraph-ref">${l.paragrafo}</span></td><td>${l.tema}</td><td><span class="badge ${st.badge}">${st.label}</span></td></tr>`;
+        }).join('')}${lacunas.length > 8 ? `<tr><td colspan="3" style="text-align:center;color:#64748b">+ ${lacunas.length - 8} recomendações adicionais (ver Anexo A)</td></tr>` : ''}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], orcDados: DadoOrcamentario[], indicadores: IndicadorInterseccional[], normativos: any[]): string {
+  const total = lacunas.length;
+  const cumprido = lacunas.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+  const critico = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
+  const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
+  const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
+  const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
+  const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).length;
+  const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
+
+  // Determine overall assessment
+  let veredito = 'Lacuna Persistente';
+  let badgeClass = 'badge-warning';
+  let icon = '⚠️';
+  if (cumprido > critico && melhorias > pioras) {
+    veredito = 'Avanço'; badgeClass = 'badge-success'; icon = '✅';
+  } else if (critico > cumprido * 2 || pioras > melhorias * 2) {
+    veredito = 'Retrocesso / Déficit Grave'; badgeClass = 'badge-danger'; icon = '🔴';
+  } else if (cumprido >= critico) {
+    veredito = 'Avanço Parcial'; badgeClass = 'badge-info'; icon = '📈';
+  }
+
+  return `
+    <div class="fio-condutor">
+      <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
+      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
+      ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
+    </div>`;
+}
+
+function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
+  if (!lacunas.length) return '';
+
+  const porStatus: Record<string, number> = {};
+  lacunas.forEach(l => { porStatus[l.status_cumprimento] = (porStatus[l.status_cumprimento] || 0) + 1; });
+
+  return `
+  <h2>III. Quadro Resumido: Recomendações × Evidências</h2>
+  <div class="section">
+    <p>O Comitê CERD emitiu <strong>${lacunas.length} recomendações/observações</strong> ao Brasil nas Observações Finais de 2022. O quadro abaixo sintetiza o status consolidado. O detalhamento completo, com descrições, evidências e ações do Brasil, está no <strong>Anexo A</strong>.</p>
+    
+    ${svgDonutChart([
+      { label: 'Cumprido', value: porStatus.cumprido || 0, color: '#22c55e' },
+      { label: 'Parcial', value: porStatus.parcialmente_cumprido || 0, color: '#eab308' },
+      { label: 'Em Andamento', value: porStatus.em_andamento || 0, color: '#3b82f6' },
+      { label: 'Não Cumprido', value: porStatus.nao_cumprido || 0, color: '#f97316' },
+      { label: 'Retrocesso', value: porStatus.retrocesso || 0, color: '#ef4444' },
+    ])}
+
+    <table>
+      <thead><tr><th>§</th><th>Tema</th><th>Eixo</th><th>Status</th><th>Artigos ICERD</th></tr></thead>
+      <tbody>${lacunas.map(l => {
+        const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
+        const artigos = ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).join(', ');
+        return `<tr>
+          <td><span class="paragraph-ref">${l.paragrafo}</span></td>
+          <td>${l.tema}</td>
+          <td style="font-size:8.5pt">${eixoLabels[l.eixo_tematico] || l.eixo_tematico}</td>
+          <td><span class="badge ${st.badge}">${st.label}</span></td>
+          <td style="font-size:8.5pt">${artigos || '—'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderRespostasCerdIIIAnnex(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any, orcDados?: DadoOrcamentario[], normativos?: any[]): string {
+  return renderRespostasCerdIII(respostas, lacunas, indicadores, orcStats, orcDados, normativos);
+}
+
+// Keep original for annex use
+function renderArticleAnalysis(d: CerdIVFullData, seg: any[], fem: any[], edu: any[], sau: any[], eco: any[], evolDesig: any[], povos: any): string {
+  // This function is now superseded by renderArticleAnalysisExpanded but kept for reference
+  return '';
 }
 
 function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): string {
@@ -736,7 +887,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
   const topProgramas = [...orcDados].sort((a, b) => num(b.pago) - num(a.pago)).slice(0, 10);
 
   return `
-  <h2>VI. Análise Orçamentária: Investimento em Igualdade Racial (2018-2025)</h2>
+  <h2>IV. Análise Orçamentária: Investimento em Igualdade Racial (2018-2025)</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>📋 Nota Metodológica</h4>
@@ -786,7 +937,7 @@ function renderBudgetAnalysis(orcStats: any, orcDados: DadoOrcamentario[]): stri
 function renderNormativeBase(normativos: any[]): string {
   if (normativos.length === 0) {
     return `
-    <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
+    <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
     <div class="section">
       <p>O período 2018-2025 foi marcado por intensas transformações legislativas e institucionais, que podem ser divididas em duas fases distintas:</p>
       <h3>Fase 1: Desmonte Institucional (2019-2022)</h3>
@@ -818,7 +969,7 @@ function renderNormativeBase(normativos: any[]): string {
   });
 
   return `
-  <h2>VII. Base Normativa e Marco Legislativo (2018-2025)</h2>
+  <h2>V. Base Normativa e Marco Legislativo (2018-2025)</h2>
   <div class="section">
     <p>O acervo normativo catalogado compreende <strong>${normativos.length} documentos</strong> entre legislações, políticas públicas, atos administrativos e compromissos internacionais. A análise distingue duas fases: o desmonte institucional (2019-2022) e a reconstrução (2023-2025), com a criação do MIR e MPI como marcos fundamentais.</p>
     ${dataCards([
@@ -855,7 +1006,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
   lacunas.forEach(l => { gruposLacunas[l.grupo_focal] = (gruposLacunas[l.grupo_focal] || 0) + 1; });
 
   return `
-  <h2>VIII. Análise Interseccional</h2>
+  <h2>VI. Análise Interseccional</h2>
   <div class="section">
     <p>O Brasil mantém <strong>${indicadores.length} indicadores estatísticos</strong> desagregados no sistema de monitoramento, dos quais ${comDesagRaca} possuem desagregação por raça/cor, ${comDesagGenero} por gênero e ${comDesagIdade} por idade. Esta capacidade de desagregação é essencial para a identificação de disparidades interseccionais conforme recomendação reiterada do Comitê.</p>
 
@@ -884,7 +1035,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
 
 function renderTraditionalPeoples(povos: any): string {
   return `
-  <h2>IX. Povos Tradicionais</h2>
+  <h2>VII. Povos Tradicionais</h2>
   <div class="section">
     <h3>A. Povos Indígenas</h3>
     <div class="highlight-box">
@@ -953,7 +1104,7 @@ function renderGuidingThreads(fios: FioCondutor[], conclusoes: ConclusaoDinamica
   ` : '';
 
   return `
-  <h2>X. Fios Condutores Analíticos e Síntese Cruzada</h2>
+  <h2>VIII. Fios Condutores Analíticos e Síntese Cruzada</h2>
   <div class="section">
     <p>A análise cruzada entre as bases estatística, orçamentária, normativa e de recomendações revela <strong>${fios.length} fios condutores</strong> que estruturam a narrativa do período, junto a ${conclusoes.filter(c => c.tipo === 'avanco').length} avanços, ${conclusoes.filter(c => c.tipo === 'retrocesso').length} retrocessos e ${conclusoes.filter(c => c.tipo === 'lacuna_persistente').length} lacunas persistentes.</p>
     
@@ -976,7 +1127,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
   return `
-  <h2>XI. Conclusões e Compromissos</h2>
+  <h2>IX. Conclusões e Compromissos</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>Veredito Geral</h4>
