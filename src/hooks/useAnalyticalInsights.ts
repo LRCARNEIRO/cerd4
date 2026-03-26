@@ -152,6 +152,17 @@ export function useAnalyticalInsights() {
     return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || []);
   }, [lacunas, stats, respostas, orcStats, indicadores]);
 
+  // Compute last updated timestamp from all data sources
+  const lastUpdated = useMemo(() => {
+    const dates: string[] = [];
+    (lacunas || []).forEach(l => { if (l.updated_at) dates.push(l.updated_at); });
+    (respostas || []).forEach(r => { if (r.updated_at) dates.push(r.updated_at); });
+    (indicadores || []).forEach((i: any) => { if (i.updated_at) dates.push(i.updated_at); });
+    if (dates.length === 0) return null;
+    dates.sort();
+    return dates[dates.length - 1];
+  }, [lacunas, respostas, indicadores]);
+
   return {
     isLoading,
     isFetching,
@@ -165,6 +176,7 @@ export function useAnalyticalInsights() {
     orcStats,
     indicadores,
     orcDados,
+    lastUpdated,
   };
 }
 
