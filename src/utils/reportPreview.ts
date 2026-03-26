@@ -1,5 +1,14 @@
-export function openHtmlPreview(html: string, title: string) {
+export function prepareHtmlPreview(title?: string) {
   const previewWindow = window.open('', '_blank', 'noopener,noreferrer');
+
+  if (previewWindow && title) {
+    previewWindow.document.title = title;
+  }
+
+  return previewWindow;
+}
+
+export function openHtmlPreview(html: string, title: string, previewWindow: Window | null = prepareHtmlPreview(title)) {
 
   if (!previewWindow) {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
