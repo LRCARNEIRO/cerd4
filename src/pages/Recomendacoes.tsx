@@ -219,7 +219,7 @@ export default function Recomendacoes() {
           </div>
         </TabsContent>
 
-        <TabsContent value="lacunas">
+        <TabsContent value="lacunas-report">
           <div className="flex justify-end mb-3" data-export-ignore="true">
             <ExportTabButtons targetSelector="#export-recomendacoes-lacunas" generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
           </div>
@@ -344,7 +344,7 @@ export default function Recomendacoes() {
           </div>
         </TabsContent>
 
-        <TabsContent value="respostas">
+        <TabsContent value="respostas-report">
           <div className="flex items-center justify-between mb-3" data-export-ignore="true">
             <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary">
               <Sparkles className="w-3 h-3" /> Avaliações técnicas geradas dinamicamente a partir dos dados atuais
