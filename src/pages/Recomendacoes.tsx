@@ -82,11 +82,17 @@ export default function Recomendacoes() {
   const { data: allNormativos } = useQuery({
     queryKey: ['normativos-justificativa'],
     queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('titulo, categoria, status, artigos_convencao');
+      const { data } = await supabase.from('documentos_normativos').select('*');
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // All lacunas (unfiltered) for Aderência ICERD
+  const { data: allLacunas } = useLacunasIdentificadas({});
+
+  // Analytical insights for Aderência
+  const { fiosCondutores, conclusoesDinamicas, respostas: respostasInsights, orcDados, indicadores: indicadoresInsights, stats: insightsStats } = useAnalyticalInsights();
 
   // Build dynamic justificativas from ALL three bases (indicadores + orçamento + normativos)
   const dynamicJustificativas = useMemo(() => {
