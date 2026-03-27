@@ -644,6 +644,7 @@ export default function Conclusoes() {
                 indicadores={indicadores || []}
                 stats={stats}
                 documentosNormativos={documentosNormativos || []}
+                respostasCerdIII={respostas || []}
               />
             </TabsContent>
           </Tabs>
