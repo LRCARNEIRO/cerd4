@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles, Scale } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresAnaliticos, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
@@ -27,6 +27,8 @@ import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
+import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
+import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -80,11 +82,17 @@ export default function Recomendacoes() {
   const { data: allNormativos } = useQuery({
     queryKey: ['normativos-justificativa'],
     queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('titulo, categoria, status, artigos_convencao');
+      const { data } = await supabase.from('documentos_normativos').select('*');
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // All lacunas (unfiltered) for Aderência ICERD
+  const { data: allLacunas } = useLacunasIdentificadas({});
+
+  // Analytical insights for Aderência
+  const { fiosCondutores, conclusoesDinamicas, respostas: respostasInsights, orcDados, indicadores: indicadoresInsights, stats: insightsStats } = useAnalyticalInsights();
 
   // Build dynamic justificativas from ALL three bases (indicadores + orçamento + normativos)
   const dynamicJustificativas = useMemo(() => {
@@ -199,6 +207,7 @@ export default function Recomendacoes() {
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
+          <TabsTrigger value="aderencia" className="gap-1"><Scale className="w-4 h-4" /> Aderência ICERD</TabsTrigger>
         </TabsList>
 
         <TabsContent value="observacoes">
@@ -444,6 +453,19 @@ export default function Recomendacoes() {
           <div id="export-recomendacoes-durban">
             <DurbanTab />
           </div>
+        </TabsContent>
+
+        <TabsContent value="aderencia">
+          <IcerdAdherencePanel
+            fiosCondutores={fiosCondutores}
+            conclusoes={conclusoesDinamicas}
+            lacunas={allLacunas || []}
+            orcamentoRecords={orcDados || []}
+            indicadores={indicadoresInsights || []}
+            stats={insightsStats}
+            respostas={respostasInsights || []}
+            documentosNormativos={allNormativos || []}
+          />
         </TabsContent>
       </Tabs>
     </DashboardLayout>
