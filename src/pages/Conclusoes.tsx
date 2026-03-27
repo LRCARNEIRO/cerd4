@@ -34,6 +34,10 @@ const eixoLabels: Record<string, string> = {
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
 import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
+import { LacunaCard } from '@/components/dashboard/LacunaCard';
+import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
+import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
