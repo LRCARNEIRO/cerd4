@@ -207,6 +207,7 @@ export default function Recomendacoes() {
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
+          <TabsTrigger value="aderencia" className="gap-1"><Scale className="w-4 h-4" /> Aderência ICERD</TabsTrigger>
         </TabsList>
 
         <TabsContent value="observacoes">
