@@ -336,13 +336,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       // Indicadores by article
       const artInd = indicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
 
-      // NEW: Respostas CERD III by article (match via lacunas paragraphs)
-      const artParagraphs = new Set(artLacunas.map(l => l.paragrafo));
-      const artRespostas = respostas.filter(r => {
-        // Match by paragraph prefix (e.g., "§31" in paragrafo_cerd_iii)
-        return artParagraphs.has(r.paragrafo_cerd_iii) ||
-          [...artParagraphs].some(p => r.paragrafo_cerd_iii.includes(p) || p.includes(r.paragrafo_cerd_iii));
-      });
+      // Respostas CERD III by article — mapeamento direto temático
+      const artRespostas = mapRespostasToArticle(respostas, art.numero);
       const respCumpridas = artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length;
       const respNaoCumpridas = artRespostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso').length;
 
