@@ -189,29 +189,51 @@ const formatCompact = (value: number) => {
   return `R$ ${(value / 1_000).toFixed(0)} mil`;
 };
 
+/**
+ * Mapeamento direto: parágrafo CERD III → artigos ICERD (por conteúdo temático)
+ */
+const CERD_III_PARAGRAFO_ARTIGOS: Record<string, ArtigoConvencao[]> = {
+  '12': ['I', 'II', 'VI'],    // legislação/implementação
+  '14': ['IV', 'VII'],         // estereótipos/mídia
+  '16': ['V'],                 // saúde
+  '18': ['V', 'VII'],          // educação/Lei 10.639
+  '20': ['III', 'V'],          // povos indígenas
+  '22': ['III', 'V'],          // quilombolas/território
+  '24': ['V', 'VI'],           // violência policial/juventude
+  '26': ['V', 'VI'],           // encarceramento
+};
+
+function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: ArtigoConvencao): RespostaLacunaCerdIII[] {
+  return respostas.filter(r => {
+    const p = r.paragrafo_cerd_iii.replace(/[§ ]/g, '');
+    const mapped = CERD_III_PARAGRAFO_ARTIGOS[p];
+    return mapped ? mapped.includes(artigo) : false;
+  });
+}
+
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
   // Weighted scoring with balanced interpretation:
   // Lacunas compliance (20%), Budget (15%), Conclusions (15%), Evidence breadth (10%), 
   // Normativos (20%), Respostas (15%), Stats (5%)
-  // 
-  // Interpretação equilibrada: reconhece esforço legislativo/institucional 
-  // mesmo quando indicadores ainda não refletem melhoras
   let score = 0;
 
-  // Lacunas compliance (0-20) — peso reduzido para ser menos punitivo
+  // Lacunas compliance (0-20) — AGORA contabiliza em_andamento como 30% de cumprimento
   if (a.lacunasTotal > 0) {
-    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6) / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.2;
+    const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
+    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
     score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
-    // Bônus por esforço: se há parciais, reconhece que há andamento
-    if (a.lacunasParciais > 0) score += Math.min(5, a.lacunasParciais * 1.5);
+    // Bônus por esforço: parciais + em_andamento reconhecem andamento
+    if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
   } else {
     score += 10;
   }
 
-  // Budget coverage (0-15)
+  // Budget coverage (0-15) — valoriza tanto programas quanto volume liquidado
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 2.5);
+    score += Math.min(10, a.orcamentoProgramas * 1.5);
+    // Bônus por volume liquidado (>100mi = bom sinal)
+    if (a.orcamentoLiquidado > 100_000_000) score += Math.min(5, a.orcamentoLiquidado / 1_000_000_000 * 5);
   }
 
   // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
@@ -219,7 +241,6 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   if (totalConc > 0) {
     const avancoRatio = a.conclusoesAvanco / totalConc;
     score += avancoRatio * 15;
-    // Bônus: se há mais avanços que retrocessos
     if (a.conclusoesAvanco > a.conclusoesRetrocesso) score += 2;
   }
 
@@ -233,30 +254,33 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
   score += (breadth / 6) * 10;
 
-  // Normative coverage (0-20) — peso aumentado para valorizar esforço legislativo
+  // Normative coverage (0-20) — peso alto para valorizar esforço legislativo
   if (a.normativosCount > 0) {
     score += Math.min(20, a.normativosCount * 2.5);
   }
 
-  // Respostas CERD III (0-15) — peso aumentado, interpretação mais permissiva
+  // Respostas CERD III (0-15) — interpretação mais permissiva, inclui parcial e em_andamento
   if (a.respostasTotal > 0) {
-    const respRatio = (a.respostasCumpridas * 1 + (a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas) * 0.5) / a.respostasTotal;
-    score += respRatio * 15;
+    // cumprido = 1.0, parcial = 0.7, em_andamento (restante) = 0.4, nao_cumprido = 0
+    const emAndamentoResp = a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas;
+    const respScore = (a.respostasCumpridas * 1.0 + emAndamentoResp * 0.4) / a.respostasTotal;
+    score += respScore * 15;
   }
 
   // Statistical series (0-5)
   if (a.seriesEstatisticas > 0) {
-    score += Math.min(5, a.seriesEstatisticas);
+    score += Math.min(5, a.seriesEstatisticas * 0.5);
   }
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
 
 function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
-  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas;
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas + Math.floor(emAndamento * 0.3);
   const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
-  if (avancos > retrocessos * 1.5) return 'melhora';
-  if (retrocessos > avancos * 1.5) return 'piora';
+  if (avancos > retrocessos * 1.3) return 'melhora';
+  if (retrocessos > avancos * 1.3) return 'piora';
   return 'estagnacao';
 }
 
