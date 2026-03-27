@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users } from 'lucide-react';
+import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
@@ -188,29 +189,51 @@ const formatCompact = (value: number) => {
   return `R$ ${(value / 1_000).toFixed(0)} mil`;
 };
 
+/**
+ * Mapeamento direto: parágrafo CERD III → artigos ICERD (por conteúdo temático)
+ */
+const CERD_III_PARAGRAFO_ARTIGOS: Record<string, ArtigoConvencao[]> = {
+  '12': ['I', 'II', 'VI'],    // legislação/implementação
+  '14': ['IV', 'VII'],         // estereótipos/mídia
+  '16': ['V'],                 // saúde
+  '18': ['V', 'VII'],          // educação/Lei 10.639
+  '20': ['III', 'V'],          // povos indígenas
+  '22': ['III', 'V'],          // quilombolas/território
+  '24': ['V', 'VI'],           // violência policial/juventude
+  '26': ['V', 'VI'],           // encarceramento
+};
+
+function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: ArtigoConvencao): RespostaLacunaCerdIII[] {
+  return respostas.filter(r => {
+    const p = r.paragrafo_cerd_iii.replace(/[§ ]/g, '');
+    const mapped = CERD_III_PARAGRAFO_ARTIGOS[p];
+    return mapped ? mapped.includes(artigo) : false;
+  });
+}
+
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
   // Weighted scoring with balanced interpretation:
   // Lacunas compliance (20%), Budget (15%), Conclusions (15%), Evidence breadth (10%), 
   // Normativos (20%), Respostas (15%), Stats (5%)
-  // 
-  // Interpretação equilibrada: reconhece esforço legislativo/institucional 
-  // mesmo quando indicadores ainda não refletem melhoras
   let score = 0;
 
-  // Lacunas compliance (0-20) — peso reduzido para ser menos punitivo
+  // Lacunas compliance (0-20) — AGORA contabiliza em_andamento como 30% de cumprimento
   if (a.lacunasTotal > 0) {
-    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6) / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.2;
+    const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
+    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
     score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
-    // Bônus por esforço: se há parciais, reconhece que há andamento
-    if (a.lacunasParciais > 0) score += Math.min(5, a.lacunasParciais * 1.5);
+    // Bônus por esforço: parciais + em_andamento reconhecem andamento
+    if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
   } else {
     score += 10;
   }
 
-  // Budget coverage (0-15)
+  // Budget coverage (0-15) — valoriza tanto programas quanto volume liquidado
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 2.5);
+    score += Math.min(10, a.orcamentoProgramas * 1.5);
+    // Bônus por volume liquidado (>100mi = bom sinal)
+    if (a.orcamentoLiquidado > 100_000_000) score += Math.min(5, a.orcamentoLiquidado / 1_000_000_000 * 5);
   }
 
   // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
@@ -218,7 +241,6 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   if (totalConc > 0) {
     const avancoRatio = a.conclusoesAvanco / totalConc;
     score += avancoRatio * 15;
-    // Bônus: se há mais avanços que retrocessos
     if (a.conclusoesAvanco > a.conclusoesRetrocesso) score += 2;
   }
 
@@ -232,41 +254,47 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
   score += (breadth / 6) * 10;
 
-  // Normative coverage (0-20) — peso aumentado para valorizar esforço legislativo
+  // Normative coverage (0-20) — peso alto para valorizar esforço legislativo
   if (a.normativosCount > 0) {
     score += Math.min(20, a.normativosCount * 2.5);
   }
 
-  // Respostas CERD III (0-15) — peso aumentado, interpretação mais permissiva
+  // Respostas CERD III (0-15) — interpretação mais permissiva, inclui parcial e em_andamento
   if (a.respostasTotal > 0) {
-    const respRatio = (a.respostasCumpridas * 1 + (a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas) * 0.5) / a.respostasTotal;
-    score += respRatio * 15;
+    // cumprido = 1.0, parcial = 0.7, em_andamento (restante) = 0.4, nao_cumprido = 0
+    const emAndamentoResp = a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas;
+    const respScore = (a.respostasCumpridas * 1.0 + emAndamentoResp * 0.4) / a.respostasTotal;
+    score += respScore * 15;
   }
 
   // Statistical series (0-5)
   if (a.seriesEstatisticas > 0) {
-    score += Math.min(5, a.seriesEstatisticas);
+    score += Math.min(5, a.seriesEstatisticas * 0.5);
   }
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
 
 function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
-  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas;
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas + Math.floor(emAndamento * 0.3);
   const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
-  if (avancos > retrocessos * 1.5) return 'melhora';
-  if (retrocessos > avancos * 1.5) return 'piora';
+  if (avancos > retrocessos * 1.3) return 'melhora';
+  if (retrocessos > avancos * 1.3) return 'piora';
   return 'estagnacao';
 }
 
 function generateVerdict(a: ArtigoAnalysis): string {
-  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : ', sem respaldo normativo específico identificado';
+  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
-  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) do Escopo comprovam a situação.` : '';
+  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
+  const orcText = a.orcamentoLiquidado > 0 ? ` Investimento liquidado: ${formatCompact(a.orcamentoLiquidado)}.` : '';
 
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}, com ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas e ${a.orcamentoProgramas} programas orçamentários${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial. Existem avanços pontuais no Art. ${a.numero} (${a.conclusoesAvanco} avanços identificados), mas ${a.lacunasNaoCumpridas + a.lacunasRetrocesso} obrigações permanecem sem cumprimento adequado${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} obrigações não cumpridas, ${a.lacunasRetrocesso} retrocessos e cobertura orçamentária limitada (${a.orcamentoProgramas} programas)${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} programas orçamentários e ${a.indicadoresCount} indicadores vinculados${normText}.${respText}${orcText}${statsText}`;
+  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} programas e ${a.indicadoresCount} indicadores${normText}.${respText}${orcText}${statsText}`;
+  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${orcText}${statsText}`;
   return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
 }
 
@@ -308,13 +336,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       // Indicadores by article
       const artInd = indicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
 
-      // NEW: Respostas CERD III by article (match via lacunas paragraphs)
-      const artParagraphs = new Set(artLacunas.map(l => l.paragrafo));
-      const artRespostas = respostas.filter(r => {
-        // Match by paragraph prefix (e.g., "§31" in paragrafo_cerd_iii)
-        return artParagraphs.has(r.paragrafo_cerd_iii) ||
-          [...artParagraphs].some(p => r.paragrafo_cerd_iii.includes(p) || p.includes(r.paragrafo_cerd_iii));
-      });
+      // Respostas CERD III by article — mapeamento direto temático
+      const artRespostas = mapRespostasToArticle(respostas, art.numero);
       const respCumpridas = artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length;
       const respNaoCumpridas = artRespostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso').length;
 
@@ -385,6 +408,82 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const totalRespostas = respostas.length;
   const totalStatSeries = Object.values(statSeriesPerArticle).reduce((s, v) => s + v, 0);
 
+  // ── Annex download ──
+  const downloadAnnex = useCallback(() => {
+    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Anexo — Aderência ICERD Detalhada</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1000px;margin:20px auto;color:#222;font-size:13px}
+h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
+h2{font-size:15px;margin-top:24px;color:#1e40af}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold}
+.green{background:#dcfce7;color:#166534}.yellow{background:#fef9c3;color:#854d0e}
+.red{background:#fee2e2;color:#991b1b}.blue{background:#dbeafe;color:#1e40af}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;font-size:12px}
+th{background:#f1f5f9}
+.score{font-size:24px;font-weight:bold}
+.section{margin:12px 0;padding:12px;background:#f8fafc;border-radius:6px;border-left:4px solid}
+.nota{font-size:11px;color:#666;margin-top:4px}
+</style></head><body>
+<h1>⚖️ Anexo Analítico — Aderência ICERD por Artigo</h1>
+<p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+<p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
+<p><strong>Fontes:</strong> ${stats?.total || 0} lacunas ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${indicadores.length} indicadores, ${totalStatSeries} séries estatísticas.</p>
+<p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
+<hr/>
+${analysis.map(a => {
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
+  const trendIcon = a.tendencia === 'melhora' ? '↑ Melhora' : a.tendencia === 'piora' ? '↓ Piora' : '→ Estagnação';
+  return `
+<h2>Artigo ${a.numero} — ${a.titulo}</h2>
+<p>${a.tituloCompleto}</p>
+<p><span class="score" style="color:${a.grauAderencia >= 60 ? '#16a34a' : a.grauAderencia >= 30 ? '#ca8a04' : '#dc2626'}">${a.grauAderencia}%</span> 
+<span class="badge ${badgeClass}">${badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência'}</span>
+<span class="badge blue">${trendIcon}</span></p>
+
+<table>
+<tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
+<tr><td>Lacunas ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Programas Orçamentários</td><td>${a.orcamentoProgramas}</td><td>Liquidado: ${formatCompact(a.orcamentoLiquidado)}</td></tr>
+<tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
+<tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
+<tr><td>Indicadores (BD)</td><td>${a.indicadoresCount}</td><td>Registros com título, valores e fonte</td></tr>
+<tr><td>Séries Estatísticas</td><td>${a.seriesEstatisticas}</td><td>Conjuntos temporais temáticos</td></tr>
+<tr><td>Fios Condutores</td><td>${a.fiosTotal}</td><td>${a.fiosAvanco} avanço(s), ${a.fiosRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Conclusões Analíticas</td><td>${a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna}</td><td>${a.conclusoesAvanco} avanço(s), ${a.conclusoesRetrocesso} retrocesso(s), ${a.conclusoesLacuna} lacuna(s)</td></tr>
+</table>
+
+<div class="section" style="border-color:${a.cor}">
+<strong>Veredito:</strong> ${a.veredito}
+</div>
+`;
+}).join('')}
+
+<hr/>
+<h2>Metodologia de Cálculo</h2>
+<table>
+<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
+<tr><td>Lacunas ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Programas vinculados + bônus por volume liquidado &gt;R$100mi</td></tr>
+<tr><td>Conclusões Analíticas</td><td>15%</td><td>Proporção de avanços vs. retrocessos</td></tr>
+<tr><td>Amplitude de Evidências</td><td>10%</td><td>Nº de dimensões com dados (lacunas, fios, orçamento, indicadores, normativos, respostas)</td></tr>
+<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Respostas CERD III</td><td>15%</td><td>Mapeamento direto §12-§26 por conteúdo temático</td></tr>
+<tr><td>Séries Estatísticas</td><td>5%</td><td>Séries temporais do espelho de dados</td></tr>
+</table>
+<p class="nota"><strong>Indicadores vs. Séries Estatísticas:</strong> "Indicadores" são registros individuais armazenados no banco de dados (indicadores_interseccionais), cada um com título, valores desagregados, fonte e artigos ICERD. "Séries Estatísticas" são conjuntos de dados temporais do espelho de dados (mirror), agrupados por tema (segurança, saúde, educação etc.) — representam a fundamentação quantitativa longitudinal.</p>
+</body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, indicadores.length]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -401,7 +500,16 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
                 {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
                 {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
               </p>
-              <MethodologyPanel variant="full" className="mt-3" />
+              <div className="flex items-center gap-2 mt-3">
+                <MethodologyPanel variant="full" />
+                <Button size="sm" variant="outline" onClick={downloadAnnex} className="text-xs gap-1">
+                  <Download className="w-3 h-3" /> Baixar Anexo Detalhado
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">
+                <strong>Indicadores</strong> = registros individuais do BD com título, valores e fonte. 
+                <strong>Séries Estatísticas</strong> = conjuntos temporais temáticos (segurança, saúde, educação etc.) do espelho de dados.
+              </p>
             </div>
           </div>
         </CardContent>
