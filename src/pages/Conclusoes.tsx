@@ -61,6 +61,20 @@ export default function Conclusoes() {
     },
   });
 
+  // Diagnostic Sensor for lacunas
+  const { diagnosticMap } = useDiagnosticSensor(lacunas);
+
+  // Dynamic justificativas for respostas CERD III
+  const dynamicJustificativas = useMemo(() => {
+    if (!indicadores || !orcDados) return {};
+    const map: Record<string, string | null> = {};
+    const paragrafos = ['12', '14', '16', '18', '20', '22', '24', '26'];
+    for (const p of paragrafos) {
+      map[p] = generateDynamicJustificativa(p, indicadores as any, orcDados as any, documentosNormativos || []);
+    }
+    return map;
+  }, [indicadores, orcDados, documentosNormativos]);
+
   const [diffOpen, setDiffOpen] = useState(false);
   const [beforeSnap, setBeforeSnap] = useState<SnapshotData | null>(null);
   const [afterSnap, setAfterSnap] = useState<SnapshotData | null>(null);
