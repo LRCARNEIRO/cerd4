@@ -13,6 +13,7 @@ interface FarolEvolucaoPanelProps {
   indicadores: any[];
   stats: any;
   documentosNormativos: any[];
+  respostasCerdIII: any[];
 }
 
 type FarolArtigoResult = {
@@ -83,14 +84,25 @@ function evaluateIndicador(ind: any): 'favoravel' | 'desfavoravel' | 'novo' | 'n
   return 'neutro';
 }
 
-export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, stats, documentosNormativos }: FarolEvolucaoPanelProps) {
+export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, stats, documentosNormativos, respostasCerdIII }: FarolEvolucaoPanelProps) {
   
+  // Build set of paragraphs that have CERD III responses
+  const paragrafosComResposta = useMemo(() => {
+    const set = new Set<string>();
+    (respostasCerdIII || []).forEach((r: any) => {
+      if (r.paragrafo_cerd_iii) set.add(String(r.paragrafo_cerd_iii));
+    });
+    return set;
+  }, [respostasCerdIII]);
+
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
-      // ── LACUNAS ONU ──
+      // ── LACUNAS ONU (somente as que têm resposta CERD III correspondente) ──
       const artigoLacunas = lacunas.filter(l => {
+        // Primeiro: só conta lacuna que tem resposta CERD III
+        if (!paragrafosComResposta.has(String(l.paragrafo))) return false;
         const explicit = l.artigos_convencao?.filter((a: string) => a)?.length > 0;
         if (explicit) return l.artigos_convencao.includes(artNum);
         const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
@@ -189,7 +201,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         resumo: partes.join('. ') + '.',
       };
     });
-  }, [lacunas, orcamentoRecords, indicadores, documentosNormativos]);
+  }, [lacunas, orcamentoRecords, indicadores, documentosNormativos, paragrafosComResposta]);
 
   const mediaGeral = Math.round(artigoResults.reduce((s, a) => s + a.scoreFarol, 0) / artigoResults.length);
 

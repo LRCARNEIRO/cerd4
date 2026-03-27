@@ -202,8 +202,8 @@ export default function Recomendacoes() {
       <Tabs defaultValue="observacoes" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
-          <TabsTrigger value="lacunas">Lacunas Identificadas</TabsTrigger>
-          <TabsTrigger value="respostas">Respostas CERD III</TabsTrigger>
+          <TabsTrigger value="lacunas-report">Lacunas ONU ({stats?.total || 0})</TabsTrigger>
+          <TabsTrigger value="respostas-report">Respostas CERD III ({respostasCerd?.length || 0})</TabsTrigger>
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
@@ -219,7 +219,7 @@ export default function Recomendacoes() {
           </div>
         </TabsContent>
 
-        <TabsContent value="lacunas">
+        <TabsContent value="lacunas-report">
           <div className="flex justify-end mb-3" data-export-ignore="true">
             <ExportTabButtons targetSelector="#export-recomendacoes-lacunas" generateHTML={() => generateLacunasExportHTML(filteredLacunas, stats)} fileName="Lacunas-ONU-CERD" compact />
           </div>
@@ -344,7 +344,7 @@ export default function Recomendacoes() {
           </div>
         </TabsContent>
 
-        <TabsContent value="respostas">
+        <TabsContent value="respostas-report">
           <div className="flex items-center justify-between mb-3" data-export-ignore="true">
             <Badge variant="outline" className="gap-1 text-xs border-primary/30 text-primary">
               <Sparkles className="w-3 h-3" /> Avaliações técnicas geradas dinamicamente a partir dos dados atuais
