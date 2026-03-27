@@ -408,6 +408,82 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const totalRespostas = respostas.length;
   const totalStatSeries = Object.values(statSeriesPerArticle).reduce((s, v) => s + v, 0);
 
+  // ── Annex download ──
+  const downloadAnnex = useCallback(() => {
+    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Anexo — Aderência ICERD Detalhada</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1000px;margin:20px auto;color:#222;font-size:13px}
+h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
+h2{font-size:15px;margin-top:24px;color:#1e40af}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold}
+.green{background:#dcfce7;color:#166534}.yellow{background:#fef9c3;color:#854d0e}
+.red{background:#fee2e2;color:#991b1b}.blue{background:#dbeafe;color:#1e40af}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+th,td{border:1px solid #ddd;padding:6px 8px;text-align:left;font-size:12px}
+th{background:#f1f5f9}
+.score{font-size:24px;font-weight:bold}
+.section{margin:12px 0;padding:12px;background:#f8fafc;border-radius:6px;border-left:4px solid}
+.nota{font-size:11px;color:#666;margin-top:4px}
+</style></head><body>
+<h1>⚖️ Anexo Analítico — Aderência ICERD por Artigo</h1>
+<p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+<p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
+<p><strong>Fontes:</strong> ${stats?.total || 0} lacunas ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${indicadores.length} indicadores, ${totalStatSeries} séries estatísticas.</p>
+<p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
+<hr/>
+${analysis.map(a => {
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
+  const trendIcon = a.tendencia === 'melhora' ? '↑ Melhora' : a.tendencia === 'piora' ? '↓ Piora' : '→ Estagnação';
+  return `
+<h2>Artigo ${a.numero} — ${a.titulo}</h2>
+<p>${a.tituloCompleto}</p>
+<p><span class="score" style="color:${a.grauAderencia >= 60 ? '#16a34a' : a.grauAderencia >= 30 ? '#ca8a04' : '#dc2626'}">${a.grauAderencia}%</span> 
+<span class="badge ${badgeClass}">${badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência'}</span>
+<span class="badge blue">${trendIcon}</span></p>
+
+<table>
+<tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
+<tr><td>Lacunas ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Programas Orçamentários</td><td>${a.orcamentoProgramas}</td><td>Liquidado: ${formatCompact(a.orcamentoLiquidado)}</td></tr>
+<tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
+<tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
+<tr><td>Indicadores (BD)</td><td>${a.indicadoresCount}</td><td>Registros com título, valores e fonte</td></tr>
+<tr><td>Séries Estatísticas</td><td>${a.seriesEstatisticas}</td><td>Conjuntos temporais temáticos</td></tr>
+<tr><td>Fios Condutores</td><td>${a.fiosTotal}</td><td>${a.fiosAvanco} avanço(s), ${a.fiosRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Conclusões Analíticas</td><td>${a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna}</td><td>${a.conclusoesAvanco} avanço(s), ${a.conclusoesRetrocesso} retrocesso(s), ${a.conclusoesLacuna} lacuna(s)</td></tr>
+</table>
+
+<div class="section" style="border-color:${a.cor}">
+<strong>Veredito:</strong> ${a.veredito}
+</div>
+`;
+}).join('')}
+
+<hr/>
+<h2>Metodologia de Cálculo</h2>
+<table>
+<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
+<tr><td>Lacunas ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Programas vinculados + bônus por volume liquidado &gt;R$100mi</td></tr>
+<tr><td>Conclusões Analíticas</td><td>15%</td><td>Proporção de avanços vs. retrocessos</td></tr>
+<tr><td>Amplitude de Evidências</td><td>10%</td><td>Nº de dimensões com dados (lacunas, fios, orçamento, indicadores, normativos, respostas)</td></tr>
+<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Respostas CERD III</td><td>15%</td><td>Mapeamento direto §12-§26 por conteúdo temático</td></tr>
+<tr><td>Séries Estatísticas</td><td>5%</td><td>Séries temporais do espelho de dados</td></tr>
+</table>
+<p class="nota"><strong>Indicadores vs. Séries Estatísticas:</strong> "Indicadores" são registros individuais armazenados no banco de dados (indicadores_interseccionais), cada um com título, valores desagregados, fonte e artigos ICERD. "Séries Estatísticas" são conjuntos de dados temporais do espelho de dados (mirror), agrupados por tema (segurança, saúde, educação etc.) — representam a fundamentação quantitativa longitudinal.</p>
+</body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, indicadores.length]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
