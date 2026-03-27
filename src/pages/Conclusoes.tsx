@@ -667,6 +667,54 @@ export default function Conclusoes() {
                 respostasCerdIII={respostas || []}
               />
             </TabsContent>
+
+            {/* ABA: LACUNAS IDENTIFICADAS */}
+            <TabsContent value="lacunas-ident">
+              <Card className="mb-4 border-l-4 border-l-primary">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <Database className="w-6 h-6 text-primary flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold mb-1">Lacunas Identificadas — Recomendações ONU</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {lacunas?.length || 0} observações/recomendações do Comitê CERD com análise de cumprimento e evidências cruzadas
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {(lacunas || []).map(lacuna => (
+                  <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
+                ))}
+              </div>
+            </TabsContent>
+
+            {/* ABA: RESPOSTAS CERD III */}
+            <TabsContent value="respostas-cerd">
+              <Card className="mb-4 border-l-4 border-l-warning">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-warning flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold mb-1">Respostas às Críticas do CERD III</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {respostas?.length || 0} respostas oficiais com avaliação dinâmica de cumprimento
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="space-y-4">
+                {(respostas || []).map(resposta => (
+                  <RespostaCerdCard
+                    key={resposta.id}
+                    resposta={resposta}
+                    dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
+                  />
+                ))}
+              </div>
+            </TabsContent>
           </Tabs>
         </>
       )}
