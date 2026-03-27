@@ -454,6 +454,19 @@ export default function Recomendacoes() {
             <DurbanTab />
           </div>
         </TabsContent>
+
+        <TabsContent value="aderencia">
+          <IcerdAdherencePanel
+            fiosCondutores={fiosCondutores}
+            conclusoes={conclusoesDinamicas}
+            lacunas={allLacunas || []}
+            orcamentoRecords={orcDados || []}
+            indicadores={indicadoresInsights || []}
+            stats={insightsStats}
+            respostas={respostasInsights || []}
+            documentosNormativos={allNormativos || []}
+          />
+        </TabsContent>
       </Tabs>
     </DashboardLayout>
   );
