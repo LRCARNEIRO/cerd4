@@ -52,6 +52,7 @@ const navSections: NavSection[] = [
       { title: 'Plano de Trabalho', href: '/plano-trabalho', icon: ClipboardList },
       { title: 'Common Core (77)', href: '/common-core', icon: BookOpen, badge: '77' },
       { title: 'Recomendações', href: '/recomendacoes', icon: AlertTriangle },
+      { title: 'Artigos', href: '/artigos', icon: Scale },
       { title: 'Documentos Balizadores', href: '/documentos-balizadores', icon: FileText },
       { title: 'Fontes de Dados', href: '/fontes', icon: Database },
     ]

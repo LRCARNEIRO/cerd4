@@ -13,7 +13,7 @@ interface FarolEvolucaoPanelProps {
   indicadores: any[];
   stats: any;
   documentosNormativos: any[];
-  respostasCerdIII: any[];
+  respostasCerdIII?: any[];
 }
 
 type FarolArtigoResult = {
@@ -21,13 +21,6 @@ type FarolArtigoResult = {
   titulo: string;
   tituloCompleto: string;
   cor: string;
-  // Lacunas ONU
-  lacunasTotal: number;
-  lacunasCumpridas: number;
-  lacunasParciais: number;
-  lacunasEmAndamento: number;
-  lacunasNaoCumpridas: number;
-  lacunasRetrocesso: number;
   // Orçamento
   programasCount: number;
   totalLiquidado: number;
@@ -85,35 +78,10 @@ function evaluateIndicador(ind: any): 'favoravel' | 'desfavoravel' | 'novo' | 'n
 }
 
 export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, stats, documentosNormativos, respostasCerdIII }: FarolEvolucaoPanelProps) {
-  
-  // Build set of paragraphs that have CERD III responses
-  const paragrafosComResposta = useMemo(() => {
-    const set = new Set<string>();
-    (respostasCerdIII || []).forEach((r: any) => {
-      if (r.paragrafo_cerd_iii) set.add(String(r.paragrafo_cerd_iii));
-    });
-    return set;
-  }, [respostasCerdIII]);
 
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
-
-      // ── LACUNAS ONU (somente as que têm resposta CERD III correspondente) ──
-      const artigoLacunas = lacunas.filter(l => {
-        // Primeiro: só conta lacuna que tem resposta CERD III
-        if (!paragrafosComResposta.has(String(l.paragrafo))) return false;
-        const explicit = l.artigos_convencao?.filter((a: string) => a)?.length > 0;
-        if (explicit) return l.artigos_convencao.includes(artNum);
-        const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
-        return mapped.includes(artNum);
-      });
-      const lacunasTotal = artigoLacunas.length;
-      const lacunasCumpridas = artigoLacunas.filter(l => l.status_cumprimento === 'cumprido').length;
-      const lacunasParciais = artigoLacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
-      const lacunasEmAndamento = artigoLacunas.filter(l => l.status_cumprimento === 'em_andamento').length;
-      const lacunasNaoCumpridas = artigoLacunas.filter(l => l.status_cumprimento === 'nao_cumprido').length;
-      const lacunasRetrocesso = artigoLacunas.filter(l => l.status_cumprimento === 'retrocesso').length;
 
       // ── ORÇAMENTO ──
       const artigoOrc = orcamentoRecords.filter(o => {
@@ -147,13 +115,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         else if (result === 'novo') indicadoresNovos++;
       });
 
-      // ── SCORE FAROL ──
-      // Weights: Lacunas 30%, Orçamento 25%, Normativa 25%, Indicadores 20%
-      let scoreLacunas = 0;
-      if (lacunasTotal > 0) {
-        scoreLacunas = ((lacunasCumpridas * 1.0 + lacunasParciais * 0.6 + lacunasEmAndamento * 0.3) / lacunasTotal) * 100;
-      }
-
+      // ── SCORE FAROL (3 dimensões) ──
+      // Pesos: Orçamento 35%, Normativa 35%, Indicadores 30%
       const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
       const scoreNormativa = Math.min(100, normativosCount * 12);
       
@@ -164,20 +127,15 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       }
 
       const scoreFarol = Math.round(
-        scoreLacunas * 0.30 +
-        scoreOrcamento * 0.25 +
-        scoreNormativa * 0.25 +
-        scoreIndicadores * 0.20
+        scoreOrcamento * 0.35 +
+        scoreNormativa * 0.35 +
+        scoreIndicadores * 0.30
       );
 
       const sinal: 'verde' | 'amarelo' | 'vermelho' = scoreFarol >= 60 ? 'verde' : scoreFarol >= 35 ? 'amarelo' : 'vermelho';
 
       // Resumo textual
       const partes: string[] = [];
-      if (lacunasTotal > 0) {
-        const pctAtendido = Math.round(((lacunasCumpridas + lacunasParciais + lacunasEmAndamento) / lacunasTotal) * 100);
-        partes.push(`${pctAtendido}% das ${lacunasTotal} recomendações ONU em andamento/atendidas`);
-      }
       if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
       if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
       if (indicadoresFavoraveis + indicadoresNovos > 0) {
@@ -192,7 +150,6 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         titulo: art.titulo,
         tituloCompleto: art.tituloCompleto,
         cor: art.cor,
-        lacunasTotal, lacunasCumpridas, lacunasParciais, lacunasEmAndamento, lacunasNaoCumpridas, lacunasRetrocesso,
         programasCount, totalLiquidado,
         normativosCount,
         indicadoresFavoraveis, indicadoresDesfavoraveis, indicadoresNovos,
@@ -201,7 +158,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         resumo: partes.join('. ') + '.',
       };
     });
-  }, [lacunas, orcamentoRecords, indicadores, documentosNormativos, paragrafosComResposta]);
+  }, [orcamentoRecords, indicadores, documentosNormativos]);
 
   const mediaGeral = Math.round(artigoResults.reduce((s, a) => s + a.scoreFarol, 0) / artigoResults.length);
 
@@ -210,32 +167,30 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       <tr>
         <td><strong>Art. ${a.numero}</strong></td>
         <td>${a.titulo}</td>
-        <td style="text-align:center">${a.lacunasTotal} (${a.lacunasCumpridas}✓ ${a.lacunasParciais}◐ ${a.lacunasEmAndamento}⟳ ${a.lacunasNaoCumpridas}✗ ${a.lacunasRetrocesso}↓)</td>
         <td style="text-align:center">${a.programasCount} prog. (R$ ${(a.totalLiquidado/1e9).toFixed(2)} bi)</td>
         <td style="text-align:center">${a.normativosCount}</td>
         <td style="text-align:center">${a.indicadoresFavoraveis}↑ ${a.indicadoresNovos}★ ${a.indicadoresDesfavoraveis}↓</td>
         <td style="text-align:center;font-weight:bold;color:${a.sinal === 'verde' ? '#16a34a' : a.sinal === 'amarelo' ? '#ca8a04' : '#dc2626'}">${a.scoreFarol}%</td>
       </tr>
     `).join('');
-    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Farol de Evolução por Artigo ICERD</title>
+    const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Evolução dos Artigos ICERD</title>
     <style>body{font-family:system-ui;padding:2rem;max-width:1200px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #ddd;padding:8px;font-size:12px}th{background:#f5f5f5;font-weight:600}</style></head>
-    <body><h1>Farol de Evolução — Artigos I-VII ICERD</h1>
-    <p>Avaliação baseada em: Lacunas ONU, Programas Orçamentários, Instrumentos Normativos e Indicadores com série temporal.</p>
+    <body><h1>Evolução dos Artigos I-VII ICERD</h1>
+    <p>Avaliação baseada em: Programas Orçamentários, Instrumentos Normativos e Indicadores com série temporal.</p>
     <p><strong>Score Médio:</strong> ${mediaGeral}%</p>
-    <table><thead><tr><th>Artigo</th><th>Tema</th><th>Lacunas ONU</th><th>Orçamento</th><th>Normativos</th><th>Indicadores</th><th>Score</th></tr></thead>
+    <table><thead><tr><th>Artigo</th><th>Tema</th><th>Orçamento</th><th>Normativos</th><th>Indicadores</th><th>Score</th></tr></thead>
     <tbody>${rows}</tbody></table>
     <h2>Metodologia</h2>
     <ul>
-      <li><strong>Lacunas ONU (30%):</strong> Cumpridas=100%, Parciais=60%, Em Andamento=30%, Não Cumpridas/Retrocesso=0%</li>
-      <li><strong>Orçamento (25%):</strong> Programas com execução rastreável</li>
-      <li><strong>Normativa (25%):</strong> Instrumentos normativos vinculados ao artigo</li>
-      <li><strong>Indicadores (20%):</strong> Somente indicadores com melhoria em série histórica ou recém-mensurados contam a favor</li>
+      <li><strong>Orçamento (35%):</strong> Programas com execução rastreável</li>
+      <li><strong>Normativa (35%):</strong> Instrumentos normativos vinculados ao artigo</li>
+      <li><strong>Indicadores (30%):</strong> Somente indicadores com melhoria em série histórica ou recém-mensurados contam a favor</li>
     </ul>
     <p style="font-size:10px;color:#999">Gerado em ${new Date().toLocaleString('pt-BR')}</p></body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'farol-evolucao-icerd.html'; a.click();
+    a.href = url; a.download = 'evolucao-artigos-icerd.html'; a.click();
     URL.revokeObjectURL(url);
   }, [artigoResults, mediaGeral]);
 
@@ -259,14 +214,14 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
           <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="flex items-center gap-2">
               <Scale className="w-6 h-6 text-primary" />
-              Farol de Evolução das Políticas Raciais por Artigo ICERD
+              Evolução dos Artigos — Políticas Raciais por Artigo ICERD
             </CardTitle>
             <Button variant="outline" size="sm" onClick={downloadAnnex} className="gap-1">
               <Download className="w-3 h-3" /> Baixar Anexo
             </Button>
           </div>
           <CardDescription>
-            Avalia exclusivamente: Lacunas ONU (30%) + Programas Orçamentários (25%) + Instrumentos Normativos (25%) + Indicadores com evolução (20%)
+            Avalia exclusivamente: Programas Orçamentários (35%) + Instrumentos Normativos (35%) + Indicadores com evolução (30%)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -308,15 +263,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
             <CardContent className="space-y-3">
               <Progress value={art.scoreFarol} className="h-2" />
 
-              <div className="grid grid-cols-2 gap-2">
-                {/* Lacunas */}
-                <div className="p-2 bg-muted/30 rounded text-xs">
-                  <p className="font-medium mb-1">📋 Lacunas ONU</p>
-                  <p className="text-muted-foreground">
-                    {art.lacunasTotal} total: {art.lacunasCumpridas}✓ {art.lacunasParciais}◐ {art.lacunasEmAndamento}⟳ {art.lacunasNaoCumpridas}✗
-                    {art.lacunasRetrocesso > 0 && <span className="text-destructive"> {art.lacunasRetrocesso}↓</span>}
-                  </p>
-                </div>
+              <div className="grid grid-cols-3 gap-2">
                 {/* Orçamento */}
                 <div className="p-2 bg-muted/30 rounded text-xs">
                   <p className="font-medium mb-1">💰 Orçamento</p>

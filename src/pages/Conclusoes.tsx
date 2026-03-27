@@ -407,9 +407,9 @@ export default function Conclusoes() {
               <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
               <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
               <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
-              <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Farol de Evolução</TabsTrigger>
+              <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
               <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas Identificadas ({lacunas?.length || 0})</TabsTrigger>
-              <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Respostas CERD III ({respostas?.length || 0})</TabsTrigger>
+              <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Críticas CERD III ({respostas?.length || 0})</TabsTrigger>
             </TabsList>
 
             {/* ABA: INFOGRÁFICOS */}
