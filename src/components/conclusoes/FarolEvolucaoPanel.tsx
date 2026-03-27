@@ -13,7 +13,7 @@ interface FarolEvolucaoPanelProps {
   indicadores: any[];
   stats: any;
   documentosNormativos: any[];
-  respostasCerdIII: any[];
+  respostasCerdIII?: any[];
 }
 
 type FarolArtigoResult = {
@@ -21,13 +21,6 @@ type FarolArtigoResult = {
   titulo: string;
   tituloCompleto: string;
   cor: string;
-  // Lacunas ONU
-  lacunasTotal: number;
-  lacunasCumpridas: number;
-  lacunasParciais: number;
-  lacunasEmAndamento: number;
-  lacunasNaoCumpridas: number;
-  lacunasRetrocesso: number;
   // Orçamento
   programasCount: number;
   totalLiquidado: number;
