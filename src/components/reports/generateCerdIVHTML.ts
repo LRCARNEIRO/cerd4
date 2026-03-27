@@ -834,6 +834,7 @@ function renderArticleRecSummary(lacunas: LacunaIdentificada[]): string {
 function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], orcDados: DadoOrcamentario[], indicadores: IndicadorInterseccional[], normativos: any[]): string {
   const total = lacunas.length;
   const cumprido = lacunas.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+  const emAndamento = lacunas.filter(l => l.status_cumprimento === 'em_andamento').length;
   const critico = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
   const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
   const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
@@ -841,22 +842,27 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).length;
   const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
+  // em_andamento conta como progresso parcial (peso 0.3)
+  const progressoEfetivo = cumprido + emAndamento * 0.3;
+
   // Determine overall assessment
   let veredito = 'Lacuna Persistente';
   let badgeClass = 'badge-warning';
   let icon = '⚠️';
-  if (cumprido > critico && melhorias > pioras) {
+  if (progressoEfetivo > critico && melhorias >= pioras) {
     veredito = 'Avanço'; badgeClass = 'badge-success'; icon = '✅';
-  } else if (critico > cumprido * 2 || pioras > melhorias * 2) {
+  } else if (critico > progressoEfetivo * 2 || pioras > melhorias * 2) {
     veredito = 'Retrocesso / Déficit Grave'; badgeClass = 'badge-danger'; icon = '🔴';
-  } else if (cumprido >= critico) {
+  } else if (progressoEfetivo >= critico) {
     veredito = 'Avanço Parcial'; badgeClass = 'badge-info'; icon = '📈';
   }
+
+  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
 
   return `
     <div class="fio-condutor">
       <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
-      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
+      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
       ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>`;
 }
