@@ -500,7 +500,16 @@ ${analysis.map(a => {
                 {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
                 {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
               </p>
-              <MethodologyPanel variant="full" className="mt-3" />
+              <div className="flex items-center gap-2 mt-3">
+                <MethodologyPanel variant="full" />
+                <Button size="sm" variant="outline" onClick={downloadAnnex} className="text-xs gap-1">
+                  <Download className="w-3 h-3" /> Baixar Anexo Detalhado
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">
+                <strong>Indicadores</strong> = registros individuais do BD com título, valores e fonte. 
+                <strong>Séries Estatísticas</strong> = conjuntos temporais temáticos (segurança, saúde, educação etc.) do espelho de dados.
+              </p>
             </div>
           </div>
         </CardContent>
