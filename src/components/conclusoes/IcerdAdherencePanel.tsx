@@ -285,13 +285,16 @@ function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 
 }
 
 function generateVerdict(a: ArtigoAnalysis): string {
-  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : ', sem respaldo normativo específico identificado';
+  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
+  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
+  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
-  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) do Escopo comprovam a situação.` : '';
+  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
+  const orcText = a.orcamentoLiquidado > 0 ? ` Investimento liquidado: ${formatCompact(a.orcamentoLiquidado)}.` : '';
 
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}, com ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas e ${a.orcamentoProgramas} programas orçamentários${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial. Existem avanços pontuais no Art. ${a.numero} (${a.conclusoesAvanco} avanços identificados), mas ${a.lacunasNaoCumpridas + a.lacunasRetrocesso} obrigações permanecem sem cumprimento adequado${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} obrigações não cumpridas, ${a.lacunasRetrocesso} retrocessos e cobertura orçamentária limitada (${a.orcamentoProgramas} programas)${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} programas orçamentários e ${a.indicadoresCount} indicadores vinculados${normText}.${respText}${orcText}${statsText}`;
+  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} programas e ${a.indicadoresCount} indicadores${normText}.${respText}${orcText}${statsText}`;
+  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${orcText}${statsText}`;
   return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
 }
 
