@@ -201,7 +201,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         resumo: partes.join('. ') + '.',
       };
     });
-  }, [lacunas, orcamentoRecords, indicadores, documentosNormativos]);
+  }, [lacunas, orcamentoRecords, indicadores, documentosNormativos, paragrafosComResposta]);
 
   const mediaGeral = Math.round(artigoResults.reduce((s, a) => s + a.scoreFarol, 0) / artigoResults.length);
 
