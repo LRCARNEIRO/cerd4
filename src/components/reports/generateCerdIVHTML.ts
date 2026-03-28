@@ -274,13 +274,9 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnalyticalAnnexCover(d, total, safeIndicadores.length)}
   ${renderAnalyticalMethodology(d, safeIndicadores.length)}
   ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
-  <div style="page-break-before:always"></div>
-  <h2>III. Quadro Detalhado: ${total} Recomendações × Evidências</h2>
-  <p>O quadro a seguir apresenta o detalhamento das recomendações das Observações Finais de 2022, com status, evidências e lacunas remanescentes, organizados por eixo temático.</p>
-  ${renderAllRecommendations(d.lacunas)}
-  ${renderAnnexC(safeIndicadores)}
-  ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
-  ${renderAnnexE(d.normativos || [])}
+  ${renderRecommendationsSummary(d.lacunas)}
+  ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
+  ${renderNormativeBase(d.normativos || [])}
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderAnalyticalSynthesis()}
 
@@ -327,7 +323,7 @@ function renderTOC(): string {
       <li><strong>I.</strong> Introdução (§1–§4)</li>
       <li><strong>II.</strong> Artigos I–VII da Convenção (§5–§74c)</li>
       <li><strong>III.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</li>
-      <li><strong>IV.</strong> Diálogo com a Sociedade Civil: Relatório Sombra (§79–§84)</li>
+      <li><strong>IV.</strong> Diálogo com a Sociedade Civil: Relatório Sombra (§86–§90)</li>
       <li><strong>V.</strong> Considerações Finais (§82–§85)</li>
       <li><strong>Anexos — Dados Consolidados</strong> (A.1–A.7)</li>
       <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO ANALÍTICO — PLATAFORMA CERD4</strong></li>
