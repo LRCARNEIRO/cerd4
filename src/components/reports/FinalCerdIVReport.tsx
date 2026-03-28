@@ -149,20 +149,25 @@ export function FinalCerdIVReport() {
 
           {/* Structure preview */}
           <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-1">
-            <p className="font-semibold text-foreground mb-2">Estrutura do Relatório:</p>
+            <p className="font-semibold text-foreground mb-2">Estrutura do Relatório (~42 páginas):</p>
             <p>📄 <strong>I.</strong> Introdução, Metodologia e Contexto Demográfico (§1–§4)</p>
-            <p>📄 <strong>II.</strong> Fundamentação por Artigos I–VII (§5–§65) — com gráficos, vereditos e narrativas</p>
-            <p>📄 <strong>III.</strong> Cruzamento: Recomendações × Artigos × Evidências</p>
-            <p>📄 <strong>IV.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</p>
-            <p>📄 <strong>V.</strong> Fios Condutores e Síntese Cruzada</p>
-            <p>📄 <strong>VI.</strong> Informações Complementares (Guideline CERD/C/2007/1, §75–§81)</p>
-            <p>📄 <strong>VII.</strong> Diálogo com a Sociedade Civil — Relatório Sombra (§86–§90)</p>
-            <p>📄 <strong>VIII.</strong> Considerações Finais (§82–§85)</p>
-            <p className="border-t pt-1 mt-1">📎 <strong>Anexo A</strong> — 87 Recomendações × Evidências</p>
+            <p>📄 <strong>II.</strong> Fundamentação por Artigos I–VII (§5–§74c) — narrativas, gráficos, vereditos</p>
+            <p>📄 <strong>III.</strong> Quadro Resumido: Recomendações × Status</p>
+            <p>📄 <strong>IV.</strong> Cruzamento: Recomendações × Artigos × Evidências</p>
+            <p>📄 <strong>V.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</p>
+            <p>📄 <strong>VI.</strong> Fios Condutores e Síntese Cruzada</p>
+            <p>📄 <strong>VII.</strong> Análise Interseccional</p>
+            <p>📄 <strong>VIII.</strong> Povos Tradicionais (Indígenas, Quilombolas, Ciganos)</p>
+            <p>📄 <strong>IX.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</p>
+            <p>📄 <strong>X.</strong> Diálogo com a Sociedade Civil — Relatório Sombra (§86–§90)</p>
+            <p>📄 <strong>XI.</strong> Considerações Finais (§82–§85)</p>
+            <p>📄 <strong>XII.</strong> Conclusões e Compromissos</p>
+            <p className="border-t pt-1 mt-1">📎 <strong>Anexo A</strong> — Recomendações × Evidências</p>
             <p>📎 <strong>Anexo B</strong> — Respostas às Observações Finais (CERD III)</p>
             <p>📎 <strong>Anexo C</strong> — Base Estatística Completa por Artigo</p>
             <p>📎 <strong>Anexo D</strong> — Ações Orçamentárias + Diagrama Metodológico</p>
             <p>📎 <strong>Anexo E</strong> — Instrumentos Normativos + Linha do Tempo</p>
+            <p>📎 <strong>Anexo F</strong> — Dados Consolidados (Tabelas A.1–A.7)</p>
           </div>
 
           {/* Generate buttons */}
