@@ -290,9 +290,10 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnalyticalSynthesis()}
 
   <div class="footer">
-    <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
-    <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com MIR e MRE</p>
-    <p>Gerado em ${new Date().toLocaleDateString('pt-BR')} — Dados de fontes oficiais (IBGE, DataSUS, FBSP, SIOP, CNJ)</p>
+    <p style="font-weight:600;color:#1e3a5f;font-size:9pt">CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
+    <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com o Ministério da Igualdade Racial (MIR) e o Ministério das Relações Exteriores (MRE)</p>
+    <p>Gerado em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })} • Dados de fontes oficiais: IBGE, DataSUS, FBSP, SIOP, CNJ, INEP, TSE</p>
+    <p style="margin-top:0.3cm;font-size:7.5pt;color:#94a3b8">Este documento foi gerado pela Plataforma CERD4 (cerd4.lovable.app) — todos os dados são dinâmicos e regenerados a cada atualização do sistema.</p>
   </div>
   ${getExportToolbarHTML('CERD-IV-Relatorio-Periodico-Brasil')}
 </body>
