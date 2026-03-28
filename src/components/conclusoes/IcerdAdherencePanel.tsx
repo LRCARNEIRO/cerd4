@@ -229,11 +229,9 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
     score += 10;
   }
 
-  // Budget coverage (0-15) — valoriza tanto programas quanto volume liquidado
+  // Budget coverage (0-15) — avalia apenas quantidade de ações vinculadas (por palavras-chave)
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(10, a.orcamentoProgramas * 1.5);
-    // Bônus por volume liquidado (>100mi = bom sinal)
-    if (a.orcamentoLiquidado > 100_000_000) score += Math.min(5, a.orcamentoLiquidado / 1_000_000_000 * 5);
+    score += Math.min(15, a.orcamentoProgramas * 1.8);
   }
 
   // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
@@ -290,7 +288,7 @@ function generateVerdict(a: ArtigoAnalysis): string {
   const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
   const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
-  const orcText = a.orcamentoLiquidado > 0 ? ` Investimento liquidado: ${formatCompact(a.orcamentoLiquidado)}.` : '';
+  const orcText = a.orcamentoProgramas > 0 ? ` ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s).` : '';
 
   if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} programas orçamentários e ${a.indicadoresCount} indicadores vinculados${normText}.${respText}${orcText}${statsText}`;
   if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} programas e ${a.indicadoresCount} indicadores${normText}.${respText}${orcText}${statsText}`;
