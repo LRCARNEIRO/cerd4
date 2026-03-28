@@ -23,7 +23,6 @@ import {
   JuventudeTab, 
   ClasseSocialTab 
 } from '@/components/estatisticas/InterseccionalTabs';
-import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 
