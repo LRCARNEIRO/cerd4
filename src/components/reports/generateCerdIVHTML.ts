@@ -1122,7 +1122,7 @@ function renderGuidingThreads(fios: FioCondutor[], conclusoes: ConclusaoDinamica
   ` : '';
 
   return `
-  <h2>VIII. Fios Condutores Analíticos e Síntese Cruzada</h2>
+  <h2>V. Fios Condutores Analíticos e Síntese Cruzada</h2>
   <div class="section">
     <p>A análise cruzada entre as bases estatística, orçamentária, normativa e de recomendações revela <strong>${fios.length} fios condutores</strong> que estruturam a narrativa do período, junto a ${conclusoes.filter(c => c.tipo === 'avanco').length} avanços, ${conclusoes.filter(c => c.tipo === 'retrocesso').length} retrocessos e ${conclusoes.filter(c => c.tipo === 'lacuna_persistente').length} lacunas persistentes.</p>
     
@@ -1145,7 +1145,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
 
   return `
-  <h2>IX. Conclusões e Compromissos</h2>
+  <h2>VI. Conclusões e Compromissos</h2>
   <div class="section">
     <div class="highlight-box">
       <h4>Veredito Geral</h4>
@@ -1187,4 +1187,146 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
       <p>O Brasil dispõe hoje de um aparato institucional e normativo robusto para o combate à discriminação racial — MIR, MPI, Fundação Palmares, sistema de cotas, legislação antirracista. O desafio fundamental não é mais a ausência de instrumentos legais, mas a <strong>tradução efetiva dessas normas em mudanças estruturais nos indicadores de desigualdade</strong>. Este é o paradoxo central que define a agenda brasileira de igualdade racial para o próximo ciclo de relatórios ao Comitê CERD.</p>
     </div>
   </div>`;
+}
+
+// ═══════════════════════════════════════════
+// CROSS-REFERENCE TABLE (body — summarized)
+// ═══════════════════════════════════════════
+
+function renderCrossReferenceTable(lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcDados: DadoOrcamentario[], normativos: any[]): string {
+  const artigos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  const rows = artigos.map(art => {
+    const artLacunas = lacunas.filter(l => {
+      const explicit = ((l as any).artigos_convencao || []).filter((a: string) => artigos.includes(a));
+      if (explicit.length > 0) return explicit.includes(art);
+      return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(art as any);
+    });
+    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art));
+    const artOrc = orcDados.filter(o => inferArtigosOrcamento(o).includes(art as any));
+    const artNorm = normativos.filter((n: any) => {
+      const explicit = (n.artigos_convencao || []).filter((a: string) => artigos.includes(a));
+      if (explicit.length > 0) return explicit.includes(art);
+      return inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas }).includes(art as any);
+    });
+    const porStatus: Record<string, number> = {};
+    artLacunas.forEach(l => { porStatus[l.status_cumprimento] = (porStatus[l.status_cumprimento] || 0) + 1; });
+    const cumprido = (porStatus.cumprido || 0) + (porStatus.parcialmente_cumprido || 0);
+    const critico = (porStatus.nao_cumprido || 0) + (porStatus.retrocesso || 0);
+    const evolution = summarizeIndicatorEvolution(artInd);
+
+    return `<tr>
+      <td><strong>Art. ${art}</strong></td>
+      <td style="text-align:center">${artLacunas.length}</td>
+      <td style="text-align:center"><span class="badge badge-success">${cumprido}</span> / <span class="badge badge-danger">${critico}</span></td>
+      <td style="text-align:center">${artInd.length} <span style="font-size:7.5pt;color:#64748b">(${evolution.favoraveis}↑ ${evolution.desfavoraveis}↓)</span></td>
+      <td style="text-align:center">${artOrc.length}</td>
+      <td style="text-align:center">${artNorm.length}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>III. Cruzamento: Recomendações × Artigos × Evidências</h2>
+  <div class="section">
+    <p>O quadro a seguir sintetiza, para cada Artigo da Convenção ICERD, o quantitativo de recomendações, indicadores, ações orçamentárias e normativos vinculados, com o status consolidado de cumprimento. O detalhamento completo de cada base está nos Anexos C, D e E.</p>
+    <table>
+      <thead><tr><th>Artigo</th><th>Recomendações</th><th>Atendidas / Déficit</th><th>Indicadores</th><th>Ações Orçam.</th><th>Normativos</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p style="font-size:9pt;color:#64748b"><em>Legenda indicadores: ↑ = favorável/novo, ↓ = piora. Detalhamento completo no Anexo C.</em></p>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
+// ANNEX C — Full Indicator Tables per Article
+// ═══════════════════════════════════════════
+
+function renderAnnexC(indicadores: IndicadorInterseccional[]): string {
+  const artigos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  const sections = artigos.map(art => {
+    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art));
+    if (artInd.length === 0) return '';
+    return `
+      <h3>Artigo ${art} — ${artInd.length} indicador(es)</h3>
+      ${renderFullIndicatorTable(artInd)}`;
+  }).filter(Boolean).join('');
+
+  if (!sections) return '';
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO C — Base Estatística Completa por Artigo</h2>
+  <p>Listagem integral de todos os indicadores interseccionais vinculados a cada artigo da Convenção ICERD, com evolução temporal (valor antigo → recente) e classificação de tendência. Exclui duplicidades e indicadores de Common Core.</p>
+  ${sections}`;
+}
+
+// ═══════════════════════════════════════════
+// ANNEX D — Full Budget + Methodology per Article
+// ═══════════════════════════════════════════
+
+function renderAnnexD(orcDados: DadoOrcamentario[], orcStats: any, indicadores: IndicadorInterseccional[], normativos: any[], lacunas: LacunaIdentificada[], respostas: RespostaLacunaCerdIII[]): string {
+  const artigos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  
+  // Methodology diagram
+  const diagramHTML = `
+    <h3>Diagrama Metodológico — Pipeline de Cruzamento</h3>
+    <p>O relatório é produzido pelo cruzamento automatizado de quatro bases de dados independentes, correlacionadas pelos Artigos I-VII da Convenção ICERD:</p>
+    <div class="chart-container">
+      ${renderMethodologyDiagram(indicadores.length, orcDados.length, normativos.length, lacunas.length, respostas.length)}
+    </div>`;
+
+  // Budget analysis
+  const budgetHTML = renderBudgetAnalysis(orcStats, orcDados);
+
+  // Per-article budget
+  const sections = artigos.map(art => {
+    const artOrc = orcDados.filter(o => inferArtigosOrcamento(o).includes(art as any));
+    if (artOrc.length === 0) return '';
+    return `
+      <h3>Artigo ${art} — ${artOrc.length} ação(ões) orçamentária(s)</h3>
+      ${renderFullBudgetTable(artOrc)}`;
+  }).filter(Boolean).join('');
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO D — Ações Orçamentárias por Artigo + Metodologia</h2>
+  <p>Detalhamento completo das ações orçamentárias vinculadas a cada artigo, com dotação, valores pagos e taxa de execução, precedido do diagrama metodológico e da análise orçamentária consolidada.</p>
+  ${diagramHTML}
+  ${budgetHTML}
+  ${sections}`;
+}
+
+// ═══════════════════════════════════════════
+// ANNEX E — Full Normative + Timeline per Article
+// ═══════════════════════════════════════════
+
+function renderAnnexE(normativos: any[]): string {
+  const artigos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  
+  // Timeline
+  const timelineHTML = normativos.length > 0 ? renderNormativeTimeline(normativos) : '';
+
+  // Normative base summary
+  const normBaseHTML = renderNormativeBase(normativos);
+
+  // Per-article normatives
+  const sections = artigos.map(art => {
+    const artNorm = normativos.filter((n: any) => {
+      const explicit = (n.artigos_convencao || []).filter((a: string) => artigos.includes(a));
+      if (explicit.length > 0) return explicit.includes(art);
+      return inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas }).includes(art as any);
+    });
+    if (artNorm.length === 0) return '';
+    return `
+      <h3>Artigo ${art} — ${artNorm.length} instrumento(s) normativo(s)</h3>
+      ${renderFullNormativeTable(artNorm)}`;
+  }).filter(Boolean).join('');
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>ANEXO E — Instrumentos Normativos por Artigo + Linha do Tempo</h2>
+  <p>Listagem completa dos marcos legislativos, políticas públicas e atos administrativos vinculados a cada artigo da Convenção ICERD, com linha do tempo visual 2018-2025.</p>
+  ${timelineHTML}
+  ${normBaseHTML}
+  ${sections}`;
 }
