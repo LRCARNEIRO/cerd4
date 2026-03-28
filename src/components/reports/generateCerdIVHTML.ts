@@ -262,7 +262,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CERD/C/BRA/21-23 - Relatório Periódico Combinado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>${STYLES}</style>
 </head>
 <body>
