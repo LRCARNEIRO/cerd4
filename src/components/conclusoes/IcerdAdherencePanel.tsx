@@ -288,11 +288,11 @@ function generateVerdict(a: ArtigoAnalysis): string {
   const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
   const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
-  const orcText = a.orcamentoProgramas > 0 ? ` ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s).` : '';
+  const orcText = ''; // mantido por compatibilidade
 
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} programas orçamentários e ${a.indicadoresCount} indicadores vinculados${normText}.${respText}${orcText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} programas e ${a.indicadoresCount} indicadores${normText}.${respText}${orcText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${orcText}${statsText}`;
+  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} ação(ões) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
+  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${statsText}`;
   return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
 }
 
@@ -444,7 +444,7 @@ ${analysis.map(a => {
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
 <tr><td>Lacunas ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
-<tr><td>Programas Orçamentários</td><td>${a.orcamentoProgramas}</td><td>Liquidado: ${formatCompact(a.orcamentoLiquidado)}</td></tr>
+<tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoProgramas}</td><td>Nº de ações/programas mapeados por palavras-chave</td></tr>
 <tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
 <tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
 <tr><td>Indicadores (BD)</td><td>${a.indicadoresCount}</td><td>Registros com título, valores e fonte</td></tr>
@@ -464,7 +464,7 @@ ${analysis.map(a => {
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
 <tr><td>Lacunas ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Programas vinculados + bônus por volume liquidado &gt;R$100mi</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
 <tr><td>Conclusões Analíticas</td><td>15%</td><td>Proporção de avanços vs. retrocessos</td></tr>
 <tr><td>Amplitude de Evidências</td><td>10%</td><td>Nº de dimensões com dados (lacunas, fios, orçamento, indicadores, normativos, respostas)</td></tr>
 <tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
@@ -690,7 +690,7 @@ ${analysis.map(a => {
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
-                  <p className="text-[10px] text-muted-foreground">Programas</p>
+                  <p className="text-[10px] text-muted-foreground">Ações Vinculadas</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.normativosCount}</p>
@@ -714,11 +714,6 @@ ${analysis.map(a => {
                 </div>
               </div>
 
-              {a.orcamentoLiquidado > 0 && (
-                <p className="text-xs text-muted-foreground mb-2">
-                  💰 Investimento liquidado vinculado: <strong>{formatCompact(a.orcamentoLiquidado)}</strong>
-                </p>
-              )}
 
               <div className="p-3 bg-muted/30 rounded-lg">
                 <p className="text-xs text-muted-foreground leading-relaxed">{a.veredito}</p>
@@ -777,9 +772,9 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-muted/30 rounded-lg">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: cumprimento de lacunas ONU (30%), cobertura orçamentária (15%),
-              balanço de conclusões analíticas (15%), cobertura normativa/institucional (15%), respostas CERD III (10%),
-              amplitude de fontes de evidência (10%) e séries estatísticas oficiais IBGE/FBSP/DataSUS (5%).
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: lacunas ONU (20%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%),
+              conclusões analíticas (15%), respostas CERD III (15%),
+              amplitude de fontes de evidência (10%) e séries estatísticas oficiais (5%). O orçamento não considera valores em R$.
               Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais.
               Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
