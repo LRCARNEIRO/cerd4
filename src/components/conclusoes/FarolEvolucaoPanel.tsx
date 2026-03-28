@@ -1,10 +1,12 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
+import { Scale, CheckCircle2, AlertTriangle, XCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { evaluateIndicador } from './evaluateIndicador';
+import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 
 interface FarolEvolucaoPanelProps {
@@ -21,69 +23,29 @@ type FarolArtigoResult = {
   titulo: string;
   tituloCompleto: string;
   cor: string;
-  // Orçamento
   programasCount: number;
   acoesVinculadas: number;
   totalLiquidado: number;
-  // Normativa
   normativosCount: number;
-  // Indicadores (only those with improvement or newly measured)
   indicadoresFavoraveis: number;
   indicadoresDesfavoraveis: number;
   indicadoresNovos: number;
   indicadoresTotal: number;
-  // Score
-  scoreFarol: number; // 0-100
+  scoreFarol: number;
   sinal: 'verde' | 'amarelo' | 'vermelho';
   resumo: string;
+  // raw data for drilldown
+  rawIndicadores: any[];
+  rawNormativos: any[];
+  rawOrcamento: any[];
 };
-
-/**
- * Evaluates whether an indicator counts as "favorable" for the farol.
- * Favorable = has time series showing improvement, OR is newly measured (single data point).
- */
-function evaluateIndicador(ind: any): 'favoravel' | 'desfavoravel' | 'novo' | 'neutro' {
-  const dados = ind.dados;
-  if (!dados) return 'neutro';
-
-  // Check if dados has series (array of values over time)
-  const series = dados.serie || dados.series || dados.historico;
-  if (Array.isArray(series) && series.length >= 2) {
-    // Compare first and last values
-    const first = typeof series[0] === 'object' ? (series[0].valor ?? series[0].value) : series[0];
-    const last = typeof series[series.length - 1] === 'object' ? (series[series.length - 1].valor ?? series[series.length - 1].value) : series[series.length - 1];
-    if (typeof first === 'number' && typeof last === 'number') {
-      // For negative indicators (homicide, inequality), decrease = favorable
-      const nome = (ind.nome || '').toLowerCase();
-      const isNegative = nome.includes('homicíd') || nome.includes('letalidade') || nome.includes('analfabet') ||
-        nome.includes('mortalidade') || nome.includes('evasão') || nome.includes('desemprego') ||
-        nome.includes('encarcer') || nome.includes('feminicíd') || nome.includes('violência');
-      
-      if (isNegative) {
-        return last < first ? 'favoravel' : last > first ? 'desfavoravel' : 'neutro';
-      }
-      return last > first ? 'favoravel' : last < first ? 'desfavoravel' : 'neutro';
-    }
-  }
-
-  // Single data point = newly measured = favorable (being measured is progress)
-  if (Array.isArray(series) && series.length === 1) return 'novo';
-  
-  // Check for snapshot-style data (single values)
-  if (typeof dados === 'object' && !Array.isArray(dados)) {
-    const keys = Object.keys(dados);
-    if (keys.length > 0) return 'novo';
-  }
-
-  return 'neutro';
-}
 
 export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, stats, documentosNormativos, respostasCerdIII }: FarolEvolucaoPanelProps) {
 
+  const [drilldown, setDrilldown] = useState<{ art: FarolArtigoResult; tab: string } | null>(null);
+
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
-    // Filter out common_core indicators (safety net — should already be excluded upstream)
     const filteredIndicadores = indicadores.filter((ind: any) => ind.categoria !== 'common_core');
-    // Deduplicate by id
     const seenIds = new Set<string>();
     const dedupedIndicadores = filteredIndicadores.filter((ind: any) => {
       if (seenIds.has(ind.id)) return false;
@@ -94,7 +56,6 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
-      // ── ORÇAMENTO ──
       const artigoOrc = orcamentoRecords.filter(o => {
         if (o.artigos_convencao?.includes(artNum)) return true;
         return inferArtigosOrcamento(o).includes(artNum);
@@ -103,14 +64,12 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const acoesVinculadas = artigoOrc.length;
       const totalLiquidado = artigoOrc.reduce((s, o) => s + (Number(o.liquidado) || 0), 0);
 
-      // ── NORMATIVA ──
       const artigoNorm = documentosNormativos.filter(d => {
         if (d.artigos_convencao?.includes(artNum)) return true;
         return inferArtigosDocumentoNormativo(d).includes(artNum);
       });
       const normativosCount = artigoNorm.length;
 
-      // ── INDICADORES (favorability logic) — excludes common_core, deduped ──
       const artigoInd = dedupedIndicadores.filter((ind: any) => {
         if (ind.artigos_convencao?.includes(artNum)) return true;
         const mapped = EIXO_PARA_ARTIGOS[ind.categoria as keyof typeof EIXO_PARA_ARTIGOS] || [];
@@ -127,8 +86,6 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         else if (result === 'novo') indicadoresNovos++;
       });
 
-      // ── SCORE FAROL (3 dimensões) ──
-      // Pesos: Orçamento 35%, Normativa 35%, Indicadores 30%
       const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
       const scoreNormativa = Math.min(100, normativosCount * 12);
       
@@ -146,7 +103,6 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
 
       const sinal: 'verde' | 'amarelo' | 'vermelho' = scoreFarol >= 60 ? 'verde' : scoreFarol >= 35 ? 'amarelo' : 'vermelho';
 
-      // Resumo textual
       const partes: string[] = [];
       if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s), ${acoesVinculadas} ação(ões) vinculada(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
       if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
@@ -158,16 +114,12 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       }
 
       return {
-        numero: artNum,
-        titulo: art.titulo,
-        tituloCompleto: art.tituloCompleto,
-        cor: art.cor,
-        programasCount, acoesVinculadas, totalLiquidado,
-        normativosCount,
+        numero: artNum, titulo: art.titulo, tituloCompleto: art.tituloCompleto, cor: art.cor,
+        programasCount, acoesVinculadas, totalLiquidado, normativosCount,
         indicadoresFavoraveis, indicadoresDesfavoraveis, indicadoresNovos,
-        indicadoresTotal: artigoInd.length,
-        scoreFarol, sinal,
+        indicadoresTotal: artigoInd.length, scoreFarol, sinal,
         resumo: partes.join('. ') + '.',
+        rawIndicadores: artigoInd, rawNormativos: artigoNorm, rawOrcamento: artigoOrc,
       };
     });
   }, [orcamentoRecords, indicadores, documentosNormativos]);
@@ -220,7 +172,6 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <Card className="border-2 border-primary/30">
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -251,12 +202,11 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>Critério de Indicadores:</strong> Somente indicadores com melhoria comprovada em série histórica ou recém-mensurados (inclusão = progresso) contam a favor. Indicadores com piora penalizam o score.
+            <strong>Critério de Indicadores:</strong> Somente indicadores com melhoria comprovada em série histórica ou recém-mensurados (inclusão = progresso) contam a favor. Indicadores com piora penalizam o score. Clique nos contadores para auditar indicador por indicador.
           </p>
         </CardContent>
       </Card>
 
-      {/* Cards por artigo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {artigoResults.map(art => (
           <Card key={art.numero} className="border-l-4" style={{ borderLeftColor: art.cor }}>
@@ -276,22 +226,28 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
               <Progress value={art.scoreFarol} className="h-2" />
 
               <div className="grid grid-cols-3 gap-2">
-                {/* Orçamento */}
-                <div className="p-2 bg-muted/30 rounded text-xs">
+                <button
+                  onClick={() => setDrilldown({ art, tab: 'orcamento' })}
+                  className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
+                >
                   <p className="font-medium mb-1">💰 Orçamento</p>
                   <p className="text-muted-foreground">
                     {art.programasCount} programa(s)<br/>
-                    {art.acoesVinculadas} ação(ões) vinculada(s)<br/>
-                    R$ {(art.totalLiquidado / 1e9).toFixed(2)} bi liquidado
+                    {art.acoesVinculadas} ação(ões)<br/>
+                    R$ {(art.totalLiquidado / 1e9).toFixed(2)} bi
                   </p>
-                </div>
-                {/* Normativa */}
-                <div className="p-2 bg-muted/30 rounded text-xs">
+                </button>
+                <button
+                  onClick={() => setDrilldown({ art, tab: 'normativos' })}
+                  className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
+                >
                   <p className="font-medium mb-1">⚖️ Normativos</p>
                   <p className="text-muted-foreground">{art.normativosCount} instrumento(s)</p>
-                </div>
-                {/* Indicadores */}
-                <div className="p-2 bg-muted/30 rounded text-xs">
+                </button>
+                <button
+                  onClick={() => setDrilldown({ art, tab: 'indicadores' })}
+                  className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
+                >
                   <p className="font-medium mb-1">📊 Indicadores</p>
                   <p className="text-muted-foreground">
                     {art.indicadoresTotal} total:
@@ -299,7 +255,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
                     <span className="text-primary"> {art.indicadoresNovos}★</span>
                     {art.indicadoresDesfavoraveis > 0 && <span className="text-destructive"> {art.indicadoresDesfavoraveis}↓</span>}
                   </p>
-                </div>
+                </button>
               </div>
 
               <p className="text-[11px] text-muted-foreground leading-relaxed">{art.resumo}</p>
@@ -307,7 +263,19 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
           </Card>
         ))}
       </div>
+
+      {drilldown && (
+        <FarolDrilldownDialog
+          open={!!drilldown}
+          onOpenChange={(open) => !open && setDrilldown(null)}
+          artigoNumero={drilldown.art.numero}
+          artigoTitulo={drilldown.art.titulo}
+          indicadores={drilldown.art.rawIndicadores}
+          normativos={drilldown.art.rawNormativos}
+          orcamento={drilldown.art.rawOrcamento}
+          initialTab={drilldown.tab}
+        />
+      )}
     </div>
   );
 }
-
