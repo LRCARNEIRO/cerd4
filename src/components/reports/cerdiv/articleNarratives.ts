@@ -359,7 +359,7 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
   ${d.antra && d.antra.length > 0 ? `
   <table>
     <thead><tr><th>Ano</th><th>Total assassinatos trans</th><th>% negras</th><th>Fonte</th></tr></thead>
-    <tbody>${d.antra.map((a: any) => `<tr><td>${a.ano}</td><td>${a.total}</td><td>${num(a.percentualNegras || a.pctNegras).toFixed(0)}%</td><td>Dossiê ANTRA 2026</td></tr>`).join('')}</tbody>
+    <tbody>${d.antra.map((a: any) => `<tr><td>${a.ano}</td><td>${a.totalAssassinatos ?? a.total ?? 'N/D'}</td><td>${num(a.negros || a.percentualNegras || a.pctNegras).toFixed(0)}%</td><td>${a.fonte || 'Dossiê ANTRA 2026'}</td></tr>`).join('')}</tbody>
   </table>
   <p style="font-size:8.5pt;color:#64748b">Média histórica 2017–2025: 77% negras, 22% brancas, 1% indígenas.</p>` : ''}
 
