@@ -13,6 +13,7 @@ import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
 import { StatisticsInventoryReport } from '@/components/reports/StatisticsInventoryReport';
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
+import { FinalCerdIVReport } from '@/components/reports/FinalCerdIVReport';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
@@ -293,8 +294,11 @@ ${(respostasCerd || []).map(r => {
         </Card>
       </div>
 
-      <Tabs defaultValue="consolidado" className="w-full">
+      <Tabs defaultValue="final-cerd-iv" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="final-cerd-iv" className="gap-1 bg-primary/20 font-semibold">
+            <BookOpen className="w-4 h-4" /> Relatório Final CERD IV
+          </TabsTrigger>
           <TabsTrigger value="consolidado" className="gap-1 bg-primary/10">
             <FileText className="w-4 h-4" /> Consolidado (Escopo)
           </TabsTrigger>
@@ -320,6 +324,11 @@ ${(respostasCerd || []).map(r => {
             <Shield className="w-4 h-4" /> Auditoria Triple-Check
           </TabsTrigger>
         </TabsList>
+
+        {/* ABA: RELATÓRIO FINAL CERD IV */}
+        <TabsContent value="final-cerd-iv">
+          <FinalCerdIVReport />
+        </TabsContent>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
         <TabsContent value="consolidado">
