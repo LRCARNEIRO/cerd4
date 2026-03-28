@@ -17,6 +17,11 @@ import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
 import {
+  renderFullIndicatorTable, renderFullBudgetTable, renderFullNormativeTable,
+  renderArticleRecommendationEvidence, renderMethodologyDiagram,
+  renderNormativeTimeline, renderKeyInsights,
+} from './cerdiv/articleDetailRenderers';
+import {
   segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
   educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
   indicadoresSocioeconomicos as hcSocioEco, povosTradicionais as hcPovos,
