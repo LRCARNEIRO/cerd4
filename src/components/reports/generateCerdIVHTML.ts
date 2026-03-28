@@ -307,20 +307,28 @@ function renderCover(d: CerdIVFullData, total: number, cumpridas: number, parcia
   const safeIndicadores = getSafeIndicadores(d.indicadores || []);
   return `
   <div class="header">
-    <div class="un-logo">🇺🇳</div>
-    <h1>Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial</h1>
-    <div class="subtitle">CERD/C/BRA/21-23</div>
+    <div class="un-emblem">
+      <div class="un-emblem-line"></div>
+      <div class="un-logo">🇺🇳</div>
+      <div class="un-emblem-line"></div>
+    </div>
+    <p style="font-size:9pt;text-transform:uppercase;letter-spacing:3px;color:#64748b;margin-bottom:0.3cm">Nações Unidas</p>
+    <h1>Convenção Internacional sobre a Eliminação<br>de Todas as Formas de Discriminação Racial</h1>
+    <div class="subtitle" style="margin-top:0.8cm;font-weight:600">CERD/C/BRA/21-23</div>
     <div class="subtitle">Relatórios periódicos combinados (21º a 23º) do Brasil</div>
-    <div class="date">Período de cobertura: 2018-2025</div>
+    <div class="date" style="margin-top:0.6cm">Período de cobertura: 2018–2025</div>
+    <div class="date">Elaborado pelo Grupo de Pesquisa CDG/UFF • MIR • MRE</div>
   </div>
+  <div style="margin:1cm 0">
   ${dataCards([
-    { value: `${total}`, label: 'Recomendações Analisadas' },
-    { value: `${cumpridas}`, label: 'Cumpridas', color: '#22c55e' },
-    { value: `${parciais}`, label: 'Parciais', color: '#eab308' },
-    { value: `${naoCumpridas + retrocessos}`, label: 'Não Cumpridas/Retrocesso', color: '#ef4444' },
-    { value: `${emAndamento}`, label: 'Em Andamento', color: '#3b82f6' },
-      { value: `${safeIndicadores.length}`, label: 'Indicadores Estatísticos' },
-  ])}`;
+    { value: `${total}`, label: 'Recomendações' },
+    { value: `${cumpridas}`, label: 'Cumpridas', color: '#16a34a' },
+    { value: `${parciais}`, label: 'Parciais', color: '#d97706' },
+    { value: `${naoCumpridas + retrocessos}`, label: 'Não Cumpridas / Retrocesso', color: '#dc2626' },
+    { value: `${emAndamento}`, label: 'Em Andamento', color: '#2563eb' },
+    { value: `${safeIndicadores.length}`, label: 'Indicadores' },
+  ])}
+  </div>`;
 }
 
 function renderTOC(): string {
