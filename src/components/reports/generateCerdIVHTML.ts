@@ -268,6 +268,8 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
   
+  ${renderRecommendationsSummary(d.lacunas)}
+
   ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
   
   <!-- Key Insights / Storytelling -->
@@ -275,20 +277,26 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
 
+  <!-- Análise Interseccional -->
+  ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
+
+  <!-- Povos Tradicionais -->
+  ${renderTraditionalPeoples(povos)}
+
   <!-- Informações Complementares — Guideline CERD/C/2007/1 -->
   ${renderComplementaryInfo()}
 
-  <!-- Considerações Finais -->
-  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
-
   <!-- Diálogo com a Sociedade Civil -->
   ${renderDialogoSociedadeCivil()}
+
+  <!-- Considerações Finais -->
+  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
 
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
   <!-- ANEXOS -->
   <div style="page-break-before:always"></div>
-  <h2>ANEXO A — Quadro Detalhado: 87 Recomendações × Evidências</h2>
+  <h2>ANEXO A — Quadro Detalhado: ${total} Recomendações × Evidências</h2>
   <p>O quadro a seguir apresenta o detalhamento completo de todas as recomendações das Observações Finais de 2022, com status, evidências, ações do Brasil e lacunas remanescentes.</p>
   ${renderAllRecommendations(d.lacunas)}
 
@@ -300,6 +308,9 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnnexC(safeIndicadores)}
   ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
   ${renderAnnexE(d.normativos || [])}
+
+  <!-- Dados Consolidados (A.1-A.7) -->
+  ${renderDataAnnexes(demo, seg, fem, eco, sau, edu, safeIndicadores)}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
