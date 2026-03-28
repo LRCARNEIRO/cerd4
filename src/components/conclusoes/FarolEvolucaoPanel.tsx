@@ -169,7 +169,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       <tr>
         <td><strong>Art. ${a.numero}</strong></td>
         <td>${a.titulo}</td>
-        <td style="text-align:center">${a.programasCount} prog. (R$ ${(a.totalLiquidado/1e9).toFixed(2)} bi)</td>
+        <td style="text-align:center">${a.programasCount} prog. / ${a.acoesVinculadas} ações (R$ ${(a.totalLiquidado/1e9).toFixed(2)} bi)</td>
         <td style="text-align:center">${a.normativosCount}</td>
         <td style="text-align:center">${a.indicadoresFavoraveis}↑ ${a.indicadoresNovos}★ ${a.indicadoresDesfavoraveis}↓</td>
         <td style="text-align:center;font-weight:bold;color:${a.sinal === 'verde' ? '#16a34a' : a.sinal === 'amarelo' ? '#ca8a04' : '#dc2626'}">${a.scoreFarol}%</td>
