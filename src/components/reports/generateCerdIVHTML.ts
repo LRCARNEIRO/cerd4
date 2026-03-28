@@ -881,14 +881,14 @@ function renderArticleAnalysisExpanded(
     if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !articleNarrativeHTML) return '';
 
     return `
-      <h3>Artigo ${artigo} — ${info.titulo}</h3>
+      <div class="section-divider"></div>
+      <h3 style="font-size:12.5pt;border-left:4px solid #1e3a5f;margin-top:0">Artigo ${artigo} — ${info.titulo}</h3>
+      <p style="font-size:9.5pt;color:#64748b;font-style:italic;margin-bottom:0.6cm">Art. ${artigo} — ${info.descricao}</p>
       <div class="section">
-        <!-- Narrative text from DOCX template -->
         ${articleNarrativeHTML}
 
-        <!-- System analysis (dynamic counts) -->
-        <div class="analysis-box">
-          <h4>📊 Leitura do Sistema CERD4 — ${info.tituloCompleto}</h4>
+        <div class="analysis-box" style="margin-top:1cm">
+          <h4 style="margin-top:0">📊 Leitura do Sistema CERD4 — Art. ${artigo}</h4>
           ${systemAnalysisHTML}
         </div>
 
@@ -897,9 +897,10 @@ function renderArticleAnalysisExpanded(
   }).filter(Boolean).join('');
 
   return `
+    <div class="section-divider"></div>
     <h2>II. Fundamentação por Artigos da Convenção ICERD</h2>
     <div class="section">
-      <p>Esta seção reproduz a estrutura do relatório principal, preservando o texto-base dos artigos e mantendo dinâmicos apenas os dados e leituras analíticas vinculados ao sistema.</p>
+      <p>Esta seção apresenta a análise do período 2018–2025 organizada pelos Artigos I–VII da Convenção, com textos narrativos que integram dados estatísticos, marcos normativos e evidências orçamentárias extraídas dinamicamente do sistema.</p>
     </div>
     ${sections}`;
 }
