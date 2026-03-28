@@ -202,12 +202,9 @@ export default function Recomendacoes() {
       <Tabs defaultValue="observacoes" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
-          <TabsTrigger value="lacunas-report">Lacunas x Evidências ({stats?.total || 0})</TabsTrigger>
-          <TabsTrigger value="respostas-report">Respostas CERD III ({respostasCerd?.length || 0})</TabsTrigger>
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
-          
         </TabsList>
 
         <TabsContent value="observacoes">
