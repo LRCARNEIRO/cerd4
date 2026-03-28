@@ -81,6 +81,16 @@ function evaluateIndicador(ind: any): 'favoravel' | 'desfavoravel' | 'novo' | 'n
 export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, stats, documentosNormativos, respostasCerdIII }: FarolEvolucaoPanelProps) {
 
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
+    // Filter out common_core indicators (safety net — should already be excluded upstream)
+    const filteredIndicadores = indicadores.filter((ind: any) => ind.categoria !== 'common_core');
+    // Deduplicate by id
+    const seenIds = new Set<string>();
+    const dedupedIndicadores = filteredIndicadores.filter((ind: any) => {
+      if (seenIds.has(ind.id)) return false;
+      seenIds.add(ind.id);
+      return true;
+    });
+
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
@@ -100,8 +110,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       });
       const normativosCount = artigoNorm.length;
 
-      // ── INDICADORES (favorability logic) ──
-      const artigoInd = indicadores.filter((ind: any) => {
+      // ── INDICADORES (favorability logic) — excludes common_core, deduped ──
+      const artigoInd = dedupedIndicadores.filter((ind: any) => {
         if (ind.artigos_convencao?.includes(artNum)) return true;
         const mapped = EIXO_PARA_ARTIGOS[ind.categoria as keyof typeof EIXO_PARA_ARTIGOS] || [];
         return mapped.includes(artNum);
