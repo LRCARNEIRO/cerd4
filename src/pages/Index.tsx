@@ -9,7 +9,7 @@ import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
 import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
-import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import { 
   ClipboardCheck, 
   AlertTriangle, 
@@ -28,11 +28,12 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
-import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useDadosOrcamentarios, useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE, TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 
 export default function Index() {
