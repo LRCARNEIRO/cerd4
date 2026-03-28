@@ -299,6 +299,17 @@ function generateVerdict(a: ArtigoAnalysis): string {
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
 
+  // Filter out common_core and deduplicate indicators (safety net)
+  const safeIndicadores = useMemo(() => {
+    const filtered = indicadores.filter((ind: any) => ind.categoria !== 'common_core');
+    const seen = new Set<string>();
+    return filtered.filter((ind: any) => {
+      if (seen.has(ind.id)) return false;
+      seen.add(ind.id);
+      return true;
+    });
+  }, [indicadores]);
+
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
@@ -331,8 +342,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       const liquidado = artOrc.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
       const programas = new Set(artOrc.map(r => r.programa)).size;
 
-      // Indicadores by article
-      const artInd = indicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
+      // Indicadores by article — excludes common_core, deduped
+      const artInd = safeIndicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
 
       // Respostas CERD III by article — mapeamento direto temático
       const artRespostas = mapRespostasToArticle(respostas, art.numero);
@@ -377,7 +388,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, respostas, documentosNormativos, statSeriesPerArticle]);
+  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle]);
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
