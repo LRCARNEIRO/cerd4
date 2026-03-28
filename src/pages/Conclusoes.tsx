@@ -34,6 +34,7 @@ const eixoLabels: Record<string, string> = {
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
 import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
+import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
@@ -410,6 +411,7 @@ export default function Conclusoes() {
               <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
               <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas Identificadas ({lacunas?.length || 0})</TabsTrigger>
               <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Críticas CERD III ({respostas?.length || 0})</TabsTrigger>
+              <TabsTrigger value="lacunas-cerd-stats" className="gap-1"><FileText className="w-4 h-4" /> Lacunas CERD (Estatísticas)</TabsTrigger>
             </TabsList>
 
             {/* ABA: INFOGRÁFICOS */}
@@ -714,6 +716,11 @@ export default function Conclusoes() {
                   />
                 ))}
               </div>
+            </TabsContent>
+
+            {/* ABA: LACUNAS CERD (ESTATÍSTICAS) */}
+            <TabsContent value="lacunas-cerd-stats">
+              <LacunasCerdTab />
             </TabsContent>
           </Tabs>
         </>
