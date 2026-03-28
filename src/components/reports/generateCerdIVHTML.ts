@@ -452,12 +452,12 @@ function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number
 
 function renderAnalyticalSynthesis(): string {
   return `
-  <div style="page-break-before:always"></div>
+  <div class="section-divider"></div>
   <h2>VIII. Síntese Avaliativa por Dimensão (2018–2025)</h2>
   <div class="section">
     <p>Quando o sistema entrelaça estatística, orçamento, normativa, recomendações e narrativas analíticas, o padrão que emerge é claro: o Brasil avançou mais na capacidade formal de responder do que na velocidade substantiva de reversão da desigualdade racial.</p>
-    <div class="analysis-box">
-      <p><strong>Leitura sintética:</strong> houve reconstrução institucional relevante a partir de 2023, mas a persistência de assimetrias em segurança pública, renda, saúde e titulação territorial impede uma conclusão celebratória. O ganho formal é real; a transformação material ainda é incompleta.</p>
+    <div class="analysis-box" style="border-left-color:#1e3a5f;border-left-width:5px">
+      <p style="margin-bottom:0"><strong>Leitura sintética:</strong> houve reconstrução institucional relevante a partir de 2023, mas a persistência de assimetrias em segurança pública, renda, saúde e titulação territorial impede uma conclusão celebratória. O ganho formal é real; a transformação material ainda é incompleta.</p>
     </div>
   </div>`;
 }
