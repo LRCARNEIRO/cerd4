@@ -361,14 +361,19 @@ function renderIntroduction(d: CerdIVFullData, demo: any, total: number, cumprid
   const pctCritico = total > 0 ? ((naoCumpridas + retrocessos) / total * 100).toFixed(1) : '0';
   
   return `
-  <h2>I. Introdução e Contexto</h2>
+  <h2>I. Introdução</h2>
   <div class="section">
-    <p>A República Federativa do Brasil submete seus relatórios periódicos combinados (21º a 23º) ao Comitê para a Eliminação da Discriminação Racial, em conformidade com o artigo 9 da Convenção. Este relatório abrange o período de 2018 a 2025, marcado por profundas transformações institucionais: o desmonte de políticas raciais (2019-2022) seguido da reconstrução institucional a partir de 2023, com a criação do Ministério da Igualdade Racial (MIR) e do Ministério dos Povos Indígenas (MPI).</p>
+    <p>1. O Governo da República Federativa do Brasil apresenta seu quarto relatório periódico à Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial ('a Convenção'), em conformidade com o artigo 9.º do referido instrumento e com as Observações Finais do Comitê (CERD/C/BRA/CO/18-20, adotadas em 1.º de dezembro de 2022). O relatório abrange o período de 2018 a 2025 e dá continuidade ao III Relatório (período 2004–2017).</p>
+
+    <p>2. O presente documento foi elaborado a partir de processo participativo que incluiu consultas com o movimento negro, organizações quilombolas, povos ciganos, comunidades de terreiro, povos indígenas e organizações de direitos humanos, em atendimento à recomendação do Comitê (§66 das Observações Finais). A coleta de dados foi orientada pelos princípios da desagregação racial, da interseccionalidade e da auditabilidade das fontes, respondendo às preocupações do Comitê sobre lacunas e fragilidades nos mecanismos de coleta (§5–6).</p>
+
+    <p>3. O relatório reconhece com honestidade que o Estado brasileiro partiu, em 2018, de um ponto de inflexão negativa: o desmonte institucional das políticas de igualdade racial entre 2019 e 2022 — com o rebaixamento da SEPPIR a departamento, o esvaziamento orçamentário dos programas raciais e a paralisia do processo de demarcação de terras — representou retrocesso grave, explicitamente reconhecido como preocupação central pelas Observações Finais do Comitê. A partir de 2023, com a criação do Ministério da Igualdade Racial, o Estado iniciou processo de reconstrução dessas políticas, documentado ao longo deste relatório.</p>
+
+    <p>4. Os dados utilizados neste relatório foram extraídos exclusivamente de fontes primárias auditáveis: IBGE/SIDRA (Censo 2022 e PNAD Contínua), DataSUS/SIM/SINASC, Atlas da Violência 2025 (IPEA/FBSP), 19.º Anuário Brasileiro de Segurança Pública (FBSP 2025), Dossiê ANTRA 2026, INEP/Censo Escolar, TSE/Dados Eleitorais, CNJ/Justiça em Números, ONDH/Disque 100 e Fundação João Pinheiro. A estrutura do relatório segue os artigos da Convenção, com atenção específica às recomendações prioritárias do Comitê.</p>
 
     <div class="highlight-box">
-      <h4>📋 Metodologia</h4>
-      <p>Este relatório foi elaborado com base em ${d.indicadores.length} indicadores estatísticos desagregados por raça/cor, ${total} recomendações das Observações Finais de 2022 sistematicamente analisadas, dados orçamentários de ${d.orcStats?.totalRegistros || 0} registros (2018-2025), e ${d.normativos?.length || 0} documentos normativos catalogados. A análise utiliza cruzamento automatizado entre bases de dados para garantir fundamentação empírica das conclusões.</p>
-      <p>As fontes primárias são: IBGE (Censo 2022, PNAD Contínua), DataSUS (SIM, SINASC), FBSP (Anuário de Segurança Pública), SIOP/Portal da Transparência, CNJ, INEP e Atlas da Violência. Todos os dados foram verificados por auditoria manual com referência cruzada às tabelas-fonte oficiais.</p>
+      <h4>📋 Nota Metodológica — Plataforma CERD4</h4>
+      <p>Este relatório incorpora dados analíticos gerados pela Plataforma CERD4 (cerd4.lovable.app), que cruzou <strong>${d.indicadores.length} indicadores estatísticos</strong>, <strong>${total} recomendações</strong>, <strong>${d.orcStats?.totalRegistros || 0} registros orçamentários</strong> e <strong>${d.normativos?.length || 0} documentos normativos</strong>. As inserções do sistema aparecem em caixas sombreadas ao longo do texto, após cada seção de artigo.</p>
     </div>
 
     <div class="analysis-box">
