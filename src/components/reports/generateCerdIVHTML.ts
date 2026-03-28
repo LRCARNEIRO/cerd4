@@ -738,9 +738,12 @@ function renderArticleAnalysisExpanded(
     const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
-    const indicatorMatrix = renderArticleIndicatorTable(artigoIndicadores);
-    const budgetTable = renderBudgetProgramsTable(artigoOrc);
-    const normTable = renderNormativeDocsTable(artigoNormativos);
+    
+    // Use FULL detail renderers (no slice limits)
+    const indicatorMatrix = renderFullIndicatorTable(artigoIndicadores);
+    const budgetTable = renderFullBudgetTable(artigoOrc);
+    const normTable = renderFullNormativeTable(artigoNormativos);
+    const recEvidence = renderArticleRecommendationEvidence(artigoLacunas);
 
     // Embed thematic narratives directly into article sections
     const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
@@ -750,9 +753,6 @@ function renderArticleAnalysisExpanded(
       .join('');
     // Mark used narratives to avoid duplication
     thematicKeys.forEach(key => { thematicNarratives[key] = ''; });
-
-    // Brief recommendation summary for this article (not full detail)
-    const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
 
     // Conclusion assessment for this article
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
@@ -773,10 +773,10 @@ function renderArticleAnalysisExpanded(
 
         ${assessmentHTML}
 
-        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada (${artigoIndicadores.length} indicadores)</h4>${indicatorMatrix}</div>` : ''}
-        ${recSummary}
-        ${budgetTable ? `<div class="budget-box"><h4>💰 Investimento vinculado ao artigo</h4>${budgetTable}</div>` : ''}
-        ${normTable ? `<div class="normative-box"><h4>📜 Marco normativo de sustentação</h4>${normTable}</div>` : ''}
+        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada — Listagem completa (${artigoIndicadores.length} indicadores)</h4><p style="font-size:9pt">A tabela abaixo detalha cada indicador vinculado ao artigo, com o valor mais antigo e mais recente disponíveis no período 2018-2025, permitindo auditoria da evolução.</p>${indicatorMatrix}</div>` : ''}
+        ${recEvidence}
+        ${budgetTable ? `<div class="budget-box"><h4>💰 Ações orçamentárias vinculadas — Listagem completa</h4><p style="font-size:9pt">Todos os registros orçamentários rastreáveis para este artigo, com dotação, valores pagos e taxa de execução.</p>${budgetTable}</div>` : ''}
+        ${normTable ? `<div class="normative-box"><h4>📜 Instrumentos normativos — Listagem completa</h4><p style="font-size:9pt">Todos os marcos legislativos, políticas públicas e atos administrativos vinculados a este artigo.</p>${normTable}</div>` : ''}
       </div>`;
   }).filter(Boolean).join('');
 
