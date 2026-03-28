@@ -293,6 +293,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
 // ═══════════════════════════════════════════
 
 function renderCover(d: CerdIVFullData, total: number, cumpridas: number, parciais: number, naoCumpridas: number, retrocessos: number, emAndamento: number): string {
+  const safeIndicadores = getSafeIndicadores(d.indicadores || []);
   return `
   <div class="header">
     <div class="un-logo">🇺🇳</div>
