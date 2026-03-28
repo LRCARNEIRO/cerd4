@@ -195,6 +195,7 @@ export function generateCerdIVHTML(
 // ═══════════════════════════════════════════
 
 export function generateCerdIVFullHTML(d: CerdIVFullData): string {
+  const safeIndicadores = getSafeIndicadores(d.indicadores || []);
   const seg = d.mirror?.segurancaPublica?.length ? d.mirror.segurancaPublica : hcSeguranca;
   const fem = d.mirror?.feminicidioSerie?.length ? d.mirror.feminicidioSerie : hcFeminicidio;
   const edu = d.mirror?.educacaoSerieHistorica?.length ? d.mirror.educacaoSerieHistorica : hcEducacao;
@@ -257,11 +258,11 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   ${renderDemographicContext(demo)}
-  ${renderArticleAnalysisExpanded(d, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
+  ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
   ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
-  ${renderIntersectionalAnalysis(d.indicadores, d.lacunas)}
+  ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
   ${renderTraditionalPeoples(povos)}
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
@@ -275,7 +276,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   <div style="page-break-before:always"></div>
   <h2>ANEXO B — Respostas do Estado Brasileiro às Observações Finais (CERD III)</h2>
   <p>Registro das respostas oficiais do Brasil a cada parágrafo das Observações Finais, incluindo avaliação técnica dinâmica do sistema.</p>
-  ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, d.indicadores, d.orcStats, d.orcDados, d.normativos)}
+  ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, safeIndicadores, d.orcStats, d.orcDados, d.normativos)}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
@@ -306,7 +307,7 @@ function renderCover(d: CerdIVFullData, total: number, cumpridas: number, parcia
     { value: `${parciais}`, label: 'Parciais', color: '#eab308' },
     { value: `${naoCumpridas + retrocessos}`, label: 'Não Cumpridas/Retrocesso', color: '#ef4444' },
     { value: `${emAndamento}`, label: 'Em Andamento', color: '#3b82f6' },
-    { value: `${d.indicadores.length}`, label: 'Indicadores Estatísticos' },
+      { value: `${safeIndicadores.length}`, label: 'Indicadores Estatísticos' },
   ])}`;
 }
 
