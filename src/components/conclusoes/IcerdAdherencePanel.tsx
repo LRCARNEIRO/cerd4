@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
@@ -156,33 +157,6 @@ function inferArtigosNormativo(doc: DocumentoNormativo): ArtigoConvencao[] {
   return inferArtigosDocumentoNormativo(doc as Parameters<typeof inferArtigosDocumentoNormativo>[0]);
 }
 
-function inferArtigosIndicador(ind: any): ArtigoConvencao[] {
-  const explicit = (ind.artigos_convencao || []).filter((a: string) => ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].includes(a)) as ArtigoConvencao[];
-  if (explicit.length > 0) return explicit;
-
-  const arts = new Set<ArtigoConvencao>();
-  const categoria = String(ind.categoria || '').toLowerCase();
-  const subcategoria = String(ind.subcategoria || '').toLowerCase();
-  const nome = String(ind.nome || '').toLowerCase();
-  const origem = Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ').toLowerCase() : '';
-  const texto = [categoria, subcategoria, nome, origem].join(' ');
-
-  const eixo = categoria as keyof typeof EIXO_PARA_ARTIGOS;
-  if (EIXO_PARA_ARTIGOS[eixo]) {
-    EIXO_PARA_ARTIGOS[eixo].forEach((a) => arts.add(a));
-  }
-  if (/seguran|viol[êe]ncia|homic|letal|pris/.test(texto)) { arts.add('V'); arts.add('VI'); }
-  if (/educa|ensino|escolar|analfabet/.test(texto)) { arts.add('V'); arts.add('VII'); }
-  if (/sa[úu]de|materna|covid|hospital/.test(texto)) arts.add('V');
-  if (/trabalho|renda|desemprego|pobreza|moradia|habita/.test(texto)) arts.add('V');
-  if (/quilomb|ind[ií]gena|indigena|territ[óo]rio|favela|aglomerado/.test(texto)) { arts.add('III'); arts.add('V'); }
-  if (/racismo|discrimin|igualdade|ação afirmativa|acao afirmativa|dados|estat[íi]st/.test(texto)) { arts.add('I'); arts.add('II'); }
-  if (/justi[çc]a|judici|repara/.test(texto)) arts.add('VI');
-  if (/cultura|patrim|lei 10.639|curr[ií]culo/.test(texto)) arts.add('VII');
-
-  return [...arts];
-}
-
 const formatCompact = (value: number) => {
   if (value >= 1_000_000_000) return `R$ ${(value / 1_000_000_000).toFixed(1)} bi`;
   if (value >= 1_000_000) return `R$ ${(value / 1_000_000).toFixed(0)} mi`;
@@ -301,13 +275,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
-    const filtered = indicadores.filter((ind: any) => ind.categoria !== 'common_core');
-    const seen = new Set<string>();
-    return filtered.filter((ind: any) => {
-      if (seen.has(ind.id)) return false;
-      seen.add(ind.id);
-      return true;
-    });
+    return getSafeIndicadores(indicadores);
   }, [indicadores]);
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {

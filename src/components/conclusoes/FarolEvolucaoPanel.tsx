@@ -8,6 +8,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { evaluateIndicador } from './evaluateIndicador';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 
 interface FarolEvolucaoPanelProps {
   lacunas: any[];
@@ -45,13 +46,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
   const [drilldown, setDrilldown] = useState<{ art: FarolArtigoResult; tab: string } | null>(null);
 
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
-    const filteredIndicadores = indicadores.filter((ind: any) => ind.categoria !== 'common_core');
-    const seenIds = new Set<string>();
-    const dedupedIndicadores = filteredIndicadores.filter((ind: any) => {
-      if (seenIds.has(ind.id)) return false;
-      seenIds.add(ind.id);
-      return true;
-    });
+    const dedupedIndicadores = getSafeIndicadores(indicadores);
 
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
@@ -72,8 +67,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
 
       const artigoInd = dedupedIndicadores.filter((ind: any) => {
         if (ind.artigos_convencao?.includes(artNum)) return true;
-        const mapped = EIXO_PARA_ARTIGOS[ind.categoria as keyof typeof EIXO_PARA_ARTIGOS] || [];
-        return mapped.includes(artNum);
+        return inferArtigosIndicador(ind).includes(artNum);
       });
 
       let indicadoresFavoraveis = 0;
