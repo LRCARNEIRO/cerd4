@@ -40,6 +40,8 @@ import {
   renderLaborNarrative, renderTerritoryNarrative, renderLGBTandDisabilityNarrative,
   renderAllRecommendations,
 } from './cerdiv/thematicNarratives';
+import { renderArticleNarrative } from './cerdiv/articleNarratives';
+import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil } from './cerdiv/complementaryInfo';
 
 // ═══════════════════════════════════════════
 // TIPOS
@@ -272,6 +274,16 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
   
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
+
+  <!-- Informações Complementares — Guideline CERD/C/2007/1 -->
+  ${renderComplementaryInfo()}
+
+  <!-- Considerações Finais -->
+  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
+
+  <!-- Diálogo com a Sociedade Civil -->
+  ${renderDialogoSociedadeCivil()}
+
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
   <!-- ANEXOS -->
@@ -724,20 +736,35 @@ function renderArticleAnalysisExpanded(
     const artigoLacunas = d.lacunas.filter(l => {
       const explicit = ((l as any).artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
       if (explicit.length > 0) return explicit.includes(artigo);
-      // Fallback to eixo_tematico mapping
       return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo as any);
     });
     const artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
     const artigoNormativos = (d.normativos || []).filter((n: any) => {
       const explicit = (n.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
       if (explicit.length > 0) return explicit.includes(artigo);
-      // Fallback: use inferArtigosDocumentoNormativo
       const inferred = inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas });
       return inferred.includes(artigo as any);
     });
     const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
+
+    // Article narrative from DOCX template (dynamic text)
+    const narrativeData = {
+      lacunas: artigoLacunas, indicadores: artigoIndicadores, orcDados: artigoOrc, normativos: artigoNormativos,
+      demo: d.mirror?.dadosDemograficos || hcDemograficos,
+      seg: d.mirror?.segurancaPublica?.length ? d.mirror.segurancaPublica : hcSeguranca,
+      sau: d.mirror?.saudeSerieHistorica?.length ? d.mirror.saudeSerieHistorica : hcSaude,
+      edu: d.mirror?.educacaoSerieHistorica?.length ? d.mirror.educacaoSerieHistorica : hcEducacao,
+      eco: d.mirror?.indicadoresSocioeconomicos?.length ? d.mirror.indicadoresSocioeconomicos : hcSocioEco,
+      fem: d.mirror?.feminicidioSerie?.length ? d.mirror.feminicidioSerie : hcFeminicidio,
+      povos: d.mirror?.povosTradicionais || hcPovos,
+      atlas: d.mirror?.atlasViolencia2025 || hcAtlas,
+      analfab: d.mirror?.analfabetismoGeral2024 || hcAnalfabetismo,
+      evasao: hcEvasao, antra: hcAntra,
+    };
+    const articleNarrativeHTML = renderArticleNarrative(artigo, narrativeData);
+
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
-    const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
+    const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
     
     // Embed thematic narratives directly into article sections
     const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
@@ -745,29 +772,31 @@ function renderArticleAnalysisExpanded(
       .map(key => thematicNarratives[key])
       .filter(Boolean)
       .join('');
-    // Mark used narratives to avoid duplication
     thematicKeys.forEach(key => { thematicNarratives[key] = ''; });
 
-    // Conclusion assessment for this article
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
 
-    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML && !embeddedNarratives) return '';
+    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML && !embeddedNarratives && !articleNarrativeHTML) return '';
 
-    // Summary counts only — full detail goes to annexes
     const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
 
     return `
       <h3>Artigo ${artigo} — ${info.titulo}</h3>
       <div class="section">
-        ${narrativeHTML}
+        <!-- Narrative text from DOCX template -->
+        ${articleNarrativeHTML}
+
+        <!-- System analysis (dynamic counts) -->
+        <div class="analysis-box">
+          <h4>📊 Leitura do Sistema CERD4 — ${info.tituloCompleto}</h4>
+          ${systemAnalysisHTML}
+        </div>
 
         ${embeddedNarratives ? `
         <h4>📈 Evolução dos Indicadores Vinculados (2018-2025)</h4>
-        <p>Os dados a seguir fundamentam empiricamente a avaliação de avanço ou retrocesso neste artigo. Cada série apresenta a trajetória completa do período.</p>
         ${embeddedNarratives}` : ''}
 
         ${chartsHTML}
-
         ${recSummary}
         ${assessmentHTML}
 
