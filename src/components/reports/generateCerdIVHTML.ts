@@ -41,7 +41,7 @@ import {
   renderAllRecommendations,
 } from './cerdiv/thematicNarratives';
 import { renderArticleNarrative } from './cerdiv/articleNarratives';
-import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil } from './cerdiv/complementaryInfo';
+import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil, renderDataAnnexes } from './cerdiv/complementaryInfo';
 
 // ═══════════════════════════════════════════
 // TIPOS
@@ -268,6 +268,8 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
   
+  ${renderRecommendationsSummary(d.lacunas)}
+
   ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
   
   <!-- Key Insights / Storytelling -->
@@ -275,20 +277,26 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
 
+  <!-- Análise Interseccional -->
+  ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
+
+  <!-- Povos Tradicionais -->
+  ${renderTraditionalPeoples(povos)}
+
   <!-- Informações Complementares — Guideline CERD/C/2007/1 -->
   ${renderComplementaryInfo()}
 
-  <!-- Considerações Finais -->
-  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
-
   <!-- Diálogo com a Sociedade Civil -->
   ${renderDialogoSociedadeCivil()}
+
+  <!-- Considerações Finais -->
+  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
 
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
   <!-- ANEXOS -->
   <div style="page-break-before:always"></div>
-  <h2>ANEXO A — Quadro Detalhado: 87 Recomendações × Evidências</h2>
+  <h2>ANEXO A — Quadro Detalhado: ${total} Recomendações × Evidências</h2>
   <p>O quadro a seguir apresenta o detalhamento completo de todas as recomendações das Observações Finais de 2022, com status, evidências, ações do Brasil e lacunas remanescentes.</p>
   ${renderAllRecommendations(d.lacunas)}
 
@@ -300,6 +308,9 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnnexC(safeIndicadores)}
   ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
   ${renderAnnexE(d.normativos || [])}
+
+  <!-- Dados Consolidados (A.1-A.7) -->
+  ${renderDataAnnexes(demo, seg, fem, eco, sau, edu, safeIndicadores)}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
@@ -340,18 +351,25 @@ function renderTOC(): string {
   <div class="toc">
     <h3>Sumário</h3>
     <ul>
-      <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
+      <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico (§1–§4)</li>
       <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
-      <li style="padding-left:2cm">Artigos I a VII — Narrativa analítica, gráficos e vereditos</li>
-      <li><strong>III.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
-      <li><strong>IV.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
-      <li><strong>V.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>VI.</strong> Conclusões e Compromissos</li>
-      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
+      <li style="padding-left:2cm">Artigos I a VII — Narrativa analítica (§5–§74c), gráficos e vereditos</li>
+      <li><strong>III.</strong> Quadro Resumido: Recomendações × Status</li>
+      <li><strong>IV.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
+      <li><strong>V.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
+      <li><strong>VI.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>VII.</strong> Análise Interseccional</li>
+      <li><strong>VIII.</strong> Povos Tradicionais (Indígenas, Quilombolas, Ciganos)</li>
+      <li><strong>IX.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</li>
+      <li><strong>X.</strong> Diálogo com a Sociedade Civil — Relatório Sombra (§86–§90)</li>
+      <li><strong>XI.</strong> Considerações Finais (§82–§85)</li>
+      <li><strong>XII.</strong> Conclusões e Compromissos</li>
+      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: Recomendações × Evidências</li>
       <li><strong>ANEXO B</strong> — Respostas do Estado às Observações Finais (CERD III)</li>
       <li><strong>ANEXO C</strong> — Base Estatística Completa por Artigo</li>
       <li><strong>ANEXO D</strong> — Ações Orçamentárias por Artigo + Metodologia</li>
       <li><strong>ANEXO E</strong> — Instrumentos Normativos por Artigo + Linha do Tempo</li>
+      <li><strong>ANEXO F</strong> — Dados Consolidados (Tabelas A.1–A.7)</li>
     </ul>
   </div>`;
 }
