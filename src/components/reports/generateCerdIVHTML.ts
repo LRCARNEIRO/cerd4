@@ -41,7 +41,7 @@ import {
   renderAllRecommendations,
 } from './cerdiv/thematicNarratives';
 import { renderArticleNarrative } from './cerdiv/articleNarratives';
-import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil } from './cerdiv/complementaryInfo';
+import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil, renderDataAnnexes } from './cerdiv/complementaryInfo';
 
 // ═══════════════════════════════════════════
 // TIPOS
