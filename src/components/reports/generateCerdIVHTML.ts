@@ -393,12 +393,13 @@ function renderSiglas(): string {
   ];
 
   return `
-  <div style="page-break-before:always"></div>
-  <h2>Lista de Siglas</h2>
-  <table>
-    <thead><tr><th>Sigla</th><th>Descrição</th></tr></thead>
-    <tbody>${siglas.map(([sigla, descricao]) => `<tr><td><strong>${sigla}</strong></td><td>${descricao}</td></tr>`).join('')}</tbody>
-  </table>`;
+  <div class="section-divider"></div>
+  <h2>Lista de Siglas e Abreviaturas</h2>
+  <div style="columns:2;column-gap:1cm">
+  <table style="font-size:9pt">
+    <tbody>${siglas.map(([sigla, descricao]) => `<tr><td style="font-weight:700;color:#1e3a5f;white-space:nowrap;width:80px;border:none;padding:4px 8px">${sigla}</td><td style="border:none;padding:4px 8px;color:#475569">${descricao}</td></tr>`).join('')}</tbody>
+  </table>
+  </div>`;
 }
 
 function renderAnalyticalAnnexCover(d: CerdIVFullData, total: number, totalIndicadores: number): string {
