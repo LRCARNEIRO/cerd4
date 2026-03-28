@@ -70,7 +70,7 @@ export function FinalCerdIVReport() {
 
   const handleGenerateHTML = () => {
     const html = generateCerdIVFullHTML(buildFullData());
-    openReportPreview(html);
+    openHtmlPreview(html, 'Relatório Final CERD IV');
   };
 
   const handleGenerateDocx = () => {
