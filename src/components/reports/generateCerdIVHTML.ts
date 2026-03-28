@@ -1201,7 +1201,7 @@ function renderCrossReferenceTable(lacunas: LacunaIdentificada[], indicadores: I
       if (explicit.length > 0) return explicit.includes(art);
       return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(art as any);
     });
-    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art));
+    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art as any));
     const artOrc = orcDados.filter(o => inferArtigosOrcamento(o).includes(art as any));
     const artNorm = normativos.filter((n: any) => {
       const explicit = (n.artigos_convencao || []).filter((a: string) => artigos.includes(a));
@@ -1244,7 +1244,7 @@ function renderCrossReferenceTable(lacunas: LacunaIdentificada[], indicadores: I
 function renderAnnexC(indicadores: IndicadorInterseccional[]): string {
   const artigos = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
   const sections = artigos.map(art => {
-    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art));
+    const artInd = indicadores.filter(i => inferArtigosIndicador(i).includes(art as any));
     if (artInd.length === 0) return '';
     return `
       <h3>Artigo ${art} — ${artInd.length} indicador(es)</h3>
