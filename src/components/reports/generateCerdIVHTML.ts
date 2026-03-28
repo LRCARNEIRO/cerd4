@@ -263,26 +263,10 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
   
-  <!-- Methodology Diagram -->
-  <div class="section">
-    <h3>Diagrama Metodológico</h3>
-    <p>O relatório é produzido pelo cruzamento automatizado de quatro bases de dados independentes, correlacionadas pelos Artigos I-VII da Convenção ICERD:</p>
-    <div class="chart-container">
-      ${renderMethodologyDiagram(safeIndicadores.length, (d.orcDados || []).length, (d.normativos || []).length, d.lacunas.length, d.respostas.length)}
-    </div>
-  </div>
-
   ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
-  ${renderRecommendationsSummary(d.lacunas)}
-  ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   
-  <!-- Normative Timeline -->
-  ${renderNormativeBase(d.normativos || [])}
-  ${(d.normativos || []).length > 0 ? renderNormativeTimeline(d.normativos || []) : ''}
-  
-  ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
-  ${renderTraditionalPeoples(povos)}
+  ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
   
   <!-- Key Insights / Storytelling -->
   ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
@@ -300,6 +284,10 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   <h2>ANEXO B — Respostas do Estado Brasileiro às Observações Finais (CERD III)</h2>
   <p>Registro das respostas oficiais do Brasil a cada parágrafo das Observações Finais, incluindo avaliação técnica dinâmica do sistema.</p>
   ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, safeIndicadores, d.orcStats, d.orcDados, d.normativos)}
+
+  ${renderAnnexC(safeIndicadores)}
+  ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
+  ${renderAnnexE(d.normativos || [])}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
@@ -751,12 +739,6 @@ function renderArticleAnalysisExpanded(
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
     
-    // Use FULL detail renderers (no slice limits)
-    const indicatorMatrix = renderFullIndicatorTable(artigoIndicadores);
-    const budgetTable = renderFullBudgetTable(artigoOrc);
-    const normTable = renderFullNormativeTable(artigoNormativos);
-    const recEvidence = renderArticleRecommendationEvidence(artigoLacunas);
-
     // Embed thematic narratives directly into article sections
     const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
     const embeddedNarratives = thematicKeys
@@ -771,6 +753,9 @@ function renderArticleAnalysisExpanded(
 
     if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML && !embeddedNarratives) return '';
 
+    // Summary counts only — full detail goes to annexes
+    const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
+
     return `
       <h3>Artigo ${artigo} — ${info.titulo}</h3>
       <div class="section">
@@ -783,12 +768,10 @@ function renderArticleAnalysisExpanded(
 
         ${chartsHTML}
 
+        ${recSummary}
         ${assessmentHTML}
 
-        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada — Listagem completa (${artigoIndicadores.length} indicadores)</h4><p style="font-size:9pt">A tabela abaixo detalha cada indicador vinculado ao artigo, com o valor mais antigo e mais recente disponíveis no período 2018-2025, permitindo auditoria da evolução.</p>${indicatorMatrix}</div>` : ''}
-        ${recEvidence}
-        ${budgetTable ? `<div class="budget-box"><h4>💰 Ações orçamentárias vinculadas — Listagem completa</h4><p style="font-size:9pt">Todos os registros orçamentários rastreáveis para este artigo, com dotação, valores pagos e taxa de execução.</p>${budgetTable}</div>` : ''}
-        ${normTable ? `<div class="normative-box"><h4>📜 Instrumentos normativos — Listagem completa</h4><p style="font-size:9pt">Todos os marcos legislativos, políticas públicas e atos administrativos vinculados a este artigo.</p>${normTable}</div>` : ''}
+        <p style="font-size:9pt;color:#64748b;margin-top:0.3cm"><em>📎 Listagens completas: indicadores (Anexo C), orçamento (Anexo D), normativos (Anexo E), recomendações detalhadas (Anexo A).</em></p>
       </div>`;
   }).filter(Boolean).join('');
 
