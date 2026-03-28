@@ -1,11 +1,12 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { dataSources } from '@/data/mockData';
 import { DataSourceCard } from '@/components/dashboard/DataSourceCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
-import { Search, Database, Globe, FileText, Download } from 'lucide-react';
+import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const additionalSources = [
