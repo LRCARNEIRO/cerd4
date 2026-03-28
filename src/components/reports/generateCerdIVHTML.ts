@@ -40,6 +40,8 @@ import {
   renderLaborNarrative, renderTerritoryNarrative, renderLGBTandDisabilityNarrative,
   renderAllRecommendations,
 } from './cerdiv/thematicNarratives';
+import { renderArticleNarrative } from './cerdiv/articleNarratives';
+import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil } from './cerdiv/complementaryInfo';
 
 // ═══════════════════════════════════════════
 // TIPOS
