@@ -61,6 +61,61 @@ const additionalSources = [
   }
 ];
 
+// Fontes oficiais com status de integração (merged from FontesDadosTab)
+const fontesOficiais = [
+  { categoria: 'Demográficos', fontes: [
+    { nome: 'Censo Demográfico 2022', orgao: 'IBGE', status: 'integrado', indicadores: ['População por raça', 'Quilombolas', 'Indígenas'], url: 'https://censo2022.ibge.gov.br' },
+    { nome: 'PNAD Contínua', orgao: 'IBGE', status: 'integrado', indicadores: ['Desemprego', 'Renda', 'Informalidade'], url: 'https://sidra.ibge.gov.br/pesquisa/pnadct' },
+  ]},
+  { categoria: 'Segurança Pública', fontes: [
+    { nome: '19º Anuário Brasileiro de Segurança Pública', orgao: 'FBSP', status: 'integrado', indicadores: ['Homicídios por raça', 'Letalidade policial', 'Encarceramento'], url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
+    { nome: 'Atlas da Violência 2025', orgao: 'IPEA/FBSP', status: 'integrado', indicadores: ['Taxa homicídio por raça', 'Risco relativo', 'IVJ-N'], url: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf' },
+    { nome: 'SINESP', orgao: 'MJSP', status: 'parcial', indicadores: ['Ocorrências policiais', 'Prisões'], url: 'https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/sinesp-1' },
+  ]},
+  { categoria: 'Saúde', fontes: [
+    { nome: 'SIM - Mortalidade Materna', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Mortalidade materna por raça', 'Óbitos por causas externas'], url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sim/cnv/mat10uf.def' },
+    { nome: 'SINASC - Nascidos Vivos', orgao: 'MS/DataSUS', status: 'integrado', indicadores: ['Pré-natal', 'Mortalidade infantil'], url: 'http://tabnet.datasus.gov.br/cgi/deftohtm.exe?sinasc/cnv/nvuf.def' },
+    { nome: 'SESAI', orgao: 'MS', status: 'parcial', indicadores: ['Saúde indígena', 'Mortalidade indígena'], url: 'https://www.gov.br/saude/pt-br/composicao/sesai' },
+  ]},
+  { categoria: 'Educação', fontes: [
+    { nome: 'SIDRA 7129 - Ensino Superior por Cor/Raça', orgao: 'IBGE/PNAD', status: 'integrado', indicadores: ['Nível de instrução por raça', 'Ensino superior completo'], url: 'https://sidra.ibge.gov.br/Tabela/7129' },
+    { nome: 'SIDRA 7125 - Analfabetismo por Cor/Raça', orgao: 'IBGE/PNAD', status: 'integrado', indicadores: ['Taxa de analfabetismo por raça e idade'], url: 'https://sidra.ibge.gov.br/Tabela/7125' },
+    { nome: 'Censo Escolar', orgao: 'INEP', status: 'integrado', indicadores: ['Matrículas por raça', 'Evasão', 'Distorção idade-série'], url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/pesquisas-estatisticas-e-indicadores/censo-escolar' },
+  ]},
+  { categoria: 'Trabalho e Renda', fontes: [
+    { nome: 'RAIS', orgao: 'MTE', status: 'integrado', indicadores: ['Emprego formal por raça', 'Salário médio'], url: 'http://bi.mte.gov.br/bgcaged/' },
+    { nome: 'CadÚnico', orgao: 'MDS', status: 'integrado', indicadores: ['Famílias em pobreza', 'Bolsa Família'], url: 'https://aplicacoes.mds.gov.br/sagi/vis/data3/v.php' },
+  ]},
+  { categoria: 'Orçamento', fontes: [
+    { nome: 'SIOP', orgao: 'MPO', status: 'integrado', indicadores: ['Execução orçamentária federal'], url: 'https://www.siop.planejamento.gov.br/' },
+    { nome: 'SICONFI', orgao: 'STN', status: 'integrado', indicadores: ['Orçamento estados e municípios'], url: 'https://siconfi.tesouro.gov.br/' },
+    { nome: 'Portal Transparência', orgao: 'CGU', status: 'integrado', indicadores: ['Gastos federais detalhados'], url: 'https://portaldatransparencia.gov.br/' },
+  ]},
+  { categoria: 'Terras e Territórios', fontes: [
+    { nome: 'Terras Indígenas', orgao: 'FUNAI', status: 'integrado', indicadores: ['TIs demarcadas', 'TIs homologadas'], url: 'https://www.gov.br/funai/pt-br/atuacao/terras-indigenas' },
+    { nome: 'Quilombos', orgao: 'INCRA', status: 'integrado', indicadores: ['Comunidades certificadas', 'Títulos emitidos'], url: 'https://www.gov.br/incra/pt-br/assuntos/governanca-fundiaria/quilombolas' },
+    { nome: 'Fundação Palmares', orgao: 'MinC', status: 'integrado', indicadores: ['Certificações quilombolas'], url: 'https://www.palmares.gov.br/' },
+  ]},
+];
+
+const indicadoresCommonCore = [
+  { secao: 'I.A', titulo: 'Características demográficas', indicadores: 12, integrados: 10 },
+  { secao: 'I.B', titulo: 'Indicadores socioeconômicos', indicadores: 18, integrados: 15 },
+  { secao: 'II.A', titulo: 'Sistema político', indicadores: 8, integrados: 6 },
+  { secao: 'II.B', titulo: 'Estrutura institucional', indicadores: 10, integrados: 8 },
+  { secao: 'III', titulo: 'Quadro jurídico', indicadores: 15, integrados: 12 },
+];
+
+const statusColors: Record<string, string> = {
+  integrado: 'bg-success text-success-foreground',
+  parcial: 'bg-warning text-warning-foreground',
+  pendente: 'bg-destructive text-destructive-foreground',
+};
+const statusLabels: Record<string, string> = {
+  integrado: 'Integrado',
+  parcial: 'Parcial',
+  pendente: 'Pendente',
+};
 export default function Fontes() {
   const [searchTerm, setSearchTerm] = useState('');
 
