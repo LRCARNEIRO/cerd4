@@ -11,6 +11,8 @@
 import type { LacunaIdentificada, RespostaLacunaCerdIII, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import type { FioCondutor, ConclusaoDinamica, InsightCruzamento } from '@/hooks/useAnalyticalInsights';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtigosDocumentoNormativo } from '@/utils/artigosConvencao';
+import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
@@ -441,29 +443,6 @@ function uniqueStrings(values: (string | null | undefined)[]): string[] {
   return [...new Set(values.filter(Boolean) as string[])];
 }
 
-function inferArtigosIndicador(ind: IndicadorInterseccional): string[] {
-  const explicit = ((ind as any).artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
-  if (explicit.length > 0) return explicit;
-
-  // Fallback: infer from categoria/subcategoria keywords
-  const txt = [ind.nome, ind.categoria, ind.subcategoria || ''].join(' ').toLowerCase();
-  const arts: string[] = [];
-  if (txt.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) { arts.push('V', 'VII'); }
-  if (txt.match(/saúde|saude|mortalidade|nascidos|sinasc|datasus/)) arts.push('V');
-  if (txt.match(/trabalho|emprego|renda|salário|salario|desemprego|rendimento/)) arts.push('V');
-  if (txt.match(/terra|territór|territor|quilomb|indígena|indigena|funai/)) { arts.push('III', 'V'); }
-  if (txt.match(/justiça|justica|judiciár|judiciar|encarceramento|prisão|prisao|homicíd|homicid|violência|violencia|segurança|seguranca|polícia|policia|letal/)) { arts.push('V', 'VI'); }
-  if (txt.match(/cultur|patrimôn|patrimon|candomblé|candomble|matriz africana/)) { arts.push('V', 'VII'); }
-  if (txt.match(/igualdade|discrimin|racis|preconceito/)) { arts.push('I', 'II'); }
-  if (txt.match(/ódio|odio|propaganda|extremism/)) arts.push('IV');
-  if (txt.match(/segregaç|segregac|favela|periferi|saneamento|habitaç|habitac|moradia|deficit/)) { arts.push('III', 'V'); }
-  if (txt.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|participaç|participac/)) arts.push('II');
-  if (txt.match(/dado|estatístic|estatistic|censo|indicador|desagrega/)) { arts.push('I', 'II'); }
-  if (txt.match(/mulher|gênero|genero|feminicíd|feminicid|lgbtqia|trans/)) arts.push('V');
-  if (txt.match(/ods|objetivo.*sustentável|objetivo.*sustentavel/)) { arts.push('II', 'V'); }
-  return [...new Set(arts)];
-}
-
 function pickIndicadorSnapshot(ind: IndicadorInterseccional): string {
   const dados = ind.dados as any;
   if (!dados || typeof dados !== 'object') return '—';
@@ -839,8 +818,9 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
   const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
   const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
-  const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).length;
-  const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
+  const evolution = summarizeIndicatorEvolution(indicadores);
+  const melhorias = evolution.favoraveis + evolution.novos;
+  const pioras = evolution.desfavoraveis;
 
   // em_andamento conta como progresso parcial (peso 0.3)
   const progressoEfetivo = cumprido + emAndamento * 0.3;
@@ -862,7 +842,7 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   return `
     <div class="fio-condutor">
       <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
-      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
+      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
       ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>`;
 }
