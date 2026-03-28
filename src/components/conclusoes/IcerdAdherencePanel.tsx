@@ -388,7 +388,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, respostas, documentosNormativos, statSeriesPerArticle]);
+  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle]);
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
