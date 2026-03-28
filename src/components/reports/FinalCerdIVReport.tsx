@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { generateCerdIVFullHTML, type CerdIVFullData } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
-import { openReportPreview } from '@/utils/reportPreview';
+import { openHtmlPreview } from '@/utils/reportPreview';
 
 export function FinalCerdIVReport() {
   const {
