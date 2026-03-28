@@ -417,7 +417,13 @@ function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number
       { value: `${d.lacunas.length}`, label: 'Recomendações ONU' },
     ])}
     <p>O motor de cruzamento correlaciona cada elemento das quatro bases com os Artigos I–VII, gerando: (1) score de cumprimento por artigo; (2) diagnóstico de avanço, estagnação ou retrocesso por domínio de política pública; (3) identificação de assimetrias orçamentárias; e (4) veredito global para o relatório. Todos os dados foram verificados por auditoria manual com referência cruzada às tabelas-fonte oficiais.</p>
-    <div class="chart-container">${renderMethodologyDiagram()}</div>
+    <div class="chart-container">${renderMethodologyDiagram(
+      totalIndicadores,
+      d.orcStats?.totalRegistros || 0,
+      d.normativos?.length || 0,
+      d.lacunas.length,
+      d.respostas.length,
+    )}</div>
     <div class="highlight-box">
       <h4>📋 Nota metodológica sobre fontes e escopo</h4>
       <p>Fontes primárias utilizadas: IBGE/SIDRA, DataSUS, FBSP, SIOP/Portal da Transparência, CNJ/Justiça em Números, INEP/Censo Escolar, Atlas da Violência 2025, Dossiê ANTRA 2026, ONDH/Disque 100, TSE, Fundação João Pinheiro, INCRA/FUNAI e DIEESE.</p>
