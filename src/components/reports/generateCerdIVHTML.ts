@@ -341,6 +341,7 @@ function renderTOC(): string {
     <h3>Sumário</h3>
     <ul>
       <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
+      <li style="padding-left:2cm">Diagrama Metodológico — Pipeline de Cruzamento</li>
       <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
       <li style="padding-left:2cm">Artigo I — Definição de Discriminação Racial</li>
       <li style="padding-left:2cm">Artigo II — Condenação e Políticas de Eliminação</li>
@@ -349,13 +350,15 @@ function renderTOC(): string {
       <li style="padding-left:2cm">Artigo V — Direitos Civis, Políticos, Econômicos, Sociais e Culturais</li>
       <li style="padding-left:2cm">Artigo VI — Recursos Efetivos e Reparação</li>
       <li style="padding-left:2cm">Artigo VII — Educação e Cultura Antirracista</li>
+      <li style="padding-left:2cm"><em>Cada artigo inclui: listagem completa de indicadores, orçamento, normativos e recomendações com evidências</em></li>
       <li><strong>III.</strong> Quadro Resumido: Recomendações × Evidências</li>
       <li><strong>IV.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
-      <li><strong>V.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
+      <li><strong>V.</strong> Base Normativa e Linha do Tempo (2018-2025)</li>
       <li><strong>VI.</strong> Análise Interseccional</li>
       <li><strong>VII.</strong> Povos Tradicionais</li>
-      <li><strong>VIII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>IX.</strong> Conclusões e Compromissos</li>
+      <li><strong>VIII.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
+      <li><strong>IX.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>X.</strong> Conclusões e Compromissos</li>
       <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
       <li><strong>ANEXO B</strong> — Respostas do Estado Brasileiro às Observações Finais (CERD III)</li>
     </ul>
