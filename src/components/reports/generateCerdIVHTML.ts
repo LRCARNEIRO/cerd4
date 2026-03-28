@@ -963,10 +963,10 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
 
   return `
-    <div class="fio-condutor">
-      <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
-      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
-      ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
+    <div class="fio-condutor" style="margin-top:0.8cm;border-left-width:5px">
+      <h4 style="margin-top:0;font-size:11pt">${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}" style="font-size:9.5pt;padding:4px 12px">${veredito}</span></h4>
+      <p style="font-size:10pt">O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018–2025.</p>
+      ${critico > 0 ? `<p style="font-size:9pt;color:#991b1b;margin-bottom:0"><strong>⚠ Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>`;
 }
 
