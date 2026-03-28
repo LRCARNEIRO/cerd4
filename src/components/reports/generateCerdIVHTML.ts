@@ -274,6 +274,16 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
   
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
+
+  <!-- Informações Complementares — Guideline CERD/C/2007/1 -->
+  ${renderComplementaryInfo()}
+
+  <!-- Considerações Finais -->
+  ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
+
+  <!-- Diálogo com a Sociedade Civil -->
+  ${renderDialogoSociedadeCivil()}
+
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
   <!-- ANEXOS -->
