@@ -294,7 +294,7 @@ ${(respostasCerd || []).map(r => {
         </Card>
       </div>
 
-      <Tabs defaultValue="consolidado" className="w-full">
+      <Tabs defaultValue="final-cerd-iv" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="final-cerd-iv" className="gap-1 bg-primary/20 font-semibold">
             <BookOpen className="w-4 h-4" /> Relatório Final CERD IV
