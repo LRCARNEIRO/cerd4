@@ -262,13 +262,31 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderCover(d, total, cumpridas, parciais, naoCumpridas, retrocessos, emAndamento)}
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
+  
+  <!-- Methodology Diagram -->
+  <div class="section">
+    <h3>Diagrama Metodológico</h3>
+    <p>O relatório é produzido pelo cruzamento automatizado de quatro bases de dados independentes, correlacionadas pelos Artigos I-VII da Convenção ICERD:</p>
+    <div class="chart-container">
+      ${renderMethodologyDiagram(safeIndicadores.length, (d.orcDados || []).length, (d.normativos || []).length, d.lacunas.length, d.respostas.length)}
+    </div>
+  </div>
+
   ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
   ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
+  
+  <!-- Normative Timeline -->
   ${renderNormativeBase(d.normativos || [])}
+  ${(d.normativos || []).length > 0 ? renderNormativeTimeline(d.normativos || []) : ''}
+  
   ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
   ${renderTraditionalPeoples(povos)}
+  
+  <!-- Key Insights / Storytelling -->
+  ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
+  
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
