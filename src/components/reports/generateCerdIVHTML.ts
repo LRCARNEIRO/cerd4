@@ -99,50 +99,59 @@ const STYLES = `
 @page { size: A4; margin: 2cm; @bottom-center { content: counter(page); font-size: 9pt; color: #64748b; } }
 @page :first { @bottom-center { content: none; } }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Open Sans', sans-serif; font-size: 10.5pt; line-height: 1.65; color: #1a1a2e; max-width: 21cm; margin: 0 auto; padding: 2cm; background: white; }
-.header { text-align: center; margin-bottom: 2cm; border-bottom: 3px solid #1e3a5f; padding-bottom: 1.5cm; }
-.header h1 { font-family: 'Merriweather', serif; font-size: 17pt; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 1px; }
-.header .subtitle { font-size: 13pt; margin-top: 0.4cm; color: #2c5282; }
-.header .date { font-size: 11pt; margin-top: 0.4cm; font-style: italic; color: #64748b; }
-.un-logo { text-align: center; font-size: 32pt; margin-bottom: 0.8cm; }
-h2 { font-family: 'Merriweather', serif; font-size: 14pt; font-weight: 700; margin-top: 1.5cm; margin-bottom: 0.5cm; color: #1e3a5f; border-bottom: 2px solid #c7a82b; padding-bottom: 0.3cm; page-break-after: avoid; }
-h3 { font-family: 'Merriweather', serif; font-size: 12pt; font-weight: 700; margin-top: 1cm; margin-bottom: 0.3cm; color: #2c5282; }
-h4 { font-size: 11pt; font-weight: 600; margin-top: 0.7cm; margin-bottom: 0.2cm; color: #334155; }
-p { text-align: justify; margin-bottom: 0.4cm; }
+body { font-family: 'Noto Sans', 'Open Sans', 'Segoe UI', sans-serif; font-size: 10.5pt; line-height: 1.7; color: #1e293b; max-width: 21cm; margin: 0 auto; padding: 2.5cm 2cm; background: white; }
+.header { text-align: center; margin-bottom: 2.5cm; padding-bottom: 1.5cm; position: relative; }
+.header::after { content: ''; position: absolute; bottom: 0; left: 15%; right: 15%; height: 3px; background: linear-gradient(90deg, transparent, #1e3a5f, #c7a82b, #1e3a5f, transparent); }
+.header h1 { font-family: 'Merriweather', 'Georgia', serif; font-size: 16pt; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 2px; line-height: 1.3; }
+.header .subtitle { font-size: 12.5pt; margin-top: 0.5cm; color: #334155; font-weight: 400; letter-spacing: 0.5px; }
+.header .date { font-size: 10.5pt; margin-top: 0.5cm; font-style: italic; color: #64748b; }
+.un-logo { text-align: center; font-size: 36pt; margin-bottom: 1cm; }
+.un-emblem { display: flex; align-items: center; justify-content: center; gap: 0.5cm; margin-bottom: 0.8cm; }
+.un-emblem-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, #94a3b8); max-width: 3cm; }
+h2 { font-family: 'Merriweather', 'Georgia', serif; font-size: 13.5pt; font-weight: 700; margin-top: 1.8cm; margin-bottom: 0.6cm; color: #1e3a5f; border-bottom: 2px solid #c7a82b; padding-bottom: 0.35cm; page-break-after: avoid; letter-spacing: 0.3px; }
+h3 { font-family: 'Merriweather', 'Georgia', serif; font-size: 11.5pt; font-weight: 700; margin-top: 1.2cm; margin-bottom: 0.4cm; color: #2c5282; border-left: 3px solid #c7a82b; padding-left: 0.4cm; }
+h4 { font-size: 10.5pt; font-weight: 600; margin-top: 0.8cm; margin-bottom: 0.25cm; color: #334155; }
+p { text-align: justify; margin-bottom: 0.45cm; text-indent: 0; orphans: 3; widows: 3; }
 .section { margin-bottom: 1.5cm; page-break-inside: avoid; }
-.highlight-box { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #1e3a5f; border-radius: 0 8px 8px 0; }
-.analysis-box { background: #f0f4ff; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; }
-.advance-box { background: #ecfdf5; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0; }
-.regress-box { background: #fef2f2; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #ef4444; border-radius: 0 8px 8px 0; }
-.gap-box { background: #fffbeb; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #eab308; border-radius: 0 8px 8px 0; }
-.budget-box { background: #faf5ff; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #8b5cf6; border-radius: 0 8px 8px 0; }
-.normative-box { background: #f0fdfa; padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #14b8a6; border-radius: 0 8px 8px 0; }
-.paragraph-ref { font-weight: 700; color: #1e3a5f; font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
-table { width: 100%; border-collapse: collapse; margin: 0.5cm 0; font-size: 9.5pt; }
-th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; }
-th { background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; font-weight: 600; }
+.highlight-box { background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #1e3a5f; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.analysis-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #3b82f6; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.advance-box { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #16a34a; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.regress-box { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #dc2626; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.gap-box { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #d97706; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.budget-box { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #7c3aed; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.normative-box { background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #0d9488; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.paragraph-ref { font-weight: 700; color: #1e3a5f; font-family: 'Courier New', monospace; background: #e2e8f0; padding: 2px 7px; border-radius: 3px; font-size: 9.5pt; }
+table { width: 100%; border-collapse: collapse; margin: 0.6cm 0; font-size: 9.5pt; page-break-inside: auto; }
+th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; }
+th { background: linear-gradient(180deg, #1e3a5f 0%, #2c5282 100%); color: white; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
 tr:nth-child(even) { background: #f8fafc; }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 8.5pt; font-weight: 600; }
-.badge-success { background: #dcfce7; color: #166534; } .badge-warning { background: #fef3c7; color: #92400e; } .badge-danger { background: #fee2e2; color: #991b1b; } .badge-info { background: #dbeafe; color: #1e40af; }
-.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.5cm; margin: 0.5cm 0; }
-.data-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6cm; text-align: center; }
-.data-card-value { font-size: 20pt; font-weight: 700; color: #1e3a5f; }
-.data-card-label { font-size: 8.5pt; color: #64748b; margin-top: 0.2cm; }
-.chart-container { margin: 0.5cm 0; padding: 0.3cm; background: #fafbfc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid; }
-.chart-title { font-size: 10pt; font-weight: 600; color: #1e3a5f; margin-bottom: 0.3cm; }
-.toc { margin: 1cm 0; padding: 1cm; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
-.toc h3 { margin-top: 0; color: #1e3a5f; }
-.toc ul { list-style: none; padding-left: 0; }
-.toc li { margin: 0.25cm 0; padding-left: 1cm; position: relative; }
-.toc li::before { content: "→"; position: absolute; left: 0; color: #c7a82b; }
-ul, ol { margin-left: 1cm; margin-bottom: 0.4cm; }
-li { margin-bottom: 0.15cm; }
-.footer { margin-top: 2cm; padding-top: 1cm; border-top: 2px solid #1e3a5f; font-size: 8.5pt; text-align: center; color: #64748b; }
-.fio-condutor { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); padding: 0.7cm; margin: 0.5cm 0; border-left: 4px solid #d97706; border-radius: 0 8px 8px 0; }
-.print-instructions { background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 1cm; margin-bottom: 1cm; border: 1px solid #3b82f6; border-radius: 8px; }
-@media print { .print-instructions { display: none; } body { padding: 0; } }
+tr:hover { background: #f1f5f9; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 8.5pt; font-weight: 600; letter-spacing: 0.3px; }
+.badge-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; } .badge-warning { background: #fef3c7; color: #a16207; border: 1px solid #fcd34d; } .badge-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; } .badge-info { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5cm; margin: 0.6cm 0; }
+.data-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6cm; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+.data-card-value { font-size: 18pt; font-weight: 700; color: #1e3a5f; line-height: 1.2; }
+.data-card-label { font-size: 8pt; color: #64748b; margin-top: 0.2cm; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+.chart-container { margin: 0.6cm 0; padding: 0.5cm; background: #fafbfc; border: 1px solid #e2e8f0; border-radius: 8px; page-break-inside: avoid; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+.chart-title { font-size: 10pt; font-weight: 600; color: #1e3a5f; margin-bottom: 0.3cm; text-align: center; }
+.toc { margin: 1.5cm 0; padding: 1.2cm; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 8px; border: 1px solid #cbd5e1; }
+.toc h3 { margin-top: 0; color: #1e3a5f; font-size: 13pt; border-left: none; padding-left: 0; text-align: center; margin-bottom: 0.6cm; }
+.toc ul { list-style: none; padding-left: 0; columns: 1; }
+.toc li { margin: 0.3cm 0; padding-left: 1.2cm; position: relative; font-size: 10pt; }
+.toc li::before { content: "▸"; position: absolute; left: 0; color: #c7a82b; font-weight: 700; }
+.toc li strong { color: #1e3a5f; }
+ul, ol { margin-left: 1cm; margin-bottom: 0.45cm; }
+li { margin-bottom: 0.2cm; }
+.footer { margin-top: 2cm; padding-top: 1cm; border-top: 3px solid; border-image: linear-gradient(90deg, #1e3a5f, #c7a82b, #1e3a5f) 1; font-size: 8.5pt; text-align: center; color: #64748b; }
+.fio-condutor { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); padding: 0.8cm; margin: 0.6cm 0; border-left: 4px solid #b45309; border-radius: 0 6px 6px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.print-instructions { background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); padding: 1cm; margin-bottom: 1cm; border: 1px solid #93c5fd; border-radius: 8px; font-size: 10pt; }
+@media print { .print-instructions { display: none; } body { padding: 1.5cm; } }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1cm; }
-.status-cumprido { color: #166534; font-weight: 600; } .status-parcial { color: #ca8a04; font-weight: 600; } .status-nao { color: #dc2626; font-weight: 600; }
+.status-cumprido { color: #15803d; font-weight: 600; } .status-parcial { color: #a16207; font-weight: 600; } .status-nao { color: #dc2626; font-weight: 600; }
+.section-divider { page-break-before: always; margin-top: 0; }
+.annex-header { text-align: center; margin: 1.5cm 0; padding: 1cm; background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%); color: white; border-radius: 8px; }
+.annex-header h2 { color: white; border: none; margin: 0; padding: 0; font-size: 14pt; }
+.annex-header p { color: #cbd5e1; margin: 0.3cm 0 0; font-size: 10pt; }
 `;
 
 // ═══════════════════════════════════════════
@@ -253,7 +262,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CERD/C/BRA/21-23 - Relatório Periódico Combinado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>${STYLES}</style>
 </head>
 <body>
@@ -281,9 +290,10 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnalyticalSynthesis()}
 
   <div class="footer">
-    <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
-    <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com MIR e MRE</p>
-    <p>Gerado em ${new Date().toLocaleDateString('pt-BR')} — Dados de fontes oficiais (IBGE, DataSUS, FBSP, SIOP, CNJ)</p>
+    <p style="font-weight:600;color:#1e3a5f;font-size:9pt">CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
+    <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com o Ministério da Igualdade Racial (MIR) e o Ministério das Relações Exteriores (MRE)</p>
+    <p>Gerado em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })} • Dados de fontes oficiais: IBGE, DataSUS, FBSP, SIOP, CNJ, INEP, TSE</p>
+    <p style="margin-top:0.3cm;font-size:7.5pt;color:#94a3b8">Este documento foi gerado pela Plataforma CERD4 (cerd4.lovable.app) — todos os dados são dinâmicos e regenerados a cada atualização do sistema.</p>
   </div>
   ${getExportToolbarHTML('CERD-IV-Relatorio-Periodico-Brasil')}
 </body>
@@ -298,20 +308,28 @@ function renderCover(d: CerdIVFullData, total: number, cumpridas: number, parcia
   const safeIndicadores = getSafeIndicadores(d.indicadores || []);
   return `
   <div class="header">
-    <div class="un-logo">🇺🇳</div>
-    <h1>Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial</h1>
-    <div class="subtitle">CERD/C/BRA/21-23</div>
+    <div class="un-emblem">
+      <div class="un-emblem-line"></div>
+      <div class="un-logo">🇺🇳</div>
+      <div class="un-emblem-line"></div>
+    </div>
+    <p style="font-size:9pt;text-transform:uppercase;letter-spacing:3px;color:#64748b;margin-bottom:0.3cm">Nações Unidas</p>
+    <h1>Convenção Internacional sobre a Eliminação<br>de Todas as Formas de Discriminação Racial</h1>
+    <div class="subtitle" style="margin-top:0.8cm;font-weight:600">CERD/C/BRA/21-23</div>
     <div class="subtitle">Relatórios periódicos combinados (21º a 23º) do Brasil</div>
-    <div class="date">Período de cobertura: 2018-2025</div>
+    <div class="date" style="margin-top:0.6cm">Período de cobertura: 2018–2025</div>
+    <div class="date">Elaborado pelo Grupo de Pesquisa CDG/UFF • MIR • MRE</div>
   </div>
+  <div style="margin:1cm 0">
   ${dataCards([
-    { value: `${total}`, label: 'Recomendações Analisadas' },
-    { value: `${cumpridas}`, label: 'Cumpridas', color: '#22c55e' },
-    { value: `${parciais}`, label: 'Parciais', color: '#eab308' },
-    { value: `${naoCumpridas + retrocessos}`, label: 'Não Cumpridas/Retrocesso', color: '#ef4444' },
-    { value: `${emAndamento}`, label: 'Em Andamento', color: '#3b82f6' },
-      { value: `${safeIndicadores.length}`, label: 'Indicadores Estatísticos' },
-  ])}`;
+    { value: `${total}`, label: 'Recomendações' },
+    { value: `${cumpridas}`, label: 'Cumpridas', color: '#16a34a' },
+    { value: `${parciais}`, label: 'Parciais', color: '#d97706' },
+    { value: `${naoCumpridas + retrocessos}`, label: 'Não Cumpridas / Retrocesso', color: '#dc2626' },
+    { value: `${emAndamento}`, label: 'Em Andamento', color: '#2563eb' },
+    { value: `${safeIndicadores.length}`, label: 'Indicadores' },
+  ])}
+  </div>`;
 }
 
 function renderTOC(): string {
@@ -375,29 +393,33 @@ function renderSiglas(): string {
   ];
 
   return `
-  <div style="page-break-before:always"></div>
-  <h2>Lista de Siglas</h2>
-  <table>
-    <thead><tr><th>Sigla</th><th>Descrição</th></tr></thead>
-    <tbody>${siglas.map(([sigla, descricao]) => `<tr><td><strong>${sigla}</strong></td><td>${descricao}</td></tr>`).join('')}</tbody>
-  </table>`;
+  <div class="section-divider"></div>
+  <h2>Lista de Siglas e Abreviaturas</h2>
+  <div style="columns:2;column-gap:1cm">
+  <table style="font-size:9pt">
+    <tbody>${siglas.map(([sigla, descricao]) => `<tr><td style="font-weight:700;color:#1e3a5f;white-space:nowrap;width:80px;border:none;padding:4px 8px">${sigla}</td><td style="border:none;padding:4px 8px;color:#475569">${descricao}</td></tr>`).join('')}</tbody>
+  </table>
+  </div>`;
 }
 
 function renderAnalyticalAnnexCover(d: CerdIVFullData, total: number, totalIndicadores: number): string {
   return `
-  <div style="page-break-before:always"></div>
-  <div class="header">
-    <h1>ANEXO ANALÍTICO — PLATAFORMA CERD4</h1>
-    <div class="subtitle">IV Relatório do Estado Brasileiro à Convenção ICERD</div>
-    <div class="subtitle">Base Estatística, Orçamentária, Normativa e de Recomendações (2018–2025)</div>
-    <div class="date">Brasília, DF — 2025</div>
+  <div class="section-divider"></div>
+  <div class="annex-header">
+    <h2 style="font-size:15pt;letter-spacing:1px">ANEXO ANALÍTICO</h2>
+    <p style="font-size:12pt;color:#e2e8f0;font-weight:500">PLATAFORMA CERD4</p>
+    <p>IV Relatório do Estado Brasileiro à Convenção ICERD</p>
+    <p>Base Estatística, Orçamentária, Normativa e de Recomendações (2018–2025)</p>
+    <p style="font-style:italic;margin-top:0.5cm">Brasília, DF — 2025</p>
   </div>
+  <div style="margin:0.8cm 0">
   ${dataCards([
-    { value: `${total}`, label: 'Recomendações Analisadas' },
-    { value: `${totalIndicadores}`, label: 'Indicadores Estatísticos' },
-    { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Registros orçamentários' },
-    { value: `${d.normativos?.length || 0}`, label: 'Documentos normativos' },
-  ])}`;
+    { value: `${total}`, label: 'Recomendações' },
+    { value: `${totalIndicadores}`, label: 'Indicadores' },
+    { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Registros Orçam.' },
+    { value: `${d.normativos?.length || 0}`, label: 'Normativos' },
+  ])}
+  </div>`;
 }
 
 function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number): string {
@@ -430,12 +452,12 @@ function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number
 
 function renderAnalyticalSynthesis(): string {
   return `
-  <div style="page-break-before:always"></div>
+  <div class="section-divider"></div>
   <h2>VIII. Síntese Avaliativa por Dimensão (2018–2025)</h2>
   <div class="section">
     <p>Quando o sistema entrelaça estatística, orçamento, normativa, recomendações e narrativas analíticas, o padrão que emerge é claro: o Brasil avançou mais na capacidade formal de responder do que na velocidade substantiva de reversão da desigualdade racial.</p>
-    <div class="analysis-box">
-      <p><strong>Leitura sintética:</strong> houve reconstrução institucional relevante a partir de 2023, mas a persistência de assimetrias em segurança pública, renda, saúde e titulação territorial impede uma conclusão celebratória. O ganho formal é real; a transformação material ainda é incompleta.</p>
+    <div class="analysis-box" style="border-left-color:#1e3a5f;border-left-width:5px">
+      <p style="margin-bottom:0"><strong>Leitura sintética:</strong> houve reconstrução institucional relevante a partir de 2023, mas a persistência de assimetrias em segurança pública, renda, saúde e titulação territorial impede uma conclusão celebratória. O ganho formal é real; a transformação material ainda é incompleta.</p>
     </div>
   </div>`;
 }
@@ -859,14 +881,14 @@ function renderArticleAnalysisExpanded(
     if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !articleNarrativeHTML) return '';
 
     return `
-      <h3>Artigo ${artigo} — ${info.titulo}</h3>
+      <div class="section-divider"></div>
+      <h3 style="font-size:12.5pt;border-left:4px solid #1e3a5f;margin-top:0">Artigo ${artigo} — ${info.titulo}</h3>
+      <p style="font-size:9.5pt;color:#64748b;font-style:italic;margin-bottom:0.6cm">Art. ${artigo} — ${info.descricao}</p>
       <div class="section">
-        <!-- Narrative text from DOCX template -->
         ${articleNarrativeHTML}
 
-        <!-- System analysis (dynamic counts) -->
-        <div class="analysis-box">
-          <h4>📊 Leitura do Sistema CERD4 — ${info.tituloCompleto}</h4>
+        <div class="analysis-box" style="margin-top:1cm">
+          <h4 style="margin-top:0">📊 Leitura do Sistema CERD4 — Art. ${artigo}</h4>
           ${systemAnalysisHTML}
         </div>
 
@@ -875,9 +897,10 @@ function renderArticleAnalysisExpanded(
   }).filter(Boolean).join('');
 
   return `
+    <div class="section-divider"></div>
     <h2>II. Fundamentação por Artigos da Convenção ICERD</h2>
     <div class="section">
-      <p>Esta seção reproduz a estrutura do relatório principal, preservando o texto-base dos artigos e mantendo dinâmicos apenas os dados e leituras analíticas vinculados ao sistema.</p>
+      <p>Esta seção apresenta a análise do período 2018–2025 organizada pelos Artigos I–VII da Convenção, com textos narrativos que integram dados estatísticos, marcos normativos e evidências orçamentárias extraídas dinamicamente do sistema.</p>
     </div>
     ${sections}`;
 }
@@ -940,10 +963,10 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
 
   return `
-    <div class="fio-condutor">
-      <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
-      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
-      ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
+    <div class="fio-condutor" style="margin-top:0.8cm;border-left-width:5px">
+      <h4 style="margin-top:0;font-size:11pt">${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}" style="font-size:9.5pt;padding:4px 12px">${veredito}</span></h4>
+      <p style="font-size:10pt">O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018–2025.</p>
+      ${critico > 0 ? `<p style="font-size:9pt;color:#991b1b;margin-bottom:0"><strong>⚠ Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>`;
 }
 
