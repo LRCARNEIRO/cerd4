@@ -263,54 +263,26 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
 
   ${renderCover(d, total, cumpridas, parciais, naoCumpridas, retrocessos, emAndamento)}
   ${renderTOC()}
+  ${renderSiglas()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
-  
-  ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
-  
-  ${renderRecommendationsSummary(d.lacunas)}
-
-  ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
-  
-  <!-- Key Insights / Storytelling -->
-  ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
-  
-  ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
-
-  <!-- Análise Interseccional -->
-  ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
-
-  <!-- Povos Tradicionais -->
-  ${renderTraditionalPeoples(povos)}
-
-  <!-- Informações Complementares — Guideline CERD/C/2007/1 -->
   ${renderComplementaryInfo()}
-
-  <!-- Diálogo com a Sociedade Civil -->
   ${renderDialogoSociedadeCivil()}
-
-  <!-- Considerações Finais -->
   ${renderConsideracoesFinais(total, cumpridas, parciais, naoCumpridas, retrocessos, d.normativos?.length || 0, safeIndicadores.length, d.orcStats?.variacaoPago || 0)}
+  ${renderDataAnnexes(demo, seg, fem, eco, sau, edu, safeIndicadores)}
 
-  ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
-
-  <!-- ANEXOS -->
+  ${renderAnalyticalAnnexCover(d, total, safeIndicadores.length)}
+  ${renderAnalyticalMethodology(d, safeIndicadores.length)}
+  ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
   <div style="page-break-before:always"></div>
-  <h2>ANEXO A — Quadro Detalhado: ${total} Recomendações × Evidências</h2>
-  <p>O quadro a seguir apresenta o detalhamento completo de todas as recomendações das Observações Finais de 2022, com status, evidências, ações do Brasil e lacunas remanescentes.</p>
+  <h2>III. Quadro Detalhado: ${total} Recomendações × Evidências</h2>
+  <p>O quadro a seguir apresenta o detalhamento das recomendações das Observações Finais de 2022, com status, evidências e lacunas remanescentes, organizados por eixo temático.</p>
   ${renderAllRecommendations(d.lacunas)}
-
-  <div style="page-break-before:always"></div>
-  <h2>ANEXO B — Respostas do Estado Brasileiro às Observações Finais (CERD III)</h2>
-  <p>Registro das respostas oficiais do Brasil a cada parágrafo das Observações Finais, incluindo avaliação técnica dinâmica do sistema.</p>
-  ${renderRespostasCerdIIIAnnex(d.respostas, d.lacunas, safeIndicadores, d.orcStats, d.orcDados, d.normativos)}
-
   ${renderAnnexC(safeIndicadores)}
   ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
   ${renderAnnexE(d.normativos || [])}
-
-  <!-- Dados Consolidados (A.1-A.7) -->
-  ${renderDataAnnexes(demo, seg, fem, eco, sau, edu, safeIndicadores)}
+  ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
+  ${renderAnalyticalSynthesis()}
 
   <div class="footer">
     <p>CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
@@ -351,26 +323,124 @@ function renderTOC(): string {
   <div class="toc">
     <h3>Sumário</h3>
     <ul>
-      <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico (§1–§4)</li>
-      <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
-      <li style="padding-left:2cm">Artigos I a VII — Narrativa analítica (§5–§74c), gráficos e vereditos</li>
-      <li><strong>III.</strong> Quadro Resumido: Recomendações × Status</li>
-      <li><strong>IV.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
-      <li><strong>V.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
-      <li><strong>VI.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>VII.</strong> Análise Interseccional</li>
-      <li><strong>VIII.</strong> Povos Tradicionais (Indígenas, Quilombolas, Ciganos)</li>
-      <li><strong>IX.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</li>
-      <li><strong>X.</strong> Diálogo com a Sociedade Civil — Relatório Sombra (§86–§90)</li>
-      <li><strong>XI.</strong> Considerações Finais (§82–§85)</li>
-      <li><strong>XII.</strong> Conclusões e Compromissos</li>
-      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: Recomendações × Evidências</li>
-      <li><strong>ANEXO B</strong> — Respostas do Estado às Observações Finais (CERD III)</li>
-      <li><strong>ANEXO C</strong> — Base Estatística Completa por Artigo</li>
-      <li><strong>ANEXO D</strong> — Ações Orçamentárias por Artigo + Metodologia</li>
-      <li><strong>ANEXO E</strong> — Instrumentos Normativos por Artigo + Linha do Tempo</li>
-      <li><strong>ANEXO F</strong> — Dados Consolidados (Tabelas A.1–A.7)</li>
+      <li>Lista de Siglas</li>
+      <li><strong>I.</strong> Introdução (§1–§4)</li>
+      <li><strong>II.</strong> Artigos I–VII da Convenção (§5–§74c)</li>
+      <li><strong>III.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</li>
+      <li><strong>IV.</strong> Diálogo com a Sociedade Civil: Relatório Sombra (§79–§84)</li>
+      <li><strong>V.</strong> Considerações Finais (§82–§85)</li>
+      <li><strong>Anexos — Dados Consolidados</strong> (A.1–A.7)</li>
+      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO ANALÍTICO — PLATAFORMA CERD4</strong></li>
+      <li><strong>I.</strong> Metodologia do Sistema CERD4</li>
+      <li><strong>II.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
+      <li><strong>III.</strong> Quadro Detalhado: Recomendações × Evidências</li>
+      <li><strong>IV.</strong> Base Estatística — Evolução dos Indicadores por Artigo</li>
+      <li><strong>V.</strong> Base Orçamentária — Investimento em Igualdade Racial</li>
+      <li><strong>VI.</strong> Base Normativa — Linha do Tempo 2018–2025</li>
+      <li><strong>VII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>VIII.</strong> Síntese Avaliativa por Dimensão (2018–2025)</li>
     </ul>
+  </div>`;
+}
+
+function renderSiglas(): string {
+  const siglas = [
+    ['ANTRA', 'Associação Nacional de Travestis e Transexuais'],
+    ['CF', 'Constituição Federal'],
+    ['CERD', 'Comitê para a Eliminação da Discriminação Racial'],
+    ['CNJ', 'Conselho Nacional de Justiça'],
+    ['CONAPIR', 'Conferência Nacional de Promoção da Igualdade Racial'],
+    ['DIEESE', 'Departamento Intersindical de Estatística e Estudos Socioeconômicos'],
+    ['FBSP', 'Fórum Brasileiro de Segurança Pública'],
+    ['FJP', 'Fundação João Pinheiro'],
+    ['IBGE', 'Instituto Brasileiro de Geografia e Estatística'],
+    ['INCRA', 'Instituto Nacional de Colonização e Reforma Agrária'],
+    ['INEP', 'Instituto Nacional de Estudos e Pesquisas Educacionais'],
+    ['IPEA', 'Instituto de Pesquisa Econômica Aplicada'],
+    ['MIR', 'Ministério da Igualdade Racial'],
+    ['MDHC', 'Ministério dos Direitos Humanos e da Cidadania'],
+    ['MPI', 'Ministério dos Povos Indígenas'],
+    ['ONDH', 'Ouvidoria Nacional de Direitos Humanos'],
+    ['PNAD', 'Pesquisa Nacional por Amostra de Domicílios Contínua'],
+    ['PNIR', 'Política Nacional de Igualdade Racial'],
+    ['PNSIPN', 'Política Nacional de Saúde Integral da População Negra'],
+    ['PROUNI', 'Programa Universidade para Todos'],
+    ['RASEAM', 'Relatório Anual Socioeconômico das Mulheres'],
+    ['SESAI', 'Secretaria Especial de Saúde Indígena'],
+    ['SIDRA', 'Sistema IBGE de Recuperação Automática'],
+    ['SIM', 'Sistema de Informações sobre Mortalidade'],
+    ['SINASC', 'Sistema de Informações sobre Nascidos Vivos'],
+    ['SINAPIR', 'Sistema Nacional de Promoção da Igualdade Racial'],
+    ['SIS', 'Síntese de Indicadores Sociais (IBGE)'],
+    ['STF', 'Supremo Tribunal Federal'],
+    ['STJ', 'Superior Tribunal de Justiça'],
+    ['SUS', 'Sistema Único de Saúde'],
+    ['TSE', 'Tribunal Superior Eleitoral'],
+  ];
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>Lista de Siglas</h2>
+  <table>
+    <thead><tr><th>Sigla</th><th>Descrição</th></tr></thead>
+    <tbody>${siglas.map(([sigla, descricao]) => `<tr><td><strong>${sigla}</strong></td><td>${descricao}</td></tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function renderAnalyticalAnnexCover(d: CerdIVFullData, total: number, totalIndicadores: number): string {
+  return `
+  <div style="page-break-before:always"></div>
+  <div class="header">
+    <h1>ANEXO ANALÍTICO — PLATAFORMA CERD4</h1>
+    <div class="subtitle">IV Relatório do Estado Brasileiro à Convenção ICERD</div>
+    <div class="subtitle">Base Estatística, Orçamentária, Normativa e de Recomendações (2018–2025)</div>
+    <div class="date">Brasília, DF — 2025</div>
+  </div>
+  ${dataCards([
+    { value: `${total}`, label: 'Recomendações Analisadas' },
+    { value: `${totalIndicadores}`, label: 'Indicadores Estatísticos' },
+    { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Registros orçamentários' },
+    { value: `${d.normativos?.length || 0}`, label: 'Documentos normativos' },
+  ])}`;
+}
+
+function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number): string {
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>I. Metodologia do Sistema CERD4</h2>
+  <div class="section">
+    <p>O sistema CERD4 foi desenvolvido para apoiar a elaboração do IV Relatório Periódico do Brasil à Convenção ICERD. A plataforma realiza cruzamento automatizado entre quatro bases de dados independentes, correlacionadas pelos Artigos I–VII da Convenção.</p>
+    ${dataCards([
+      { value: `${totalIndicadores}`, label: 'Base Estatística' },
+      { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Orçamento Federal' },
+      { value: `${d.normativos?.length || 0}`, label: 'Base Normativa' },
+      { value: `${d.lacunas.length}`, label: 'Recomendações ONU' },
+    ])}
+    <p>O motor de cruzamento correlaciona cada elemento das quatro bases com os Artigos I–VII, gerando: (1) score de cumprimento por artigo; (2) diagnóstico de avanço, estagnação ou retrocesso por domínio de política pública; (3) identificação de assimetrias orçamentárias; e (4) veredito global para o relatório. Todos os dados foram verificados por auditoria manual com referência cruzada às tabelas-fonte oficiais.</p>
+    <div class="chart-container">${renderMethodologyDiagram(
+      totalIndicadores,
+      d.orcStats?.totalRegistros || 0,
+      d.normativos?.length || 0,
+      d.lacunas.length,
+      d.respostas.length,
+    )}</div>
+    <div class="highlight-box">
+      <h4>📋 Nota metodológica sobre fontes e escopo</h4>
+      <p>Fontes primárias utilizadas: IBGE/SIDRA, DataSUS, FBSP, SIOP/Portal da Transparência, CNJ/Justiça em Números, INEP/Censo Escolar, Atlas da Violência 2025, Dossiê ANTRA 2026, ONDH/Disque 100, TSE, Fundação João Pinheiro, INCRA/FUNAI e DIEESE.</p>
+      <p>Nota sobre orçamento: foram incluídas apenas ações com componente institucional explícito de igualdade racial. Programas universais sem marcador racial específico permanecem fora do cálculo central para evitar distorção metodológica.</p>
+    </div>
+  </div>`;
+}
+
+function renderAnalyticalSynthesis(): string {
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>VIII. Síntese Avaliativa por Dimensão (2018–2025)</h2>
+  <div class="section">
+    <p>Quando o sistema entrelaça estatística, orçamento, normativa, recomendações e narrativas analíticas, o padrão que emerge é claro: o Brasil avançou mais na capacidade formal de responder do que na velocidade substantiva de reversão da desigualdade racial.</p>
+    <div class="analysis-box">
+      <p><strong>Leitura sintética:</strong> houve reconstrução institucional relevante a partir de 2023, mas a persistência de assimetrias em segurança pública, renda, saúde e titulação territorial impede uma conclusão celebratória. O ganho formal é real; a transformação material ainda é incompleta.</p>
+    </div>
   </div>`;
 }
 
@@ -786,22 +856,11 @@ function renderArticleAnalysisExpanded(
     };
     const articleNarrativeHTML = renderArticleNarrative(artigo, narrativeData);
 
-    const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
-    
-    // Embed thematic narratives directly into article sections
-    const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
-    const embeddedNarratives = thematicKeys
-      .map(key => thematicNarratives[key])
-      .filter(Boolean)
-      .join('');
-    thematicKeys.forEach(key => { thematicNarratives[key] = ''; });
 
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
 
-    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !chartsHTML && !embeddedNarratives && !articleNarrativeHTML) return '';
-
-    const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
+    if (!artigoLacunas.length && !artigoOrc.length && !artigoNormativos.length && !artigoIndicadores.length && !articleNarrativeHTML) return '';
 
     return `
       <h3>Artigo ${artigo} — ${info.titulo}</h3>
@@ -815,23 +874,14 @@ function renderArticleAnalysisExpanded(
           ${systemAnalysisHTML}
         </div>
 
-        ${embeddedNarratives ? `
-        <h4>📈 Evolução dos Indicadores Vinculados (2018-2025)</h4>
-        ${embeddedNarratives}` : ''}
-
-        ${chartsHTML}
-        ${recSummary}
         ${assessmentHTML}
-
-        <p style="font-size:9pt;color:#64748b;margin-top:0.3cm"><em>📎 Listagens completas: indicadores (Anexo C), orçamento (Anexo D), normativos (Anexo E), recomendações detalhadas (Anexo A).</em></p>
       </div>`;
   }).filter(Boolean).join('');
 
   return `
     <h2>II. Fundamentação por Artigos da Convenção ICERD</h2>
     <div class="section">
-      <p>Esta seção constitui o <strong>eixo central do relatório</strong>. Cada artigo da Convenção é analisado de forma integrada, reunindo séries estatísticas, execução orçamentária, marcos normativos e leituras analíticas para fundamentar se houve <strong>avanço substantivo, movimentação apenas formal, ou persistência da desigualdade racial</strong> no período 2018-2025.</p>
-      <p>As recomendações do Comitê são referenciadas dentro de cada artigo como evidência complementar. O detalhamento completo de cada uma das 87 recomendações está disponível nos <strong>Anexos A e B</strong>.</p>
+      <p>Esta seção reproduz a estrutura do relatório principal, preservando o texto-base dos artigos e mantendo dinâmicos apenas os dados e leituras analíticas vinculados ao sistema.</p>
     </div>
     ${sections}`;
 }
