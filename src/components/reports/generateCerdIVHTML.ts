@@ -351,18 +351,25 @@ function renderTOC(): string {
   <div class="toc">
     <h3>Sumário</h3>
     <ul>
-      <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
+      <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico (§1–§4)</li>
       <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
-      <li style="padding-left:2cm">Artigos I a VII — Narrativa analítica, gráficos e vereditos</li>
-      <li><strong>III.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
-      <li><strong>IV.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
-      <li><strong>V.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>VI.</strong> Conclusões e Compromissos</li>
-      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
+      <li style="padding-left:2cm">Artigos I a VII — Narrativa analítica (§5–§74c), gráficos e vereditos</li>
+      <li><strong>III.</strong> Quadro Resumido: Recomendações × Status</li>
+      <li><strong>IV.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
+      <li><strong>V.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
+      <li><strong>VI.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>VII.</strong> Análise Interseccional</li>
+      <li><strong>VIII.</strong> Povos Tradicionais (Indígenas, Quilombolas, Ciganos)</li>
+      <li><strong>IX.</strong> Informações Complementares — Guideline CERD/C/2007/1 (§75–§81)</li>
+      <li><strong>X.</strong> Diálogo com a Sociedade Civil — Relatório Sombra (§86–§90)</li>
+      <li><strong>XI.</strong> Considerações Finais (§82–§85)</li>
+      <li><strong>XII.</strong> Conclusões e Compromissos</li>
+      <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: Recomendações × Evidências</li>
       <li><strong>ANEXO B</strong> — Respostas do Estado às Observações Finais (CERD III)</li>
       <li><strong>ANEXO C</strong> — Base Estatística Completa por Artigo</li>
       <li><strong>ANEXO D</strong> — Ações Orçamentárias por Artigo + Metodologia</li>
       <li><strong>ANEXO E</strong> — Instrumentos Normativos por Artigo + Linha do Tempo</li>
+      <li><strong>ANEXO F</strong> — Dados Consolidados (Tabelas A.1–A.7)</li>
     </ul>
   </div>`;
 }
