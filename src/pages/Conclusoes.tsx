@@ -402,15 +402,15 @@ export default function Conclusoes() {
           <Tabs defaultValue="infograficos" className="w-full">
             <TabsList className="mb-6 flex-wrap h-auto gap-1">
               <TabsTrigger value="infograficos" className="gap-1"><BarChart3 className="w-4 h-4" /> Infográficos Comparativos</TabsTrigger>
-              <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Tabela Síntese</TabsTrigger>
+              <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Síntese Indicadores-Chave</TabsTrigger>
               <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosFiltrados.length})</TabsTrigger>
               <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
               <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
               <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
               <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
               <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
-              <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas Identificadas ({lacunas?.length || 0})</TabsTrigger>
-              <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Críticas CERD III ({respostas?.length || 0})</TabsTrigger>
+              <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas x Evidências ({lacunas?.length || 0})</TabsTrigger>
+              <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Respostas às Críticas ({respostas?.length || 0})</TabsTrigger>
               <TabsTrigger value="lacunas-cerd-stats" className="gap-1"><FileText className="w-4 h-4" /> Lacunas CERD (Estatísticas)</TabsTrigger>
             </TabsList>
 
