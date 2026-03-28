@@ -402,19 +402,22 @@ function renderSiglas(): string {
 
 function renderAnalyticalAnnexCover(d: CerdIVFullData, total: number, totalIndicadores: number): string {
   return `
-  <div style="page-break-before:always"></div>
-  <div class="header">
-    <h1>ANEXO ANALÍTICO — PLATAFORMA CERD4</h1>
-    <div class="subtitle">IV Relatório do Estado Brasileiro à Convenção ICERD</div>
-    <div class="subtitle">Base Estatística, Orçamentária, Normativa e de Recomendações (2018–2025)</div>
-    <div class="date">Brasília, DF — 2025</div>
+  <div class="section-divider"></div>
+  <div class="annex-header">
+    <h2 style="font-size:15pt;letter-spacing:1px">ANEXO ANALÍTICO</h2>
+    <p style="font-size:12pt;color:#e2e8f0;font-weight:500">PLATAFORMA CERD4</p>
+    <p>IV Relatório do Estado Brasileiro à Convenção ICERD</p>
+    <p>Base Estatística, Orçamentária, Normativa e de Recomendações (2018–2025)</p>
+    <p style="font-style:italic;margin-top:0.5cm">Brasília, DF — 2025</p>
   </div>
+  <div style="margin:0.8cm 0">
   ${dataCards([
-    { value: `${total}`, label: 'Recomendações Analisadas' },
-    { value: `${totalIndicadores}`, label: 'Indicadores Estatísticos' },
-    { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Registros orçamentários' },
-    { value: `${d.normativos?.length || 0}`, label: 'Documentos normativos' },
-  ])}`;
+    { value: `${total}`, label: 'Recomendações' },
+    { value: `${totalIndicadores}`, label: 'Indicadores' },
+    { value: `${d.orcStats?.totalRegistros || 0}`, label: 'Registros Orçam.' },
+    { value: `${d.normativos?.length || 0}`, label: 'Normativos' },
+  ])}
+  </div>`;
 }
 
 function renderAnalyticalMethodology(d: CerdIVFullData, totalIndicadores: number): string {
