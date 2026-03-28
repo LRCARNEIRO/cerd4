@@ -324,21 +324,80 @@ function gerarFiosCondutores(
       l.interseccionalidades?.includes('gênero')
     );
 
+    // ── Extract dynamic values from indicadores ──
+    const femInd = indicadores.find(i => i.nome.toLowerCase().includes('feminicídio') && i.nome.toLowerCase().includes('série'));
+    const estupInd = indicadores.find(i => i.nome.toLowerCase().includes('estupro'));
+    const saudeInd = indicadores.find(i => i.nome.toLowerCase().includes('mortalidade materna') && i.nome.toLowerCase().includes('infantil'));
+    const violDomInd = indicadores.find(i => i.nome.toLowerCase().includes('violência doméstica'));
+
+    // Feminicídio
+    let femPctAtual = '63,6';
+    let femPct2018 = '61';
+    let femFonte = '19º Anuário FBSP 2025';
+    if (femInd) {
+      const d = femInd.dados as any;
+      const series = d?.series || {};
+      const anos = Object.keys(series).map(Number).sort();
+      const anoMax = anos[anos.length - 1];
+      const anoMin = anos[0];
+      if (anoMax && series[anoMax]?.percentualNegras != null) femPctAtual = String(series[anoMax].percentualNegras);
+      if (anoMin && series[anoMin]?.percentualNegras != null) femPct2018 = String(series[anoMin].percentualNegras);
+      if (femInd.fonte) femFonte = femInd.fonte;
+    }
+
+    // Estupro
+    let estupPct = '55,6';
+    if (estupInd) {
+      const d = estupInd.dados as any;
+      if (d?.mulher_negra_pct != null) estupPct = String(d.mulher_negra_pct);
+    }
+
+    // Mortalidade materna
+    let mmPctNegra = '67,1';
+    let mmRazao = '2,3';
+    let mmFonte = 'DataSUS/SIM';
+    if (saudeInd) {
+      const d = saudeInd.dados as any;
+      const series = d?.series || {};
+      const anos = Object.keys(series).map(Number).sort();
+      const anoMax = anos[anos.length - 1];
+      if (anoMax && series[anoMax]) {
+        const s = series[anoMax];
+        if (s.mortalidadeMaternaNegra != null && s.mortalidadeMaternaBranca != null) {
+          const total = (s.mortalidadeMaternaNegra + s.mortalidadeMaternaBranca);
+          if (total > 0) mmPctNegra = ((s.mortalidadeMaternaNegra / total) * 100).toFixed(1);
+          if (s.mortalidadeMaternaBranca > 0) mmRazao = (s.mortalidadeMaternaNegra / s.mortalidadeMaternaBranca).toFixed(1);
+        }
+      }
+      if (saudeInd.fonte) mmFonte = saudeInd.fonte;
+    }
+
+    // Violência doméstica
+    let violDomPct = '59,8';
+    if (violDomInd) {
+      const d = violDomInd.dados as any;
+      if (d?.mulher_negra_abs != null && d?.mulher_branca_abs != null) {
+        const total = d.mulher_negra_abs + d.mulher_branca_abs;
+        if (total > 0) violDomPct = ((d.mulher_negra_abs / total) * 100).toFixed(1);
+      }
+    }
+
     fios.push({
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (63,6% das vítimas são mulheres negras — FBSP 2025), mortalidade materna (67,1% dos óbitos são de mulheres negras — DataSUS/SIM 2022; razão pretas/brancas: 2,3× — IEPS Jul/2025) e violência doméstica (59,8% das vítimas são negras — FBSP 2025) atingem desproporcionalmente mulheres negras.`,
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (${femPctAtual}% das vítimas são mulheres negras — ${femFonte}), mortalidade materna (${mmPctNegra}% dos óbitos são de mulheres negras — ${mmFonte}; razão negra/branca: ${mmRazao}×) e violência doméstica (${violDomPct}% das vítimas são negras) atingem desproporcionalmente mulheres negras.`,
       evidencias: [
-        { texto: 'Feminicídio: 63,6% das vítimas são mulheres negras (2024)', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: 'Violência doméstica: 59,8% vítimas negras', fonte: '19º Anuário FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: 'Mortalidade materna: 67,1% dos óbitos são de mulheres negras; razão pretas/brancas: 2,3× (108,6 vs 46,9 por 100 mil NV)', fonte: 'DataSUS/SIM 2022 + Boletim IEPS nº 7 Jul/2025', tipo: 'quantitativa' as const },
-        ...evidMulheres.slice(0, 5),
+        { texto: `Feminicídio: ${femPctAtual}% das vítimas são mulheres negras`, fonte: femFonte, tipo: 'quantitativa' as const },
+        { texto: `Violência doméstica: ${violDomPct}% vítimas negras`, fonte: violDomInd?.fonte || 'FBSP 2025', tipo: 'quantitativa' as const },
+        { texto: `Mortalidade materna: ${mmPctNegra}% dos óbitos são de mulheres negras; razão negra/branca: ${mmRazao}×`, fonte: mmFonte, tipo: 'quantitativa' as const },
+        { texto: `Estupro: ${estupPct}% das vítimas são mulheres negras`, fonte: estupInd?.fonte || 'FBSP 2025', tipo: 'quantitativa' as const },
+        ...evidMulheres.slice(0, 4),
       ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: 61% em 2018 → 63,6% em 2024 (19º Anuário FBSP 2025). Mortalidade materna: 67,1% dos óbitos são de negras (DataSUS/SIM 2022); razão pretas/brancas: 2,3× (Boletim IEPS nº 7, Jul/2025, série 2010-2023). Estupro: 55,6% das vítimas são mulheres negras (19º Anuário FBSP 2025, auditado).`
+      comparativo2018: `Feminicídio de mulheres negras: ${femPct2018}% → ${femPctAtual}% (${femFonte}). Mortalidade materna: ${mmPctNegra}% dos óbitos são de negras (${mmFonte}); razão negra/branca: ${mmRazao}×. Estupro: ${estupPct}% das vítimas são mulheres negras.`
     });
   }
 
