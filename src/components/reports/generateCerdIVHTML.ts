@@ -862,7 +862,7 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   return `
     <div class="fio-condutor">
       <h4>${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}">${veredito}</span></h4>
-      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos e ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
+      <p>O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores (${melhorias} melhoram, ${pioras} pioram), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018-2025.</p>
       ${critico > 0 ? `<p style="font-size:9.5pt;color:#991b1b"><strong>Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>`;
 }

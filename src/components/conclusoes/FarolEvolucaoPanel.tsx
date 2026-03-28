@@ -23,6 +23,7 @@ type FarolArtigoResult = {
   cor: string;
   // Orçamento
   programasCount: number;
+  acoesVinculadas: number;
   totalLiquidado: number;
   // Normativa
   normativosCount: number;
@@ -89,6 +90,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         return inferArtigosOrcamento(o).includes(artNum);
       });
       const programasCount = new Set(artigoOrc.map(o => o.programa)).size;
+      const acoesVinculadas = artigoOrc.length;
       const totalLiquidado = artigoOrc.reduce((s, o) => s + (Number(o.liquidado) || 0), 0);
 
       // ── NORMATIVA ──
@@ -136,7 +138,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
 
       // Resumo textual
       const partes: string[] = [];
-      if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
+      if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s), ${acoesVinculadas} ação(ões) vinculada(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
       if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
       if (indicadoresFavoraveis + indicadoresNovos > 0) {
         partes.push(`${indicadoresFavoraveis + indicadoresNovos} indicador(es) com evolução positiva ou recém-mensurados`);
@@ -150,7 +152,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         titulo: art.titulo,
         tituloCompleto: art.tituloCompleto,
         cor: art.cor,
-        programasCount, totalLiquidado,
+        programasCount, acoesVinculadas, totalLiquidado,
         normativosCount,
         indicadoresFavoraveis, indicadoresDesfavoraveis, indicadoresNovos,
         indicadoresTotal: artigoInd.length,
@@ -167,7 +169,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       <tr>
         <td><strong>Art. ${a.numero}</strong></td>
         <td>${a.titulo}</td>
-        <td style="text-align:center">${a.programasCount} prog. (R$ ${(a.totalLiquidado/1e9).toFixed(2)} bi)</td>
+        <td style="text-align:center">${a.programasCount} prog. / ${a.acoesVinculadas} ações (R$ ${(a.totalLiquidado/1e9).toFixed(2)} bi)</td>
         <td style="text-align:center">${a.normativosCount}</td>
         <td style="text-align:center">${a.indicadoresFavoraveis}↑ ${a.indicadoresNovos}★ ${a.indicadoresDesfavoraveis}↓</td>
         <td style="text-align:center;font-weight:bold;color:${a.sinal === 'verde' ? '#16a34a' : a.sinal === 'amarelo' ? '#ca8a04' : '#dc2626'}">${a.scoreFarol}%</td>
@@ -269,6 +271,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
                   <p className="font-medium mb-1">💰 Orçamento</p>
                   <p className="text-muted-foreground">
                     {art.programasCount} programa(s)<br/>
+                    {art.acoesVinculadas} ação(ões) vinculada(s)<br/>
                     R$ {(art.totalLiquidado / 1e9).toFixed(2)} bi liquidado
                   </p>
                 </div>
