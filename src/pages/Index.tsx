@@ -41,6 +41,16 @@ export default function Index() {
   const queryClient = useQueryClient();
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const { data: allLacunas } = useLacunasIdentificadas();
+  const { data: allOrcamento } = useDadosOrcamentarios();
+  const { data: allIndicadores } = useIndicadoresAnaliticos();
+  const { data: allNormativos } = useQuery({
+    queryKey: ['normativos-index'],
+    queryFn: async () => {
+      const { data } = await supabase.from('documentos_normativos').select('artigos_convencao');
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
   const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
 
