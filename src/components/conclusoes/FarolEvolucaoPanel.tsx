@@ -5,10 +5,10 @@ import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { evaluateIndicador } from './evaluateIndicador';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
 
 interface FarolEvolucaoPanelProps {
   lacunas: any[];
@@ -70,24 +70,14 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         return inferArtigosIndicador(ind).includes(artNum);
       });
 
-      let indicadoresFavoraveis = 0;
-      let indicadoresDesfavoraveis = 0;
-      let indicadoresNovos = 0;
-      artigoInd.forEach((ind: any) => {
-        const result = evaluateIndicador(ind);
-        if (result === 'favoravel') indicadoresFavoraveis++;
-        else if (result === 'desfavoravel') indicadoresDesfavoraveis++;
-        else if (result === 'novo') indicadoresNovos++;
-      });
+      const indicadoresSummary = summarizeIndicatorEvolution(artigoInd);
+      const indicadoresFavoraveis = indicadoresSummary.favoraveis;
+      const indicadoresDesfavoraveis = indicadoresSummary.desfavoraveis;
+      const indicadoresNovos = indicadoresSummary.novos;
 
       const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
       const scoreNormativa = Math.min(100, normativosCount * 12);
-      
-      const totalIndEval = indicadoresFavoraveis + indicadoresDesfavoraveis + indicadoresNovos;
-      let scoreIndicadores = 0;
-      if (totalIndEval > 0) {
-        scoreIndicadores = ((indicadoresFavoraveis + indicadoresNovos * 0.7) / totalIndEval) * 100;
-      }
+      const scoreIndicadores = indicadoresSummary.score;
 
       const scoreFarol = Math.round(
         scoreOrcamento * 0.35 +
@@ -100,11 +90,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const partes: string[] = [];
       if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s), ${acoesVinculadas} ação(ões) vinculada(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
       if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
-      if (indicadoresFavoraveis + indicadoresNovos > 0) {
-        partes.push(`${indicadoresFavoraveis + indicadoresNovos} indicador(es) com evolução positiva ou recém-mensurados`);
-      }
-      if (indicadoresDesfavoraveis > 0) {
-        partes.push(`${indicadoresDesfavoraveis} indicador(es) com piora`);
+        if (artigoInd.length > 0) {
+          partes.push(`${artigoInd.length} indicador(es) vinculados; ${indicadoresFavoraveis + indicadoresNovos} com leitura favorável e ${indicadoresDesfavoraveis} com piora`);
       }
 
       return {
