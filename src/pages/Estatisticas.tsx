@@ -26,7 +26,7 @@ import {
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
-import { FontesDadosTab } from '@/components/estatisticas/FontesDadosTab';
+
 import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
 // DadosNovosTab removed — merged into ComplementoCerd3Tab
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
@@ -228,9 +228,6 @@ export default function Estatisticas() {
           <TabsTrigger value="seguranca-saude-educacao" className="gap-1">
             <Shield className="w-4 h-4" /> Segurança/Saúde/Educação
           </TabsTrigger>
-          <TabsTrigger value="lacunas-cerd" className="gap-1">
-            <FileText className="w-4 h-4" /> Lacunas CERD
-          </TabsTrigger>
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Espelho Seguro (BD)
           </TabsTrigger>
@@ -245,9 +242,6 @@ export default function Estatisticas() {
           </TabsTrigger>
           <TabsTrigger value="ods-racial" className="gap-1" style={{ backgroundColor: 'rgba(221,19,103,0.1)' }}>
             <Globe className="w-4 h-4" /> ODS Racial ({TOTAL_ODS_RACIAL || '...'})
-          </TabsTrigger>
-          <TabsTrigger value="fontes-dados" className="gap-1">
-            <Globe className="w-4 h-4" /> Fontes de Dados
           </TabsTrigger>
           <TabsTrigger value="vulnerabilidades" className="gap-1">
             <Layers className="w-4 h-4" /> Vulnerabilidades
@@ -273,13 +267,13 @@ export default function Estatisticas() {
         <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
-        <TabsContent value="lacunas-cerd"><LacunasCerdTab /></TabsContent>
+        
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
         <TabsContent value="ods-racial"><OdsRacialTab /></TabsContent>
-        <TabsContent value="fontes-dados"><FontesDadosTab /></TabsContent>
+        
         <TabsContent value="vulnerabilidades"><VulnerabilidadesTab /></TabsContent>
         <TabsContent value="raca-genero"><RacaGeneroTab /></TabsContent>
         <TabsContent value="lgbtqia"><LgbtqiaTab /></TabsContent>
