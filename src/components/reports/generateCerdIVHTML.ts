@@ -17,6 +17,11 @@ import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
 import {
+  renderFullIndicatorTable, renderFullBudgetTable, renderFullNormativeTable,
+  renderArticleRecommendationEvidence, renderMethodologyDiagram,
+  renderNormativeTimeline, renderKeyInsights,
+} from './cerdiv/articleDetailRenderers';
+import {
   segurancaPublica as hcSeguranca, feminicidioSerie as hcFeminicidio,
   educacaoSerieHistorica as hcEducacao, saudeSerieHistorica as hcSaude,
   indicadoresSocioeconomicos as hcSocioEco, povosTradicionais as hcPovos,
@@ -257,13 +262,31 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderCover(d, total, cumpridas, parciais, naoCumpridas, retrocessos, emAndamento)}
   ${renderTOC()}
   ${renderIntroduction(d, demo, total, cumpridas, parciais, naoCumpridas, retrocessos)}
+  
+  <!-- Methodology Diagram -->
+  <div class="section">
+    <h3>Diagrama Metodológico</h3>
+    <p>O relatório é produzido pelo cruzamento automatizado de quatro bases de dados independentes, correlacionadas pelos Artigos I-VII da Convenção ICERD:</p>
+    <div class="chart-container">
+      ${renderMethodologyDiagram(safeIndicadores.length, (d.orcDados || []).length, (d.normativos || []).length, d.lacunas.length, d.respostas.length)}
+    </div>
+  </div>
+
   ${renderDemographicContext(demo)}
   ${renderArticleAnalysisExpanded({ ...d, indicadores: safeIndicadores }, seg, fem, edu, sau, eco, evolDesig, povos, thematicNarratives)}
   ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
+  
+  <!-- Normative Timeline -->
   ${renderNormativeBase(d.normativos || [])}
+  ${(d.normativos || []).length > 0 ? renderNormativeTimeline(d.normativos || []) : ''}
+  
   ${renderIntersectionalAnalysis(safeIndicadores, d.lacunas)}
   ${renderTraditionalPeoples(povos)}
+  
+  <!-- Key Insights / Storytelling -->
+  ${renderKeyInsights(d.orcStats, safeIndicadores, d.lacunas, d.normativos || [])}
+  
   ${renderGuidingThreads(d.fiosCondutores || [], d.conclusoesDinamicas || [], d.insightsCruzamento || [])}
   ${renderConclusions(d, total, cumpridas, parciais, naoCumpridas, retrocessos)}
 
@@ -318,6 +341,7 @@ function renderTOC(): string {
     <h3>Sumário</h3>
     <ul>
       <li><strong>I.</strong> Introdução, Metodologia e Contexto Demográfico</li>
+      <li style="padding-left:2cm">Diagrama Metodológico — Pipeline de Cruzamento</li>
       <li><strong>II.</strong> Fundamentação por Artigos da Convenção ICERD (I-VII)</li>
       <li style="padding-left:2cm">Artigo I — Definição de Discriminação Racial</li>
       <li style="padding-left:2cm">Artigo II — Condenação e Políticas de Eliminação</li>
@@ -326,13 +350,15 @@ function renderTOC(): string {
       <li style="padding-left:2cm">Artigo V — Direitos Civis, Políticos, Econômicos, Sociais e Culturais</li>
       <li style="padding-left:2cm">Artigo VI — Recursos Efetivos e Reparação</li>
       <li style="padding-left:2cm">Artigo VII — Educação e Cultura Antirracista</li>
+      <li style="padding-left:2cm"><em>Cada artigo inclui: listagem completa de indicadores, orçamento, normativos e recomendações com evidências</em></li>
       <li><strong>III.</strong> Quadro Resumido: Recomendações × Evidências</li>
       <li><strong>IV.</strong> Análise Orçamentária: Investimento em Igualdade Racial</li>
-      <li><strong>V.</strong> Base Normativa e Marco Legislativo (2018-2025)</li>
+      <li><strong>V.</strong> Base Normativa e Linha do Tempo (2018-2025)</li>
       <li><strong>VI.</strong> Análise Interseccional</li>
       <li><strong>VII.</strong> Povos Tradicionais</li>
-      <li><strong>VIII.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
-      <li><strong>IX.</strong> Conclusões e Compromissos</li>
+      <li><strong>VIII.</strong> Três Perspectivas Fundamentais (Storytelling Analítico)</li>
+      <li><strong>IX.</strong> Fios Condutores Analíticos e Síntese Cruzada</li>
+      <li><strong>X.</strong> Conclusões e Compromissos</li>
       <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO A</strong> — Quadro Detalhado: 87 Recomendações × Evidências</li>
       <li><strong>ANEXO B</strong> — Respostas do Estado Brasileiro às Observações Finais (CERD III)</li>
     </ul>
@@ -733,9 +759,12 @@ function renderArticleAnalysisExpanded(
     const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
     const chartsHTML = buildEvidenceHighlights(artigo, d, seg, fem, edu, sau, eco, evolDesig, povos);
     const narrativeHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
-    const indicatorMatrix = renderArticleIndicatorTable(artigoIndicadores);
-    const budgetTable = renderBudgetProgramsTable(artigoOrc);
-    const normTable = renderNormativeDocsTable(artigoNormativos);
+    
+    // Use FULL detail renderers (no slice limits)
+    const indicatorMatrix = renderFullIndicatorTable(artigoIndicadores);
+    const budgetTable = renderFullBudgetTable(artigoOrc);
+    const normTable = renderFullNormativeTable(artigoNormativos);
+    const recEvidence = renderArticleRecommendationEvidence(artigoLacunas);
 
     // Embed thematic narratives directly into article sections
     const thematicKeys = ARTICLE_THEMATIC_MAP[artigo] || [];
@@ -745,9 +774,6 @@ function renderArticleAnalysisExpanded(
       .join('');
     // Mark used narratives to avoid duplication
     thematicKeys.forEach(key => { thematicNarratives[key] = ''; });
-
-    // Brief recommendation summary for this article (not full detail)
-    const recSummary = artigoLacunas.length > 0 ? renderArticleRecSummary(artigoLacunas) : '';
 
     // Conclusion assessment for this article
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
@@ -768,10 +794,10 @@ function renderArticleAnalysisExpanded(
 
         ${assessmentHTML}
 
-        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada (${artigoIndicadores.length} indicadores)</h4>${indicatorMatrix}</div>` : ''}
-        ${recSummary}
-        ${budgetTable ? `<div class="budget-box"><h4>💰 Investimento vinculado ao artigo</h4>${budgetTable}</div>` : ''}
-        ${normTable ? `<div class="normative-box"><h4>📜 Marco normativo de sustentação</h4>${normTable}</div>` : ''}
+        ${indicatorMatrix ? `<div class="analysis-box"><h4>📊 Base estatística vinculada — Listagem completa (${artigoIndicadores.length} indicadores)</h4><p style="font-size:9pt">A tabela abaixo detalha cada indicador vinculado ao artigo, com o valor mais antigo e mais recente disponíveis no período 2018-2025, permitindo auditoria da evolução.</p>${indicatorMatrix}</div>` : ''}
+        ${recEvidence}
+        ${budgetTable ? `<div class="budget-box"><h4>💰 Ações orçamentárias vinculadas — Listagem completa</h4><p style="font-size:9pt">Todos os registros orçamentários rastreáveis para este artigo, com dotação, valores pagos e taxa de execução.</p>${budgetTable}</div>` : ''}
+        ${normTable ? `<div class="normative-box"><h4>📜 Instrumentos normativos — Listagem completa</h4><p style="font-size:9pt">Todos os marcos legislativos, políticas públicas e atos administrativos vinculados a este artigo.</p>${normTable}</div>` : ''}
       </div>`;
   }).filter(Boolean).join('');
 
