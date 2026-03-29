@@ -1068,6 +1068,31 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
   const porStatus: Record<string, number> = {};
   lacunas.forEach(l => { porStatus[l.status_cumprimento] = (porStatus[l.status_cumprimento] || 0) + 1; });
 
+  // Per-article aggregation
+  const artigosList = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+  const artigoStats: Record<string, { total: number; cumprido: number; parcial: number; emAndamento: number; naoCumprido: number; retrocesso: number }> = {};
+  artigosList.forEach(a => { artigoStats[a] = { total: 0, cumprido: 0, parcial: 0, emAndamento: 0, naoCumprido: 0, retrocesso: 0 }; });
+
+  // Helper to get articles for a lacuna
+  const getArtigosLacuna = (l: LacunaIdentificada): string[] => {
+    const explicit = ((l as any).artigos_convencao || []).filter((a: string) => artigosList.includes(a));
+    if (explicit.length > 0) return explicit;
+    return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []) as string[];
+  };
+
+  lacunas.forEach(l => {
+    const arts = getArtigosLacuna(l);
+    arts.forEach(a => {
+      if (!artigoStats[a]) return;
+      artigoStats[a].total++;
+      if (l.status_cumprimento === 'cumprido') artigoStats[a].cumprido++;
+      else if (l.status_cumprimento === 'parcialmente_cumprido') artigoStats[a].parcial++;
+      else if (l.status_cumprimento === 'em_andamento') artigoStats[a].emAndamento++;
+      else if (l.status_cumprimento === 'nao_cumprido') artigoStats[a].naoCumprido++;
+      else if (l.status_cumprimento === 'retrocesso') artigoStats[a].retrocesso++;
+    });
+  });
+
   return `
   <h2>III. Quadro Resumido: Recomendações × Evidências</h2>
   <div class="section">
@@ -1085,13 +1110,32 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
       <thead><tr><th>§</th><th>Tema</th><th>Eixo</th><th>Status</th><th>Artigos ICERD</th></tr></thead>
       <tbody>${lacunas.map(l => {
         const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
-        const artigos = ((l as any).artigos_convencao || EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).join(', ');
+        const artigos = getArtigosLacuna(l).join(', ');
         return `<tr>
           <td><span class="paragraph-ref">${l.paragrafo}</span></td>
           <td>${l.tema}</td>
           <td style="font-size:8.5pt">${eixoLabels[l.eixo_tematico] || l.eixo_tematico}</td>
           <td><span class="badge ${st.badge}">${st.label}</span></td>
           <td style="font-size:8.5pt">${artigos || '—'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+
+    <h3 style="margin-top:1cm">Resumo por Artigo ICERD</h3>
+    <table>
+      <thead><tr><th>Artigo</th><th>Total</th><th>Cumpridas</th><th>Parciais</th><th>Em Andamento</th><th>Não Cumpridas</th><th>Retrocesso</th><th>Taxa Atend.</th></tr></thead>
+      <tbody>${artigosList.map(a => {
+        const s = artigoStats[a];
+        const taxa = s.total > 0 ? ((s.cumprido + s.parcial) / s.total * 100).toFixed(0) : '—';
+        return `<tr>
+          <td><strong>Art. ${a}</strong></td>
+          <td style="text-align:center">${s.total}</td>
+          <td style="text-align:center"><span class="badge badge-success">${s.cumprido}</span></td>
+          <td style="text-align:center"><span class="badge badge-warning">${s.parcial}</span></td>
+          <td style="text-align:center"><span class="badge badge-info">${s.emAndamento}</span></td>
+          <td style="text-align:center"><span class="badge badge-danger">${s.naoCumprido}</span></td>
+          <td style="text-align:center">${s.retrocesso > 0 ? `<span class="badge badge-danger">${s.retrocesso}</span>` : '0'}</td>
+          <td style="text-align:center;font-weight:600">${taxa}%</td>
         </tr>`;
       }).join('')}</tbody>
     </table>
