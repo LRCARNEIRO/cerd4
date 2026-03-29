@@ -805,57 +805,83 @@ function generateTransversalReading(
   if (lacunas.length === 0 && indicadores.length === 0) return '';
 
   const parts: string[] = [];
+  const total = lacunas.length;
+  const cumpridas = lacunas.filter(l => l.status_cumprimento === 'cumprido').length;
+  const parciais = lacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+  const emAndamento = lacunas.filter(l => l.status_cumprimento === 'em_andamento').length;
+  const naoCumpridas = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido').length;
+  const retrocessos = lacunas.filter(l => l.status_cumprimento === 'retrocesso').length;
+  const atendidas = cumpridas + parciais;
+  const deficit = naoCumpridas + retrocessos;
 
-  // 1. Intersectional gender lens
+  // 0. Context: total and status breakdown (always show)
+  parts.push(`<strong>Panorama do Artigo ${artigo}:</strong> Das ${total} recomendações vinculadas, ${atendidas} foram atendidas (${cumpridas} cumprida(s) + ${parciais} parcial(is)), ${emAndamento} estão em andamento e ${deficit} permanecem em déficit (${naoCumpridas} não cumprida(s) + ${retrocessos} retrocesso(s)). <strong>Taxa de resposta: ${((atendidas / Math.max(total, 1)) * 100).toFixed(0)}%</strong>.`);
+
+  // 1. Temporal comparison (2018-2022 vs 2023-2025)
+  const lacPre = lacunas.filter(l => {
+    const dt = new Date(l.updated_at || l.created_at);
+    return dt.getFullYear() <= 2022;
+  });
+  const lacPos = lacunas.filter(l => {
+    const dt = new Date(l.updated_at || l.created_at);
+    return dt.getFullYear() >= 2023;
+  });
+  const preCumpridas = lacPre.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+  const posCumpridas = lacPos.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+  if (lacPre.length > 0 || lacPos.length > 0) {
+    parts.push(`<em>Comparação temporal:</em> Período 2018–2022: ${preCumpridas} de ${lacPre.length} recomendações com algum grau de atendimento (${((preCumpridas / Math.max(lacPre.length, 1)) * 100).toFixed(0)}%). Período 2023–2025: ${posCumpridas} de ${lacPos.length} (${((posCumpridas / Math.max(lacPos.length, 1)) * 100).toFixed(0)}%).`);
+  }
+
+  // 2. Intersectional gender lens
   const lacMulheresNegras = lacunas.filter(l => l.grupo_focal === 'mulheres_negras' || (l.interseccionalidades || []).some(i => /mulher|gênero|gender|feminic/i.test(i)));
   const lacGenero = lacunas.filter(l => (l.interseccionalidades || []).some(i => /gênero|gender|mulher|feminic/i.test(i)) || l.grupo_focal === 'mulheres_negras');
   if (lacMulheresNegras.length > 0 || lacGenero.length > 0) {
-    parts.push(`${lacMulheresNegras.length} lacuna(s) diretamente sobre mulheres negras e ${lacGenero.length} lacunas com dimensão de gênero.`);
+    parts.push(`${lacMulheresNegras.length} lacuna(s) diretamente sobre mulheres negras e ${lacGenero.length} com dimensão de gênero (de ${total} totais neste artigo).`);
   }
 
-  // 2. Priority distribution within article
+  // 3. Priority distribution within article
   const criticas = lacunas.filter(l => l.prioridade === 'critica');
   const altas = lacunas.filter(l => l.prioridade === 'alta');
   const criticasNaoCumpridas = criticas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso');
   if (criticas.length > 0) {
-    parts.push(`Das ${criticas.length} lacuna(s) de prioridade crítica vinculadas, ${criticasNaoCumpridas.length} (${(criticasNaoCumpridas.length / Math.max(criticas.length, 1) * 100).toFixed(0)}%) permanecem não cumpridas ou em retrocesso.`);
+    parts.push(`Das ${criticas.length} lacuna(s) de prioridade crítica vinculadas ao artigo (de ${total} totais), ${criticasNaoCumpridas.length} (${(criticasNaoCumpridas.length / Math.max(criticas.length, 1) * 100).toFixed(0)}%) permanecem não cumpridas ou em retrocesso.`);
   }
   if (altas.length > 0) {
-    parts.push(`${altas.length} lacuna(s) de prioridade alta.`);
+    parts.push(`${altas.length} lacuna(s) de prioridade alta (de ${total} totais).`);
   }
 
-  // 3. Eixo breakdown — compare article vs global
+  // 4. Eixo breakdown — compare article vs global
   const eixoCount: Record<string, number> = {};
   lacunas.forEach(l => { eixoCount[l.eixo_tematico] = (eixoCount[l.eixo_tematico] || 0) + 1; });
   const topEixo = Object.entries(eixoCount).sort((a, b) => b[1] - a[1])[0];
   if (topEixo) {
     const globalEixo = allLacunas.filter(l => l.eixo_tematico === topEixo[0]);
-    const globalCumpridos = globalEixo.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido');
-    parts.push(`O Brasil possui ${globalEixo.length} observações da ONU no eixo ${eixoLabels[topEixo[0]] || topEixo[0]}, das quais ${globalCumpridos.length} tiveram algum grau de cumprimento.`);
+    const globalAtendidos = globalEixo.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+    parts.push(`No eixo predominante (${eixoLabels[topEixo[0]] || topEixo[0]}), o Brasil possui ${globalEixo.length} observações da ONU ao total, das quais ${globalAtendidos} (${((globalAtendidos / Math.max(globalEixo.length, 1)) * 100).toFixed(0)}%) tiveram algum grau de cumprimento.`);
   }
 
-  // 4. Budget concentration insight
+  // 5. Budget concentration insight
   if (orcDados.length > 0) {
     const topOrgaos: Record<string, number> = {};
     orcDados.forEach(o => { topOrgaos[o.orgao] = (topOrgaos[o.orgao] || 0) + num(o.pago); });
     const sorted = Object.entries(topOrgaos).sort((a, b) => b[1] - a[1]);
-    if (sorted.length >= 2) {
+    if (sorted.length >= 1) {
       const topPago = sorted[0][1];
       const totalPago = sorted.reduce((s, [, v]) => s + v, 0);
-      parts.push(`O órgão com maior execução (${sorted[0][0]}) concentra ${(topPago / Math.max(totalPago, 1) * 100).toFixed(0)}% dos recursos pagos — revelando ${topPago / Math.max(totalPago, 1) > 0.5 ? 'alta concentração orçamentária' : 'distribuição razoável entre órgãos'}.`);
+      parts.push(`Execução orçamentária: ${fmtBRL(totalPago)} pagos em ${orcDados.length} ação(ões). Principal executor: ${sorted[0][0]} (${(topPago / Math.max(totalPago, 1) * 100).toFixed(0)}% dos recursos).`);
     }
   }
 
-  // 5. Indicator intersectional coverage
+  // 6. Indicator intersectional coverage
   const indComRaca = indicadores.filter(i => i.desagregacao_raca);
   const indComGenero = indicadores.filter(i => i.desagregacao_genero);
   if (indicadores.length > 0) {
-    parts.push(`Dos ${indicadores.length} indicadores vinculados, ${indComRaca.length} possuem desagregação racial e ${indComGenero.length} desagregação por gênero — evidenciando ${indComGenero.length / Math.max(indicadores.length, 1) > 0.5 ? 'boa cobertura interseccional' : 'lacuna na cobertura interseccional de gênero'}.`);
+    parts.push(`Dos ${indicadores.length} indicadores vinculados ao artigo, ${indComRaca.length} possuem desagregação racial e ${indComGenero.length} desagregação por gênero — evidenciando ${indComGenero.length / Math.max(indicadores.length, 1) > 0.5 ? 'boa cobertura interseccional' : 'lacuna na cobertura interseccional de gênero'}.`);
   }
 
   if (parts.length === 0) return '';
 
-  return `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema</h4><p>${parts.join(' ')}</p></div>`;
+  return `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema — Artigo ${artigo}</h4><p>${parts.join('</p><p>')}</p></div>`;
 }
 
 function generateArticleAnalysis(
