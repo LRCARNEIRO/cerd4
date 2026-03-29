@@ -794,6 +794,70 @@ function buildEvidenceHighlights(artigo: string, d: CerdIVFullData, seg: any[], 
   return blocks.join('');
 }
 
+function generateTransversalReading(
+  artigo: string,
+  lacunas: LacunaIdentificada[],
+  orcDados: DadoOrcamentario[],
+  indicadores: IndicadorInterseccional[],
+  normativos: any[],
+  allLacunas: LacunaIdentificada[]
+): string {
+  if (lacunas.length === 0 && indicadores.length === 0) return '';
+
+  const parts: string[] = [];
+
+  // 1. Intersectional gender lens
+  const lacMulheresNegras = lacunas.filter(l => l.grupo_focal === 'mulheres_negras' || (l.interseccionalidades || []).some(i => /mulher|gênero|gender|feminic/i.test(i)));
+  const lacGenero = lacunas.filter(l => (l.interseccionalidades || []).some(i => /gênero|gender|mulher|feminic/i.test(i)) || l.grupo_focal === 'mulheres_negras');
+  if (lacMulheresNegras.length > 0 || lacGenero.length > 0) {
+    parts.push(`${lacMulheresNegras.length} lacuna(s) diretamente sobre mulheres negras e ${lacGenero.length} lacunas com dimensão de gênero.`);
+  }
+
+  // 2. Priority distribution within article
+  const criticas = lacunas.filter(l => l.prioridade === 'critica');
+  const altas = lacunas.filter(l => l.prioridade === 'alta');
+  const criticasNaoCumpridas = criticas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso');
+  if (criticas.length > 0) {
+    parts.push(`Das ${criticas.length} lacuna(s) de prioridade crítica vinculadas, ${criticasNaoCumpridas.length} (${(criticasNaoCumpridas.length / Math.max(criticas.length, 1) * 100).toFixed(0)}%) permanecem não cumpridas ou em retrocesso.`);
+  }
+  if (altas.length > 0) {
+    parts.push(`${altas.length} lacuna(s) de prioridade alta.`);
+  }
+
+  // 3. Eixo breakdown — compare article vs global
+  const eixoCount: Record<string, number> = {};
+  lacunas.forEach(l => { eixoCount[l.eixo_tematico] = (eixoCount[l.eixo_tematico] || 0) + 1; });
+  const topEixo = Object.entries(eixoCount).sort((a, b) => b[1] - a[1])[0];
+  if (topEixo) {
+    const globalEixo = allLacunas.filter(l => l.eixo_tematico === topEixo[0]);
+    const globalCumpridos = globalEixo.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido');
+    parts.push(`O Brasil possui ${globalEixo.length} observações da ONU no eixo ${eixoLabels[topEixo[0]] || topEixo[0]}, das quais ${globalCumpridos.length} tiveram algum grau de cumprimento.`);
+  }
+
+  // 4. Budget concentration insight
+  if (orcDados.length > 0) {
+    const topOrgaos: Record<string, number> = {};
+    orcDados.forEach(o => { topOrgaos[o.orgao] = (topOrgaos[o.orgao] || 0) + num(o.pago); });
+    const sorted = Object.entries(topOrgaos).sort((a, b) => b[1] - a[1]);
+    if (sorted.length >= 2) {
+      const topPago = sorted[0][1];
+      const totalPago = sorted.reduce((s, [, v]) => s + v, 0);
+      parts.push(`O órgão com maior execução (${sorted[0][0]}) concentra ${(topPago / Math.max(totalPago, 1) * 100).toFixed(0)}% dos recursos pagos — revelando ${topPago / Math.max(totalPago, 1) > 0.5 ? 'alta concentração orçamentária' : 'distribuição razoável entre órgãos'}.`);
+    }
+  }
+
+  // 5. Indicator intersectional coverage
+  const indComRaca = indicadores.filter(i => i.desagregacao_raca);
+  const indComGenero = indicadores.filter(i => i.desagregacao_genero);
+  if (indicadores.length > 0) {
+    parts.push(`Dos ${indicadores.length} indicadores vinculados, ${indComRaca.length} possuem desagregação racial e ${indComGenero.length} desagregação por gênero — evidenciando ${indComGenero.length / Math.max(indicadores.length, 1) > 0.5 ? 'boa cobertura interseccional' : 'lacuna na cobertura interseccional de gênero'}.`);
+  }
+
+  if (parts.length === 0) return '';
+
+  return `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema</h4><p>${parts.join(' ')}</p></div>`;
+}
+
 function generateArticleAnalysis(
   artigo: string,
   titulo: string,
@@ -802,7 +866,8 @@ function generateArticleAnalysis(
   orcDados: DadoOrcamentario[],
   normativos: any[],
   indicadores: IndicadorInterseccional[],
-  fios: FioCondutor[]
+  fios: FioCondutor[],
+  allLacunas?: LacunaIdentificada[]
 ): string {
   const total = lacunas.length;
   const cumprido = lacunas.filter(l => l.status_cumprimento === 'cumprido').length;
@@ -815,11 +880,12 @@ function generateArticleAnalysis(
   const grupos = uniqueStrings(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal));
   const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).map(i => i.nome);
   const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).map(i => i.nome);
-  const fiosRelacionados = fios.filter(f => (f.artigosConvencao || []).includes(artigo as any));
 
   if (total === 0 && indicadores.length === 0 && orcDados.length === 0 && normativos.length === 0) {
     return `<p>O ${titulo} não concentrou recomendações formalmente vinculadas no banco, mas segue relevante como eixo interpretativo da Convenção. Ainda assim, o sistema não localizou base empírica suficiente para uma leitura robusta neste ciclo.</p>`;
   }
+
+  const transversalHTML = generateTransversalReading(artigo, lacunas, orcDados, indicadores, normativos, allLacunas || lacunas);
 
   return `
     <p><strong>${titulo}</strong> — ${descricao}</p>
@@ -828,7 +894,7 @@ function generateArticleAnalysis(
     ${indicadores.length > 0 ? `<p>Na base estatística, os principais sinais são: ${melhorias.length ? `<strong>melhoras parciais</strong> em ${melhorias.slice(0, 4).join(', ')}` : 'sem melhoras robustas registradas'}${melhorias.length && pioras.length ? '; ' : ''}${pioras.length ? `<strong>alertas</strong> em ${pioras.slice(0, 4).join(', ')}` : ''}. A leitura do artigo não é, portanto, apenas normativa: ela se ancora em séries históricas, quadros-síntese e evidências quantitativas do sistema.</p>` : ''}
     ${orcDados.length > 0 ? `<p>Na dimensão orçamentária, foram rastreados ${fmtBRL(totalDotacao)} em dotação autorizada e ${fmtBRL(totalPago)} pagos, com execução média de ${execucao.toFixed(1)}%. Esse dado importa porque evidencia se a promessa normativa e programática se converteu, ou não, em capacidade material de implementação.</p>` : ''}
     ${normativos.length > 0 ? `<p>Na dimensão normativa, o artigo foi sustentado por ${normativos.length} documentos do acervo institucional. Esses marcos ajudam a explicar por que certos resultados melhoram lentamente, enquanto outros permanecem apenas no plano declaratório.</p>` : ''}
-    ${fiosRelacionados.length > 0 ? `<div class="fio-condutor"><h4>🧵 Leitura transversal do sistema</h4><p>${fiosRelacionados.slice(0, 2).map(f => f.argumento).join(' ')}</p></div>` : ''}`;
+    ${transversalHTML}`;
 }
 
 // Map articles to thematic narrative keys
@@ -874,7 +940,7 @@ function renderArticleAnalysisExpanded(
     };
     const articleNarrativeHTML = renderArticleNarrative(artigo, narrativeData);
 
-    const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
+    const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || [], d.lacunas);
 
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
 
