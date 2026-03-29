@@ -292,7 +292,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnnexC(safeIndicadores)}
   ${renderAnnexD(d.orcDados || [], d.orcStats, safeIndicadores, d.normativos || [], d.lacunas, d.respostas)}
   ${renderAnnexE(d.normativos || [])}
-  ${renderAllRecommendations(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
+  ${renderAllRecommendations(d.lacunas)}
     <p style="font-weight:600;color:#1e3a5f;font-size:9pt">CERD/C/BRA/21-23 — Relatórios Periódicos Combinados do Brasil (21º a 23º)</p>
     <p>Elaborado pelo Grupo de Pesquisa CDG/UFF em parceria com o Ministério da Igualdade Racial (MIR) e o Ministério das Relações Exteriores (MRE)</p>
     <p>Gerado em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })} • Dados de fontes oficiais: IBGE, DataSUS, FBSP, SIOP, CNJ, INEP, TSE</p>
