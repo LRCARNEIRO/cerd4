@@ -940,7 +940,7 @@ function renderArticleAnalysisExpanded(
     };
     const articleNarrativeHTML = renderArticleNarrative(artigo, narrativeData);
 
-    const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || []);
+    const systemAnalysisHTML = generateArticleAnalysis(artigo, info.tituloCompleto, info.descricao, artigoLacunas, artigoOrc, artigoNormativos, artigoIndicadores, d.fiosCondutores || [], d.lacunas);
 
     const assessmentHTML = renderArticleAssessment(artigo, artigoLacunas, artigoOrc, artigoIndicadores, artigoNormativos);
 
