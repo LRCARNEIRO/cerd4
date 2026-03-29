@@ -1142,6 +1142,47 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
         </tr>`;
       }).join('')}</tbody>
     </table>
+
+    <!-- SVG Infographic: Stacked bar per article -->
+    <h3 style="margin-top:0.8cm">Infográfico: Status por Artigo ICERD</h3>
+    <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-top:8px">
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px">
+        <!-- Legend -->
+        <rect x="20" y="5" width="12" height="12" fill="#22c55e" rx="2"/><text x="36" y="15" font-size="9" fill="#334155">Cumprido</text>
+        <rect x="110" y="5" width="12" height="12" fill="#eab308" rx="2"/><text x="126" y="15" font-size="9" fill="#334155">Parcial</text>
+        <rect x="190" y="5" width="12" height="12" fill="#3b82f6" rx="2"/><text x="206" y="15" font-size="9" fill="#334155">Em Andamento</text>
+        <rect x="310" y="5" width="12" height="12" fill="#f97316" rx="2"/><text x="326" y="15" font-size="9" fill="#334155">Não Cumprido</text>
+        <rect x="430" y="5" width="12" height="12" fill="#ef4444" rx="2"/><text x="446" y="15" font-size="9" fill="#334155">Retrocesso</text>
+        ${artigosList.map((a, i) => {
+          const s = artigoStats[a];
+          const maxBar = Math.max(...artigosList.map(x => artigoStats[x].total), 1);
+          const barW = 580;
+          const y = 30 + i * 26;
+          const scale = (v: number) => s.total > 0 ? (v / maxBar) * barW : 0;
+          let x0 = 80;
+          const segments = [
+            { v: s.cumprido, c: '#22c55e' },
+            { v: s.parcial, c: '#eab308' },
+            { v: s.emAndamento, c: '#3b82f6' },
+            { v: s.naoCumprido, c: '#f97316' },
+            { v: s.retrocesso, c: '#ef4444' },
+          ];
+          const taxa = s.total > 0 ? ((s.cumprido + s.parcial) / s.total * 100).toFixed(0) : '0';
+          const rects = segments.map(seg => {
+            const w = scale(seg.v);
+            const r = `<rect x="${x0}" y="${y}" width="${w}" height="20" fill="${seg.c}" rx="2"/>`;
+            x0 += w;
+            return w > 0 ? r : '';
+          }).join('');
+          return `
+            <text x="10" y="${y + 14}" font-size="10" font-weight="600" fill="#1e293b">Art. ${a}</text>
+            <rect x="80" y="${y}" width="${barW}" height="20" fill="#e2e8f0" rx="3"/>
+            ${rects}
+            <text x="${82 + barW}" y="${y + 14}" font-size="9" font-weight="600" fill="#475569">${taxa}% (${s.total})</text>
+          `;
+        }).join('')}
+      </svg>
+    </div>
   </div>`;
 }
 
