@@ -1072,7 +1072,8 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   ${(() => {
-    // Dynamic IEAT calculation per eixo
+    // Dynamic IEAT calculation per eixo — matches Ecossistema methodology
+    // Uses actual numeric variation from indicator data series
     const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda', 'terra_territorio'];
     const eixoToCats: Record<string, string[]> = {
       saude: ['saude', 'covid_racial'],
@@ -1081,6 +1082,59 @@ tr:nth-child(even){background:#f8fafc;}
       trabalho_renda: ['trabalho_renda'],
       terra_territorio: ['terra_territorio', 'povos_tradicionais'],
     };
+
+    // Helper: extract numeric variation from indicator data series
+    function computeIndicadorVar(inds: any[]): { varPct: number; count: number; melhora: number; piora: number } {
+      let totalVar = 0, counted = 0, melhora = 0, piora = 0;
+      inds.forEach((ind: any) => {
+        const dados = ind.dados;
+        if (!dados || typeof dados !== 'object') return;
+        const nome = (ind.nome || '').toLowerCase();
+        const negative = ['mortalidade','homicídio','homicidio','violência','violencia','desemprego','analfabet','evasão','evasao','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
+
+        // Try to get first and last numeric values from the data
+        let values: { year: number; val: number }[] = [];
+        if (dados.series && Array.isArray(dados.series)) {
+          dados.series.forEach((s: any) => {
+            if (typeof s.ano === 'number' && typeof s.valor === 'number') values.push({ year: s.ano, val: s.valor });
+          });
+        } else if (dados.valores && typeof dados.valores === 'object') {
+          Object.entries(dados.valores).forEach(([k, v]) => {
+            const yr = parseInt(k);
+            const val = typeof v === 'number' ? v : parseFloat(String(v));
+            if (!isNaN(yr) && !isNaN(val)) values.push({ year: yr, val });
+          });
+        } else {
+          // Try direct year keys
+          Object.entries(dados).forEach(([k, v]) => {
+            const yr = parseInt(k);
+            const val = typeof v === 'number' ? v : parseFloat(String(v));
+            if (!isNaN(yr) && yr >= 2000 && yr <= 2030 && !isNaN(val)) values.push({ year: yr, val });
+          });
+        }
+
+        if (values.length < 2) {
+          // Fallback to tendency
+          const t = (ind.tendencia || '').toLowerCase();
+          if ((t === 'decrescente' && negative) || (t === 'crescente' && !negative)) melhora++;
+          if ((t === 'crescente' && negative) || (t === 'decrescente' && !negative)) piora++;
+          return;
+        }
+
+        values.sort((a, b) => a.year - b.year);
+        const first = values[0].val;
+        const last = values[values.length - 1].val;
+        if (first === 0) return;
+        let pctChange = ((last - first) / Math.abs(first)) * 100;
+        // For negative indicators, improvement = decrease, so invert sign
+        if (negative) pctChange = -pctChange;
+        totalVar += pctChange;
+        counted++;
+        if (pctChange > 0) melhora++;
+        else if (pctChange < 0) piora++;
+      });
+      return { varPct: counted > 0 ? totalVar / counted : 0, count: counted, melhora, piora };
+    }
 
     const ieatRows = eixosIEAT.map(eixo => {
       const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
@@ -1091,25 +1145,18 @@ tr:nth-child(even){background:#f8fafc;}
       const varOrc = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
       const cats = eixoToCats[eixo] || [];
-      const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria));
-      let melhora = 0, piora = 0;
-      indsEixo.forEach((i: any) => {
-        const t = (i.tendencia || '').toLowerCase();
-        const nome = (i.nome || '').toLowerCase();
-        const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-        if ((t === 'decrescente' && negative) || (t === 'crescente' && !negative)) melhora++;
-        if ((t === 'crescente' && negative) || (t === 'decrescente' && !negative)) piora++;
-      });
+      const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
+      const indResult = computeIndicadorVar(indsEixo);
+      const varInd = indResult.varPct;
 
-      const totalTend = melhora + piora;
-      const varInd = totalTend > 0 ? ((melhora - piora) / totalTend * 100) : 0;
       const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
+      const retornoPorReal = ieat;
       const eficacia = ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica';
       const efColor = ieat > 1 ? '#166534' : ieat > 0.3 ? '#92400e' : ieat > 0 ? '#92400e' : '#991b1b';
       const efBg = ieat > 1 ? '#dcfce7' : ieat > 0.3 ? '#fef3c7' : ieat > 0 ? '#fef3c7' : '#fee2e2';
       const efEmoji = ieat > 1 ? '🟢' : ieat > 0.3 ? '🟡' : ieat > 0 ? '🟡' : '🔴';
 
-      return { eixo, varOrc, varInd, ieat, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora, piora, pagoTotal: pagoP1 + pagoP2 };
+      return { eixo, varOrc, varInd, ieat, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
     }).filter(r => r.pagoTotal > 0 || r.totalInd > 0);
 
     const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
@@ -1117,31 +1164,32 @@ tr:nth-child(even){background:#f8fafc;}
 
     return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária × tendência dos indicadores (P1 vs P2)</p></div>
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária P1→P2 × variação real dos indicadores sociais</p></div>
     <table>
-      <thead><tr><th>Eixo</th><th>Δ Orçamento</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
+      <thead><tr><th>Eixo</th><th>Δ% Orçamento</th><th>Δ% Indicador</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
       <tbody>
-      ${ieatRows.map(r => `<tr>
-        <td><strong>${eixoLabels[r.eixo] || r.eixo}</strong></td>
-        <td class="${r.varOrc >= 0 ? 'trend-up' : 'trend-down'}">${r.varOrc >= 0 ? '+' : ''}${r.varOrc.toFixed(1)}%</td>
-        <td style="text-align:center">${r.totalInd}</td>
-        <td class="trend-up" style="text-align:center">${r.melhora || '—'}</td>
-        <td class="trend-down" style="text-align:center">${r.piora || '—'}</td>
-        <td style="font-family:monospace;text-align:center;color:${r.efColor};font-weight:700;">${r.ieat.toFixed(2)}</td>
-        <td><span style="display:inline-block;padding:2px 8px;background:${r.efBg};color:${r.efColor};border-radius:10px;font-size:.75rem;font-weight:600;">${r.efEmoji} ${r.eficacia}</span></td>
-      </tr>`).join('')}
+      ${ieatRows.map(r => '<tr>' +
+        '<td><strong>' + (eixoLabels[r.eixo] || r.eixo) + '</strong></td>' +
+        '<td class="' + (r.varOrc >= 0 ? 'trend-up' : 'trend-down') + '">' + (r.varOrc >= 0 ? '+' : '') + r.varOrc.toFixed(1) + '%</td>' +
+        '<td class="' + (r.varInd >= 0 ? 'trend-up' : 'trend-down') + '">' + (r.varInd >= 0 ? '+' : '') + r.varInd.toFixed(1) + '%</td>' +
+        '<td style="text-align:center">' + r.totalInd + '</td>' +
+        '<td class="trend-up" style="text-align:center">' + (r.melhora || '—') + '</td>' +
+        '<td class="trend-down" style="text-align:center">' + (r.piora || '—') + '</td>' +
+        '<td style="font-family:monospace;text-align:center;color:' + r.efColor + ';font-weight:700;">' + r.ieat.toFixed(2) + '</td>' +
+        '<td><span style="display:inline-block;padding:2px 8px;background:' + r.efBg + ';color:' + r.efColor + ';border-radius:10px;font-size:.75rem;font-weight:600;">' + r.efEmoji + ' ' + r.eficacia + '</span></td>' +
+      '</tr>').join('')}
       </tbody>
     </table>
-    <div class="table-footer">IEAT = (Δ% Indicador) ÷ (Δ% Orçamento). Valores > 1 indicam retorno social superior ao investimento.</div>
+    <div class="table-footer">IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento). Δ% Indicador é a média das variações reais extraídas das séries históricas do banco de dados. Consistente com a metodologia do Ecossistema MIR.</div>
   </div>
 
   <div class="grid-2" style="margin-top:16px;">
-    ${alerts.map(a => `<div class="insight-card">
-      <p>⚠️ <strong>Alerta de Eficiência Crítica — ${eixoLabels[a.eixo] || a.eixo}:</strong> Orçamento variou ${a.varOrc >= 0 ? '+' : ''}${a.varOrc.toFixed(1)}%, mas ${a.piora} indicador(es) pioraram contra ${a.melhora} em melhora. IEAT = ${a.ieat.toFixed(2)}.</p>
-    </div>`).join('')}
-    ${highlights.map(h => `<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">
-      <p style="color:#166534;">✅ <strong>Destaque Positivo — ${eixoLabels[h.eixo] || h.eixo}:</strong> IEAT = ${h.ieat.toFixed(2)} — retorno social ${h.ieat > 3 ? 'excepcional' : 'positivo'} em relação ao investimento. ${h.melhora} indicador(es) em melhora.</p>
-    </div>`).join('')}
+    ${alerts.map(a => '<div class="insight-card">' +
+      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '.</p>' +
+    '</div>').join('')}
+    ${highlights.map(h => '<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">' +
+      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — indicadores melhoraram ' + (h.varInd >= 0 ? '+' : '') + h.varInd.toFixed(1) + '% com orçamento variando ' + (h.varOrc >= 0 ? '+' : '') + h.varOrc.toFixed(1) + '%. ' + h.melhora + ' indicador(es) em melhora.</p>' +
+    '</div>').join('')}
   </div>`;
   })()}
 
