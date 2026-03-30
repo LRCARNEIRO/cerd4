@@ -1434,12 +1434,12 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 15. ANEXO ═══════════════ -->
-<section class="section" id="anexo">
+<!-- ═══════════════ 15. ANEXO A ═══════════════ -->
+<section class="section" id="anexo-a">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">📎</div>
-    <div><h2 class="section-title">ANEXO — Listagem Completa de Programas e Ações</h2>
+    <div><h2 class="section-title">ANEXO A — Listagem Completa de Programas e Ações</h2>
     <p class="section-subtitle">${programas.size} programas · ${all.length} registros (Ação × Ano)</p></div>
   </div>
 
@@ -1450,15 +1450,15 @@ tr:nth-child(even){background:#f8fafc;}
       <tbody>
       ${Object.entries(byPrograma).sort(([,a], [,b]) => b.pago - a.pago).map(([prog, data]) => {
         const anosArr = Array.from(data.anos).sort() as number[];
-        return `<tr>
-          <td><strong>${prog}</strong></td>
-          <td>${data.orgao}</td>
-          <td>${grupoLabels[data.grupo] || data.grupo}</td>
-          <td>${anosArr[0]}–${anosArr[anosArr.length - 1]}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(data.dotacao)}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt"><strong>${fmtFull(data.pago)}</strong></td>
-          <td style="font-size:.8rem">${Array.from(data.artigos).join(', ') || '—'}</td>
-        </tr>`;
+        return \`<tr>
+          <td><strong>\${prog}</strong></td>
+          <td>\${data.orgao}</td>
+          <td>\${grupoLabels[data.grupo] || data.grupo}</td>
+          <td>\${anosArr[0]}–\${anosArr[anosArr.length - 1]}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(data.dotacao)}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt"><strong>\${fmtFull(data.pago)}</strong></td>
+          <td style="font-size:.8rem">\${Array.from(data.artigos).join(', ') || '—'}</td>
+        </tr>\`;
       }).join('')}
       </tbody>
     </table>
@@ -1473,19 +1473,72 @@ tr:nth-child(even){background:#f8fafc;}
         const dot = parseFloat(r.dotacao_autorizada || 0);
         const pago = parseFloat(r.pago || 0);
         const exec = dot > 0 ? (pago / dot * 100).toFixed(0) : '—';
-        return `<tr>
-          <td style="font-size:.8rem">${r.programa}</td>
-          <td style="font-size:.8rem">${r.orgao}</td>
-          <td>${r.ano}</td>
-          <td>${r.tipo_dotacao === 'extraorcamentario' ? '🔄 Extra' : '💰 LOA'}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(dot)}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(pago)}</td>
-          <td>${exec}%</td>
-        </tr>`;
+        return \`<tr>
+          <td style="font-size:.8rem">\${r.programa}</td>
+          <td style="font-size:.8rem">\${r.orgao}</td>
+          <td>\${r.ano}</td>
+          <td>\${r.tipo_dotacao === 'extraorcamentario' ? '🔄 Extra' : '💰 LOA'}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(dot)}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(pago)}</td>
+          <td>\${exec}%</td>
+        </tr>\`;
       }).join('')}
       </tbody>
     </table>
   </div>
+</div>
+</section>
+
+<!-- ═══════════════ 16. ANEXO B — ARTIGOS ICERD ═══════════════ -->
+<section class="section section-alt" id="anexo-b">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">⚖️</div>
+    <div><h2 class="section-title">ANEXO B — Listagem Completa: Programas por Artigo ICERD</h2>
+    <p class="section-subtitle">Detalhamento do cruzamento orçamentário × artigos da Convenção (Seção 9)</p></div>
+  </div>
+
+  ${(() => {
+    const artigoTitulosFull: Record<string, string> = {
+      'I': 'Art. I — Definição de Discriminação Racial',
+      'II': 'Art. II — Obrigações dos Estados',
+      'III': 'Art. III — Segregação e Apartheid',
+      'IV': 'Art. IV — Propaganda e Organizações Racistas',
+      'V': 'Art. V — Igualdade de Direitos',
+      'VI': 'Art. VI — Proteção Judicial',
+      'VII': 'Art. VII — Ensino, Educação e Cultura',
+    };
+    // Build per-artigo program details
+    const artigoProgDetails: Record<string, { prog: string; orgao: string; pago: number; dotacao: number }[]> = {};
+    all.forEach((r: any) => {
+      const arts = inferArtigosOrcamento(r);
+      arts.forEach((a: string) => {
+        if (!artigoProgDetails[a]) artigoProgDetails[a] = [];
+        const existing = artigoProgDetails[a].find(p => p.prog === r.programa);
+        if (existing) {
+          existing.pago += parseFloat(r.pago || 0);
+          existing.dotacao += parseFloat(r.dotacao_autorizada || 0);
+        } else {
+          artigoProgDetails[a].push({ prog: r.programa, orgao: r.orgao, pago: parseFloat(r.pago || 0), dotacao: parseFloat(r.dotacao_autorizada || 0) });
+        }
+      });
+    });
+
+    const order = ['I','II','III','IV','V','VI','VII'];
+    return order.map(art => {
+      const progs = (artigoProgDetails[art] || []).sort((a, b) => b.pago - a.pago);
+      if (progs.length === 0) return '';
+      const totalPago = progs.reduce((s, p) => s + p.pago, 0);
+      return '<div class="table-container" style="margin-bottom:16px;">' +
+        '<div class="table-header"><h3>' + (artigoTitulosFull[art] || art) + '</h3><p>' + progs.length + ' programas · Total pago: ' + fmtC(totalPago) + '</p></div>' +
+        '<table><thead><tr><th>Programa</th><th>Órgão</th><th>Dotação</th><th>Pago</th><th>Execução</th></tr></thead><tbody>' +
+        progs.map(p => {
+          const exec = p.dotacao > 0 ? (p.pago / p.dotacao * 100).toFixed(0) : '—';
+          return '<tr><td style="font-size:.8rem">' + p.prog + '</td><td>' + p.orgao + '</td><td style="text-align:right;font-family:monospace;font-size:9pt">' + fmtFull(p.dotacao) + '</td><td style="text-align:right;font-family:monospace;font-size:9pt"><strong>' + fmtFull(p.pago) + '</strong></td><td>' + exec + '%</td></tr>';
+        }).join('') +
+        '</tbody></table></div>';
+    }).join('');
+  })()}
 </div>
 </section>
 
