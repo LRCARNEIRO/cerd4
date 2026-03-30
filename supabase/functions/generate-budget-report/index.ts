@@ -1410,7 +1410,7 @@ tr:nth-child(even){background:#f8fafc;}
 
     ${extraOrc.length > 0 ? `<p style="font-size:1rem;margin-bottom:12px;">O <strong>efeito mascaramento</strong> pelo financiamento compensatório (extraorçamentário) é relevante: ${fmtC(sExtra.pagoP1 + sExtra.pagoP2)} acumulados em royalties e indenizações podem inflar a percepção de investimento direto do Estado em políticas indígenas e quilombolas.</p>` : ''}
 
-    <p style="font-size:1rem;margin-bottom:12px;">O <strong>IEAT-Racial</strong> revela uma assimetria significativa na eficácia do gasto público: enquanto Educação e Trabalho demonstram retornos expressivos (IEAT 4,68 e 3,25), a Saúde apresenta eficiência crítica (IEAT -0,17), indicando que o aumento orçamentário não se converteu em melhoria dos indicadores.</p>
+    <p style="font-size:1rem;margin-bottom:12px;">O <strong>IEAT-Racial</strong>, calculado dinamicamente a partir das séries históricas dos indicadores sociais, revela a eficácia real do gasto público racial por eixo temático, identificando onde o investimento se converte em melhoria dos indicadores e onde há alertas de eficiência crítica.</p>
 
     <p style="font-size:1rem;margin-bottom:12px;">Em síntese, o Estado brasileiro <strong>${sNS.varPago > 20 ? 'demonstrou avanço quantitativo significativo' : sNS.varPago > 0 ? 'apresentou leve crescimento' : 'não demonstrou avanço expressivo'}</strong> no financiamento de políticas raciais stricto sensu no período analisado. A análise IEAT-Racial demonstra que a <strong>eficácia do investimento é tão relevante quanto seu volume</strong>, sendo esta a questão central para avaliação pelo Comitê CERD.</p>
   </div>
