@@ -350,12 +350,21 @@ serve(async (req) => {
       .sort((a, b) => b.value - a.value);
     const chartGrupo = svgDonutChart(grupoChartData, 380, 380);
 
+    const artigoTitulosChart: Record<string, string> = {
+      'I': 'Art. I — Definição', 'II': 'Art. II — Obrigações', 'III': 'Art. III — Segregação',
+      'IV': 'Art. IV — Propaganda', 'V': 'Art. V — Igualdade', 'VI': 'Art. VI — Proteção Judicial',
+      'VII': 'Art. VII — Ensino/Cultura',
+    };
+    const artigoColors = ['#6366f1','#2563eb','#0891b2','#dc2626','#047857','#7c3aed','#ea580c'];
     const artigoChartItems = Object.entries(byArtigo)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([art, data]) => ({
-        label: art,
+      .sort(([a], [b]) => {
+        const order = ['I','II','III','IV','V','VI','VII'];
+        return order.indexOf(a) - order.indexOf(b);
+      })
+      .map(([art, data], i) => ({
+        label: artigoTitulosChart[art] || art,
         value: data.pago,
-        color: '#047857',
+        color: artigoColors[i % artigoColors.length],
       }));
     const chartArtigos = artigoChartItems.length > 0 ? svgHBarChart(artigoChartItems, 650) : '';
 
