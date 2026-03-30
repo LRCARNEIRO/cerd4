@@ -1786,7 +1786,7 @@ tr:nth-child(even){background:#f8fafc;}
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
       <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">2. Foi apenas planejado ou efetivamente executado?</p>
       <p style="margin:0;line-height:1.7;opacity:.92;">
-        Execução geral de <strong>${execGeral}%</strong> (pago/dotação). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}
+        Execução geral de <strong>${execGeral}%</strong> (pago/dotação). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}${extraOrc.length > 0 && Math.abs(sAll.varDot - sAll.varPago) > 15 ? ' <em style="opacity:.85">A reclassificação contábil de 2023 e a redução do extraorçamentário explicam parcialmente a aparente queda na taxa de execução.</em>' : ''}
       </p>
     </div>
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;">
