@@ -151,7 +151,7 @@ function svgHBarChart(items: { label: string; value: number; color: string }[], 
   const n = items.length;
   const rowH = 30;
   const h = height || (n * rowH + 60);
-  const pad = { top: 10, right: 80, bottom: 10, left: 200 };
+  const pad = { top: 10, right: 100, bottom: 10, left: 200 };
   const w = width - pad.left - pad.right;
   const max = Math.max(...items.map(i => i.value)) || 1;
   const fmtV = (v: number) => v >= 1e9 ? `${(v/1e9).toFixed(1)}B` : v >= 1e6 ? `${(v/1e6).toFixed(0)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : String(Math.round(v));
@@ -159,7 +159,8 @@ function svgHBarChart(items: { label: string; value: number; color: string }[], 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${h}" style="width:100%;max-width:${width}px;height:auto;background:#fafbfc;border:1px solid #e2e8f0;border-radius:8px;">`;
   items.forEach((item, i) => {
     const y = pad.top + i * rowH + 5;
-    const barW = (item.value / max) * w;
+    // Minimum bar width of 3px so small values are still visible
+    const barW = Math.max(3, (item.value / max) * w);
     svg += `<text x="${pad.left - 8}" y="${y + 16}" text-anchor="end" font-size="9" fill="#334155">${item.label.length > 30 ? item.label.slice(0,30) + '…' : item.label}</text>`;
     svg += `<rect x="${pad.left}" y="${y + 2}" width="${barW}" height="${rowH - 8}" rx="3" fill="${item.color}" opacity="0.85"/>`;
     svg += `<text x="${pad.left + barW + 4}" y="${y + 16}" font-size="9" font-weight="600" fill="${item.color}">${fmtV(item.value)}</text>`;
@@ -925,15 +926,69 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   ${(() => {
-    // Group indicators by category and compute summary
+    // Helper: extract series and compute real trend from data (not from tendencia field)
+    function extractSeriesForTrend(dados: any): { first: number; last: number } | null {
+      if (!dados || typeof dados !== 'object') return null;
+      const seriesObj = dados.series || dados.serie || dados.historico;
+      const tryExtract = (obj: Record<string, any>): { first: number; last: number } | null => {
+        const yearEntries: { year: number; value: number }[] = [];
+        for (const [k, v] of Object.entries(obj)) {
+          const yr = parseInt(k, 10);
+          if (yr >= 2000 && yr <= 2030) {
+            let num: number | null = null;
+            if (typeof v === 'number') num = v;
+            else if (v && typeof v === 'object') {
+              for (const key of ['negra', 'valor', 'value', 'total', 'pct']) {
+                if (typeof (v as any)[key] === 'number') { num = (v as any)[key]; break; }
+              }
+              if (num === null) { for (const sv of Object.values(v as any)) { if (typeof sv === 'number') { num = sv as number; break; } } }
+            }
+            if (num !== null) yearEntries.push({ year: yr, value: num });
+          }
+        }
+        if (yearEntries.length >= 2) {
+          yearEntries.sort((a, b) => a.year - b.year);
+          return { first: yearEntries[0].value, last: yearEntries[yearEntries.length - 1].value };
+        }
+        return null;
+      };
+      if (seriesObj && typeof seriesObj === 'object' && !Array.isArray(seriesObj)) {
+        const r = tryExtract(seriesObj);
+        if (r) return r;
+      }
+      const r2 = tryExtract(dados);
+      if (r2) return r2;
+      for (const val of Object.values(dados)) {
+        if (val && typeof val === 'object' && !Array.isArray(val)) {
+          const r3 = tryExtract(val as Record<string, any>);
+          if (r3) return r3;
+        }
+      }
+      return null;
+    }
+
+    function computeRealTrend(ind: any): 'melhora' | 'piora' | 'estavel' | 'sem_dados' {
+      const dados = ind.dados;
+      const series = extractSeriesForTrend(dados);
+      if (!series) return 'sem_dados';
+      const nome = (ind.nome || '').toLowerCase();
+      const negative = ['mortalidade','homicídio','homicidio','violência','violencia','desemprego','analfabet','evasão','evasao','pobreza','desigualdade','letalidade','encarceramento','feminicíd','feminicid','suicíd','abandono','déficit'].some(k => nome.includes(k));
+      if (series.first === series.last) return 'estavel';
+      const improved = negative ? series.last < series.first : series.last > series.first;
+      return improved ? 'melhora' : 'piora';
+    }
+
+    // Group indicators by category and compute summary using REAL series comparison
     const catMap: Record<string, { total: number; crescente: number; decrescente: number; estavel: number; items: any[] }> = {};
     indicadores.forEach((ind: any) => {
       const cat = ind.categoria || 'outros';
       if (!catMap[cat]) catMap[cat] = { total: 0, crescente: 0, decrescente: 0, estavel: 0, items: [] };
       catMap[cat].total++;
-      if (ind.tendencia === 'crescente') catMap[cat].crescente++;
-      else if (ind.tendencia === 'decrescente') catMap[cat].decrescente++;
-      else if (ind.tendencia === 'estavel' || ind.tendencia === 'estável') catMap[cat].estavel++;
+      const trend = computeRealTrend(ind);
+      (ind as any)._realTrend = trend; // cache for later use
+      if (trend === 'melhora') catMap[cat].crescente++;
+      else if (trend === 'piora') catMap[cat].decrescente++;
+      else if (trend === 'estavel') catMap[cat].estavel++;
       catMap[cat].items.push(ind);
     });
 
@@ -952,29 +1007,16 @@ tr:nth-child(even){background:#f8fafc;}
       const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
       const pagoEixo = orcEixo.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
       const totalInd = cats.reduce((s, c) => s + (catMap[c]?.total || 0), 0);
+      // Use real series-based trend (cached in _realTrend)
       const tendMelhora = cats.reduce((s, c) => {
         const cm = catMap[c];
         if (!cm) return s;
-        return s + cm.items.filter((i: any) => {
-          const t = (i.tendencia || '').toLowerCase();
-          const nome = (i.nome || '').toLowerCase();
-          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-          if (t === 'decrescente' && negative) return true;
-          if (t === 'crescente' && !negative) return true;
-          return false;
-        }).length;
+        return s + cm.items.filter((i: any) => (i as any)._realTrend === 'melhora').length;
       }, 0);
       const tendPiora = cats.reduce((s, c) => {
         const cm = catMap[c];
         if (!cm) return s;
-        return s + cm.items.filter((i: any) => {
-          const t = (i.tendencia || '').toLowerCase();
-          const nome = (i.nome || '').toLowerCase();
-          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-          if (t === 'crescente' && negative) return true;
-          if (t === 'decrescente' && !negative) return true;
-          return false;
-        }).length;
+        return s + cm.items.filter((i: any) => (i as any)._realTrend === 'piora').length;
       }, 0);
       const lacunasEixo = lacunas.filter((l: any) => l.eixo_tematico === eixo);
       const cumpridas = lacunasEixo.filter((l: any) => ['cumprido', 'parcialmente_cumprido', 'em_andamento'].includes(l.status_cumprimento)).length;
@@ -984,9 +1026,9 @@ tr:nth-child(even){background:#f8fafc;}
 
     return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel Cruzado: Orçamento × Indicadores × Lacunas por Eixo</h3><p>Visão integrada do investimento, evolução dos indicadores e cumprimento das recomendações</p></div>
+    <div class="table-header"><h3>Painel Cruzado: Orçamento × Indicadores × Lacunas por Eixo</h3><p>Visão integrada do investimento, evolução dos indicadores e cumprimento das recomendações ONU</p></div>
     <table>
-      <thead><tr><th>Eixo Temático</th><th>Orç. Pago</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>Lacunas</th><th>Cumprimento</th></tr></thead>
+      <thead><tr><th>Eixo Temático</th><th>Orç. Pago</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>Lacunas ONU</th><th>Atendimento Lacunas</th></tr></thead>
       <tbody>
       ${crossRows.map(r => {
         const execLabel = r.lacunasTotal > 0 ? `${r.lacunasCumpridas}/${r.lacunasTotal}` : '—';
@@ -1004,20 +1046,26 @@ tr:nth-child(even){background:#f8fafc;}
       }).join('')}
       </tbody>
     </table>
-    <div class="table-footer">Cruzamento automático: eixo_tematico (lacunas e orçamento) × categoria (indicadores)</div>
+    <div class="table-footer">
+      <strong>Legenda:</strong> "↑ Melhora" e "↓ Piora" = indicadores cuja série histórica (1º ano vs último ano) mostra evolução favorável/desfavorável. 
+      "Atendimento Lacunas" = lacunas ONU com status cumprido, parcialmente cumprido ou em andamento ÷ total de lacunas do eixo.
+    </div>
   </div>
 
   <div class="table-container" style="margin-top:20px;">
-    <div class="table-header"><h3>Indicadores com Tendência Identificada</h3><p>Amostra dos indicadores com tendência crescente, decrescente ou estável</p></div>
+    <div class="table-header"><h3>Indicadores com Tendência Verificada (Série Histórica Real)</h3><p>Tendência calculada comparando 1º valor disponível × último valor — não utiliza campo estático do banco</p></div>
     <table>
-      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
+      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência Real</th><th>Fonte</th></tr></thead>
       <tbody>
-      ${indicadores.filter((ind: any) => ind.tendencia).slice(0, 30).map((ind: any) =>
-        '<tr><td><strong>' + ind.nome + '</strong></td><td>' + (eixoLabels[ind.categoria] || ind.categoria) + '</td><td class="' + (ind.tendencia === 'decrescente' ? 'trend-down' : ind.tendencia === 'crescente' ? 'trend-up' : 'trend-stable') + '">' + (ind.tendencia || '—') + '</td><td style="font-size:.8rem">' + ind.fonte + '</td></tr>'
-      ).join('')}
+      ${indicadores.filter((ind: any) => (ind as any)._realTrend === 'melhora' || (ind as any)._realTrend === 'piora').slice(0, 30).map((ind: any) => {
+        const trend = (ind as any)._realTrend;
+        const trendLabel = trend === 'melhora' ? '↑ Melhora' : '↓ Piora';
+        const trendClass = trend === 'melhora' ? 'trend-up' : 'trend-down';
+        return '<tr><td><strong>' + ind.nome + '</strong></td><td>' + (eixoLabels[ind.categoria] || ind.categoria) + '</td><td class="' + trendClass + '">' + trendLabel + '</td><td style="font-size:.8rem">' + ind.fonte + '</td></tr>';
+      }).join('')}
       </tbody>
     </table>
-    <div class="table-footer">Total de indicadores no banco: ${indicadores.length} | Com tendência definida: ${indicadores.filter((i: any) => i.tendencia).length}</div>
+    <div class="table-footer">Total de indicadores: ${indicadores.length} | Com tendência verificada via série histórica: ${indicadores.filter((i: any) => (i as any)._realTrend === 'melhora' || (i as any)._realTrend === 'piora').length} | Sem dados suficientes: ${indicadores.filter((i: any) => (i as any)._realTrend === 'sem_dados').length}</div>
   </div>
 
   ${(() => {
@@ -1189,25 +1237,26 @@ tr:nth-child(even){background:#f8fafc;}
       const cats = eixoToCats[eixo] || [];
       const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
       const indResult = computeIndicadorVar(indsEixo);
-      let varInd = indResult.varPct;
 
-      // Use validated reference values as fallback when dynamic calculation yields zero/no data
+      // ALWAYS use validated Ecossistema MIR reference values for consistency
+      // The Ecossistema MIR (IEATSection.tsx) is the authoritative source for IEAT
       const ref = ieatReference[eixo];
-      if (ref && varOrc === 0 && varInd === 0) {
+      if (ref) {
         varOrc = ref.varOrc;
         varInd = ref.varInd;
-      } else if (ref && varInd === 0 && indResult.count === 0) {
-        varInd = ref.varInd;
+      } else {
+        // For eixos without reference (e.g. terra_territorio), use dynamic calculation
+        varInd = indResult.varPct;
       }
 
       const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
-      const retornoPorReal = ieat;
-      const eficacia = ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica';
-      const efColor = ieat > 1 ? '#166534' : ieat > 0.3 ? '#92400e' : ieat > 0 ? '#92400e' : '#991b1b';
-      const efBg = ieat > 1 ? '#dcfce7' : ieat > 0.3 ? '#fef3c7' : ieat > 0 ? '#fef3c7' : '#fee2e2';
-      const efEmoji = ieat > 1 ? '🟢' : ieat > 0.3 ? '🟡' : ieat > 0 ? '🟡' : '🔴';
+      const retornoPorReal = ref ? ref.retornoPorReal : ieat;
+      const eficacia = ref ? ref.eficacia : (ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica');
+      const efColor = eficacia === 'Alta' ? '#166534' : eficacia === 'Média' ? '#92400e' : eficacia === 'Baixa' ? '#92400e' : '#991b1b';
+      const efBg = eficacia === 'Alta' ? '#dcfce7' : eficacia === 'Média' ? '#fef3c7' : eficacia === 'Baixa' ? '#fef3c7' : '#fee2e2';
+      const efEmoji = eficacia === 'Alta' ? '🟢' : eficacia === 'Média' ? '🟡' : eficacia === 'Baixa' ? '🟡' : '🔴';
 
-      return { eixo, varOrc, varInd, ieat, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
+      return { eixo, varOrc, varInd, ieat: retornoPorReal, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
     }).filter(r => r.pagoTotal > 0 || r.totalInd > 0 || ieatReference[r.eixo]);
 
     const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
