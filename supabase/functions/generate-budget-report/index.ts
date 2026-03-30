@@ -856,28 +856,53 @@ tr:nth-child(even){background:#f8fafc;}
   <div class="section-header">
     <div class="section-icon">⚖️</div>
     <div><h2 class="section-title">9. Cruzamento Orçamentário × Artigos ICERD</h2>
-    <p class="section-subtitle">Mapeamento dos programas aos artigos da Convenção Internacional</p></div>
+    <p class="section-subtitle">Mapeamento automático dos programas aos artigos I–VII da Convenção (via inferência por eixo temático e palavras-chave)</p></div>
   </div>
 
-  ${Object.keys(byArtigo).length > 0 ? `
+  ${(() => {
+    const artigoTitulos: Record<string, string> = {
+      'I': 'Definição de Discriminação Racial',
+      'II': 'Obrigações dos Estados',
+      'III': 'Segregação e Apartheid',
+      'IV': 'Propaganda e Organizações Racistas',
+      'V': 'Igualdade de Direitos',
+      'VI': 'Proteção Judicial',
+      'VII': 'Ensino, Educação e Cultura',
+    };
+    const sortedArtigos = Object.entries(byArtigo).sort(([a], [b]) => {
+      const order = ['I','II','III','IV','V','VI','VII'];
+      return order.indexOf(a) - order.indexOf(b);
+    });
+    const totalMapped = all.length - unmappedCount;
+    const pctMapped = all.length > 0 ? (totalMapped / all.length * 100).toFixed(0) : '0';
+
+    if (sortedArtigos.length === 0) return '<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD.</p></div>';
+
+    return `
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="stat-card"><div class="stat-card-value">${totalMapped}/${all.length}</div><div class="stat-card-label">Registros mapeados (${pctMapped}%)</div></div>
+    <div class="stat-card"><div class="stat-card-value">${sortedArtigos.length}/7</div><div class="stat-card-label">Artigos com cobertura orçamentária</div></div>
+  </div>
+
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD (R$)</div></div>
+    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD (R$)</div><div class="chart-subtitle">Inferência via eixo temático + palavras-chave (mesma lógica da aba Artigos ICERD)</div></div>
     ${chartArtigos}
   </div>
 
   <div class="table-container">
-    <div class="table-header"><h3>Investimento por Artigo da Convenção</h3><p>Mapeamento financeiro dos artigos I–VII da ICERD</p></div>
+    <div class="table-header"><h3>Resumo por Artigo da Convenção</h3><p>Mapeamento financeiro dos artigos I–VII da ICERD — listagem completa no Anexo B</p></div>
     <table>
-      <thead><tr><th>Artigo</th><th>Programas Vinculados</th><th>Dotação Total</th><th>Pago Total</th><th>Execução</th></tr></thead>
+      <thead><tr><th>Artigo</th><th>Título</th><th>Programas</th><th>Registros</th><th>Dotação Total</th><th>Pago Total</th><th>Execução</th></tr></thead>
       <tbody>
-      ${Object.entries(byArtigo).sort(([a], [b]) => a.localeCompare(b)).map(([art, data]) => {
+      ${sortedArtigos.map(([art, data]) => {
         const exec = data.dotacao > 0 ? (data.pago / data.dotacao * 100).toFixed(1) : '—';
-        return `<tr><td><strong>${art}</strong></td><td>${data.programas.size}</td><td style="text-align:right;font-family:monospace">${fmtFull(data.dotacao)}</td><td style="text-align:right;font-family:monospace">${fmtFull(data.pago)}</td><td>${exec}%</td></tr>`;
+        return '<tr><td><strong>Art. ' + art + '</strong></td><td>' + (artigoTitulos[art] || art) + '</td><td style="text-align:center">' + data.programas.size + '</td><td style="text-align:center">' + data.registros + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.dotacao) + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.pago) + '</td><td>' + exec + '%</td></tr>';
       }).join('')}
       </tbody>
     </table>
-  </div>
-  ` : `<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD.</p></div>`}
+    <div class="table-footer">Método: artigos_convencao (explícito) → eixo_tematico (EIXO_PARA_ARTIGOS) → keywords no programa/órgão/descritivo${unmappedCount > 0 ? '. ' + unmappedCount + ' registro(s) sem mapeamento.' : ''}</div>
+  </div>`;
+  })()}
 </div>
 </section>
 
