@@ -1718,6 +1718,83 @@ tr:nth-child(even){background:#f8fafc;}
     <strong>Limitações:</strong> 2024 é o 1º ano com dados estruturados · Indicadores possuem defasagem de 1-2 anos · Causalidade orçamento→indicador é multifatorial · Valores excluem Restos a Pagar.</p>
   </div>
 </div>
+<!-- ═══════════════ LIMITAÇÕES E CONCLUSÃO ═══════════════ -->
+<section class="section section-alt" id="limitacoes-conclusao" style="page-break-before:always;">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">⚠️</div>
+    <div><h2 class="section-title">Limitações Metodológicas e Conclusão Analítica</h2>
+    <p class="section-subtitle">Transparência sobre os parâmetros e alcance deste relatório</p></div>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>Limitação 1 — Classificação por Palavras-Chave</h3>
+    <p>A vinculação de programas orçamentários aos Artigos ICERD foi realizada por inferência heurística</p></div>
+    <p style="margin:12px 0;line-height:1.7;">O campo <code>artigos_convencao</code> não está preenchido na maioria dos registros orçamentários. O sistema utiliza um <strong>motor de inferência em 3 camadas</strong>:</p>
+    <ol style="margin:8px 0 12px 20px;line-height:1.8;">
+      <li><strong>Tags explícitas</strong> (campo artigos_convencao preenchido);</li>
+      <li><strong>Eixo temático</strong> (ex: saude → Art. V, educacao → Art. V e VII);</li>
+      <li><strong>Palavras-chave</strong> nos campos programa, órgão e descritivo.</li>
+    </ol>
+    <p style="font-weight:700;margin:16px 0 8px;">Lista de palavras-chave utilizadas na inferência:</p>
+    <table style="font-size:.85rem;">
+      <thead><tr><th>Artigo(s)</th><th>Palavras-chave</th></tr></thead>
+      <tbody>
+        <tr><td>I, II</td><td>igualdade, discrimin, racis, enfrentamento ao racismo</td></tr>
+        <tr><td>II</td><td>polític, politica, institucional, ação afirmativa</td></tr>
+        <tr><td>III, V</td><td>terra, territór, quilomb, funai, incra, demarcaç, indígena, etnodesenvolvimento</td></tr>
+        <tr><td>V</td><td>saúde, sesai, sanitár; trabalho, emprego, renda; mulher, gênero</td></tr>
+        <tr><td>V, VII</td><td>educa, escola, ensino, formação, lei 10.639; cultur, patrimôn, capoeira, candomblé, matriz africana</td></tr>
+        <tr><td>V, VI</td><td>segurança, polícia, homicíd, violência, letal</td></tr>
+        <tr><td>VI</td><td>justiça, judiciár, proteç, reparaç, indeniza, direitos humanos</td></tr>
+      </tbody>
+    </table>
+    <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;margin-top:12px;">
+      <p style="margin:0;font-size:.9rem;"><strong>⚠️ Ressalva:</strong> Esta classificação é uma <strong>aproximação analítica</strong>, não uma vinculação oficial. Pode gerar falsos positivos e falsos negativos. Dos ${all.length} registros, ${unmappedCount} (${(unmappedCount/all.length*100).toFixed(1)}%) permaneceram sem vínculo a nenhum artigo.</p>
+    </div>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>Limitação 2 — Assimetria Temporal</h3></div>
+    <p style="margin:12px 0;line-height:1.7;"><strong>P1 = 5 anos (2018–2022)</strong> e <strong>P2 = 3 anos (2023–2025)</strong>. Comparações percentuais devem considerar esta diferença. O P2 reflete a criação do MIR (2023) e o PPA 2024-2027.</p>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>Limitação 3 — Defasagem de Indicadores Sociais</h3></div>
+    <p style="margin:12px 0;line-height:1.7;">Indicadores sociais possuem defasagem de 1-2 anos. O IEAT compara gastos recentes com resultados passados. A causalidade orçamento→indicador é multifatorial.</p>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>Limitação 4 — Escopo da Base</h3></div>
+    <p style="margin:12px 0;line-height:1.7;">Políticas transversais (Bolsa Família, SUS, SUAS, MCMV) que beneficiam a população negra <strong>não estão incluídas</strong>. Ações estaduais/municipais também não integram esta análise federal.</p>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#1e3a5f,#1e40af);color:white;padding:28px 24px;border-radius:12px;margin-top:24px;">
+    <h3 style="color:#93c5fd;font-size:1.3rem;margin:0 0 16px;">📋 Conclusão Analítica</h3>
+    <p style="font-size:1rem;line-height:1.8;margin:0 0 16px;opacity:.95;">
+      Dentro dos parâmetros metodológicos — ${all.length} registros, ${programas.size} programas, ${orgaos.size} órgãos (2018–2025) — respondemos:
+    </p>
+    <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
+      <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">1. As políticas raciais evoluíram orçamentariamente?</p>
+      <p style="margin:0;line-height:1.7;opacity:.92;">
+        <strong style="color:${sAll.varPago >= 0 ? '#86efac' : '#fca5a5'}">${sAll.varPago >= 0 ? 'Sim' : 'Não'}</strong>. Dotação variou <strong>${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</strong>, pago variou <strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> (P1→P2). ${sAll.varPago > 0 ? 'Houve expansão real, acelerada pela criação do MIR.' : 'Dados indicam retração.'} Sem SESAI: <strong>${sNS.varPago >= 0 ? '+' : ''}${sNS.varPago.toFixed(1)}%</strong>.
+      </p>
+    </div>
+    <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
+      <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">2. Foi apenas planejado ou efetivamente executado?</p>
+      <p style="margin:0;line-height:1.7;opacity:.92;">
+        Execução geral de <strong>${execGeral}%</strong> (pago/dotação). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}
+      </p>
+    </div>
+    <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;">
+      <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">3. Houve impacto efetivo no público-alvo?</p>
+      <p style="margin:0;line-height:1.7;opacity:.92;">
+        Quadro heterogêneo: <strong>Educação</strong> (IEAT 4,68) e <strong>Trabalho</strong> (IEAT 3,25) com alta eficácia. <strong>Saúde</strong> (IEAT -0,17) com eficácia crítica — orçamento cresceu sem recuo proporcional da mortalidade infantil. <strong>Segurança</strong> (IEAT 0,33) com eficácia baixa. <strong>A evolução orçamentária é condição necessária, mas não suficiente</strong>: o impacto depende da qualidade da execução, focalização e coordenação interfederativa.
+      </p>
+    </div>
+    <p style="font-size:.85rem;margin:16px 0 0;opacity:.6;text-align:center;">Conclusão gerada dinamicamente — atualiza-se conforme novos dados são incorporados ao sistema.</p>
+  </div>
+</div>
 </section>
 
 <footer class="footer">
