@@ -1643,6 +1643,83 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
+<!-- ═══════════════ NOTA METODOLÓGICA ═══════════════ -->
+<section class="section" id="nota-metodologica" style="page-break-before:always;">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">📐</div>
+    <div><h2 class="section-title">Nota Metodológica</h2>
+    <p class="section-subtitle">Critérios de cálculo utilizados neste relatório</p></div>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>1. Política de Conformidade Equilibrada (v2)</h3>
+    <p>Fórmula de Progresso: Progresso = Σ (status × peso) / total_recomendações</p></div>
+    <table>
+      <thead><tr><th>Status</th><th>Peso</th><th>Critério</th></tr></thead>
+      <tbody>
+        <tr><td><span style="color:#166534;font-weight:700">✅ Cumprido</span></td><td style="text-align:center;font-weight:700">100%</td><td>Recomendação plenamente atendida com evidências e ações documentadas</td></tr>
+        <tr><td><span style="color:#b45309;font-weight:700">⚠️ Parcialmente Cumprido</span></td><td style="text-align:center;font-weight:700">60%</td><td>Ações registradas ou 3+ evidências, mas sem cobertura completa</td></tr>
+        <tr><td><span style="color:#2563eb;font-weight:700">🔄 Em Andamento</span></td><td style="text-align:center;font-weight:700">30%</td><td>Esforço normativo/institucional identificado (1-2 evidências)</td></tr>
+        <tr><td><span style="color:#991b1b;font-weight:700">❌ Não Cumprido</span></td><td style="text-align:center;font-weight:700">5%</td><td>Sem evidências documentadas (reconhece existência do tema)</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Reclassificação automática: lacunas com ações do Brasil → parcial; com 1-2 evidências → em andamento; parciais com 2+ ações e 3+ evidências → cumprido.</p>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>2. Aderência ICERD — Pesos por Dimensão</h3>
+    <p>Score composto avaliando a capacidade de resposta institucional do Estado</p></div>
+    <table>
+      <thead><tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td>⚠️ Lacunas ONU</td><td style="text-align:center;font-weight:700">20%</td><td>Proporção de lacunas atendidas vs. total por artigo</td></tr>
+        <tr><td>📜 Cobertura Normativa</td><td style="text-align:center;font-weight:700">20%</td><td>Instrumentos normativos vinculados ao artigo</td></tr>
+        <tr><td>📋 Respostas CERD III</td><td style="text-align:center;font-weight:700">15%</td><td>Qualidade das respostas oficiais do Brasil ao Comitê</td></tr>
+        <tr><td>💰 Orçamento</td><td style="text-align:center;font-weight:700">15%</td><td>Ações orçamentárias vinculadas (contagem, não valor R$)</td></tr>
+        <tr><td>🔍 Conclusões Analíticas</td><td style="text-align:center;font-weight:700">15%</td><td>Conclusões e evidências qualitativas documentadas</td></tr>
+        <tr><td>📊 Amplitude de Evidências</td><td style="text-align:center;font-weight:700">10%</td><td>Diversidade de fontes e tipos de evidência</td></tr>
+        <tr><td>📈 Séries Estatísticas</td><td style="text-align:center;font-weight:700">5%</td><td>Conjuntos temporais temáticos do espelho de dados</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>3. Evolução dos Artigos — Semáforo de Políticas Raciais</h3>
+    <p>Avalia impacto real e tendências das políticas para Artigos I-VII da ICERD</p></div>
+    <table>
+      <thead><tr><th>Dimensão</th><th>Peso</th></tr></thead>
+      <tbody>
+        <tr><td>💰 Programas Orçamentários</td><td style="text-align:center;font-weight:700">35%</td></tr>
+        <tr><td>📜 Instrumentos Normativos</td><td style="text-align:center;font-weight:700">35%</td></tr>
+        <tr><td>📈 Indicadores com Evolução</td><td style="text-align:center;font-weight:700">30%</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Semáforo: <span style="color:#166534;font-weight:700">≥60% Evolução</span> · <span style="color:#b45309;font-weight:700">35-59% Estagnação</span> · <span style="color:#991b1b;font-weight:700">&lt;35% Retrocesso</span>.<br>Critério de indicadores: somente indicadores com melhoria comprovada em série histórica ou recém-mensurados (inclusão = progresso) contam a favor. Indicadores com piora penalizam o score.</p>
+  </div>
+
+  <div class="table-container" style="margin-bottom:20px;">
+    <div class="table-header"><h3>4. IEAT-Racial — Índice de Eficácia da Agenda Transversal</h3>
+    <p>Sistema de Validação da Agenda Transversal (Marco Zero PPA 2024-2027)</p></div>
+    <div style="background:#f0f4ff;padding:16px;border-radius:8px;margin-bottom:12px;">
+      <p style="font-size:1.1rem;font-weight:700;color:#1e40af;text-align:center;margin:0;">IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento Específico)</p>
+      <p style="font-size:.8rem;color:#64748b;text-align:center;margin:6px 0 0;">Quando o orçamento cresce e o indicador social estagna ou retrocede → Alerta de Eficiência Crítica</p>
+    </div>
+    <table>
+      <thead><tr><th>Eixo</th><th>Indicador Social</th><th>Fonte Orçamentária</th></tr></thead>
+      <tbody>
+        <tr><td>Saúde</td><td>Mortalidade infantil negra (DataSUS/SIM)</td><td>Δ orçamento SESAI/FNS</td></tr>
+        <tr><td>Educação</td><td>% ensino superior negro (INEP/PNAD)</td><td>Δ orçamento MEC/SESU</td></tr>
+        <tr><td>Segurança</td><td>Taxa de homicídio negro (FBSP/Atlas)</td><td>Δ orçamento MJSP/SENASP</td></tr>
+        <tr><td>Trabalho</td><td>Renda média negra (PNAD Contínua/IBGE)</td><td>Δ orçamento MTE</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.8rem;color:#64748b;margin-top:8px;"><strong>Base:</strong> Relatório de Agendas Transversais — MPO 2024 · Execução LOA via SIOP/Portal da Transparência · PPA 2024-2027.<br>
+    <strong>Limitações:</strong> 2024 é o 1º ano com dados estruturados · Indicadores possuem defasagem de 1-2 anos · Causalidade orçamento→indicador é multifatorial · Valores excluem Restos a Pagar.</p>
+  </div>
+</div>
+</section>
+
 <footer class="footer">
 <div class="container footer-content">
   <p><strong>Relatório Orçamentário Consolidado — Políticas de Igualdade Racial (2018–2025)</strong></p>
