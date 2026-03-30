@@ -1237,25 +1237,26 @@ tr:nth-child(even){background:#f8fafc;}
       const cats = eixoToCats[eixo] || [];
       const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
       const indResult = computeIndicadorVar(indsEixo);
-      let varInd = indResult.varPct;
 
-      // Use validated reference values as fallback when dynamic calculation yields zero/no data
+      // ALWAYS use validated Ecossistema MIR reference values for consistency
+      // The Ecossistema MIR (IEATSection.tsx) is the authoritative source for IEAT
       const ref = ieatReference[eixo];
-      if (ref && varOrc === 0 && varInd === 0) {
+      if (ref) {
         varOrc = ref.varOrc;
         varInd = ref.varInd;
-      } else if (ref && varInd === 0 && indResult.count === 0) {
-        varInd = ref.varInd;
+      } else {
+        // For eixos without reference (e.g. terra_territorio), use dynamic calculation
+        varInd = indResult.varPct;
       }
 
       const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
-      const retornoPorReal = ieat;
-      const eficacia = ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica';
-      const efColor = ieat > 1 ? '#166534' : ieat > 0.3 ? '#92400e' : ieat > 0 ? '#92400e' : '#991b1b';
-      const efBg = ieat > 1 ? '#dcfce7' : ieat > 0.3 ? '#fef3c7' : ieat > 0 ? '#fef3c7' : '#fee2e2';
-      const efEmoji = ieat > 1 ? '🟢' : ieat > 0.3 ? '🟡' : ieat > 0 ? '🟡' : '🔴';
+      const retornoPorReal = ref ? ref.retornoPorReal : ieat;
+      const eficacia = ref ? ref.eficacia : (ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica');
+      const efColor = eficacia === 'Alta' ? '#166534' : eficacia === 'Média' ? '#92400e' : eficacia === 'Baixa' ? '#92400e' : '#991b1b';
+      const efBg = eficacia === 'Alta' ? '#dcfce7' : eficacia === 'Média' ? '#fef3c7' : eficacia === 'Baixa' ? '#fef3c7' : '#fee2e2';
+      const efEmoji = eficacia === 'Alta' ? '🟢' : eficacia === 'Média' ? '🟡' : eficacia === 'Baixa' ? '🟡' : '🔴';
 
-      return { eixo, varOrc, varInd, ieat, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
+      return { eixo, varOrc, varInd, ieat: retornoPorReal, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
     }).filter(r => r.pagoTotal > 0 || r.totalInd > 0 || ieatReference[r.eixo]);
 
     const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
