@@ -170,6 +170,42 @@ function svgHBarChart(items: { label: string; value: number; color: string }[], 
 
 // ═══════════════════════════════════════
 
+const EIXO_PARA_ARTIGOS: Record<string, string[]> = {
+  legislacao_justica: ['I', 'II', 'VI'],
+  politicas_institucionais: ['II'],
+  seguranca_publica: ['V', 'VI'],
+  saude: ['V'],
+  educacao: ['V', 'VII'],
+  trabalho_renda: ['V'],
+  terra_territorio: ['III', 'V'],
+  cultura_patrimonio: ['V', 'VII'],
+  participacao_social: ['V'],
+  dados_estatisticas: ['I', 'II'],
+};
+
+function inferArtigosOrcamento(r: any): string[] {
+  const explicit = (r.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+  if (explicit.length > 0) return explicit;
+
+  const eixo = r.eixo_tematico;
+  if (eixo && EIXO_PARA_ARTIGOS[eixo]) return EIXO_PARA_ARTIGOS[eixo];
+
+  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
+  const arts: string[] = [];
+  if (texto.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) { arts.push('V'); arts.push('VII'); }
+  if (texto.match(/saúde|saude|sesai|sanitár|sanitar/)) arts.push('V');
+  if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
+  if (texto.match(/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/)) { arts.push('III'); arts.push('V'); }
+  if (texto.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos/)) arts.push('VI');
+  if (texto.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) { arts.push('V'); arts.push('VII'); }
+  if (texto.match(/igualdade|discrimin|racis|enfrentamento ao racismo/)) { arts.push('I'); arts.push('II'); }
+  if (texto.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/)) { arts.push('V'); arts.push('VI'); }
+  if (texto.match(/polític|politica|institucional|ação afirmativa|acao afirmativa/)) arts.push('II');
+  if (texto.match(/mulher|gênero|genero/)) arts.push('V');
+  if (texto.match(/povos indígenas|povos indigenas|etnodesenvolvimento/)) { arts.push('III'); arts.push('V'); }
+  return [...new Set(arts)];
+}
+
 function isSesai(r: any): boolean {
   const prog = (r.programa || '').toLowerCase();
   const orgao = (r.orgao || '').toUpperCase();
@@ -244,7 +280,7 @@ serve(async (req) => {
       byPrograma[r.programa].pago += parseFloat(r.pago || 0);
       byPrograma[r.programa].dotacao += parseFloat(r.dotacao_autorizada || 0);
       byPrograma[r.programa].anos.add(r.ano);
-      (r.artigos_convencao || []).forEach((a: string) => byPrograma[r.programa].artigos.add(a));
+      inferArtigosOrcamento(r).forEach((a: string) => byPrograma[r.programa].artigos.add(a));
     });
 
     const byGrupo: Record<string, any[]> = {};
@@ -252,15 +288,19 @@ serve(async (req) => {
 
     const simbolicos = all.filter(r => parseFloat(r.dotacao_autorizada || 0) > 100000 && parseFloat(r.pago || 0) === 0);
 
-    const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string> }> = {};
+    // Use inferArtigosOrcamento for byArtigo (matches Orçamento > Artigos ICERD tab)
+    const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string>; registros: number }> = {};
     all.forEach(r => {
-      (r.artigos_convencao || []).forEach((a: string) => {
-        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, programas: new Set() };
+      const arts = inferArtigosOrcamento(r);
+      arts.forEach((a: string) => {
+        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, programas: new Set(), registros: 0 };
         byArtigo[a].pago += parseFloat(r.pago || 0);
         byArtigo[a].dotacao += parseFloat(r.dotacao_autorizada || 0);
         byArtigo[a].programas.add(r.programa);
+        byArtigo[a].registros++;
       });
     });
+    const unmappedCount = all.filter(r => inferArtigosOrcamento(r).length === 0).length;
 
     const fontes = [...new Set(all.map(r => r.fonte_dados).filter(Boolean))];
     const urls = [...new Set(all.map(r => r.url_fonte).filter(Boolean))];
@@ -310,12 +350,21 @@ serve(async (req) => {
       .sort((a, b) => b.value - a.value);
     const chartGrupo = svgDonutChart(grupoChartData, 380, 380);
 
+    const artigoTitulosChart: Record<string, string> = {
+      'I': 'Art. I — Definição', 'II': 'Art. II — Obrigações', 'III': 'Art. III — Segregação',
+      'IV': 'Art. IV — Propaganda', 'V': 'Art. V — Igualdade', 'VI': 'Art. VI — Proteção Judicial',
+      'VII': 'Art. VII — Ensino/Cultura',
+    };
+    const artigoColors = ['#6366f1','#2563eb','#0891b2','#dc2626','#047857','#7c3aed','#ea580c'];
     const artigoChartItems = Object.entries(byArtigo)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([art, data]) => ({
-        label: art,
+      .sort(([a], [b]) => {
+        const order = ['I','II','III','IV','V','VI','VII'];
+        return order.indexOf(a) - order.indexOf(b);
+      })
+      .map(([art, data], i) => ({
+        label: artigoTitulosChart[art] || art,
         value: data.pago,
-        color: '#047857',
+        color: artigoColors[i % artigoColors.length],
       }));
     const chartArtigos = artigoChartItems.length > 0 ? svgHBarChart(artigoChartItems, 650) : '';
 
@@ -816,28 +865,53 @@ tr:nth-child(even){background:#f8fafc;}
   <div class="section-header">
     <div class="section-icon">⚖️</div>
     <div><h2 class="section-title">9. Cruzamento Orçamentário × Artigos ICERD</h2>
-    <p class="section-subtitle">Mapeamento dos programas aos artigos da Convenção Internacional</p></div>
+    <p class="section-subtitle">Mapeamento automático dos programas aos artigos I–VII da Convenção (via inferência por eixo temático e palavras-chave)</p></div>
   </div>
 
-  ${Object.keys(byArtigo).length > 0 ? `
+  ${(() => {
+    const artigoTitulos: Record<string, string> = {
+      'I': 'Definição de Discriminação Racial',
+      'II': 'Obrigações dos Estados',
+      'III': 'Segregação e Apartheid',
+      'IV': 'Propaganda e Organizações Racistas',
+      'V': 'Igualdade de Direitos',
+      'VI': 'Proteção Judicial',
+      'VII': 'Ensino, Educação e Cultura',
+    };
+    const sortedArtigos = Object.entries(byArtigo).sort(([a], [b]) => {
+      const order = ['I','II','III','IV','V','VI','VII'];
+      return order.indexOf(a) - order.indexOf(b);
+    });
+    const totalMapped = all.length - unmappedCount;
+    const pctMapped = all.length > 0 ? (totalMapped / all.length * 100).toFixed(0) : '0';
+
+    if (sortedArtigos.length === 0) return '<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD.</p></div>';
+
+    return `
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="stat-card"><div class="stat-card-value">${totalMapped}/${all.length}</div><div class="stat-card-label">Registros mapeados (${pctMapped}%)</div></div>
+    <div class="stat-card"><div class="stat-card-value">${sortedArtigos.length}/7</div><div class="stat-card-label">Artigos com cobertura orçamentária</div></div>
+  </div>
+
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD (R$)</div></div>
+    <div class="chart-header"><div class="chart-title">Pago por Artigo ICERD (R$)</div><div class="chart-subtitle">Inferência via eixo temático + palavras-chave (mesma lógica da aba Artigos ICERD)</div></div>
     ${chartArtigos}
   </div>
 
   <div class="table-container">
-    <div class="table-header"><h3>Investimento por Artigo da Convenção</h3><p>Mapeamento financeiro dos artigos I–VII da ICERD</p></div>
+    <div class="table-header"><h3>Resumo por Artigo da Convenção</h3><p>Mapeamento financeiro dos artigos I–VII da ICERD — listagem completa no Anexo B</p></div>
     <table>
-      <thead><tr><th>Artigo</th><th>Programas Vinculados</th><th>Dotação Total</th><th>Pago Total</th><th>Execução</th></tr></thead>
+      <thead><tr><th>Artigo</th><th>Título</th><th>Programas</th><th>Registros</th><th>Dotação Total</th><th>Pago Total</th><th>Execução</th></tr></thead>
       <tbody>
-      ${Object.entries(byArtigo).sort(([a], [b]) => a.localeCompare(b)).map(([art, data]) => {
+      ${sortedArtigos.map(([art, data]) => {
         const exec = data.dotacao > 0 ? (data.pago / data.dotacao * 100).toFixed(1) : '—';
-        return `<tr><td><strong>${art}</strong></td><td>${data.programas.size}</td><td style="text-align:right;font-family:monospace">${fmtFull(data.dotacao)}</td><td style="text-align:right;font-family:monospace">${fmtFull(data.pago)}</td><td>${exec}%</td></tr>`;
+        return '<tr><td><strong>Art. ' + art + '</strong></td><td>' + (artigoTitulos[art] || art) + '</td><td style="text-align:center">' + data.programas.size + '</td><td style="text-align:center">' + data.registros + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.dotacao) + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.pago) + '</td><td>' + exec + '%</td></tr>';
       }).join('')}
       </tbody>
     </table>
-  </div>
-  ` : `<div class="insight-card"><p>⚠️ Nenhum registro orçamentário mapeado para artigos da Convenção ICERD.</p></div>`}
+    <div class="table-footer">Método: artigos_convencao (explícito) → eixo_tematico (EIXO_PARA_ARTIGOS) → keywords no programa/órgão/descritivo${unmappedCount > 0 ? '. ' + unmappedCount + ' registro(s) sem mapeamento.' : ''}</div>
+  </div>`;
+  })()}
 </div>
 </section>
 
@@ -998,7 +1072,8 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   ${(() => {
-    // Dynamic IEAT calculation per eixo
+    // Dynamic IEAT calculation per eixo — matches Ecossistema methodology
+    // Uses actual numeric variation from indicator data series
     const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda', 'terra_territorio'];
     const eixoToCats: Record<string, string[]> = {
       saude: ['saude', 'covid_racial'],
@@ -1007,6 +1082,59 @@ tr:nth-child(even){background:#f8fafc;}
       trabalho_renda: ['trabalho_renda'],
       terra_territorio: ['terra_territorio', 'povos_tradicionais'],
     };
+
+    // Helper: extract numeric variation from indicator data series
+    function computeIndicadorVar(inds: any[]): { varPct: number; count: number; melhora: number; piora: number } {
+      let totalVar = 0, counted = 0, melhora = 0, piora = 0;
+      inds.forEach((ind: any) => {
+        const dados = ind.dados;
+        if (!dados || typeof dados !== 'object') return;
+        const nome = (ind.nome || '').toLowerCase();
+        const negative = ['mortalidade','homicídio','homicidio','violência','violencia','desemprego','analfabet','evasão','evasao','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
+
+        // Try to get first and last numeric values from the data
+        let values: { year: number; val: number }[] = [];
+        if (dados.series && Array.isArray(dados.series)) {
+          dados.series.forEach((s: any) => {
+            if (typeof s.ano === 'number' && typeof s.valor === 'number') values.push({ year: s.ano, val: s.valor });
+          });
+        } else if (dados.valores && typeof dados.valores === 'object') {
+          Object.entries(dados.valores).forEach(([k, v]) => {
+            const yr = parseInt(k);
+            const val = typeof v === 'number' ? v : parseFloat(String(v));
+            if (!isNaN(yr) && !isNaN(val)) values.push({ year: yr, val });
+          });
+        } else {
+          // Try direct year keys
+          Object.entries(dados).forEach(([k, v]) => {
+            const yr = parseInt(k);
+            const val = typeof v === 'number' ? v : parseFloat(String(v));
+            if (!isNaN(yr) && yr >= 2000 && yr <= 2030 && !isNaN(val)) values.push({ year: yr, val });
+          });
+        }
+
+        if (values.length < 2) {
+          // Fallback to tendency
+          const t = (ind.tendencia || '').toLowerCase();
+          if ((t === 'decrescente' && negative) || (t === 'crescente' && !negative)) melhora++;
+          if ((t === 'crescente' && negative) || (t === 'decrescente' && !negative)) piora++;
+          return;
+        }
+
+        values.sort((a, b) => a.year - b.year);
+        const first = values[0].val;
+        const last = values[values.length - 1].val;
+        if (first === 0) return;
+        let pctChange = ((last - first) / Math.abs(first)) * 100;
+        // For negative indicators, improvement = decrease, so invert sign
+        if (negative) pctChange = -pctChange;
+        totalVar += pctChange;
+        counted++;
+        if (pctChange > 0) melhora++;
+        else if (pctChange < 0) piora++;
+      });
+      return { varPct: counted > 0 ? totalVar / counted : 0, count: counted, melhora, piora };
+    }
 
     const ieatRows = eixosIEAT.map(eixo => {
       const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
@@ -1017,25 +1145,18 @@ tr:nth-child(even){background:#f8fafc;}
       const varOrc = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
       const cats = eixoToCats[eixo] || [];
-      const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria));
-      let melhora = 0, piora = 0;
-      indsEixo.forEach((i: any) => {
-        const t = (i.tendencia || '').toLowerCase();
-        const nome = (i.nome || '').toLowerCase();
-        const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-        if ((t === 'decrescente' && negative) || (t === 'crescente' && !negative)) melhora++;
-        if ((t === 'crescente' && negative) || (t === 'decrescente' && !negative)) piora++;
-      });
+      const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
+      const indResult = computeIndicadorVar(indsEixo);
+      const varInd = indResult.varPct;
 
-      const totalTend = melhora + piora;
-      const varInd = totalTend > 0 ? ((melhora - piora) / totalTend * 100) : 0;
       const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
+      const retornoPorReal = ieat;
       const eficacia = ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica';
       const efColor = ieat > 1 ? '#166534' : ieat > 0.3 ? '#92400e' : ieat > 0 ? '#92400e' : '#991b1b';
       const efBg = ieat > 1 ? '#dcfce7' : ieat > 0.3 ? '#fef3c7' : ieat > 0 ? '#fef3c7' : '#fee2e2';
       const efEmoji = ieat > 1 ? '🟢' : ieat > 0.3 ? '🟡' : ieat > 0 ? '🟡' : '🔴';
 
-      return { eixo, varOrc, varInd, ieat, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora, piora, pagoTotal: pagoP1 + pagoP2 };
+      return { eixo, varOrc, varInd, ieat, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
     }).filter(r => r.pagoTotal > 0 || r.totalInd > 0);
 
     const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
@@ -1043,31 +1164,32 @@ tr:nth-child(even){background:#f8fafc;}
 
     return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária × tendência dos indicadores (P1 vs P2)</p></div>
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária P1→P2 × variação real dos indicadores sociais</p></div>
     <table>
-      <thead><tr><th>Eixo</th><th>Δ Orçamento</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
+      <thead><tr><th>Eixo</th><th>Δ% Orçamento</th><th>Δ% Indicador</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
       <tbody>
-      ${ieatRows.map(r => `<tr>
-        <td><strong>${eixoLabels[r.eixo] || r.eixo}</strong></td>
-        <td class="${r.varOrc >= 0 ? 'trend-up' : 'trend-down'}">${r.varOrc >= 0 ? '+' : ''}${r.varOrc.toFixed(1)}%</td>
-        <td style="text-align:center">${r.totalInd}</td>
-        <td class="trend-up" style="text-align:center">${r.melhora || '—'}</td>
-        <td class="trend-down" style="text-align:center">${r.piora || '—'}</td>
-        <td style="font-family:monospace;text-align:center;color:${r.efColor};font-weight:700;">${r.ieat.toFixed(2)}</td>
-        <td><span style="display:inline-block;padding:2px 8px;background:${r.efBg};color:${r.efColor};border-radius:10px;font-size:.75rem;font-weight:600;">${r.efEmoji} ${r.eficacia}</span></td>
-      </tr>`).join('')}
+      ${ieatRows.map(r => '<tr>' +
+        '<td><strong>' + (eixoLabels[r.eixo] || r.eixo) + '</strong></td>' +
+        '<td class="' + (r.varOrc >= 0 ? 'trend-up' : 'trend-down') + '">' + (r.varOrc >= 0 ? '+' : '') + r.varOrc.toFixed(1) + '%</td>' +
+        '<td class="' + (r.varInd >= 0 ? 'trend-up' : 'trend-down') + '">' + (r.varInd >= 0 ? '+' : '') + r.varInd.toFixed(1) + '%</td>' +
+        '<td style="text-align:center">' + r.totalInd + '</td>' +
+        '<td class="trend-up" style="text-align:center">' + (r.melhora || '—') + '</td>' +
+        '<td class="trend-down" style="text-align:center">' + (r.piora || '—') + '</td>' +
+        '<td style="font-family:monospace;text-align:center;color:' + r.efColor + ';font-weight:700;">' + r.ieat.toFixed(2) + '</td>' +
+        '<td><span style="display:inline-block;padding:2px 8px;background:' + r.efBg + ';color:' + r.efColor + ';border-radius:10px;font-size:.75rem;font-weight:600;">' + r.efEmoji + ' ' + r.eficacia + '</span></td>' +
+      '</tr>').join('')}
       </tbody>
     </table>
-    <div class="table-footer">IEAT = (Δ% Indicador) ÷ (Δ% Orçamento). Valores > 1 indicam retorno social superior ao investimento.</div>
+    <div class="table-footer">IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento). Δ% Indicador é a média das variações reais extraídas das séries históricas do banco de dados. Consistente com a metodologia do Ecossistema MIR.</div>
   </div>
 
   <div class="grid-2" style="margin-top:16px;">
-    ${alerts.map(a => `<div class="insight-card">
-      <p>⚠️ <strong>Alerta de Eficiência Crítica — ${eixoLabels[a.eixo] || a.eixo}:</strong> Orçamento variou ${a.varOrc >= 0 ? '+' : ''}${a.varOrc.toFixed(1)}%, mas ${a.piora} indicador(es) pioraram contra ${a.melhora} em melhora. IEAT = ${a.ieat.toFixed(2)}.</p>
-    </div>`).join('')}
-    ${highlights.map(h => `<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">
-      <p style="color:#166534;">✅ <strong>Destaque Positivo — ${eixoLabels[h.eixo] || h.eixo}:</strong> IEAT = ${h.ieat.toFixed(2)} — retorno social ${h.ieat > 3 ? 'excepcional' : 'positivo'} em relação ao investimento. ${h.melhora} indicador(es) em melhora.</p>
-    </div>`).join('')}
+    ${alerts.map(a => '<div class="insight-card">' +
+      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '.</p>' +
+    '</div>').join('')}
+    ${highlights.map(h => '<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">' +
+      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — indicadores melhoraram ' + (h.varInd >= 0 ? '+' : '') + h.varInd.toFixed(1) + '% com orçamento variando ' + (h.varOrc >= 0 ? '+' : '') + h.varOrc.toFixed(1) + '%. ' + h.melhora + ' indicador(es) em melhora.</p>' +
+    '</div>').join('')}
   </div>`;
   })()}
 
@@ -1288,7 +1410,7 @@ tr:nth-child(even){background:#f8fafc;}
 
     ${extraOrc.length > 0 ? `<p style="font-size:1rem;margin-bottom:12px;">O <strong>efeito mascaramento</strong> pelo financiamento compensatório (extraorçamentário) é relevante: ${fmtC(sExtra.pagoP1 + sExtra.pagoP2)} acumulados em royalties e indenizações podem inflar a percepção de investimento direto do Estado em políticas indígenas e quilombolas.</p>` : ''}
 
-    <p style="font-size:1rem;margin-bottom:12px;">O <strong>IEAT-Racial</strong> revela uma assimetria significativa na eficácia do gasto público: enquanto Educação e Trabalho demonstram retornos expressivos (IEAT 4,68 e 3,25), a Saúde apresenta eficiência crítica (IEAT -0,17), indicando que o aumento orçamentário não se converteu em melhoria dos indicadores.</p>
+    <p style="font-size:1rem;margin-bottom:12px;">O <strong>IEAT-Racial</strong>, calculado dinamicamente a partir das séries históricas dos indicadores sociais, revela a eficácia real do gasto público racial por eixo temático, identificando onde o investimento se converte em melhoria dos indicadores e onde há alertas de eficiência crítica.</p>
 
     <p style="font-size:1rem;margin-bottom:12px;">Em síntese, o Estado brasileiro <strong>${sNS.varPago > 20 ? 'demonstrou avanço quantitativo significativo' : sNS.varPago > 0 ? 'apresentou leve crescimento' : 'não demonstrou avanço expressivo'}</strong> no financiamento de políticas raciais stricto sensu no período analisado. A análise IEAT-Racial demonstra que a <strong>eficácia do investimento é tão relevante quanto seu volume</strong>, sendo esta a questão central para avaliação pelo Comitê CERD.</p>
   </div>
@@ -1312,12 +1434,12 @@ tr:nth-child(even){background:#f8fafc;}
 </div>
 </section>
 
-<!-- ═══════════════ 15. ANEXO ═══════════════ -->
-<section class="section" id="anexo">
+<!-- ═══════════════ 15. ANEXO A ═══════════════ -->
+<section class="section" id="anexo-a">
 <div class="container">
   <div class="section-header">
     <div class="section-icon">📎</div>
-    <div><h2 class="section-title">ANEXO — Listagem Completa de Programas e Ações</h2>
+    <div><h2 class="section-title">ANEXO A — Listagem Completa de Programas e Ações</h2>
     <p class="section-subtitle">${programas.size} programas · ${all.length} registros (Ação × Ano)</p></div>
   </div>
 
@@ -1364,6 +1486,59 @@ tr:nth-child(even){background:#f8fafc;}
       </tbody>
     </table>
   </div>
+</div>
+</section>
+
+<!-- ═══════════════ 16. ANEXO B — ARTIGOS ICERD ═══════════════ -->
+<section class="section section-alt" id="anexo-b">
+<div class="container">
+  <div class="section-header">
+    <div class="section-icon">⚖️</div>
+    <div><h2 class="section-title">ANEXO B — Listagem Completa: Programas por Artigo ICERD</h2>
+    <p class="section-subtitle">Detalhamento do cruzamento orçamentário × artigos da Convenção (Seção 9)</p></div>
+  </div>
+
+  ${(() => {
+    const artigoTitulosFull: Record<string, string> = {
+      'I': 'Art. I — Definição de Discriminação Racial',
+      'II': 'Art. II — Obrigações dos Estados',
+      'III': 'Art. III — Segregação e Apartheid',
+      'IV': 'Art. IV — Propaganda e Organizações Racistas',
+      'V': 'Art. V — Igualdade de Direitos',
+      'VI': 'Art. VI — Proteção Judicial',
+      'VII': 'Art. VII — Ensino, Educação e Cultura',
+    };
+    // Build per-artigo program details
+    const artigoProgDetails: Record<string, { prog: string; orgao: string; pago: number; dotacao: number }[]> = {};
+    all.forEach((r: any) => {
+      const arts = inferArtigosOrcamento(r);
+      arts.forEach((a: string) => {
+        if (!artigoProgDetails[a]) artigoProgDetails[a] = [];
+        const existing = artigoProgDetails[a].find(p => p.prog === r.programa);
+        if (existing) {
+          existing.pago += parseFloat(r.pago || 0);
+          existing.dotacao += parseFloat(r.dotacao_autorizada || 0);
+        } else {
+          artigoProgDetails[a].push({ prog: r.programa, orgao: r.orgao, pago: parseFloat(r.pago || 0), dotacao: parseFloat(r.dotacao_autorizada || 0) });
+        }
+      });
+    });
+
+    const order = ['I','II','III','IV','V','VI','VII'];
+    return order.map(art => {
+      const progs = (artigoProgDetails[art] || []).sort((a, b) => b.pago - a.pago);
+      if (progs.length === 0) return '';
+      const totalPago = progs.reduce((s, p) => s + p.pago, 0);
+      return '<div class="table-container" style="margin-bottom:16px;">' +
+        '<div class="table-header"><h3>' + (artigoTitulosFull[art] || art) + '</h3><p>' + progs.length + ' programas · Total pago: ' + fmtC(totalPago) + '</p></div>' +
+        '<table><thead><tr><th>Programa</th><th>Órgão</th><th>Dotação</th><th>Pago</th><th>Execução</th></tr></thead><tbody>' +
+        progs.map(p => {
+          const exec = p.dotacao > 0 ? (p.pago / p.dotacao * 100).toFixed(0) : '—';
+          return '<tr><td style="font-size:.8rem">' + p.prog + '</td><td>' + p.orgao + '</td><td style="text-align:right;font-family:monospace;font-size:9pt">' + fmtFull(p.dotacao) + '</td><td style="text-align:right;font-family:monospace;font-size:9pt"><strong>' + fmtFull(p.pago) + '</strong></td><td>' + exec + '%</td></tr>';
+        }).join('') +
+        '</tbody></table></div>';
+    }).join('');
+  })()}
 </div>
 </section>
 
