@@ -1007,29 +1007,16 @@ tr:nth-child(even){background:#f8fafc;}
       const orcEixo = all.filter((r: any) => r.eixo_tematico === eixo);
       const pagoEixo = orcEixo.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
       const totalInd = cats.reduce((s, c) => s + (catMap[c]?.total || 0), 0);
+      // Use real series-based trend (cached in _realTrend)
       const tendMelhora = cats.reduce((s, c) => {
         const cm = catMap[c];
         if (!cm) return s;
-        return s + cm.items.filter((i: any) => {
-          const t = (i.tendencia || '').toLowerCase();
-          const nome = (i.nome || '').toLowerCase();
-          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-          if (t === 'decrescente' && negative) return true;
-          if (t === 'crescente' && !negative) return true;
-          return false;
-        }).length;
+        return s + cm.items.filter((i: any) => (i as any)._realTrend === 'melhora').length;
       }, 0);
       const tendPiora = cats.reduce((s, c) => {
         const cm = catMap[c];
         if (!cm) return s;
-        return s + cm.items.filter((i: any) => {
-          const t = (i.tendencia || '').toLowerCase();
-          const nome = (i.nome || '').toLowerCase();
-          const negative = ['mortalidade','homicídio','violência','desemprego','analfabet','evasão','pobreza','desigualdade','letalidade','encarceramento'].some(k => nome.includes(k));
-          if (t === 'crescente' && negative) return true;
-          if (t === 'decrescente' && !negative) return true;
-          return false;
-        }).length;
+        return s + cm.items.filter((i: any) => (i as any)._realTrend === 'piora').length;
       }, 0);
       const lacunasEixo = lacunas.filter((l: any) => l.eixo_tematico === eixo);
       const cumpridas = lacunasEixo.filter((l: any) => ['cumprido', 'parcialmente_cumprido', 'em_andamento'].includes(l.status_cumprimento)).length;
@@ -1066,16 +1053,19 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   <div class="table-container" style="margin-top:20px;">
-    <div class="table-header"><h3>Indicadores com Tendência Identificada</h3><p>Amostra dos indicadores com tendência crescente, decrescente ou estável</p></div>
+    <div class="table-header"><h3>Indicadores com Tendência Verificada (Série Histórica Real)</h3><p>Tendência calculada comparando 1º valor disponível × último valor — não utiliza campo estático do banco</p></div>
     <table>
-      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência</th><th>Fonte</th></tr></thead>
+      <thead><tr><th>Indicador</th><th>Categoria</th><th>Tendência Real</th><th>Fonte</th></tr></thead>
       <tbody>
-      ${indicadores.filter((ind: any) => ind.tendencia).slice(0, 30).map((ind: any) =>
-        '<tr><td><strong>' + ind.nome + '</strong></td><td>' + (eixoLabels[ind.categoria] || ind.categoria) + '</td><td class="' + (ind.tendencia === 'decrescente' ? 'trend-down' : ind.tendencia === 'crescente' ? 'trend-up' : 'trend-stable') + '">' + (ind.tendencia || '—') + '</td><td style="font-size:.8rem">' + ind.fonte + '</td></tr>'
-      ).join('')}
+      ${indicadores.filter((ind: any) => (ind as any)._realTrend === 'melhora' || (ind as any)._realTrend === 'piora').slice(0, 30).map((ind: any) => {
+        const trend = (ind as any)._realTrend;
+        const trendLabel = trend === 'melhora' ? '↑ Melhora' : '↓ Piora';
+        const trendClass = trend === 'melhora' ? 'trend-up' : 'trend-down';
+        return '<tr><td><strong>' + ind.nome + '</strong></td><td>' + (eixoLabels[ind.categoria] || ind.categoria) + '</td><td class="' + trendClass + '">' + trendLabel + '</td><td style="font-size:.8rem">' + ind.fonte + '</td></tr>';
+      }).join('')}
       </tbody>
     </table>
-    <div class="table-footer">Total de indicadores no banco: ${indicadores.length} | Com tendência definida: ${indicadores.filter((i: any) => i.tendencia).length}</div>
+    <div class="table-footer">Total de indicadores: ${indicadores.length} | Com tendência verificada via série histórica: ${indicadores.filter((i: any) => (i as any)._realTrend === 'melhora' || (i as any)._realTrend === 'piora').length} | Sem dados suficientes: ${indicadores.filter((i: any) => (i as any)._realTrend === 'sem_dados').length}</div>
   </div>
 
   ${(() => {
