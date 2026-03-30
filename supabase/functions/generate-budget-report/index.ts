@@ -1450,15 +1450,15 @@ tr:nth-child(even){background:#f8fafc;}
       <tbody>
       ${Object.entries(byPrograma).sort(([,a], [,b]) => b.pago - a.pago).map(([prog, data]) => {
         const anosArr = Array.from(data.anos).sort() as number[];
-        return \`<tr>
-          <td><strong>\${prog}</strong></td>
-          <td>\${data.orgao}</td>
-          <td>\${grupoLabels[data.grupo] || data.grupo}</td>
-          <td>\${anosArr[0]}–\${anosArr[anosArr.length - 1]}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(data.dotacao)}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt"><strong>\${fmtFull(data.pago)}</strong></td>
-          <td style="font-size:.8rem">\${Array.from(data.artigos).join(', ') || '—'}</td>
-        </tr>\`;
+        return `<tr>
+          <td><strong>${prog}</strong></td>
+          <td>${data.orgao}</td>
+          <td>${grupoLabels[data.grupo] || data.grupo}</td>
+          <td>${anosArr[0]}–${anosArr[anosArr.length - 1]}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(data.dotacao)}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt"><strong>${fmtFull(data.pago)}</strong></td>
+          <td style="font-size:.8rem">${Array.from(data.artigos).join(', ') || '—'}</td>
+        </tr>`;
       }).join('')}
       </tbody>
     </table>
@@ -1473,15 +1473,15 @@ tr:nth-child(even){background:#f8fafc;}
         const dot = parseFloat(r.dotacao_autorizada || 0);
         const pago = parseFloat(r.pago || 0);
         const exec = dot > 0 ? (pago / dot * 100).toFixed(0) : '—';
-        return \`<tr>
-          <td style="font-size:.8rem">\${r.programa}</td>
-          <td style="font-size:.8rem">\${r.orgao}</td>
-          <td>\${r.ano}</td>
-          <td>\${r.tipo_dotacao === 'extraorcamentario' ? '🔄 Extra' : '💰 LOA'}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(dot)}</td>
-          <td style="text-align:right;font-family:monospace;font-size:9pt">\${fmtFull(pago)}</td>
-          <td>\${exec}%</td>
-        </tr>\`;
+        return `<tr>
+          <td style="font-size:.8rem">${r.programa}</td>
+          <td style="font-size:.8rem">${r.orgao}</td>
+          <td>${r.ano}</td>
+          <td>${r.tipo_dotacao === 'extraorcamentario' ? '🔄 Extra' : '💰 LOA'}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(dot)}</td>
+          <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtFull(pago)}</td>
+          <td>${exec}%</td>
+        </tr>`;
       }).join('')}
       </tbody>
     </table>
