@@ -1294,7 +1294,7 @@ tr:nth-child(even){background:#f8fafc;}
 
     return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária P1→P2 × variação real dos indicadores sociais</p></div>
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>4 eixos monitorados — consistente com Ecossistema MIR</p></div>
     <table>
       <thead><tr><th>Eixo</th><th>Δ% Orçamento</th><th>Δ% Indicador</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
       <tbody>
@@ -1310,15 +1310,24 @@ tr:nth-child(even){background:#f8fafc;}
       '</tr>').join('')}
       </tbody>
     </table>
-    <div class="table-footer">IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento). Δ% Indicador é a média das variações reais extraídas das séries históricas do banco de dados. Consistente com a metodologia do Ecossistema MIR.</div>
+    <div class="table-footer">
+      <strong>Metodologia:</strong> IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento Específico). Valores consistentes com o Ecossistema MIR.<br/>
+      <strong>Leitura:</strong> Um IEAT de <strong>4.68</strong> (Educação) significa que para cada 1 p.p. de aumento no orçamento, o indicador social melhorou 4.68 p.p. — alta eficácia. Um IEAT de <strong>-0.17</strong> (Saúde) significa que apesar do aumento orçamentário de +12.3%, o indicador piorou -2.1% — o investimento não gerou retorno mensurável no indicador finalístico.<br/>
+      <strong>Escala:</strong> IEAT > 1 = Alta eficácia | 0.3–1 = Baixa | < 0 = Crítica (retrocesso com investimento).
+    </div>
+  </div>
+
+  <!-- Gauge Charts — Visual IEAT -->
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px;">
+    ${ieatRows.map(r => '<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px;min-width:150px;flex:1;max-width:200px;">' + svgGauge(r.retornoPorReal, 5, eixoLabels[r.eixo] || r.eixo, r.efColor, r.eficacia === 'Crítica') + '</div>').join('')}
   </div>
 
   <div class="grid-2" style="margin-top:16px;">
     ${alerts.map(a => '<div class="insight-card">' +
-      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '.</p>' +
+      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '. O investimento adicional não se converteu em melhoria do indicador finalístico.</p>' +
     '</div>').join('')}
     ${highlights.map(h => '<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">' +
-      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — indicadores melhoraram ' + (h.varInd >= 0 ? '+' : '') + h.varInd.toFixed(1) + '% com orçamento variando ' + (h.varOrc >= 0 ? '+' : '') + h.varOrc.toFixed(1) + '%. ' + h.melhora + ' indicador(es) em melhora.</p>' +
+      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — para cada 1 p.p. de aumento orçamentário, indicador melhorou ' + h.ieat.toFixed(2) + ' p.p. ' + h.melhora + ' indicador(es) em melhora.</p>' +
     '</div>').join('')}
   </div>`;
   })()}
