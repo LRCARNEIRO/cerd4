@@ -1780,7 +1780,7 @@ tr:nth-child(even){background:#f8fafc;}
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
       <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">1. As políticas raciais evoluíram orçamentariamente?</p>
       <p style="margin:0;line-height:1.7;opacity:.92;">
-        <strong style="color:${sAll.varPago >= 0 ? '#86efac' : '#fca5a5'}">${sAll.varPago >= 0 ? 'Sim' : 'Não'}</strong>. Dotação variou <strong>${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</strong>, pago variou <strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> (P1→P2). ${sAll.varPago > 0 ? 'Houve expansão real, acelerada pela criação do MIR.' : 'Dados indicam retração.'} Sem SESAI: <strong>${sNS.varPago >= 0 ? '+' : ''}${sNS.varPago.toFixed(1)}%</strong>.
+        <strong style="color:${sAll.varPago >= 0 ? '#86efac' : '#fca5a5'}">${sAll.varPago >= 0 ? 'Sim' : 'Não'}</strong>. Dotação variou <strong>${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</strong>, pago variou <strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> (P1→P2). ${sAll.varPago > 0 ? 'Houve expansão real, acelerada pela criação do MIR.' : 'Dados indicam retração.'} Sem SESAI: <strong>${sNS.varPago >= 0 ? '+' : ''}${sNS.varPago.toFixed(1)}%</strong>.${extraOrc.length > 0 ? ` <em style="opacity:.85">Nota: a redução do extraorçamentário (${sExtra.varPago.toFixed(1)}%) impacta a leitura global — a evolução orçamentária stricto sensu deve ser lida na perspectiva Sem SESAI.</em>` : ''}
       </p>
     </div>
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
