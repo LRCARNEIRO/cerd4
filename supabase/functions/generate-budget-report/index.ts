@@ -170,6 +170,42 @@ function svgHBarChart(items: { label: string; value: number; color: string }[], 
 
 // ═══════════════════════════════════════
 
+const EIXO_PARA_ARTIGOS: Record<string, string[]> = {
+  legislacao_justica: ['I', 'II', 'VI'],
+  politicas_institucionais: ['II'],
+  seguranca_publica: ['V', 'VI'],
+  saude: ['V'],
+  educacao: ['V', 'VII'],
+  trabalho_renda: ['V'],
+  terra_territorio: ['III', 'V'],
+  cultura_patrimonio: ['V', 'VII'],
+  participacao_social: ['V'],
+  dados_estatisticas: ['I', 'II'],
+};
+
+function inferArtigosOrcamento(r: any): string[] {
+  const explicit = (r.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+  if (explicit.length > 0) return explicit;
+
+  const eixo = r.eixo_tematico;
+  if (eixo && EIXO_PARA_ARTIGOS[eixo]) return EIXO_PARA_ARTIGOS[eixo];
+
+  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
+  const arts: string[] = [];
+  if (texto.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) { arts.push('V'); arts.push('VII'); }
+  if (texto.match(/saúde|saude|sesai|sanitár|sanitar/)) arts.push('V');
+  if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
+  if (texto.match(/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/)) { arts.push('III'); arts.push('V'); }
+  if (texto.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos/)) arts.push('VI');
+  if (texto.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) { arts.push('V'); arts.push('VII'); }
+  if (texto.match(/igualdade|discrimin|racis|enfrentamento ao racismo/)) { arts.push('I'); arts.push('II'); }
+  if (texto.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/)) { arts.push('V'); arts.push('VI'); }
+  if (texto.match(/polític|politica|institucional|ação afirmativa|acao afirmativa/)) arts.push('II');
+  if (texto.match(/mulher|gênero|genero/)) arts.push('V');
+  if (texto.match(/povos indígenas|povos indigenas|etnodesenvolvimento/)) { arts.push('III'); arts.push('V'); }
+  return [...new Set(arts)];
+}
+
 function isSesai(r: any): boolean {
   const prog = (r.programa || '').toLowerCase();
   const orgao = (r.orgao || '').toUpperCase();
