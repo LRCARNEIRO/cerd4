@@ -1233,6 +1233,7 @@ tr:nth-child(even){background:#f8fafc;}
       const pagoP1 = p1.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
       const pagoP2 = p2.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
       let varOrc = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
+      let varInd = 0;
 
       const cats = eixoToCats[eixo] || [];
       const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
