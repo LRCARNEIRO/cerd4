@@ -1125,23 +1125,56 @@ tr:nth-child(even){background:#f8fafc;}
   ${(() => {
     // Dynamic IEAT calculation per eixo — matches Ecossistema methodology
     // Uses actual numeric variation from indicator data series
-    const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda', 'terra_territorio'];
+    // STRICTLY 4 eixos — matches exactly Ecossistema MIR (IEATSection.tsx)
+    const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda'];
     const eixoToCats: Record<string, string[]> = {
       saude: ['saude', 'covid_racial'],
       educacao: ['educacao'],
       seguranca_publica: ['seguranca_publica'],
       trabalho_renda: ['trabalho_renda'],
-      terra_territorio: ['terra_territorio', 'povos_tradicionais'],
     };
 
-    // Validated IEAT reference values from Ecossistema MIR (hardcoded benchmark)
-    // These represent the validated analysis used when dynamic extraction yields no results
+    // Validated IEAT reference values from Ecossistema MIR — SINGLE SOURCE OF TRUTH
+    // These are the ONLY 4 eixos. Do NOT add others.
     const ieatReference: Record<string, { varOrc: number; varInd: number; retornoPorReal: number; eficacia: string }> = {
       saude: { varOrc: 12.3, varInd: -2.1, retornoPorReal: -0.17, eficacia: 'Crítica' },
       educacao: { varOrc: 8.7, varInd: 40.7, retornoPorReal: 4.68, eficacia: 'Alta' },
       seguranca_publica: { varOrc: 5.2, varInd: 1.7, retornoPorReal: 0.33, eficacia: 'Baixa' },
       trabalho_renda: { varOrc: 15.1, varInd: 49.0, retornoPorReal: 3.25, eficacia: 'Alta' },
     };
+
+    // SVG Gauge Chart generator (mirrors Ecossistema MIR visual)
+    function svgGauge(value: number, maxVal: number, label: string, color: string, alert: boolean): string {
+      const clampedValue = Math.max(-maxVal, Math.min(maxVal, value));
+      const percentage = (clampedValue + maxVal) / (2 * maxVal);
+      const angle = -90 + percentage * 180;
+      const radius = 58;
+      const cx = 70, cy = 70;
+      const arcPath = (sa: number, ea: number, r: number) => {
+        const sr = (sa * Math.PI) / 180, er = (ea * Math.PI) / 180;
+        const x1 = cx + r * Math.cos(sr), y1 = cy + r * Math.sin(sr);
+        const x2 = cx + r * Math.cos(er), y2 = cy + r * Math.sin(er);
+        const la = ea - sa > 180 ? 1 : 0;
+        return 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + la + ' 1 ' + x2 + ' ' + y2;
+      };
+      const needleRad = (angle * Math.PI) / 180;
+      const needleLen = radius - 12;
+      const nx = cx + needleLen * Math.cos(needleRad);
+      const ny = cy + needleLen * Math.sin(needleRad);
+      return '<div style="text-align:center;padding:8px;">' +
+        '<div style="font-size:11px;font-weight:600;margin-bottom:4px;">' + label + '</div>' +
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 85" style="width:140px;height:auto;">' +
+        '<path d="' + arcPath(-180, -120, radius) + '" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<path d="' + arcPath(-120, -60, radius) + '" fill="none" stroke="#eab308" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<path d="' + arcPath(-60, 0, radius) + '" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<line x1="' + cx + '" y1="' + cy + '" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + color + '"/>' +
+        '</svg>' +
+        '<div style="font-size:13px;font-weight:700;color:' + color + ';">' + (value > 0 ? '+' : '') + value.toFixed(2) + '</div>' +
+        '<div style="font-size:9px;color:#64748b;line-height:1.3;margin-top:2px;">A cada R$ 1 investido,<br/>indicador moveu ' + (value > 0 ? '+' : '') + value.toFixed(2) + ' p.p.</div>' +
+        (alert ? '<div style="display:inline-block;margin-top:4px;padding:2px 6px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:9px;font-weight:600;">⚠️ Eficiência Crítica</div>' : '') +
+        '</div>';
+    }
 
     // Robust numeric value extractor (mirrors evaluateIndicador.ts logic)
     function extractNumVal(entry: any): number | null {
