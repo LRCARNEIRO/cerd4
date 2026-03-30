@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ExternalLink, Search, Filter, Download, CheckCircle2, AlertTriangle, BookOpen, Layers, DollarSign, FileText, ClipboardCheck } from 'lucide-react';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 
 const PORTAL_TRANSPARENCIA = 'https://portaldatransparencia.gov.br';
 const SIOP = 'https://www.siop.planejamento.gov.br';
