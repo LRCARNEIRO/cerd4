@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ExternalLink, Search, Filter, Download, CheckCircle2, AlertTriangle, BookOpen, Layers, DollarSign, FileText, ClipboardCheck } from 'lucide-react';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 
 const PORTAL_TRANSPARENCIA = 'https://portaldatransparencia.gov.br';
 const SIOP = 'https://www.siop.planejamento.gov.br';
@@ -14,7 +15,14 @@ export default function GuiaAuditoria() {
       title="Guia de Auditoria Orçamentária"
       subtitle="Passo a passo para reproduzir e verificar todos os dados orçamentários nos portais oficiais"
     >
-      <div className="space-y-6 max-w-4xl">
+      <div className="flex justify-end mb-4">
+        <ExportTabButtons
+          targetSelector="#export-guia-auditoria"
+          fileName="Guia-Auditoria-Orcamentaria-CERD-IV"
+          label="Guia"
+        />
+      </div>
+      <div id="export-guia-auditoria" className="space-y-6 max-w-4xl">
 
         {/* INTRODUÇÃO */}
         <Card className="border-primary/30 bg-primary/5">
