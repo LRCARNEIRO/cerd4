@@ -280,7 +280,7 @@ serve(async (req) => {
       byPrograma[r.programa].pago += parseFloat(r.pago || 0);
       byPrograma[r.programa].dotacao += parseFloat(r.dotacao_autorizada || 0);
       byPrograma[r.programa].anos.add(r.ano);
-      (r.artigos_convencao || []).forEach((a: string) => byPrograma[r.programa].artigos.add(a));
+      inferArtigosOrcamento(r).forEach((a: string) => byPrograma[r.programa].artigos.add(a));
     });
 
     const byGrupo: Record<string, any[]> = {};
@@ -288,15 +288,19 @@ serve(async (req) => {
 
     const simbolicos = all.filter(r => parseFloat(r.dotacao_autorizada || 0) > 100000 && parseFloat(r.pago || 0) === 0);
 
-    const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string> }> = {};
+    // Use inferArtigosOrcamento for byArtigo (matches Orçamento > Artigos ICERD tab)
+    const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string>; registros: number }> = {};
     all.forEach(r => {
-      (r.artigos_convencao || []).forEach((a: string) => {
-        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, programas: new Set() };
+      const arts = inferArtigosOrcamento(r);
+      arts.forEach((a: string) => {
+        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, programas: new Set(), registros: 0 };
         byArtigo[a].pago += parseFloat(r.pago || 0);
         byArtigo[a].dotacao += parseFloat(r.dotacao_autorizada || 0);
         byArtigo[a].programas.add(r.programa);
+        byArtigo[a].registros++;
       });
     });
+    const unmappedCount = all.filter(r => inferArtigosOrcamento(r).length === 0).length;
 
     const fontes = [...new Set(all.map(r => r.fonte_dados).filter(Boolean))];
     const urls = [...new Set(all.map(r => r.url_fonte).filter(Boolean))];
