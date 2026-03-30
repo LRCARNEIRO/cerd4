@@ -639,12 +639,11 @@ tr:nth-child(even){background:#f8fafc;}
   <!-- Análise textual do Quadro Executivo -->
   <div style="background:white;border:2px solid var(--primary);border-radius:12px;padding:20px;line-height:1.7;">
     <h4 style="color:var(--primary);margin-bottom:8px;">📝 Análise do Quadro Executivo</h4>
-    <p style="font-size:.9rem;margin-bottom:8px;">O volume total de recursos pagos (<strong>${fmtC(totalPago)}</strong>) representa <strong>${execGeral}%</strong> da dotação autorizada (<strong>${fmtC(totalDot)}</strong>), indicando ${Number(execGeral) > 80 ? 'uma taxa de execução robusta, acima da média federal' : Number(execGeral) > 60 ? 'uma execução moderada, com espaço para melhoria na absorção dos recursos autorizados' : 'uma taxa de execução preocupantemente baixa, sugerindo entraves na implementação das políticas'}.</p>
+    <p style="font-size:.9rem;margin-bottom:8px;">O volume total de recursos pagos (<strong>${fmtC(totalPago)}</strong>) representa <strong>${execGeral}%</strong> da dotação autorizada (<strong>${fmtC(totalDot)}</strong>).</p>
     <p style="font-size:.9rem;margin-bottom:8px;">A variação entre P1 e P2 (<strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> no pago) deve ser contextualizada: P1 compreende <strong>5 anos</strong> de execução enquanto P2 abrange <strong>3 anos</strong> — portanto, a ${sAll.varPago > 0 ? 'expansão é proporcionalmente ainda mais expressiva quando anualizada' : 'contração reflete uma reversão real na priorização orçamentária'}.</p>
-    <p style="font-size:.9rem;margin-bottom:8px;">Na perspectiva de dotação autorizada, a variação de <strong>${sAll.varDot >= 0 ? '+' : ''}${sAll.varDot.toFixed(1)}%</strong> ${Math.abs(sAll.varDot - sAll.varPago) > 15 ? 'apresenta divergência em relação à variação do pago' : 'acompanha de perto a variação do pago, demonstrando coerência entre planejamento e execução'}.</p>
-    ${Math.abs(sAll.varDot - sAll.varPago) > 15 && extraOrc.length > 0 ? `<div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:14px;margin-top:8px;">
-      <p style="font-size:.85rem;margin:0;color:#92400e;"><strong>⚠️ Ressalva Metodológica:</strong> A aparente queda na taxa de execução (pago/dotação) no P2 não pode ser interpretada de forma absoluta. No P1 (2018–2022), houve significativo volume de pagamentos <strong>extraorçamentários</strong> (${fmtC(sExtra.pagoP1)}) — royalties, compensações e indenizações — que se reduziram no P2 (${fmtC(sExtra.pagoP2)}, variação de <strong>${sExtra.varPago >= 0 ? '+' : ''}${sExtra.varPago.toFixed(1)}%</strong>). Esta redução contribui para o aparente "efeito tesoura" entre dotação e pagamento. A <strong>reclassificação contábil de 2023</strong> (formalização de recursos antes executados como extraorçamentários em ações LOA diretas, exigência TCU/CGU) ampliou a dotação sem correspondente aumento proporcional no pago orçamentário, inflando a percepção de baixa execução.</p>
-    </div>` : ''}
+    <div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:14px;margin-top:8px;">
+      <p style="font-size:.85rem;margin:0;color:#92400e;"><strong>⚠️ Ressalva Metodológica — Comparação Dotação × Pago:</strong> Este relatório <strong>não apresenta comparativo direto entre dotação autorizada e valor pago</strong> como métrica isolada de desempenho. No P1 (2018–2022), houve significativo volume de pagamentos <strong>extraorçamentários</strong> (${fmtC(sExtra.pagoP1)}) — royalties, compensações e indenizações — que se reduziram no P2 (${fmtC(sExtra.pagoP2)}, variação de <strong>${sExtra.varPago >= 0 ? '+' : ''}${sExtra.varPago.toFixed(1)}%</strong>). A <strong>reclassificação contábil de 2023</strong> (formalização de recursos antes executados como extraorçamentários em ações LOA diretas, exigência TCU/CGU) ampliou a dotação sem correspondente aumento proporcional no pago orçamentário. Portanto, uma taxa de execução (pago/dotação) aparentemente baixa no P2 não reflete necessariamente desinvestimento, mas sim uma mudança na estrutura contábil do financiamento público. A análise de eficácia deste relatório concentra-se nas <strong>3 perspectivas comparativas (Total, Sem SESAI, Apenas SESAI)</strong> e no <strong>IEAT-Racial</strong>.</p>
+    </div>
   </div>
 </div>
 </section>
@@ -1125,23 +1124,56 @@ tr:nth-child(even){background:#f8fafc;}
   ${(() => {
     // Dynamic IEAT calculation per eixo — matches Ecossistema methodology
     // Uses actual numeric variation from indicator data series
-    const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda', 'terra_territorio'];
+    // STRICTLY 4 eixos — matches exactly Ecossistema MIR (IEATSection.tsx)
+    const eixosIEAT = ['saude', 'educacao', 'seguranca_publica', 'trabalho_renda'];
     const eixoToCats: Record<string, string[]> = {
       saude: ['saude', 'covid_racial'],
       educacao: ['educacao'],
       seguranca_publica: ['seguranca_publica'],
       trabalho_renda: ['trabalho_renda'],
-      terra_territorio: ['terra_territorio', 'povos_tradicionais'],
     };
 
-    // Validated IEAT reference values from Ecossistema MIR (hardcoded benchmark)
-    // These represent the validated analysis used when dynamic extraction yields no results
+    // Validated IEAT reference values from Ecossistema MIR — SINGLE SOURCE OF TRUTH
+    // These are the ONLY 4 eixos. Do NOT add others.
     const ieatReference: Record<string, { varOrc: number; varInd: number; retornoPorReal: number; eficacia: string }> = {
       saude: { varOrc: 12.3, varInd: -2.1, retornoPorReal: -0.17, eficacia: 'Crítica' },
       educacao: { varOrc: 8.7, varInd: 40.7, retornoPorReal: 4.68, eficacia: 'Alta' },
       seguranca_publica: { varOrc: 5.2, varInd: 1.7, retornoPorReal: 0.33, eficacia: 'Baixa' },
       trabalho_renda: { varOrc: 15.1, varInd: 49.0, retornoPorReal: 3.25, eficacia: 'Alta' },
     };
+
+    // SVG Gauge Chart generator (mirrors Ecossistema MIR visual)
+    function svgGauge(value: number, maxVal: number, label: string, color: string, alert: boolean): string {
+      const clampedValue = Math.max(-maxVal, Math.min(maxVal, value));
+      const percentage = (clampedValue + maxVal) / (2 * maxVal);
+      const angle = -90 + percentage * 180;
+      const radius = 58;
+      const cx = 70, cy = 70;
+      const arcPath = (sa: number, ea: number, r: number) => {
+        const sr = (sa * Math.PI) / 180, er = (ea * Math.PI) / 180;
+        const x1 = cx + r * Math.cos(sr), y1 = cy + r * Math.sin(sr);
+        const x2 = cx + r * Math.cos(er), y2 = cy + r * Math.sin(er);
+        const la = ea - sa > 180 ? 1 : 0;
+        return 'M ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + la + ' 1 ' + x2 + ' ' + y2;
+      };
+      const needleRad = (angle * Math.PI) / 180;
+      const needleLen = radius - 12;
+      const nx = cx + needleLen * Math.cos(needleRad);
+      const ny = cy + needleLen * Math.sin(needleRad);
+      return '<div style="text-align:center;padding:8px;">' +
+        '<div style="font-size:11px;font-weight:600;margin-bottom:4px;">' + label + '</div>' +
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 85" style="width:140px;height:auto;">' +
+        '<path d="' + arcPath(-180, -120, radius) + '" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<path d="' + arcPath(-120, -60, radius) + '" fill="none" stroke="#eab308" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<path d="' + arcPath(-60, 0, radius) + '" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" opacity="0.2"/>' +
+        '<line x1="' + cx + '" y1="' + cy + '" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="' + color + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="' + color + '"/>' +
+        '</svg>' +
+        '<div style="font-size:13px;font-weight:700;color:' + color + ';">' + (value > 0 ? '+' : '') + value.toFixed(2) + '</div>' +
+        '<div style="font-size:9px;color:#64748b;line-height:1.3;margin-top:2px;">A cada R$ 1 investido,<br/>indicador moveu ' + (value > 0 ? '+' : '') + value.toFixed(2) + ' p.p.</div>' +
+        (alert ? '<div style="display:inline-block;margin-top:4px;padding:2px 6px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:9px;font-weight:600;">⚠️ Eficiência Crítica</div>' : '') +
+        '</div>';
+    }
 
     // Robust numeric value extractor (mirrors evaluateIndicador.ts logic)
     function extractNumVal(entry: any): number | null {
@@ -1242,33 +1274,26 @@ tr:nth-child(even){background:#f8fafc;}
       const indsEixo = indicadores.filter((i: any) => cats.includes(i.categoria) && i.categoria !== 'Common Core');
       const indResult = computeIndicadorVar(indsEixo);
 
-      // ALWAYS use validated Ecossistema MIR reference values for consistency
-      // The Ecossistema MIR (IEATSection.tsx) is the authoritative source for IEAT
+      // ALWAYS use validated Ecossistema MIR reference values — all 4 eixos have refs
       const ref = ieatReference[eixo];
-      if (ref) {
-        varOrc = ref.varOrc;
-        varInd = ref.varInd;
-      } else {
-        // For eixos without reference (e.g. terra_territorio), use dynamic calculation
-        varInd = indResult.varPct;
-      }
+      varOrc = ref.varOrc;
+      varInd = ref.varInd;
 
-      const ieat = varOrc !== 0 ? varInd / Math.abs(varOrc) : 0;
-      const retornoPorReal = ref ? ref.retornoPorReal : ieat;
-      const eficacia = ref ? ref.eficacia : (ieat > 1 ? 'Alta' : ieat > 0.3 ? 'Média' : ieat > 0 ? 'Baixa' : 'Crítica');
-      const efColor = eficacia === 'Alta' ? '#166534' : eficacia === 'Média' ? '#92400e' : eficacia === 'Baixa' ? '#92400e' : '#991b1b';
-      const efBg = eficacia === 'Alta' ? '#dcfce7' : eficacia === 'Média' ? '#fef3c7' : eficacia === 'Baixa' ? '#fef3c7' : '#fee2e2';
-      const efEmoji = eficacia === 'Alta' ? '🟢' : eficacia === 'Média' ? '🟡' : eficacia === 'Baixa' ? '🟡' : '🔴';
+      const retornoPorReal = ref.retornoPorReal;
+      const eficacia = ref.eficacia;
+      const efColor = eficacia === 'Alta' ? '#166534' : eficacia === 'Baixa' ? '#92400e' : '#991b1b';
+      const efBg = eficacia === 'Alta' ? '#dcfce7' : eficacia === 'Baixa' ? '#fef3c7' : '#fee2e2';
+      const efEmoji = eficacia === 'Alta' ? '🟢' : eficacia === 'Baixa' ? '🟡' : '🔴';
 
       return { eixo, varOrc, varInd, ieat: retornoPorReal, retornoPorReal, eficacia, efColor, efBg, efEmoji, totalInd: indsEixo.length, melhora: indResult.melhora, piora: indResult.piora, pagoTotal: pagoP1 + pagoP2 };
-    }).filter(r => r.pagoTotal > 0 || r.totalInd > 0 || ieatReference[r.eixo]);
+    });
 
     const alerts = ieatRows.filter(r => r.ieat <= 0 && r.varOrc > 0);
     const highlights = ieatRows.filter(r => r.ieat > 1);
 
     return `
   <div class="table-container">
-    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>Cruzamento dinâmico: variação orçamentária P1→P2 × variação real dos indicadores sociais</p></div>
+    <div class="table-header"><h3>Painel IEAT-Racial — Eficácia por Eixo Temático</h3><p>4 eixos monitorados — consistente com Ecossistema MIR</p></div>
     <table>
       <thead><tr><th>Eixo</th><th>Δ% Orçamento</th><th>Δ% Indicador</th><th>Indicadores</th><th>↑ Melhora</th><th>↓ Piora</th><th>IEAT</th><th>Eficácia</th></tr></thead>
       <tbody>
@@ -1284,15 +1309,24 @@ tr:nth-child(even){background:#f8fafc;}
       '</tr>').join('')}
       </tbody>
     </table>
-    <div class="table-footer">IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento). Δ% Indicador é a média das variações reais extraídas das séries históricas do banco de dados. Consistente com a metodologia do Ecossistema MIR.</div>
+    <div class="table-footer">
+      <strong>Metodologia:</strong> IEAT = (Δ% Indicador Social) ÷ (Δ% Orçamento Específico). Valores consistentes com o Ecossistema MIR.<br/>
+      <strong>Leitura:</strong> Um IEAT de <strong>4.68</strong> (Educação) significa que para cada 1 p.p. de aumento no orçamento, o indicador social melhorou 4.68 p.p. — alta eficácia. Um IEAT de <strong>-0.17</strong> (Saúde) significa que apesar do aumento orçamentário de +12.3%, o indicador piorou -2.1% — o investimento não gerou retorno mensurável no indicador finalístico.<br/>
+      <strong>Escala:</strong> IEAT > 1 = Alta eficácia | 0.3–1 = Baixa | < 0 = Crítica (retrocesso com investimento).
+    </div>
+  </div>
+
+  <!-- Gauge Charts — Visual IEAT -->
+  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px;">
+    ${ieatRows.map(r => '<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px;min-width:150px;flex:1;max-width:200px;">' + svgGauge(r.retornoPorReal, 5, eixoLabels[r.eixo] || r.eixo, r.efColor, r.eficacia === 'Crítica') + '</div>').join('')}
   </div>
 
   <div class="grid-2" style="margin-top:16px;">
     ${alerts.map(a => '<div class="insight-card">' +
-      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '.</p>' +
+      '<p>⚠️ <strong>Alerta de Eficiência Crítica — ' + (eixoLabels[a.eixo] || a.eixo) + ':</strong> Orçamento variou ' + (a.varOrc >= 0 ? '+' : '') + a.varOrc.toFixed(1) + '%, mas indicadores variaram ' + (a.varInd >= 0 ? '+' : '') + a.varInd.toFixed(1) + '%. IEAT = ' + a.ieat.toFixed(2) + '. O investimento adicional não se converteu em melhoria do indicador finalístico.</p>' +
     '</div>').join('')}
     ${highlights.map(h => '<div class="insight-card" style="background:#f0fdf4;border-color:#86efac;">' +
-      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — indicadores melhoraram ' + (h.varInd >= 0 ? '+' : '') + h.varInd.toFixed(1) + '% com orçamento variando ' + (h.varOrc >= 0 ? '+' : '') + h.varOrc.toFixed(1) + '%. ' + h.melhora + ' indicador(es) em melhora.</p>' +
+      '<p style="color:#166534;">✅ <strong>Destaque Positivo — ' + (eixoLabels[h.eixo] || h.eixo) + ':</strong> IEAT = ' + h.ieat.toFixed(2) + ' — para cada 1 p.p. de aumento orçamentário, indicador melhorou ' + h.ieat.toFixed(2) + ' p.p. ' + h.melhora + ' indicador(es) em melhora.</p>' +
     '</div>').join('')}
   </div>`;
   })()}

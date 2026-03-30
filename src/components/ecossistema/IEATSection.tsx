@@ -59,7 +59,7 @@ function GaugeChart({ value, max, label, color, alert }: { value: number; max: n
       <div className="text-center -mt-1">
         <span className="text-sm font-bold" style={{ color }}>{value > 0 ? '+' : ''}{value.toFixed(2)}</span>
         <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-          Para cada R$ 1 investido,<br />indicador moveu <strong style={{ color }}>{Math.abs(value * 100).toFixed(0)}%</strong>
+          A cada 1 p.p. de aumento<br/>orçamentário, indicador moveu<br/><strong style={{ color }}>{value > 0 ? '+' : ''}{value.toFixed(2)} p.p.</strong>
         </p>
       </div>
       {alert && (
