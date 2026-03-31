@@ -142,91 +142,86 @@ export default function Recomendacoes() {
       <div className="mb-4">
         <MethodologyPanel variant="sensor" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-muted rounded-lg">
-              <Database className="w-5 h-5 text-foreground" />
+      {(() => {
+        const origemCounts = contarPorOrigem(lacunas || []);
+        const totalGeral = (lacunas?.length) || 0;
+        return (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <Card>
+                <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                  <div className="p-2 bg-muted rounded-lg">
+                    <Database className="w-5 h-5 text-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Total Monitoradas</p>
+                    <p className="text-xl font-bold">{isLoading ? '...' : totalGeral}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                  <div className="p-2 bg-success/10 rounded-lg">
+                    <CheckCircle2 className="w-5 h-5 text-success" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Cumpridas</p>
+                    <p className="text-xl font-bold text-success">{isLoading ? '...' : stats?.porStatus.cumprido || 0}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                  <div className="p-2 bg-warning/10 rounded-lg">
+                    <Clock className="w-5 h-5 text-warning" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Parciais</p>
+                    <p className="text-xl font-bold text-warning">{isLoading ? '...' : stats?.porStatus.parcialmente_cumprido || 0}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                  <div className="p-2 bg-destructive/10 rounded-lg">
+                    <XCircle className="w-5 h-5 text-destructive" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Não Cumpridas</p>
+                    <p className="text-xl font-bold text-destructive">{isLoading ? '...' : stats?.porStatus.nao_cumprido || 0}</p>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                  <div className="p-2 bg-destructive/10 rounded-lg">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Críticas</p>
+                    <p className="text-xl font-bold">{isLoading ? '...' : stats?.porPrioridade.critica || 0}</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Obs. Finais (CERD)</p>
-              <p className="text-xl font-bold">{isLoading ? '...' : stats?.total || 0}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Scale className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Rec. Gerais + Durban</p>
-              <p className="text-xl font-bold">7 + 3</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-success/10 rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-success" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Cumpridas</p>
-              <p className="text-xl font-bold text-success">{isLoading ? '...' : stats?.porStatus.cumprido || 0}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-warning/10 rounded-lg">
-              <Clock className="w-5 h-5 text-warning" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Parciais</p>
-              <p className="text-xl font-bold text-warning">{isLoading ? '...' : stats?.porStatus.parcialmente_cumprido || 0}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-destructive/10 rounded-lg">
-              <XCircle className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-              <p className="text-xl font-bold text-destructive">{isLoading ? '...' : stats?.porStatus.nao_cumprido || 0}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 bg-destructive/10 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Críticas</p>
-              <p className="text-xl font-bold">{isLoading ? '...' : stats?.porPrioridade.critica || 0}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Resumo de escopo */}
-      <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
-        <span className="text-xs font-medium text-muted-foreground">Escopo de análise:</span>
-        <Badge variant="outline" className="text-xs border border-primary/30 bg-primary/10 text-primary">
-          {stats?.total || 33} Observações Finais (§4–§65)
-        </Badge>
-        <Badge variant="outline" className="text-xs border border-accent/30 bg-accent/10">
-          7 Recomendações Gerais (RG 23, 31, 34, 35, 36, 37, 38)
-        </Badge>
-        <Badge variant="outline" className="text-xs border border-muted-foreground/30 bg-muted">
-          3 Parágrafos Durban (Declaração + Plano de Ação)
-        </Badge>
-        <Badge variant="secondary" className="text-xs font-semibold">
-          Total: {(stats?.total || 33) + 10} recomendações monitoradas
-        </Badge>
-      </div>
+            {/* Resumo por origem */}
+            <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
+              <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" /> Composição:
+              </span>
+              {(['cerd', 'rg', 'durban'] as OrigemLacuna[]).map(o => (
+                <Badge key={o} variant="outline" className={`text-xs border ${ORIGEM_CONFIG[o].cor}`}>
+                  {ORIGEM_CONFIG[o].labelCurto}: {origemCounts[o]}
+                </Badge>
+              ))}
+              <Badge variant="secondary" className="text-xs font-semibold">
+                Total: {totalGeral} recomendações com avaliação de status
+              </Badge>
+            </div>
+          </>
+        );
+      })()}
 
 
       <Tabs defaultValue="observacoes" className="w-full">
