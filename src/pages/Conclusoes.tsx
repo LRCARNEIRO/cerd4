@@ -46,7 +46,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 export default function Conclusoes() {
   const queryClient = useQueryClient();
-  const [filterOrigem, setFilterOrigem] = useState<OrigemLacuna | 'all'>('all');
+  
   const {
     isLoading, isFetching, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados, lastUpdated,
