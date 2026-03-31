@@ -66,6 +66,9 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   );
   const respostaCerdIV = lacuna.resposta_sugerida_cerd_iv || dynamicResponse;
 
+  const origem = classificarOrigemLacuna(lacuna.paragrafo);
+  const origemCfg = ORIGEM_CONFIG[origem];
+
   return (
     <div className={cn('data-card', isNaoCumprido && 'border-l-4 border-l-destructive', isParcial && 'border-l-4 border-l-warning')}>
       <div className="flex items-start gap-3">
@@ -74,8 +77,13 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-2">
+            {origem !== 'cerd' && (
+              <Badge variant="outline" className={cn('text-xs border', origemCfg.cor)}>
+                {origemCfg.labelCurto}
+              </Badge>
+            )}
             <span className="text-xs font-semibold bg-muted px-2 py-0.5 rounded">
-              §{lacuna.paragrafo}
+              {origem === 'cerd' ? '§' : ''}{lacuna.paragrafo}
             </span>
             <Badge variant="outline" className="text-xs">
               {eixoLabels[lacuna.eixo_tematico]}
