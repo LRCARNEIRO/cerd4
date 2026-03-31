@@ -675,61 +675,24 @@ export default function Conclusoes() {
 
             {/* ABA: LACUNAS IDENTIFICADAS */}
             <TabsContent value="lacunas-ident">
-              {(() => {
-                const origemCounts = contarPorOrigem(lacunas || []);
-                const filteredByOrigem = (lacunas || []).filter(l =>
-                  filterOrigem === 'all' ? true : classificarOrigemLacuna(l.paragrafo) === filterOrigem
-                );
-                return (
-                  <>
-                    <Card className="mb-4 border-l-4 border-l-primary">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3">
-                            <Database className="w-6 h-6 text-primary flex-shrink-0" />
-                            <div>
-                              <h3 className="font-semibold mb-1">Lacunas Identificadas — Recomendações por Documento de Origem</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {filteredByOrigem.length} de {lacunas?.length || 0} registros exibidos
-                              </p>
-                            </div>
-                          </div>
-                          <Select value={filterOrigem} onValueChange={(v) => setFilterOrigem(v as OrigemLacuna | 'all')}>
-                            <SelectTrigger className="w-[260px]">
-                              <Filter className="w-4 h-4 mr-2" />
-                              <SelectValue placeholder="Filtrar por origem" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">Todas as origens ({lacunas?.length || 0})</SelectItem>
-                              <SelectItem value="cerd">CERD — Obs. Finais ONU ({origemCounts.cerd})</SelectItem>
-                              <SelectItem value="cnj">CNJ — Audiências de Custódia ({origemCounts.cnj})</SelectItem>
-                              <SelectItem value="stf">STF — ADO 26 ({origemCounts.stf})</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        {/* Summary badges */}
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {(['cerd', 'cnj', 'stf'] as OrigemLacuna[]).map(o => (
-                            <Badge
-                              key={o}
-                              variant="outline"
-                              className={cn('text-xs cursor-pointer border', ORIGEM_CONFIG[o].cor, filterOrigem === o && 'ring-2 ring-offset-1 ring-primary')}
-                              onClick={() => setFilterOrigem(filterOrigem === o ? 'all' : o)}
-                            >
-                              {ORIGEM_CONFIG[o].labelCurto}: {origemCounts[o]}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      {filteredByOrigem.map(lacuna => (
-                        <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
-                      ))}
+              <Card className="mb-4 border-l-4 border-l-primary">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <Database className="w-6 h-6 text-primary flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold mb-1">Lacunas Identificadas — CERD/C/BRA/CO/18-20</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {lacunas?.length || 0} recomendações do Comitê CERD (§4–§65)
+                      </p>
                     </div>
-                  </>
-                );
-              })()}
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {(lacunas || []).map(lacuna => (
+                  <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
+                ))}
+              </div>
             </TabsContent>
 
             {/* ABA: RESPOSTAS CERD III */}

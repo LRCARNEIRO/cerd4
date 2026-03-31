@@ -200,22 +200,6 @@ export default function Recomendacoes() {
         </Card>
       </div>
 
-      {/* Origin breakdown */}
-      {(() => {
-        const origemCounts = contarPorOrigem(lacunas || []);
-        return (
-          <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
-            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> Origem dos registros:
-            </span>
-            {(['cerd', 'cnj', 'stf'] as OrigemLacuna[]).map(o => (
-              <Badge key={o} variant="outline" className={`text-xs border ${ORIGEM_CONFIG[o].cor}`}>
-                {ORIGEM_CONFIG[o].labelCurto}: {origemCounts[o]}
-              </Badge>
-            ))}
-          </div>
-        );
-      })()}
 
       <Tabs defaultValue="observacoes" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
