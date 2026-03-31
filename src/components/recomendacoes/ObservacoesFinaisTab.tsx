@@ -58,6 +58,11 @@ export function ObservacoesFinaisTab() {
             Observações Finais do CERD ao Brasil (19/12/2022). Total de {totalRecs} temas com recomendações diretas, 
             das quais {prioritarias} são tratadas como prioritárias (§68-69).
           </p>
+          <p className="text-xs text-muted-foreground mt-1 p-2 bg-primary/5 rounded border border-primary/10">
+            ℹ️ Este índice contém apenas as <strong>{totalRecs} recomendações do Comitê CERD</strong> (parágrafos §6-§67). 
+            A base completa do sistema inclui também recomendações do CNJ (Audiências de Custódia) e do STF (ADO 26), 
+            visíveis na aba "Lacunas Identificadas" em Conclusões.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="flex gap-3 mb-4">
