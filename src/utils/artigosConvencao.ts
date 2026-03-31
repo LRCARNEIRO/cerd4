@@ -101,9 +101,9 @@ export const ARTIGOS_CONVENCAO: ArtigoDefinicao[] = [
  * Cada eixo pode mapear para 1+ artigos.
  */
 export const EIXO_PARA_ARTIGOS: Record<ThematicAxis, ArtigoConvencao[]> = {
-  legislacao_justica:        ['I', 'II', 'VI'],
+  legislacao_justica:        ['I', 'II', 'IV', 'VI'],
   politicas_institucionais:  ['II'],
-  seguranca_publica:         ['V', 'VI'],      // V(b) segurança pessoal + VI proteção judicial
+  seguranca_publica:         ['IV', 'V', 'VI'],      // IV discurso de ódio/crimes + V(b) segurança pessoal + VI proteção judicial
   saude:                     ['V'],             // V(e)(iv)
   educacao:                  ['V', 'VII'],      // V(e)(v) + VII ensino/educação
   trabalho_renda:            ['V'],             // V(e)(i)
