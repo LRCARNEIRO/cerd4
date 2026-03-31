@@ -2,11 +2,11 @@
  * Classifica a origem de uma lacuna/recomendação com base no padrão do parágrafo.
  * 
  * - CERD: parágrafos numéricos (§4-§65) do CERD/C/BRA/CO/18-20
- * - CNJ: parágrafos com prefixo "p." do Relatório CNJ sobre Audiências de Custódia
- * - STF: parágrafos "RESUMO DO CASO" ou "Tese:" da ADO 26
+ * - RG: Recomendações Gerais do CERD (RG23, RG31, etc.)
+ * - Durban: Declaração e Plano de Ação de Durban
  */
 
-export type OrigemLacuna = 'cerd' | 'cnj' | 'stf';
+export type OrigemLacuna = 'cerd' | 'rg' | 'durban';
 
 export interface OrigemConfig {
   label: string;
@@ -18,34 +18,35 @@ export interface OrigemConfig {
 export const ORIGEM_CONFIG: Record<OrigemLacuna, OrigemConfig> = {
   cerd: {
     label: 'CERD/C/BRA/CO/18-20 — Observações Finais',
-    labelCurto: 'CERD',
+    labelCurto: 'Obs. Finais',
     documento: 'Comitê CERD — ONU (2022)',
     cor: 'bg-primary/10 text-primary border-primary/30',
   },
-  cnj: {
-    label: 'Relatório CNJ — Audiências de Custódia',
-    labelCurto: 'CNJ',
-    documento: 'Conselho Nacional de Justiça',
+  rg: {
+    label: 'Recomendações Gerais do CERD',
+    labelCurto: 'Rec. Gerais',
+    documento: 'Comitê CERD — ONU',
     cor: 'bg-amber-100 text-amber-800 border-amber-300',
   },
-  stf: {
-    label: 'STF — ADO 26 (Criminalização da Homofobia)',
-    labelCurto: 'STF/ADO 26',
-    documento: 'Supremo Tribunal Federal',
+  durban: {
+    label: 'Declaração e Plano de Ação de Durban',
+    labelCurto: 'Durban',
+    documento: 'Conferência de Durban (2001)',
     cor: 'bg-violet-100 text-violet-800 border-violet-300',
   },
 };
 
 export function classificarOrigemLacuna(paragrafo: string): OrigemLacuna {
-  if (paragrafo.startsWith('p.') || paragrafo.startsWith('p ')) return 'cnj';
-  if (paragrafo.startsWith('RESUMO') || paragrafo.startsWith('Tese')) return 'stf';
+  if (paragrafo.startsWith('RG')) return 'rg';
+  if (paragrafo.startsWith('Durban')) return 'durban';
   return 'cerd';
 }
 
 export function contarPorOrigem(lacunas: { paragrafo: string }[]): Record<OrigemLacuna, number> {
-  const counts: Record<OrigemLacuna, number> = { cerd: 0, cnj: 0, stf: 0 };
+  const counts: Record<OrigemLacuna, number> = { cerd: 0, rg: 0, durban: 0 };
   for (const l of lacunas) {
     counts[classificarOrigemLacuna(l.paragrafo)]++;
   }
   return counts;
 }
+
