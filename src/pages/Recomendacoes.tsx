@@ -142,15 +142,26 @@ export default function Recomendacoes() {
       <div className="mb-4">
         <MethodologyPanel variant="sensor" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
         <Card>
           <CardContent className="pt-4 pb-4 flex items-center gap-3">
             <div className="p-2 bg-muted rounded-lg">
               <Database className="w-5 h-5 text-foreground" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Total Lacunas</p>
+              <p className="text-xs text-muted-foreground">Obs. Finais (CERD)</p>
               <p className="text-xl font-bold">{isLoading ? '...' : stats?.total || 0}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Scale className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Rec. Gerais + Durban</p>
+              <p className="text-xl font-bold">7 + 3</p>
             </div>
           </CardContent>
         </Card>
@@ -198,6 +209,23 @@ export default function Recomendacoes() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Resumo de escopo */}
+      <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
+        <span className="text-xs font-medium text-muted-foreground">Escopo de análise:</span>
+        <Badge variant="outline" className="text-xs border border-primary/30 bg-primary/10 text-primary">
+          {stats?.total || 33} Observações Finais (§4–§65)
+        </Badge>
+        <Badge variant="outline" className="text-xs border border-accent/30 bg-accent/10">
+          7 Recomendações Gerais (RG 23, 31, 34, 35, 36, 37, 38)
+        </Badge>
+        <Badge variant="outline" className="text-xs border border-muted-foreground/30 bg-muted">
+          3 Parágrafos Durban (Declaração + Plano de Ação)
+        </Badge>
+        <Badge variant="secondary" className="text-xs font-semibold">
+          Total: {(stats?.total || 33) + 10} recomendações monitoradas
+        </Badge>
       </div>
 
 
