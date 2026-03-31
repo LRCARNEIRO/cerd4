@@ -101,16 +101,16 @@ export const ARTIGOS_CONVENCAO: ArtigoDefinicao[] = [
  * Cada eixo pode mapear para 1+ artigos.
  */
 export const EIXO_PARA_ARTIGOS: Record<ThematicAxis, ArtigoConvencao[]> = {
-  legislacao_justica:        ['I', 'II', 'IV', 'VI'],
+  legislacao_justica:        ['I', 'II', 'VI'],       // IV removido — Art. IV só por keywords específicas de discurso de ódio
   politicas_institucionais:  ['II'],
-  seguranca_publica:         ['IV', 'V', 'VI'],      // IV discurso de ódio/crimes + V(b) segurança pessoal + VI proteção judicial
-  saude:                     ['V'],             // V(e)(iv)
-  educacao:                  ['V', 'VII'],      // V(e)(v) + VII ensino/educação
-  trabalho_renda:            ['V'],             // V(e)(i)
-  terra_territorio:          ['III', 'V'],      // III segregação + V(e)(iii) moradia + V(d) circulação
-  cultura_patrimonio:        ['V', 'VII'],      // V(e)(vi) + VII cultura
-  participacao_social:       ['V'],             // V(c) direitos políticos
-  dados_estatisticas:        ['I', 'II'],       // Base para definição e obrigações
+  seguranca_publica:         ['V', 'VI'],             // IV removido — segurança pública ≠ propaganda racista
+  saude:                     ['V'],                   // V(e)(iv)
+  educacao:                  ['V', 'VII'],             // V(e)(v) + VII ensino/educação
+  trabalho_renda:            ['V'],                   // V(e)(i)
+  terra_territorio:          ['III', 'V'],             // III segregação + V(e)(iii) moradia + V(d) circulação
+  cultura_patrimonio:        ['V', 'VII'],             // V(e)(vi) + VII cultura
+  participacao_social:       ['V'],                   // V(c) direitos políticos
+  dados_estatisticas:        ['I', 'II'],             // Base para definição e obrigações
 };
 
 /**
