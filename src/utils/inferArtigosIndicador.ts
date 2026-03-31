@@ -37,6 +37,7 @@ export function inferArtigosIndicador(ind: any): ArtigoConvencao[] {
   if (/trabalho|renda|desemprego|pobreza|moradia|habita/.test(texto)) arts.add('V');
   if (/quilomb|ind[ií]gena|indigena|territ[óo]rio|favela|aglomerado/.test(texto)) { arts.add('III'); arts.add('V'); }
   if (/racismo|discrimin|igualdade|ação afirmativa|acao afirmativa|dados|estat[íi]st/.test(texto)) { arts.add('I'); arts.add('II'); }
+  if (/[óo]dio|propaganda.*racis|extremism|neonazi|supremaci|incita[çc]|tipifica[çc]|inj[úu]ria.*racial|crime.*racial|discurso.*[óo]dio/.test(texto)) arts.add('IV');
   if (/justi[çc]a|judici|repara/.test(texto)) arts.add('VI');
   if (/cultura|patrim|lei 10.639|curr[ií]culo/.test(texto)) arts.add('VII');
 
