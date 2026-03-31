@@ -5,11 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles, Scale } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles, Scale, Filter } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresAnaliticos, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
+import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
