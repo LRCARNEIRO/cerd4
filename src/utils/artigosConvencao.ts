@@ -101,9 +101,9 @@ export const ARTIGOS_CONVENCAO: ArtigoDefinicao[] = [
  * Cada eixo pode mapear para 1+ artigos.
  */
 export const EIXO_PARA_ARTIGOS: Record<ThematicAxis, ArtigoConvencao[]> = {
-  legislacao_justica:        ['I', 'II', 'VI'],
+  legislacao_justica:        ['I', 'II', 'IV', 'VI'],
   politicas_institucionais:  ['II'],
-  seguranca_publica:         ['V', 'VI'],      // V(b) segurança pessoal + VI proteção judicial
+  seguranca_publica:         ['IV', 'V', 'VI'],      // IV discurso de ódio/crimes + V(b) segurança pessoal + VI proteção judicial
   saude:                     ['V'],             // V(e)(iv)
   educacao:                  ['V', 'VII'],      // V(e)(v) + VII ensino/educação
   trabalho_renda:            ['V'],             // V(e)(i)
@@ -184,6 +184,7 @@ export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; 
   if (texto.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos|socioeducativ/)) arts.push('VI');
   if (texto.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) arts.push('V', 'VII');
   if (texto.match(/igualdade|discrimin|racis|enfrentamento ao racismo/)) arts.push('I', 'II');
+  if (texto.match(/ódio|odio|propaganda racis|extremism|neonazi|supremaci|incitaç|incitac|tipificaç|tipificac|injúria racial|injuria racial|crime.*racial|discurso.*ódio|discurso.*odio/)) arts.push('IV');
   if (texto.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/)) arts.push('V', 'VI');
   if (texto.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|fortalecimento institucional/)) arts.push('II');
   if (texto.match(/mulher|gênero|genero/)) arts.push('V');
