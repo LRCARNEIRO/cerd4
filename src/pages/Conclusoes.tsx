@@ -41,6 +41,8 @@ import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificati
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { classificarOrigemLacuna, contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Conclusoes() {
   const queryClient = useQueryClient();
