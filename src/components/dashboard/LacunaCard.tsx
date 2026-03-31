@@ -9,6 +9,7 @@ import { LacunaEnrichedJustification } from '@/components/dashboard/LacunaEnrich
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
 import { useMemo } from 'react';
+import { classificarOrigemLacuna, ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 
 interface LacunaCardProps {
   lacuna: LacunaIdentificada;
