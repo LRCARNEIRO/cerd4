@@ -164,7 +164,7 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
   <p>24. Em resposta, o governo implementou: (i) Resolução CNJ n.º 525/2023 com diagnósticos raciais sobre impacto de decisões penais; (ii) Protocolo de Uso da Força com Perspectiva Racial (2024); e (iii) revisão de penas de presos provisórios com atenção à desproporção racial.</p>
 
   <h4>3.3 Povos ciganos: segregação e documentação</h4>
-  <p>25. O Censo 2022 identificou aproximadamente 1,1 milhão de pessoas ciganas, distribuídas em todas as regiões.</p>
+  <p>25. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira.</p>
 
   <p>26. O Projeto Documentar, coordenado pelo MIR em parceria com o TSE e cartórios de registro civil, realizou mutirões de documentação em 148 acampamentos ciganos entre 2023 e 2024, emitindo 12.340 documentos civis para pessoas previamente sem registro. O Plano Nacional de Políticas para Povos Ciganos, lançado em 2024, estrutura metas específicas de universalização da documentação e acesso a serviços essenciais para o período 2024–2027.</p>`;
 }

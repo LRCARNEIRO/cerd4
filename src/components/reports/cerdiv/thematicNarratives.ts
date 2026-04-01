@@ -512,7 +512,7 @@ export function renderAllRecommendations(lacunas: any[]): string {
   return `
   <h2>II. Quadro Completo de Cumprimento das Recomendações</h2>
   <div class="section">
-    <p>O Comitê CERD emitiu um total de <strong>${lacunas.length} recomendações/observações</strong> ao Brasil. A análise sistemática revela o seguinte quadro de cumprimento, organizado por eixo temático:</p>
+    <p>O sistema monitora <strong>${lacunas.length} recomendações/observações</strong> provenientes de três fontes: Observações Finais do CERD (2022), Recomendações Gerais do Comitê e Declaração e Plano de Ação de Durban. A análise sistemática revela o seguinte quadro de cumprimento, organizado por eixo temático:</p>
 
     ${svgDonutChart([
       { label: 'Cumprido', value: porStatus.cumprido || 0, color: '#22c55e' },
