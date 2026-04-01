@@ -17,6 +17,7 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
 import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
 import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
+import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import {
   generateObservacoesFinaisHTML, generateLacunasExportHTML,
