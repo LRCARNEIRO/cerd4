@@ -227,11 +227,16 @@ export default function Recomendacoes() {
 
       <Tabs defaultValue="observacoes" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
+          <TabsTrigger value="relacao">📋 Relação Completa</TabsTrigger>
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="relacao">
+          <RelacaoRecomendacoesTab />
+        </TabsContent>
 
         <TabsContent value="observacoes">
           <div className="flex justify-end mb-3" data-export-ignore="true">
