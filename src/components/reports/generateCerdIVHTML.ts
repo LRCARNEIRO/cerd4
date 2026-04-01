@@ -363,6 +363,7 @@ function renderTOC(): string {
       <li style="margin-top:0.3cm;border-top:1px solid #e2e8f0;padding-top:0.3cm"><strong>ANEXO ANALÍTICO — PLATAFORMA CERD4</strong></li>
       <li><strong>I.</strong> Metodologia do Sistema CERD4</li>
       <li><strong>II.</strong> Cruzamento: Recomendações × Artigos × Evidências</li>
+      <li><strong>II-B.</strong> Relação Consolidada de Recomendações Monitoradas</li>
       <li><strong>III.</strong> Quadro Detalhado: Recomendações × Evidências</li>
       <li><strong>IV.</strong> Base Estatística — Evolução dos Indicadores por Artigo</li>
       <li><strong>V.</strong> Base Orçamentária — Investimento em Igualdade Racial</li>
