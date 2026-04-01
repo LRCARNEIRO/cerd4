@@ -154,6 +154,18 @@ li { margin-bottom: 0.2cm; }
 .annex-header p { color: #cbd5e1; margin: 0.3cm 0 0; font-size: 10pt; }
 `;
 
+/** Reusable status legend block for report sections */
+function renderStatusLegend(): string {
+  return `
+    <div style="margin-top:0.5cm;padding:0.4cm 0.6cm;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:8.5pt;color:#475569">
+      <strong style="color:#1e3a5f">Legenda de Status:</strong>
+      <span class="badge badge-success" style="margin-left:0.3cm">Cumprido</span> Implementação integral verificada &nbsp;|&nbsp;
+      <span class="badge badge-warning">Parcial</span> Implementação parcial ou em estágio avançado &nbsp;|&nbsp;
+      <span class="badge badge-info">Em Andamento</span> Medidas iniciadas, sem conclusão &nbsp;|&nbsp;
+      <span class="badge badge-danger">Não Cumprido</span> Sem ação efetiva &nbsp;|&nbsp;
+      <span class="badge badge-danger" style="background:#fee2e2;border-color:#fca5a5">Retrocesso</span> Situação pior que o período anterior
+    </div>`;
+}
 // ═══════════════════════════════════════════
 // LABELS
 // ═══════════════════════════════════════════
