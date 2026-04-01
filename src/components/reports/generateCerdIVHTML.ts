@@ -1203,7 +1203,74 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
   </div>`;
 }
 
-function renderRespostasCerdIIIAnnex(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any, orcDados?: DadoOrcamentario[], normativos?: any[]): string {
+function renderRelacaoCompleta(lacunas: LacunaIdentificada[]): string {
+  if (!lacunas.length) return '';
+
+  const grouped: Record<OrigemLacuna, LacunaIdentificada[]> = { cerd: [], rg: [], durban: [] };
+  for (const l of lacunas) {
+    grouped[classificarOrigemLacuna(l.paragrafo)].push(l);
+  }
+  grouped.cerd.sort((a, b) => {
+    const na = parseInt(a.paragrafo.replace(/\D/g, '')) || 0;
+    const nb = parseInt(b.paragrafo.replace(/\D/g, '')) || 0;
+    return na - nb;
+  });
+  grouped.rg.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
+  grouped.durban.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
+
+  const renderGroup = (key: OrigemLacuna, items: LacunaIdentificada[]): string => {
+    if (items.length === 0) return '';
+    const config = ORIGEM_CONFIG[key];
+    const borderColor = key === 'cerd' ? '#1e3a5f' : key === 'rg' ? '#d97706' : '#7c3aed';
+
+    const statusCount: Record<string, number> = {};
+    items.forEach(l => { statusCount[l.status_cumprimento] = (statusCount[l.status_cumprimento] || 0) + 1; });
+
+    const summaryBadges = [
+      statusCount.cumprido ? `<span class="badge badge-success">${statusCount.cumprido} Cumprida(s)</span>` : '',
+      statusCount.parcialmente_cumprido ? `<span class="badge badge-warning">${statusCount.parcialmente_cumprido} Parcial(is)</span>` : '',
+      statusCount.em_andamento ? `<span class="badge badge-info">${statusCount.em_andamento} Em Andamento</span>` : '',
+      statusCount.nao_cumprido ? `<span class="badge badge-danger">${statusCount.nao_cumprido} Não Cumprida(s)</span>` : '',
+      statusCount.retrocesso ? `<span class="badge badge-danger">${statusCount.retrocesso} Retrocesso(s)</span>` : '',
+    ].filter(Boolean).join(' &nbsp; ');
+
+    return `
+      <div style="margin-bottom:0.8cm;border-left:4px solid ${borderColor};padding-left:0.5cm">
+        <h4 style="margin-top:0">${config.label} <span style="font-weight:400;font-size:9pt;color:#64748b">(${items.length} recomendações)</span></h4>
+        <p style="font-size:8.5pt;color:#64748b;margin-bottom:0.3cm">${config.documento}</p>
+        <p style="margin-bottom:0.4cm">${summaryBadges}</p>
+        <table style="font-size:9pt">
+          <thead><tr><th style="width:70px">§</th><th>Tema</th><th style="width:130px">Eixo Temático</th><th style="width:110px">Status</th><th style="width:80px">Prioridade</th></tr></thead>
+          <tbody>${items.map(l => {
+            const st = statusCfg[l.status_cumprimento] || statusCfg.nao_cumprido;
+            return `<tr>
+              <td><span class="paragraph-ref">${l.paragrafo}</span></td>
+              <td>${l.tema}</td>
+              <td style="font-size:8.5pt">${eixoLabels[l.eixo_tematico] || l.eixo_tematico}</td>
+              <td><span class="badge ${st.badge}">${st.label}</span></td>
+              <td style="text-transform:capitalize;font-size:8.5pt">${l.prioridade}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+  };
+
+  return `
+  <div style="page-break-before:always"></div>
+  <h2>II-B. Relação Consolidada de Recomendações Monitoradas</h2>
+  <div class="section">
+    <p>Total de <strong>${lacunas.length}</strong> recomendações ativas, distribuídas em três categorias de origem:
+    Observações Finais do CERD (${grouped.cerd.length}), Recomendações Gerais (${grouped.rg.length}) e Declaração de Durban (${grouped.durban.length}).</p>
+    
+    ${renderGroup('cerd', grouped.cerd)}
+    ${renderGroup('rg', grouped.rg)}
+    ${renderGroup('durban', grouped.durban)}
+
+    ${renderStatusLegend()}
+  </div>`;
+}
+
+
   return renderRespostasCerdIII(respostas, lacunas, indicadores, orcStats, orcDados, normativos);
 }
 
