@@ -296,6 +296,7 @@ export function generateCerdIVFullHTML(d: CerdIVFullData): string {
   ${renderAnalyticalAnnexCover(d, total, safeIndicadores.length)}
   ${renderAnalyticalMethodology(d, safeIndicadores.length)}
   ${renderCrossReferenceTable(d.lacunas, safeIndicadores, d.orcDados || [], d.normativos || [])}
+  ${renderRelacaoCompleta(d.lacunas)}
   ${renderRecommendationsSummary(d.lacunas)}
   ${renderBudgetAnalysis(d.orcStats, d.orcDados || [])}
   ${renderNormativeBase(d.normativos || [])}
