@@ -1270,7 +1270,7 @@ function renderRelacaoCompleta(lacunas: LacunaIdentificada[]): string {
   </div>`;
 }
 
-
+function renderRespostasCerdIIIAnnex(respostas: RespostaLacunaCerdIII[], lacunas: LacunaIdentificada[], indicadores: IndicadorInterseccional[], orcStats: any, orcDados?: DadoOrcamentario[], normativos?: any[]): string {
   return renderRespostasCerdIII(respostas, lacunas, indicadores, orcStats, orcDados, normativos);
 }
 
