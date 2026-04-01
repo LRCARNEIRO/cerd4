@@ -195,6 +195,14 @@ export function renderArticleRecommendationEvidence(lacunas: LacunaIdentificada[
         <thead><tr><th>§</th><th>Tema</th><th>Status</th><th>Evidências / Ações do Brasil</th><th>Fontes</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
+      <div style="margin-top:0.4cm;padding:0.3cm 0.5cm;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:8pt;color:#475569">
+        <strong style="color:#1e3a5f">Legenda:</strong>
+        <span class="badge badge-success">Cumprido</span> Implementação integral &nbsp;|&nbsp;
+        <span class="badge badge-warning">Parcial</span> Implementação parcial &nbsp;|&nbsp;
+        <span class="badge badge-info">Em Andamento</span> Medidas iniciadas &nbsp;|&nbsp;
+        <span class="badge badge-danger">Não Cumprido</span> Sem ação efetiva &nbsp;|&nbsp;
+        <span class="badge badge-danger" style="background:#fee2e2;border-color:#fca5a5">Retrocesso</span> Situação pior
+      </div>
     </div>`;
 }
 
