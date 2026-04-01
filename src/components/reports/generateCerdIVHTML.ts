@@ -1114,7 +1114,7 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
   return `
   <h2>III. Quadro Resumido: Recomendações × Evidências</h2>
   <div class="section">
-    <p>O Comitê CERD emitiu <strong>${lacunas.length} recomendações/observações</strong> ao Brasil nas Observações Finais de 2022. O quadro abaixo sintetiza o status consolidado. O detalhamento completo, com descrições, evidências e ações do Brasil, está no <strong>Anexo A</strong>.</p>
+    <p>O sistema monitora <strong>${lacunas.length} recomendações/observações</strong> provenientes de três fontes: Observações Finais do CERD (2022), Recomendações Gerais do Comitê e Declaração e Plano de Ação de Durban. O quadro abaixo sintetiza o status consolidado. O detalhamento completo, com descrições, evidências e ações do Brasil, está no <strong>Anexo A</strong>.</p>
     
     ${svgDonutChart([
       { label: 'Cumprido', value: porStatus.cumprido || 0, color: '#22c55e' },
