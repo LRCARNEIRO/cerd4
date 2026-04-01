@@ -1196,6 +1196,7 @@ function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
         }).join('')}
       </svg>
     </div>
+    ${renderStatusLegend()}
   </div>`;
 }
 
