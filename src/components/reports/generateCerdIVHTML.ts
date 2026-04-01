@@ -1076,6 +1076,7 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
        ${critico > 0 ? `<p style="font-size:9pt;color:#991b1b;margin-bottom:0"><strong>⚠ Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>
     ${renderStatusLegend()}`;
+}
 
 function renderRecommendationsSummary(lacunas: LacunaIdentificada[]): string {
   if (!lacunas.length) return '';
