@@ -225,7 +225,7 @@ export default function Recomendacoes() {
       })()}
 
 
-      <Tabs defaultValue="observacoes" className="w-full">
+      <Tabs defaultValue="relacao" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="relacao">📋 Relação Completa</TabsTrigger>
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
