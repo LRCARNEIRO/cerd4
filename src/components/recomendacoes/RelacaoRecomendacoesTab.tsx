@@ -132,21 +132,13 @@ th{background:#f1f5f9;font-size:10px}
 </div>
 
 <div class="methodology">
-<h2>🔗 Metodologia de Vinculação e Score</h2>
-<p><strong>Vinculação:</strong> Tags explícitas (BD) → Eixo temático (fallback).</p>
+<h2>🔗 Metodologia de Vinculação</h2>
+<p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback).</p>
 <table>
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
 </table>
-<h3>Score 0-100 (Modelo Híbrido Anti-Coringa)</h3>
-<table>
-<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Indicadores Estatísticos</td><td>40%</td><td>Dados quantitativos vinculados por tags ou palavras-chave</td></tr>
-<tr><td>Orçamento</td><td>30%</td><td>Ações orçamentárias vinculadas (cobertura)</td></tr>
-<tr><td>Normativos</td><td>30%</td><td>Instrumentos legislativos vinculados</td></tr>
-</table>
-<p class="nota"><strong>Cap de Piora:</strong> Se indicadores pioram > melhoram, score máximo = 55 (Parcial).</p>
-<p class="nota"><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+<p class="nota"><strong>Status:</strong> Avaliação computada disponível em Produtos → Conclusões → Evolução Recomendações.</p>
 </div>
 
 <h2>Detalhamento</h2>
