@@ -167,7 +167,7 @@ export default function Recomendacoes() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Cumpridas</p>
-                    <p className="text-xl font-bold text-success">{isLoading ? '...' : stats?.porStatus.cumprido || 0}</p>
+                    <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -178,7 +178,7 @@ export default function Recomendacoes() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Parciais</p>
-                    <p className="text-xl font-bold text-warning">{isLoading ? '...' : stats?.porStatus.parcialmente_cumprido || 0}</p>
+                    <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.parcialmente_cumprido || 0) + (sensorSummary?.statusReclassificado.em_andamento || 0) : stats?.porStatus.parcialmente_cumprido || 0}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -189,7 +189,7 @@ export default function Recomendacoes() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                    <p className="text-xl font-bold text-destructive">{isLoading ? '...' : stats?.porStatus.nao_cumprido || 0}</p>
+                    <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) : stats?.porStatus.nao_cumprido || 0}</p>
                   </div>
                 </CardContent>
               </Card>
