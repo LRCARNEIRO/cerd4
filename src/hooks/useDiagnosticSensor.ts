@@ -504,7 +504,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [lacunas, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
+  }, [recomendacoes, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
