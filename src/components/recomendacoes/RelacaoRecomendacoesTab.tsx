@@ -197,14 +197,10 @@ ${renderRows(allItems)}
                 <TableRow>
                   <TableHead className="w-[80px]">§</TableHead>
                   <TableHead>Tema</TableHead>
-                  <TableHead className="w-[100px]">Artigos</TableHead>
-                  <TableHead className="w-[130px]">Justificativa</TableHead>
+                  <TableHead className="w-[120px]">Artigos</TableHead>
+                  <TableHead className="w-[150px]">Justificativa</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
-                  <TableHead className="w-[60px]">Score</TableHead>
-                  <TableHead className="w-[100px]">Indicadores</TableHead>
-                  <TableHead className="w-[100px]">Orçamento</TableHead>
-                  <TableHead className="w-[100px]">Normativos</TableHead>
-                  <TableHead className="w-[80px]">Prioridade</TableHead>
+                  <TableHead className="w-[90px]">Prioridade</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
