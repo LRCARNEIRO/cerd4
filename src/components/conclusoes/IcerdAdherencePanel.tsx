@@ -186,34 +186,32 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
 }
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Aderência = "O sistema tem dados suficientes para avaliar este artigo?"
-  // Foco exclusivo em dados externos (orçamento, normativos, indicadores, séries).
-  // Respostas CERD III e Conclusões Analíticas são outputs interpretativos do sistema,
-  // NÃO evidências externas — removidos do cálculo para evitar circularidade.
+  // Aderência = visão GERENCIAL — "O Estado está respondendo às obrigações CERD?"
+  // Peso maior para Recomendações ONU atendidas (o core da aderência ao Comitê).
   //
-  // Pesos: Recomendações ONU (20%), Normativos (25%), Orçamento (20%),
+  // Pesos: Recomendações ONU (30%), Normativos (20%), Orçamento (15%),
   //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Recomendações ONU (0-20) — contabiliza em_andamento como 30%
+  // Recomendações ONU (0-30) — PESO PRINCIPAL — contabiliza em_andamento como 30%
   if (a.lacunasTotal > 0) {
     const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
     const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
     const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
-    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
+    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 30;
     if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
   } else {
-    score += 10;
+    score += 15;
   }
 
-  // Cobertura Normativa (0-25) — peso alto para esforço legislativo
+  // Cobertura Normativa (0-20) — esforço legislativo
   if (a.normativosCount > 0) {
-    score += Math.min(25, a.normativosCount * 3);
+    score += Math.min(20, a.normativosCount * 2.5);
   }
 
-  // Cobertura Orçamentária (0-20) — quantidade de ações vinculadas
+  // Cobertura Orçamentária (0-15) — quantidade de ações vinculadas
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(20, a.orcamentoProgramas * 2.2);
+    score += Math.min(15, a.orcamentoProgramas * 1.8);
   }
 
   // Indicadores + Séries Estatísticas (0-25) — dados quantitativos
