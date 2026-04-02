@@ -495,7 +495,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       };
 
       return {
-        lacunaId: lacuna.id,
+        recomendacaoId: rec.id,
         statusComputado,
         auditoria,
         signals,
