@@ -370,18 +370,19 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         signals.push({ type: 'orcamento_simbolico', severity: 'info', message: `${totalOrc} ação(ões) orçamentária(s) vinculada(s)` });
       }
 
-      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) ──
+      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — modelo híbrido ──
       const totalNorm = normativosVinculados.length;
+      const totalNormW = normativosVinculados.reduce((s, n) => s + getNormWeight(n), 0);
       let scoreNorm = 0;
-      if (totalNorm >= 5) scoreNorm = 100;
-      else if (totalNorm >= 3) scoreNorm = 80;
-      else if (totalNorm >= 2) scoreNorm = 60;
-      else if (totalNorm >= 1) scoreNorm = 40;
-      else scoreNorm = 5; // sem normativo = quase zero
+      if (totalNormW >= 4) scoreNorm = 100;
+      else if (totalNormW >= 2.5) scoreNorm = 80;
+      else if (totalNormW >= 1.5) scoreNorm = 60;
+      else if (totalNormW >= 0.5) scoreNorm = 40;
+      else scoreNorm = 5;
 
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) normativo(s) vinculado(s). Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) [${totalNormKeyword} keyword, ${totalNormEixo} eixo×50%], peso efetivo ${totalNormW.toFixed(1)}. Score: ${scoreNorm}/100.`;
 
       // Signals for normatives
       if (totalNorm > 0) {
