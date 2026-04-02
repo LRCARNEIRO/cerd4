@@ -4,15 +4,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/components/ui/progress';
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
-import { Loader2, TrendingUp, BarChart3, TrendingDown, Minus } from 'lucide-react';
-import { useMemo, useCallback } from 'react';
+import { Loader2, TrendingUp, BarChart3, TrendingDown, Minus, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { useMemo, useCallback, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
-import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
+import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -53,13 +53,11 @@ type EvolucaoResult = {
   eixo_tematico: string;
   artigos: ArtigoConvencao[];
   prioridade: string;
-  // Evolution scores (same methodology as FarolEvolucaoPanel)
   scoreOrcamento: number;
   scoreNormativa: number;
   scoreIndicadores: number;
   scoreFarol: number;
   sinal: 'verde' | 'amarelo' | 'vermelho';
-  // Details
   programasCount: number;
   acoesVinculadas: number;
   totalLiquidado: number;
@@ -68,18 +66,20 @@ type EvolucaoResult = {
   indicadoresDesfavoraveis: number;
   indicadoresNovos: number;
   indicadoresTotal: number;
+  // raw data for drilldown
+  rawIndicadores: any[];
+  rawNormativos: any[];
+  rawOrcamento: any[];
 };
 
 /**
- * Evolução das Recomendações — mesma metodologia de Evolução dos Artigos.
- * Avalia se as evidências vinculadas a cada recomendação melhoraram no período 2018-2025.
- * Orçamento (35%): programas + R$ liquidado
- * Normativa (35%): instrumentos normativos vinculados
- * Indicadores (30%): tendência favorável na série histórica
+ * Evolução das Recomendações — avalia se evidências vinculadas melhoraram (2018-2025).
+ * Pesos: Indicadores (50%) + Orçamento (30%) + Normativos (20%)
  * Semáforo: ≥60% Evolução | 35-59% Estagnação | <35% Retrocesso
  */
 export function EvolucaoRecomendacoesPanel() {
   const { data: recomendacoes, isLoading: loadingRecs } = useLacunasIdentificadas({});
+  const [drilldown, setDrilldown] = useState<{ rec: EvolucaoResult; tab: string } | null>(null);
 
   const { data: indicadores, isLoading: loadingInd } = useQuery({
     queryKey: ['evolucao-rec-indicadores'],
@@ -142,7 +142,6 @@ export function EvolucaoRecomendacoesPanel() {
         const oArts = ((o.artigos_convencao || []) as string[]).map(normalizeArticle).filter(Boolean);
         return artigos.some(a => oArts.includes(a));
       });
-      // Also match by keyword in tema/descricao
       const temaTokens = `${rec.tema} ${rec.descricao_lacuna}`.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .split(/\s+/).filter(t => t.length >= 5);
@@ -181,7 +180,7 @@ export function EvolucaoRecomendacoesPanel() {
       });
       const allInd = Array.from(new Map([...artigoInd, ...indByKeyword].map((i: any) => [i.nome, i])).values());
 
-      // Evaluate indicator trends (same as FarolEvolucaoPanel)
+      // Evaluate indicator trends
       let favoraveis = 0, desfavoraveis = 0, novos = 0;
       allInd.forEach((ind: any) => {
         const result = evaluateIndicadorDetailed(ind).result;
@@ -196,14 +195,14 @@ export function EvolucaoRecomendacoesPanel() {
         : 0;
       const scoreIndicadores = Math.max(0, Math.min(100, rawIndScore));
 
-      // Scores — same formula as FarolEvolucaoPanel
+      // NEW WEIGHTS: Indicadores 50%, Orçamento 30%, Normativos 20%
       const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
       const scoreNormativa = Math.min(100, normativosCount * 12);
 
       const scoreFarol = Math.round(
-        scoreOrcamento * 0.35 +
-        scoreNormativa * 0.35 +
-        scoreIndicadores * 0.30
+        scoreIndicadores * 0.50 +
+        scoreOrcamento * 0.30 +
+        scoreNormativa * 0.20
       );
 
       const sinal: 'verde' | 'amarelo' | 'vermelho' = scoreFarol >= 60 ? 'verde' : scoreFarol >= 35 ? 'amarelo' : 'vermelho';
@@ -228,6 +227,9 @@ export function EvolucaoRecomendacoesPanel() {
         indicadoresDesfavoraveis: desfavoraveis,
         indicadoresNovos: novos,
         indicadoresTotal,
+        rawIndicadores: allInd,
+        rawNormativos: allNorm,
+        rawOrcamento: allOrc,
       };
     });
   }, [recomendacoes, indicadores, orcamento, normativos]);
@@ -251,54 +253,81 @@ export function EvolucaoRecomendacoesPanel() {
   const generateExportHTML = useCallback(() => {
     if (results.length === 0) return '<html><body>Sem dados</body></html>';
 
-    const renderRows = (items: EvolucaoResult[]) => items.map(r => {
+    const renderDetailRows = (items: EvolucaoResult[]) => items.map(r => {
       const corSinal = r.sinal === 'verde' ? '#16a34a' : r.sinal === 'amarelo' ? '#ca8a04' : '#dc2626';
       const labelSinal = r.sinal === 'verde' ? 'Evolução' : r.sinal === 'amarelo' ? 'Estagnação' : 'Retrocesso';
+
+      // Evidence details for export
+      const indDetails = r.rawIndicadores.map((ind: any) => {
+        const ev = evaluateIndicadorDetailed(ind);
+        const trendLabel = ev.result === 'favoravel' ? '↑ Melhoria' : ev.result === 'desfavoravel' ? '↓ Piora' : ev.result === 'novo' ? '★ Novo' : '— Neutro';
+        return `<li>${ind.nome} (${ind.fonte || ind.categoria}) — <strong>${trendLabel}</strong></li>`;
+      }).join('');
+
+      const normDetails = r.rawNormativos.map((n: any) => `<li>${n.titulo}</li>`).join('');
+
+      const orcDetails = r.rawOrcamento.slice(0, 15).map((o: any) =>
+        `<li>${o.programa} — ${o.orgao} (${o.ano}) — R$ ${((Number(o.liquidado) || 0) / 1e6).toFixed(1)}M liquidado</li>`
+      ).join('');
+
       return `<tr>
-        <td style="font-family:monospace;font-weight:bold">${r.paragrafo}</td>
-        <td>${r.tema}</td>
-        <td>${r.artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
-        <td style="color:${corSinal};font-weight:bold">${labelSinal} (${r.scoreFarol}%)</td>
-        <td style="font-size:10px">${r.programasCount} prog. / ${r.acoesVinculadas} ações (R$ ${(r.totalLiquidado / 1e9).toFixed(2)} bi)</td>
-        <td style="font-size:10px">${r.normativosCount} instrumento(s)</td>
-        <td style="font-size:10px">${r.indicadoresFavoraveis}↑ ${r.indicadoresNovos}★ ${r.indicadoresDesfavoraveis}↓ (${r.indicadoresTotal} total)</td>
-        <td style="font-size:10px">${eixoLabels[r.eixo_tematico] || r.eixo_tematico}</td>
+        <td style="font-family:monospace;font-weight:bold;vertical-align:top">${r.paragrafo}</td>
+        <td style="vertical-align:top">${r.tema}</td>
+        <td style="color:${corSinal};font-weight:bold;vertical-align:top">${labelSinal} (${r.scoreFarol}%)</td>
+        <td style="font-size:10px;vertical-align:top">
+          <strong>Indicadores (${r.scoreIndicadores}pts — 50%):</strong> ${r.indicadoresTotal} total: ${r.indicadoresFavoraveis}↑ ${r.indicadoresNovos}★ ${r.indicadoresDesfavoraveis}↓
+          ${indDetails ? `<ul style="margin:4px 0;padding-left:16px">${indDetails}</ul>` : '<p>Nenhum indicador vinculado</p>'}
+          <strong>Orçamento (${r.scoreOrcamento}pts — 30%):</strong> ${r.programasCount} programa(s), R$ ${(r.totalLiquidado / 1e9).toFixed(2)} bi
+          ${orcDetails ? `<ul style="margin:4px 0;padding-left:16px">${orcDetails}</ul>` : '<p>Nenhuma ação orçamentária vinculada</p>'}
+          ${r.rawOrcamento.length > 15 ? `<p style="font-style:italic">... e mais ${r.rawOrcamento.length - 15} ações</p>` : ''}
+          <strong>Normativos (${r.scoreNormativa}pts — 20%):</strong> ${r.normativosCount} instrumento(s)
+          ${normDetails ? `<ul style="margin:4px 0;padding-left:16px">${normDetails}</ul>` : '<p>Nenhum instrumento normativo vinculado</p>'}
+        </td>
       </tr>`;
     }).join('');
 
     return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Evolução das Recomendações — Tendência de Evidências 2018-2025</title>
 <style>
-body{font-family:Arial,sans-serif;max-width:1200px;margin:20px auto;color:#222;font-size:12px}
+body{font-family:Arial,sans-serif;max-width:1400px;margin:20px auto;color:#222;font-size:12px}
 h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
 h2{font-size:14px;margin-top:20px;color:#1e40af}
 table{width:100%;border-collapse:collapse;margin:8px 0}
 th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:11px}
 th{background:#f1f5f9;font-size:10px}
+ul{font-size:10px}
 .methodology{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px;margin:12px 0}
+.summary-box{display:flex;gap:20px;margin:12px 0;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px}
 .nota{font-size:10px;color:#666}
 </style></head><body>
 <h1>📈 Evolução das Recomendações — Tendência de Evidências (2018-2025)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-<p><strong>Score Médio:</strong> ${mediaGeral}% | ${sinaisCount.verde} Evolução | ${sinaisCount.amarelo} Estagnação | ${sinaisCount.vermelho} Retrocesso</p>
+
+<div class="summary-box">
+  <div><strong>Score Médio:</strong> ${mediaGeral}%</div>
+  <div style="color:#16a34a"><strong>${sinaisCount.verde}</strong> Evolução (≥60%)</div>
+  <div style="color:#ca8a04"><strong>${sinaisCount.amarelo}</strong> Estagnação (35-59%)</div>
+  <div style="color:#dc2626"><strong>${sinaisCount.vermelho}</strong> Retrocesso (&lt;35%)</div>
+  <div><strong>Total:</strong> ${results.length} recomendações</div>
+</div>
 
 <div class="methodology">
-<h2>📐 Metodologia (idêntica à Evolução dos Artigos)</h2>
+<h2>📐 Metodologia</h2>
 <p>Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período 2018-2025.</p>
 <table>
-<tr><th>Dimensão</th><th>Peso</th><th>O que mede</th></tr>
-<tr><td>Orçamento</td><td>35%</td><td>Programas com execução rastreável + R$ liquidado</td></tr>
-<tr><td>Normativa</td><td>35%</td><td>Instrumentos legislativos vinculados</td></tr>
-<tr><td>Indicadores</td><td>30%</td><td>Tendência na série histórica (somente variação positiva pontua)</td></tr>
+<tr><th>Dimensão</th><th>Peso</th><th>O que mede</th><th>Justificativa</th></tr>
+<tr><td><strong>Indicadores</strong></td><td><strong>50%</strong></td><td>Tendência na série histórica (somente variação positiva pontua)</td><td>Termômetro real da efetividade — demonstra se a política alcançou a ponta</td></tr>
+<tr><td><strong>Orçamento</strong></td><td><strong>30%</strong></td><td>Programas com execução rastreável + R$ liquidado</td><td>Demonstra investimento concreto, embora não garanta resultado na ponta</td></tr>
+<tr><td><strong>Normativos</strong></td><td><strong>20%</strong></td><td>Instrumentos legislativos vinculados</td><td>Inicia o ciclo de políticas, mas é o mais distante do resultado final</td></tr>
 </table>
 <p class="nota"><strong>Semáforo:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
 <p class="nota"><strong>Diferença vs. Status (Relação Completa):</strong> O <em>Status</em> avalia se a recomendação foi cumprida (cobertura de dados). A <em>Evolução</em> avalia se os dados mostram melhora no período.</p>
 </div>
 
-<h2>Detalhamento por Recomendação</h2>
+<h2>Detalhamento por Recomendação (com evidências)</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Sinal</th><th>Orçamento</th><th>Normativos</th><th>Indicadores</th><th>Eixo</th></tr>
-${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
+<tr><th>§</th><th>Tema</th><th>Sinal</th><th>Evidências (Indicadores / Orçamento / Normativos)</th></tr>
+${renderDetailRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
 </table>
 
 <p class="nota" style="margin-top:16px">Documento gerado pelo Sistema de Monitoramento CERD IV — ${new Date().toLocaleDateString('pt-BR')}</p>
@@ -361,9 +390,9 @@ ${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
                   <TableHead className="w-[100px]">Artigos</TableHead>
                   <TableHead className="w-[110px]">Sinal</TableHead>
                   <TableHead className="w-[60px]">Score</TableHead>
-                  <TableHead className="w-[130px]">Orçamento (35%)</TableHead>
-                  <TableHead className="w-[100px]">Normativos (35%)</TableHead>
-                  <TableHead className="w-[130px]">Indicadores (30%)</TableHead>
+                  <TableHead className="w-[130px]">Indicadores (50%)</TableHead>
+                  <TableHead className="w-[130px]">Orçamento (30%)</TableHead>
+                  <TableHead className="w-[100px]">Normativos (20%)</TableHead>
                   <TableHead className="w-[80px]">Prioridade</TableHead>
                 </TableRow>
               </TableHeader>
@@ -390,17 +419,46 @@ ${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
                         {r.scoreFarol}%
                       </span>
                     </TableCell>
-                    <TableCell className="text-[10px] text-muted-foreground">
-                      {r.programasCount > 0 ? `${r.programasCount} prog. / R$ ${(r.totalLiquidado / 1e9).toFixed(2)}bi` : '—'}
-                      <div className="text-[9px]">({r.scoreOrcamento}pts)</div>
+                    <TableCell>
+                      <button
+                        onClick={() => setDrilldown({ rec: r, tab: 'indicadores' })}
+                        className="text-[10px] text-left hover:bg-muted/50 rounded p-1 cursor-pointer transition-colors w-full"
+                      >
+                        {r.indicadoresTotal > 0 ? (
+                          <>
+                            <span className="text-success">{r.indicadoresFavoraveis}↑</span>{' '}
+                            <span className="text-primary">{r.indicadoresNovos}★</span>{' '}
+                            <span className="text-destructive">{r.indicadoresDesfavoraveis}↓</span>
+                            <div className="text-[9px] text-muted-foreground">({r.scoreIndicadores}pts) — clique p/ detalhes</div>
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </button>
                     </TableCell>
-                    <TableCell className="text-[10px] text-muted-foreground">
-                      {r.normativosCount > 0 ? `${r.normativosCount} instr.` : '—'}
-                      <div className="text-[9px]">({r.scoreNormativa}pts)</div>
+                    <TableCell>
+                      <button
+                        onClick={() => setDrilldown({ rec: r, tab: 'orcamento' })}
+                        className="text-[10px] text-left hover:bg-muted/50 rounded p-1 cursor-pointer transition-colors w-full"
+                      >
+                        {r.programasCount > 0 ? (
+                          <>
+                            {r.programasCount} prog. / R$ {(r.totalLiquidado / 1e9).toFixed(2)}bi
+                            <div className="text-[9px] text-muted-foreground">({r.scoreOrcamento}pts) — clique p/ detalhes</div>
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </button>
                     </TableCell>
-                    <TableCell className="text-[10px] text-muted-foreground">
-                      {r.indicadoresTotal > 0 ? `${r.indicadoresFavoraveis}↑ ${r.indicadoresNovos}★ ${r.indicadoresDesfavoraveis}↓` : '—'}
-                      <div className="text-[9px]">({r.scoreIndicadores}pts)</div>
+                    <TableCell>
+                      <button
+                        onClick={() => setDrilldown({ rec: r, tab: 'normativos' })}
+                        className="text-[10px] text-left hover:bg-muted/50 rounded p-1 cursor-pointer transition-colors w-full"
+                      >
+                        {r.normativosCount > 0 ? (
+                          <>
+                            {r.normativosCount} instr.
+                            <div className="text-[9px] text-muted-foreground">({r.scoreNormativa}pts) — clique p/ detalhes</div>
+                          </>
+                        ) : <span className="text-muted-foreground">—</span>}
+                      </button>
                     </TableCell>
                     <TableCell>
                       <Badge variant={r.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
@@ -419,8 +477,9 @@ ${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
 
   return (
     <div className="space-y-6">
+      {/* Summary infographic */}
       <div className="bg-muted/30 rounded-lg border p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
             Evolução das Recomendações — Tendência de Evidências (2018-2025)
@@ -432,21 +491,52 @@ ${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
             compact
           />
         </div>
-        <p className="text-xs text-muted-foreground">
-          Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período, usando a mesma metodologia
-          da Evolução dos Artigos: Orçamento (35%), Normativa (35%), Indicadores (30%).
-        </p>
-        <div className="flex items-center gap-4 mt-3">
-          <div className="text-center">
-            <span className={`text-2xl font-bold ${mediaGeral >= 60 ? 'text-success' : mediaGeral >= 35 ? 'text-warning' : 'text-destructive'}`}>{mediaGeral}%</span>
-            <p className="text-[10px] text-muted-foreground">Score Médio</p>
+
+        {/* Status summary gauge */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+          <div className="bg-card rounded-lg border p-3 text-center">
+            <span className={`text-3xl font-bold ${mediaGeral >= 60 ? 'text-success' : mediaGeral >= 35 ? 'text-warning' : 'text-destructive'}`}>
+              {mediaGeral}%
+            </span>
+            <p className="text-[10px] text-muted-foreground mt-1">Score Médio</p>
           </div>
-          <div className="flex flex-wrap gap-3 text-xs">
-            <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-success" /> {sinaisCount.verde} Evolução (≥60%)</span>
-            <span className="flex items-center gap-1"><Minus className="w-3 h-3 text-warning" /> {sinaisCount.amarelo} Estagnação (35-59%)</span>
-            <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3 text-destructive" /> {sinaisCount.vermelho} Retrocesso (&lt;35%)</span>
+          <div className="bg-card rounded-lg border p-3 text-center">
+            <span className="text-2xl font-bold text-foreground">{results.length}</span>
+            <p className="text-[10px] text-muted-foreground mt-1">Total Recomendações</p>
+          </div>
+          <div className="bg-success/10 rounded-lg border border-success/20 p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <CheckCircle2 className="w-4 h-4 text-success" />
+              <span className="text-2xl font-bold text-success">{sinaisCount.verde}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Evolução (≥60%)</p>
+            <Progress value={results.length > 0 ? (sinaisCount.verde / results.length) * 100 : 0} className="h-1.5 mt-1" />
+          </div>
+          <div className="bg-warning/10 rounded-lg border border-warning/20 p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <AlertTriangle className="w-4 h-4 text-warning" />
+              <span className="text-2xl font-bold text-warning">{sinaisCount.amarelo}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Estagnação (35-59%)</p>
+            <Progress value={results.length > 0 ? (sinaisCount.amarelo / results.length) * 100 : 0} className="h-1.5 mt-1" />
+          </div>
+          <div className="bg-destructive/10 rounded-lg border border-destructive/20 p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <XCircle className="w-4 h-4 text-destructive" />
+              <span className="text-2xl font-bold text-destructive">{sinaisCount.vermelho}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Retrocesso (&lt;35%)</p>
+            <Progress value={results.length > 0 ? (sinaisCount.vermelho / results.length) * 100 : 0} className="h-1.5 mt-1" />
           </div>
         </div>
+
+        <p className="text-xs text-muted-foreground">
+          Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período, com pesos:
+          <strong> Indicadores (50%)</strong> — termômetro real de efetividade;
+          <strong> Orçamento (30%)</strong> — investimento concreto;
+          <strong> Normativos (20%)</strong> — início do ciclo de políticas.
+          <em> Clique nos contadores para auditar as evidências.</em>
+        </p>
       </div>
 
       {renderGroup('cerd', grouped.cerd)}
@@ -460,10 +550,29 @@ ${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning" /> <strong>Estagnação (35-59%):</strong> Pouca variação detectada</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso (&lt;35%):</strong> Indicadores em piora ou sem evidências</span>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-2 italic">
+        <p className="text-[10px] text-muted-foreground mt-2">
+          <strong>Pesos:</strong> Indicadores (50%) — verdadeiro termômetro da efetividade |
+          Orçamento (30%) — investimento concreto, mas não garante resultado na ponta |
+          Normativos (20%) — início do ciclo, menor peso pois não significa alcance.
+        </p>
+        <p className="text-[10px] text-muted-foreground mt-1 italic">
           <strong>Diferença vs. Status (Relação Completa):</strong> O Status avalia se a recomendação foi cumprida (cobertura). A Evolução avalia se os dados mostram melhora.
         </p>
       </div>
+
+      {/* Drilldown dialog reusing FarolDrilldownDialog */}
+      {drilldown && (
+        <FarolDrilldownDialog
+          open={!!drilldown}
+          onOpenChange={(open) => !open && setDrilldown(null)}
+          artigoNumero={`§${drilldown.rec.paragrafo}`}
+          artigoTitulo={drilldown.rec.tema}
+          indicadores={drilldown.rec.rawIndicadores}
+          normativos={drilldown.rec.rawNormativos}
+          orcamento={drilldown.rec.rawOrcamento}
+          initialTab={drilldown.tab}
+        />
+      )}
     </div>
   );
 }
