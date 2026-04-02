@@ -256,7 +256,7 @@ ${renderRows(allItems)}
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII e status computado (Score 0-100).
+          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD. Para análise de evolução com scores detalhados, consulte <em>Produtos → Conclusões → Evolução Recomendações</em>.
         </p>
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>

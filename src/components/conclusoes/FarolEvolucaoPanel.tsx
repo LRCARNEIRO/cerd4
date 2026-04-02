@@ -197,9 +197,14 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
                   {sinalIcon(art.sinal)}
                   Art. {art.numero} — {art.titulo}
                 </CardTitle>
-                <Badge className={`font-bold ${sinalColor(art.sinal)}`}>
-                  {art.scoreFarol}%
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className={`text-[10px] ${sinalColor(art.sinal)}`}>
+                    {art.sinal === 'verde' ? 'Evolução' : art.sinal === 'amarelo' ? 'Estagnação' : 'Retrocesso'}
+                  </Badge>
+                  <Badge className={`font-bold ${sinalColor(art.sinal)}`}>
+                    {art.scoreFarol}%
+                  </Badge>
+                </div>
               </div>
               <p className="text-[10px] text-muted-foreground">{art.tituloCompleto}</p>
             </CardHeader>
