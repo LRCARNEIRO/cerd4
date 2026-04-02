@@ -248,6 +248,22 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     return map;
   }, [normativos]);
 
+  // ── Frequência de cada artigo nos normativos (anti-coringa) ──
+  const artigoFrequency = useMemo(() => {
+    if (!normativos || normativos.length === 0) return {} as Record<string, number>;
+    const counts: Record<string, number> = {};
+    normativos.forEach(doc => {
+      const arts = ((doc.artigos_convencao as string[] | null) || [])
+        .map(normalizeArticle)
+        .filter(Boolean) as ArtigoConvencao[];
+      arts.forEach(a => { counts[a] = (counts[a] || 0) + 1; });
+    });
+    const total = normativos.length;
+    const freq: Record<string, number> = {};
+    Object.entries(counts).forEach(([a, c]) => { freq[a] = c / total; });
+    return freq;
+  }, [normativos]);
+
   // ── Diagnose each lacuna ─────────────────────────────────────────
   const diagnostics = useMemo<LacunaDiagnostic[]>(() => {
     if (!lacunas || !indicadores || !orcamento || !normativos) return [];
