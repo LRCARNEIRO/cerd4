@@ -289,10 +289,22 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
         return mapped ? mapped.includes(art.numero) : false;
       });
-      const cumpridas = artLacunas.filter(l => l.status_cumprimento === 'cumprido').length;
-      const parciais = artLacunas.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
-      const naoCumpridas = artLacunas.filter(l => l.status_cumprimento === 'nao_cumprido').length;
-      const retrocesso = artLacunas.filter(l => l.status_cumprimento === 'retrocesso').length;
+      const cumpridas = artLacunas.filter(l => {
+        const s = l._computedStatus || l.status_cumprimento;
+        return s === 'cumprido';
+      }).length;
+      const parciais = artLacunas.filter(l => {
+        const s = l._computedStatus || l.status_cumprimento;
+        return s === 'parcialmente_cumprido';
+      }).length;
+      const naoCumpridas = artLacunas.filter(l => {
+        const s = l._computedStatus || l.status_cumprimento;
+        return s === 'nao_cumprido';
+      }).length;
+      const retrocesso = artLacunas.filter(l => {
+        const s = l._computedStatus || l.status_cumprimento;
+        return s === 'retrocesso';
+      }).length;
 
       // Fios by article
       const artFios = fiosCondutores.filter(f => f.artigosConvencao?.includes(art.numero));
