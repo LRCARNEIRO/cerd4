@@ -95,20 +95,13 @@ export function RelacaoRecomendacoesTab() {
       const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
       const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
 
-      const ind = diag?.auditoria?.indicadores;
-      const orc = diag?.auditoria?.orcamento;
-      const norm = diag?.auditoria?.normativos;
-
       return `<tr>
         <td style="font-family:monospace;font-weight:bold">${l.paragrafo}</td>
         <td>${l.tema}</td>
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="font-size:10px;color:#555">${justificativa}</td>
         <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
-        <td style="font-family:monospace;font-weight:bold;text-align:center">${score != null ? score : '—'}</td>
-        <td style="font-size:10px">${ind ? `${ind.score}pts (${ind.total} ind.)` : '—'}</td>
-        <td style="font-size:10px">${orc ? `${orc.score}pts (${orc.total} ações)` : '—'}</td>
-        <td style="font-size:10px">${norm ? `${norm.score}pts (${norm.total} leis)` : '—'}</td>
+        <td style="font-size:10px;text-transform:capitalize">${l.prioridade}</td>
       </tr>`;
     }).join('');
 
