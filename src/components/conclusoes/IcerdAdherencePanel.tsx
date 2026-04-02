@@ -186,63 +186,49 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
 }
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Weighted scoring with balanced interpretation:
-  // Lacunas compliance (20%), Budget (15%), Conclusions (15%), Evidence breadth (10%), 
-  // Normativos (20%), Respostas (15%), Stats (5%)
+  // Aderência = "O sistema tem dados suficientes para avaliar este artigo?"
+  // Foco exclusivo em dados externos (orçamento, normativos, indicadores, séries).
+  // Respostas CERD III e Conclusões Analíticas são outputs interpretativos do sistema,
+  // NÃO evidências externas — removidos do cálculo para evitar circularidade.
+  //
+  // Pesos: Recomendações ONU (20%), Normativos (25%), Orçamento (20%),
+  //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Lacunas compliance (0-20) — AGORA contabiliza em_andamento como 30% de cumprimento
+  // Recomendações ONU (0-20) — contabiliza em_andamento como 30%
   if (a.lacunasTotal > 0) {
     const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
     const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
     const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
     score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
-    // Bônus por esforço: parciais + em_andamento reconhecem andamento
     if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
   } else {
     score += 10;
   }
 
-  // Budget coverage (0-15) — avalia apenas quantidade de ações vinculadas (por palavras-chave)
+  // Cobertura Normativa (0-25) — peso alto para esforço legislativo
+  if (a.normativosCount > 0) {
+    score += Math.min(25, a.normativosCount * 3);
+  }
+
+  // Cobertura Orçamentária (0-20) — quantidade de ações vinculadas
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 1.8);
+    score += Math.min(20, a.orcamentoProgramas * 2.2);
   }
 
-  // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
-  const totalConc = a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna;
-  if (totalConc > 0) {
-    const avancoRatio = a.conclusoesAvanco / totalConc;
-    score += avancoRatio * 15;
-    if (a.conclusoesAvanco > a.conclusoesRetrocesso) score += 2;
-  }
+  // Indicadores + Séries Estatísticas (0-25) — dados quantitativos
+  const indScore = a.indicadoresCount > 0 ? Math.min(15, a.indicadoresCount * 1.5) : 0;
+  const seriesScore = a.seriesEstatisticas > 0 ? Math.min(10, a.seriesEstatisticas * 0.8) : 0;
+  score += indScore + seriesScore;
 
-  // Evidence breadth (0-10)
-  const hasLacunas = a.lacunasTotal > 0;
-  const hasFios = a.fiosTotal > 0;
+  // Amplitude de Fontes (0-10) — diversidade de tipos de evidência
+  const hasRecomendacoes = a.lacunasTotal > 0;
   const hasOrc = a.orcamentoProgramas > 0;
   const hasInd = a.indicadoresCount > 0;
   const hasNorm = a.normativosCount > 0;
-  const hasResp = a.respostasTotal > 0;
-  const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
-  score += (breadth / 6) * 10;
-
-  // Normative coverage (0-20) — peso alto para valorizar esforço legislativo
-  if (a.normativosCount > 0) {
-    score += Math.min(20, a.normativosCount * 2.5);
-  }
-
-  // Respostas CERD III (0-15) — interpretação mais permissiva, inclui parcial e em_andamento
-  if (a.respostasTotal > 0) {
-    // cumprido = 1.0, parcial = 0.7, em_andamento (restante) = 0.4, nao_cumprido = 0
-    const emAndamentoResp = a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas;
-    const respScore = (a.respostasCumpridas * 1.0 + emAndamentoResp * 0.4) / a.respostasTotal;
-    score += respScore * 15;
-  }
-
-  // Statistical series (0-5)
-  if (a.seriesEstatisticas > 0) {
-    score += Math.min(5, a.seriesEstatisticas * 0.5);
-  }
+  const hasSeries = a.seriesEstatisticas > 0;
+  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm, hasSeries].filter(Boolean).length;
+  score += (breadth / 5) * 10;
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
