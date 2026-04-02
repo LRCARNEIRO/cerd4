@@ -5,7 +5,7 @@ import type { LacunaIdentificada, ComplianceStatus, ThematicAxis, FocalGroupType
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // ── Types ──────────────────────────────────────────────────────────
-export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa' | 'divergencia';
+export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
 
 export interface DiagnosticSignal {
   type: DiagnosticSignalType;
