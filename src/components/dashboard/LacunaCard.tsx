@@ -96,11 +96,6 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
                 Score: {diagnostic.auditoria.scoreGlobal}/100
               </Badge>
             )}
-            {isDivergent && (
-              <Badge variant="outline" className="text-[10px] border-warning/30 text-warning">
-                manual: {manualStatus === 'cumprido' ? 'Cumprido' : manualStatus === 'parcialmente_cumprido' ? 'Parcial' : manualStatus === 'nao_cumprido' ? 'Não Cumprido' : manualStatus === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
-              </Badge>
-            )}
           </div>
           
           <h3 className="font-medium text-sm text-foreground">
