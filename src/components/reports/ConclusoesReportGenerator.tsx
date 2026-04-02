@@ -201,7 +201,7 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 ? `
 <div class="highlight">
   <p style="font-weight:700;margin-bottom:6px;">⚡ EIXOS MAIS CRÍTICOS (recomendações ONU não cumpridas)</p>
-  <table><tr><th>Eixo</th><th>Lacunas</th><th>% Não Cumprido</th></tr>
+  <table><tr><th>Eixo</th><th>Recomendações</th><th>% Não Cumprido</th></tr>
   ${sinteseExecutiva.eixosMaisProblematicos.map(e => `<tr><td>${e.eixo}</td><td>${e.total}</td><td class="stat-neg">${Math.round(e.gravidade*100)}%</td></tr>`).join('')}
   </table>
 </div>` : ''}
