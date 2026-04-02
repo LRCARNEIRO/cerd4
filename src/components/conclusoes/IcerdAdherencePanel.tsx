@@ -408,13 +408,12 @@ th{background:#f1f5f9}
 ${analysis.map(a => {
   const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
   const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
-  const trendIcon = a.tendencia === 'melhora' ? '↑ Melhora' : a.tendencia === 'piora' ? '↓ Piora' : '→ Estagnação';
+  const badgeLabel = badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência';
   return `
 <h2>Artigo ${a.numero} — ${a.titulo}</h2>
 <p>${a.tituloCompleto}</p>
 <p><span class="score" style="color:${a.grauAderencia >= 60 ? '#16a34a' : a.grauAderencia >= 30 ? '#ca8a04' : '#dc2626'}">${a.grauAderencia}%</span> 
-<span class="badge ${badgeClass}">${badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência'}</span>
-<span class="badge blue">${trendIcon}</span></p>
+<span class="badge ${badgeClass}">${badgeLabel}</span></p>
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
@@ -475,7 +474,7 @@ ${analysis.map(a => {
                 Nota: Respostas CERD III e Conclusões Analíticas são exibidas como informação contextual, mas <strong>não</strong> compõem o score — são outputs do próprio sistema, não evidências externas.
               </p>
               <div className="flex items-center gap-2 mt-3">
-                <MethodologyPanel variant="full" />
+                <MethodologyPanel variant="aderencia" />
                 <Button size="sm" variant="outline" onClick={downloadAnnex} className="text-xs gap-1">
                   <Download className="w-3 h-3" /> Baixar Anexo Detalhado
                 </Button>
@@ -560,9 +559,9 @@ ${analysis.map(a => {
         </Card>
         <Card>
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Art. com Tendência ↑</p>
-            <p className="text-lg font-bold">{analysis.filter(a => a.tendencia === 'melhora').length}</p>
-            <p className="text-xs text-muted-foreground">de 7 artigos</p>
+            <p className="text-xs text-muted-foreground">Art. com Boa Aderência</p>
+            <p className="text-lg font-bold">{analysis.filter(a => a.grauAderencia >= 70).length}</p>
+            <p className="text-xs text-muted-foreground">≥ 70% de aderência</p>
           </CardContent>
         </Card>
       </div>
@@ -573,7 +572,7 @@ ${analysis.map(a => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Radar de Aderência por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Escala 0-100 integrando recomendações ONU, orçamento, normativos, respostas CERD III, séries estatísticas e indicadores
+              Escala 0-100 integrando recomendações ONU, normativos, orçamento, indicadores e séries estatísticas
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -620,10 +619,15 @@ ${analysis.map(a => {
 
       {/* Detail per article */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-sm flex items-center gap-2">
-          <Scale className="w-4 h-4 text-primary" />
-          Avaliação Detalhada por Artigo
-        </h3>
+        <div>
+          <h3 className="font-semibold text-sm flex items-center gap-2">
+            <Scale className="w-4 h-4 text-primary" />
+            Avaliação Detalhada por Artigo
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            Esta seção mostra <strong>aderência</strong> — cobertura de dados e capacidade de resposta do Estado. Leituras de melhora, piora ou estagnação pertencem ao painel <strong>Evolução dos Artigos</strong>, não a este score.
+          </p>
+        </div>
         {analysis.map(a => (
           <Card key={a.numero} className="border-l-4" style={{ borderLeftColor: a.cor }}>
             <CardContent className="pt-4 pb-4">
@@ -638,9 +642,18 @@ ${analysis.map(a => {
                   <div className="min-w-0">
                     <p className="font-semibold text-sm">{a.tituloCompleto}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      {a.tendencia === 'melhora' && <Badge className="bg-success/10 text-success border-success/30 text-[10px]" variant="outline"><TrendingUp className="w-3 h-3 mr-1" />Melhora</Badge>}
-                      {a.tendencia === 'piora' && <Badge className="bg-destructive/10 text-destructive border-destructive/30 text-[10px]" variant="outline"><TrendingDown className="w-3 h-3 mr-1" />Piora</Badge>}
-                      {a.tendencia === 'estagnacao' && <Badge className="bg-muted text-muted-foreground text-[10px]" variant="outline"><Minus className="w-3 h-3 mr-1" />Estagnação</Badge>}
+                      <Badge
+                        className={`text-[10px] ${
+                          a.grauAderencia >= 70
+                            ? 'bg-success/10 text-success border-success/30'
+                            : a.grauAderencia >= 40
+                              ? 'bg-warning/10 text-warning border-warning/30'
+                              : 'bg-destructive/10 text-destructive border-destructive/30'
+                        }`}
+                        variant="outline"
+                      >
+                        {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'}
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -707,7 +720,7 @@ ${analysis.map(a => {
             Síntese: Priorização Histórica dos Artigos pelo Estado Brasileiro
           </CardTitle>
           <CardDescription className="text-xs">
-            Baseada no cruzamento exaustivo de {stats?.total || 0} recomendações ONU + {totalNormativos} normativos + {orcamentoRecords.length} registros orçamentários + {totalRespostas} respostas CERD III + {indicadores.length} indicadores + {totalStatSeries} séries estatísticas
+            Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {indicadores.length} indicadores e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
@@ -748,11 +761,7 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-muted/30 rounded-lg">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU (20%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%),
-              conclusões analíticas (15%), respostas CERD III (15%),
-              amplitude de fontes de evidência (10%) e séries estatísticas oficiais (5%). O orçamento não considera valores em R$.
-              Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais.
-              Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU atendidas (30%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%), indicadores + séries estatísticas (25%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo do score. O orçamento não considera valores em R$. Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
           </div>
         </CardContent>
