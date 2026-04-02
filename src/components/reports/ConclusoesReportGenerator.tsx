@@ -200,7 +200,7 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 
 ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 ? `
 <div class="highlight">
-  <p style="font-weight:700;margin-bottom:6px;">⚡ EIXOS MAIS CRÍTICOS (lacunas ONU não cumpridas)</p>
+  <p style="font-weight:700;margin-bottom:6px;">⚡ EIXOS MAIS CRÍTICOS (recomendações ONU não cumpridas)</p>
   <table><tr><th>Eixo</th><th>Lacunas</th><th>% Não Cumprido</th></tr>
   ${sinteseExecutiva.eixosMaisProblematicos.map(e => `<tr><td>${e.eixo}</td><td>${e.total}</td><td class="stat-neg">${Math.round(e.gravidade*100)}%</td></tr>`).join('')}
   </table>
@@ -273,7 +273,7 @@ ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 ? `
 <!-- 4. FIOS CONDUTORES -->
 <h2 id="sec4">4. Fios Condutores (${fiosCondutores.length})</h2>
 <p style="font-size:10px;color:#64748b;margin-bottom:12px;">
-  Argumentos transversais gerados pelo cruzamento: Base Estatística × ${totalLacunas} lacunas ONU × ${respostas?.length || 0} respostas CERD III × ${orcStats?.totalRegistros || 0} registros orçamentários.
+  Argumentos transversais gerados pelo cruzamento: Base Estatística × ${totalLacunas} recomendações ONU × ${respostas?.length || 0} respostas CERD III × ${orcStats?.totalRegistros || 0} registros orçamentários.
   <a class="link" href="${systemUrl}/conclusoes">→ Ver no sistema</a>
 </p>
 ${fiosCondutores.map(fio => {
@@ -295,7 +295,7 @@ ${fiosCondutores.map(fio => {
 <!-- 5. CRUZAMENTOS -->
 <h2 id="sec5">5. Cruzamentos Analíticos (${insightsCruzamento.length})</h2>
 <p style="font-size:10px;color:#64748b;margin-bottom:12px;">
-  Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III.
+  Insights gerados pelo cruzamento: recomendações ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III.
   <a class="link" href="${systemUrl}/conclusoes">→ Ver no sistema</a>
 </p>
 ${insightsCruzamento.map(ins => {
@@ -415,7 +415,7 @@ ${icerdData.map(a => `
 <div class="card" style="border:2px solid #0f3460;background:#f8faff;">
   <h4 style="color:#0f3460;">Diagnóstico Final — IV Relatório Periódico</h4>
   <div class="kpi-grid">
-    <div class="kpi"><div class="value">${totalLacunas}</div><div class="label">Lacunas ONU</div></div>
+    <div class="kpi"><div class="value">${totalLacunas}</div><div class="label">Recomendações ONU</div></div>
     <div class="kpi"><div class="value" style="color:#dc2626">${naoCumpridas + retrocessosLac}</div><div class="label">Não cumpridas + retrocessos</div></div>
     <div class="kpi"><div class="value">${fiosCondutores.length}</div><div class="label">Fios condutores</div></div>
     <div class="kpi"><div class="value">${conclusoesDinamicas.length}</div><div class="label">Conclusões analíticas</div></div>
@@ -437,7 +437,7 @@ ${icerdData.map(a => `
 
 <div class="source" style="margin-top:24px;padding-top:12px;border-top:2px solid #0f3460;">
   📋 Relatório Integral de Conclusões gerado pelo Sistema de Subsídios CERD IV — ${now}<br/>
-  Fontes integradas: FBSP 2025, PNAD 2024, DataSUS, SIDRA/IBGE, Censo 2022, SIOP, MUNIC/ESTADIC 2024, ${totalLacunas} lacunas ONU, ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores BD<br/>
+  Fontes integradas: FBSP 2025, PNAD 2024, DataSUS, SIDRA/IBGE, Censo 2022, SIOP, MUNIC/ESTADIC 2024, ${totalLacunas} recomendações ONU, ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores BD<br/>
   🔗 Sistema: <a class="link" href="${systemUrl}">${systemUrl}</a>
 </div>
 </body></html>`;

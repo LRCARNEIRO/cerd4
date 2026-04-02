@@ -20,7 +20,7 @@ const progressCategories = [
 ];
 
 const aderenciaWeights = [
-  { label: 'Lacunas ONU', weight: '20%', icon: '⚠️' },
+  { label: 'Recomendações ONU', weight: '20%', icon: '⚠️' },
   { label: 'Cobertura Normativa', weight: '20%', icon: '📜' },
   { label: 'Respostas CERD III', weight: '15%', icon: '📋' },
   { label: 'Orçamento', weight: '15%', icon: '💰' },

@@ -151,9 +151,9 @@ export function RefreshDiffDialog({ open, onOpenChange, before, after }: Refresh
             <span>Depois: {after.timestamp}</span>
           </div>
 
-          {/* Lacunas ONU */}
+          {/* Recomendações ONU */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Lacunas ONU</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Recomendações ONU</h4>
             <div className="border rounded-lg divide-y">
               <DiffRow label="Total de lacunas" before={before.totalLacunas} after={after.totalLacunas} />
               <DiffRow label="Cumpridas" before={before.cumpridas} after={after.cumpridas} />

@@ -474,7 +474,7 @@ function gerarFiosCondutores(
     argumento: `${lacunasDados.length} observações da ONU sobre dados/estatísticas. ${gruposSemDados.length > 0 ? `Grupos sem representação nos dados: ${gruposSemDados.map(g => grupoLabels[g]).join(', ')}.` : ''} O Censo 2022 foi avanço histórico (primeira contagem de quilombolas), mas persistem lacunas em dados interseccionais sistemáticos — especialmente para povos ciganos, população LGBTQIA+ negra e PcD negros. O monitoramento ODS Racial (${odsRacialIndicadores.length} indicadores em ${odsGrupos.length} grupos temáticos) evidencia desigualdades persistentes nas metas da Agenda 2030.`,
     evidencias: [
       { texto: `${indicadores.length} indicadores interseccionais no banco (incluindo ${odsRacialIndicadores.length} ODS Racial)`, fonte: 'BD Sistema', tipo: 'quantitativa' },
-      { texto: `${lacunasDados.length} lacunas ONU sobre dados`, fonte: 'CERD/C/BRA/CO/18-20', tipo: 'qualitativa' },
+      { texto: `${lacunasDados.length} recomendações ONU sobre dados`, fonte: 'CERD/C/BRA/CO/18-20', tipo: 'qualitativa' },
       ...gruposSemDados.map(g => ({
         texto: `${grupoLabels[g]}: sem dados sistemáticos desagregados`,
         fonte: 'Análise do BD',
@@ -580,7 +580,7 @@ function gerarFiosCondutores(
       if (orc.count === 0 && lac > 0) artigosSemCobertura.push(`Art. ${art.numero}`);
       if (lac > 0 || orc.count > 0) {
         evidIcerd.push({
-          texto: `Art. ${art.numero} — ${art.titulo}: ${orc.count} registros (${formatBRL(orc.liq)} liq.) × ${lac} lacunas ONU`,
+          texto: `Art. ${art.numero} — ${art.titulo}: ${orc.count} registros (${formatBRL(orc.liq)} liq.) × ${lac} recomendações ONU`,
           fonte: 'Cruzamento ICERD × Orçamento × Lacunas',
           tipo: 'orcamentaria',
         });
@@ -591,7 +591,7 @@ function gerarFiosCondutores(
       id: 'assimetria-icerd-orcamento',
       titulo: 'Assimetria ICERD × Orçamento: Investimento vs. Compromissos',
       tipo: 'paradoxo',
-      argumento: `O cruzamento do investimento federal com os 7 artigos da Convenção revela assimetria estrutural. ${artigosConcentrados.length > 0 ? `O investimento concentra-se em ${artigosConcentrados.join(', ')}, dominado por saúde indígena (SESAI).` : ''} ${artigosSemCobertura.length > 0 ? `Enquanto isso, ${artigosSemCobertura.join(', ')} possuem lacunas ONU sem nenhuma cobertura orçamentária identificada — revelando compromissos do tratado desatendidos financeiramente.` : 'Todos os artigos possuem alguma cobertura orçamentária.'} Esta desproporção é evidência de que o orçamento racial brasileiro não responde às obrigações do tratado de forma equilibrada.`,
+      argumento: `O cruzamento do investimento federal com os 7 artigos da Convenção revela assimetria estrutural. ${artigosConcentrados.length > 0 ? `O investimento concentra-se em ${artigosConcentrados.join(', ')}, dominado por saúde indígena (SESAI).` : ''} ${artigosSemCobertura.length > 0 ? `Enquanto isso, ${artigosSemCobertura.join(', ')} possuem recomendações ONU sem nenhuma cobertura orçamentária identificada — revelando compromissos do tratado desatendidos financeiramente.` : 'Todos os artigos possuem alguma cobertura orçamentária.'} Esta desproporção é evidência de que o orçamento racial brasileiro não responde às obrigações do tratado de forma equilibrada.`,
       evidencias: evidIcerd,
       eixos: Object.keys(eixoLabels),
       grupos: [],
@@ -746,7 +746,7 @@ function gerarFiosEmergentes(
         tipo: 'lacuna_critica',
         argumento: `${eixosSemOrcamento.length} eixo(s) temático(s) com recomendações do CERD não possuem registros orçamentários vinculados: ${eixosSemOrcamento.map(e => eixoLabels[e] || e).join(', ')}. Isso pode indicar ausência de programas específicos, dados orçamentários ainda não coletados, ou dispersão do financiamento em programas genéricos não rastreáveis por recorte racial.`,
         evidencias: eixosSemOrcamento.map(e => ({
-          texto: `${eixoLabels[e]}: ${porEixo[e].length} lacunas ONU, 0 registros orçamentários`,
+          texto: `${eixoLabels[e]}: ${porEixo[e].length} recomendações ONU, 0 registros orçamentários`,
           fonte: 'Cruzamento BD',
           tipo: 'orcamentaria' as const,
         })),
@@ -983,11 +983,11 @@ function gerarConclusoesDinamicas(
       const evidencias: string[] = [];
       if (orc.count > 0) evidencias.push(`${orc.count} registros orçamentários · Liquidado total: ${formatBRL(orc.liq)}`);
       if (orc.liqP1 > 0 || orc.liqP2 > 0) evidencias.push(`P1 (2018-22): ${formatBRL(orc.liqP1)} → P2 (2023-25): ${formatBRL(orc.liqP2)} (${varOrc >= 0 ? '+' : ''}${varOrc.toFixed(0)}%)`);
-      if (lac.total > 0) evidencias.push(`${lac.total} lacunas ONU: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s)`);
+      if (lac.total > 0) evidencias.push(`${lac.total} recomendações ONU: ${lac.cum} cumpridas, ${lac.parc} parciais, ${lac.nc} não cumpridas, ${lac.ret} retrocesso(s)`);
       if (orc.count === 0 && lac.total > 0) evidencias.push('⚠ Nenhum registro orçamentário identificado para este compromisso');
 
       const contradicao = varOrc > 20 && negativos > positivos
-        ? ` Apesar do crescimento orçamentário de ${varOrc.toFixed(0)}%, a maioria das lacunas ONU permanece sem cumprimento — evidenciando que o investimento não se traduziu em conformidade com o tratado.`
+        ? ` Apesar do crescimento orçamentário de ${varOrc.toFixed(0)}%, a maioria das recomendações ONU permanece sem cumprimento — evidenciando que o investimento não se traduziu em conformidade com o tratado.`
         : '';
 
       conclusoes.push({

@@ -37,7 +37,7 @@ export function generateMethodologyHTML(): string {
         {
           nome: 'Segurança / Saúde / Educação',
           icone: '🛡️',
-          origem: 'Recomendações CERD + Lacunas ONU + FBSP/DataSUS/INEP',
+          origem: 'Recomendações CERD + Recomendações ONU + FBSP/DataSUS/INEP',
           motivacao: `Consolidou as <strong>séries temporais 2018-2024</strong> dos três eixos mais demandados pelo Comitê CERD nas Observações Finais de 2022: (1) <strong>Segurança pública</strong> (homicídios por raça, letalidade policial, feminicídio — fonte FBSP 19º Anuário 2025); (2) <strong>Saúde</strong> (mortalidade materna por raça, mortalidade infantil — fonte DataSUS/SIM/SINASC); (3) <strong>Educação</strong> (taxa de analfabetismo por raça, ensino superior — fonte PNAD/Censo). Cada série encerra no último dado real disponível (Regra de Ouro).`,
           documentosFonte: ['CERD-Observacoes-Brasil-2022.pdf', 'Quadro-Monitoramento-CERD-Brasil.xlsx'],
           promptOrigem: 'Criar séries temporais 2018-2024 para segurança pública (homicídios, letalidade policial, feminicídio), saúde (mortalidade materna/infantil por raça) e educação (analfabetismo, ensino superior) usando dados reais do FBSP, DataSUS e IBGE.',
@@ -283,7 +283,7 @@ ${getExportToolbarHTML('Metodologia-Escopo-Projeto')}
   <ul>
     <li><strong>Recomendações CERD</strong> — Aba criada para responder a recomendações específicas das Observações Finais (CERD/C/BRA/CO/18-20, 2022)</li>
     <li><strong>Common Core Document</strong> — Aba criada para atender obrigações do Documento Básico Comum (HRI/CORE/BRA)</li>
-    <li><strong>Lacunas ONU</strong> — Aba criada a partir da leitura das lacunas identificadas nos documentos ONU</li>
+    <li><strong>Recomendações ONU</strong> — Aba criada a partir da leitura das lacunas identificadas nos documentos ONU</li>
     <li><strong>Relatório CERD III</strong> — Aba criada em resposta a críticas ou omissões do III Relatório Periódico (2018)</li>
     <li><strong>Diretrizes CERD</strong> — Aba criada para cumprir orientações das Diretrizes de Elaboração de Relatórios (CERD/C/2007/1)</li>
     <li><strong>Auditoria do sistema</strong> — Aba criada durante as fases de auditoria técnica (Fases 1-3) para transparência e controle de qualidade</li>

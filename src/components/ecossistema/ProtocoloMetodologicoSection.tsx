@@ -15,7 +15,7 @@ const PROTOCOLS = [
   {
     icon: Scale,
     title: 'Score de Aderência ICERD',
-    description: 'Avaliação multidimensional em 7 eixos: Lacunas ONU (20%), Cobertura Normativa (20%), Respostas CERD III (15%), Orçamento (15%), Conclusões Analíticas (15%), Amplitude de Evidências (10%), Séries Estatísticas (5%).',
+    description: 'Avaliação multidimensional em 7 eixos: Recomendações ONU (20%), Cobertura Normativa (20%), Respostas CERD III (15%), Orçamento (15%), Conclusões Analíticas (15%), Amplitude de Evidências (10%), Séries Estatísticas (5%).',
     sources: ['IcerdAdherencePanel', '7 dimensões integradas'],
   },
   {

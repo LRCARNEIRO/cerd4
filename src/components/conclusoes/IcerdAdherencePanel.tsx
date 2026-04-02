@@ -418,7 +418,7 @@ th{background:#f1f5f9}
 <h1>⚖️ Anexo Analítico — Aderência ICERD por Artigo</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
-<p><strong>Fontes:</strong> ${stats?.total || 0} lacunas ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${indicadores.length} indicadores, ${totalStatSeries} séries estatísticas.</p>
+<p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${indicadores.length} indicadores, ${totalStatSeries} séries estatísticas.</p>
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
@@ -434,7 +434,7 @@ ${analysis.map(a => {
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
-<tr><td>Lacunas ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
 <tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoProgramas}</td><td>Nº de ações/programas mapeados por palavras-chave</td></tr>
 <tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
 <tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
@@ -454,7 +454,7 @@ ${analysis.map(a => {
 <h2>Metodologia de Cálculo</h2>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Lacunas ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
+<tr><td>Recomendações ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
 <tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
 <tr><td>Conclusões Analíticas</td><td>15%</td><td>Proporção de avanços vs. retrocessos</td></tr>
 <tr><td>Amplitude de Evidências</td><td>10%</td><td>Nº de dimensões com dados (lacunas, fios, orçamento, indicadores, normativos, respostas)</td></tr>
@@ -484,7 +484,7 @@ ${analysis.map(a => {
               <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
                 Avaliação consolidada integrando <strong>todas as bases do sistema</strong>:
-                {' '}{stats?.total || 0} lacunas ONU, {fiosCondutores.length} fios condutores,
+                {' '}{stats?.total || 0} recomendações ONU, {fiosCondutores.length} fios condutores,
                 {' '}{conclusoes.length} conclusões analíticas, {orcamentoRecords.length} registros orçamentários,
                 {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
                 {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
@@ -510,7 +510,7 @@ ${analysis.map(a => {
           <CardContent className="pt-2 pb-2 text-center">
             <Database className="w-4 h-4 mx-auto text-chart-1 mb-1" />
             <p className="text-lg font-bold">{stats?.total || 0}</p>
-            <p className="text-[10px] text-muted-foreground">Lacunas ONU</p>
+            <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
           </CardContent>
         </Card>
         <Card className="border-chart-2/30">
@@ -588,7 +588,7 @@ ${analysis.map(a => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Radar de Aderência por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Escala 0-100 integrando lacunas ONU, orçamento, normativos, respostas CERD III, séries estatísticas e indicadores
+              Escala 0-100 integrando recomendações ONU, orçamento, normativos, respostas CERD III, séries estatísticas e indicadores
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -610,7 +610,7 @@ ${analysis.map(a => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Status de Cumprimento por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Distribuição das lacunas ONU vinculadas a cada artigo
+              Distribuição das recomendações ONU vinculadas a cada artigo
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -673,7 +673,7 @@ ${analysis.map(a => {
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 mb-3">
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Lacunas ONU</p>
+                  <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold text-success">{a.lacunasCumpridas + a.lacunasParciais}</p>
@@ -722,7 +722,7 @@ ${analysis.map(a => {
             Síntese: Priorização Histórica dos Artigos pelo Estado Brasileiro
           </CardTitle>
           <CardDescription className="text-xs">
-            Baseada no cruzamento exaustivo de {stats?.total || 0} lacunas ONU + {totalNormativos} normativos + {orcamentoRecords.length} registros orçamentários + {totalRespostas} respostas CERD III + {indicadores.length} indicadores + {totalStatSeries} séries estatísticas
+            Baseada no cruzamento exaustivo de {stats?.total || 0} recomendações ONU + {totalNormativos} normativos + {orcamentoRecords.length} registros orçamentários + {totalRespostas} respostas CERD III + {indicadores.length} indicadores + {totalStatSeries} séries estatísticas
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
@@ -763,7 +763,7 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-muted/30 rounded-lg">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: lacunas ONU (20%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%),
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU (20%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%),
               conclusões analíticas (15%), respostas CERD III (15%),
               amplitude de fontes de evidência (10%) e séries estatísticas oficiais (5%). O orçamento não considera valores em R$.
               Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais.
