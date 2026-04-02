@@ -257,6 +257,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       const keywords = getLacunaKeywords(lacuna);
       const signals: DiagnosticSignal[] = [];
 
+      // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
       const baseIndicadores = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
       const baseOrcamento = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
       const baseNormativos = artigos.flatMap(a => normativosPorArtigo[a] || []);
@@ -274,9 +275,26 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         return keywords.some(k => haystack.includes(k));
       });
 
+      // Build weight maps: keyword match → 1.0, eixo-only → 0.5
+      const keywordIndSet = new Set(keywordIndicadores.map(i => i.nome));
+      const keywordOrcSet = new Set(keywordOrcamento.map(o => `${o.programa}-${o.orgao}-${o.ano}`));
+      const keywordNormSet = new Set(keywordNormativos.map(n => n.titulo));
+
       const indicadoresVinculados = Array.from(new Map([...baseIndicadores, ...keywordIndicadores].map(i => [i.nome, i])).values()).slice(0, 20);
       const orcamentosVinculados = Array.from(new Map([...baseOrcamento, ...keywordOrcamento].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values()).slice(0, 20);
       const normativosVinculados = Array.from(new Map([...baseNormativos, ...keywordNormativos].map(n => [n.titulo, n])).values()).slice(0, 20);
+
+      // Match quality weights
+      const getIndWeight = (i: typeof indicadoresVinculados[0]) => keywordIndSet.has(i.nome) ? 1.0 : 0.5;
+      const getOrcWeight = (o: typeof orcamentosVinculados[0]) => keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`) ? 1.0 : 0.5;
+      const getNormWeight = (n: typeof normativosVinculados[0]) => keywordNormSet.has(n.titulo) ? 1.0 : 0.5;
+
+      const totalIndKeyword = indicadoresVinculados.filter(i => getIndWeight(i) === 1.0).length;
+      const totalIndEixo = indicadoresVinculados.length - totalIndKeyword;
+      const totalOrcKeyword = orcamentosVinculados.filter(o => getOrcWeight(o) === 1.0).length;
+      const totalOrcEixo = orcamentosVinculados.length - totalOrcKeyword;
+      const totalNormKeyword = normativosVinculados.filter(n => getNormWeight(n) === 1.0).length;
+      const totalNormEixo = normativosVinculados.length - totalNormKeyword;
 
       // ═══════════════════════════════════════════════════════════
       // MOTOR DE STATUS COMPUTADO — Metodologia Auditável
@@ -284,27 +302,30 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
       // Score 0-100 → Status automático com justificativa
 
-      // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
-      const pioram = tendencias.filter(t => t === 'piora').length;
-      const melhoram = tendencias.filter(t => t === 'melhora').length;
-      const estaveis = tendencias.filter(t => t === 'estavel').length;
+      // ── 1. SCORE INDICADORES (0-100, peso 40%) — modelo híbrido ──
+      // Indicadores por keyword contam 100%, por eixo genérico 50%
+      const weightedTendencias = indicadoresVinculados.map(i => ({ t: inferTendencia(i), w: getIndWeight(i) }));
+      const pioramW = weightedTendencias.filter(x => x.t === 'piora').reduce((s, x) => s + x.w, 0);
+      const melhoramW = weightedTendencias.filter(x => x.t === 'melhora').reduce((s, x) => s + x.w, 0);
+      const totalIndW = weightedTendencias.reduce((s, x) => s + x.w, 0);
+      const pioram = weightedTendencias.filter(x => x.t === 'piora').length;
+      const melhoram = weightedTendencias.filter(x => x.t === 'melhora').length;
+      const estaveis = weightedTendencias.filter(x => x.t === 'estavel').length;
       const totalInd = indicadoresVinculados.length;
 
-      let scoreInd = 50; // base neutra
-      if (totalInd > 0) {
-        const ratioMelhora = melhoram / totalInd;
-        const ratioPiora = pioram / totalInd;
-        // Melhora puxa para cima, piora puxa para baixo
+      let scoreInd = 50;
+      if (totalIndW > 0) {
+        const ratioMelhora = melhoramW / totalIndW;
+        const ratioPiora = pioramW / totalIndW;
         scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
         scoreInd = Math.max(0, Math.min(100, scoreInd));
       } else {
-        scoreInd = 25; // sem indicadores = incerteza → score baixo
+        scoreInd = 25;
       }
 
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es): ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) [${totalIndKeyword} keyword, ${totalIndEixo} eixo×50%]: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
@@ -313,7 +334,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
-      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) ──
+      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — modelo híbrido ──
       const simbolicos = orcamentosVinculados.filter(o => {
         const dotacao = Number(o.dotacao_autorizada) || 0;
         const pago = Number(o.pago) || 0;
@@ -324,23 +345,22 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
+        // Weighted: keyword matches contribute full dotação/pago, eixo contributes 50%
+        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0) * getOrcWeight(o), 0);
+        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0) * getOrcWeight(o), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
-        // Execução > 70% = score alto, < 5% = score mínimo
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
-        // Penalidade por simbólicos
         if (simbolicos.length > 0) {
           scoreOrc = Math.max(10, scoreOrc - (simbolicos.length / totalOrc) * 30);
         }
       } else {
-        scoreOrc = 20; // sem orçamento vinculado = incerteza
+        scoreOrc = 20;
       }
       scoreOrc = Math.round(Math.max(0, Math.min(100, scoreOrc)));
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões), execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) [${totalOrcKeyword} keyword, ${totalOrcEixo} eixo×50%], execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
@@ -350,18 +370,19 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         signals.push({ type: 'orcamento_simbolico', severity: 'info', message: `${totalOrc} ação(ões) orçamentária(s) vinculada(s)` });
       }
 
-      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) ──
+      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — modelo híbrido ──
       const totalNorm = normativosVinculados.length;
+      const totalNormW = normativosVinculados.reduce((s, n) => s + getNormWeight(n), 0);
       let scoreNorm = 0;
-      if (totalNorm >= 5) scoreNorm = 100;
-      else if (totalNorm >= 3) scoreNorm = 80;
-      else if (totalNorm >= 2) scoreNorm = 60;
-      else if (totalNorm >= 1) scoreNorm = 40;
-      else scoreNorm = 5; // sem normativo = quase zero
+      if (totalNormW >= 4) scoreNorm = 100;
+      else if (totalNormW >= 2.5) scoreNorm = 80;
+      else if (totalNormW >= 1.5) scoreNorm = 60;
+      else if (totalNormW >= 0.5) scoreNorm = 40;
+      else scoreNorm = 5;
 
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) normativo(s) vinculado(s). Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) [${totalNormKeyword} keyword, ${totalNormEixo} eixo×50%], peso efetivo ${totalNormW.toFixed(1)}. Score: ${scoreNorm}/100.`;
 
       // Signals for normatives
       if (totalNorm > 0) {
@@ -402,6 +423,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
+        `Modelo Híbrido: keyword match = 100%, eixo genérico = 50%`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
