@@ -186,63 +186,49 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
 }
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Weighted scoring with balanced interpretation:
-  // Lacunas compliance (20%), Budget (15%), Conclusions (15%), Evidence breadth (10%), 
-  // Normativos (20%), Respostas (15%), Stats (5%)
+  // Aderência = "O sistema tem dados suficientes para avaliar este artigo?"
+  // Foco exclusivo em dados externos (orçamento, normativos, indicadores, séries).
+  // Respostas CERD III e Conclusões Analíticas são outputs interpretativos do sistema,
+  // NÃO evidências externas — removidos do cálculo para evitar circularidade.
+  //
+  // Pesos: Recomendações ONU (20%), Normativos (25%), Orçamento (20%),
+  //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Lacunas compliance (0-20) — AGORA contabiliza em_andamento como 30% de cumprimento
+  // Recomendações ONU (0-20) — contabiliza em_andamento como 30%
   if (a.lacunasTotal > 0) {
     const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
     const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
     const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
     score += Math.max(0, (cumprimento - retrocessoPenalty)) * 20;
-    // Bônus por esforço: parciais + em_andamento reconhecem andamento
     if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
   } else {
     score += 10;
   }
 
-  // Budget coverage (0-15) — avalia apenas quantidade de ações vinculadas (por palavras-chave)
+  // Cobertura Normativa (0-25) — peso alto para esforço legislativo
+  if (a.normativosCount > 0) {
+    score += Math.min(25, a.normativosCount * 3);
+  }
+
+  // Cobertura Orçamentária (0-20) — quantidade de ações vinculadas
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 1.8);
+    score += Math.min(20, a.orcamentoProgramas * 2.2);
   }
 
-  // Conclusions balance (0-15) — reconhece avanços mesmo com lacunas
-  const totalConc = a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna;
-  if (totalConc > 0) {
-    const avancoRatio = a.conclusoesAvanco / totalConc;
-    score += avancoRatio * 15;
-    if (a.conclusoesAvanco > a.conclusoesRetrocesso) score += 2;
-  }
+  // Indicadores + Séries Estatísticas (0-25) — dados quantitativos
+  const indScore = a.indicadoresCount > 0 ? Math.min(15, a.indicadoresCount * 1.5) : 0;
+  const seriesScore = a.seriesEstatisticas > 0 ? Math.min(10, a.seriesEstatisticas * 0.8) : 0;
+  score += indScore + seriesScore;
 
-  // Evidence breadth (0-10)
-  const hasLacunas = a.lacunasTotal > 0;
-  const hasFios = a.fiosTotal > 0;
+  // Amplitude de Fontes (0-10) — diversidade de tipos de evidência
+  const hasRecomendacoes = a.lacunasTotal > 0;
   const hasOrc = a.orcamentoProgramas > 0;
   const hasInd = a.indicadoresCount > 0;
   const hasNorm = a.normativosCount > 0;
-  const hasResp = a.respostasTotal > 0;
-  const breadth = [hasLacunas, hasFios, hasOrc, hasInd, hasNorm, hasResp].filter(Boolean).length;
-  score += (breadth / 6) * 10;
-
-  // Normative coverage (0-20) — peso alto para valorizar esforço legislativo
-  if (a.normativosCount > 0) {
-    score += Math.min(20, a.normativosCount * 2.5);
-  }
-
-  // Respostas CERD III (0-15) — interpretação mais permissiva, inclui parcial e em_andamento
-  if (a.respostasTotal > 0) {
-    // cumprido = 1.0, parcial = 0.7, em_andamento (restante) = 0.4, nao_cumprido = 0
-    const emAndamentoResp = a.respostasTotal - a.respostasCumpridas - a.respostasNaoCumpridas;
-    const respScore = (a.respostasCumpridas * 1.0 + emAndamentoResp * 0.4) / a.respostasTotal;
-    score += respScore * 15;
-  }
-
-  // Statistical series (0-5)
-  if (a.seriesEstatisticas > 0) {
-    score += Math.min(5, a.seriesEstatisticas * 0.5);
-  }
+  const hasSeries = a.seriesEstatisticas > 0;
+  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm, hasSeries].filter(Boolean).length;
+  score += (breadth / 5) * 10;
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
@@ -451,18 +437,17 @@ ${analysis.map(a => {
 }).join('')}
 
 <hr/>
-<h2>Metodologia de Cálculo</h2>
+<h2>Metodologia de Cálculo — Aderência ICERD</h2>
+<p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
 <tr><td>Recomendações ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
-<tr><td>Conclusões Analíticas</td><td>15%</td><td>Proporção de avanços vs. retrocessos</td></tr>
-<tr><td>Amplitude de Evidências</td><td>10%</td><td>Nº de dimensões com dados (lacunas, fios, orçamento, indicadores, normativos, respostas)</td></tr>
-<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Respostas CERD III</td><td>15%</td><td>Mapeamento direto §12-§26 por conteúdo temático</td></tr>
-<tr><td>Séries Estatísticas</td><td>5%</td><td>Séries temporais do espelho de dados</td></tr>
+<tr><td>Cobertura Normativa</td><td>25%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>20%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
+<tr><td>Indicadores + Séries Estatísticas</td><td>25%</td><td>Registros do BD (15%) + séries temporais do espelho de dados (10%)</td></tr>
+<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recomendações, orçamento, indicadores, normativos, séries)</td></tr>
 </table>
-<p class="nota"><strong>Indicadores vs. Séries Estatísticas:</strong> "Indicadores" são registros individuais armazenados no banco de dados (indicadores_interseccionais), cada um com título, valores desagregados, fonte e artigos ICERD. "Séries Estatísticas" são conjuntos de dados temporais do espelho de dados (mirror), agrupados por tema (segurança, saúde, educação etc.) — representam a fundamentação quantitativa longitudinal.</p>
+<p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> avalia a <strong>cobertura de dados</strong> (o sistema tem base para avaliar?). A <em>Evolução dos Artigos</em> avalia o <strong>impacto real</strong> nos dados (orçamento, normativos e indicadores melhoraram?).</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -483,11 +468,13 @@ ${analysis.map(a => {
             <div className="flex-1">
               <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Avaliação consolidada integrando <strong>todas as bases do sistema</strong>:
-                {' '}{stats?.total || 0} recomendações ONU, {fiosCondutores.length} fios condutores,
-                {' '}{conclusoes.length} conclusões analíticas, {orcamentoRecords.length} registros orçamentários,
-                {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
-                {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
+                Avalia se o sistema possui <strong>dados externos suficientes</strong> para fundamentar cada artigo:
+                {' '}{stats?.total || 0} recomendações ONU, {totalNormativos} instrumentos normativos,
+                {' '}{orcamentoRecords.length} registros orçamentários,
+                {' '}{indicadores.length} indicadores e {totalStatSeries} séries estatísticas oficiais.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">
+                Nota: Respostas CERD III e Conclusões Analíticas são exibidas como informação contextual, mas <strong>não</strong> compõem o score — são outputs do próprio sistema, não evidências externas.
               </p>
               <div className="flex items-center gap-2 mt-3">
                 <MethodologyPanel variant="full" />

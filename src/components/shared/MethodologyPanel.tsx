@@ -21,12 +21,10 @@ const progressCategories = [
 
 const aderenciaWeights = [
   { label: 'Recomendações ONU', weight: '20%', icon: '⚠️' },
-  { label: 'Cobertura Normativa', weight: '20%', icon: '📜' },
-  { label: 'Respostas CERD III', weight: '15%', icon: '📋' },
-  { label: 'Orçamento', weight: '15%', icon: '💰' },
-  { label: 'Conclusões Analíticas', weight: '15%', icon: '🔍' },
-  { label: 'Amplitude de Evidências', weight: '10%', icon: '📊' },
-  { label: 'Séries Estatísticas', weight: '5%', icon: '📈' },
+  { label: 'Cobertura Normativa', weight: '25%', icon: '📜' },
+  { label: 'Orçamento', weight: '20%', icon: '💰' },
+  { label: 'Indicadores + Séries Estatísticas', weight: '25%', icon: '📊' },
+  { label: 'Amplitude de Fontes', weight: '10%', icon: '📈' },
 ];
 
 export function MethodologyPanel({ variant, className }: MethodologyPanelProps) {
