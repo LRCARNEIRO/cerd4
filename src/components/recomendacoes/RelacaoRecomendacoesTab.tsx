@@ -95,20 +95,13 @@ export function RelacaoRecomendacoesTab() {
       const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
       const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
 
-      const ind = diag?.auditoria?.indicadores;
-      const orc = diag?.auditoria?.orcamento;
-      const norm = diag?.auditoria?.normativos;
-
       return `<tr>
         <td style="font-family:monospace;font-weight:bold">${l.paragrafo}</td>
         <td>${l.tema}</td>
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="font-size:10px;color:#555">${justificativa}</td>
         <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
-        <td style="font-family:monospace;font-weight:bold;text-align:center">${score != null ? score : '—'}</td>
-        <td style="font-size:10px">${ind ? `${ind.score}pts (${ind.total} ind.)` : '—'}</td>
-        <td style="font-size:10px">${orc ? `${orc.score}pts (${orc.total} ações)` : '—'}</td>
-        <td style="font-size:10px">${norm ? `${norm.score}pts (${norm.total} leis)` : '—'}</td>
+        <td style="font-size:10px;text-transform:capitalize">${l.prioridade}</td>
       </tr>`;
     }).join('');
 
@@ -139,26 +132,18 @@ th{background:#f1f5f9;font-size:10px}
 </div>
 
 <div class="methodology">
-<h2>🔗 Metodologia de Vinculação e Score</h2>
-<p><strong>Vinculação:</strong> Tags explícitas (BD) → Eixo temático (fallback).</p>
+<h2>🔗 Metodologia de Vinculação</h2>
+<p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback).</p>
 <table>
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
 </table>
-<h3>Score 0-100 (Modelo Híbrido Anti-Coringa)</h3>
-<table>
-<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Indicadores Estatísticos</td><td>40%</td><td>Dados quantitativos vinculados por tags ou palavras-chave</td></tr>
-<tr><td>Orçamento</td><td>30%</td><td>Ações orçamentárias vinculadas (cobertura)</td></tr>
-<tr><td>Normativos</td><td>30%</td><td>Instrumentos legislativos vinculados</td></tr>
-</table>
-<p class="nota"><strong>Cap de Piora:</strong> Se indicadores pioram > melhoram, score máximo = 55 (Parcial).</p>
-<p class="nota"><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+<p class="nota"><strong>Status:</strong> Avaliação computada disponível em Produtos → Conclusões → Evolução Recomendações.</p>
 </div>
 
 <h2>Detalhamento</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Score</th><th>Indicadores</th><th>Orçamento</th><th>Normativos</th></tr>
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade</th></tr>
 ${renderRows(allItems)}
 </table>
 
@@ -212,26 +197,17 @@ ${renderRows(allItems)}
                 <TableRow>
                   <TableHead className="w-[80px]">§</TableHead>
                   <TableHead>Tema</TableHead>
-                  <TableHead className="w-[100px]">Artigos</TableHead>
-                  <TableHead className="w-[130px]">Justificativa</TableHead>
+                  <TableHead className="w-[120px]">Artigos</TableHead>
+                  <TableHead className="w-[150px]">Justificativa</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
-                  <TableHead className="w-[60px]">Score</TableHead>
-                  <TableHead className="w-[100px]">Indicadores</TableHead>
-                  <TableHead className="w-[100px]">Orçamento</TableHead>
-                  <TableHead className="w-[100px]">Normativos</TableHead>
-                  <TableHead className="w-[80px]">Prioridade</TableHead>
+                  <TableHead className="w-[90px]">Prioridade</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((l: any) => {
-                  const diag = diagnosticMap.get(l.id);
-                  const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
+              {items.map((l: any) => {
+                  const effectiveStatus = getEffectiveStatus(l);
                   const artigos = getArtigosFromRecomendacao(l);
                   const justificativa = getVinculacaoJustificativa(l);
-                  const score = diag?.auditoria?.scoreGlobal;
-                  const ind = diag?.auditoria?.indicadores;
-                  const orc = diag?.auditoria?.orcamento;
-                  const norm = diag?.auditoria?.normativos;
 
                   return (
                     <TableRow key={l.id}>
@@ -247,22 +223,6 @@ ${renderRows(allItems)}
                       <TableCell className="text-[10px] text-muted-foreground">{justificativa}</TableCell>
                       <TableCell>
                         <StatusBadge status={effectiveStatus} size="sm" />
-                      </TableCell>
-                      <TableCell>
-                        {score != null && (
-                          <span className={`text-xs font-mono font-bold ${score >= 80 ? 'text-success' : score >= 55 ? 'text-warning' : score >= 35 ? 'text-orange-500' : 'text-destructive'}`}>
-                            {score}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {ind ? `${ind.total} (${ind.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {orc ? `${orc.total} (${orc.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {norm ? `${norm.total} (${norm.score}pts)` : '—'}
                       </TableCell>
                       <TableCell>
                         <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
@@ -296,7 +256,7 @@ ${renderRows(allItems)}
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII e status computado (Score 0-100).
+          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD. Para análise de evolução com scores detalhados, consulte <em>Produtos → Conclusões → Evolução Recomendações</em>.
         </p>
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
