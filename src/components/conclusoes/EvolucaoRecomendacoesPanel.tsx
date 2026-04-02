@@ -86,9 +86,9 @@ export function EvolucaoRecomendacoesPanel() {
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
         <td style="font-family:monospace;font-weight:bold;text-align:center">${score != null ? score : '—'}</td>
-        <td style="font-size:10px">${ind ? `${ind.score}/${ind.maxScore} (${ind.total} ind.)` : '—'}</td>
-        <td style="font-size:10px">${orc ? `${orc.score}/${orc.maxScore} (${orc.total} ações)` : '—'}</td>
-        <td style="font-size:10px">${norm ? `${norm.score}/${norm.maxScore} (${norm.total} leis)` : '—'}</td>
+        <td style="font-size:10px">${ind ? `${ind.score}pts (${ind.total} ind.)` : '—'}</td>
+        <td style="font-size:10px">${orc ? `${orc.score}pts (${orc.total} ações)` : '—'}</td>
+        <td style="font-size:10px">${norm ? `${norm.score}pts (${norm.total} leis)` : '—'}</td>
         <td style="font-size:10px">${eixoLabels[l.eixo_tematico] || l.eixo_tematico}</td>
       </tr>`;
     }).join('');
