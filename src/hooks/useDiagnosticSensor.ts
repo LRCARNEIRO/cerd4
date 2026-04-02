@@ -257,6 +257,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       const keywords = getLacunaKeywords(lacuna);
       const signals: DiagnosticSignal[] = [];
 
+      // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
       const baseIndicadores = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
       const baseOrcamento = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
       const baseNormativos = artigos.flatMap(a => normativosPorArtigo[a] || []);
@@ -274,9 +275,26 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         return keywords.some(k => haystack.includes(k));
       });
 
+      // Build weight maps: keyword match → 1.0, eixo-only → 0.5
+      const keywordIndSet = new Set(keywordIndicadores.map(i => i.nome));
+      const keywordOrcSet = new Set(keywordOrcamento.map(o => `${o.programa}-${o.orgao}-${o.ano}`));
+      const keywordNormSet = new Set(keywordNormativos.map(n => n.titulo));
+
       const indicadoresVinculados = Array.from(new Map([...baseIndicadores, ...keywordIndicadores].map(i => [i.nome, i])).values()).slice(0, 20);
       const orcamentosVinculados = Array.from(new Map([...baseOrcamento, ...keywordOrcamento].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values()).slice(0, 20);
       const normativosVinculados = Array.from(new Map([...baseNormativos, ...keywordNormativos].map(n => [n.titulo, n])).values()).slice(0, 20);
+
+      // Match quality weights
+      const getIndWeight = (i: typeof indicadoresVinculados[0]) => keywordIndSet.has(i.nome) ? 1.0 : 0.5;
+      const getOrcWeight = (o: typeof orcamentosVinculados[0]) => keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`) ? 1.0 : 0.5;
+      const getNormWeight = (n: typeof normativosVinculados[0]) => keywordNormSet.has(n.titulo) ? 1.0 : 0.5;
+
+      const totalIndKeyword = indicadoresVinculados.filter(i => getIndWeight(i) === 1.0).length;
+      const totalIndEixo = indicadoresVinculados.length - totalIndKeyword;
+      const totalOrcKeyword = orcamentosVinculados.filter(o => getOrcWeight(o) === 1.0).length;
+      const totalOrcEixo = orcamentosVinculados.length - totalOrcKeyword;
+      const totalNormKeyword = normativosVinculados.filter(n => getNormWeight(n) === 1.0).length;
+      const totalNormEixo = normativosVinculados.length - totalNormKeyword;
 
       // ═══════════════════════════════════════════════════════════
       // MOTOR DE STATUS COMPUTADO — Metodologia Auditável
