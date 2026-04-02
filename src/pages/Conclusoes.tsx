@@ -198,7 +198,7 @@ export default function Conclusoes() {
       content += '</tbody></table>';
     }
 
-    generateSectionPDF({ titulo: 'Síntese Executiva', subtitulo: `${stats?.total || 0} lacunas ONU × ${respostas?.length || 0} respostas CERD III`, dataGeracao: now, conteudo: content });
+    generateSectionPDF({ titulo: 'Síntese Executiva', subtitulo: `${stats?.total || 0} recomendações ONU × ${respostas?.length || 0} respostas CERD III`, dataGeracao: now, conteudo: content });
   };
 
   const conclusoesAgrupadas = {
@@ -230,7 +230,7 @@ export default function Conclusoes() {
           <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />Normativa</Badge>
           <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />MUNIC/ESTADIC</Badge>
           <Badge variant="outline" className="gap-1 bg-destructive/10"><Heart className="w-3 h-3" />COVID-19</Badge>
-          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} lacunas ONU</Badge>
+          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} recomendações ONU</Badge>
           <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores analíticos</Badge>
           {lastUpdated && (
             <Badge variant="secondary" className="gap-1 text-[10px]">
@@ -342,7 +342,7 @@ export default function Conclusoes() {
                 </Button>
               </div>
               <CardDescription>
-                Cruzamento de {stats?.total || 0} lacunas ONU + {respostas?.length || 0} respostas CERD III + dados FBSP/PNAD/DataSUS/SIOP 2018→2024
+                Cruzamento de {stats?.total || 0} recomendações ONU + {respostas?.length || 0} respostas CERD III + dados FBSP/PNAD/DataSUS/SIOP 2018→2024
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
@@ -372,7 +372,7 @@ export default function Conclusoes() {
               
               {sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos.length > 0 && (
                 <div className="p-4 bg-warning/5 border border-warning/20 rounded-lg">
-                  <p className="text-xs font-semibold text-warning mb-2">⚡ EIXOS MAIS CRÍTICOS (lacunas ONU não cumpridas)</p>
+                  <p className="text-xs font-semibold text-warning mb-2">⚡ EIXOS MAIS CRÍTICOS (recomendações ONU não cumpridas)</p>
                   <div className="space-y-2">
                     {sinteseExecutiva.eixosMaisProblematicos.map((e, i) => (
                       <div key={i} className="flex items-center justify-between">
@@ -477,7 +477,7 @@ export default function Conclusoes() {
                         <p className="font-semibold text-sm">Fios Condutores — a "cola" do quebra-cabeças</p>
                         <p className="text-sm text-muted-foreground mt-1">
                           Argumentos transversais gerados pelo cruzamento das bases do Escopo: dados estatísticos (FBSP, PNAD, DataSUS) × 
-                          {stats?.total || 0} lacunas ONU × {respostas?.length || 0} respostas CERD III × {orcStats?.totalRegistros || 0} registros orçamentários. 
+                          {stats?.total || 0} recomendações ONU × {respostas?.length || 0} respostas CERD III × {orcStats?.totalRegistros || 0} registros orçamentários. 
                           Cada fio conecta números, eixos e comparativos para formar narrativas consistentes para o relatório.
                         </p>
                       </div>
@@ -501,7 +501,7 @@ export default function Conclusoes() {
                   <Card className="bg-muted/30 flex-1">
                     <CardContent className="pt-6">
                       <p className="text-sm text-muted-foreground">
-                        Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III. 
+                        Insights gerados pelo cruzamento: recomendações ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III. 
                         Identificam padrões, contradições e correlações na política racial brasileira.
                       </p>
                     </CardContent>
@@ -524,7 +524,7 @@ export default function Conclusoes() {
                       Conclusão-Síntese: O Estado Brasileiro Avançou nas Políticas Raciais (2018–2025)?
                     </CardTitle>
                     <CardDescription>
-                      Resposta integrada a partir dos {fiosCondutores.length} fios condutores × {stats?.total || 0} lacunas ONU × dados FBSP/PNAD/DataSUS/SIOP
+                      Resposta integrada a partir dos {fiosCondutores.length} fios condutores × {stats?.total || 0} recomendações ONU × dados FBSP/PNAD/DataSUS/SIOP
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-4">
@@ -587,7 +587,7 @@ export default function Conclusoes() {
 
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="text-xs text-muted-foreground italic mb-2">
-                        <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} lacunas ONU (CERD/C/BRA/CO/18-20), 
+                        <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20), 
                         {respostas?.length || 0} respostas CERD III, {indicadores?.length || 0} indicadores interseccionais, 
                         {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
                       </p>

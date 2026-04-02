@@ -183,7 +183,7 @@ function generateConsolidatedHTML(data: {
           <li><a href="#saude">Saúde</a></li>
           <li><a href="#inter">Interseccionalidade</a></li>
           <li><a href="#povos">Povos Tradicionais</a></li>
-          <li><a href="#lacunas">Lacunas ONU</a></li>
+          <li><a href="#lacunas">Recomendações ONU</a></li>
           <li><a href="#inddb">Indicadores do Banco de Dados</a></li>
         </ol>
       </li>
@@ -357,7 +357,7 @@ function generateConsolidatedHTML(data: {
   <p class="source">Fontes: IBGE Censo 2022 (SIDRA 9605, 9578, Brasil Indígena); FUNAI Geoprocessamento; INCRA Títulos Expedidos; Palmares.</p>
 
   <!-- 1.8 LACUNAS ONU -->
-  <h3 id="lacunas">1.8 — Lacunas ONU (${lacunasStats?.total || 0} registros)</h3>
+  <h3 id="lacunas">1.8 — Recomendações ONU (${lacunasStats?.total || 0} registros)</h3>
   ${lacunasStats ? `
   <div class="kpi-grid">
     <div class="kpi"><div class="value" style="color:green">${lacunasStats.porStatus.cumprido}</div><div class="label">Cumpridas</div></div>
@@ -498,7 +498,7 @@ function generateConsolidatedHTML(data: {
   </div>
   ${sinteseExecutiva && sinteseExecutiva.eixosMaisProblematicos?.length > 0 ? `
   <div style="padding:10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;margin:10px 0;">
-    <p style="font-size:10px;font-weight:600;color:#92400e;margin-bottom:4px;">⚡ EIXOS MAIS CRÍTICOS (lacunas ONU não cumpridas)</p>
+    <p style="font-size:10px;font-weight:600;color:#92400e;margin-bottom:4px;">⚡ EIXOS MAIS CRÍTICOS (recomendações ONU não cumpridas)</p>
     <table>
       <tr><th>Eixo</th><th>Total Lacunas</th><th>% Não Cumprido</th></tr>
       ${sinteseExecutiva.eixosMaisProblematicos.map((e: any) => `<tr><td>${e.eixo}</td><td>${e.total}</td><td style="color:red;font-weight:600">${Math.round(e.gravidade * 100)}%</td></tr>`).join('')}
@@ -579,7 +579,7 @@ function generateConsolidatedHTML(data: {
 
   <!-- 4.4 FIOS CONDUTORES -->
   <h3 id="concl-fios">4.4 — Fios Condutores (${fiosCondutores.length} argumentos transversais)</h3>
-  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Argumentos transversais gerados pelo cruzamento das bases do Escopo: dados estatísticos (FBSP, PNAD, DataSUS) × lacunas ONU × respostas CERD III × registros orçamentários.</p>
+  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Argumentos transversais gerados pelo cruzamento das bases do Escopo: dados estatísticos (FBSP, PNAD, DataSUS) × recomendações ONU × respostas CERD III × registros orçamentários.</p>
   ${fiosCondutores.map(fio => {
     const tipoLabel: Record<string, string> = { paradoxo: '⚖️ Paradoxo', correlacao: '🔗 Correlação', tendencia: '📈 Tendência', lacuna_critica: '⚠️ Lacuna Crítica', avanco: '✅ Avanço', retrocesso: '🔴 Retrocesso' };
     const tipoBadge: Record<string, string> = { paradoxo: 'badge-info', correlacao: 'badge-info', tendencia: 'badge-success', lacuna_critica: 'badge-danger', avanco: 'badge-success', retrocesso: 'badge-danger' };
@@ -595,7 +595,7 @@ function generateConsolidatedHTML(data: {
 
   <!-- 4.5 CRUZAMENTOS ANALÍTICOS -->
   <h3 id="concl-cruz">4.5 — Cruzamentos Analíticos (${insightsCruzamento.length} insights)</h3>
-  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Insights gerados pelo cruzamento: lacunas ONU × orçamento × indicadores × respostas CERD III.</p>
+  <p style="font-size:10px;color:#64748b;margin-bottom:10px;">Insights gerados pelo cruzamento: recomendações ONU × orçamento × indicadores × respostas CERD III.</p>
   ${insightsCruzamento.map(ins => {
     const tipoBadge: Record<string, string> = { alerta: 'badge-danger', progresso: 'badge-success', 'contradição': 'badge-warning', 'correlação': 'badge-info' };
     return `
@@ -675,7 +675,7 @@ function generateConsolidatedHTML(data: {
   })()}
 
   <p class="source" style="margin-top:16px;">
-    <strong>Fontes integradas:</strong> ${fiosCondutores.length} fios condutores analíticos, ${lacunasStats?.total || 0} lacunas ONU (CERD/C/BRA/CO/18-20),
+    <strong>Fontes integradas:</strong> ${fiosCondutores.length} fios condutores analíticos, ${lacunasStats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20),
     ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores interseccionais,
     ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
   </p>
@@ -780,7 +780,7 @@ export function ConsolidatedScopeReport() {
             <div className="flex justify-between"><span>Saúde (DataSUS)</span><Badge variant="outline" className="text-xs">7 anos</Badge></div>
             <div className="flex justify-between"><span>Interseccionalidade</span><Badge variant="outline" className="text-xs">4 eixos</Badge></div>
             <div className="flex justify-between"><span>Povos Tradicionais</span><Badge variant="outline" className="text-xs">Indígenas + Quilomb.</Badge></div>
-            <div className="flex justify-between"><span>Lacunas ONU</span><Badge variant="outline" className="text-xs">{lacunas?.length || 0} reg.</Badge></div>
+            <div className="flex justify-between"><span>Recomendações ONU</span><Badge variant="outline" className="text-xs">{lacunas?.length || 0} reg.</Badge></div>
             <div className="flex justify-between"><span>Indicadores BD</span><Badge variant="outline" className="text-xs">{indicadores?.length || 0} reg.</Badge></div>
           </CardContent>
         </Card>
@@ -882,7 +882,7 @@ export function ConsolidatedScopeReport() {
           <li>Saúde: mortalidade materna e infantil por raça</li>
           <li>Interseccionalidade: raça × gênero × idade, deficiência, LGBTQIA+</li>
           <li>Povos tradicionais: indígenas (TIs, etnias, línguas) e quilombolas (títulos, infraestrutura)</li>
-          <li>Lacunas ONU: todas as recomendações com status de cumprimento</li>
+          <li>Recomendações ONU: todas as recomendações com status de cumprimento</li>
           <li>Indicadores do banco de dados com desagregações</li>
           <li>Orçamento: evolução federal 2018-2025, dados do BD</li>
           <li>Base normativa: todos os documentos com categorias e recomendações vinculadas</li>

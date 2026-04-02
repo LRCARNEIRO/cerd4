@@ -614,7 +614,7 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 <!-- ============================================ -->
 <div class="tab-header">
   <h2 id="tab3">🔗 3. Fios Condutores (${fiosCondutores.length})</h2>
-  <p>Argumentos transversais: Base Estatística × ${totalLacunas} lacunas ONU × ${respostas.length} respostas CERD III × ${orcStats?.totalRegistros || 0} registros orçamentários</p>
+  <p>Argumentos transversais: Base Estatística × ${totalLacunas} recomendações ONU × ${respostas.length} respostas CERD III × ${orcStats?.totalRegistros || 0} registros orçamentários</p>
 </div>
 
 ${fiosCondutores.map(fio => `
@@ -631,7 +631,7 @@ ${fiosCondutores.map(fio => `
 <!-- ============================================ -->
 <div class="tab-header">
   <h2 id="tab4">⚡ 4. Cruzamentos Analíticos (${insightsCruzamento.length})</h2>
-  <p>Insights: lacunas ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III</p>
+  <p>Insights: recomendações ONU × orçamento × indicadores FBSP/PNAD × respostas CERD III</p>
 </div>
 
 ${insightsCruzamento.map(ins => `

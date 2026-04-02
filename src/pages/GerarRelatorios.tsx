@@ -55,7 +55,7 @@ export default function GerarRelatorios() {
     em_andamento: respostasCerd?.filter(r => r.grau_atendimento === 'em_andamento').length || 0,
   };
 
-  // Generate Lacunas ONU report HTML
+  // Generate Recomendações ONU report HTML
   const generateLacunasHTML = () => {
     const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const statusIcon = (s: string) => {
@@ -63,7 +63,7 @@ export default function GerarRelatorios() {
       return map[s] || '';
     };
     return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-<title>Lacunas ONU — Relatório CERD IV</title>
+<title>Recomendações ONU — Relatório CERD IV</title>
 <style>
   body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 210mm; margin: 0 auto; padding: 20px; font-size: 11px; line-height: 1.5; color: #1a1a2e; }
   h1 { font-size: 20px; color: #0f3460; border-bottom: 3px solid #0f3460; padding-bottom: 8px; }
@@ -88,7 +88,7 @@ export default function GerarRelatorios() {
 </style></head><body>
 ${getExportToolbarHTML('Lacunas-ONU-CERD-IV')}
 <div class="header">
-  <h1>⚠️ Lacunas ONU — Recomendações não cumpridas</h1>
+  <h1>⚠️ Recomendações ONU — Recomendações não cumpridas</h1>
   <p><strong>IV Relatório Periódico do Brasil ao CERD</strong></p>
   <p>Período: 2018–2026 | Gerado em: ${now}</p>
 </div>
@@ -223,12 +223,12 @@ ${(respostasCerd || []).map(r => {
   return (
     <DashboardLayout
       title="Gerar Relatórios Analíticos"
-      subtitle="Análise de políticas raciais com base nos dados do sistema — Lacunas ONU, Orçamento, Indicadores"
+      subtitle="Análise de políticas raciais com base nos dados do sistema — Recomendações ONU, Orçamento, Indicadores"
     >
       {/* Header analítico */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{totalLacunas} lacunas ONU</Badge>
+          <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{totalLacunas} recomendações ONU</Badge>
           <Badge variant="outline" className="gap-1"><FileCheck className="w-3 h-3" />{respostasCerd?.length || 0} respostas CERD III</Badge>
           <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />{orcStats?.totalRegistros || 0} registros orçamentários</Badge>
           <Badge variant="outline" className="gap-1"><TrendingUp className="w-3 h-3" />{indicadores?.length || 0} indicadores BD</Badge>
@@ -540,7 +540,7 @@ ${getExportToolbarHTML('Balanco-Comparativo-CERD-IV')}
 <div class="kpi-grid">
   <div class="kpi">
     <div class="value" style="color:#0f3460">${totalLacunas}</div>
-    <div class="label">Lacunas ONU mapeadas</div>
+    <div class="label">Recomendações ONU mapeadas</div>
     <div class="delta">CERD/C/BRA/CO/18-20</div>
   </div>
   <div class="kpi">
@@ -564,7 +564,7 @@ ${getExportToolbarHTML('Balanco-Comparativo-CERD-IV')}
   <h3>📈 Composição da Base de Dados</h3>
   <table>
     <tr><th>Módulo</th><th>Registros</th><th>Fonte</th><th>Link no Sistema</th></tr>
-    <tr><td>Lacunas ONU</td><td>${totalLacunas}</td><td>CERD/C/BRA/CO/18-20 (Ago/2022)</td><td><a class="link" href="${systemUrl}/conclusoes">→ Conclusões</a></td></tr>
+    <tr><td>Recomendações ONU</td><td>${totalLacunas}</td><td>CERD/C/BRA/CO/18-20 (Ago/2022)</td><td><a class="link" href="${systemUrl}/conclusoes">→ Conclusões</a></td></tr>
     <tr><td>Respostas CERD III</td><td>${respostasCerd.length}</td><td>III Relatório Periódico (2018)</td><td><a class="link" href="${systemUrl}/gerar-relatorios">→ Gerar Relatórios</a></td></tr>
     <tr><td>Indicadores Interseccionais</td><td>${indicadores.length}</td><td>SIDRA, DataSUS, FBSP, CNJ, TSE</td><td><a class="link" href="${systemUrl}/estatisticas">→ Estatísticas</a></td></tr>
     <tr><td>Dados Orçamentários</td><td>${orcStats?.totalRegistros || 0}</td><td>SIOP / Portal Transparência</td><td><a class="link" href="${systemUrl}/orcamento">→ Orçamento</a></td></tr>
@@ -573,7 +573,7 @@ ${getExportToolbarHTML('Balanco-Comparativo-CERD-IV')}
 </div>
 
 <!-- LACUNAS ONU -->
-<h2>2. Lacunas ONU — Quadro de Cumprimento</h2>
+<h2>2. Recomendações ONU — Quadro de Cumprimento</h2>
 <div class="kpi-grid">
   <div class="kpi"><div class="value" style="color:#166534">${cumpridas}</div><div class="label">Cumpridas</div></div>
   <div class="kpi"><div class="value" style="color:#92400e">${parciais}</div><div class="label">Parcialmente cumpridas</div></div>
@@ -597,7 +597,7 @@ ${getExportToolbarHTML('Balanco-Comparativo-CERD-IV')}
 
 <!-- CONCLUSÕES ANALÍTICAS -->
 <h2>3. Conclusões Analíticas — Fios Condutores</h2>
-<p style="font-size:10px;color:#64748b;">As conclusões cruzam lacunas ONU × orçamento × indicadores para identificar padrões estruturais.</p>
+<p style="font-size:10px;color:#64748b;">As conclusões cruzam recomendações ONU × orçamento × indicadores para identificar padrões estruturais.</p>
 
 <div class="section-box">
   <h3>Composição das ${conclusoes.length} Conclusões</h3>
@@ -676,7 +676,7 @@ ${conclusoes.map((c: any) => `
     <tr><td>Indicadores BD</td><td>Deep links SIDRA + metadados de metodologia adicionados</td><td>Auditabilidade total — cada indicador rastreável à fonte primária</td></tr>
     <tr><td>Indicadores BD</td><td>Notas sobre cruzamentos e baselines inaugurais (Censo 2022)</td><td>Transparência sobre limitações de séries quilombolas/indígenas</td></tr>
     <tr><td>Gerar Relatórios</td><td>Exportação DOCX adicionada a todos os relatórios analíticos</td><td>Todos os produtos exportáveis em PDF/HTML + Word editável</td></tr>
-    <tr><td>Gerar Relatórios</td><td>Relatórios Lacunas ONU e Respostas CERD III com exportação</td><td>Dados do BD alimentam diretamente os documentos exportados</td></tr>
+    <tr><td>Gerar Relatórios</td><td>Relatórios Recomendações ONU e Respostas CERD III com exportação</td><td>Dados do BD alimentam diretamente os documentos exportados</td></tr>
     <tr><td>Base Estatística</td><td>Seção Grupos Focais integrada ao relatório de Inventário</td><td>Quilombolas, indígenas, ciganos, juventude e mulheres negras no documento</td></tr>
     <tr><td>Base Estatística</td><td>Deep links bidirecionais sistema↔documento adicionados</td><td>Navegação direta do DOCX para a tela correspondente no sistema</td></tr>
     <tr><td>Indicadores BD</td><td>Persistência de indicadores de alta prioridade (homicídios, letalidade, encarceramento)</td><td>Base elevada para ${indicadores.length} indicadores auditáveis</td></tr>
@@ -686,7 +686,7 @@ ${conclusoes.map((c: any) => `
 <div class="highlight">
   🔄 <strong>Impacto nas Conclusões:</strong> As conclusões analíticas (${conclusoes.length} registros) e os fios condutores permanecem estáveis — 
   as alterações das últimas 24h foram de <strong>enriquecimento de dados</strong> (mais séries, mais deep links, mais metadados), 
-  não de reclassificação. Os vereditos de cumprimento das lacunas ONU (${cumpridas} cumpridas, ${naoCumpridas} não cumpridas, ${retrocessos} retrocessos) 
+  não de reclassificação. Os vereditos de cumprimento das recomendações ONU (${cumpridas} cumpridas, ${naoCumpridas} não cumpridas, ${retrocessos} retrocessos) 
   e a composição de avanços/retrocessos nas conclusões (${avancos.length}/${retrocessosConc.length}) não sofreram alteração.
   <br/><br/>
   A aderência ICERD e o cruzamento artigos×lacunas×orçamento mantêm a mesma estrutura, agora com evidências mais robustas 
@@ -699,7 +699,7 @@ ${conclusoes.map((c: any) => `
   <p><strong>Estabilidade analítica confirmada.</strong> As implementações das últimas 24 horas foram de caráter qualitativo 
   (enriquecimento de séries, adição de metadados, ampliação de exportação), sem alterar:</p>
   <ul style="margin:8px 0;padding-left:20px;">
-    <li>Classificação de cumprimento das ${totalLacunas} lacunas ONU</li>
+    <li>Classificação de cumprimento das ${totalLacunas} recomendações ONU</li>
     <li>Composição dos ${conclusoes.length} fios condutores (${avancos.length} avanço, ${lacunasPersist.length} lacunas persistentes, ${retrocessosConc.length} retrocesso)</li>
     <li>Pontuação de aderência ICERD por artigo</li>
     <li>Diagnóstico orçamentário (${orcStats?.totalRegistros || 0} registros, variação ${orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(1)}%` : 'N/A'})</li>
@@ -751,7 +751,7 @@ ${conclusoes.map((c: any) => `
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card>
           <CardContent className="pt-4 pb-4 text-center">
-            <p className="text-xs text-muted-foreground">Lacunas ONU</p>
+            <p className="text-xs text-muted-foreground">Recomendações ONU</p>
             <p className="text-2xl font-bold">{totalLacunas}</p>
             <p className="text-xs text-muted-foreground">{cumpridas} cumpridas | {naoCumpridas} não</p>
           </CardContent>
@@ -792,7 +792,7 @@ ${conclusoes.map((c: any) => `
             </div>
             <div className="flex items-start gap-2">
               <Badge variant="outline" className="flex-shrink-0">Relatórios</Badge>
-              <p>Exportação DOCX adicionada a todos os produtos analíticos + Lacunas ONU e Respostas CERD III</p>
+              <p>Exportação DOCX adicionada a todos os produtos analíticos + Recomendações ONU e Respostas CERD III</p>
             </div>
             <div className="flex items-start gap-2">
               <Badge variant="outline" className="flex-shrink-0">Estatísticas</Badge>
