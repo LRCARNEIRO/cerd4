@@ -80,11 +80,11 @@ function normalizeArticle(raw: string): ArtigoConvencao | null {
   return null;
 }
 
-function getLacunaArtigos(lacuna: LacunaIdentificada): ArtigoConvencao[] {
-  const raw = (lacuna as any).artigos_convencao;
+function getRecomendacaoArtigos(rec: LacunaIdentificada): ArtigoConvencao[] {
+  const raw = (rec as any).artigos_convencao;
   const explicit = Array.isArray(raw) ? raw.map(normalizeArticle).filter(Boolean) as ArtigoConvencao[] : [];
   if (explicit.length > 0) return [...new Set(explicit)];
-  return EIXO_PARA_ARTIGOS[lacuna.eixo_tematico as ThematicAxis] || [];
+  return EIXO_PARA_ARTIGOS[rec.eixo_tematico as ThematicAxis] || [];
 }
 
 const NEGATIVE_INDICATORS = [
