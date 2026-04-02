@@ -8,6 +8,7 @@
  */
 
 import type { ThematicAxis } from '@/hooks/useLacunasData';
+import type { MatchQuality, ArtigoMatch } from '@/utils/inferArtigosIndicador';
 
 /** Artigo da Convenção ICERD (I-VII) */
 export type ArtigoConvencao = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII';
