@@ -423,6 +423,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
+        `Modelo Híbrido: keyword match = 100%, eixo genérico = 50%`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
