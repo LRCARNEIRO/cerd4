@@ -113,7 +113,7 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
             </div>
             <span className="text-xs font-bold">{aud.scoreGlobal}%</span>
           </div>
-          <p className="text-[9px] text-muted-foreground">Faixas: ≥75 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+          <p className="text-[9px] text-muted-foreground">Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
         </div>
       )}
 

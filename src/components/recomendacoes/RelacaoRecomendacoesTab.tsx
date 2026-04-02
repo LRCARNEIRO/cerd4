@@ -158,7 +158,7 @@ export function RelacaoRecomendacoesTab() {
         </p>
         {sensorReady && (
           <p className="text-[10px] text-muted-foreground mt-1">
-            Metodologia: Indicadores (40%) + Orçamento (30%) + Normativos (30%) → Faixas: ≥75 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso
+            Metodologia: Indicadores (40%) + Orçamento (30%) + Normativos (30%) → Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso
           </p>
         )}
       </div>
