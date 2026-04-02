@@ -167,7 +167,7 @@ export default function Recomendacoes() {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Cumpridas</p>
-                    <p className="text-xl font-bold text-success">{isLoading ? '...' : stats?.porStatus.cumprido || 0}</p>
+                    <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
                   </div>
                 </CardContent>
               </Card>
