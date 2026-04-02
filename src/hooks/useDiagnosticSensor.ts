@@ -546,8 +546,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   }, [diagnostics]);
 
   const diagnosticMap = useMemo(() => {
-    const map = new Map<string, LacunaDiagnostic>();
-    diagnostics.forEach(d => map.set(d.lacunaId, d));
+    const map = new Map<string, RecomendacaoDiagnostic>();
+    diagnostics.forEach(d => map.set(d.recomendacaoId, d));
     return map;
   }, [diagnostics]);
 
