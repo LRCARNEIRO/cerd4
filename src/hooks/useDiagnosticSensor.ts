@@ -134,16 +134,50 @@ const KEYWORD_STOPWORDS = new Set([
 ]);
 
 /**
- * Keywords específicas por parágrafo — vinculação precisa.
- * Cada recomendação recebe APENAS palavras-chave que descrevem seu tema concreto,
- * sem genéricos de eixo temático que capturam toda a base.
+ * Keywords específicas por recomendação — vinculação precisa.
+ * Fontes: tema + descricao_lacuna + texto_original_onu (quando em PT) + sinônimos temáticos.
+ * Sem genéricos de eixo temático que capturam toda a base.
  */
 function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
-  // 1. Extrair tokens significativos do tema + descrição da recomendação (sem stop-words)
-  const rawTokens = tokenize(`${rec.tema} ${rec.descricao_lacuna}`)
+  // 1. Extrair tokens de tema + descrição + texto original ONU (se em português)
+  let sourceText = `${rec.tema} ${rec.descricao_lacuna}`;
+  const textoOnu = (rec as any).texto_original_onu;
+  if (textoOnu && typeof textoOnu === 'string') {
+    // Incluir apenas se parece português (contém palavras PT comuns)
+    const isPt = /\b(que|para|como|mais|pelo|pela|dos|das|com|uma|são)\b/i.test(textoOnu);
+    if (isPt) sourceText += ` ${textoOnu}`;
+  }
+
+  const rawTokens = tokenize(sourceText)
     .filter(t => !KEYWORD_STOPWORDS.has(t));
 
-  // 2. Keywords específicas por grupo focal (apenas termos discriminantes)
+  // 2. Sinônimos temáticos — expande termos que têm variantes em normativos/indicadores
+  const SYNONYMS: Record<string, string[]> = {
+    'homofobicas': ['lgbtfobia', 'orientacao sexual', 'homoafetivo'],
+    'transfobicas': ['transgenero', 'identidade genero', 'transexualidade'],
+    'quilombolas': ['quilombo', 'quilombola', 'remanescentes'],
+    'quilombola': ['quilombo', 'quilombolas', 'remanescentes'],
+    'homicidios': ['homicidio', 'letalidade', 'mortes violentas'],
+    'homicidio': ['homicidios', 'letalidade', 'mortes violentas'],
+    'moradia': ['habitacao', 'habitacional', 'deficit habitacional'],
+    'segregacao': ['segregacao residencial', 'favelas'],
+    'demarcacao': ['titulacao', 'regularizacao fundiaria'],
+    'titulacao': ['demarcacao', 'regularizacao fundiaria'],
+    'encarceramento': ['sistema prisional', 'penitenciario', 'custodia'],
+    'feminicidio': ['violencia domestica', 'violencia mulher'],
+    'trabalho infantil': ['erradicacao trabalho infantil'],
+    'discriminacao': ['preconceito', 'desigualdade'],
+    'indigena': ['indigenas', 'povos originarios'],
+    'indigenas': ['indigena', 'povos originarios'],
+    'racismo': ['racial', 'antirracista', 'racista'],
+  };
+
+  const synonymTokens: string[] = [];
+  rawTokens.forEach(t => {
+    if (SYNONYMS[t]) synonymTokens.push(...SYNONYMS[t]);
+  });
+
+  // 3. Keywords específicas por grupo focal (apenas termos discriminantes)
   const grupoSpecific: Record<FocalGroupType, string[]> = {
     negros: ['negros', 'negras', 'racial', 'racismo'],
     indigenas: ['indigena', 'indigenas'],
@@ -160,6 +194,7 @@ function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
 
   return [...new Set([
     ...rawTokens,
+    ...synonymTokens,
     ...(grupoSpecific[rec.grupo_focal as FocalGroupType] || []),
   ])];
 }
