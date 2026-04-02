@@ -45,11 +45,8 @@ export interface AuditScoreBreakdown {
 
 export interface LacunaDiagnostic {
   lacunaId: string;
-  statusManual: ComplianceStatus;
-  statusSugerido: ComplianceStatus | null;
   statusComputado: ComplianceStatus;
   auditoria: AuditScoreBreakdown;
-  divergente: boolean;
   signals: DiagnosticSignal[];
   linkedIndicadores: LinkedIndicador[];
   linkedOrcamento: LinkedOrcamento[];
