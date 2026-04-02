@@ -115,41 +115,48 @@ function tokenize(text: string): string[] {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
-    .filter(word => word.length >= 4);
+    .filter(word => word.length >= 5); // ← mínimo 5 letras (evita "terra", "dados", "saude")
 }
 
-function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
-  const eixoKeywords: Record<ThematicAxis, string[]> = {
-    legislacao_justica: ['justica', 'judicial', 'discriminacao', 'reparacao'],
-    politicas_institucionais: ['politica', 'institucional', 'igualdade', 'mulheres', 'genero', 'interseccional'],
-    seguranca_publica: ['violencia', 'homicidio', 'policial', 'seguranca'],
-    saude: ['saude', 'mortalidade', 'materna', 'infantil'],
-    educacao: ['educacao', 'escolar', 'analfabetismo'],
-    trabalho_renda: ['trabalho', 'renda', 'emprego', 'pobreza'],
-    terra_territorio: ['territorio', 'terra', 'quilombola', 'indigena'],
-    cultura_patrimonio: ['cultura', 'patrimonio', 'religiao'],
-    participacao_social: ['participacao', 'representacao', 'politica'],
-    dados_estatisticas: ['dados', 'estatistica', 'indicador'],
-  };
+// ── Stop-words: termos genéricos demais que causam falsos positivos ──
+const KEYWORD_STOPWORDS = new Set([
+  'sobre', 'entre', 'contra', 'desde', 'ainda', 'outros', 'outras',
+  'sendo', 'foram', 'todos', 'todas', 'nivel', 'forma', 'areas',
+  'acesso', 'medidas', 'especiais', 'nacional', 'brasil', 'federal',
+  'estado', 'governo', 'publico', 'publica', 'sistema', 'programa',
+  'politica', 'politicas', 'direitos', 'direito', 'humanos', 'povos',
+  'populacao', 'comunidades', 'combate', 'promocao', 'protecao',
+  'implementacao', 'garantir', 'inclui', 'impacto', 'social',
+]);
 
-  const grupoKeywords: Record<FocalGroupType, string[]> = {
-    negros: ['negros', 'negras', 'afro', 'racial'],
+/**
+ * Keywords específicas por parágrafo — vinculação precisa.
+ * Cada lacuna recebe APENAS palavras-chave que descrevem seu tema concreto,
+ * sem genéricos de eixo temático que capturam toda a base.
+ */
+function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
+  // 1. Extrair tokens significativos do tema + descrição (sem stop-words)
+  const rawTokens = tokenize(`${lacuna.tema} ${lacuna.descricao_lacuna}`)
+    .filter(t => !KEYWORD_STOPWORDS.has(t));
+
+  // 2. Keywords específicas por grupo focal (apenas termos discriminantes)
+  const grupoSpecific: Record<FocalGroupType, string[]> = {
+    negros: ['negros', 'negras', 'racial', 'racismo'],
     indigenas: ['indigena', 'indigenas'],
-    quilombolas: ['quilombola', 'quilombolas'],
-    ciganos: ['ciganos', 'romani'],
-    religioes_matriz_africana: ['religiao', 'matriz', 'africana'],
-    juventude_negra: ['juventude', 'jovens', 'negra'],
-    mulheres_negras: ['mulheres', 'mulher', 'negras', 'negra', 'genero', 'materna'],
-    lgbtqia_negros: ['lgbt', 'trans', 'sexualidade'],
-    pcd_negros: ['deficiencia', 'pcd'],
-    idosos_negros: ['idosos', 'idosas'],
+    quilombolas: ['quilombola', 'quilombolas', 'quilombo'],
+    ciganos: ['ciganos', 'cigano', 'romani'],
+    religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
+    juventude_negra: ['juventude negra', 'jovens negros'],
+    mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio'],
+    lgbtqia_negros: ['lgbtqia', 'transexual', 'homofobia', 'transfobia'],
+    pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
+    idosos_negros: ['idosos negros', 'idosas negras'],
     geral: [],
   };
 
   return [...new Set([
-    ...tokenize(`${lacuna.tema} ${lacuna.descricao_lacuna}`),
-    ...(eixoKeywords[lacuna.eixo_tematico as ThematicAxis] || []),
-    ...(grupoKeywords[lacuna.grupo_focal as FocalGroupType] || []),
+    ...rawTokens,
+    ...(grupoSpecific[lacuna.grupo_focal as FocalGroupType] || []),
   ])];
 }
 
