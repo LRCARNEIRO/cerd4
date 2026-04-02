@@ -296,8 +296,12 @@ export default function Index() {
             const evolScore = Math.round(scoreNorm + scoreOrc + scoreInd);
             const evolColor = evolScore >= 60 ? 'bg-success text-success-foreground' : evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
             
-            // Simple adherence: % of lacunas with cumprido/parcial
-            const cumpridas = artLacunas.filter(l => l.status_cumprimento === 'cumprido' || l.status_cumprimento === 'parcialmente_cumprido').length;
+            // Adherence using COMPUTED status from sensor
+            const cumpridas = artLacunas.filter(l => {
+              const diag = sensorSummary ? diagnosticMap?.get(l.id) : null;
+              const effective = diag?.statusComputado ?? l.status_cumprimento;
+              return effective === 'cumprido' || effective === 'parcialmente_cumprido';
+            }).length;
             const aderScore = artLacunas.length > 0 ? Math.round((cumpridas / artLacunas.length) * 100) : 0;
             const aderColor = aderScore >= 60 ? 'bg-success/15 text-success border-success/30' : aderScore >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
 
