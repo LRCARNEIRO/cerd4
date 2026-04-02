@@ -11,7 +11,7 @@ const iconMap: Record<string, typeof BarChart3> = {
   tendencia: BarChart3,
   orcamento_simbolico: Banknote,
   cobertura_normativa: FileText,
-  divergencia: AlertTriangle,
+  
 };
 
 const severityClasses: Record<string, string> = {
