@@ -137,20 +137,21 @@ export function EvolucaoRecomendacoesPanel() {
     return recomendacoes.map(rec => {
       const artigos = getArtigosFromRecomendacao(rec);
 
-      // Build keyword tokens from recommendation tema + description for specific matching
-      const temaTokens = `${rec.tema} ${rec.descricao_lacuna}`.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .split(/\s+/).filter(t => t.length >= 5);
+      // Build keyword tokens from recommendation tema + description + texto_original_onu
+      const GENERIC_STOPS = ['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal', 'estado', 'governo', 'medida', 'direito', 'parte', 'comite', 'sobre', 'contra', 'entre', 'todas', 'todos', 'forma', 'podem', 'grupo', 'populacao', 'pessoa', 'acoes', 'acordo', 'ainda', 'alem', 'outro', 'outras', 'outros', 'sendo', 'relacao', 'numero', 'dados'];
+      const rawText = `${rec.tema} ${rec.descricao_lacuna} ${(rec as any).texto_original_onu || ''}`.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const temaTokens = rawText
+        .split(/\s+/).filter(t => t.length >= 5 && !GENERIC_STOPS.includes(t));
 
       // Also check if normativo/orcamento explicitly references this recommendation paragraph
       const paragrafoRef = String(rec.paragrafo || '').replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
 
       // --- ORÇAMENTO: keyword-only + explicit paragraph reference ---
       const orcByKeyword = orcamento.filter((o: any) => {
-        // Check explicit paragraph reference in recomendacoes field (if exists)
         const h = `${o.programa} ${o.orgao}`.toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral'].includes(t))
+        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
           .some(t => h.includes(t));
       });
       const allOrc = Array.from(new Map(orcByKeyword.map((o: any) => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
@@ -163,27 +164,18 @@ export function EvolucaoRecomendacoesPanel() {
       const allNorm = normativos.filter((d: any) => {
         const h = d.titulo.toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        // Match specific keywords from this recommendation, excluding generic terms
-        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal'].includes(t))
+        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
           .some(t => h.includes(t));
       });
       const normativosCount = allNorm.length;
 
-      // --- INDICADORES: keyword + article-level (with anti-coringa filter) ---
-      const artigoInd = dedupedIndicadores.filter((ind: any) => {
-        // Only use article matching for non-coringa articles
-        const indArts = [...(ind.artigos_convencao || []).map(normalizeArticle).filter(Boolean), ...inferArtigosIndicador(ind)];
-        // Filter out coringa articles (V is present in >40% of records)
-        const specificArts = artigos.filter(a => a !== 'V' || artigos.length === 1);
-        return specificArts.some(a => indArts.includes(a));
-      });
-      const indByKeyword = dedupedIndicadores.filter((ind: any) => {
-        const h = `${ind.nome} ${ind.categoria}`.toLowerCase()
+      // --- INDICADORES: keyword-only matching (same as normativos — no article-level matching) ---
+      const allInd = dedupedIndicadores.filter((ind: any) => {
+        const h = `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''}`.toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral'].includes(t))
+        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
           .some(t => h.includes(t));
       });
-      const allInd = Array.from(new Map([...artigoInd, ...indByKeyword].map((i: any) => [i.nome, i])).values());
 
       // Evaluate indicator trends
       let favoraveis = 0, desfavoraveis = 0, novos = 0;
