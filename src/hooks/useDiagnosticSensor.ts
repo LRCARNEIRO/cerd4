@@ -462,7 +462,6 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       : 0;
 
     return {
-      totalDivergencias,
       totalOrcamentoSimbolico,
       totalTendenciaPiora,
       totalSemCoberturaNormativa,
