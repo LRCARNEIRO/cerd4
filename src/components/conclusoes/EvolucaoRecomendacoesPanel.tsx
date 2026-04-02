@@ -120,7 +120,7 @@ export function EvolucaoRecomendacoesPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status');
+        .select('titulo, artigos_convencao, status, categoria, url_origem');
       if (error) throw error;
       return data || [];
     },
