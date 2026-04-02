@@ -137,46 +137,51 @@ export function EvolucaoRecomendacoesPanel() {
     return recomendacoes.map(rec => {
       const artigos = getArtigosFromRecomendacao(rec);
 
-      // Find linked evidence by article tags
-      const artigoOrc = orcamento.filter((o: any) => {
-        const oArts = ((o.artigos_convencao || []) as string[]).map(normalizeArticle).filter(Boolean);
-        return artigos.some(a => oArts.includes(a));
-      });
+      // Build keyword tokens from recommendation tema + description for specific matching
       const temaTokens = `${rec.tema} ${rec.descricao_lacuna}`.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .split(/\s+/).filter(t => t.length >= 5);
+
+      // Also check if normativo/orcamento explicitly references this recommendation paragraph
+      const paragrafoRef = String(rec.paragrafo || '').replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
+
+      // --- ORÇAMENTO: keyword-only + explicit paragraph reference ---
       const orcByKeyword = orcamento.filter((o: any) => {
-        const h = `${o.programa} ${o.orgao}`.toLowerCase();
-        return temaTokens.some(t => h.includes(t));
+        // Check explicit paragraph reference in recomendacoes field (if exists)
+        const h = `${o.programa} ${o.orgao}`.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral'].includes(t))
+          .some(t => h.includes(t));
       });
-      const allOrc = Array.from(new Map([...artigoOrc, ...orcByKeyword].map((o: any) => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
+      const allOrc = Array.from(new Map(orcByKeyword.map((o: any) => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
 
       const programasCount = new Set(allOrc.map((o: any) => o.programa)).size;
       const acoesVinculadas = allOrc.length;
       const totalLiquidado = allOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
 
-      // Normativos linked by article
-      const artigoNorm = normativos.filter((d: any) => {
-        const dArts = ((d.artigos_convencao || []) as string[]).map(normalizeArticle).filter(Boolean);
-        return artigos.some(a => dArts.includes(a));
+      // --- NORMATIVOS: keyword-only matching (no broad article matching) ---
+      const allNorm = normativos.filter((d: any) => {
+        const h = d.titulo.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        // Match specific keywords from this recommendation, excluding generic terms
+        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal'].includes(t))
+          .some(t => h.includes(t));
       });
-      const normByKeyword = normativos.filter((d: any) => {
-        const h = d.titulo.toLowerCase();
-        return temaTokens.some(t => h.includes(t));
-      });
-      const allNorm = Array.from(new Map([...artigoNorm, ...normByKeyword].map((n: any) => [n.titulo, n])).values());
       const normativosCount = allNorm.length;
 
-      // Indicadores linked by article
+      // --- INDICADORES: keyword + article-level (with anti-coringa filter) ---
       const artigoInd = dedupedIndicadores.filter((ind: any) => {
-        return artigos.some((a: ArtigoConvencao) => {
-          if (ind.artigos_convencao?.includes(a)) return true;
-          return inferArtigosIndicador(ind).includes(a);
-        });
+        // Only use article matching for non-coringa articles
+        const indArts = [...(ind.artigos_convencao || []).map(normalizeArticle).filter(Boolean), ...inferArtigosIndicador(ind)];
+        // Filter out coringa articles (V is present in >40% of records)
+        const specificArts = artigos.filter(a => a !== 'V' || artigos.length === 1);
+        return specificArts.some(a => indArts.includes(a));
       });
       const indByKeyword = dedupedIndicadores.filter((ind: any) => {
-        const h = `${ind.nome} ${ind.categoria}`.toLowerCase();
-        return temaTokens.some(t => h.includes(t));
+        const h = `${ind.nome} ${ind.categoria}`.toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return temaTokens.filter(t => !['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral'].includes(t))
+          .some(t => h.includes(t));
       });
       const allInd = Array.from(new Map([...artigoInd, ...indByKeyword].map((i: any) => [i.nome, i])).values());
 
