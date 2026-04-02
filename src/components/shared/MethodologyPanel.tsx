@@ -20,9 +20,9 @@ const progressCategories = [
 ];
 
 const aderenciaWeights = [
-  { label: 'Recomendações ONU', weight: '20%', icon: '⚠️' },
-  { label: 'Cobertura Normativa', weight: '25%', icon: '📜' },
-  { label: 'Orçamento', weight: '20%', icon: '💰' },
+  { label: 'Recomendações ONU Atendidas', weight: '30%', icon: '⚠️' },
+  { label: 'Cobertura Normativa', weight: '20%', icon: '📜' },
+  { label: 'Orçamento', weight: '15%', icon: '💰' },
   { label: 'Indicadores + Séries Estatísticas', weight: '25%', icon: '📊' },
   { label: 'Amplitude de Fontes', weight: '10%', icon: '📈' },
 ];

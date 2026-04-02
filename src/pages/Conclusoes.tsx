@@ -34,6 +34,7 @@ const eixoLabels: Record<string, string> = {
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
 import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
+import { EvolucaoRecomendacoesPanel } from '@/components/conclusoes/EvolucaoRecomendacoesPanel';
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
@@ -412,6 +413,7 @@ export default function Conclusoes() {
               <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
               <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
               <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
+              <TabsTrigger value="evolucao-recomendacoes" className="gap-1"><TrendingUp className="w-4 h-4" /> Evolução Recomendações</TabsTrigger>
               <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas x Evidências ({lacunas?.length || 0})</TabsTrigger>
               <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Respostas às Críticas ({respostas?.length || 0})</TabsTrigger>
               <TabsTrigger value="lacunas-cerd-stats" className="gap-1"><FileText className="w-4 h-4" /> Lacunas CERD (Estatísticas)</TabsTrigger>
@@ -673,7 +675,12 @@ export default function Conclusoes() {
               />
             </TabsContent>
 
-            {/* ABA: LACUNAS IDENTIFICADAS */}
+            {/* ABA: EVOLUÇÃO RECOMENDAÇÕES */}
+            <TabsContent value="evolucao-recomendacoes">
+              <EvolucaoRecomendacoesPanel />
+            </TabsContent>
+
+
             <TabsContent value="lacunas-ident">
               <Card className="mb-4 border-l-4 border-l-primary">
                 <CardContent className="pt-6">
