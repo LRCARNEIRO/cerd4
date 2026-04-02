@@ -54,7 +54,10 @@ export interface RecomendacaoDiagnostic {
   linkedNormativos: LinkedNormativo[];
 }
 
-export interface DiagnosticSummary {
+/** @deprecated Use RecomendacaoDiagnostic */
+export type LacunaDiagnostic = RecomendacaoDiagnostic;
+
+
   totalOrcamentoSimbolico: number;
   totalTendenciaPiora: number;
   totalSemCoberturaNormativa: number;
