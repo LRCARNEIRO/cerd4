@@ -272,13 +272,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     return freq;
   }, [normativos]);
 
-  // ── Diagnose each lacuna ─────────────────────────────────────────
-  const diagnostics = useMemo<LacunaDiagnostic[]>(() => {
-    if (!lacunas || !indicadores || !orcamento || !normativos) return [];
+  // ── Diagnose each recomendação ────────────────────────────────────
+  const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
+    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
-    return lacunas.map(lacuna => {
-      const artigos = getLacunaArtigos(lacuna);
-      const keywords = getLacunaKeywords(lacuna);
+    return recomendacoes.map(rec => {
+      const artigos = getRecomendacaoArtigos(rec);
+      const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
       // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
