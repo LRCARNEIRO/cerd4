@@ -51,6 +51,14 @@ function getVinculacaoJustificativa(l: { artigos_convencao?: string[] | null; ei
   return 'Sem vinculação';
 }
 
+function getPrioridadeLabel(prioridade: string): string {
+  if (prioridade === 'critica') return 'Crítica';
+  if (prioridade === 'alta') return 'Alta';
+  if (prioridade === 'media') return 'Média';
+  if (prioridade === 'baixa') return 'Baixa';
+  return prioridade;
+}
+
 /**
  * Relação Completa — visão institucional com vinculação + status computado.
  * Restaurada com colunas de status, score e breakdown por dimensão.
@@ -89,9 +97,9 @@ export function RelacaoRecomendacoesTab() {
     const renderRows = (items: typeof allItems) => items.map(l => {
       const diag = diagnosticMap.get(l.id);
       const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
-      const score = diag?.auditoria?.scoreGlobal;
       const artigos = getArtigosFromRecomendacao(l);
       const justificativa = getVinculacaoJustificativa(l);
+      const prioridadeLabel = getPrioridadeLabel(l.prioridade);
       const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
       const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
 
@@ -101,7 +109,7 @@ export function RelacaoRecomendacoesTab() {
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="font-size:10px;color:#555">${justificativa}</td>
         <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
-        <td style="font-size:10px;text-transform:capitalize">${l.prioridade}</td>
+        <td style="font-size:10px">${prioridadeLabel}</td>
       </tr>`;
     }).join('');
 
@@ -138,12 +146,13 @@ th{background:#f1f5f9;font-size:10px}
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
 </table>
+<p class="nota"><strong>Prioridade cadastrada:</strong> a coluna de prioridade é lida diretamente do campo <code>prioridade</code> da base. Ela não é recalculada por esta tela nem pelo score do sensor.</p>
 <p class="nota"><strong>Status:</strong> Avaliação computada disponível em Produtos → Conclusões → Evolução Recomendações.</p>
 </div>
 
 <h2>Detalhamento</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade</th></tr>
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade cadastrada</th></tr>
 ${renderRows(allItems)}
 </table>
 
@@ -200,11 +209,11 @@ ${renderRows(allItems)}
                   <TableHead className="w-[120px]">Artigos</TableHead>
                   <TableHead className="w-[150px]">Justificativa</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
-                  <TableHead className="w-[90px]">Prioridade</TableHead>
+                  <TableHead className="w-[140px]">Prioridade cadastrada</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-              {items.map((l: any) => {
+                {items.map((l: any) => {
                   const effectiveStatus = getEffectiveStatus(l);
                   const artigos = getArtigosFromRecomendacao(l);
                   const justificativa = getVinculacaoJustificativa(l);
@@ -225,8 +234,8 @@ ${renderRows(allItems)}
                         <StatusBadge status={effectiveStatus} size="sm" />
                       </TableCell>
                       <TableCell>
-                        <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
-                          {l.prioridade}
+                        <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs">
+                          {getPrioridadeLabel(l.prioridade)}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -256,7 +265,10 @@ ${renderRows(allItems)}
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD. Para análise de evolução com scores detalhados, consulte <em>Produtos → Conclusões → Evolução Recomendações</em>.
+          Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
+        </p>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          <strong>Prioridade cadastrada:</strong> este campo vem pronto da base de recomendações e não é calculado pelo sensor nem por esta tela.
         </p>
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
