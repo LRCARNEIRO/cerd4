@@ -5,7 +5,7 @@ import type { LacunaIdentificada, ComplianceStatus, ThematicAxis, FocalGroupType
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // ── Types ──────────────────────────────────────────────────────────
-export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa' | 'divergencia';
+export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
 
 export interface DiagnosticSignal {
   type: DiagnosticSignalType;
@@ -45,11 +45,8 @@ export interface AuditScoreBreakdown {
 
 export interface LacunaDiagnostic {
   lacunaId: string;
-  statusManual: ComplianceStatus;
-  statusSugerido: ComplianceStatus | null;
   statusComputado: ComplianceStatus;
   auditoria: AuditScoreBreakdown;
-  divergente: boolean;
   signals: DiagnosticSignal[];
   linkedIndicadores: LinkedIndicador[];
   linkedOrcamento: LinkedOrcamento[];
@@ -57,7 +54,6 @@ export interface LacunaDiagnostic {
 }
 
 export interface DiagnosticSummary {
-  totalDivergencias: number;
   totalOrcamentoSimbolico: number;
   totalTendenciaPiora: number;
   totalSemCoberturaNormativa: number;
@@ -422,27 +418,10 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         justificativaCompleta,
       };
 
-      // ── Divergência (computado vs manual) ──
-      const manual = lacuna.status_cumprimento;
-      const statusSugerido = statusComputado !== manual ? statusComputado : null;
-      const divergente = statusSugerido !== null;
-
-      if (divergente && statusSugerido) {
-        const isPiora = scoreGlobal < 30;
-        signals.push({
-          type: 'divergencia',
-          severity: isPiora ? 'critical' : 'warning',
-          message: `Motor computou "${formatStatus(statusComputado)}" (score ${scoreGlobal}) — manual é "${formatStatus(manual)}"`,
-        });
-      }
-
       return {
         lacunaId: lacuna.id,
-        statusManual: manual,
-        statusSugerido,
         statusComputado,
         auditoria,
-        divergente,
         signals,
         linkedIndicadores: indicadoresVinculados.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
         linkedOrcamento: orcamentosVinculados.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
@@ -453,7 +432,6 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
-    const totalDivergencias = diagnostics.filter(d => d.divergente).length;
     const totalOrcamentoSimbolico = diagnostics.filter(d => d.signals.some(s => s.type === 'orcamento_simbolico' && s.severity === 'warning')).length;
     const totalTendenciaPiora = diagnostics.filter(d => d.signals.some(s => s.type === 'tendencia' && s.severity === 'critical')).length;
     const totalSemCoberturaNormativa = diagnostics.filter(d => d.signals.some(s => s.type === 'cobertura_normativa' && s.severity === 'warning')).length;
@@ -483,7 +461,6 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       : 0;
 
     return {
-      totalDivergencias,
       totalOrcamentoSimbolico,
       totalTendenciaPiora,
       totalSemCoberturaNormativa,

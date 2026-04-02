@@ -181,7 +181,7 @@ export default function Index() {
         <StatCard
           title="Progresso Geral"
           value={isLoading ? '...' : `${sensorReady ? sensorSummary.progressoSensor : stats.progressoGeral}%`}
-          subtitle={sensorReady && sensorSummary.totalDivergencias > 0 ? `⚠️ ${sensorSummary.totalDivergencias} divergência(s)` : 'baseado nos dados'}
+          subtitle="baseado nos dados"
           icon={ClipboardCheck}
           variant="default"
           sourceInfo={{ label: 'Sensor Diagnóstico — Nível 1', url: '/recomendacoes' }}

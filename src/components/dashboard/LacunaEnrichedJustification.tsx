@@ -75,11 +75,6 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
           {statusLabel} — Fundamentação Cruzada ({totalEvidences} evidências)
           {aud && <span className="font-mono ml-1 text-[10px]">[Score {aud.scoreGlobal}/100]</span>}
         </p>
-        {diagnostic?.divergente && (
-          <span className="text-[10px] px-2 py-1 rounded-full border bg-warning/10 text-warning border-warning/20">
-            Status manual (BD): {lacuna.status_cumprimento === 'cumprido' ? 'Cumprido' : lacuna.status_cumprimento === 'parcialmente_cumprido' ? 'Parcial' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
-          </span>
-        )}
       </div>
 
       {/* ── AUDITORIA DO SCORE ── */}

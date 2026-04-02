@@ -18,7 +18,7 @@ export function SensorAlertPanel({ summary, isReady, totalIndicadoresBD = 266 }:
 
   if (!isReady) return null;
 
-  const hasAlerts = summary.totalDivergencias > 0 || summary.totalOrcamentoSimbolico > 0 || summary.totalTendenciaPiora > 0;
+  const hasAlerts = summary.totalOrcamentoSimbolico > 0 || summary.totalTendenciaPiora > 0;
 
   // Corpus total estimate: BD indicators + hardcoded series + common core rows
   const totalCorpus = totalIndicadoresBD + 273; // ~273 from hardcoded series + common core
@@ -38,15 +38,6 @@ export function SensorAlertPanel({ summary, isReady, totalIndicadoresBD = 266 }:
           </CardHeader>
           <CardContent className="pb-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {summary.totalDivergencias > 0 && (
-                <Link to="/recomendacoes" className="flex items-center gap-2 p-2 rounded-lg bg-destructive/10 hover:bg-destructive/15 transition-colors">
-                  <AlertTriangle className="w-4 h-4 text-destructive flex-shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold text-destructive">{summary.totalDivergencias} divergência(s)</p>
-                    <p className="text-[10px] text-muted-foreground">Status manual ≠ sensor</p>
-                  </div>
-                </Link>
-              )}
               {summary.totalOrcamentoSimbolico > 0 && (
                 <Link to="/recomendacoes" className="flex items-center gap-2 p-2 rounded-lg bg-warning/10 hover:bg-warning/15 transition-colors">
                   <Banknote className="w-4 h-4 text-warning flex-shrink-0" />

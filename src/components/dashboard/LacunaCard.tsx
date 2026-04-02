@@ -53,8 +53,6 @@ const grupoLabels: Record<FocalGroupType, string> = {
 export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
   // Status COMPUTADO é o primário; fallback para manual se sensor não disponível
   const effectiveStatus = diagnostic?.statusComputado ?? lacuna.status_cumprimento;
-  const manualStatus = lacuna.status_cumprimento;
-  const isDivergent = diagnostic?.divergente ?? false;
   const isNaoCumprido = effectiveStatus === 'nao_cumprido' || effectiveStatus === 'retrocesso';
   const isParcial = effectiveStatus === 'parcialmente_cumprido';
   const [expanded, setExpanded] = useState(true);
@@ -96,11 +94,6 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
             {diagnostic?.auditoria && (
               <Badge variant="outline" className="text-[10px] font-mono bg-primary/5 border-primary/30 text-primary">
                 Score: {diagnostic.auditoria.scoreGlobal}/100
-              </Badge>
-            )}
-            {isDivergent && (
-              <Badge variant="outline" className="text-[10px] border-warning/30 text-warning">
-                manual: {manualStatus === 'cumprido' ? 'Cumprido' : manualStatus === 'parcialmente_cumprido' ? 'Parcial' : manualStatus === 'nao_cumprido' ? 'Não Cumprido' : manualStatus === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
               </Badge>
             )}
           </div>

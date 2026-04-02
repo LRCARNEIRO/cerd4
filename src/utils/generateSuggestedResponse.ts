@@ -11,7 +11,7 @@ export function generateSuggestedResponse(
 ): string | null {
   if (!diagnostic) return null;
 
-  const { linkedIndicadores, linkedOrcamento, linkedNormativos, signals, statusManual, statusSugerido, divergente } = diagnostic;
+  const { linkedIndicadores, linkedOrcamento, linkedNormativos, signals, statusComputado } = diagnostic;
 
   // If no cross-referenced data at all, can't generate
   if (linkedIndicadores.length === 0 && linkedOrcamento.length === 0 && linkedNormativos.length === 0) {
@@ -119,7 +119,6 @@ export function generateSuggestedResponse(
   }
 
   // ── Closing assessment ──
-  const effective = divergente && statusSugerido ? statusSugerido : statusManual;
   const statusText: Record<string, string> = {
     cumprido: 'considera-se que a recomendação foi substancialmente cumprida, com base nas evidências cruzadas identificadas',
     parcialmente_cumprido: 'avalia-se cumprimento parcial, requerendo aprofundamento das políticas públicas e maior alocação orçamentária efetiva',
@@ -128,11 +127,7 @@ export function generateSuggestedResponse(
     em_andamento: 'registram-se iniciativas em andamento cujos resultados ainda não são mensuráveis no período analisado',
   };
 
-  parts.push(`\nDiante do exposto, ${statusText[effective] || statusText.nao_cumprido}.`);
-
-  if (divergente && statusSugerido && statusSugerido !== statusManual) {
-    parts.push(`\n[Nota do Sensor Diagnóstico: A análise automatizada dos dados cruzados sugere reclassificação do status para "${formatStatusLabel(statusSugerido)}", divergindo da avaliação manual atual ("${formatStatusLabel(statusManual)}"). Recomenda-se revisão pelo especialista.]`);
-  }
+  parts.push(`\nDiante do exposto, ${statusText[statusComputado] || statusText.nao_cumprido}.`);
 
   return parts.join('\n');
 }

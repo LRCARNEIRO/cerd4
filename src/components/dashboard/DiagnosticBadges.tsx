@@ -11,7 +11,7 @@ const iconMap: Record<string, typeof BarChart3> = {
   tendencia: BarChart3,
   orcamento_simbolico: Banknote,
   cobertura_normativa: FileText,
-  divergencia: AlertTriangle,
+  
 };
 
 const severityClasses: Record<string, string> = {
@@ -39,7 +39,7 @@ export function DiagnosticBadges({ diagnostic }: DiagnosticBadgesProps) {
                   {signal.type === 'tendencia' && '📊'}
                   {signal.type === 'orcamento_simbolico' && '💰'}
                   {signal.type === 'cobertura_normativa' && '📋'}
-                  {signal.type === 'divergencia' && '⚠️'}
+                  
                 </Badge>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs">
@@ -51,11 +51,6 @@ export function DiagnosticBadges({ diagnostic }: DiagnosticBadgesProps) {
             </Tooltip>
           );
         })}
-        {diagnostic.divergente && (
-          <Badge variant="destructive" className="text-[10px] animate-pulse">
-            ⚠️ Divergência
-          </Badge>
-        )}
       </div>
     </TooltipProvider>
   );
