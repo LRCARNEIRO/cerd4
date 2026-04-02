@@ -674,7 +674,12 @@ export default function Conclusoes() {
               />
             </TabsContent>
 
-            {/* ABA: LACUNAS IDENTIFICADAS */}
+            {/* ABA: EVOLUÇÃO RECOMENDAÇÕES */}
+            <TabsContent value="evolucao-recomendacoes">
+              <EvolucaoRecomendacoesPanel />
+            </TabsContent>
+
+
             <TabsContent value="lacunas-ident">
               <Card className="mb-4 border-l-4 border-l-primary">
                 <CardContent className="pt-6">
