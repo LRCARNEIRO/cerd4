@@ -157,7 +157,7 @@ function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
 
   return [...new Set([
     ...rawTokens,
-    ...(grupoSpecific[lacuna.grupo_focal as FocalGroupType] || []),
+    ...(grupoSpecific[rec.grupo_focal as FocalGroupType] || []),
   ])];
 }
 
