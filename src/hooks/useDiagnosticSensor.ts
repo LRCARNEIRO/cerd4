@@ -302,22 +302,25 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
       // Score 0-100 → Status automático com justificativa
 
-      // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
-      const pioram = tendencias.filter(t => t === 'piora').length;
-      const melhoram = tendencias.filter(t => t === 'melhora').length;
-      const estaveis = tendencias.filter(t => t === 'estavel').length;
+      // ── 1. SCORE INDICADORES (0-100, peso 40%) — modelo híbrido ──
+      // Indicadores por keyword contam 100%, por eixo genérico 50%
+      const weightedTendencias = indicadoresVinculados.map(i => ({ t: inferTendencia(i), w: getIndWeight(i) }));
+      const pioramW = weightedTendencias.filter(x => x.t === 'piora').reduce((s, x) => s + x.w, 0);
+      const melhoramW = weightedTendencias.filter(x => x.t === 'melhora').reduce((s, x) => s + x.w, 0);
+      const totalIndW = weightedTendencias.reduce((s, x) => s + x.w, 0);
+      const pioram = weightedTendencias.filter(x => x.t === 'piora').length;
+      const melhoram = weightedTendencias.filter(x => x.t === 'melhora').length;
+      const estaveis = weightedTendencias.filter(x => x.t === 'estavel').length;
       const totalInd = indicadoresVinculados.length;
 
-      let scoreInd = 50; // base neutra
-      if (totalInd > 0) {
-        const ratioMelhora = melhoram / totalInd;
-        const ratioPiora = pioram / totalInd;
-        // Melhora puxa para cima, piora puxa para baixo
+      let scoreInd = 50;
+      if (totalIndW > 0) {
+        const ratioMelhora = melhoramW / totalIndW;
+        const ratioPiora = pioramW / totalIndW;
         scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
         scoreInd = Math.max(0, Math.min(100, scoreInd));
       } else {
-        scoreInd = 25; // sem indicadores = incerteza → score baixo
+        scoreInd = 25;
       }
 
       const justInd = totalInd === 0
