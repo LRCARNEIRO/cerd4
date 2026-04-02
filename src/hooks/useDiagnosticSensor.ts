@@ -162,7 +162,7 @@ function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
 }
 
 // ── Main Hook ──────────────────────────────────────────────────────
-export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
+export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined) {
   // Fetch all three cross-reference sources in parallel
   const { data: indicadores } = useQuery({
     queryKey: ['sensor-indicadores'],
