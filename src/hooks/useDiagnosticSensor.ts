@@ -34,10 +34,21 @@ export interface LinkedNormativo {
   status: string;
 }
 
+export interface AuditScoreBreakdown {
+  indicadores: { score: number; total: number; melhoram: number; pioram: number; estaveis: number; justificativa: string };
+  orcamento: { score: number; total: number; simbolicos: number; execucaoMedia: number; justificativa: string };
+  normativos: { score: number; total: number; justificativa: string };
+  scoreGlobal: number;
+  statusComputado: ComplianceStatus;
+  justificativaCompleta: string;
+}
+
 export interface LacunaDiagnostic {
   lacunaId: string;
   statusManual: ComplianceStatus;
   statusSugerido: ComplianceStatus | null;
+  statusComputado: ComplianceStatus;
+  auditoria: AuditScoreBreakdown;
   divergente: boolean;
   signals: DiagnosticSignal[];
   linkedIndicadores: LinkedIndicador[];
