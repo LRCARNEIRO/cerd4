@@ -204,15 +204,10 @@ ${renderRows(allItems)}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((l: any) => {
-                  const diag = diagnosticMap.get(l.id);
-                  const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
+              {items.map((l: any) => {
+                  const effectiveStatus = getEffectiveStatus(l);
                   const artigos = getArtigosFromRecomendacao(l);
                   const justificativa = getVinculacaoJustificativa(l);
-                  const score = diag?.auditoria?.scoreGlobal;
-                  const ind = diag?.auditoria?.indicadores;
-                  const orc = diag?.auditoria?.orcamento;
-                  const norm = diag?.auditoria?.normativos;
 
                   return (
                     <TableRow key={l.id}>
@@ -228,22 +223,6 @@ ${renderRows(allItems)}
                       <TableCell className="text-[10px] text-muted-foreground">{justificativa}</TableCell>
                       <TableCell>
                         <StatusBadge status={effectiveStatus} size="sm" />
-                      </TableCell>
-                      <TableCell>
-                        {score != null && (
-                          <span className={`text-xs font-mono font-bold ${score >= 80 ? 'text-success' : score >= 55 ? 'text-warning' : score >= 35 ? 'text-orange-500' : 'text-destructive'}`}>
-                            {score}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {ind ? `${ind.total} (${ind.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {orc ? `${orc.total} (${orc.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {norm ? `${norm.total} (${norm.score}pts)` : '—'}
                       </TableCell>
                       <TableCell>
                         <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
