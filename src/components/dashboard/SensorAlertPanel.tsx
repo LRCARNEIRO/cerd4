@@ -18,7 +18,7 @@ export function SensorAlertPanel({ summary, isReady, totalIndicadoresBD = 266 }:
 
   if (!isReady) return null;
 
-  const hasAlerts = summary.totalDivergencias > 0 || summary.totalOrcamentoSimbolico > 0 || summary.totalTendenciaPiora > 0;
+  const hasAlerts = summary.totalOrcamentoSimbolico > 0 || summary.totalTendenciaPiora > 0;
 
   // Corpus total estimate: BD indicators + hardcoded series + common core rows
   const totalCorpus = totalIndicadoresBD + 273; // ~273 from hardcoded series + common core
