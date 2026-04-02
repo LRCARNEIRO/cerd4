@@ -139,8 +139,8 @@ export function EvolucaoRecomendacoesPanel() {
 
       // Find linked evidence by article tags
       const artigoOrc = orcamento.filter((o: any) => {
-        if (o.artigos_convencao?.includes(artigos[0])) return true;
-        return artigos.some((a: string) => (o.artigos_convencao || []).map(normalizeArticle).filter(Boolean).includes(a));
+        const oArts = ((o.artigos_convencao || []) as string[]).map(normalizeArticle).filter(Boolean);
+        return artigos.some(a => oArts.includes(a));
       });
       // Also match by keyword in tema/descricao
       const temaTokens = `${rec.tema} ${rec.descricao_lacuna}`.toLowerCase()
