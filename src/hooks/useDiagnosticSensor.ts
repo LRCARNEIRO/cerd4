@@ -57,7 +57,7 @@ export interface RecomendacaoDiagnostic {
 /** @deprecated Use RecomendacaoDiagnostic */
 export type LacunaDiagnostic = RecomendacaoDiagnostic;
 
-
+export interface DiagnosticSummary {
   totalOrcamentoSimbolico: number;
   totalTendenciaPiora: number;
   totalSemCoberturaNormativa: number;
