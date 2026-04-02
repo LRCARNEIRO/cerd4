@@ -468,11 +468,13 @@ ${analysis.map(a => {
             <div className="flex-1">
               <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Avaliação consolidada integrando <strong>todas as bases do sistema</strong>:
-                {' '}{stats?.total || 0} recomendações ONU, {fiosCondutores.length} fios condutores,
-                {' '}{conclusoes.length} conclusões analíticas, {orcamentoRecords.length} registros orçamentários,
-                {' '}{indicadores.length} indicadores interseccionais, {totalRespostas} respostas CERD III,
-                {' '}{totalNormativos} instrumentos normativos e {totalStatSeries} séries estatísticas oficiais.
+                Avalia se o sistema possui <strong>dados externos suficientes</strong> para fundamentar cada artigo:
+                {' '}{stats?.total || 0} recomendações ONU, {totalNormativos} instrumentos normativos,
+                {' '}{orcamentoRecords.length} registros orçamentários,
+                {' '}{indicadores.length} indicadores e {totalStatSeries} séries estatísticas oficiais.
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 italic">
+                Nota: Respostas CERD III e Conclusões Analíticas são exibidas como informação contextual, mas <strong>não</strong> compõem o score — são outputs do próprio sistema, não evidências externas.
               </p>
               <div className="flex items-center gap-2 mt-3">
                 <MethodologyPanel variant="full" />
