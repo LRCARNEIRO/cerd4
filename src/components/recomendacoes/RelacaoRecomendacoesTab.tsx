@@ -6,14 +6,9 @@ import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/uti
 import { Loader2, ListChecks } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useMemo } from 'react';
-
-const statusCfg: Record<string, { label: string; color: string }> = {
-  cumprido: { label: 'Cumprido', color: 'text-success' },
-  parcialmente_cumprido: { label: 'Parcial', color: 'text-warning' },
-  nao_cumprido: { label: 'Não Cumprido', color: 'text-destructive' },
-  retrocesso: { label: 'Retrocesso', color: 'text-destructive' },
-  em_andamento: { label: 'Em Andamento', color: 'text-info' },
-};
+import { useDiagnosticSensor, type LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import type { ComplianceStatus } from '@/hooks/useLacunasData';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -28,8 +23,14 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas',
 };
 
+function getArtigosFromLacuna(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): string[] {
+  if (l.artigos_convencao && l.artigos_convencao.length > 0) return l.artigos_convencao;
+  return EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
+}
+
 export function RelacaoRecomendacoesTab() {
   const { data: lacunas, isLoading } = useLacunasIdentificadas({});
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
   const grouped = useMemo(() => {
     if (!lacunas) return { cerd: [], rg: [], durban: [] };
@@ -37,7 +38,6 @@ export function RelacaoRecomendacoesTab() {
     for (const l of lacunas) {
       result[classificarOrigemLacuna(l.paragrafo)].push(l);
     }
-    // Sort within each group
     result.cerd.sort((a, b) => {
       const na = parseInt(a.paragrafo.replace(/\D/g, '')) || 0;
       const nb = parseInt(b.paragrafo.replace(/\D/g, '')) || 0;
@@ -56,14 +56,20 @@ export function RelacaoRecomendacoesTab() {
     );
   }
 
+  const getEffectiveStatus = (l: { id: string; status_cumprimento: ComplianceStatus }): ComplianceStatus => {
+    const diag = diagnosticMap.get(l.id);
+    return diag?.statusComputado ?? l.status_cumprimento;
+  };
+
   const renderGroup = (key: OrigemLacuna, items: typeof lacunas extends (infer T)[] ? T[] : never[]) => {
     const config = ORIGEM_CONFIG[key];
     if (items.length === 0) return null;
 
-    // Status summary
+    // Status summary using COMPUTED status
     const statusCount: Record<string, number> = {};
     items.forEach(l => {
-      statusCount[l.status_cumprimento] = (statusCount[l.status_cumprimento] || 0) + 1;
+      const eff = getEffectiveStatus(l);
+      statusCount[eff] = (statusCount[eff] || 0) + 1;
     });
 
     return (
@@ -90,25 +96,56 @@ export function RelacaoRecomendacoesTab() {
                 <TableRow>
                   <TableHead className="w-[80px]">§</TableHead>
                   <TableHead>Tema</TableHead>
+                  <TableHead className="w-[100px]">Artigos ICERD</TableHead>
                   <TableHead className="w-[140px]">Eixo Temático</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[60px]">Score</TableHead>
                   <TableHead className="w-[80px]">Prioridade</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map(l => (
-                  <TableRow key={l.id}>
-                    <TableCell className="font-mono font-semibold text-xs">{l.paragrafo}</TableCell>
-                    <TableCell className="text-sm">{l.tema}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{eixoLabels[l.eixo_tematico] || l.eixo_tematico}</TableCell>
-                    <TableCell><StatusBadge status={l.status_cumprimento} size="sm" /></TableCell>
-                    <TableCell>
-                      <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
-                        {l.prioridade}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {items.map(l => {
+                  const diag = diagnosticMap.get(l.id);
+                  const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
+                  const artigos = getArtigosFromLacuna(l);
+                  const score = diag?.auditoria?.scoreGlobal;
+                  const isDivergent = diag?.divergente;
+
+                  return (
+                    <TableRow key={l.id}>
+                      <TableCell className="font-mono font-semibold text-xs">{l.paragrafo}</TableCell>
+                      <TableCell className="text-sm">{l.tema}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-0.5">
+                          {artigos.map(a => (
+                            <Badge key={a} variant="outline" className="text-[10px] px-1 py-0">{a}</Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{eixoLabels[l.eixo_tematico] || l.eixo_tematico}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <StatusBadge status={effectiveStatus} size="sm" />
+                          {isDivergent && (
+                            <span className="text-[8px] text-warning" title={`Manual: ${l.status_cumprimento}`}>⚠</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {score != null && (
+                          <span className={`text-xs font-mono font-bold ${score >= 75 ? 'text-success' : score >= 55 ? 'text-warning' : score >= 35 ? 'text-orange-500' : 'text-destructive'}`}>
+                            {score}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
+                          {l.prioridade}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -122,9 +159,14 @@ export function RelacaoRecomendacoesTab() {
       <div className="bg-muted/30 rounded-lg border p-4">
         <h3 className="font-semibold text-sm mb-2">Relação Consolidada de Recomendações Monitoradas</h3>
         <p className="text-xs text-muted-foreground">
-          Total de <strong>{lacunas?.length || 0}</strong> recomendações ativas, distribuídas em três categorias de origem: 
-          Observações Finais do CERD ({grouped.cerd.length}), Recomendações Gerais ({grouped.rg.length}) e Declaração de Durban ({grouped.durban.length}).
+          Total de <strong>{lacunas?.length || 0}</strong> recomendações ativas com status calculado automaticamente (Score 0-100).
+          Distribuídas em: Observações Finais ({grouped.cerd.length}), Recomendações Gerais ({grouped.rg.length}) e Durban ({grouped.durban.length}).
         </p>
+        {sensorReady && (
+          <p className="text-[10px] text-muted-foreground mt-1">
+            Metodologia: Indicadores (40%) + Orçamento (30%) + Normativos (30%) → Faixas: ≥75 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso
+          </p>
+        )}
       </div>
 
       {renderGroup('cerd', grouped.cerd)}
@@ -135,11 +177,11 @@ export function RelacaoRecomendacoesTab() {
       <div className="bg-muted/20 rounded-lg border p-3">
         <p className="text-xs font-semibold text-muted-foreground mb-2">Legenda de Status:</p>
         <div className="flex flex-wrap gap-3 text-xs">
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-success" /> <strong>Cumprido:</strong> Implementação integral verificada</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning" /> <strong>Parcial:</strong> Implementação parcial ou em estágio avançado</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-info" /> <strong>Em Andamento:</strong> Medidas iniciadas, sem conclusão</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Não Cumprido:</strong> Sem ação efetiva identificada</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso:</strong> Situação pior que o período anterior</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-success" /> <strong>Cumprido (≥75):</strong> Evidências indicam cumprimento integral</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning" /> <strong>Parcial (≥55):</strong> Avanço significativo, lacunas remanescentes</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-info" /> <strong>Em Andamento (≥35):</strong> Esforço institucional detectado</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Não Cumprido (≥15):</strong> Evidências insuficientes de ação</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso (&lt;15):</strong> Piora detectada nos indicadores</span>
         </div>
       </div>
     </div>
