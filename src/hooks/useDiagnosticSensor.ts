@@ -334,7 +334,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
-      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) ──
+      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — modelo híbrido ──
       const simbolicos = orcamentosVinculados.filter(o => {
         const dotacao = Number(o.dotacao_autorizada) || 0;
         const pago = Number(o.pago) || 0;
@@ -345,23 +345,22 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
+        // Weighted: keyword matches contribute full dotação/pago, eixo contributes 50%
+        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0) * getOrcWeight(o), 0);
+        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0) * getOrcWeight(o), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
-        // Execução > 70% = score alto, < 5% = score mínimo
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
-        // Penalidade por simbólicos
         if (simbolicos.length > 0) {
           scoreOrc = Math.max(10, scoreOrc - (simbolicos.length / totalOrc) * 30);
         }
       } else {
-        scoreOrc = 20; // sem orçamento vinculado = incerteza
+        scoreOrc = 20;
       }
       scoreOrc = Math.round(Math.max(0, Math.min(100, scoreOrc)));
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões), execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) [${totalOrcKeyword} keyword, ${totalOrcEixo} eixo×50%], execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
