@@ -167,31 +167,52 @@ export const DOCUMENTOS_BALIZADORES_SIGLAS: readonly string[] = [
 ] as const;
 
 /**
- * Infer ICERD articles for a budget record based on explicit tags, eixo_tematico, or keywords.
+ * Infer ICERD articles for a budget record — with match quality.
+ */
+export function inferArtigosOrcamentoWithQuality(r: { artigos_convencao?: string[] | null; eixo_tematico?: string | null; programa: string; orgao: string; descritivo?: string | null }): ArtigoMatch[] {
+  const explicit = (r.artigos_convencao || []).filter(a => ['I','II','III','IV','V','VI','VII'].includes(a)) as ArtigoConvencao[];
+  if (explicit.length > 0) return explicit.map(a => ({ artigo: a, quality: 'explicit' as MatchQuality, weight: 1.0 }));
+
+  const matches = new Map<ArtigoConvencao, ArtigoMatch>();
+  
+  // Eixo → peso 0.5
+  const eixo = r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS | undefined;
+  if (eixo && EIXO_PARA_ARTIGOS[eixo]) {
+    EIXO_PARA_ARTIGOS[eixo].forEach(a => {
+      matches.set(a, { artigo: a, quality: 'eixo', weight: 0.5 });
+    });
+  }
+
+  // Keywords → peso 1.0
+  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
+  const keywordRules: [RegExp, ArtigoConvencao[]][] = [
+    [/educa|escola|ensino|formação|formacao|lei 10.639/, ['V', 'VII']],
+    [/saúde|saude|sesai|sanitár|sanitar/, ['V']],
+    [/trabalho|emprego|renda|profissional/, ['V']],
+    [/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/, ['III', 'V']],
+    [/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos|socioeducativ/, ['VI']],
+    [/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/, ['V', 'VII']],
+    [/igualdade|discrimin|racis|enfrentamento ao racismo/, ['I', 'II']],
+    [/ódio|odio|propaganda racis|extremism|neonazi|supremaci|incitaç|incitac|tipificaç|tipificac|injúria racial|injuria racial|crime.*racial|discurso.*ódio|discurso.*odio/, ['IV']],
+    [/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/, ['V', 'VI']],
+    [/polític|politica|institucional|ação afirmativa|acao afirmativa|fortalecimento institucional/, ['II']],
+    [/mulher|gênero|genero/, ['V']],
+    [/idoso|pessoa idosa/, ['V']],
+    [/povos indígenas|povos indigenas|etnodesenvolvimento|pluriétnic|plurietnic/, ['III', 'V']],
+  ];
+  for (const [regex, arts] of keywordRules) {
+    if (regex.test(texto)) {
+      arts.forEach(a => matches.set(a, { artigo: a, quality: 'keyword', weight: 1.0 }));
+    }
+  }
+  return [...matches.values()];
+}
+
+/**
+ * Infer ICERD articles for a budget record (compatibilidade).
  */
 export function inferArtigosOrcamento(r: { artigos_convencao?: string[] | null; eixo_tematico?: string | null; programa: string; orgao: string; descritivo?: string | null }): ArtigoConvencao[] {
-  const explicit = (r.artigos_convencao || []).filter(a => ['I','II','III','IV','V','VI','VII'].includes(a)) as ArtigoConvencao[];
-  if (explicit.length > 0) return explicit;
-
-  const eixo = r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS | undefined;
-  if (eixo && EIXO_PARA_ARTIGOS[eixo]) return EIXO_PARA_ARTIGOS[eixo];
-
-  const texto = [r.programa, r.orgao, r.descritivo].filter(Boolean).join(' ').toLowerCase();
-  const arts: ArtigoConvencao[] = [];
-  if (texto.match(/educa|escola|ensino|formação|formacao|lei 10.639/)) arts.push('V', 'VII');
-  if (texto.match(/saúde|saude|sesai|sanitár|sanitar/)) arts.push('V');
-  if (texto.match(/trabalho|emprego|renda|profissional/)) arts.push('V');
-  if (texto.match(/terra|territór|territor|quilomb|funai|incra|demarcaç|demarcac|indígena|indigena/)) arts.push('III', 'V');
-  if (texto.match(/justiça|justica|judiciár|judiciar|proteç|protecao|reparaç|reparac|indeniza|direitos humanos|socioeducativ/)) arts.push('VI');
-  if (texto.match(/cultur|patrimôn|patrimon|capoeira|candomblé|candomble|matriz africana/)) arts.push('V', 'VII');
-  if (texto.match(/igualdade|discrimin|racis|enfrentamento ao racismo/)) arts.push('I', 'II');
-  if (texto.match(/ódio|odio|propaganda racis|extremism|neonazi|supremaci|incitaç|incitac|tipificaç|tipificac|injúria racial|injuria racial|crime.*racial|discurso.*ódio|discurso.*odio/)) arts.push('IV');
-  if (texto.match(/segurança|seguranca|polícia|policia|homicíd|homicid|violência|violencia|letal/)) arts.push('V', 'VI');
-  if (texto.match(/polític|politica|institucional|ação afirmativa|acao afirmativa|fortalecimento institucional/)) arts.push('II');
-  if (texto.match(/mulher|gênero|genero/)) arts.push('V');
-  if (texto.match(/idoso|pessoa idosa/)) arts.push('V');
-  if (texto.match(/povos indígenas|povos indigenas|etnodesenvolvimento|pluriétnic|plurietnic/)) arts.push('III', 'V');
-  return [...new Set(arts)];
+  return inferArtigosOrcamentoWithQuality(r).map(m => m.artigo);
 }
 
 /**
