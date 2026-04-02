@@ -132,12 +132,12 @@ const KEYWORD_STOPWORDS = new Set([
 
 /**
  * Keywords específicas por parágrafo — vinculação precisa.
- * Cada lacuna recebe APENAS palavras-chave que descrevem seu tema concreto,
+ * Cada recomendação recebe APENAS palavras-chave que descrevem seu tema concreto,
  * sem genéricos de eixo temático que capturam toda a base.
  */
-function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
-  // 1. Extrair tokens significativos do tema + descrição (sem stop-words)
-  const rawTokens = tokenize(`${lacuna.tema} ${lacuna.descricao_lacuna}`)
+function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
+  // 1. Extrair tokens significativos do tema + descrição da recomendação (sem stop-words)
+  const rawTokens = tokenize(`${rec.tema} ${rec.descricao_lacuna}`)
     .filter(t => !KEYWORD_STOPWORDS.has(t));
 
   // 2. Keywords específicas por grupo focal (apenas termos discriminantes)
