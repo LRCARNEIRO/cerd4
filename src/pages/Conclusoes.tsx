@@ -192,7 +192,7 @@ export default function Conclusoes() {
 
     if (sinteseExecutiva.eixosMaisProblematicos.length > 0) {
       content += sectionTitleHTML('Eixos Mais Críticos');
-      content += `<table><thead><tr><th>Eixo</th><th>Total Lacunas</th><th>% Não Cumprido</th></tr></thead><tbody>`;
+      content += `<table><thead><tr><th>Eixo</th><th>Total Recomendações</th><th>% Não Cumprido</th></tr></thead><tbody>`;
       sinteseExecutiva.eixosMaisProblematicos.forEach(e => {
         content += `<tr><td>${e.eixo}</td><td>${e.total}</td><td class="stat-change negative">${Math.round(e.gravidade * 100)}%</td></tr>`;
       });

@@ -500,7 +500,7 @@ function generateConsolidatedHTML(data: {
   <div style="padding:10px;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;margin:10px 0;">
     <p style="font-size:10px;font-weight:600;color:#92400e;margin-bottom:4px;">⚡ EIXOS MAIS CRÍTICOS (recomendações ONU não cumpridas)</p>
     <table>
-      <tr><th>Eixo</th><th>Total Lacunas</th><th>% Não Cumprido</th></tr>
+      <tr><th>Eixo</th><th>Total Recomendações</th><th>% Não Cumprido</th></tr>
       ${sinteseExecutiva.eixosMaisProblematicos.map((e: any) => `<tr><td>${e.eixo}</td><td>${e.total}</td><td style="color:red;font-weight:600">${Math.round(e.gravidade * 100)}%</td></tr>`).join('')}
     </table>
   </div>` : ''}
