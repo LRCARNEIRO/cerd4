@@ -93,9 +93,14 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
               {grupoLabels[lacuna.grupo_focal]}
             </Badge>
             <StatusBadge status={effectiveStatus} size="sm" />
-            {diagnostic?.divergente && diagnostic.statusSugerido && (
-              <Badge variant="outline" className="text-[10px] border-destructive/30 text-destructive">
-                antes: {lacuna.status_cumprimento === 'cumprido' ? 'Cumprido' : lacuna.status_cumprimento === 'parcialmente_cumprido' ? 'Parcial' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
+            {diagnostic?.auditoria && (
+              <Badge variant="outline" className="text-[10px] font-mono bg-primary/5 border-primary/30 text-primary">
+                Score: {diagnostic.auditoria.scoreGlobal}/100
+              </Badge>
+            )}
+            {isDivergent && (
+              <Badge variant="outline" className="text-[10px] border-warning/30 text-warning">
+                manual: {manualStatus === 'cumprido' ? 'Cumprido' : manualStatus === 'parcialmente_cumprido' ? 'Parcial' : manualStatus === 'nao_cumprido' ? 'Não Cumprido' : manualStatus === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
               </Badge>
             )}
           </div>
