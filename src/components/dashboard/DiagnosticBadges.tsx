@@ -39,7 +39,7 @@ export function DiagnosticBadges({ diagnostic }: DiagnosticBadgesProps) {
                   {signal.type === 'tendencia' && '📊'}
                   {signal.type === 'orcamento_simbolico' && '💰'}
                   {signal.type === 'cobertura_normativa' && '📋'}
-                  {signal.type === 'divergencia' && '⚠️'}
+                  
                 </Badge>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs">
