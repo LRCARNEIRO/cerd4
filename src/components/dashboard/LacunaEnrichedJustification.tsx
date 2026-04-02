@@ -21,10 +21,12 @@ function execPercent(dotacao: number | null, pago: number | null): string {
 }
 
 export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
-  const isNaoCumprido = lacuna.status_cumprimento === 'nao_cumprido' || lacuna.status_cumprimento === 'retrocesso';
-  const isParcial = lacuna.status_cumprimento === 'parcialmente_cumprido';
-  const isCumprido = lacuna.status_cumprimento === 'cumprido';
-  const isEmAndamento = lacuna.status_cumprimento === 'em_andamento';
+  // Use status COMPUTADO como primário
+  const effectiveStatus = diagnostic?.statusComputado ?? lacuna.status_cumprimento;
+  const isNaoCumprido = effectiveStatus === 'nao_cumprido' || effectiveStatus === 'retrocesso';
+  const isParcial = effectiveStatus === 'parcialmente_cumprido';
+  const isCumprido = effectiveStatus === 'cumprido';
+  const isEmAndamento = effectiveStatus === 'em_andamento';
 
   const hasLinkedIndicadores = diagnostic && diagnostic.linkedIndicadores.length > 0;
   const hasLinkedOrcamento = diagnostic && diagnostic.linkedOrcamento.length > 0;
@@ -54,7 +56,7 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
     nao_cumprido: '⚠️ Não Cumprido',
     retrocesso: '🔴 Retrocesso',
     em_andamento: '🔄 Em Andamento',
-  }[lacuna.status_cumprimento];
+  }[effectiveStatus];
 
   const headerColor = isNaoCumprido
     ? 'text-destructive'
@@ -64,18 +66,61 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
         ? 'text-success'
         : 'text-muted-foreground';
 
+  const aud = diagnostic?.auditoria;
+
   return (
     <div className={cn('mt-2 p-3 rounded-md border space-y-3', statusStyle)}>
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <p className={cn('text-xs font-bold', headerColor)}>
-          {statusLabel} — Fundamentação Cruzada ({totalEvidences} evidências no sistema)
+          {statusLabel} — Fundamentação Cruzada ({totalEvidences} evidências)
+          {aud && <span className="font-mono ml-1 text-[10px]">[Score {aud.scoreGlobal}/100]</span>}
         </p>
-        {diagnostic?.divergente && diagnostic.statusSugerido && (
-          <span className="text-[10px] px-2 py-1 rounded-full border bg-destructive/10 text-destructive border-destructive/20">
-            Sensor sugere: {diagnostic.statusSugerido === 'cumprido' ? 'Cumprido' : diagnostic.statusSugerido === 'parcialmente_cumprido' ? 'Parcial' : diagnostic.statusSugerido === 'nao_cumprido' ? 'Não Cumprido' : diagnostic.statusSugerido === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
+        {diagnostic?.divergente && (
+          <span className="text-[10px] px-2 py-1 rounded-full border bg-warning/10 text-warning border-warning/20">
+            Status manual (BD): {lacuna.status_cumprimento === 'cumprido' ? 'Cumprido' : lacuna.status_cumprimento === 'parcialmente_cumprido' ? 'Parcial' : lacuna.status_cumprimento === 'nao_cumprido' ? 'Não Cumprido' : lacuna.status_cumprimento === 'retrocesso' ? 'Retrocesso' : 'Em Andamento'}
           </span>
         )}
       </div>
+
+      {/* ── AUDITORIA DO SCORE ── */}
+      {aud && (
+        <div className="p-2 bg-card/80 rounded border border-border/50 space-y-1.5">
+          <p className="text-[10px] font-bold text-foreground">🔍 Auditoria do Score (Metodologia Ponderada)</p>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground">📊 Indicadores</p>
+              <p className="text-sm font-bold">{aud.indicadores.score}<span className="text-[10px] font-normal text-muted-foreground">/100</span></p>
+              <p className="text-[9px] text-muted-foreground">peso 40% • {aud.indicadores.total} ind.</p>
+              <div className="flex justify-center gap-1 mt-0.5">
+                {aud.indicadores.melhoram > 0 && <span className="text-[9px] text-success">↑{aud.indicadores.melhoram}</span>}
+                {aud.indicadores.pioram > 0 && <span className="text-[9px] text-destructive">↓{aud.indicadores.pioram}</span>}
+                {aud.indicadores.estaveis > 0 && <span className="text-[9px] text-muted-foreground">→{aud.indicadores.estaveis}</span>}
+              </div>
+            </div>
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground">💰 Orçamento</p>
+              <p className="text-sm font-bold">{aud.orcamento.score}<span className="text-[10px] font-normal text-muted-foreground">/100</span></p>
+              <p className="text-[9px] text-muted-foreground">peso 30% • {aud.orcamento.total} ações</p>
+              {aud.orcamento.total > 0 && <p className="text-[9px] text-muted-foreground">exec. {aud.orcamento.execucaoMedia}%</p>}
+            </div>
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground">📋 Normativos</p>
+              <p className="text-sm font-bold">{aud.normativos.score}<span className="text-[10px] font-normal text-muted-foreground">/100</span></p>
+              <p className="text-[9px] text-muted-foreground">peso 30% • {aud.normativos.total} docs</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+            <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+              <div
+                className={cn('h-full rounded-full transition-all', aud.scoreGlobal >= 75 ? 'bg-success' : aud.scoreGlobal >= 55 ? 'bg-warning' : aud.scoreGlobal >= 35 ? 'bg-orange-400' : 'bg-destructive')}
+                style={{ width: `${aud.scoreGlobal}%` }}
+              />
+            </div>
+            <span className="text-xs font-bold">{aud.scoreGlobal}%</span>
+          </div>
+          <p className="text-[9px] text-muted-foreground">Faixas: ≥75 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+        </div>
+      )}
 
       {/* ── Indicadores vinculados via artigos_convencao ──────────── */}
       {hasLinkedIndicadores && (
