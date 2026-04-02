@@ -11,7 +11,7 @@ export function generateSuggestedResponse(
 ): string | null {
   if (!diagnostic) return null;
 
-  const { linkedIndicadores, linkedOrcamento, linkedNormativos, signals, statusManual, statusSugerido, divergente } = diagnostic;
+  const { linkedIndicadores, linkedOrcamento, linkedNormativos, signals, statusComputado } = diagnostic;
 
   // If no cross-referenced data at all, can't generate
   if (linkedIndicadores.length === 0 && linkedOrcamento.length === 0 && linkedNormativos.length === 0) {
