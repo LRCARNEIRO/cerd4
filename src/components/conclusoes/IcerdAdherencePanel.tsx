@@ -439,13 +439,13 @@ ${analysis.map(a => {
 <p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Recomendações ONU</td><td>20%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade</td></tr>
-<tr><td>Cobertura Normativa</td><td>25%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>20%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
+<tr><td>Recomendações ONU Atendidas</td><td>30%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade. Peso principal: reflete o grau de resposta do Estado ao Comitê.</td></tr>
+<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
 <tr><td>Indicadores + Séries Estatísticas</td><td>25%</td><td>Registros do BD (15%) + séries temporais do espelho de dados (10%)</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recomendações, orçamento, indicadores, normativos, séries)</td></tr>
+<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis</td></tr>
 </table>
-<p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> avalia a <strong>cobertura de dados</strong> (o sistema tem base para avaliar?). A <em>Evolução dos Artigos</em> avalia o <strong>impacto real</strong> nos dados (orçamento, normativos e indicadores melhoraram?).</p>
+<p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> é uma visão <strong>gerencial</strong> — mede se o Estado está respondendo às obrigações do Comitê CERD (por isso o peso maior para recomendações atendidas). A <em>Evolução dos Artigos</em> é uma visão de <strong>evidências</strong> — avalia se orçamento, normativos e indicadores melhoraram ou pioraram ao longo do período.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
