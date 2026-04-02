@@ -149,7 +149,7 @@ export function EvolucaoRecomendacoesPanel() {
 
       // --- ORÇAMENTO: keyword-only + explicit paragraph reference ---
       const orcByKeyword = orcamento.filter((o: any) => {
-        const h = `${o.programa} ${o.orgao}`.toLowerCase()
+        const h = `${o.programa} ${o.orgao} ${o.descritivo || ''} ${o.eixo_tematico || ''} ${o.publico_alvo || ''}`.toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
           .some(t => h.includes(t));
