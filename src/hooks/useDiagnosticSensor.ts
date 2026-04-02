@@ -458,7 +458,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     const totalTendenciaPiora = diagnostics.filter(d => d.signals.some(s => s.type === 'tendencia' && s.severity === 'critical')).length;
     const totalSemCoberturaNormativa = diagnostics.filter(d => d.signals.some(s => s.type === 'cobertura_normativa' && s.severity === 'warning')).length;
 
-    // Reclassified status counts
+    // Use status COMPUTADO (não manual) para contagens e progresso
     const statusReclassificado = {
       cumprido: 0,
       parcialmente_cumprido: 0,
@@ -468,12 +468,10 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     };
 
     diagnostics.forEach(d => {
-      const effective = d.statusSugerido && d.divergente ? d.statusSugerido : d.statusManual;
-      statusReclassificado[effective]++;
+      statusReclassificado[d.statusComputado]++;
     });
 
-    // Progress based on reclassified statuses (interpretação equilibrada)
-    // Cumprido = 100%, Parcial = 60%, Em Andamento = 30%, Não Cumprido = 5% (reconhece existência), Retrocesso = 0%
+    // Progress based on computed statuses
     const total = diagnostics.length;
     const progressoSensor = total > 0
       ? Math.round((
