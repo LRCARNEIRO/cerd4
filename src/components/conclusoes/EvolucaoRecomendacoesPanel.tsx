@@ -1,14 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
-import { Loader2, TrendingUp, BarChart3 } from 'lucide-react';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { Loader2, TrendingUp, BarChart3, TrendingDown, Minus } from 'lucide-react';
 import { useMemo, useCallback } from 'react';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
-import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
-import type { ComplianceStatus } from '@/hooks/useLacunasData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 
@@ -25,76 +27,246 @@ const eixoLabels: Record<string, string> = {
   dados_estatisticas: 'Dados e Estatísticas',
 };
 
-function getArtigosFromRecomendacao(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): string[] {
-  if (l.artigos_convencao && l.artigos_convencao.length > 0) return l.artigos_convencao;
+function normalizeArticle(raw: string): ArtigoConvencao | null {
+  const value = String(raw || '').toUpperCase().trim();
+  if (value.includes('VII')) return 'VII';
+  if (value.includes('VI')) return 'VI';
+  if (value.includes('V')) return 'V';
+  if (value.includes('IV')) return 'IV';
+  if (value.includes('III')) return 'III';
+  if (value.includes('II')) return 'II';
+  if (value.includes('I')) return 'I';
+  return null;
+}
+
+function getArtigosFromRecomendacao(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): ArtigoConvencao[] {
+  const raw = (l as any).artigos_convencao;
+  const explicit = Array.isArray(raw) ? raw.map(normalizeArticle).filter(Boolean) as ArtigoConvencao[] : [];
+  if (explicit.length > 0) return [...new Set(explicit)];
   return EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
 }
 
+type EvolucaoResult = {
+  id: string;
+  paragrafo: string;
+  tema: string;
+  eixo_tematico: string;
+  artigos: ArtigoConvencao[];
+  prioridade: string;
+  // Evolution scores (same methodology as FarolEvolucaoPanel)
+  scoreOrcamento: number;
+  scoreNormativa: number;
+  scoreIndicadores: number;
+  scoreFarol: number;
+  sinal: 'verde' | 'amarelo' | 'vermelho';
+  // Details
+  programasCount: number;
+  acoesVinculadas: number;
+  totalLiquidado: number;
+  normativosCount: number;
+  indicadoresFavoraveis: number;
+  indicadoresDesfavoraveis: number;
+  indicadoresNovos: number;
+  indicadoresTotal: number;
+};
+
 /**
- * Painel de Evolução das Recomendações — foco em evidências e status.
- * Exibido em Produtos > Conclusões.
- * Diferente da Relação Completa (que foca em vinculação artigo×recomendação).
+ * Evolução das Recomendações — mesma metodologia de Evolução dos Artigos.
+ * Avalia se as evidências vinculadas a cada recomendação melhoraram no período 2018-2025.
+ * Orçamento (35%): programas + R$ liquidado
+ * Normativa (35%): instrumentos normativos vinculados
+ * Indicadores (30%): tendência favorável na série histórica
+ * Semáforo: ≥60% Evolução | 35-59% Estagnação | <35% Retrocesso
  */
 export function EvolucaoRecomendacoesPanel() {
-  const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const { data: recomendacoes, isLoading: loadingRecs } = useLacunasIdentificadas({});
+
+  const { data: indicadores, isLoading: loadingInd } = useQuery({
+    queryKey: ['evolucao-rec-indicadores'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('indicadores_interseccionais')
+        .select('nome, categoria, tendencia, dados, artigos_convencao')
+        .neq('categoria', 'common_core');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: orcamento, isLoading: loadingOrc } = useQuery({
+    queryKey: ['evolucao-rec-orcamento'],
+    queryFn: async () => {
+      let all: any[] = [];
+      let page = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('dados_orcamentarios')
+          .select('programa, orgao, ano, dotacao_autorizada, liquidado, pago, artigos_convencao')
+          .range(page * 1000, (page + 1) * 1000 - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all = all.concat(data);
+        if (data.length < 1000) break;
+        page++;
+      }
+      return all;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: normativos, isLoading: loadingNorm } = useQuery({
+    queryKey: ['evolucao-rec-normativos'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('documentos_normativos')
+        .select('titulo, artigos_convencao, status');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isLoading = loadingRecs || loadingInd || loadingOrc || loadingNorm;
+
+  const results = useMemo<EvolucaoResult[]>(() => {
+    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
+
+    const dedupedIndicadores = getSafeIndicadores(indicadores);
+
+    return recomendacoes.map(rec => {
+      const artigos = getArtigosFromRecomendacao(rec);
+
+      // Find linked evidence by article tags
+      const artigoOrc = orcamento.filter((o: any) => {
+        if (o.artigos_convencao?.includes(artigos[0])) return true;
+        return artigos.some((a: string) => (o.artigos_convencao || []).map(normalizeArticle).filter(Boolean).includes(a));
+      });
+      // Also match by keyword in tema/descricao
+      const temaTokens = `${rec.tema} ${rec.descricao_lacuna}`.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .split(/\s+/).filter(t => t.length >= 5);
+      const orcByKeyword = orcamento.filter((o: any) => {
+        const h = `${o.programa} ${o.orgao}`.toLowerCase();
+        return temaTokens.some(t => h.includes(t));
+      });
+      const allOrc = Array.from(new Map([...artigoOrc, ...orcByKeyword].map((o: any) => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
+
+      const programasCount = new Set(allOrc.map((o: any) => o.programa)).size;
+      const acoesVinculadas = allOrc.length;
+      const totalLiquidado = allOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
+
+      // Normativos linked by article
+      const artigoNorm = normativos.filter((d: any) => {
+        return artigos.some((a: string) => (d.artigos_convencao || []).map(normalizeArticle).filter(Boolean).includes(a));
+      });
+      const normByKeyword = normativos.filter((d: any) => {
+        const h = d.titulo.toLowerCase();
+        return temaTokens.some(t => h.includes(t));
+      });
+      const allNorm = Array.from(new Map([...artigoNorm, ...normByKeyword].map((n: any) => [n.titulo, n])).values());
+      const normativosCount = allNorm.length;
+
+      // Indicadores linked by article
+      const artigoInd = dedupedIndicadores.filter((ind: any) => {
+        return artigos.some((a: string) => {
+          if (ind.artigos_convencao?.includes(a)) return true;
+          return inferArtigosIndicador(ind).includes(a);
+        });
+      });
+      const indByKeyword = dedupedIndicadores.filter((ind: any) => {
+        const h = `${ind.nome} ${ind.categoria}`.toLowerCase();
+        return temaTokens.some(t => h.includes(t));
+      });
+      const allInd = Array.from(new Map([...artigoInd, ...indByKeyword].map((i: any) => [i.nome, i])).values());
+
+      // Evaluate indicator trends (same as FarolEvolucaoPanel)
+      let favoraveis = 0, desfavoraveis = 0, novos = 0;
+      allInd.forEach((ind: any) => {
+        const result = evaluateIndicadorDetailed(ind).result;
+        if (result === 'favoravel') favoraveis++;
+        else if (result === 'desfavoravel') desfavoraveis++;
+        else if (result === 'novo') novos++;
+      });
+
+      const indicadoresTotal = allInd.length;
+      const rawIndScore = indicadoresTotal > 0
+        ? ((favoraveis + novos * 0.7 - desfavoraveis * 0.5) / indicadoresTotal) * 100
+        : 0;
+      const scoreIndicadores = Math.max(0, Math.min(100, rawIndScore));
+
+      // Scores — same formula as FarolEvolucaoPanel
+      const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
+      const scoreNormativa = Math.min(100, normativosCount * 12);
+
+      const scoreFarol = Math.round(
+        scoreOrcamento * 0.35 +
+        scoreNormativa * 0.35 +
+        scoreIndicadores * 0.30
+      );
+
+      const sinal: 'verde' | 'amarelo' | 'vermelho' = scoreFarol >= 60 ? 'verde' : scoreFarol >= 35 ? 'amarelo' : 'vermelho';
+
+      return {
+        id: rec.id,
+        paragrafo: rec.paragrafo,
+        tema: rec.tema,
+        eixo_tematico: rec.eixo_tematico,
+        artigos,
+        prioridade: rec.prioridade,
+        scoreOrcamento: Math.round(scoreOrcamento),
+        scoreNormativa: Math.round(scoreNormativa),
+        scoreIndicadores: Math.round(scoreIndicadores),
+        scoreFarol,
+        sinal,
+        programasCount,
+        acoesVinculadas,
+        totalLiquidado,
+        normativosCount,
+        indicadoresFavoraveis: favoraveis,
+        indicadoresDesfavoraveis: desfavoraveis,
+        indicadoresNovos: novos,
+        indicadoresTotal,
+      };
+    });
+  }, [recomendacoes, indicadores, orcamento, normativos]);
 
   const grouped = useMemo(() => {
-    if (!recomendacoes) return { cerd: [] as typeof recomendacoes, rg: [] as typeof recomendacoes, durban: [] as typeof recomendacoes };
-    const result: Record<OrigemLacuna, typeof recomendacoes> = { cerd: [], rg: [], durban: [] };
-    for (const l of recomendacoes) {
-      result[classificarOrigemLacuna(l.paragrafo)].push(l);
-    }
-    result.cerd.sort((a, b) => (parseInt(a.paragrafo.replace(/\D/g, '')) || 0) - (parseInt(b.paragrafo.replace(/\D/g, '')) || 0));
-    result.rg.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
-    result.durban.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
-    return result;
-  }, [recomendacoes]);
-
-  // Status summary
-  const statusSummary = useMemo(() => {
-    if (!recomendacoes) return { cumprido: 0, parcialmente_cumprido: 0, em_andamento: 0, nao_cumprido: 0, retrocesso: 0 };
-    const counts: Record<string, number> = {};
-    recomendacoes.forEach(l => {
-      const diag = diagnosticMap.get(l.id);
-      const eff = diag?.statusComputado ?? l.status_cumprimento;
-      counts[eff] = (counts[eff] || 0) + 1;
+    const r: Record<OrigemLacuna, EvolucaoResult[]> = { cerd: [], rg: [], durban: [] };
+    results.forEach(item => {
+      r[classificarOrigemLacuna(item.paragrafo)].push(item);
     });
-    return counts;
-  }, [recomendacoes, diagnosticMap]);
+    r.cerd.sort((a, b) => (parseInt(a.paragrafo.replace(/\D/g, '')) || 0) - (parseInt(b.paragrafo.replace(/\D/g, '')) || 0));
+    r.rg.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
+    r.durban.sort((a, b) => a.paragrafo.localeCompare(b.paragrafo));
+    return r;
+  }, [results]);
+
+  const mediaGeral = results.length > 0 ? Math.round(results.reduce((s, r) => s + r.scoreFarol, 0) / results.length) : 0;
+  const sinaisCount = useMemo(() => {
+    return { verde: results.filter(r => r.sinal === 'verde').length, amarelo: results.filter(r => r.sinal === 'amarelo').length, vermelho: results.filter(r => r.sinal === 'vermelho').length };
+  }, [results]);
 
   const generateExportHTML = useCallback(() => {
-    if (!recomendacoes) return '<html><body>Sem dados</body></html>';
-    const allItems = [...grouped.cerd, ...grouped.rg, ...grouped.durban];
+    if (results.length === 0) return '<html><body>Sem dados</body></html>';
 
-    const renderRows = (items: typeof allItems) => items.map(l => {
-      const diag = diagnosticMap.get(l.id);
-      const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
-      const score = diag?.auditoria?.scoreGlobal;
-      const artigos = getArtigosFromRecomendacao(l);
-      const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
-      const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
-
-      // Breakdown
-      const ind = diag?.auditoria?.indicadores;
-      const orc = diag?.auditoria?.orcamento;
-      const norm = diag?.auditoria?.normativos;
-
+    const renderRows = (items: EvolucaoResult[]) => items.map(r => {
+      const corSinal = r.sinal === 'verde' ? '#16a34a' : r.sinal === 'amarelo' ? '#ca8a04' : '#dc2626';
+      const labelSinal = r.sinal === 'verde' ? 'Evolução' : r.sinal === 'amarelo' ? 'Estagnação' : 'Retrocesso';
       return `<tr>
-        <td style="font-family:monospace;font-weight:bold">${l.paragrafo}</td>
-        <td>${l.tema}</td>
-        <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
-        <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
-        <td style="font-family:monospace;font-weight:bold;text-align:center">${score != null ? score : '—'}</td>
-        <td style="font-size:10px">${ind ? `${ind.score}pts (${ind.total} ind.)` : '—'}</td>
-        <td style="font-size:10px">${orc ? `${orc.score}pts (${orc.total} ações)` : '—'}</td>
-        <td style="font-size:10px">${norm ? `${norm.score}pts (${norm.total} leis)` : '—'}</td>
-        <td style="font-size:10px">${eixoLabels[l.eixo_tematico] || l.eixo_tematico}</td>
+        <td style="font-family:monospace;font-weight:bold">${r.paragrafo}</td>
+        <td>${r.tema}</td>
+        <td>${r.artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
+        <td style="color:${corSinal};font-weight:bold">${labelSinal} (${r.scoreFarol}%)</td>
+        <td style="font-size:10px">${r.programasCount} prog. / ${r.acoesVinculadas} ações (R$ ${(r.totalLiquidado / 1e9).toFixed(2)} bi)</td>
+        <td style="font-size:10px">${r.normativosCount} instrumento(s)</td>
+        <td style="font-size:10px">${r.indicadoresFavoraveis}↑ ${r.indicadoresNovos}★ ${r.indicadoresDesfavoraveis}↓ (${r.indicadoresTotal} total)</td>
+        <td style="font-size:10px">${eixoLabels[r.eixo_tematico] || r.eixo_tematico}</td>
       </tr>`;
     }).join('');
 
     return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-<title>Evolução das Recomendações — Status e Evidências</title>
+<title>Evolução das Recomendações — Tendência de Evidências 2018-2025</title>
 <style>
 body{font-family:Arial,sans-serif;max-width:1200px;margin:20px auto;color:#222;font-size:12px}
 h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
@@ -104,43 +276,33 @@ th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:11px}
 th{background:#f1f5f9;font-size:10px}
 .methodology{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px;margin:12px 0}
 .nota{font-size:10px;color:#666}
-.summary{display:flex;gap:12px;margin:12px 0}
-.summary span{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:bold}
 </style></head><body>
-<h1>📊 Evolução das Recomendações — Status Baseado em Evidências</h1>
+<h1>📈 Evolução das Recomendações — Tendência de Evidências (2018-2025)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-<p><strong>Total:</strong> ${recomendacoes.length} recomendações — CERD (${grouped.cerd.length}), RG (${grouped.rg.length}), Durban (${grouped.durban.length})</p>
-
-<div class="summary">
-<span style="background:#dcfce7;color:#166534">✓ ${statusSummary.cumprido || 0} Cumprida(s)</span>
-<span style="background:#fef9c3;color:#854d0e">~ ${statusSummary.parcialmente_cumprido || 0} Parcial(is)</span>
-<span style="background:#dbeafe;color:#1e40af">⏳ ${statusSummary.em_andamento || 0} Em Andamento</span>
-<span style="background:#fee2e2;color:#991b1b">✗ ${statusSummary.nao_cumprido || 0} Não Cumprida(s)</span>
-<span style="background:#fee2e2;color:#991b1b">↓ ${statusSummary.retrocesso || 0} Retrocesso(s)</span>
-</div>
+<p><strong>Score Médio:</strong> ${mediaGeral}% | ${sinaisCount.verde} Evolução | ${sinaisCount.amarelo} Estagnação | ${sinaisCount.vermelho} Retrocesso</p>
 
 <div class="methodology">
-<h2>📐 Metodologia do Score (0-100)</h2>
+<h2>📐 Metodologia (idêntica à Evolução dos Artigos)</h2>
+<p>Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período 2018-2025.</p>
 <table>
-<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Indicadores Estatísticos</td><td>40%</td><td>Dados quantitativos vinculados por tags ou palavras-chave do tema/descrição</td></tr>
-<tr><td>Orçamento</td><td>30%</td><td>Ações orçamentárias vinculadas (cobertura, não valor em R$)</td></tr>
-<tr><td>Normativos</td><td>30%</td><td>Instrumentos legislativos vinculados ao artigo/eixo</td></tr>
+<tr><th>Dimensão</th><th>Peso</th><th>O que mede</th></tr>
+<tr><td>Orçamento</td><td>35%</td><td>Programas com execução rastreável + R$ liquidado</td></tr>
+<tr><td>Normativa</td><td>35%</td><td>Instrumentos legislativos vinculados</td></tr>
+<tr><td>Indicadores</td><td>30%</td><td>Tendência na série histórica (somente variação positiva pontua)</td></tr>
 </table>
-<p class="nota"><strong>Modelo Híbrido Anti-Coringa:</strong> Tags explícitas = 100%. Eixo temático = 50%. Artigos com presença >40% (ex: Art. V) = peso reduzido (~12%).</p>
-<p class="nota"><strong>Cap de Piora:</strong> Se indicadores pioram > melhoram, score máximo = 55 (Parcial).</p>
-<p class="nota"><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+<p class="nota"><strong>Semáforo:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
+<p class="nota"><strong>Diferença vs. Status (Relação Completa):</strong> O <em>Status</em> avalia se a recomendação foi cumprida (cobertura de dados). A <em>Evolução</em> avalia se os dados mostram melhora no período.</p>
 </div>
 
 <h2>Detalhamento por Recomendação</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Status</th><th>Score</th><th>Indicadores</th><th>Orçamento</th><th>Normativos</th><th>Eixo</th></tr>
-${renderRows(allItems)}
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Sinal</th><th>Orçamento</th><th>Normativos</th><th>Indicadores</th><th>Eixo</th></tr>
+${renderRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
 </table>
 
 <p class="nota" style="margin-top:16px">Documento gerado pelo Sistema de Monitoramento CERD IV — ${new Date().toLocaleDateString('pt-BR')}</p>
 </body></html>`;
-  }, [recomendacoes, grouped, diagnosticMap, statusSummary]);
+  }, [results, grouped, mediaGeral, sinaisCount]);
 
   if (isLoading) {
     return (
@@ -150,20 +312,29 @@ ${renderRows(allItems)}
     );
   }
 
-  const getEffectiveStatus = (l: { id: string; status_cumprimento: ComplianceStatus }): ComplianceStatus => {
-    const diag = diagnosticMap.get(l.id);
-    return diag?.statusComputado ?? l.status_cumprimento;
+  const getSinalIcon = (sinal: 'verde' | 'amarelo' | 'vermelho') => {
+    if (sinal === 'verde') return <TrendingUp className="w-3.5 h-3.5 text-success" />;
+    if (sinal === 'amarelo') return <Minus className="w-3.5 h-3.5 text-warning" />;
+    return <TrendingDown className="w-3.5 h-3.5 text-destructive" />;
   };
 
-  const renderGroup = (key: OrigemLacuna, items: any[]) => {
+  const getSinalLabel = (sinal: 'verde' | 'amarelo' | 'vermelho') => {
+    if (sinal === 'verde') return 'Evolução';
+    if (sinal === 'amarelo') return 'Estagnação';
+    return 'Retrocesso';
+  };
+
+  const getSinalColor = (sinal: 'verde' | 'amarelo' | 'vermelho') => {
+    if (sinal === 'verde') return 'text-success';
+    if (sinal === 'amarelo') return 'text-warning';
+    return 'text-destructive';
+  };
+
+  const renderGroup = (key: OrigemLacuna, items: EvolucaoResult[]) => {
     const config = ORIGEM_CONFIG[key];
     if (items.length === 0) return null;
 
-    const statusCount: Record<string, number> = {};
-    items.forEach(l => {
-      const eff = getEffectiveStatus(l);
-      statusCount[eff] = (statusCount[eff] || 0) + 1;
-    });
+    const sinais = { verde: items.filter(i => i.sinal === 'verde').length, amarelo: items.filter(i => i.sinal === 'amarelo').length, vermelho: items.filter(i => i.sinal === 'vermelho').length };
 
     return (
       <Card key={key} className="border-l-4" style={{ borderLeftColor: key === 'cerd' ? 'hsl(var(--primary))' : key === 'rg' ? '#d97706' : '#7c3aed' }}>
@@ -174,11 +345,9 @@ ${renderRows(allItems)}
             <Badge variant="secondary" className="ml-auto">{items.length} recomendações</Badge>
           </CardTitle>
           <div className="flex flex-wrap gap-2 mt-2">
-            {statusCount.cumprido > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{statusCount.cumprido} Cumprida(s)</Badge>}
-            {statusCount.parcialmente_cumprido > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido} Parcial(is)</Badge>}
-            {statusCount.em_andamento > 0 && <Badge variant="outline" className="text-info border-info/30 text-xs">{statusCount.em_andamento} Em Andamento</Badge>}
-            {statusCount.nao_cumprido > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido} Não Cumprida(s)</Badge>}
-            {statusCount.retrocesso > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.retrocesso} Retrocesso(s)</Badge>}
+            {sinais.verde > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{sinais.verde} Evolução</Badge>}
+            {sinais.amarelo > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{sinais.amarelo} Estagnação</Badge>}
+            {sinais.vermelho > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{sinais.vermelho} Retrocesso</Badge>}
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -189,62 +358,56 @@ ${renderRows(allItems)}
                   <TableHead className="w-[80px]">§</TableHead>
                   <TableHead>Tema</TableHead>
                   <TableHead className="w-[100px]">Artigos</TableHead>
-                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[110px]">Sinal</TableHead>
                   <TableHead className="w-[60px]">Score</TableHead>
-                  <TableHead className="w-[100px]">Indicadores</TableHead>
-                  <TableHead className="w-[100px]">Orçamento</TableHead>
-                  <TableHead className="w-[100px]">Normativos</TableHead>
+                  <TableHead className="w-[130px]">Orçamento (35%)</TableHead>
+                  <TableHead className="w-[100px]">Normativos (35%)</TableHead>
+                  <TableHead className="w-[130px]">Indicadores (30%)</TableHead>
                   <TableHead className="w-[80px]">Prioridade</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((l: any) => {
-                  const diag = diagnosticMap.get(l.id);
-                  const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
-                  const artigos = getArtigosFromRecomendacao(l);
-                  const score = diag?.auditoria?.scoreGlobal;
-                  const ind = diag?.auditoria?.indicadores;
-                  const orc = diag?.auditoria?.orcamento;
-                  const norm = diag?.auditoria?.normativos;
-
-                  return (
-                    <TableRow key={l.id}>
-                      <TableCell className="font-mono font-semibold text-xs">{l.paragrafo}</TableCell>
-                      <TableCell className="text-sm">{l.tema}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-0.5">
-                          {artigos.map(a => (
-                            <Badge key={a} variant="outline" className="text-[10px] px-1 py-0">{a}</Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={effectiveStatus} size="sm" />
-                      </TableCell>
-                      <TableCell>
-                        {score != null && (
-                          <span className={`text-xs font-mono font-bold ${score >= 80 ? 'text-success' : score >= 55 ? 'text-warning' : score >= 35 ? 'text-orange-500' : 'text-destructive'}`}>
-                            {score}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {ind ? `${ind.total} (${ind.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {orc ? `${orc.total} (${orc.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">
-                        {norm ? `${norm.total} (${norm.score}pts)` : '—'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
-                          {l.prioridade}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {items.map(r => (
+                  <TableRow key={r.id}>
+                    <TableCell className="font-mono font-semibold text-xs">{r.paragrafo}</TableCell>
+                    <TableCell className="text-sm">{r.tema}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-0.5">
+                        {r.artigos.map(a => (
+                          <Badge key={a} variant="outline" className="text-[10px] px-1 py-0">{a}</Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        {getSinalIcon(r.sinal)}
+                        <span className={`text-xs font-semibold ${getSinalColor(r.sinal)}`}>{getSinalLabel(r.sinal)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`text-xs font-mono font-bold ${r.sinal === 'verde' ? 'text-success' : r.sinal === 'amarelo' ? 'text-warning' : 'text-destructive'}`}>
+                        {r.scoreFarol}%
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-[10px] text-muted-foreground">
+                      {r.programasCount > 0 ? `${r.programasCount} prog. / R$ ${(r.totalLiquidado / 1e9).toFixed(2)}bi` : '—'}
+                      <div className="text-[9px]">({r.scoreOrcamento}pts)</div>
+                    </TableCell>
+                    <TableCell className="text-[10px] text-muted-foreground">
+                      {r.normativosCount > 0 ? `${r.normativosCount} instr.` : '—'}
+                      <div className="text-[9px]">({r.scoreNormativa}pts)</div>
+                    </TableCell>
+                    <TableCell className="text-[10px] text-muted-foreground">
+                      {r.indicadoresTotal > 0 ? `${r.indicadoresFavoraveis}↑ ${r.indicadoresNovos}★ ${r.indicadoresDesfavoraveis}↓` : '—'}
+                      <div className="text-[9px]">({r.scoreIndicadores}pts)</div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={r.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs capitalize">
+                        {r.prioridade}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -259,30 +422,30 @@ ${renderRows(allItems)}
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold text-sm flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
-            Evolução das Recomendações — Status Baseado em Evidências
+            Evolução das Recomendações — Tendência de Evidências (2018-2025)
           </h3>
           <ExportTabButtons
             generateHTML={generateExportHTML}
-            fileName="evolucao-recomendacoes-cerd"
+            fileName="evolucao-recomendacoes"
             label="Exportar"
             compact
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Status calculado automaticamente (Score 0-100) a partir de <strong>3 dimensões de evidências</strong>: 
-          Indicadores (40%), Orçamento (30%) e Normativos (30%).
+          Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período, usando a mesma metodologia
+          da Evolução dos Artigos: Orçamento (35%), Normativa (35%), Indicadores (30%).
         </p>
-        <div className="flex flex-wrap gap-3 mt-2 text-xs">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {statusSummary.parcialmente_cumprido || 0} Parcial(is)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-info" /> {statusSummary.em_andamento || 0} Em Andamento</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)/Retrocesso(s)</span>
-        </div>
-        {sensorReady && (
-          <div className="mt-2">
-            <MethodologyPanel variant="sensor" />
+        <div className="flex items-center gap-4 mt-3">
+          <div className="text-center">
+            <span className={`text-2xl font-bold ${mediaGeral >= 60 ? 'text-success' : mediaGeral >= 35 ? 'text-warning' : 'text-destructive'}`}>{mediaGeral}%</span>
+            <p className="text-[10px] text-muted-foreground">Score Médio</p>
           </div>
-        )}
+          <div className="flex flex-wrap gap-3 text-xs">
+            <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-success" /> {sinaisCount.verde} Evolução (≥60%)</span>
+            <span className="flex items-center gap-1"><Minus className="w-3 h-3 text-warning" /> {sinaisCount.amarelo} Estagnação (35-59%)</span>
+            <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3 text-destructive" /> {sinaisCount.vermelho} Retrocesso (&lt;35%)</span>
+          </div>
+        </div>
       </div>
 
       {renderGroup('cerd', grouped.cerd)}
@@ -290,14 +453,15 @@ ${renderRows(allItems)}
       {renderGroup('durban', grouped.durban)}
 
       <div className="bg-muted/20 rounded-lg border p-3">
-        <p className="text-xs font-semibold text-muted-foreground mb-2">Legenda de Status:</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">Legenda do Semáforo:</p>
         <div className="flex flex-wrap gap-3 text-xs">
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-success" /> <strong>Cumprido (≥80):</strong> Evidências indicam cumprimento integral</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning" /> <strong>Parcial (≥55):</strong> Avanço significativo, lacunas remanescentes</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-info" /> <strong>Em Andamento (≥35):</strong> Esforço institucional detectado</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Não Cumprido (≥15):</strong> Evidências insuficientes</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso (&lt;15):</strong> Piora detectada</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-success" /> <strong>Evolução (≥60%):</strong> Evidências mostram melhora no período</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning" /> <strong>Estagnação (35-59%):</strong> Pouca variação detectada</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso (&lt;35%):</strong> Indicadores em piora ou sem evidências</span>
         </div>
+        <p className="text-[10px] text-muted-foreground mt-2 italic">
+          <strong>Diferença vs. Status (Relação Completa):</strong> O Status avalia se a recomendação foi cumprida (cobertura). A Evolução avalia se os dados mostram melhora.
+        </p>
       </div>
     </div>
   );
