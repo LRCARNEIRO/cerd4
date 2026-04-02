@@ -51,7 +51,7 @@ export default function Index() {
     },
     staleTime: 5 * 60 * 1000,
   });
-  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
+  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
 
   // Metas com progresso dinâmico
