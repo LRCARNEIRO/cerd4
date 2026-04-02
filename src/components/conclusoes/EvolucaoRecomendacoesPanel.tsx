@@ -158,7 +158,8 @@ export function EvolucaoRecomendacoesPanel() {
 
       // Normativos linked by article
       const artigoNorm = normativos.filter((d: any) => {
-        return artigos.some((a: string) => (d.artigos_convencao || []).map(normalizeArticle).filter(Boolean).includes(a));
+        const dArts = ((d.artigos_convencao || []) as string[]).map(normalizeArticle).filter(Boolean);
+        return artigos.some(a => dArts.includes(a));
       });
       const normByKeyword = normativos.filter((d: any) => {
         const h = d.titulo.toLowerCase();
@@ -169,7 +170,7 @@ export function EvolucaoRecomendacoesPanel() {
 
       // Indicadores linked by article
       const artigoInd = dedupedIndicadores.filter((ind: any) => {
-        return artigos.some((a: string) => {
+        return artigos.some((a: ArtigoConvencao) => {
           if (ind.artigos_convencao?.includes(a)) return true;
           return inferArtigosIndicador(ind).includes(a);
         });
