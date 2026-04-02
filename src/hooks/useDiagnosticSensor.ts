@@ -325,7 +325,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
 
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es): ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) [${totalIndKeyword} keyword, ${totalIndEixo} eixo×50%]: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
