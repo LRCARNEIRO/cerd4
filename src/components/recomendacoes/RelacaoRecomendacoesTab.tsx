@@ -143,7 +143,7 @@ ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</
 
 <h2>Detalhamento</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Score</th><th>Indicadores</th><th>Orçamento</th><th>Normativos</th></tr>
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade</th></tr>
 ${renderRows(allItems)}
 </table>
 
