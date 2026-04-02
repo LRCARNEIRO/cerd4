@@ -109,7 +109,6 @@ export function RelacaoRecomendacoesTab() {
                   const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
                   const artigos = getArtigosFromLacuna(l);
                   const score = diag?.auditoria?.scoreGlobal;
-                  const isDivergent = diag?.divergente;
 
                   return (
                     <TableRow key={l.id}>
