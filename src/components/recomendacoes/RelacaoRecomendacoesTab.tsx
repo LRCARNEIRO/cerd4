@@ -123,12 +123,7 @@ export function RelacaoRecomendacoesTab() {
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{eixoLabels[l.eixo_tematico] || l.eixo_tematico}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1">
-                          <StatusBadge status={effectiveStatus} size="sm" />
-                          {isDivergent && (
-                            <span className="text-[8px] text-warning" title={`Manual: ${l.status_cumprimento}`}>⚠</span>
-                          )}
-                        </div>
+                        <StatusBadge status={effectiveStatus} size="sm" />
                       </TableCell>
                       <TableCell>
                         {score != null && (

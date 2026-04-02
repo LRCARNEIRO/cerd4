@@ -51,11 +51,6 @@ export function DiagnosticBadges({ diagnostic }: DiagnosticBadgesProps) {
             </Tooltip>
           );
         })}
-        {diagnostic.divergente && (
-          <Badge variant="destructive" className="text-[10px] animate-pulse">
-            ⚠️ Divergência
-          </Badge>
-        )}
       </div>
     </TooltipProvider>
   );
