@@ -4,10 +4,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { useLacunasIdentificadas, useDadosOrcamentarios, useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useMemo } from 'react';
 
 export default function Artigos() {
   const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats } = useAnalyticalInsights();
   const { data: allLacunas } = useLacunasIdentificadas({});
+  const { diagnosticMap } = useDiagnosticSensor(allLacunas);
+
+  // Enrich lacunas with computed status
+  const enrichedLacunas = useMemo(() => {
+    if (!allLacunas) return [];
+    return allLacunas.map(l => {
+      const diag = diagnosticMap.get(l.id);
+      return { ...l, _computedStatus: diag?.statusComputado ?? l.status_cumprimento };
+    });
+  }, [allLacunas, diagnosticMap]);
 
   const { data: allNormativos } = useQuery({
     queryKey: ['normativos-artigos'],
@@ -26,7 +38,7 @@ export default function Artigos() {
       <IcerdAdherencePanel
         fiosCondutores={fiosCondutores}
         conclusoes={conclusoesDinamicas}
-        lacunas={allLacunas || []}
+        lacunas={enrichedLacunas}
         orcamentoRecords={orcDados || []}
         indicadores={indicadores || []}
         stats={stats}
