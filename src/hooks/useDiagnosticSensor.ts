@@ -54,7 +54,6 @@ export interface LacunaDiagnostic {
 }
 
 export interface DiagnosticSummary {
-  totalDivergencias: number;
   totalOrcamentoSimbolico: number;
   totalTendenciaPiora: number;
   totalSemCoberturaNormativa: number;
