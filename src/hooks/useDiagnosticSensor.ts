@@ -43,8 +43,9 @@ export interface AuditScoreBreakdown {
   justificativaCompleta: string;
 }
 
-export interface LacunaDiagnostic {
-  lacunaId: string;
+/** Diagnóstico computado de uma recomendação (CERD, RG ou Durban) */
+export interface RecomendacaoDiagnostic {
+  recomendacaoId: string;
   statusComputado: ComplianceStatus;
   auditoria: AuditScoreBreakdown;
   signals: DiagnosticSignal[];
@@ -52,6 +53,9 @@ export interface LacunaDiagnostic {
   linkedOrcamento: LinkedOrcamento[];
   linkedNormativos: LinkedNormativo[];
 }
+
+/** @deprecated Use RecomendacaoDiagnostic */
+export type LacunaDiagnostic = RecomendacaoDiagnostic;
 
 export interface DiagnosticSummary {
   totalOrcamentoSimbolico: number;
@@ -79,11 +83,11 @@ function normalizeArticle(raw: string): ArtigoConvencao | null {
   return null;
 }
 
-function getLacunaArtigos(lacuna: LacunaIdentificada): ArtigoConvencao[] {
-  const raw = (lacuna as any).artigos_convencao;
+function getRecomendacaoArtigos(rec: LacunaIdentificada): ArtigoConvencao[] {
+  const raw = (rec as any).artigos_convencao;
   const explicit = Array.isArray(raw) ? raw.map(normalizeArticle).filter(Boolean) as ArtigoConvencao[] : [];
   if (explicit.length > 0) return [...new Set(explicit)];
-  return EIXO_PARA_ARTIGOS[lacuna.eixo_tematico as ThematicAxis] || [];
+  return EIXO_PARA_ARTIGOS[rec.eixo_tematico as ThematicAxis] || [];
 }
 
 const NEGATIVE_INDICATORS = [
@@ -131,12 +135,12 @@ const KEYWORD_STOPWORDS = new Set([
 
 /**
  * Keywords específicas por parágrafo — vinculação precisa.
- * Cada lacuna recebe APENAS palavras-chave que descrevem seu tema concreto,
+ * Cada recomendação recebe APENAS palavras-chave que descrevem seu tema concreto,
  * sem genéricos de eixo temático que capturam toda a base.
  */
-function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
-  // 1. Extrair tokens significativos do tema + descrição (sem stop-words)
-  const rawTokens = tokenize(`${lacuna.tema} ${lacuna.descricao_lacuna}`)
+function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
+  // 1. Extrair tokens significativos do tema + descrição da recomendação (sem stop-words)
+  const rawTokens = tokenize(`${rec.tema} ${rec.descricao_lacuna}`)
     .filter(t => !KEYWORD_STOPWORDS.has(t));
 
   // 2. Keywords específicas por grupo focal (apenas termos discriminantes)
@@ -156,12 +160,12 @@ function getLacunaKeywords(lacuna: LacunaIdentificada): string[] {
 
   return [...new Set([
     ...rawTokens,
-    ...(grupoSpecific[lacuna.grupo_focal as FocalGroupType] || []),
+    ...(grupoSpecific[rec.grupo_focal as FocalGroupType] || []),
   ])];
 }
 
 // ── Main Hook ──────────────────────────────────────────────────────
-export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
+export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined) {
   // Fetch all three cross-reference sources in parallel
   const { data: indicadores } = useQuery({
     queryKey: ['sensor-indicadores'],
@@ -271,13 +275,13 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     return freq;
   }, [normativos]);
 
-  // ── Diagnose each lacuna ─────────────────────────────────────────
-  const diagnostics = useMemo<LacunaDiagnostic[]>(() => {
-    if (!lacunas || !indicadores || !orcamento || !normativos) return [];
+  // ── Diagnose each recomendação ────────────────────────────────────
+  const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
+    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
-    return lacunas.map(lacuna => {
-      const artigos = getLacunaArtigos(lacuna);
-      const keywords = getLacunaKeywords(lacuna);
+    return recomendacoes.map(rec => {
+      const artigos = getRecomendacaoArtigos(rec);
+      const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
       // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
@@ -494,7 +498,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
       };
 
       return {
-        lacunaId: lacuna.id,
+        recomendacaoId: rec.id,
         statusComputado,
         auditoria,
         signals,
@@ -503,7 +507,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [lacunas, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
+  }, [recomendacoes, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
@@ -545,8 +549,8 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
   }, [diagnostics]);
 
   const diagnosticMap = useMemo(() => {
-    const map = new Map<string, LacunaDiagnostic>();
-    diagnostics.forEach(d => map.set(d.lacunaId, d));
+    const map = new Map<string, RecomendacaoDiagnostic>();
+    diagnostics.forEach(d => map.set(d.recomendacaoId, d));
     return map;
   }, [diagnostics]);
 
@@ -554,7 +558,7 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
     diagnostics,
     diagnosticMap,
     summary,
-    isReady: !!(lacunas && indicadores && orcamento && normativos),
+    isReady: !!(recomendacoes && indicadores && orcamento && normativos),
   };
 }
 
