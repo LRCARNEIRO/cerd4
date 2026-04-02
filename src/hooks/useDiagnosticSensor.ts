@@ -418,27 +418,10 @@ export function useDiagnosticSensor(lacunas: LacunaIdentificada[] | undefined) {
         justificativaCompleta,
       };
 
-      // ── Divergência (computado vs manual) ──
-      const manual = lacuna.status_cumprimento;
-      const statusSugerido = statusComputado !== manual ? statusComputado : null;
-      const divergente = statusSugerido !== null;
-
-      if (divergente && statusSugerido) {
-        const isPiora = scoreGlobal < 30;
-        signals.push({
-          type: 'divergencia',
-          severity: isPiora ? 'critical' : 'warning',
-          message: `Motor computou "${formatStatus(statusComputado)}" (score ${scoreGlobal}) — manual é "${formatStatus(manual)}"`,
-        });
-      }
-
       return {
         lacunaId: lacuna.id,
-        statusManual: manual,
-        statusSugerido,
         statusComputado,
         auditoria,
-        divergente,
         signals,
         linkedIndicadores: indicadoresVinculados.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
         linkedOrcamento: orcamentosVinculados.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
