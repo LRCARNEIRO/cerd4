@@ -102,7 +102,7 @@ export function EvolucaoRecomendacoesPanel() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, liquidado, pago, artigos_convencao')
+          .select('programa, orgao, ano, dotacao_autorizada, liquidado, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -120,7 +120,7 @@ export function EvolucaoRecomendacoesPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status');
+        .select('titulo, artigos_convencao, status, categoria, url_origem');
       if (error) throw error;
       return data || [];
     },
@@ -149,7 +149,7 @@ export function EvolucaoRecomendacoesPanel() {
 
       // --- ORÇAMENTO: keyword-only + explicit paragraph reference ---
       const orcByKeyword = orcamento.filter((o: any) => {
-        const h = `${o.programa} ${o.orgao}`.toLowerCase()
+        const h = `${o.programa} ${o.orgao} ${o.descritivo || ''} ${o.eixo_tematico || ''} ${o.publico_alvo || ''}`.toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
           .some(t => h.includes(t));
