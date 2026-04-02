@@ -43,8 +43,9 @@ export interface AuditScoreBreakdown {
   justificativaCompleta: string;
 }
 
-export interface LacunaDiagnostic {
-  lacunaId: string;
+/** Diagnóstico computado de uma recomendação (CERD, RG ou Durban) */
+export interface RecomendacaoDiagnostic {
+  recomendacaoId: string;
   statusComputado: ComplianceStatus;
   auditoria: AuditScoreBreakdown;
   signals: DiagnosticSignal[];
