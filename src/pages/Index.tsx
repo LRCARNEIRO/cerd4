@@ -278,66 +278,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Artigos da Convenção ICERD — Eixo Organizador */}
-      <div className="mt-6 mb-6">
-        <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-          <Scale className="w-5 h-5 text-primary" />
-          Convenção ICERD — Artigos I-VII
-        </h2>
-        <p className="text-xs text-muted-foreground mb-4">
-          Eixo organizador fundamental: todos os dados servem à atualização de avanços e retrocessos nos compromissos de cada artigo.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {ARTIGOS_CONVENCAO.map((art) => {
-            // Count linked data per article
-            const artLacunas = (allLacunas || []).filter(l => {
-              const artigos = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
-              return artigos.includes(art.numero);
-            });
-            const artNormativos = (allNormativos || []).filter(n => n.artigos_convencao?.includes(art.numero)).length;
-            const artOrcamento = (allOrcamento || []).filter((o: any) => o.artigos_convencao?.includes(art.numero)).length;
-            const artIndicadores = (allIndicadores || []).filter((i: any) => i.artigos_convencao?.includes(art.numero)).length;
-            
-            // Simple evolution score (normativos + orçamento + indicadores weighted)
-            const scoreNorm = Math.min(artNormativos / 10, 1) * 35;
-            const scoreOrc = Math.min(artOrcamento / 5, 1) * 35;
-            const scoreInd = Math.min(artIndicadores / 3, 1) * 30;
-            const evolScore = Math.round(scoreNorm + scoreOrc + scoreInd);
-            const evolColor = evolScore >= 60 ? 'bg-success text-success-foreground' : evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
-            
-            // Adherence using COMPUTED status from sensor
-            const cumpridas = artLacunas.filter(l => {
-              const diag = sensorSummary ? diagnosticMap?.get(l.id) : null;
-              const effective = diag?.statusComputado ?? l.status_cumprimento;
-              return effective === 'cumprido' || effective === 'parcialmente_cumprido';
-            }).length;
-            const aderScore = artLacunas.length > 0 ? Math.round((cumpridas / artLacunas.length) * 100) : 0;
-            const aderColor = aderScore >= 60 ? 'bg-success/15 text-success border-success/30' : aderScore >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
 
-            return (
-              <Link
-                key={art.numero}
-                to={`/artigos`}
-                className="p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/50 transition-all group"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="default" className="text-xs">Art. {art.numero}</Badge>
-                  <Badge className={`text-[9px] ${evolColor}`} title="Evolução dos Artigos">
-                    Evol. {evolScore}%
-                  </Badge>
-                  <Badge variant="outline" className={`text-[9px] ${aderColor}`} title="Aderência ICERD">
-                    Ader. {aderScore}%
-                  </Badge>
-                </div>
-                <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                  {art.titulo}
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{art.descricao}</p>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+
 
       {/* Quick Access */}
       <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
