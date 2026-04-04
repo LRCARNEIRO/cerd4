@@ -227,22 +227,28 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Compliance Chart - Dinâmico */}
-        <div>
-          <ComplianceChart 
-            data={sensorReady ? {
-              cumprido: sensorSummary.statusReclassificado.cumprido,
-              parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
-              naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
-              retrocesso: sensorSummary.statusReclassificado.retrocesso,
-            } : {
-              cumprido: stats.recomendacoesCumpridas,
-              parcial: stats.recomendacoesParciais,
-              naoCumprido: stats.recomendacoesNaoCumpridas,
-              retrocesso: stats.recomendacoesRetrocesso,
-            }}
-          />
-        </div>
+      </div>
+
+      {/* Dual Perspective Panel — Storytelling */}
+      <div className="mb-6">
+        <DualPerspectivePanel
+          statusData={sensorReady ? {
+            cumprido: sensorSummary.statusReclassificado.cumprido,
+            parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
+            naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
+            retrocesso: sensorSummary.statusReclassificado.retrocesso,
+            emAndamento: sensorSummary.statusReclassificado.em_andamento || 0,
+          } : {
+            cumprido: stats.recomendacoesCumpridas,
+            parcial: stats.recomendacoesParciais,
+            naoCumprido: stats.recomendacoesNaoCumpridas,
+            retrocesso: stats.recomendacoesRetrocesso,
+            emAndamento: 0,
+          }}
+          evolucaoData={evolSummary}
+          artigosSummary={artigosSummary}
+          isLoading={isLoading || loadingEvol}
+        />
       </div>
 
       {/* Budget and Recommendations */}
