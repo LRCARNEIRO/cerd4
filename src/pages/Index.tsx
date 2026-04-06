@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatCard } from '@/components/dashboard/StatCard';
 
@@ -9,7 +9,9 @@ import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
 import { cerdRecommendations } from '@/data/mockData';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtigosDocumentoNormativo, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
 import { 
   ClipboardCheck, 
   AlertTriangle, 
@@ -55,7 +57,83 @@ export default function Index() {
   });
   const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
-  const { summary: evolSummary, artigosSummary, isLoading: loadingEvol } = useEvolucaoSummary();
+  const { summary: evolSummary, isLoading: loadingEvol } = useEvolucaoSummary();
+
+  // Build per-article summary using SAME sources as detailed panels
+  const artigosSummary = useMemo(() => {
+    if (!allLacunas || !allOrcamento || !allIndicadores || !allNormativos) {
+      return ARTIGOS_CONVENCAO.map(a => ({
+        numero: a.numero, titulo: a.titulo, totalRecs: 0,
+        cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0,
+      }));
+    }
+
+    const dedupedInd = getSafeIndicadores(allIndicadores);
+
+    return ARTIGOS_CONVENCAO.map(art => {
+      const artNum = art.numero;
+
+      // === COMPLIANCE: from diagnostic sensor (same as Esforço Governamental) ===
+      const artRecs = allLacunas.filter(r => {
+        const raw = (r as any).artigos_convencao;
+        const explicit = Array.isArray(raw)
+          ? raw.map((v: string) => {
+              const u = String(v || '').toUpperCase().trim();
+              if (u.includes('VII')) return 'VII';
+              if (u.includes('VI')) return 'VI';
+              if (u.includes('V')) return 'V';
+              if (u.includes('IV')) return 'IV';
+              if (u.includes('III')) return 'III';
+              if (u.includes('II')) return 'II';
+              if (u.includes('I')) return 'I';
+              return null;
+            }).filter(Boolean) as ArtigoConvencao[]
+          : [];
+        const arts = explicit.length > 0
+          ? [...new Set(explicit)]
+          : (EIXO_PARA_ARTIGOS[r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || []);
+        return arts.includes(artNum);
+      });
+
+      let cumpridas = 0, parciais = 0, naoCumpridas = 0;
+      artRecs.forEach(r => {
+        const diag = diagnosticMap.get(r.id);
+        const status = diag?.statusComputado ?? r.status_cumprimento;
+        if (status === 'cumprido') cumpridas++;
+        else if (status === 'parcialmente_cumprido' || status === 'em_andamento') parciais++;
+        else naoCumpridas++;
+      });
+
+      // === EVOLUTION: same logic as FarolEvolucaoPanel (35/35/30) ===
+      const artigoOrc = (allOrcamento as any[]).filter((o: any) => {
+        if (o.artigos_convencao?.includes(artNum)) return true;
+        return inferArtigosOrcamento(o).includes(artNum);
+      });
+      const programasCount = new Set(artigoOrc.map((o: any) => o.programa)).size;
+      const totalLiquidado = artigoOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
+
+      const artigoNorm = allNormativos.filter((d: any) => {
+        if (d.artigos_convencao?.includes(artNum)) return true;
+        return inferArtigosDocumentoNormativo(d).includes(artNum);
+      });
+
+      const artigoInd = dedupedInd.filter((ind: any) => {
+        if (ind.artigos_convencao?.includes(artNum)) return true;
+        return inferArtigosIndicador(ind).includes(artNum);
+      });
+
+      const indSummary = summarizeIndicatorEvolution(artigoInd);
+      const scoreOrc = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
+      const scoreNorm = Math.min(100, artigoNorm.length * 12);
+      const scoreInd = indSummary.score;
+      const evolScore = Math.round(scoreOrc * 0.35 + scoreNorm * 0.35 + scoreInd * 0.30);
+
+      return {
+        numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
+        cumpridas, parciais, naoCumpridas, evolScore,
+      };
+    });
+  }, [allLacunas, allOrcamento, allIndicadores, allNormativos, diagnosticMap]);
 
 
 
