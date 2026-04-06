@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatCard } from '@/components/dashboard/StatCard';
-import { MetaProgressCard } from '@/components/dashboard/MetaProgressCard';
+
 import { RecommendationCard } from '@/components/dashboard/RecommendationCard';
 import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
-import { workPlanMetas, cerdRecommendations } from '@/data/mockData';
+import { cerdRecommendations } from '@/data/mockData';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import { 
   ClipboardCheck, 
@@ -57,18 +57,8 @@ export default function Index() {
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
   const { summary: evolSummary, artigosSummary, isLoading: loadingEvol } = useEvolucaoSummary();
 
-  // Metas com progresso dinâmico
-  const metasComProgresso = workPlanMetas.map((meta, index) => ({
-    ...meta,
-    progresso: isLoading ? meta.progresso : stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || meta.progresso,
-    status: getStatusFromProgresso(stats.metasProgresso[`meta${index + 1}` as keyof typeof stats.metasProgresso] || 0)
-  }));
 
-  function getStatusFromProgresso(progresso: number): 'nao_iniciada' | 'em_andamento' | 'concluida' {
-    if (progresso === 0) return 'nao_iniciada';
-    if (progresso >= 100) return 'concluida';
-    return 'em_andamento';
-  }
+
 
   const handleRefresh = () => {
     queryClient.invalidateQueries();
@@ -207,27 +197,8 @@ export default function Index() {
         />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Metas Progress - Dinâmico */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">Progresso das Metas (Dinâmico)</h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/plano-trabalho">
-                Ver todas
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {metasComProgresso.map(meta => (
-              <MetaProgressCard key={meta.id} meta={meta} />
-            ))}
-          </div>
-        </div>
 
-      </div>
+
 
       {/* Dual Perspective Panel — Storytelling */}
       <div className="mb-6">
