@@ -228,21 +228,24 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
               const statusColorClass = pctCumpridas >= 60 ? 'bg-success/15 text-success border-success/30' : pctCumpridas >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
 
               return (
-                <Link
+                <div
                   key={art.numero}
-                  to="/artigos"
-                  className="p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/50 transition-all group"
+                  className="p-3 rounded-lg border border-border hover:border-primary/40 hover:bg-muted/50 transition-all"
                 >
                   <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
                     <Badge variant="default" className="text-xs">Art. {art.numero}</Badge>
-                    <Badge variant="outline" className={`text-[9px] ${statusColorClass}`}>
-                      Esforço {pctCumpridas}%
-                    </Badge>
-                    <Badge className={`text-[9px] ${evolColorClass}`}>
-                      {evolLabel} {art.evolScore}%
-                    </Badge>
+                    <Link to="/artigos">
+                      <Badge variant="outline" className={`text-[9px] cursor-pointer hover:opacity-80 ${statusColorClass}`}>
+                        Esforço {pctCumpridas}%
+                      </Badge>
+                    </Link>
+                    <Link to="/conclusoes">
+                      <Badge className={`text-[9px] cursor-pointer hover:opacity-80 ${evolColorClass}`}>
+                        {evolLabel} {art.evolScore}%
+                      </Badge>
+                    </Link>
                   </div>
-                  <p className="text-xs font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                  <p className="text-xs font-medium text-foreground line-clamp-1">
                     {art.titulo}
                   </p>
                   <div className="flex items-center gap-2 mt-1.5">
@@ -251,7 +254,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                       {art.cumpridas}/{art.totalRecs} rec.
                     </span>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
