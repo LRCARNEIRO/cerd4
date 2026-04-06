@@ -183,8 +183,8 @@ export default function Index() {
             <div className="flex flex-wrap gap-3 mt-4">
               <DataUploadButton />
               <Button variant="secondary" size="lg" asChild>
-                <Link to="/plano-trabalho">
-                  Ver Plano de Trabalho
+                <Link to="/recomendacoes">
+                  Ver Recomendações
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
