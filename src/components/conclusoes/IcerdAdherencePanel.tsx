@@ -6,6 +6,7 @@ import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, 
 import { Button } from '@/components/ui/button';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
@@ -267,7 +268,10 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
       const artLacunas = lacunas.filter(l => {
         if (l.artigos_convencao && l.artigos_convencao.length > 0) {
-          return l.artigos_convencao.includes(art.numero);
+          const explicit = l.artigos_convencao
+            .map(normalizeArticleTag)
+            .filter(Boolean) as ArtigoConvencao[];
+          return explicit.includes(art.numero);
         }
         // Fallback: infer from eixo_tematico
         const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];

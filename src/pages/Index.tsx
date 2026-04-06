@@ -38,6 +38,7 @@ import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 
 export default function Index() {
@@ -71,6 +72,7 @@ export default function Index() {
     retrocesso: stats.recomendacoesRetrocesso,
     emAndamento: 0,
   };
+  const totalAtendidasDashboard = dashboardStatusData.cumprido + dashboardStatusData.parcial;
 
   // Build per-article summary using SAME sources as detailed panels
   const artigosSummary = useMemo(() => {
@@ -90,17 +92,7 @@ export default function Index() {
       const artRecs = allLacunas.filter(r => {
         const raw = (r as any).artigos_convencao;
         const explicit = Array.isArray(raw)
-          ? raw.map((v: string) => {
-              const u = String(v || '').toUpperCase().trim();
-              if (u.includes('VII')) return 'VII';
-              if (u.includes('VI')) return 'VI';
-              if (u.includes('V')) return 'V';
-              if (u.includes('IV')) return 'IV';
-              if (u.includes('III')) return 'III';
-              if (u.includes('II')) return 'II';
-              if (u.includes('I')) return 'I';
-              return null;
-            }).filter(Boolean) as ArtigoConvencao[]
+          ? raw.map(normalizeArticleTag).filter(Boolean) as ArtigoConvencao[]
           : [];
         const arts = explicit.length > 0
           ? [...new Set(explicit)]
@@ -258,7 +250,7 @@ export default function Index() {
         <StatCard
           title="Recomendações ONU"
           value={isLoading ? '...' : stats.totalRecomendacoes}
-          subtitle={`${dashboardStatusData.cumprido} classificadas como cumpridas`}
+          subtitle={isLoading ? '...' : `${dashboardStatusData.cumprido} cumpridas estritas · ${totalAtendidasDashboard} atendidas/parciais`}
           icon={AlertTriangle}
           variant="warning"
           sourceInfo={{ label: 'CERD/C/BRA/CO/18-20 — OHCHR', url: 'https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FBRA%2FCO%2F18-20&Lang=en' }}

@@ -13,6 +13,7 @@ import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosI
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -28,15 +29,7 @@ const eixoLabels: Record<string, string> = {
 };
 
 function normalizeArticle(raw: string): ArtigoConvencao | null {
-  const value = String(raw || '').toUpperCase().trim();
-  if (value.includes('VII')) return 'VII';
-  if (value.includes('VI')) return 'VI';
-  if (value.includes('V')) return 'V';
-  if (value.includes('IV')) return 'IV';
-  if (value.includes('III')) return 'III';
-  if (value.includes('II')) return 'II';
-  if (value.includes('I')) return 'I';
-  return null;
+  return normalizeArticleTag(raw);
 }
 
 function getArtigosFromRecomendacao(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): ArtigoConvencao[] {
