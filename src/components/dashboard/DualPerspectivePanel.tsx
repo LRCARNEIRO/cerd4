@@ -32,6 +32,7 @@ interface DualPerspectivePanelProps {
     totalRecs: number;
     cumpridas: number;
     parciais: number;
+    emAndamento: number;
     naoCumpridas: number;
     evolScore: number;
   }[];
@@ -39,17 +40,17 @@ interface DualPerspectivePanelProps {
 }
 
 const STATUS_COLORS = {
-  cumprido: 'hsl(145, 55%, 32%)',
-  parcial: 'hsl(45, 93%, 47%)',
-  emAndamento: 'hsl(210, 50%, 50%)',
-  naoCumprido: 'hsl(0, 72%, 50%)',
-  retrocesso: 'hsl(340, 70%, 50%)',
+  cumprido: 'hsl(var(--success))',
+  parcial: 'hsl(var(--warning))',
+  emAndamento: 'hsl(var(--info))',
+  naoCumprido: 'hsl(var(--destructive))',
+  retrocesso: 'hsl(var(--chart-4))',
 };
 
 const EVOL_COLORS = {
-  evolucao: 'hsl(145, 55%, 32%)',
-  estagnacao: 'hsl(45, 93%, 47%)',
-  retrocesso: 'hsl(0, 72%, 50%)',
+  evolucao: 'hsl(var(--success))',
+  estagnacao: 'hsl(var(--warning))',
+  retrocesso: 'hsl(var(--destructive))',
 };
 
 export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary, isLoading }: DualPerspectivePanelProps) {
@@ -220,9 +221,13 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
             Através do atendimento (ou não) às recomendações e da evolução (ou não) das evidências, 
             é possível avaliar como cada artigo se encontra no período 2018–2025.
           </p>
+          <p className="text-[10px] text-muted-foreground mb-4">
+            Na badge de esforço, o percentual considera <strong>recomendações atendidas = cumpridas + parciais</strong>; itens em andamento aparecem no detalhamento gerencial.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {artigosSummary.map(art => {
-              const pctCumpridas = art.totalRecs > 0 ? Math.round((art.cumpridas / art.totalRecs) * 100) : 0;
+              const atendidas = art.cumpridas + art.parciais;
+              const pctCumpridas = art.totalRecs > 0 ? Math.round((atendidas / art.totalRecs) * 100) : 0;
               const evolLabel = art.evolScore >= 60 ? 'Evolução' : art.evolScore >= 35 ? 'Estagnação' : 'Retrocesso';
               const evolColorClass = art.evolScore >= 60 ? 'bg-success text-success-foreground' : art.evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
               const statusColorClass = pctCumpridas >= 60 ? 'bg-success/15 text-success border-success/30' : pctCumpridas >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
@@ -251,7 +256,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                   <div className="flex items-center gap-2 mt-1.5">
                     <Progress value={pctCumpridas} className="h-1.5 flex-1" />
                     <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                      {art.cumpridas}/{art.totalRecs} rec.
+                      {atendidas}/{art.totalRecs} atend.
                     </span>
                   </div>
                 </div>

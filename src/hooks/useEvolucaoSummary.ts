@@ -5,19 +5,12 @@ import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { getSafeIndicadores } from '@/utils/inferArtigosIndicador';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 const GENERIC_STOPS = ['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal', 'estado', 'governo', 'medida', 'direito', 'parte', 'comite', 'sobre', 'contra', 'entre', 'todas', 'todos', 'forma', 'podem', 'grupo', 'populacao', 'pessoa', 'acoes', 'acordo', 'ainda', 'alem', 'outro', 'outras', 'outros', 'sendo', 'relacao', 'numero', 'dados'];
 
 function normalizeArticle(raw: string): ArtigoConvencao | null {
-  const v = String(raw || '').toUpperCase().trim();
-  if (v.includes('VII')) return 'VII';
-  if (v.includes('VI')) return 'VI';
-  if (v.includes('V')) return 'V';
-  if (v.includes('IV')) return 'IV';
-  if (v.includes('III')) return 'III';
-  if (v.includes('II')) return 'II';
-  if (v.includes('I')) return 'I';
-  return null;
+  return normalizeArticleTag(raw);
 }
 
 function getArtigos(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): ArtigoConvencao[] {

@@ -38,6 +38,7 @@ import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 
 export default function Index() {
@@ -58,13 +59,27 @@ export default function Index() {
   const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
   const { summary: evolSummary, isLoading: loadingEvol } = useEvolucaoSummary();
+  const dashboardStatusData = sensorReady ? {
+    cumprido: sensorSummary.statusReclassificado.cumprido,
+    parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
+    naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
+    retrocesso: sensorSummary.statusReclassificado.retrocesso,
+    emAndamento: sensorSummary.statusReclassificado.em_andamento || 0,
+  } : {
+    cumprido: stats.recomendacoesCumpridas,
+    parcial: stats.recomendacoesParciais,
+    naoCumprido: stats.recomendacoesNaoCumpridas,
+    retrocesso: stats.recomendacoesRetrocesso,
+    emAndamento: 0,
+  };
+  const totalAtendidasDashboard = dashboardStatusData.cumprido + dashboardStatusData.parcial;
 
   // Build per-article summary using SAME sources as detailed panels
   const artigosSummary = useMemo(() => {
     if (!allLacunas || !allOrcamento || !allIndicadores || !allNormativos) {
       return ARTIGOS_CONVENCAO.map(a => ({
         numero: a.numero, titulo: a.titulo, totalRecs: 0,
-        cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0,
+        cumpridas: 0, parciais: 0, emAndamento: 0, naoCumpridas: 0, evolScore: 0,
       }));
     }
 
@@ -77,17 +92,7 @@ export default function Index() {
       const artRecs = allLacunas.filter(r => {
         const raw = (r as any).artigos_convencao;
         const explicit = Array.isArray(raw)
-          ? raw.map((v: string) => {
-              const u = String(v || '').toUpperCase().trim();
-              if (u.includes('VII')) return 'VII';
-              if (u.includes('VI')) return 'VI';
-              if (u.includes('V')) return 'V';
-              if (u.includes('IV')) return 'IV';
-              if (u.includes('III')) return 'III';
-              if (u.includes('II')) return 'II';
-              if (u.includes('I')) return 'I';
-              return null;
-            }).filter(Boolean) as ArtigoConvencao[]
+          ? raw.map(normalizeArticleTag).filter(Boolean) as ArtigoConvencao[]
           : [];
         const arts = explicit.length > 0
           ? [...new Set(explicit)]
@@ -95,12 +100,13 @@ export default function Index() {
         return arts.includes(artNum);
       });
 
-      let cumpridas = 0, parciais = 0, naoCumpridas = 0;
+      let cumpridas = 0, parciais = 0, emAndamento = 0, naoCumpridas = 0;
       artRecs.forEach(r => {
         const diag = diagnosticMap.get(r.id);
         const status = diag?.statusComputado ?? r.status_cumprimento;
         if (status === 'cumprido') cumpridas++;
-        else if (status === 'parcialmente_cumprido' || status === 'em_andamento') parciais++;
+        else if (status === 'parcialmente_cumprido') parciais++;
+        else if (status === 'em_andamento') emAndamento++;
         else naoCumpridas++;
       });
 
@@ -130,7 +136,7 @@ export default function Index() {
 
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
-        cumpridas, parciais, naoCumpridas, evolScore,
+        cumpridas, parciais, emAndamento, naoCumpridas, evolScore,
       };
     });
   }, [allLacunas, allOrcamento, allIndicadores, allNormativos, diagnosticMap]);
@@ -244,7 +250,7 @@ export default function Index() {
         <StatCard
           title="Recomendações ONU"
           value={isLoading ? '...' : stats.totalRecomendacoes}
-          subtitle={`${stats.recomendacoesCumpridas} cumpridas`}
+          subtitle={isLoading ? '...' : `${dashboardStatusData.cumprido} cumpridas estritas · ${totalAtendidasDashboard} atendidas/parciais`}
           icon={AlertTriangle}
           variant="warning"
           sourceInfo={{ label: 'CERD/C/BRA/CO/18-20 — OHCHR', url: 'https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FBRA%2FCO%2F18-20&Lang=en' }}
@@ -281,19 +287,7 @@ export default function Index() {
       {/* Dual Perspective Panel — Storytelling */}
       <div className="mb-6">
         <DualPerspectivePanel
-          statusData={sensorReady ? {
-            cumprido: sensorSummary.statusReclassificado.cumprido,
-            parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
-            naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
-            retrocesso: sensorSummary.statusReclassificado.retrocesso,
-            emAndamento: sensorSummary.statusReclassificado.em_andamento || 0,
-          } : {
-            cumprido: stats.recomendacoesCumpridas,
-            parcial: stats.recomendacoesParciais,
-            naoCumprido: stats.recomendacoesNaoCumpridas,
-            retrocesso: stats.recomendacoesRetrocesso,
-            emAndamento: 0,
-          }}
+          statusData={dashboardStatusData}
           evolucaoData={evolSummary}
           artigosSummary={artigosSummary}
           isLoading={isLoading || loadingEvol}

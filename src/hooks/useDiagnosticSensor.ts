@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { LacunaIdentificada, ComplianceStatus, ThematicAxis, FocalGroupType } from '@/hooks/useLacunasData';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
@@ -72,15 +73,7 @@ export interface DiagnosticSummary {
 }
 
 function normalizeArticle(raw: string): ArtigoConvencao | null {
-  const value = String(raw || '').toUpperCase().trim();
-  if (value.includes('VII')) return 'VII';
-  if (value.includes('VI')) return 'VI';
-  if (value.includes('V')) return 'V';
-  if (value.includes('IV')) return 'IV';
-  if (value.includes('III')) return 'III';
-  if (value.includes('II')) return 'II';
-  if (value.includes('I')) return 'I';
-  return null;
+  return normalizeArticleTag(raw);
 }
 
 function getRecomendacaoArtigos(rec: LacunaIdentificada): ArtigoConvencao[] {
