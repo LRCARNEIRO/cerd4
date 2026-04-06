@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
-import PlanoTrabalho from "./pages/PlanoTrabalho";
+
 import CommonCore from "./pages/CommonCore";
 import Estatisticas from "./pages/Estatisticas";
 import Orcamento from "./pages/Orcamento";
@@ -32,7 +32,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/ecossistema" element={<Ecossistema />} />
-          <Route path="/plano-trabalho" element={<PlanoTrabalho />} />
+          <Route path="/plano-trabalho" element={<Navigate to="/" replace />} />
           <Route path="/common-core" element={<CommonCore />} />
           <Route path="/estatisticas" element={<Estatisticas />} />
           <Route path="/orcamento" element={<Orcamento />} />
