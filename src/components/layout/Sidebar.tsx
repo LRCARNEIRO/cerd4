@@ -49,7 +49,7 @@ const navSections: NavSection[] = [
     defaultOpen: true,
     items: [
       { title: 'Painel Geral', href: '/', icon: LayoutDashboard },
-      { title: 'Plano de Trabalho', href: '/plano-trabalho', icon: ClipboardList },
+      
       { title: 'Common Core (77)', href: '/common-core', icon: BookOpen, badge: '77' },
       { title: 'Recomendações', href: '/recomendacoes', icon: AlertTriangle },
       { title: 'Artigos', href: '/artigos', icon: Scale },
