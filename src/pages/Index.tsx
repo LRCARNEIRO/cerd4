@@ -50,7 +50,7 @@ export default function Index() {
   const { data: allNormativos } = useQuery({
     queryKey: ['normativos-index'],
     queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('artigos_convencao');
+      const { data } = await supabase.from('documentos_normativos').select('titulo, artigos_convencao, categoria, secoes_impactadas, recomendacoes_impactadas');
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
