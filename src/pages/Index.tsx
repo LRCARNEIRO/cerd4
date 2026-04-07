@@ -36,7 +36,6 @@ import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
-import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 
 
 export default function Index() {
