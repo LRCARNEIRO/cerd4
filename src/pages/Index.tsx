@@ -9,9 +9,7 @@ import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
 import { cerdRecommendations } from '@/data/mockData';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtigosDocumentoNormativo, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
-import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { 
   ClipboardCheck, 
   AlertTriangle, 
@@ -47,18 +45,9 @@ export default function Index() {
   const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
   const { data: allLacunas } = useLacunasIdentificadas();
   const { data: allOrcamento } = useDadosOrcamentarios();
-  const { data: allIndicadores } = useIndicadoresAnaliticos();
-  const { data: allNormativos } = useQuery({
-    queryKey: ['normativos-index'],
-    queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('titulo, artigos_convencao, categoria, secoes_impactadas, recomendacoes_impactadas');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
   const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const criticalRecommendations = cerdRecommendations.filter(r => r.prioridade === 'critica');
-  const { summary: evolSummary, isLoading: loadingEvol } = useEvolucaoSummary();
+  const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol } = useEvolucaoSummary();
   const dashboardStatusData = sensorReady ? {
     cumprido: sensorSummary.statusReclassificado.cumprido,
     parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
@@ -74,21 +63,19 @@ export default function Index() {
   };
   const totalAtendidasDashboard = dashboardStatusData.cumprido + dashboardStatusData.parcial;
 
-  // Build per-article summary using SAME sources as detailed panels
+  // Mirror per-article data from existing panels — no local recalculation
   const artigosSummary = useMemo(() => {
-    if (!allLacunas || !allOrcamento || !allIndicadores || !allNormativos) {
+    if (!allLacunas || !evolArtigosSummary) {
       return ARTIGOS_CONVENCAO.map(a => ({
         numero: a.numero, titulo: a.titulo, totalRecs: 0,
         cumpridas: 0, parciais: 0, emAndamento: 0, naoCumpridas: 0, evolScore: 0,
       }));
     }
 
-    const dedupedInd = getSafeIndicadores(allIndicadores);
-
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
-      // === COMPLIANCE: from diagnostic sensor (same as Esforço Governamental) ===
+      // COMPLIANCE: from diagnostic sensor (same as Acompanhamento Gerencial)
       const artRecs = allLacunas.filter(r => {
         const raw = (r as any).artigos_convencao;
         const explicit = Array.isArray(raw)
@@ -110,36 +97,16 @@ export default function Index() {
         else naoCumpridas++;
       });
 
-      // === EVOLUTION: same logic as FarolEvolucaoPanel (35/35/30) ===
-      const artigoOrc = (allOrcamento as any[]).filter((o: any) => {
-        if (o.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosOrcamento(o).includes(artNum);
-      });
-      const programasCount = new Set(artigoOrc.map((o: any) => o.programa)).size;
-      const totalLiquidado = artigoOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
-
-      const artigoNorm = allNormativos.filter((d: any) => {
-        if (d.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosDocumentoNormativo(d).includes(artNum);
-      });
-
-      const artigoInd = dedupedInd.filter((ind: any) => {
-        if (ind.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosIndicador(ind).includes(artNum);
-      });
-
-      const indSummary = summarizeIndicatorEvolution(artigoInd);
-      const scoreOrc = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
-      const scoreNorm = Math.min(100, artigoNorm.length * 12);
-      const scoreInd = indSummary.score;
-      const evolScore = Math.round(scoreOrc * 0.35 + scoreNorm * 0.35 + scoreInd * 0.30);
+      // EVOLUTION: mirror from useEvolucaoSummary (same as Evolução Artigos panel)
+      const evolArt = evolArtigosSummary.find(e => e.numero === artNum);
+      const evolScore = evolArt?.evolScore ?? 0;
 
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
         cumpridas, parciais, emAndamento, naoCumpridas, evolScore,
       };
     });
-  }, [allLacunas, allOrcamento, allIndicadores, allNormativos, diagnosticMap]);
+  }, [allLacunas, evolArtigosSummary, diagnosticMap]);
 
 
 
