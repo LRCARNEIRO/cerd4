@@ -212,7 +212,7 @@ export function ArtigoAdherenceDrilldownDialog({ open, onOpenChange, artigo, rec
 
         {/* Methodology */}
         <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
-          <strong>Metodologia:</strong> Recomendações ONU (30%), Normativos (20%), Orçamento — contagem de ações (15%), Indicadores + Séries (25%), Amplitude de Fontes (10%). O orçamento não considera valores em R$.
+          <strong>Metodologia:</strong> Recomendações ONU cumpridas — taxa relativa (50%), Normativos (15%), Orçamento — contagem de ações (10%), Indicadores (15%), Amplitude de Fontes (10%). O orçamento não considera valores em R$.
         </div>
       </DialogContent>
     </Dialog>
