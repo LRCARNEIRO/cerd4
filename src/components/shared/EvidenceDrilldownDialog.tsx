@@ -53,9 +53,9 @@ export function EvidenceDrilldownDialog({
   allIndicadores, allOrcamento, allNormativos,
   overrides, onOverridesChange,
 }: EvidenceDrilldownDialogProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [addTab, setAddTab] = useState<'indicadores' | 'orcamento' | 'normativos'>('indicadores');
-  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [searchInd, setSearchInd] = useState('');
+  const [searchOrc, setSearchOrc] = useState('');
+  const [searchNorm, setSearchNorm] = useState('');
 
   const isEditable = !!onOverridesChange && !!overrides;
 
