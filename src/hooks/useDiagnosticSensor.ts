@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { LacunaIdentificada, ComplianceStatus, ThematicAxis, FocalGroupType } from '@/hooks/useLacunasData';
+import type { LacunaIdentificada, ComplianceStatus, ThematicAxis } from '@/hooks/useLacunasData';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
+import { getRecomendacaoKeywords, hasKeywordMatch } from '@/utils/recommendationKeywordMatching';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
@@ -105,93 +106,6 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
   return 'desconhecida';
 }
 
-function tokenize(text: string): string[] {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(word => word.length >= 5); // ← mínimo 5 letras (evita "terra", "dados", "saude")
-}
-
-// ── Stop-words: termos genéricos demais que causam falsos positivos ──
-const KEYWORD_STOPWORDS = new Set([
-  'sobre', 'entre', 'contra', 'desde', 'ainda', 'outros', 'outras',
-  'sendo', 'foram', 'todos', 'todas', 'nivel', 'forma', 'areas',
-  'acesso', 'medidas', 'especiais', 'nacional', 'brasil', 'federal',
-  'estado', 'governo', 'publico', 'publica', 'sistema', 'programa',
-  'politica', 'politicas', 'direitos', 'direito', 'humanos', 'povos',
-  'populacao', 'comunidades', 'combate', 'promocao', 'protecao',
-  'implementacao', 'garantir', 'inclui', 'impacto', 'social',
-]);
-
-/**
- * Keywords específicas por recomendação — vinculação precisa.
- * Fontes: tema + descricao_lacuna + texto_original_onu (quando em PT) + sinônimos temáticos.
- * Sem genéricos de eixo temático que capturam toda a base.
- */
-function getRecomendacaoKeywords(rec: LacunaIdentificada): string[] {
-  // 1. Extrair tokens de tema + descrição + texto original ONU (se em português)
-  let sourceText = `${rec.tema} ${rec.descricao_lacuna}`;
-  const textoOnu = (rec as any).texto_original_onu;
-  if (textoOnu && typeof textoOnu === 'string') {
-    // Incluir apenas se parece português (contém palavras PT comuns)
-    const isPt = /\b(que|para|como|mais|pelo|pela|dos|das|com|uma|são)\b/i.test(textoOnu);
-    if (isPt) sourceText += ` ${textoOnu}`;
-  }
-
-  const rawTokens = tokenize(sourceText)
-    .filter(t => !KEYWORD_STOPWORDS.has(t));
-
-  // 2. Sinônimos temáticos — expande termos que têm variantes em normativos/indicadores
-  const SYNONYMS: Record<string, string[]> = {
-    'homofobicas': ['lgbtfobia', 'orientacao sexual', 'homoafetivo'],
-    'transfobicas': ['transgenero', 'identidade genero', 'transexualidade'],
-    'quilombolas': ['quilombo', 'quilombola', 'remanescentes'],
-    'quilombola': ['quilombo', 'quilombolas', 'remanescentes'],
-    'homicidios': ['homicidio', 'letalidade', 'mortes violentas'],
-    'homicidio': ['homicidios', 'letalidade', 'mortes violentas'],
-    'moradia': ['habitacao', 'habitacional', 'deficit habitacional'],
-    'segregacao': ['segregacao residencial', 'favelas'],
-    'demarcacao': ['titulacao', 'regularizacao fundiaria'],
-    'titulacao': ['demarcacao', 'regularizacao fundiaria'],
-    'encarceramento': ['sistema prisional', 'penitenciario', 'custodia'],
-    'feminicidio': ['violencia domestica', 'violencia mulher'],
-    'trabalho infantil': ['erradicacao trabalho infantil'],
-    'discriminacao': ['preconceito', 'desigualdade'],
-    'indigena': ['indigenas', 'povos originarios'],
-    'indigenas': ['indigena', 'povos originarios'],
-    'racismo': ['racial', 'antirracista', 'racista'],
-  };
-
-  const synonymTokens: string[] = [];
-  rawTokens.forEach(t => {
-    if (SYNONYMS[t]) synonymTokens.push(...SYNONYMS[t]);
-  });
-
-  // 3. Keywords específicas por grupo focal (apenas termos discriminantes)
-  const grupoSpecific: Record<FocalGroupType, string[]> = {
-    negros: ['negros', 'negras', 'racial', 'racismo'],
-    indigenas: ['indigena', 'indigenas'],
-    quilombolas: ['quilombola', 'quilombolas', 'quilombo'],
-    ciganos: ['ciganos', 'cigano', 'romani'],
-    religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
-    juventude_negra: ['juventude negra', 'jovens negros'],
-    mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio'],
-    lgbtqia_negros: ['lgbtqia', 'transexual', 'homofobia', 'transfobia'],
-    pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
-    idosos_negros: ['idosos negros', 'idosas negras'],
-    geral: [],
-  };
-
-  return [...new Set([
-    ...rawTokens,
-    ...synonymTokens,
-    ...(grupoSpecific[rec.grupo_focal as FocalGroupType] || []),
-  ])];
-}
-
 // ── Main Hook ──────────────────────────────────────────────────────
 export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined) {
   // Fetch all three cross-reference sources in parallel
@@ -243,31 +157,26 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
   // ── Diagnose each recomendação ────────────────────────────────────
   // VINCULAÇÃO ESTRITA POR KEYWORDS: evidências são vinculadas APENAS
-  // por palavras-chave extraídas do tema/descrição/texto ONU da recomendação.
-  // NÃO usa artigos ICERD/eixo temático para buscar evidências (evita falsos positivos).
+  // por termos/frases extraídos do tema/descrição/texto ONU da recomendação.
+  // O match é por termo/frase inteira normalizada, sem substring solta.
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
     return recomendacoes.map(rec => {
-      const artigos = getRecomendacaoArtigos(rec);
       const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
-      // ── Vinculação ESTRITA por keywords apenas ──────────────────
-      const indicadoresVinculados = indicadores.filter(ind => {
-        const haystack = `${ind.nome} ${ind.categoria}`.toLowerCase();
-        return keywords.some(k => haystack.includes(k));
-      }).slice(0, 20);
+      const indicadoresVinculados = indicadores
+        .filter((ind) => hasKeywordMatch(`${ind.nome} ${ind.categoria}`, keywords))
+        .slice(0, 20);
 
-      const orcamentosVinculados = orcamento.filter(item => {
-        const haystack = `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`.toLowerCase();
-        return keywords.some(k => haystack.includes(k));
-      }).slice(0, 20);
+      const orcamentosVinculados = orcamento
+        .filter((item) => hasKeywordMatch(`${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`, keywords))
+        .slice(0, 20);
 
-      const normativosVinculados = normativos.filter(doc => {
-        const haystack = `${doc.titulo}`.toLowerCase();
-        return keywords.some(k => haystack.includes(k));
-      }).slice(0, 20);
+      const normativosVinculados = normativos
+        .filter((doc) => hasKeywordMatch(`${doc.titulo}`, keywords))
+        .slice(0, 20);
 
       const totalInd = indicadoresVinculados.length;
       const totalOrc = orcamentosVinculados.length;

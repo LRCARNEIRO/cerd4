@@ -55,13 +55,13 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               <Badge variant="outline" className="text-[10px]">v4</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O sistema utiliza <strong>vinculação estrita por palavras-chave</strong> para associar evidências 
-              (indicadores, orçamento e normativos) a cada recomendação. As palavras-chave são extraídas 
-              do <em>tema</em>, <em>descrição</em> e <em>texto original da ONU</em> de cada recomendação, 
-              aplicando sinônimos temáticos e filtragem de termos genéricos. A busca é realizada nos campos: 
-              nome/categoria de indicadores, programa/órgão/descritivo/público-alvo de ações orçamentárias, 
-              e título de normativos. <strong>Não</strong> utiliza artigos ICERD ou eixos temáticos genéricos 
-              para vincular evidências, evitando falsos positivos.
+              O sistema utiliza <strong>vinculação estrita por palavras-chave</strong> para associar evidências
+              (indicadores, orçamento e normativos) a cada recomendação. As palavras-chave são extraídas
+              do <em>tema</em>, <em>descrição</em> e <em>texto original da ONU</em>, com sinônimos temáticos e
+              filtro de termos jurídicos/genéricos. O cruzamento é feito por <strong>termo ou frase inteira normalizada</strong>,
+              sem substring solta (ex.: <em>norma</em> não casa com <em>normal</em>). A busca é realizada nos campos:
+              nome/categoria de indicadores, programa/órgão/descritivo/público-alvo de ações orçamentárias
+              e título de normativos. <strong>Não</strong> utiliza artigos ICERD ou eixos temáticos genéricos.
             </p>
 
             {showSensor && (
