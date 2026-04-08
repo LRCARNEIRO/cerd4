@@ -13,11 +13,10 @@ interface MethodologyPanelProps {
 }
 
 const progressCategories = [
-  { label: 'Cumprido', weight: 'Score ≥ 80', color: 'bg-emerald-500', desc: 'Cobertura ampla: 5+ indicadores, 3+ normativos e ações orçamentárias com boa execução' },
-  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 55', color: 'bg-amber-500', desc: 'Cobertura parcial: 2-4 indicadores, 1-2 normativos ou orçamento com execução moderada' },
-  { label: 'Em Andamento', weight: 'Score ≥ 35', color: 'bg-blue-500', desc: 'Evidências iniciais: ao menos 1 indicador ou normativo vinculado por coerência temática' },
-  { label: 'Não Cumprido', weight: 'Score ≥ 15', color: 'bg-red-500', desc: 'Evidências mínimas ou ausentes nas 3 dimensões (indicadores, orçamento, normativos)' },
-  { label: 'Retrocesso', weight: 'Score < 15', color: 'bg-destructive', desc: 'Nenhuma evidência relevante e indicadores com tendência de piora comprovada' },
+  { label: 'Cumprido', weight: 'Score ≥ 75', color: 'bg-emerald-500', desc: 'Cobertura ampla: 5+ indicadores, 3+ normativos, 3+ ações orçamentárias vinculadas' },
+  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 50', color: 'bg-amber-500', desc: 'Cobertura parcial: 2-4 indicadores, 1-2 normativos ou ações orçamentárias' },
+  { label: 'Em Andamento', weight: 'Score ≥ 25', color: 'bg-blue-500', desc: 'Evidências iniciais: ao menos 1 indicador, normativo ou ação orçamentária vinculada' },
+  { label: 'Não Cumprido', weight: 'Score < 25', color: 'bg-red-500', desc: 'Evidências mínimas ou ausentes nas 3 dimensões (indicadores, orçamento, normativos)' },
 ];
 
 const aderenciaWeights = [
@@ -53,7 +52,7 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             <div className="flex items-center gap-2 mb-1">
               <Scale className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground">Política de Conformidade Equilibrada</span>
-              <Badge variant="outline" className="text-[10px]">v5</Badge>
+              <Badge variant="outline" className="text-[10px]">v6</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               O sistema utiliza <strong>vinculação híbrida e auditável por palavras-chave</strong> para associar evidências
@@ -121,7 +120,8 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras, com exceções curtas relevantes como raça) → filtro de stop-words → 
               expansão por sinônimos temáticos + expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada nos campos de evidências.
               Recomendações com grupo focal exigem sinal focal explícito para evitar falsos positivos.
-              Escala de indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento: execução média × 1.3, penalização para dotações simbólicas (&lt;5%).
+              Escala de indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento (contagem): 1=40, 2=55, 3=70, 6+=85, 10+=100.
+              Análise de execução financeira e tendência de indicadores pertence ao Motor de Evolução (Produtos &gt; Conclusões).
             </p>
           </CardContent>
         </Card>
