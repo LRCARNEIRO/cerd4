@@ -147,7 +147,7 @@ function useCountStatSeriesPerArticle() {
 /**
  * Infer which articles a normative document covers based on secoes_impactadas
  */
-function inferArtigosNormativo(doc: DocumentoNormativo): ArtigoConvencao[] {
+function inferArtigosNormativo(doc: any): ArtigoConvencao[] {
   return inferArtigosDocumentoNormativo(doc as Parameters<typeof inferArtigosDocumentoNormativo>[0]);
 }
 
