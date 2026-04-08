@@ -259,6 +259,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         ? 'Nenhum indicador vinculado — sem base estatística disponível.'
         : `${totalInd} indicador(es) vinculado(s) por coerência temática. Score de cobertura: ${scoreInd}/100.`;
 
+      // Tendências informativas (não afetam score de esforço, mas são exibidas)
+      const tendencias = finalIndicadores.map(i => inferTendencia(i));
+      const pioram = tendencias.filter(t => t === 'piora').length;
+      const melhoram = tendencias.filter(t => t === 'melhora').length;
+      const estaveis = tendencias.filter(t => t === 'estavel').length;
+
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
         signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
