@@ -11,7 +11,7 @@ import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
-import { EvidenceDrilldownDialog } from '@/components/shared/EvidenceDrilldownDialog';
+import { EvidenceDrilldownDialog, emptyOverride, type EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 
 const eixoLabels: Record<string, string> = {
