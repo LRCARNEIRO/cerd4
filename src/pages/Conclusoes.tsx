@@ -604,59 +604,7 @@ export default function Conclusoes() {
               </div>
             </TabsContent>
 
-            {/* ABA: LACUNAS */}
-            <TabsContent value="lacunas">
-              <div className="flex justify-end mb-3">
-                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('lacuna_persistente', 'Lacunas Persistentes')} className="gap-1">
-                  <Printer className="w-3 h-3" /> Gerar PDF
-                </Button>
-              </div>
-              <div className="space-y-4">
-                {conclusoesAgrupadas.lacuna_persistente.length === 0 ? (
-                  <EmptyState message="Nenhuma lacuna persistente identificada." />
-                ) : (
-                  conclusoesAgrupadas.lacuna_persistente.map((c) => (
-                    <ConclusaoCard key={c.id} conclusao={c} />
-                  ))
-                )}
-              </div>
-            </TabsContent>
-
-            {/* ABA: AVANÇOS */}
-            <TabsContent value="avancos">
-              <div className="flex justify-end mb-3">
-                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('avanco', 'Avanços Identificados')} className="gap-1">
-                  <Printer className="w-3 h-3" /> Gerar PDF
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {conclusoesAgrupadas.avanco.length === 0 ? (
-                  <EmptyState message="Nenhum avanço identificado." />
-                ) : (
-                  conclusoesAgrupadas.avanco.map((c) => (
-                    <ConclusaoCard key={c.id} conclusao={c} />
-                  ))
-                )}
-              </div>
-            </TabsContent>
-
-            {/* ABA: RETROCESSOS */}
-            <TabsContent value="retrocessos">
-              <div className="flex justify-end mb-3">
-                <Button variant="outline" size="sm" onClick={() => gerarPDFConclusoes('retrocesso', 'Retrocessos Identificados')} className="gap-1">
-                  <Printer className="w-3 h-3" /> Gerar PDF
-                </Button>
-              </div>
-              <div className="space-y-4">
-                {conclusoesAgrupadas.retrocesso.length === 0 ? (
-                  <EmptyState message="Nenhum retrocesso identificado." />
-                ) : (
-                  conclusoesAgrupadas.retrocesso.map((c) => (
-                    <ConclusaoCard key={c.id} conclusao={c} />
-                  ))
-                )}
-              </div>
-            </TabsContent>
+            {/* Abas Lacunas, Avanços e Retrocessos removidas */}
 
             {/* ABA: FAROL DE EVOLUÇÃO */}
             <TabsContent value="farol">
