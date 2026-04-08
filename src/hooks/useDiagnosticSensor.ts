@@ -245,24 +245,25 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
+      // ESFORÇO GOVERNAMENTAL: mede cobertura (quantos indicadores existem),
+      // NÃO tendência (que pertence ao Motor de Evolução).
+      let scoreInd = 0;
+      if (totalInd >= 8) scoreInd = 100;
+      else if (totalInd >= 5) scoreInd = 85;
+      else if (totalInd >= 3) scoreInd = 70;
+      else if (totalInd >= 2) scoreInd = 55;
+      else if (totalInd >= 1) scoreInd = 40;
+      else scoreInd = 5;
+
+      const justInd = totalInd === 0
+        ? 'Nenhum indicador vinculado — sem base estatística disponível.'
+        : `${totalInd} indicador(es) vinculado(s) por coerência temática. Score de cobertura: ${scoreInd}/100.`;
+
+      // Tendências informativas (não afetam score de esforço, mas são exibidas)
       const tendencias = finalIndicadores.map(i => inferTendencia(i));
       const pioram = tendencias.filter(t => t === 'piora').length;
       const melhoram = tendencias.filter(t => t === 'melhora').length;
       const estaveis = tendencias.filter(t => t === 'estavel').length;
-
-      let scoreInd = 50;
-      if (totalInd > 0) {
-        const ratioMelhora = melhoram / totalInd;
-        const ratioPiora = pioram / totalInd;
-        scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
-        scoreInd = Math.max(0, Math.min(100, scoreInd));
-      } else {
-        scoreInd = 10;
-      }
-
-      const justInd = totalInd === 0
-        ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es) vinculado(s) por coerência temática: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
@@ -330,11 +331,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const PESO_NORM = 0.30;
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // ── CAP PIORA: se indicadores pioram > melhoram, teto = 55 (Parcial) ──
-      const pioraCapped = pioram > melhoram && pioram > 0;
-      if (pioraCapped && scoreGlobal > 55) {
-        scoreGlobal = 55;
-      }
+      // Nota: Tendência dos indicadores NÃO afeta o score de Esforço Governamental.
+      // A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).
 
       // ── STATUS COMPUTADO ──
       let statusComputado: ComplianceStatus;
@@ -365,8 +363,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
-        pioraCapped ? `⚠️ CAP PIORA ATIVO: score limitado a 55 (indicadores em piora > melhora)` : '',
         ``,
+        `Nota: O score de indicadores mede COBERTURA (existência de dados vinculados), não tendência.`,
+        `A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).`,
         `Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso`,
       ].filter(Boolean).join('\n');
 
