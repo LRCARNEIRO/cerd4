@@ -1,166 +1,507 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3 } from 'lucide-react';
-import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, X } from 'lucide-react';
+import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
+import { useState, useMemo } from 'react';
 
+// ── Override types ─────────────────────────────────────────────
+export interface EvidenceOverride {
+  removedIndicadores: string[];   // nomes removed
+  removedOrcamento: string[];     // `${programa}|${orgao}|${ano}` keys removed
+  removedNormativos: string[];    // titulos removed
+  addedIndicadores: LinkedIndicador[];
+  addedOrcamento: LinkedOrcamento[];
+  addedNormativos: LinkedNormativo[];
+}
+
+export type EvidenceOverrides = Record<string, EvidenceOverride>;
+
+export function emptyOverride(): EvidenceOverride {
+  return { removedIndicadores: [], removedOrcamento: [], removedNormativos: [], addedIndicadores: [], addedOrcamento: [], addedNormativos: [] };
+}
+
+function orcKey(o: LinkedOrcamento) {
+  return `${o.programa}|${o.orgao}|${o.ano}`;
+}
+
+// ── Props ──────────────────────────────────────────────────────
 interface EvidenceDrilldownDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   paragrafo: string;
   tema: string;
   diagnostic: RecomendacaoDiagnostic | undefined;
+  recomendacaoId?: string;
+  // Full databases for add-search
+  allIndicadores?: any[];
+  allOrcamento?: any[];
+  allNormativos?: any[];
+  // Override management
+  overrides?: EvidenceOverride;
+  onOverridesChange?: (override: EvidenceOverride) => void;
 }
 
-export function EvidenceDrilldownDialog({ open, onOpenChange, paragrafo, tema, diagnostic }: EvidenceDrilldownDialogProps) {
+export function EvidenceDrilldownDialog({
+  open, onOpenChange, paragrafo, tema, diagnostic,
+  recomendacaoId,
+  allIndicadores, allOrcamento, allNormativos,
+  overrides, onOverridesChange,
+}: EvidenceDrilldownDialogProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [addTab, setAddTab] = useState<'indicadores' | 'orcamento' | 'normativos'>('indicadores');
+  const [showAddPanel, setShowAddPanel] = useState(false);
+
   if (!diagnostic) return null;
+
+  const isEditable = !!onOverridesChange && !!overrides;
 
   const { auditoria, linkedIndicadores, linkedOrcamento, linkedNormativos } = diagnostic;
 
+  // ── Effective lists (with overrides applied) ──
+  const effectiveIndicadores = useMemo(() => {
+    if (!overrides) return linkedIndicadores;
+    const base = linkedIndicadores.filter(i => !overrides.removedIndicadores.includes(i.nome));
+    const added = overrides.addedIndicadores.filter(a => !base.some(b => b.nome === a.nome));
+    return [...base, ...added];
+  }, [linkedIndicadores, overrides]);
+
+  const effectiveOrcamento = useMemo(() => {
+    if (!overrides) return linkedOrcamento;
+    const base = linkedOrcamento.filter(o => !overrides.removedOrcamento.includes(orcKey(o)));
+    const added = overrides.addedOrcamento.filter(a => !base.some(b => orcKey(b) === orcKey(a)));
+    return [...base, ...added];
+  }, [linkedOrcamento, overrides]);
+
+  const effectiveNormativos = useMemo(() => {
+    if (!overrides) return linkedNormativos;
+    const base = linkedNormativos.filter(n => !overrides.removedNormativos.includes(n.titulo));
+    const added = overrides.addedNormativos.filter(a => !base.some(b => b.titulo === a.titulo));
+    return [...base, ...added];
+  }, [linkedNormativos, overrides]);
+
+  // ── Search results ──
+  const searchResults = useMemo(() => {
+    if (!searchTerm || searchTerm.length < 3) return { indicadores: [], orcamento: [], normativos: [] };
+    const term = searchTerm.toLowerCase();
+
+    const indicadores = (allIndicadores || [])
+      .filter((i: any) => {
+        const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
+        return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);
+      })
+      .slice(0, 15)
+      .map((i: any) => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados }));
+
+    const orcamento = (allOrcamento || [])
+      .filter((o: any) => {
+        const text = `${o.programa} ${o.orgao} ${o.descritivo || ''}`.toLowerCase();
+        const key = `${o.programa}|${o.orgao}|${o.ano}`;
+        return text.includes(term) && !effectiveOrcamento.some(e => orcKey(e) === key);
+      })
+      .slice(0, 15)
+      .map((o: any) => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago }));
+
+    const normativos = (allNormativos || [])
+      .filter((n: any) => {
+        const text = `${n.titulo} ${n.categoria || ''}`.toLowerCase();
+        return text.includes(term) && !effectiveNormativos.some(e => e.titulo === n.titulo);
+      })
+      .slice(0, 15)
+      .map((n: any) => ({ titulo: n.titulo, status: n.status }));
+
+    return { indicadores, orcamento, normativos };
+  }, [searchTerm, allIndicadores, allOrcamento, allNormativos, effectiveIndicadores, effectiveOrcamento, effectiveNormativos, addTab]);
+
+  // ── Handlers ──
+  const removeIndicador = (nome: string) => {
+    if (!overrides || !onOverridesChange) return;
+    const isAdded = overrides.addedIndicadores.some(a => a.nome === nome);
+    if (isAdded) {
+      onOverridesChange({ ...overrides, addedIndicadores: overrides.addedIndicadores.filter(a => a.nome !== nome) });
+    } else {
+      onOverridesChange({ ...overrides, removedIndicadores: [...overrides.removedIndicadores, nome] });
+    }
+  };
+
+  const removeOrcamento = (key: string) => {
+    if (!overrides || !onOverridesChange) return;
+    const isAdded = overrides.addedOrcamento.some(a => orcKey(a) === key);
+    if (isAdded) {
+      onOverridesChange({ ...overrides, addedOrcamento: overrides.addedOrcamento.filter(a => orcKey(a) !== key) });
+    } else {
+      onOverridesChange({ ...overrides, removedOrcamento: [...overrides.removedOrcamento, key] });
+    }
+  };
+
+  const removeNormativo = (titulo: string) => {
+    if (!overrides || !onOverridesChange) return;
+    const isAdded = overrides.addedNormativos.some(a => a.titulo === titulo);
+    if (isAdded) {
+      onOverridesChange({ ...overrides, addedNormativos: overrides.addedNormativos.filter(a => a.titulo !== titulo) });
+    } else {
+      onOverridesChange({ ...overrides, removedNormativos: [...overrides.removedNormativos, titulo] });
+    }
+  };
+
+  const addIndicador = (ind: LinkedIndicador) => {
+    if (!overrides || !onOverridesChange) return;
+    // If it was previously removed, un-remove it
+    if (overrides.removedIndicadores.includes(ind.nome)) {
+      onOverridesChange({ ...overrides, removedIndicadores: overrides.removedIndicadores.filter(n => n !== ind.nome) });
+    } else {
+      onOverridesChange({ ...overrides, addedIndicadores: [...overrides.addedIndicadores, ind] });
+    }
+  };
+
+  const addOrcamentoItem = (orc: LinkedOrcamento) => {
+    if (!overrides || !onOverridesChange) return;
+    const key = orcKey(orc);
+    if (overrides.removedOrcamento.includes(key)) {
+      onOverridesChange({ ...overrides, removedOrcamento: overrides.removedOrcamento.filter(k => k !== key) });
+    } else {
+      onOverridesChange({ ...overrides, addedOrcamento: [...overrides.addedOrcamento, orc] });
+    }
+  };
+
+  const addNormativoItem = (norm: LinkedNormativo) => {
+    if (!overrides || !onOverridesChange) return;
+    if (overrides.removedNormativos.includes(norm.titulo)) {
+      onOverridesChange({ ...overrides, removedNormativos: overrides.removedNormativos.filter(t => t !== norm.titulo) });
+    } else {
+      onOverridesChange({ ...overrides, addedNormativos: [...overrides.addedNormativos, norm] });
+    }
+  };
+
+  const hasOverrides = overrides && (
+    overrides.removedIndicadores.length > 0 || overrides.removedOrcamento.length > 0 || overrides.removedNormativos.length > 0 ||
+    overrides.addedIndicadores.length > 0 || overrides.addedOrcamento.length > 0 || overrides.addedNormativos.length > 0
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-base flex items-center gap-2">
             §{paragrafo} — {tema}
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Evidências cruzadas que fundamentam o status computado
+            {isEditable
+              ? 'Evidências vinculadas — remova ou adicione itens para ajustar a avaliação.'
+              : 'Evidências cruzadas que fundamentam o status computado'}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Score Summary */}
-        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-          <div className="text-center">
-            <p className="text-2xl font-bold">{auditoria.scoreGlobal}</p>
-            <p className="text-[10px] text-muted-foreground">Score</p>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <StatusBadge status={auditoria.statusComputado} size="sm" />
-          <div className="flex-1 text-xs text-muted-foreground">
-            Indicadores: {auditoria.indicadores.score}/100 (40%) · 
-            Orçamento: {auditoria.orcamento.score}/100 (30%) · 
-            Normativos: {auditoria.normativos.score}/100 (30%)
-          </div>
-        </div>
+        <ScrollArea className="flex-1 pr-2">
+          <div className="space-y-4">
+            {/* Score Summary */}
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{auditoria.scoreGlobal}</p>
+                <p className="text-[10px] text-muted-foreground">Score</p>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <StatusBadge status={auditoria.statusComputado} size="sm" />
+              <div className="flex-1 text-xs text-muted-foreground">
+                Indicadores: {auditoria.indicadores.score}/100 (40%) ·
+                Orçamento: {auditoria.orcamento.score}/100 (30%) ·
+                Normativos: {auditoria.normativos.score}/100 (30%)
+              </div>
+              {hasOverrides && (
+                <Badge variant="secondary" className="text-[10px] bg-accent/20 text-accent">
+                  Ajustes manuais aplicados
+                </Badge>
+              )}
+            </div>
 
-        {/* Indicadores */}
-        <div>
-          <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
-            <BarChart3 className="w-4 h-4 text-chart-1" />
-            Indicadores ({linkedIndicadores.length})
-          </h4>
-          {linkedIndicadores.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Nenhum indicador vinculado</p>
-          ) : (
-            <div className="rounded-md border overflow-auto max-h-48">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-[10px]">Indicador</TableHead>
-                    <TableHead className="text-[10px] w-24">Categoria</TableHead>
-                    <TableHead className="text-[10px] w-24">Tendência</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {linkedIndicadores.map((ind, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="text-xs">{ind.nome}</TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">{ind.categoria}</TableCell>
-                      <TableCell>
-                        {ind.tendencia === 'crescente' ? (
-                          <span className="flex items-center gap-1 text-[10px] text-success"><TrendingUp className="w-3 h-3" /> Crescente</span>
-                        ) : ind.tendencia === 'decrescente' ? (
-                          <span className="flex items-center gap-1 text-[10px] text-destructive"><TrendingDown className="w-3 h-3" /> Decrescente</span>
+            {/* Indicadores */}
+            <div>
+              <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
+                <BarChart3 className="w-4 h-4 text-chart-1" />
+                Indicadores ({effectiveIndicadores.length})
+              </h4>
+              {effectiveIndicadores.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">Nenhum indicador vinculado</p>
+              ) : (
+                <div className="rounded-md border overflow-auto max-h-48">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-[10px]">Indicador</TableHead>
+                        <TableHead className="text-[10px] w-24">Categoria</TableHead>
+                        <TableHead className="text-[10px] w-24">Tendência</TableHead>
+                        {isEditable && <TableHead className="text-[10px] w-10" />}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {effectiveIndicadores.map((ind, i) => {
+                        const isManual = overrides?.addedIndicadores.some(a => a.nome === ind.nome);
+                        return (
+                          <TableRow key={i} className={isManual ? 'bg-accent/10' : ''}>
+                            <TableCell className="text-xs">
+                              {ind.nome}
+                              {isManual && <Badge variant="outline" className="ml-1 text-[8px] px-1 py-0 text-accent">manual</Badge>}
+                            </TableCell>
+                            <TableCell className="text-[10px] text-muted-foreground">{ind.categoria}</TableCell>
+                            <TableCell>
+                              {ind.tendencia === 'crescente' ? (
+                                <span className="flex items-center gap-1 text-[10px] text-success"><TrendingUp className="w-3 h-3" /> Crescente</span>
+                              ) : ind.tendencia === 'decrescente' ? (
+                                <span className="flex items-center gap-1 text-[10px] text-destructive"><TrendingDown className="w-3 h-3" /> Decrescente</span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Minus className="w-3 h-3" /> {ind.tendencia || 'N/D'}</span>
+                              )}
+                            </TableCell>
+                            {isEditable && (
+                              <TableCell>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => removeIndicador(ind.nome)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-1">{auditoria.indicadores.justificativa}</p>
+            </div>
+
+            {/* Orçamento */}
+            <div>
+              <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
+                <DollarSign className="w-4 h-4 text-chart-2" />
+                Ações Orçamentárias ({effectiveOrcamento.length})
+              </h4>
+              {effectiveOrcamento.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">Nenhuma ação orçamentária vinculada</p>
+              ) : (
+                <div className="rounded-md border overflow-auto max-h-48">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-[10px]">Programa</TableHead>
+                        <TableHead className="text-[10px] w-28">Órgão</TableHead>
+                        <TableHead className="text-[10px] w-16">Ano</TableHead>
+                        <TableHead className="text-[10px] w-24">Pago</TableHead>
+                        {isEditable && <TableHead className="text-[10px] w-10" />}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {effectiveOrcamento.map((orc, i) => {
+                        const isManual = overrides?.addedOrcamento.some(a => orcKey(a) === orcKey(orc));
+                        return (
+                          <TableRow key={i} className={isManual ? 'bg-accent/10' : ''}>
+                            <TableCell className="text-xs">
+                              {orc.programa}
+                              {isManual && <Badge variant="outline" className="ml-1 text-[8px] px-1 py-0 text-accent">manual</Badge>}
+                            </TableCell>
+                            <TableCell className="text-[10px] text-muted-foreground">{orc.orgao}</TableCell>
+                            <TableCell className="text-[10px]">{orc.ano}</TableCell>
+                            <TableCell className="text-[10px]">
+                              {orc.pago ? `R$ ${(Number(orc.pago) / 1e6).toFixed(1)}M` : '—'}
+                            </TableCell>
+                            {isEditable && (
+                              <TableCell>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => removeOrcamento(orcKey(orc))}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-1">{auditoria.orcamento.justificativa}</p>
+            </div>
+
+            {/* Normativos */}
+            <div>
+              <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
+                <FileText className="w-4 h-4 text-chart-3" />
+                Normativos ({effectiveNormativos.length})
+              </h4>
+              {effectiveNormativos.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic">Nenhum normativo vinculado</p>
+              ) : (
+                <div className="rounded-md border overflow-auto max-h-48">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-[10px]">Título</TableHead>
+                        <TableHead className="text-[10px] w-24">Status</TableHead>
+                        {isEditable && <TableHead className="text-[10px] w-10" />}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {effectiveNormativos.map((norm, i) => {
+                        const isManual = overrides?.addedNormativos.some(a => a.titulo === norm.titulo);
+                        return (
+                          <TableRow key={i} className={isManual ? 'bg-accent/10' : ''}>
+                            <TableCell className="text-xs">
+                              {norm.titulo}
+                              {isManual && <Badge variant="outline" className="ml-1 text-[8px] px-1 py-0 text-accent">manual</Badge>}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-[10px]">{norm.status}</Badge>
+                            </TableCell>
+                            {isEditable && (
+                              <TableCell>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => removeNormativo(norm.titulo)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-1">{auditoria.normativos.justificativa}</p>
+            </div>
+
+            {/* Add Panel */}
+            {isEditable && (
+              <div className="border rounded-lg">
+                <button
+                  onClick={() => setShowAddPanel(!showAddPanel)}
+                  className="w-full flex items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 transition-colors"
+                >
+                  <Plus className="w-4 h-4 text-accent" />
+                  Adicionar evidência da base completa
+                  {showAddPanel && <X className="w-4 h-4 ml-auto" />}
+                </button>
+
+                {showAddPanel && (
+                  <div className="p-3 pt-0 space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar na base completa (mín. 3 caracteres)..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-9 text-sm"
+                      />
+                    </div>
+
+                    <Tabs value={addTab} onValueChange={(v) => setAddTab(v as any)}>
+                      <TabsList className="h-8">
+                        <TabsTrigger value="indicadores" className="text-xs h-7">
+                          📊 Indicadores ({searchResults.indicadores.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="orcamento" className="text-xs h-7">
+                          💰 Orçamento ({searchResults.orcamento.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="normativos" className="text-xs h-7">
+                          📋 Normativos ({searchResults.normativos.length})
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="indicadores">
+                        {searchTerm.length < 3 ? (
+                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
+                        ) : searchResults.indicadores.length === 0 ? (
+                          <p className="text-xs text-muted-foreground p-2">Nenhum indicador encontrado.</p>
                         ) : (
-                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Minus className="w-3 h-3" /> {ind.tendencia || 'N/D'}</span>
+                          <div className="rounded-md border max-h-40 overflow-auto">
+                            <Table>
+                              <TableBody>
+                                {searchResults.indicadores.map((ind: any, i: number) => (
+                                  <TableRow key={i}>
+                                    <TableCell className="text-xs">{ind.nome}</TableCell>
+                                    <TableCell className="text-[10px] text-muted-foreground w-20">{ind.categoria}</TableCell>
+                                    <TableCell className="w-10">
+                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addIndicador(ind)}>
+                                        <Plus className="w-3 h-3" />
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-          <p className="text-[10px] text-muted-foreground mt-1">{auditoria.indicadores.justificativa}</p>
-        </div>
+                      </TabsContent>
 
-        {/* Orçamento */}
-        <div>
-          <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
-            <DollarSign className="w-4 h-4 text-chart-2" />
-            Ações Orçamentárias ({linkedOrcamento.length})
-          </h4>
-          {linkedOrcamento.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Nenhuma ação orçamentária vinculada</p>
-          ) : (
-            <div className="rounded-md border overflow-auto max-h-48">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-[10px]">Programa</TableHead>
-                    <TableHead className="text-[10px] w-28">Órgão</TableHead>
-                    <TableHead className="text-[10px] w-16">Ano</TableHead>
-                    <TableHead className="text-[10px] w-24">Pago</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {linkedOrcamento.map((orc, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="text-xs">{orc.programa}</TableCell>
-                      <TableCell className="text-[10px] text-muted-foreground">{orc.orgao}</TableCell>
-                      <TableCell className="text-[10px]">{orc.ano}</TableCell>
-                      <TableCell className="text-[10px]">
-                        {orc.pago ? `R$ ${(Number(orc.pago) / 1e6).toFixed(1)}M` : '—'}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-          <p className="text-[10px] text-muted-foreground mt-1">{auditoria.orcamento.justificativa}</p>
-        </div>
+                      <TabsContent value="orcamento">
+                        {searchTerm.length < 3 ? (
+                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
+                        ) : searchResults.orcamento.length === 0 ? (
+                          <p className="text-xs text-muted-foreground p-2">Nenhuma ação orçamentária encontrada.</p>
+                        ) : (
+                          <div className="rounded-md border max-h-40 overflow-auto">
+                            <Table>
+                              <TableBody>
+                                {searchResults.orcamento.map((orc: any, i: number) => (
+                                  <TableRow key={i}>
+                                    <TableCell className="text-xs">{orc.programa}</TableCell>
+                                    <TableCell className="text-[10px] text-muted-foreground w-20">{orc.orgao}</TableCell>
+                                    <TableCell className="text-[10px] w-12">{orc.ano}</TableCell>
+                                    <TableCell className="w-10">
+                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addOrcamentoItem(orc)}>
+                                        <Plus className="w-3 h-3" />
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+                      </TabsContent>
 
-        {/* Normativos */}
-        <div>
-          <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
-            <FileText className="w-4 h-4 text-chart-3" />
-            Normativos ({linkedNormativos.length})
-          </h4>
-          {linkedNormativos.length === 0 ? (
-            <p className="text-xs text-muted-foreground italic">Nenhum normativo vinculado</p>
-          ) : (
-            <div className="rounded-md border overflow-auto max-h-48">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-[10px]">Título</TableHead>
-                    <TableHead className="text-[10px] w-24">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {linkedNormativos.map((norm, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="text-xs">{norm.titulo}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{norm.status}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-          <p className="text-[10px] text-muted-foreground mt-1">{auditoria.normativos.justificativa}</p>
-        </div>
+                      <TabsContent value="normativos">
+                        {searchTerm.length < 3 ? (
+                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
+                        ) : searchResults.normativos.length === 0 ? (
+                          <p className="text-xs text-muted-foreground p-2">Nenhum normativo encontrado.</p>
+                        ) : (
+                          <div className="rounded-md border max-h-40 overflow-auto">
+                            <Table>
+                              <TableBody>
+                                {searchResults.normativos.map((norm: any, i: number) => (
+                                  <TableRow key={i}>
+                                    <TableCell className="text-xs">{norm.titulo}</TableCell>
+                                    <TableCell className="w-10">
+                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addNormativoItem(norm)}>
+                                        <Plus className="w-3 h-3" />
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {/* Methodology note */}
-        <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
-          <strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso.
-          Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%.
-        </div>
+            {/* Methodology note */}
+            <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
+              <strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso.
+              Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%.
+              {isEditable && (
+                <span className="block mt-1"><strong>Nota:</strong> Ajustes manuais (inclusão/exclusão) são aplicados em tempo real e recalculam o status automaticamente.</span>
+              )}
+            </div>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
