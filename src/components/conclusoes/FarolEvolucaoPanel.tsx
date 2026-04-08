@@ -104,28 +104,28 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const indicadoresNeutros = indicadoresSummary.neutros;
 
       // ═══════════════════════════════════════════════════════
-      // SCORING — Evolução (Impacto Real) — Faixas quantitativas
+      // SCORING — Evolução (Resultados do Esforço)
       // ═══════════════════════════════════════════════════════
 
-      // Orçamento (0-100): faixas por quantidade de ações vinculadas
-      // 0=0, 1-2=20, 3-5=40, 6-10=60, 11-20=80, 21+=100
+      // Orçamento (0-100): faixas por R$ liquidado total
+      // Avalia se houve investimento real (resultado financeiro)
+      const liqBi = totalLiquidado / 1e9;
       let scoreOrcamento = 0;
-      if (acoesVinculadas >= 21) scoreOrcamento = 100;
-      else if (acoesVinculadas >= 11) scoreOrcamento = 80;
-      else if (acoesVinculadas >= 6) scoreOrcamento = 60;
-      else if (acoesVinculadas >= 3) scoreOrcamento = 40;
-      else if (acoesVinculadas >= 1) scoreOrcamento = 20;
+      if (liqBi >= 10) scoreOrcamento = 100;
+      else if (liqBi >= 5) scoreOrcamento = 80;
+      else if (liqBi >= 1) scoreOrcamento = 60;
+      else if (liqBi >= 0.1) scoreOrcamento = 40;
+      else if (totalLiquidado > 0) scoreOrcamento = 20;
 
-      // Normativa (0-100): escala degressiva (primeiros normativos valem mais)
-      // 1=15, 3=40, 6=65, 10=85, 15+=100
+      // Normativos (0-100): faixas por quantidade de instrumentos
       let scoreNormativa = 0;
-      if (normativosCount >= 15) scoreNormativa = 100;
-      else if (normativosCount >= 10) scoreNormativa = 85;
-      else if (normativosCount >= 6) scoreNormativa = 65;
-      else if (normativosCount >= 3) scoreNormativa = 40;
-      else if (normativosCount >= 1) scoreNormativa = 15;
+      if (normativosCount >= 10) scoreNormativa = 100;
+      else if (normativosCount >= 6) scoreNormativa = 75;
+      else if (normativosCount >= 3) scoreNormativa = 50;
+      else if (normativosCount >= 1) scoreNormativa = 25;
 
-      // Indicadores (0-100): já calculado rigorosamente no summarizeIndicatorEvolution
+      // Indicadores (0-100): % de indicadores com melhoria em relação ao total
+      // Favoráveis pontuam 100%, novos 40%, desfavoráveis penalizam 1:1
       const scoreIndicadores = indicadoresSummary.score;
 
       const scoreFarol = Math.round(
@@ -240,10 +240,10 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
           </p>
           <div className="mt-3 p-3 bg-muted/30 rounded-lg text-[10px] text-muted-foreground space-y-1">
             <p className="font-semibold text-xs text-foreground">Metodologia de Cálculo — Evolução por Artigo</p>
-            <p><strong>Score = Orçamento (35%) + Normativos (35%) + Indicadores (30%)</strong></p>
-            <p>• <strong>Orçamento (0-100):</strong> Faixas por qtde de ações: 1-2=20, 3-5=40, 6-10=60, 11-20=80, 21+=100.</p>
-            <p>• <strong>Normativos (0-100):</strong> Faixas por qtde: 1=15, 3=40, 6=65, 10=85, 15+=100.</p>
-            <p>• <strong>Indicadores (0-100):</strong> (favoráveis + novos×0.4 − desfavoráveis) / total × 100. Só melhoria comprovada pontua 100%; piora penaliza 1:1.</p>
+            <p><strong>Score = R$ Liquidado (35%) + Normativos (35%) + Indicadores com melhoria (30%)</strong></p>
+            <p>• <strong>R$ Liquidado (0-100):</strong> Faixas: &gt;0=20, ≥R$100mi=40, ≥R$1bi=60, ≥R$5bi=80, ≥R$10bi=100.</p>
+            <p>• <strong>Normativos (0-100):</strong> Faixas: 1=25, 3=50, 6=75, 10+=100.</p>
+            <p>• <strong>Indicadores (0-100):</strong> % com melhoria comprovada vs total. Novos contam 40%; piora penaliza 1:1.</p>
             <p>• <strong>Faixas:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
           </div>
         </CardContent>
