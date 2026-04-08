@@ -437,9 +437,9 @@ th{background:#f1f5f9}
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
-  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
   const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
   const badgeLabel = badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência';
+  const naoCumpridasTotal = a.lacunasNaoCumpridas + a.lacunasRetrocesso;
   return `
 <h2>Artigo ${a.numero} — ${a.titulo}</h2>
 <p>${a.tituloCompleto}</p>
@@ -448,7 +448,7 @@ ${analysis.map(a => {
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
-<tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ⏳ ${emAndamento} em andamento, ✗ ${a.lacunasNaoCumpridas} não cumprida(s), ↓ ${a.lacunasRetrocesso} retrocesso(s)</td></tr>
+<tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ✗ ${naoCumpridasTotal} não cumprida(s)</td></tr>
 <tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoProgramas}</td><td>Nº de ações/programas mapeados por palavras-chave</td></tr>
 <tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
 <tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
