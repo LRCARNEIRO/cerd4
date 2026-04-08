@@ -219,10 +219,9 @@ export function EvidenceDrilldownDialog({
               </div>
               <div className="h-8 w-px bg-border" />
               <StatusBadge status={auditoria.statusComputado} size="sm" />
-              <div className="flex-1 text-xs text-muted-foreground">
-                Indicadores: {auditoria.indicadores.score}/100 (40%) ·
-                Orçamento: {auditoria.orcamento.score}/100 (30%) ·
-                Normativos: {auditoria.normativos.score}/100 (30%)
+              <div className="flex-1 text-xs text-muted-foreground space-y-0.5">
+                <p>Ind: {effectiveIndicadores.length} evid. → {auditoria.indicadores.score} pts (×40%) · Orç: {effectiveOrcamentos.length} ações → {auditoria.orcamento.score} pts (×30%) · Norm: {effectiveNormativos.length} leis → {auditoria.normativos.score} pts (×30%)</p>
+                <p className="text-[10px]">Escala cobertura: 0=5 · 1=40 · 2=55 · 3=70 · 5+=85 · 8+=100 pts</p>
               </div>
               {hasOverrides && (
                 <Badge variant="secondary" className="text-[10px] bg-accent/20 text-accent">
