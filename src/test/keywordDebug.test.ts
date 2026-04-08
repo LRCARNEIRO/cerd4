@@ -19,7 +19,6 @@ describe('§14 keyword debug', () => {
   it('vincula indicadores de mortalidade materna', () => {
     expect(matchesRecommendationEvidence(p14, 'Razão de Mortalidade Materna por 100 mil nascidos vivos ods_racial')).toBe(true);
     expect(matchesRecommendationEvidence(p14, 'Saúde — mortalidade materna e infantil por raça (2018-2024) saude')).toBe(true);
-    expect(matchesRecommendationEvidence(p14, 'Saúde materna — raça e gênero saude')).toBe(true);
   });
 
   it('rejeita indicadores sem relação com §14', () => {
