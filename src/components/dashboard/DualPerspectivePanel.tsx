@@ -136,7 +136,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={statusChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value">
+                  <Pie data={statusChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
                     {statusChartData.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip
@@ -178,7 +178,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={evolChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value">
+                  <Pie data={evolChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
                     {evolChartData.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip

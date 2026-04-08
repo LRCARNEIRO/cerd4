@@ -2,33 +2,25 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
-import { useLacunasIdentificadas, useDadosOrcamentarios, useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
-import { useMemo } from 'react';
 
 export default function Artigos() {
-  const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats } = useAnalyticalInsights();
-  const { data: allLacunas } = useLacunasIdentificadas({});
-  const { diagnosticMap } = useDiagnosticSensor(allLacunas);
+  const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats, lacunas } = useAnalyticalInsights();
 
-  // Enrich lacunas with computed status
-  const enrichedLacunas = useMemo(() => {
-    if (!allLacunas) return [];
-    return allLacunas.map(l => {
-      const diag = diagnosticMap.get(l.id);
-      return { ...l, _computedStatus: diag?.statusComputado ?? l.status_cumprimento };
-    });
-  }, [allLacunas, diagnosticMap]);
-
-  const { data: allNormativos } = useQuery({
-    queryKey: ['normativos-artigos'],
-    queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('*');
-      return data || [];
-    },
+  const { data: normativosCount = 0 } = useQuery({
+    queryKey: ['normativos-artigos-count'],
     staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('documentos_normativos')
+        .select('id', { count: 'exact', head: true });
+      if (error) throw error;
+      return count || 0;
+    },
   });
 
   return (
@@ -47,12 +39,12 @@ export default function Artigos() {
         <IcerdAdherencePanel
           fiosCondutores={fiosCondutores}
           conclusoes={conclusoesDinamicas}
-          lacunas={enrichedLacunas}
+          lacunas={lacunas || []}
           orcamentoRecords={orcDados || []}
           indicadores={indicadores || []}
           stats={stats}
           respostas={respostas || []}
-          documentosNormativos={allNormativos || []}
+          documentosNormativosCount={normativosCount}
         />
       </div>
     </DashboardLayout>
