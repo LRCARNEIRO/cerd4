@@ -12,6 +12,7 @@ import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import { EvidenceDrilldownDialog } from '@/components/shared/EvidenceDrilldownDialog';
+import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -64,6 +65,7 @@ export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
   const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
+  const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
   const grouped = useMemo(() => {
     if (!recomendacoes) return { cerd: [] as typeof recomendacoes, rg: [] as typeof recomendacoes, durban: [] as typeof recomendacoes };
@@ -91,6 +93,13 @@ export function RelacaoRecomendacoesTab() {
   // Drilldown data
   const drilldownRec = recomendacoes?.find(r => r.id === drilldownId);
   const drilldownDiag = drilldownId ? diagnosticMap.get(drilldownId) : undefined;
+  const paragraphDialogRec = recomendacoes?.find(r => r.id === paragraphDialogId);
+
+  const getTextoIntegral = (l: { descricao_lacuna?: string | null; texto_original_onu?: string | null }) => {
+    const descricao = l.descricao_lacuna?.trim();
+    const textoOriginal = l.texto_original_onu?.trim();
+    return descricao || textoOriginal || '';
+  };
 
   const generateExportHTML = useCallback(() => {
     if (!recomendacoes) return '<html><body>Sem dados</body></html>';
@@ -238,7 +247,15 @@ ${renderRows(allItems)}
 
                   return (
                     <TableRow key={l.id}>
-                      <TableCell className="font-mono font-semibold text-xs">{l.paragrafo}</TableCell>
+                      <TableCell className="font-mono font-semibold text-xs">
+                        <button
+                          onClick={() => setParagraphDialogId(l.id)}
+                          className="underline-offset-2 hover:underline text-left"
+                          title="Clique para ver o texto integral do parágrafo"
+                        >
+                          {l.paragrafo}
+                        </button>
+                      </TableCell>
                       <TableCell className="text-sm">{l.tema}</TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-0.5">
@@ -319,6 +336,14 @@ ${renderRows(allItems)}
         paragrafo={drilldownRec?.paragrafo || ''}
         tema={drilldownRec?.tema || ''}
         diagnostic={drilldownDiag}
+      />
+
+      <ParagraphTextDialog
+        open={!!paragraphDialogId}
+        onOpenChange={(open) => { if (!open) setParagraphDialogId(null); }}
+        paragrafo={paragraphDialogRec?.paragrafo || ''}
+        tema={paragraphDialogRec?.tema || ''}
+        textoCompleto={paragraphDialogRec ? getTextoIntegral(paragraphDialogRec) : ''}
       />
     </div>
   );
