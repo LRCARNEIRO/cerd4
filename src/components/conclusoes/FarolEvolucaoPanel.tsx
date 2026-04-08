@@ -239,8 +239,16 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-3">
-            <strong>Critério de Indicadores:</strong> Somente indicadores com melhoria comprovada em série histórica ou recém-mensurados (inclusão = progresso) contam a favor. Indicadores com piora penalizam o score. Clique nos contadores para auditar indicador por indicador.
+            <strong>Critério de Indicadores:</strong> Somente indicadores com melhoria comprovada em série histórica contam plenamente a favor. Novos (sem série para comparar) contam apenas 40%. Indicadores com piora penalizam 1:1. Neutros não pontuam.
           </p>
+          <div className="mt-3 p-3 bg-muted/30 rounded-lg text-[10px] text-muted-foreground space-y-1">
+            <p className="font-semibold text-xs text-foreground">Metodologia de Cálculo — Evolução por Artigo</p>
+            <p><strong>Score = Orçamento (35%) + Normativos (35%) + Indicadores (30%)</strong></p>
+            <p>• <strong>Orçamento (0-100):</strong> Base institucional: min(25, programas × 3). Volume R$: min(75, log₁₀(liquidado/1M) × 25). Ex: R$ 100mi → ~37 pts volume; R$ 1bi → ~56 pts; R$ 10bi → 75 pts.</p>
+            <p>• <strong>Normativos (0-100):</strong> Escala degressiva: 1=15, 3=40, 6=65, 10=85, 15+=100.</p>
+            <p>• <strong>Indicadores (0-100):</strong> (favoráveis + novos×0.4 - desfavoráveis×1.0) / total × 100. Só melhoria comprovada pontua 100%; piora penaliza integralmente.</p>
+            <p>• <strong>Faixas:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -267,12 +275,21 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
             <CardContent className="space-y-3">
               <Progress value={art.scoreFarol} className="h-2" />
 
+              {/* Score breakdown — transparência total */}
+              <div className="text-[10px] text-muted-foreground bg-muted/20 rounded p-2">
+                <span className="font-medium">Composição:</span>{' '}
+                Orç <strong>{art.scoreOrcamento}</strong>/100 × 35% = {Math.round(art.scoreOrcamento * 0.35)}{' | '}
+                Norm <strong>{art.scoreNormativa}</strong>/100 × 35% = {Math.round(art.scoreNormativa * 0.35)}{' | '}
+                Ind <strong>{art.scoreIndicadores}</strong>/100 × 30% = {Math.round(art.scoreIndicadores * 0.30)}{' '}
+                → <strong>{art.scoreFarol}%</strong>
+              </div>
+
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => setDrilldown({ art, tab: 'orcamento' })}
                   className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
                 >
-                  <p className="font-medium mb-1">💰 Orçamento</p>
+                  <p className="font-medium mb-1">💰 Orçamento <span className="text-[10px] font-normal text-muted-foreground">({art.scoreOrcamento}/100)</span></p>
                   <p className="text-muted-foreground">
                     {art.programasCount} programa(s)<br/>
                     {art.acoesVinculadas} ação(ões)<br/>
@@ -283,18 +300,19 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
                   onClick={() => setDrilldown({ art, tab: 'normativos' })}
                   className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
                 >
-                  <p className="font-medium mb-1">⚖️ Normativos</p>
+                  <p className="font-medium mb-1">⚖️ Normativos <span className="text-[10px] font-normal text-muted-foreground">({art.scoreNormativa}/100)</span></p>
                   <p className="text-muted-foreground">{art.normativosCount} instrumento(s)</p>
                 </button>
                 <button
                   onClick={() => setDrilldown({ art, tab: 'indicadores' })}
                   className="p-2 bg-muted/30 rounded text-xs text-left hover:bg-muted/50 transition-colors cursor-pointer"
                 >
-                  <p className="font-medium mb-1">📊 Indicadores</p>
+                  <p className="font-medium mb-1">📊 Indicadores <span className="text-[10px] font-normal text-muted-foreground">({art.scoreIndicadores}/100)</span></p>
                   <p className="text-muted-foreground">
                     {art.indicadoresTotal} total:
                     <span className="text-success"> {art.indicadoresFavoraveis}↑</span>
                     <span className="text-primary"> {art.indicadoresNovos}★</span>
+                    {art.indicadoresNeutros > 0 && <span> {art.indicadoresNeutros}=</span>}
                     {art.indicadoresDesfavoraveis > 0 && <span className="text-destructive"> {art.indicadoresDesfavoraveis}↓</span>}
                   </p>
                 </button>
