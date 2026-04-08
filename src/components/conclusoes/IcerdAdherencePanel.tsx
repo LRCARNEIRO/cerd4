@@ -796,10 +796,18 @@ ${analysis.map(a => {
             </p>
           </div>
 
-          <div className="p-3 bg-muted/30 rounded-lg">
+          <div className="p-3 bg-muted/30 rounded-lg space-y-2">
             <p className="text-[10px] text-muted-foreground">
               <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU cumpridas — taxa relativa cumpridas/total (50%), cobertura normativa (15%), cobertura orçamentária — contagem de ações (10%), indicadores (15%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo. O orçamento não considera valores em R$. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
+            <div className="text-[10px] text-muted-foreground">
+              <strong>Faixas de Status de Aderência:</strong>
+              <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                <li><strong>Boa Aderência</strong> — Score ≥ 70%: Cobertura ampla com evidências em múltiplas dimensões e alta taxa de cumprimento das recomendações ONU.</li>
+                <li><strong>Aderência Parcial</strong> — Score 40–69%: Cobertura intermediária com esforços visíveis, mas lacunas persistentes em ao menos uma dimensão relevante.</li>
+                <li><strong>Baixa Aderência</strong> — Score &lt; 40%: Cobertura insuficiente com poucas evidências de resposta do Estado às obrigações da Convenção.</li>
+              </ul>
+            </div>
           </div>
         </CardContent>
       </Card>
