@@ -132,6 +132,10 @@ export default function Fontes() {
       title="Fontes de Dados"
       subtitle="Bases oficiais para atualização do Common Core e relatório CERD"
     >
+      <div className="flex justify-end mb-3">
+        <ExportTabButtons targetSelector="#export-fontes-dados" fileName="Fontes-de-Dados" compact />
+      </div>
+      <div id="export-fontes-dados">
       {/* Info Card */}
       <Card className="mb-6 bg-primary text-primary-foreground">
         <CardContent className="pt-6">
