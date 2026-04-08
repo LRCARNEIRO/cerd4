@@ -343,7 +343,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const auditoria: AuditScoreBreakdown = {
         indicadores: { score: scoreInd, total: totalInd, melhoram, pioram, estaveis, justificativa: justInd },
-        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: simbolicos.length, execucaoMedia: Math.round(execucaoMedia * 10) / 10, justificativa: justOrc },
+        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: 0, execucaoMedia: 0, justificativa: justOrc },
         normativos: { score: scoreNorm, total: totalNorm, justificativa: justNorm },
         scoreGlobal,
         statusComputado,
