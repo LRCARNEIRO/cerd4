@@ -1,4 +1,4 @@
-import { IMPORTANT_SHORT_KEYWORDS, RECOMMENDATION_CONCEPT_BUNDLES } from '@/utils/recommendationKeywordConcepts';
+import { IMPORTANT_SHORT_KEYWORDS, RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS } from '@/utils/recommendationKeywordConcepts';
 
 type RecommendationKeywordSource = {
   tema?: string | null;
@@ -61,12 +61,24 @@ const SYNONYMS: Record<string, string[]> = {
   demarcacao: ['titulacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
   titulacao: ['demarcacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
   encarceramento: ['sistema prisional', 'penitenciario', 'custodia'],
+  prisional: ['encarceramento', 'penitenciario', 'custodia', 'preso', 'detencao'],
+  detencao: ['encarceramento', 'sistema prisional', 'custodia'],
   feminicidio: ['violencia domestica', 'violencia mulher'],
   'trabalho infantil': ['erradicacao trabalho infantil'],
   discriminacao: ['preconceito', 'desigualdade'],
   indigena: ['indigenas', 'povos originarios'],
   indigenas: ['indigena', 'povos originarios'],
   racismo: ['racial', 'antirracista', 'racista'],
+  odio: ['discurso odio', 'crime odio', 'injuria racial', 'tipificacao'],
+  supremacia: ['neonazi', 'extremismo', 'propaganda racista'],
+  escravidao: ['reparacao', 'reparatorio', 'memoria', 'verdade', 'trabalho escravo', 'trabalho analogo'],
+  reparacao: ['escravidao', 'reparatorio', 'memoria', 'comissao verdade'],
+  curriculo: ['curricular', 'didatico', 'educacao antirracista'],
+  curricular: ['curriculo', 'didatico', 'educacao antirracista'],
+  afrodescendentes: ['decada', 'decenio', 'populacao negra'],
+  decada: ['afrodescendentes', 'decenio', 'durban'],
+  representacao: ['sub representacao', 'cadeiras', 'cargos eletivos', 'parlamento', 'vereador', 'candidatura'],
+  eletivos: ['representacao', 'parlamento', 'vereador', 'candidatura'],
   coleta: ['censo', 'registro administrativo', 'registros administrativos'],
   coletar: ['censo', 'registro administrativo', 'registros administrativos'],
   estatisticos: ['estatisticas', 'demografia', 'censo'],
@@ -253,10 +265,36 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
     (standaloneWeakKeywords.length * 0.5);
 
   const requiresFocalSignal = profile.groupKeywords.length > 0;
-  const isRelevant = requiresFocalSignal
-    ? (matchedGroupKeywords.length > 0 && (matchedPhraseKeywords.length > 0 || score >= 2))
-      || (matchedPhraseKeywords.length >= 1 && score >= 3)
-    : matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
+
+  // Grupo focal com tokens ubíquos (negros/racial) exige critério mais rigoroso:
+  // não basta casar "racial" — precisa de phrase match OU strong keyword temático não-ubíquo.
+  const groupIsUbiquitous = profile.groupKeywords.every(
+    (gk) => UBIQUITOUS_GROUP_TOKENS.has(normalizeSearchText(gk))
+  );
+
+  // Para grupos ubíquos, group match só conta se acompanhado de evidência temática específica
+  const hasNonUbiquitousGroupMatch = matchedGroupKeywords.some(
+    (gk) => !UBIQUITOUS_GROUP_TOKENS.has(normalizeSearchText(gk))
+  );
+  const hasThematicSignal = matchedPhraseKeywords.length > 0 || standaloneStrongKeywords.length > 0;
+
+  let isRelevant: boolean;
+  if (requiresFocalSignal) {
+    if (groupIsUbiquitous) {
+      // Ex: grupo 'negros' — exige phrase + group OU strong temático ≥3
+      isRelevant =
+        (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 3)
+        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4)
+        || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 1 && score >= 4);
+    } else {
+      // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
+      isRelevant =
+        (matchedGroupKeywords.length > 0 && score >= 2)
+        || (matchedPhraseKeywords.length >= 1 && score >= 3);
+    }
+  } else {
+    isRelevant = matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
+  }
 
   return {
     isRelevant,
