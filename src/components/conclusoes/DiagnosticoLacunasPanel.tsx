@@ -139,11 +139,10 @@ h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')} · <strong>Total:</strong> ${items.length} recomendações analisadas</p>
 <div class="summary">
 <span style="background:#dcfce7;color:#166534">✓ ${statusCounts.cumprido || 0} Cumprida(s)</span>
-<span style="background:#fef9c3;color:#854d0e">~ ${statusCounts.parcialmente_cumprido || 0} Parcial(is)</span>
-<span style="background:#dbeafe;color:#1e40af">⏳ ${statusCounts.em_andamento || 0} Em Andamento</span>
-<span style="background:#fee2e2;color:#991b1b">✗ ${(statusCounts.nao_cumprido || 0) + (statusCounts.retrocesso || 0)} Não Cumprida(s)/Retrocesso(s)</span>
+<span style="background:#fef9c3;color:#854d0e">~ ${(statusCounts.parcialmente_cumprido || 0) + (statusCounts.em_andamento || 0)} Parcial(is)</span>
+<span style="background:#fee2e2;color:#991b1b">✗ ${(statusCounts.nao_cumprido || 0) + (statusCounts.retrocesso || 0)} Não Cumprida(s)</span>
 </div>
-<p style="font-size:11px;color:#555">Lacunas persistentes (Não Cumpridas + Retrocesso + Em Andamento): <strong>${lacunasPersistentes.length}</strong></p>
+<p style="font-size:11px;color:#555">Lacunas persistentes (Não Cumpridas): <strong>${lacunasPersistentes.length}</strong></p>
 <hr style="margin:12px 0"/>
 ${rows}
 <p style="font-size:10px;color:#888;margin-top:20px">Documento gerado pelo Sistema de Monitoramento CERD IV — ${new Date().toLocaleDateString('pt-BR')}</p>
