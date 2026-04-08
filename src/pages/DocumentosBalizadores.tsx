@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -309,10 +310,11 @@ export default function DocumentosBalizadores() {
           </a>
         </Button>
         <span className="text-xs text-muted-foreground">{documentos.length} documentos disponíveis</span>
+        <ExportTabButtons targetSelector="#export-documentos-balizadores" fileName="Documentos-Balizadores" compact />
       </div>
 
       {/* Documents grid */}
-      <div className="space-y-4">
+      <div id="export-documentos-balizadores" className="space-y-4">
         {documentos.map((doc) => {
           const Icon = doc.icon;
           return (

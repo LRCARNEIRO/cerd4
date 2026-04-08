@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -337,6 +338,11 @@ export default function CommonCore() {
         </CardContent>
       </Card>
 
+      <div className="flex justify-end mb-3">
+        <ExportTabButtons targetSelector="#export-common-core" fileName="Common-Core-77-Tabelas" compact />
+      </div>
+
+      <div id="export-common-core">
       {/* Tabs por Categoria */}
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
@@ -556,6 +562,7 @@ export default function CommonCore() {
           </TabsContent>
         ))}
       </Tabs>
+      </div>
     </DashboardLayout>
   );
 }

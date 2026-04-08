@@ -9,6 +9,7 @@ import {
   Landmark, HeartPulse, UsersRound, CheckCircle2, CircleDashed
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 
@@ -124,6 +125,9 @@ export default function Estatisticas() {
       title="Estatísticas e Indicadores"
       subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2025)"
     >
+      <div className="flex justify-end mb-3">
+        <ExportTabButtons targetSelector="#export-estatisticas" fileName="Estatisticas-Indicadores" compact />
+      </div>
       {/* Alerta Metodológico */}
       <Card className="mb-6 border-l-4 border-l-primary">
         <CardContent className="pt-6">

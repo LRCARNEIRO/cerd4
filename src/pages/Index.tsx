@@ -4,9 +4,8 @@ import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DualPerspectivePanel } from '@/components/dashboard/DualPerspectivePanel';
-import { SystemGuidePanel } from '@/components/dashboard/SystemGuidePanel';
-import { CriticalRecommendationsSummary } from '@/components/dashboard/CriticalRecommendationsSummary';
-import { cerdRecommendations } from '@/data/mockData';
+
+import { MethodologyExportButton } from '@/components/dashboard/MethodologyExportButton';
 import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
 import {
   ArrowRight, RefreshCw, Loader2, RotateCcw
@@ -154,18 +153,14 @@ export default function Index() {
         />
       </div>
 
-      {/* Budget + Critical Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Budget */}
+      <div className="grid grid-cols-1 gap-6 mb-6">
         <BudgetChart data={budgetTrendData} />
-        <CriticalRecommendationsSummary
-          diagnosticMap={diagnosticMap}
-          sensorReady={sensorReady}
-        />
       </div>
 
-      {/* System Guide */}
+      {/* Methodology Export Button */}
       <div className="mb-6">
-        <SystemGuidePanel />
+        <MethodologyExportButton />
       </div>
 
       {/* Histórico de Versões — collapsible */}
