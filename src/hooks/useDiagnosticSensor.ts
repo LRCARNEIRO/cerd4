@@ -363,8 +363,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
-        ''
         ``,
+        `Nota: O score de indicadores mede COBERTURA (existência de dados vinculados), não tendência.`,
+        `A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).`,
         `Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso`,
       ].filter(Boolean).join('\n');
 
