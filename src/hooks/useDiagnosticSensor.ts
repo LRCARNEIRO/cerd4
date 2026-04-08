@@ -110,22 +110,32 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
 
 // ── Main Hook ──────────────────────────────────────────────────────
 export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined, overrides?: EvidenceOverrides) {
-  // Fetch all three cross-reference sources in parallel
+  const SHARED_OPTS = {
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false as const,
+    refetchOnWindowFocus: false as const,
+    refetchOnReconnect: false as const,
+  };
+
+  // Reuse the SAME query keys as useLacunasData hooks to avoid duplicate fetches
   const { data: indicadores } = useQuery({
-    queryKey: ['sensor-indicadores'],
+    queryKey: ['indicadores-analiticos-sem-cc'],
+    ...SHARED_OPTS,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
-        .select('nome, categoria, subcategoria, tendencia, dados, artigos_convencao, analise_interseccional, documento_origem')
-        .neq('categoria', 'common_core');
+        .select('*')
+        .neq('categoria', 'common_core')
+        .order('categoria', { ascending: true });
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   const { data: orcamento } = useQuery({
     queryKey: ['sensor-orcamento'],
+    ...SHARED_OPTS,
     queryFn: async () => {
       let all: any[] = [];
       let page = 0;
@@ -142,11 +152,11 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       }
       return all;
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   const { data: normativos } = useQuery({
     queryKey: ['sensor-normativos'],
+    ...SHARED_OPTS,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
@@ -154,7 +164,6 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   // ── Diagnose each recomendação ────────────────────────────────────
