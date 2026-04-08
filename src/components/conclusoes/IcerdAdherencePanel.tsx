@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -8,9 +8,12 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
+import { ArtigoAdherenceDrilldownDialog } from '@/components/shared/ArtigoAdherenceDrilldownDialog';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
