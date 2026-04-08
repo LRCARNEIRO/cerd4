@@ -63,7 +63,8 @@ function getPrioridadeLabel(prioridade: string): string {
 
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const [evidenceOverrides, setEvidenceOverrides] = useState<EvidenceOverrides>({});
+  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
   const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
