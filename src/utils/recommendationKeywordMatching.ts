@@ -1,4 +1,4 @@
-import { IMPORTANT_SHORT_KEYWORDS, RECOMMENDATION_CONCEPT_BUNDLES } from '@/utils/recommendationKeywordConcepts';
+import { IMPORTANT_SHORT_KEYWORDS, RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS } from '@/utils/recommendationKeywordConcepts';
 
 type RecommendationKeywordSource = {
   tema?: string | null;
@@ -253,10 +253,36 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
     (standaloneWeakKeywords.length * 0.5);
 
   const requiresFocalSignal = profile.groupKeywords.length > 0;
-  const isRelevant = requiresFocalSignal
-    ? (matchedGroupKeywords.length > 0 && (matchedPhraseKeywords.length > 0 || score >= 2))
-      || (matchedPhraseKeywords.length >= 1 && score >= 3)
-    : matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
+
+  // Grupo focal com tokens ubíquos (negros/racial) exige critério mais rigoroso:
+  // não basta casar "racial" — precisa de phrase match OU strong keyword temático não-ubíquo.
+  const groupIsUbiquitous = profile.groupKeywords.every(
+    (gk) => UBIQUITOUS_GROUP_TOKENS.has(normalizeSearchText(gk))
+  );
+
+  // Para grupos ubíquos, group match só conta se acompanhado de evidência temática específica
+  const hasNonUbiquitousGroupMatch = matchedGroupKeywords.some(
+    (gk) => !UBIQUITOUS_GROUP_TOKENS.has(normalizeSearchText(gk))
+  );
+  const hasThematicSignal = matchedPhraseKeywords.length > 0 || standaloneStrongKeywords.length > 0;
+
+  let isRelevant: boolean;
+  if (requiresFocalSignal) {
+    if (groupIsUbiquitous) {
+      // Ex: grupo 'negros' — exige phrase + group OU strong temático ≥3
+      isRelevant =
+        (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 3)
+        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4);
+    } else {
+      // Ex: grupo 'quilombolas', 'indigenas' — basta group match + algum tema
+      isRelevant =
+        (hasNonUbiquitousGroupMatch && hasThematicSignal && score >= 2)
+        || (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 2)
+        || (matchedPhraseKeywords.length >= 1 && score >= 3);
+    }
+  } else {
+    isRelevant = matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
+  }
 
   return {
     isRelevant,
