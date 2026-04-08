@@ -197,13 +197,11 @@ function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
   //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Recomendações ONU (0-30) — PESO PRINCIPAL — contabiliza em_andamento como 30%
+  // Recomendações ONU (0-30) — PESO PRINCIPAL — conta apenas CUMPRIDAS
   if (a.lacunasTotal > 0) {
-    const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
-    const cumprimento = (a.lacunasCumpridas * 1 + a.lacunasParciais * 0.6 + emAndamento * 0.3) / a.lacunasTotal;
+    const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
     const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
-    score += Math.max(0, (cumprimento - retrocessoPenalty)) * 30;
-    if (a.lacunasParciais + emAndamento > 0) score += Math.min(5, (a.lacunasParciais + emAndamento * 0.5) * 1.2);
+    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 30;
   } else {
     score += 15;
   }
@@ -708,7 +706,7 @@ ${analysis.map(a => {
               <Progress value={a.grauAderencia} className="h-2 mb-3" />
 
               {/* Metrics grid - expanded with new dimensions */}
-              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2 mb-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-3">
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
                   <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
@@ -718,32 +716,16 @@ ${analysis.map(a => {
                   <p className="text-[10px] text-muted-foreground">Cumpridas</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-warning">{a.lacunasParciais}</p>
-                  <p className="text-[10px] text-muted-foreground">Parciais</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
-                  <p className="text-[10px] text-muted-foreground">Ações Vinculadas</p>
+                  <p className="text-[10px] text-muted-foreground">Ações Orçam.</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.normativosCount}</p>
                   <p className="text-[10px] text-muted-foreground">Normativos</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold">{a.respostasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Respostas CERD</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold">{a.fiosTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Fios Condutores</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.indicadoresCount}</p>
                   <p className="text-[10px] text-muted-foreground">Indicadores</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold">{a.seriesEstatisticas}</p>
-                  <p className="text-[10px] text-muted-foreground">Séries Estat.</p>
                 </div>
               </div>
 
