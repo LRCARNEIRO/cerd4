@@ -720,26 +720,26 @@ ${analysis.map(a => {
 
               {/* Metrics grid - expanded with new dimensions */}
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-3">
-                <div className="bg-muted/50 rounded p-2 text-center">
+                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('recomendacoes'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Recom. ONU</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Recom. ONU 🔍</p>
+                </button>
+                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('recomendacoes'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold text-success">{a.lacunasCumpridas}/{a.lacunasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Cumpridas ({a.lacunasTotal > 0 ? Math.round((a.lacunasCumpridas / a.lacunasTotal) * 100) : 0}%)</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Cumpridas ({a.lacunasTotal > 0 ? Math.round((a.lacunasCumpridas / a.lacunasTotal) * 100) : 0}%) 🔍</p>
+                </button>
+                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('orcamento'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
-                  <p className="text-[10px] text-muted-foreground">Ações Orçam.</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Ações Orçam. 🔍</p>
+                </button>
+                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('normativos'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.normativosCount}</p>
-                  <p className="text-[10px] text-muted-foreground">Normativos</p>
-                </div>
-                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-[10px] text-muted-foreground">Normativos 🔍</p>
+                </button>
+                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('indicadores'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.indicadoresCount}</p>
-                  <p className="text-[10px] text-muted-foreground">Indicadores</p>
-                </div>
+                  <p className="text-[10px] text-muted-foreground">Indicadores 🔍</p>
+                </button>
               </div>
 
 
