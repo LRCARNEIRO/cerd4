@@ -809,11 +809,13 @@ ${analysis.map(a => {
       {/* Artigo Adherence Drilldown Dialog */}
       <ArtigoAdherenceDrilldownDialog
         open={!!drilldownArtigo}
-        onOpenChange={(open) => { if (!open) setDrilldownArtigo(null); }}
+        onOpenChange={(open) => { if (!open) { setDrilldownArtigo(null); setDrilldownFocus(null); } }}
         artigo={drilldownArtigo ? analysis.find(a => a.numero === drilldownArtigo) || null : null}
         recomendacoes={drilldownData.recomendacoes}
         normativos={drilldownData.normativos}
         orcamentos={drilldownData.orcamentos}
+        indicadores={drilldownData.indicadores}
+        focusTab={drilldownFocus}
       />
     </div>
   );
