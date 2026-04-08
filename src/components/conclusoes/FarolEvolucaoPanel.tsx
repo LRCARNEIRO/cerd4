@@ -4,15 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
-import type { DadoOrcamentario } from '@/hooks/useLacunasData';
-import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
+import { useDiagnosticSensor, type LinkedIndicador, type LinkedOrcamento, type LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
 
 interface FarolEvolucaoPanelProps {
   lacunas: any[];
-  orcamentoRecords: DadoOrcamentario[];
+  orcamentoRecords: any[];
   indicadores: any[];
   stats: any;
   documentosNormativos: any[];
@@ -45,31 +45,55 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
 
   const [drilldown, setDrilldown] = useState<{ art: FarolArtigoResult; tab: string } | null>(null);
 
-  const artigoResults = useMemo<FarolArtigoResult[]>(() => {
-    const dedupedIndicadores = getSafeIndicadores(indicadores);
+  // Use the same diagnostic sensor as Recomendações and Artigos (Aderência)
+  const { diagnosticMap } = useDiagnosticSensor(lacunas);
 
+  const artigoResults = useMemo<FarolArtigoResult[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
-      const artigoOrc = orcamentoRecords.filter(o => {
-        if (o.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosOrcamento(o).includes(artNum);
+      // ── Find recommendations linked to this article (same logic as IcerdAdherencePanel) ──
+      const artLacunas = lacunas.filter(l => {
+        if (l.artigos_convencao && l.artigos_convencao.length > 0) {
+          const explicit = l.artigos_convencao
+            .map(normalizeArticleTag)
+            .filter(Boolean) as ArtigoConvencao[];
+          return explicit.includes(artNum);
+        }
+        const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+        return mapped ? mapped.includes(artNum) : false;
       });
+
+      // ── Aggregate evidence from diagnosticMap (same source as Recomendações) ──
+      const indMap = new Map<string, LinkedIndicador>();
+      const orcMap = new Map<string, LinkedOrcamento>();
+      const normMap = new Map<string, LinkedNormativo>();
+
+      for (const l of artLacunas) {
+        const diag = diagnosticMap.get(l.id);
+        if (!diag) continue;
+        for (const ind of diag.linkedIndicadores) {
+          if (!indMap.has(ind.nome)) indMap.set(ind.nome, ind);
+        }
+        for (const orc of diag.linkedOrcamento) {
+          const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
+          if (!orcMap.has(key)) orcMap.set(key, orc);
+        }
+        for (const norm of diag.linkedNormativos) {
+          if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, norm);
+        }
+      }
+
+      const artigoOrc = Array.from(orcMap.values());
+      const artigoNorm = Array.from(normMap.values());
+      const artigoInd = Array.from(indMap.values());
+
       const programasCount = new Set(artigoOrc.map(o => o.programa)).size;
       const acoesVinculadas = artigoOrc.length;
       const totalLiquidado = artigoOrc.reduce((s, o) => s + (Number(o.liquidado) || 0), 0);
-
-      const artigoNorm = documentosNormativos.filter(d => {
-        if (d.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosDocumentoNormativo(d).includes(artNum);
-      });
       const normativosCount = artigoNorm.length;
 
-      const artigoInd = dedupedIndicadores.filter((ind: any) => {
-        if (ind.artigos_convencao?.includes(artNum)) return true;
-        return inferArtigosIndicador(ind).includes(artNum);
-      });
-
+      // Evolution scoring uses trend analysis on indicators
       const indicadoresSummary = summarizeIndicatorEvolution(artigoInd);
       const indicadoresFavoraveis = indicadoresSummary.favoraveis;
       const indicadoresDesfavoraveis = indicadoresSummary.desfavoraveis;
@@ -90,8 +114,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const partes: string[] = [];
       if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s), ${acoesVinculadas} ação(ões) vinculada(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
       if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
-        if (artigoInd.length > 0) {
-          partes.push(`${artigoInd.length} indicador(es) vinculados; ${indicadoresFavoraveis + indicadoresNovos} com leitura favorável e ${indicadoresDesfavoraveis} com piora`);
+      if (artigoInd.length > 0) {
+        partes.push(`${artigoInd.length} indicador(es) vinculados; ${indicadoresFavoraveis + indicadoresNovos} com leitura favorável e ${indicadoresDesfavoraveis} com piora`);
       }
 
       return {
@@ -103,7 +127,7 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
         rawIndicadores: artigoInd, rawNormativos: artigoNorm, rawOrcamento: artigoOrc,
       };
     });
-  }, [orcamentoRecords, indicadores, documentosNormativos]);
+  }, [lacunas, diagnosticMap]);
 
   const mediaGeral = Math.round(artigoResults.reduce((s, a) => s + a.scoreFarol, 0) / artigoResults.length);
 
@@ -121,7 +145,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
     const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Evolução dos Artigos ICERD</title>
     <style>body{font-family:system-ui;padding:2rem;max-width:1200px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #ddd;padding:8px;font-size:12px}th{background:#f5f5f5;font-weight:600}</style></head>
     <body><h1>Evolução dos Artigos I-VII ICERD</h1>
-    <p>Avaliação baseada em: Programas Orçamentários, Instrumentos Normativos e Indicadores com série temporal.</p>
+    <p>Avaliação baseada em: Programas Orçamentários (35%) + Instrumentos Normativos (35%) + Indicadores com evolução (30%)</p>
+    <p><strong>Fonte:</strong> Evidências agregadas das recomendações vinculadas a cada artigo (mesma base do Acompanhamento Gerencial).</p>
     <p><strong>Score Médio:</strong> ${mediaGeral}%</p>
     <table><thead><tr><th>Artigo</th><th>Tema</th><th>Orçamento</th><th>Normativos</th><th>Indicadores</th><th>Score</th></tr></thead>
     <tbody>${rows}</tbody></table>
@@ -165,7 +190,9 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
             </Button>
           </div>
           <CardDescription>
-            Avalia exclusivamente: Programas Orçamentários (35%) + Instrumentos Normativos (35%) + Indicadores com evolução (30%)
+            Avalia exclusivamente: Programas Orçamentários (35%) + Instrumentos Normativos (35%) + Indicadores com evolução (30%).
+            <br/>
+            <span className="text-[10px] italic">Fonte: mesma base de evidências mapeadas em Acompanhamento Gerencial → Recomendações, agregada por artigo.</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
