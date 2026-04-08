@@ -40,8 +40,9 @@ export function DiagnosticoLacunasPanel() {
         const diag = diagnosticMap.get(r.id);
         const effectiveStatus = diag?.statusComputado ?? r.status_cumprimento;
         const resposta = generateSuggestedResponse(r, diag);
-        const artigos = (r.artigos_convencao && r.artigos_convencao.length > 0)
-          ? r.artigos_convencao
+        const rawArtigos = (r as any).artigos_convencao;
+        const artigos = (Array.isArray(rawArtigos) && rawArtigos.length > 0)
+          ? rawArtigos
           : (EIXO_PARA_ARTIGOS[r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || []);
         const origem = classificarOrigemLacuna(r.paragrafo);
         return { ...r, diag, effectiveStatus, resposta, artigos, origem };
