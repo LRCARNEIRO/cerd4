@@ -246,12 +246,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) — contagem ──
       let scoreInd = 0;
-      if (totalInd >= 8) scoreInd = 100;
-      else if (totalInd >= 5) scoreInd = 85;
-      else if (totalInd >= 3) scoreInd = 70;
-      else if (totalInd >= 2) scoreInd = 55;
-      else if (totalInd >= 1) scoreInd = 40;
-      else scoreInd = 5;
+      if (totalInd >= 10) scoreInd = 100;
+      else if (totalInd >= 7) scoreInd = 80;
+      else if (totalInd >= 5) scoreInd = 65;
+      else if (totalInd >= 3) scoreInd = 50;
+      else if (totalInd >= 2) scoreInd = 35;
+      else if (totalInd >= 1) scoreInd = 20;
+      else scoreInd = 0;
 
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística disponível.'
@@ -273,12 +274,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — CONTAGEM de ações (não execução) ──
       // A análise de execução financeira pertence ao Motor de Evolução.
       let scoreOrc = 0;
-      if (totalOrc >= 10) scoreOrc = 100;
-      else if (totalOrc >= 6) scoreOrc = 85;
-      else if (totalOrc >= 3) scoreOrc = 70;
-      else if (totalOrc >= 2) scoreOrc = 55;
-      else if (totalOrc >= 1) scoreOrc = 40;
-      else scoreOrc = 5;
+      if (totalOrc >= 12) scoreOrc = 100;
+      else if (totalOrc >= 8) scoreOrc = 80;
+      else if (totalOrc >= 5) scoreOrc = 65;
+      else if (totalOrc >= 3) scoreOrc = 50;
+      else if (totalOrc >= 2) scoreOrc = 35;
+      else if (totalOrc >= 1) scoreOrc = 20;
+      else scoreOrc = 0;
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
@@ -291,11 +293,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — contagem ──
       let scoreNorm = 0;
-      if (totalNorm >= 5) scoreNorm = 100;
-      else if (totalNorm >= 3) scoreNorm = 80;
-      else if (totalNorm >= 2) scoreNorm = 60;
-      else if (totalNorm >= 1) scoreNorm = 40;
-      else scoreNorm = 5;
+      if (totalNorm >= 6) scoreNorm = 100;
+      else if (totalNorm >= 4) scoreNorm = 75;
+      else if (totalNorm >= 3) scoreNorm = 55;
+      else if (totalNorm >= 2) scoreNorm = 40;
+      else if (totalNorm >= 1) scoreNorm = 20;
+      else scoreNorm = 0;
 
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
