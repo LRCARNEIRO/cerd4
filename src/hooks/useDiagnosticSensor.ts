@@ -257,7 +257,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística disponível.'
-        : `${totalInd} indicador(es) vinculado(s) por coerência temática. Score de cobertura: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) vinculado(s) por coerência temática → ${scoreInd} pts.`;
 
       // Tendências informativas (não afetam score de esforço, mas são exibidas)
       const tendencias = finalIndicadores.map(i => inferTendencia(i));
@@ -296,7 +296,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões) vinculada(s) por coerência temática, execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) vinculada(s), execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''} → ${scoreOrc} pts.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
@@ -316,7 +316,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) vinculado(s) por coerência temática. Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) vinculado(s) por coerência temática → ${scoreNorm} pts.`;
 
       // Signals for normatives
       if (totalNorm > 0) {

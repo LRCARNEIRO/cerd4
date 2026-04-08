@@ -708,14 +708,18 @@ ${analysis.map(a => {
               <Progress value={a.grauAderencia} className="h-2 mb-3" />
 
               {/* Metrics grid - expanded with new dimensions */}
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 mb-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2 mb-3">
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
                   <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas + a.lacunasParciais}</p>
-                  <p className="text-[10px] text-muted-foreground">Atendidas</p>
+                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas}</p>
+                  <p className="text-[10px] text-muted-foreground">Cumpridas</p>
+                </div>
+                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-warning">{a.lacunasParciais}</p>
+                  <p className="text-[10px] text-muted-foreground">Parciais</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
