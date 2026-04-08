@@ -164,7 +164,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
+    const orcKeyFn = (o: any) => `${o.programa}|${o.orgao}|${o.ano}`;
+
     return recomendacoes.map(rec => {
+      const recOverride = overrides?.[rec.id];
       const signals: DiagnosticSignal[] = [];
 
       const indicadoresVinculados = indicadores
