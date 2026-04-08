@@ -191,44 +191,43 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
   // Aderência = visão GERENCIAL — "O Estado está respondendo às obrigações CERD?"
-  // Peso maior para Recomendações ONU atendidas (o core da aderência ao Comitê).
+  // O cumprimento das recomendações é o CERNE da aderência à Convenção.
   //
-  // Pesos: Recomendações ONU (30%), Normativos (20%), Orçamento (15%),
-  //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
+  // Pesos REBALANCEADOS: Recomendações ONU (50%), Normativos (15%), Orçamento (10%),
+  //         Indicadores (15%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Recomendações ONU (0-30) — PESO PRINCIPAL — conta apenas CUMPRIDAS
+  // Recomendações ONU (0-50) — PESO DOMINANTE — taxa relativa cumpridas/total
   if (a.lacunasTotal > 0) {
     const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
-    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 30;
+    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.1;
+    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 50;
   } else {
-    score += 15;
+    score += 25;
   }
 
-  // Cobertura Normativa (0-20) — esforço legislativo
+  // Cobertura Normativa (0-15) — esforço legislativo
   if (a.normativosCount > 0) {
-    score += Math.min(20, a.normativosCount * 2.5);
+    score += Math.min(15, a.normativosCount * 1.5);
   }
 
-  // Cobertura Orçamentária (0-15) — quantidade de ações vinculadas
+  // Cobertura Orçamentária (0-10) — quantidade de ações vinculadas
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 1.8);
+    score += Math.min(10, a.orcamentoProgramas * 1.0);
   }
 
-  // Indicadores + Séries Estatísticas (0-25) — dados quantitativos
-  const indScore = a.indicadoresCount > 0 ? Math.min(15, a.indicadoresCount * 1.5) : 0;
-  const seriesScore = a.seriesEstatisticas > 0 ? Math.min(10, a.seriesEstatisticas * 0.8) : 0;
-  score += indScore + seriesScore;
+  // Indicadores (0-15) — dados quantitativos disponíveis
+  if (a.indicadoresCount > 0) {
+    score += Math.min(15, a.indicadoresCount * 1.2);
+  }
 
   // Amplitude de Fontes (0-10) — diversidade de tipos de evidência
-  const hasRecomendacoes = a.lacunasTotal > 0;
+  const hasRecomendacoes = a.lacunasCumpridas > 0;
   const hasOrc = a.orcamentoProgramas > 0;
   const hasInd = a.indicadoresCount > 0;
   const hasNorm = a.normativosCount > 0;
-  const hasSeries = a.seriesEstatisticas > 0;
-  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm, hasSeries].filter(Boolean).length;
-  score += (breadth / 5) * 10;
+  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm].filter(Boolean).length;
+  score += (breadth / 4) * 10;
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
@@ -470,11 +469,11 @@ ${analysis.map(a => {
 <p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Recomendações ONU Atendidas</td><td>30%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade. Peso principal: reflete o grau de resposta do Estado ao Comitê.</td></tr>
-<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
-<tr><td>Indicadores + Séries Estatísticas</td><td>25%</td><td>Registros do BD (15%) + séries temporais do espelho de dados (10%)</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis</td></tr>
+<tr><td>Recomendações ONU Cumpridas</td><td>50%</td><td>Taxa relativa: cumpridas/total × 50. Peso dominante — reflete diretamente o grau de resposta do Estado ao Comitê CERD.</td></tr>
+<tr><td>Cobertura Normativa</td><td>15%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>10%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
+<tr><td>Indicadores</td><td>15%</td><td>Registros estatísticos do BD vinculados ao artigo</td></tr>
+<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recom. cumpridas, orçamento, indicadores, normativos)</td></tr>
 </table>
 <p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> é uma visão <strong>gerencial</strong> — mede se o Estado está respondendo às obrigações do Comitê CERD (por isso o peso maior para recomendações atendidas). A <em>Evolução dos Artigos</em> é uma visão de <strong>evidências</strong> — avalia se orçamento, normativos e indicadores melhoraram ou pioraram ao longo do período.</p>
 </body></html>`;
@@ -787,7 +786,7 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-muted/30 rounded-lg">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU atendidas (30%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%), indicadores + séries estatísticas (25%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo do score. O orçamento não considera valores em R$. Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU cumpridas — taxa relativa cumpridas/total (50%), cobertura normativa (15%), cobertura orçamentária — contagem de ações (10%), indicadores (15%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo. O orçamento não considera valores em R$. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
           </div>
         </CardContent>
