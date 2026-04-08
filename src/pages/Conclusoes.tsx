@@ -409,14 +409,9 @@ export default function Conclusoes() {
               <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Síntese Indicadores-Chave</TabsTrigger>
               <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosFiltrados.length})</TabsTrigger>
               <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
-              <TabsTrigger value="lacunas" className="gap-1"><AlertTriangle className="w-4 h-4" /> Lacunas ({conclusoesAgrupadas.lacuna_persistente.length})</TabsTrigger>
-              <TabsTrigger value="avancos" className="gap-1"><TrendingUp className="w-4 h-4" /> Avanços ({conclusoesAgrupadas.avanco.length})</TabsTrigger>
-              <TabsTrigger value="retrocessos" className="gap-1"><TrendingDown className="w-4 h-4" /> Retrocessos ({conclusoesAgrupadas.retrocesso.length})</TabsTrigger>
               <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
               <TabsTrigger value="evolucao-recomendacoes" className="gap-1"><TrendingUp className="w-4 h-4" /> Evolução Recomendações</TabsTrigger>
               <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas x Evidências ({lacunas?.length || 0})</TabsTrigger>
-              <TabsTrigger value="respostas-cerd" className="gap-1"><CheckCircle2 className="w-4 h-4" /> Respostas às Críticas ({respostas?.length || 0})</TabsTrigger>
-              <TabsTrigger value="lacunas-cerd-stats" className="gap-1"><FileText className="w-4 h-4" /> Lacunas CERD (Estatísticas)</TabsTrigger>
             </TabsList>
 
             {/* ABA: INFOGRÁFICOS */}
@@ -702,36 +697,7 @@ export default function Conclusoes() {
               </div>
             </TabsContent>
 
-            {/* ABA: RESPOSTAS CERD III */}
-            <TabsContent value="respostas-cerd">
-              <Card className="mb-4 border-l-4 border-l-warning">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-warning flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Respostas às Críticas do CERD III</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {respostas?.length || 0} respostas oficiais com avaliação dinâmica de cumprimento
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="space-y-4">
-                {(respostas || []).map(resposta => (
-                  <RespostaCerdCard
-                    key={resposta.id}
-                    resposta={resposta}
-                    dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-
-            {/* ABA: LACUNAS CERD (ESTATÍSTICAS) */}
-            <TabsContent value="lacunas-cerd-stats">
-              <LacunasCerdTab />
-            </TabsContent>
+            {/* Respostas às Críticas movida para Recomendações; Lacunas CERD removida */}
           </Tabs>
         </>
       )}
