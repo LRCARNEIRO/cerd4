@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, Maximize2, Minimize2 } from 'lucide-react';
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
 
@@ -55,6 +55,7 @@ export function EvidenceDrilldownDialog({
   const [searchInd, setSearchInd] = useState('');
   const [searchOrc, setSearchOrc] = useState('');
   const [searchNorm, setSearchNorm] = useState('');
+  const [maximized, setMaximized] = useState(false);
 
   const isEditable = !!onOverridesChange && !!overrides;
 
