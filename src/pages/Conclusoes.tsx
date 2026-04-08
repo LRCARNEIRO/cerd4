@@ -36,6 +36,7 @@ import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/compone
 import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
 import { EvolucaoRecomendacoesPanel } from '@/components/conclusoes/EvolucaoRecomendacoesPanel';
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
+import { DiagnosticoLacunasPanel } from '@/components/conclusoes/DiagnosticoLacunasPanel';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
