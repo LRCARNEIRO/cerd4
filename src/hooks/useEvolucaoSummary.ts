@@ -186,5 +186,8 @@ export function useEvolucaoSummary() {
     };
   }, [recomendacoes, diagnosticMap, sensorReady]);
 
-  return { summary, artigosSummary, isLoading };
+  // Expose sensor data so consumers (e.g. Dashboard) don't need their own useDiagnosticSensor
+  const { summary: sensorSummary } = useDiagnosticSensor(recomendacoes);
+
+  return { summary, artigosSummary, isLoading, sensorSummary, sensorReady };
 }

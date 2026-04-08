@@ -18,8 +18,6 @@ import {
 } from '@/components/ui/accordion';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
-import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { History } from 'lucide-react';
@@ -29,9 +27,8 @@ export default function Index() {
   const [historyAccordionValue, setHistoryAccordionValue] = useState('');
   const queryClient = useQueryClient();
   const { stats, isLoading, orcamentoStats } = useDashboardStats();
-  const { data: allLacunas } = useLacunasIdentificadas();
-  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
-  const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol } = useEvolucaoSummary();
+  // Single source: useEvolucaoSummary already runs useDiagnosticSensor internally
+  const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol, sensorSummary, sensorReady } = useEvolucaoSummary();
 
   const dashboardStatusData = sensorReady ? {
     cumprido: sensorSummary.statusReclassificado.cumprido,
