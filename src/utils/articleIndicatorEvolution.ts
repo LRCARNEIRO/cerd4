@@ -40,6 +40,6 @@ export function summarizeIndicatorEvolution(indicadores: any[]): IndicatorEvolut
     desfavoraveis,
     novos,
     neutros,
-    score: Math.max(0, Math.min(100, rawScore)),
+    score: Math.round(Math.max(0, Math.min(100, rawScore))),
   };
 }
