@@ -139,10 +139,7 @@ export default function Recomendacoes() {
       title="Recomendações"
       subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2025"
     >
-      {/* Metodologia + Stats */}
-      <div className="mb-4">
-        <MethodologyPanel variant="sensor" />
-      </div>
+      {/* Stats */}
       {(() => {
         const origemCounts = contarPorOrigem(lacunas || []);
         const totalGeral = (lacunas?.length) || 0;
