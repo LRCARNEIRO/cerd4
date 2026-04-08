@@ -241,7 +241,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // ═══════════════════════════════════════════════════════════
       // Mede APENAS se o governo buscou responder (existência de evidências).
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
-      // 4 Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido
+      // 3 Faixas: ≥65 Cumprido | ≥35 Parcial | <35 Não Cumprido
       // Análise de execução/tendência pertence ao Motor de Evolução.
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) — contagem ──
@@ -317,11 +317,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const PESO_NORM = 0.30;
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // ── STATUS COMPUTADO (4 faixas — sem Retrocesso) ──
+      // ── STATUS COMPUTADO (3 faixas) ──
       let statusComputado: ComplianceStatus;
-      if (scoreGlobal >= 75) statusComputado = 'cumprido';
-      else if (scoreGlobal >= 50) statusComputado = 'parcialmente_cumprido';
-      else if (scoreGlobal >= 25) statusComputado = 'em_andamento';
+      if (scoreGlobal >= 65) statusComputado = 'cumprido';
+      else if (scoreGlobal >= 35) statusComputado = 'parcialmente_cumprido';
       else statusComputado = 'nao_cumprido';
 
       const statusLabels: Record<ComplianceStatus, string> = {
