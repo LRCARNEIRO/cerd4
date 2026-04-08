@@ -441,6 +441,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     diagnosticMap,
     summary,
     isReady: !!(recomendacoes && indicadores && orcamento && normativos),
+    rawIndicadores: indicadores,
+    rawOrcamento: orcamento,
+    rawNormativos: normativos,
   };
 }
 
