@@ -274,10 +274,9 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
         (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 3)
         || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4);
     } else {
-      // Ex: grupo 'quilombolas', 'indigenas' — basta group match + algum tema
+      // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
       isRelevant =
-        (hasNonUbiquitousGroupMatch && hasThematicSignal && score >= 2)
-        || (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 2)
+        (matchedGroupKeywords.length > 0 && score >= 2)
         || (matchedPhraseKeywords.length >= 1 && score >= 3);
     }
   } else {
