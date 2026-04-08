@@ -216,7 +216,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao')
+          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -241,69 +241,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Build indices by normalized artigo ───────────────────────────
-  const indicadoresPorArtigo = useMemo(() => {
-    if (!indicadores) return {} as Record<string, typeof indicadores>;
-    const map: Record<string, typeof indicadores> = {};
-    indicadores.forEach(ind => {
-      const arts = ((ind.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(ind);
-      });
-    });
-    return map;
-  }, [indicadores]);
-
-  const orcamentoPorArtigo = useMemo(() => {
-    if (!orcamento) return {} as Record<string, typeof orcamento>;
-    const map: Record<string, typeof orcamento> = {};
-    orcamento.forEach(orc => {
-      const arts = ((orc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(orc);
-      });
-    });
-    return map;
-  }, [orcamento]);
-
-  const normativosPorArtigo = useMemo(() => {
-    if (!normativos) return {} as Record<string, typeof normativos>;
-    const map: Record<string, typeof normativos> = {};
-    normativos.forEach(doc => {
-      const arts = ((doc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(doc);
-      });
-    });
-    return map;
-  }, [normativos]);
-
-  // ── Frequência de cada artigo nos normativos (anti-coringa) ──
-  const artigoFrequency = useMemo(() => {
-    if (!normativos || normativos.length === 0) return {} as Record<string, number>;
-    const counts: Record<string, number> = {};
-    normativos.forEach(doc => {
-      const arts = ((doc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => { counts[a] = (counts[a] || 0) + 1; });
-    });
-    const total = normativos.length;
-    const freq: Record<string, number> = {};
-    Object.entries(counts).forEach(([a, c]) => { freq[a] = c / total; });
-    return freq;
-  }, [normativos]);
-
   // ── Diagnose each recomendação ────────────────────────────────────
+  // VINCULAÇÃO ESTRITA POR KEYWORDS: evidências são vinculadas APENAS
+  // por palavras-chave extraídas do tema/descrição/texto ONU da recomendação.
+  // NÃO usa artigos ICERD/eixo temático para buscar evidências (evita falsos positivos).
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
@@ -312,63 +253,25 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
-      // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
-      const baseIndicadores = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
-      const baseOrcamento = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
-      const baseNormativos = artigos.flatMap(a => normativosPorArtigo[a] || []);
-
-      const keywordIndicadores = indicadores.filter(ind => {
+      // ── Vinculação ESTRITA por keywords apenas ──────────────────
+      const indicadoresVinculados = indicadores.filter(ind => {
         const haystack = `${ind.nome} ${ind.categoria}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
-      const keywordOrcamento = orcamento.filter(item => {
-        const haystack = `${item.programa} ${item.orgao}`.toLowerCase();
+      }).slice(0, 20);
+
+      const orcamentosVinculados = orcamento.filter(item => {
+        const haystack = `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
-      const keywordNormativos = normativos.filter(doc => {
+      }).slice(0, 20);
+
+      const normativosVinculados = normativos.filter(doc => {
         const haystack = `${doc.titulo}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
+      }).slice(0, 20);
 
-      // ── Peso anti-coringa universal ──────────────────────────────
-      // Artigos que aparecem em >40% dos normativos recebem peso reduzido
-      // proporcional à sua frequência. Ex: Art.V (76%) → eixoWeight = 0.12
-      // Art.III (25%) → eixoWeight = 0.50 (sem penalidade)
-      const getEixoWeight = (artigos_item: string[] | null): number => {
-        const arts = (artigos_item || []).map(normalizeArticle).filter(Boolean) as ArtigoConvencao[];
-        if (arts.length === 0) return 0.5;
-        // Use the LEAST frequent article as representative (most specific)
-        const minFreq = Math.min(...arts.map(a => artigoFrequency[a] || 0));
-        // If freq > 0.4, reduce weight: 0.5 * (1 - freq). Floor at 0.10
-        if (minFreq > 0.4) {
-          return Math.max(0.10, 0.5 * (1 - minFreq));
-        }
-        return 0.5;
-      };
-
-      // Build weight maps: keyword match → 1.0, eixo-only → dynamic (anti-coringa)
-      const keywordIndSet = new Set(keywordIndicadores.map(i => i.nome));
-      const keywordOrcSet = new Set(keywordOrcamento.map(o => `${o.programa}-${o.orgao}-${o.ano}`));
-      const keywordNormSet = new Set(keywordNormativos.map(n => n.titulo));
-
-      const indicadoresVinculados = Array.from(new Map([...baseIndicadores, ...keywordIndicadores].map(i => [i.nome, i])).values()).slice(0, 20);
-      const orcamentosVinculados = Array.from(new Map([...baseOrcamento, ...keywordOrcamento].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values()).slice(0, 20);
-      const normativosVinculados = Array.from(new Map([...baseNormativos, ...keywordNormativos].map(n => [n.titulo, n])).values()).slice(0, 20);
-
-      // Match quality weights — keyword=1.0, eixo=dynamic anti-coringa
-      const getIndWeight = (i: typeof indicadoresVinculados[0]) =>
-        keywordIndSet.has(i.nome) ? 1.0 : getEixoWeight(i.artigos_convencao as string[] | null);
-      const getOrcWeight = (o: typeof orcamentosVinculados[0]) =>
-        keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`) ? 1.0 : getEixoWeight(o.artigos_convencao as string[] | null);
-      const getNormWeight = (n: typeof normativosVinculados[0]) =>
-        keywordNormSet.has(n.titulo) ? 1.0 : getEixoWeight(n.artigos_convencao as string[] | null);
-
-      const totalIndKeyword = indicadoresVinculados.filter(i => keywordIndSet.has(i.nome)).length;
-      const totalIndEixo = indicadoresVinculados.length - totalIndKeyword;
-      const totalOrcKeyword = orcamentosVinculados.filter(o => keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`)).length;
-      const totalOrcEixo = orcamentosVinculados.length - totalOrcKeyword;
-      const totalNormKeyword = normativosVinculados.filter(n => keywordNormSet.has(n.titulo)).length;
-      const totalNormEixo = normativosVinculados.length - totalNormKeyword;
+      const totalInd = indicadoresVinculados.length;
+      const totalOrc = orcamentosVinculados.length;
+      const totalNorm = normativosVinculados.length;
 
       // ═══════════════════════════════════════════════════════════
       // MOTOR DE STATUS COMPUTADO v3 — Calibrado Anti-Coringa
