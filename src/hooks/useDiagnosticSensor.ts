@@ -5,6 +5,7 @@ import type { LacunaIdentificada, ComplianceStatus, ThematicAxis } from '@/hooks
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
+import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
