@@ -72,7 +72,6 @@ const SYNONYMS: Record<string, string[]> = {
   estatisticos: ['estatisticas', 'demografia', 'censo'],
   demograficos: ['demografia', 'censo'],
   desagregados: ['desagregacao', 'por raca', 'por genero', 'por etnia', 'raca cor', 'genero raca', 'quesito raca cor'],
-  raca: ['racial', 'raciais', 'raca cor', 'quesito raca cor'],
 };
 
 const GRUPO_SPECIFIC: Record<string, string[]> = {
@@ -177,10 +176,7 @@ function getRecommendationKeywordProfile(rec: RecommendationKeywordSource): Reco
     ...groupKeywords.filter((token) => normalizeSearchText(token).includes(' ')),
   ]);
   const conceptKeywords = extractConceptKeywords(sourceText, rawTokens, basePhraseKeywords);
-  const phraseKeywords = uniqueNonEmpty([
-    ...basePhraseKeywords,
-    ...conceptKeywords.filter((token) => normalizeSearchText(token).includes(' ')),
-  ]);
+  const phraseKeywords = basePhraseKeywords;
 
   const groupKeywordSet = new Set(groupKeywords);
   const allCandidateKeywords = uniqueNonEmpty([...rawTokens, ...synonymTokens, ...groupKeywords, ...conceptKeywords]);
