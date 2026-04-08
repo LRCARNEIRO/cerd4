@@ -13,10 +13,9 @@ interface MethodologyPanelProps {
 }
 
 const progressCategories = [
-  { label: 'Cumprido', weight: 'Score ≥ 75', color: 'bg-emerald-500', desc: 'Cobertura robusta: 7+ indicadores, 4+ normativos, 8+ ações orçamentárias vinculadas' },
-  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 50', color: 'bg-amber-500', desc: 'Cobertura moderada: 3-6 indicadores, 2-3 normativos, 3-7 ações orçamentárias' },
-  { label: 'Em Andamento', weight: 'Score ≥ 25', color: 'bg-blue-500', desc: 'Evidências iniciais: 1-2 indicadores, 1 normativo ou 1-2 ações orçamentárias' },
-  { label: 'Não Cumprido', weight: 'Score < 25', color: 'bg-red-500', desc: 'Evidências insuficientes ou ausentes nas 3 dimensões' },
+  { label: 'Cumprido', weight: 'Score ≥ 65', color: 'bg-emerald-500', desc: 'Cobertura robusta: 5+ indicadores, 3+ normativos, 5+ ações orçamentárias vinculadas' },
+  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 35', color: 'bg-amber-500', desc: 'Cobertura moderada: 2-4 indicadores, 1-2 normativos ou 2-4 ações orçamentárias' },
+  { label: 'Não Cumprido', weight: 'Score < 35', color: 'bg-red-500', desc: 'Evidências insuficientes ou ausentes nas 3 dimensões' },
 ];
 
 const aderenciaWeights = [
@@ -120,8 +119,7 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               Vinculação por keywords: tema + descrição + texto ONU → tokenização → filtro de stop-words → 
               expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada.
               Escala de indicadores: 1=20, 2=35, 3=50, 5=65, 7=80, 10+=100. Orçamento (contagem): 1=20, 2=35, 3=50, 5=65, 8=80, 12+=100.
-              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100.
-              Análise de execução financeira e tendência pertence ao Motor de Evolução.
+              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100. Faixas: ≥65 Cumprido | ≥35 Parcial | &lt;35 Não Cumprido.
             </p>
           </CardContent>
         </Card>

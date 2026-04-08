@@ -241,7 +241,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // ═══════════════════════════════════════════════════════════
       // Mede APENAS se o governo buscou responder (existência de evidências).
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
-      // 4 Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido
+      // 3 Faixas: ≥65 Cumprido | ≥35 Parcial | <35 Não Cumprido
       // Análise de execução/tendência pertence ao Motor de Evolução.
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) — contagem ──
@@ -317,11 +317,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const PESO_NORM = 0.30;
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // ── STATUS COMPUTADO (4 faixas — sem Retrocesso) ──
+      // ── STATUS COMPUTADO (3 faixas) ──
       let statusComputado: ComplianceStatus;
-      if (scoreGlobal >= 75) statusComputado = 'cumprido';
-      else if (scoreGlobal >= 50) statusComputado = 'parcialmente_cumprido';
-      else if (scoreGlobal >= 25) statusComputado = 'em_andamento';
+      if (scoreGlobal >= 65) statusComputado = 'cumprido';
+      else if (scoreGlobal >= 35) statusComputado = 'parcialmente_cumprido';
       else statusComputado = 'nao_cumprido';
 
       const statusLabels: Record<ComplianceStatus, string> = {
@@ -341,7 +340,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
         ``,
-        `Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido`,
+        `Faixas: ≥65 Cumprido | ≥35 Parcial | <35 Não Cumprido`,
       ].filter(Boolean).join('\n');
 
       const auditoria: AuditScoreBreakdown = {
@@ -384,15 +383,15 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       statusReclassificado[d.statusComputado]++;
     });
 
-    // Progress based on computed statuses (4 faixas, sem retrocesso)
+    // Progress based on computed statuses (3 faixas)
     const total = diagnostics.length;
     const progressoSensor = total > 0
       ? Math.round((
-          (statusReclassificado.cumprido * 90) + 
-          (statusReclassificado.parcialmente_cumprido * 67) + 
-          (statusReclassificado.em_andamento * 45) +
-          (statusReclassificado.nao_cumprido * 15) +
-          (statusReclassificado.retrocesso * 15)
+          (statusReclassificado.cumprido * 100) + 
+          (statusReclassificado.parcialmente_cumprido * 50) + 
+          (statusReclassificado.em_andamento * 50) +
+          (statusReclassificado.nao_cumprido * 10) +
+          (statusReclassificado.retrocesso * 10)
         ) / total)
       : 0;
 
