@@ -57,11 +57,12 @@ export function EvidenceDrilldownDialog({
   const [addTab, setAddTab] = useState<'indicadores' | 'orcamento' | 'normativos'>('indicadores');
   const [showAddPanel, setShowAddPanel] = useState(false);
 
-  if (!diagnostic) return null;
-
   const isEditable = !!onOverridesChange && !!overrides;
 
-  const { auditoria, linkedIndicadores, linkedOrcamento, linkedNormativos } = diagnostic;
+  const auditoria = diagnostic?.auditoria;
+  const linkedIndicadores = diagnostic?.linkedIndicadores || [];
+  const linkedOrcamento = diagnostic?.linkedOrcamento || [];
+  const linkedNormativos = diagnostic?.linkedNormativos || [];
 
   // ── Effective lists (with overrides applied) ──
   const effectiveIndicadores = useMemo(() => {
@@ -182,6 +183,8 @@ export function EvidenceDrilldownDialog({
     overrides.removedIndicadores.length > 0 || overrides.removedOrcamento.length > 0 || overrides.removedNormativos.length > 0 ||
     overrides.addedIndicadores.length > 0 || overrides.addedOrcamento.length > 0 || overrides.addedNormativos.length > 0
   );
+
+  if (!diagnostic || !auditoria) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
