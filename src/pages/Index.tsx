@@ -211,41 +211,7 @@ export default function Index() {
         <SensorAlertPanel summary={sensorSummary} isReady={sensorReady} />
       </div>
 
-      {/* Stats Grid - Dinâmico */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard
-          title="Recomendações ONU"
-          value={isLoading ? '...' : stats.totalRecomendacoes}
-          subtitle={isLoading ? '...' : `${totalCumpridas} cumpridas de ${stats.totalRecomendacoes}`}
-          icon={AlertTriangle}
-          variant="warning"
-          sourceInfo={{ label: 'CERD/C/BRA/CO/18-20 — OHCHR', url: 'https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FBRA%2FCO%2F18-20&Lang=en' }}
-        />
-        <StatCard
-          title="Progresso Geral"
-          value={isLoading ? '...' : `${sensorReady ? sensorSummary.progressoSensor : stats.progressoGeral}%`}
-          subtitle="baseado nos dados"
-          icon={ClipboardCheck}
-          variant="default"
-          sourceInfo={{ label: 'Sensor Diagnóstico — Nível 1', url: '/recomendacoes' }}
-        />
-        <StatCard
-          title="Indicadores"
-          value={isLoading ? '...' : TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + stats.totalIndicadores}
-          subtitle={`${TOTAL_TABELAS_COMMON_CORE} tabelas CC · ${TOTAL_DADOS_NOVOS} dados novos · ${stats.totalIndicadores} no BD`}
-          icon={BarChart3}
-          variant="success"
-          sourceInfo={{ label: 'SIDRA/IBGE + DataSUS + FBSP', url: 'https://sidra.ibge.gov.br/home/pnadct/brasil' }}
-        />
-        <StatCard
-          title="Registros Orçamentários"
-          value={isLoading ? '...' : stats.totalOrcamento}
-          subtitle={`${orcamentoStats?.porEsfera ? Object.keys(orcamentoStats.porEsfera).length : 0} esferas`}
-          icon={Database}
-          variant="default"
-          sourceInfo={{ label: 'SIOP + Portal da Transparência', url: 'https://portaldatransparencia.gov.br/funcoes/14-Direitos-da-Cidadania' }}
-        />
-      </div>
+      {/* Removed: 4 initial StatCards — data is already visible in the Dual Perspective Panel below */}
 
 
 
