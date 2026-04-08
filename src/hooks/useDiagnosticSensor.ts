@@ -363,7 +363,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
-        pioraCapped ? `⚠️ CAP PIORA ATIVO: score limitado a 55 (indicadores em piora > melhora)` : '',
+        ''
         ``,
         `Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso`,
       ].filter(Boolean).join('\n');
