@@ -285,19 +285,23 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         return mapped ? mapped.includes(art.numero) : false;
       });
       const cumpridas = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'cumprido';
       }).length;
       const parciais = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'parcialmente_cumprido';
       }).length;
       const naoCumpridas = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'nao_cumprido';
       }).length;
       const retrocesso = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'retrocesso';
       }).length;
 
