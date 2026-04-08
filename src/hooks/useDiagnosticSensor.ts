@@ -214,15 +214,21 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       if (recOverride) {
         finalIndicadores = [
           ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
-          ...recOverride.addedIndicadores.filter(a => !finalIndicadores.some(f => f.nome === a.nome)),
+          ...recOverride.addedIndicadores
+            .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
+            .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
         ];
         finalOrcamentos = [
           ...finalOrcamentos.filter(o => !recOverride.removedOrcamento.includes(orcKeyFn(o))),
-          ...recOverride.addedOrcamento.filter(a => !finalOrcamentos.some(f => orcKeyFn(f) === orcKeyFn(a))),
+          ...recOverride.addedOrcamento
+            .filter(a => !finalOrcamentos.some(f => orcKeyFn(f) === orcKeyFn(a)))
+            .map(a => ({ ...a, descritivo: null, eixo_tematico: null, publico_alvo: null, observacoes: null, razao_selecao: null, artigos_convencao: null } as any)),
         ];
         finalNormativos = [
           ...finalNormativos.filter(n => !recOverride.removedNormativos.includes(n.titulo)),
-          ...recOverride.addedNormativos.filter(a => !finalNormativos.some(f => f.titulo === a.titulo)),
+          ...recOverride.addedNormativos
+            .filter(a => !finalNormativos.some(f => f.titulo === a.titulo))
+            .map(a => ({ ...a, artigos_convencao: null, categoria: '' } as any)),
         ];
       }
 
