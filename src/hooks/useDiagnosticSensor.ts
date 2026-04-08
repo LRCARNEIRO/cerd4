@@ -340,7 +340,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
         ``,
-        `Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido`,
+        `Faixas: ≥65 Cumprido | ≥35 Parcial | <35 Não Cumprido`,
       ].filter(Boolean).join('\n');
 
       const auditoria: AuditScoreBreakdown = {
