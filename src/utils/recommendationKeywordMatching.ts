@@ -5,6 +5,24 @@ type RecommendationKeywordSource = {
   grupo_focal?: string | null;
 };
 
+type RecommendationKeywordProfile = {
+  allKeywords: string[];
+  phraseKeywords: string[];
+  groupKeywords: string[];
+  strongKeywords: string[];
+  weakKeywords: string[];
+};
+
+export type RecommendationKeywordMatch = {
+  isRelevant: boolean;
+  matchedKeywords: string[];
+  matchedPhraseKeywords: string[];
+  matchedGroupKeywords: string[];
+  matchedStrongKeywords: string[];
+  matchedWeakKeywords: string[];
+  score: number;
+};
+
 const KEYWORD_STOPWORDS = new Set([
   'sobre', 'entre', 'contra', 'desde', 'ainda', 'outros', 'outras',
   'sendo', 'foram', 'todos', 'todas', 'nivel', 'forma', 'areas',
@@ -18,20 +36,28 @@ const KEYWORD_STOPWORDS = new Set([
   'violando', 'dever', 'estatal', 'especialmente', 'vulneravel',
   'artigo', 'artigos', 'decreto', 'decretos', 'resolucao', 'resolucoes',
   'federal', 'nacional', 'brasileiro', 'brasileira', 'uniao',
+  'comite', 'recomenda', 'recomendacao', 'recomendacoes', 'parte',
+  'acelere', 'proteja', 'essas', 'esses', 'essa', 'esse',
+]);
+
+const LOW_SIGNAL_KEYWORDS = new Set([
+  'violencia', 'ameaca', 'ameacas', 'discriminacao', 'segregacao',
+  'protecao', 'combate', 'combater', 'garantia', 'garantias',
+  'promocao', 'promover', 'acesso', 'acessos',
 ]);
 
 const SYNONYMS: Record<string, string[]> = {
   homofobicas: ['homofobia', 'lgbtfobia', 'lgbtqia', 'orientacao sexual', 'homoafetivo'],
   transfobicas: ['transfobia', 'pessoas trans', 'trans', 'transgenero', 'identidade de genero', 'transexualidade'],
   criminalizacao: ['criminalizar', 'criminalizacao', 'tipificacao'],
-  quilombolas: ['quilombo', 'quilombola', 'remanescentes'],
-  quilombola: ['quilombo', 'quilombolas', 'remanescentes'],
+  quilombolas: ['quilombo', 'quilombola', 'remanescentes', 'territorio quilombola', 'terras quilombolas'],
+  quilombola: ['quilombo', 'quilombolas', 'remanescentes', 'territorio quilombola', 'terras quilombolas'],
   homicidios: ['homicidio', 'letalidade', 'mortes violentas'],
   homicidio: ['homicidios', 'letalidade', 'mortes violentas'],
   moradia: ['habitacao', 'habitacional', 'deficit habitacional'],
   segregacao: ['segregacao residencial', 'favelas'],
-  demarcacao: ['titulacao', 'regularizacao fundiaria'],
-  titulacao: ['demarcacao', 'regularizacao fundiaria'],
+  demarcacao: ['titulacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
+  titulacao: ['demarcacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
   encarceramento: ['sistema prisional', 'penitenciario', 'custodia'],
   feminicidio: ['violencia domestica', 'violencia mulher'],
   'trabalho infantil': ['erradicacao trabalho infantil'],
@@ -75,7 +101,13 @@ function uniqueNonEmpty(values: string[]): string[] {
   return [...new Set(values.map(normalizeSearchText).filter(Boolean))].sort((a, b) => b.length - a.length);
 }
 
-export function getRecomendacaoKeywords(rec: RecommendationKeywordSource): string[] {
+function includesWholeTerm(normalizedHaystack: string, keyword: string): boolean {
+  const normalizedKeyword = normalizeSearchText(keyword);
+  if (!normalizedKeyword) return false;
+  return normalizedHaystack.includes(` ${normalizedKeyword} `);
+}
+
+function extractSourceText(rec: RecommendationKeywordSource): string {
   let sourceText = `${rec.tema || ''} ${rec.descricao_lacuna || ''}`;
   const textoOnu = rec.texto_original_onu;
 
@@ -84,15 +116,58 @@ export function getRecomendacaoKeywords(rec: RecommendationKeywordSource): strin
     if (isPt) sourceText += ` ${textoOnu}`;
   }
 
-  const rawTokens = tokenize(sourceText).filter(token => !KEYWORD_STOPWORDS.has(token));
-  const synonymTokens = rawTokens.flatMap(token => SYNONYMS[token] || []);
-  const grupoTokens = GRUPO_SPECIFIC[rec.grupo_focal || ''] || [];
+  return sourceText;
+}
 
-  return uniqueNonEmpty([
-    ...rawTokens,
-    ...synonymTokens,
-    ...grupoTokens,
+function extractPhraseKeywords(text: string): string[] {
+  const words = normalizeSearchText(text).split(' ').filter(Boolean);
+  const phrases: string[] = [];
+
+  for (const size of [3, 2]) {
+    for (let index = 0; index <= words.length - size; index += 1) {
+      const slice = words.slice(index, index + size);
+      const relevantWords = slice.filter((word) => word.length >= 4 && !KEYWORD_STOPWORDS.has(word));
+      if (relevantWords.length < 2) continue;
+      if (relevantWords.every((word) => LOW_SIGNAL_KEYWORDS.has(word))) continue;
+      phrases.push(slice.join(' '));
+    }
+  }
+
+  return uniqueNonEmpty(phrases);
+}
+
+function getRecommendationKeywordProfile(rec: RecommendationKeywordSource): RecommendationKeywordProfile {
+  const sourceText = extractSourceText(rec);
+  const rawTokens = tokenize(sourceText).filter((token) => !KEYWORD_STOPWORDS.has(token));
+  const synonymTokens = rawTokens.flatMap((token) => SYNONYMS[token] || []);
+  const groupKeywords = uniqueNonEmpty(GRUPO_SPECIFIC[rec.grupo_focal || ''] || []);
+  const phraseKeywords = uniqueNonEmpty([
+    ...extractPhraseKeywords(sourceText),
+    ...synonymTokens.filter((token) => normalizeSearchText(token).includes(' ')),
+    ...groupKeywords.filter((token) => normalizeSearchText(token).includes(' ')),
   ]);
+
+  const groupKeywordSet = new Set(groupKeywords);
+  const allCandidateKeywords = uniqueNonEmpty([...rawTokens, ...synonymTokens, ...groupKeywords]);
+  const weakKeywords = uniqueNonEmpty(
+    allCandidateKeywords.filter((keyword) => !groupKeywordSet.has(keyword) && LOW_SIGNAL_KEYWORDS.has(keyword))
+  );
+  const weakKeywordSet = new Set(weakKeywords);
+  const strongKeywords = uniqueNonEmpty(
+    allCandidateKeywords.filter((keyword) => !groupKeywordSet.has(keyword) && !weakKeywordSet.has(keyword))
+  );
+
+  return {
+    allKeywords: uniqueNonEmpty([...phraseKeywords, ...groupKeywords, ...strongKeywords, ...weakKeywords]),
+    phraseKeywords,
+    groupKeywords,
+    strongKeywords,
+    weakKeywords,
+  };
+}
+
+export function getRecomendacaoKeywords(rec: RecommendationKeywordSource): string[] {
+  return getRecommendationKeywordProfile(rec).allKeywords;
 }
 
 export function getKeywordMatches(haystack: string, keywords: string[]): string[] {
@@ -110,4 +185,63 @@ export function getKeywordMatches(haystack: string, keywords: string[]): string[
 
 export function hasKeywordMatch(haystack: string, keywords: string[]): boolean {
   return getKeywordMatches(haystack, keywords).length > 0;
+}
+
+export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, haystack: string): RecommendationKeywordMatch {
+  const normalizedHaystack = ` ${normalizeSearchText(haystack)} `;
+  if (!normalizedHaystack.trim()) {
+    return {
+      isRelevant: false,
+      matchedKeywords: [],
+      matchedPhraseKeywords: [],
+      matchedGroupKeywords: [],
+      matchedStrongKeywords: [],
+      matchedWeakKeywords: [],
+      score: 0,
+    };
+  }
+
+  const profile = getRecommendationKeywordProfile(rec);
+  const matchedPhraseKeywords = profile.phraseKeywords.filter((keyword) => includesWholeTerm(normalizedHaystack, keyword));
+  const matchedGroupKeywords = profile.groupKeywords.filter((keyword) => includesWholeTerm(normalizedHaystack, keyword));
+  const matchedStrongKeywords = profile.strongKeywords.filter((keyword) => includesWholeTerm(normalizedHaystack, keyword));
+  const matchedWeakKeywords = profile.weakKeywords.filter((keyword) => includesWholeTerm(normalizedHaystack, keyword));
+
+  const phraseCoveredTokens = new Set(
+    matchedPhraseKeywords.flatMap((phrase) => normalizeSearchText(phrase).split(' '))
+  );
+
+  const standaloneGroupKeywords = matchedGroupKeywords.filter((keyword) => !phraseCoveredTokens.has(normalizeSearchText(keyword)));
+  const standaloneStrongKeywords = matchedStrongKeywords.filter((keyword) => !phraseCoveredTokens.has(normalizeSearchText(keyword)));
+  const standaloneWeakKeywords = matchedWeakKeywords.filter((keyword) => !phraseCoveredTokens.has(normalizeSearchText(keyword)));
+
+  const score =
+    (matchedPhraseKeywords.length * 3) +
+    (standaloneGroupKeywords.length * 2.5) +
+    (standaloneStrongKeywords.length * 1.5) +
+    (standaloneWeakKeywords.length * 0.5);
+
+  const requiresFocalSignal = profile.groupKeywords.length > 0;
+  const isRelevant = requiresFocalSignal
+    ? matchedGroupKeywords.length > 0 && (matchedPhraseKeywords.length > 0 || score >= 3)
+    : matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
+
+  return {
+    isRelevant,
+    matchedKeywords: uniqueNonEmpty([
+      ...matchedPhraseKeywords,
+      ...matchedGroupKeywords,
+      ...matchedStrongKeywords,
+      ...matchedWeakKeywords,
+    ]),
+    matchedPhraseKeywords,
+    matchedGroupKeywords,
+    matchedStrongKeywords,
+    matchedWeakKeywords,
+    score,
+  };
+}
+
+export function matchesRecommendationEvidence(rec: RecommendationKeywordSource, haystack: string): boolean {
+  return getRecommendationKeywordMatch(rec, haystack).isRelevant;
 }
