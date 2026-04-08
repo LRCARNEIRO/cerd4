@@ -337,6 +337,12 @@ ${renderRows(allItems)}
         paragrafo={drilldownRec?.paragrafo || ''}
         tema={drilldownRec?.tema || ''}
         diagnostic={drilldownDiag}
+        recomendacaoId={drilldownId || undefined}
+        allIndicadores={rawIndicadores}
+        allOrcamento={rawOrcamento}
+        allNormativos={rawNormativos}
+        overrides={drilldownId ? (evidenceOverrides[drilldownId] || emptyOverride()) : undefined}
+        onOverridesChange={drilldownId ? (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov })) : undefined}
       />
 
       <ParagraphTextDialog
