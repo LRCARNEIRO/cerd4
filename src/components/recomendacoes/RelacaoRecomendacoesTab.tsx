@@ -11,7 +11,7 @@ import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
-import { EvidenceDrilldownDialog } from '@/components/shared/EvidenceDrilldownDialog';
+import { EvidenceDrilldownDialog, emptyOverride, type EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 
 const eixoLabels: Record<string, string> = {
@@ -63,7 +63,8 @@ function getPrioridadeLabel(prioridade: string): string {
 
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const [evidenceOverrides, setEvidenceOverrides] = useState<EvidenceOverrides>({});
+  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
   const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
@@ -336,6 +337,12 @@ ${renderRows(allItems)}
         paragrafo={drilldownRec?.paragrafo || ''}
         tema={drilldownRec?.tema || ''}
         diagnostic={drilldownDiag}
+        recomendacaoId={drilldownId || undefined}
+        allIndicadores={rawIndicadores}
+        allOrcamento={rawOrcamento}
+        allNormativos={rawNormativos}
+        overrides={drilldownId ? (evidenceOverrides[drilldownId] || emptyOverride()) : undefined}
+        onOverridesChange={drilldownId ? (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov })) : undefined}
       />
 
       <ParagraphTextDialog

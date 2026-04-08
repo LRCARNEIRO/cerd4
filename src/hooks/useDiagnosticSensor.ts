@@ -5,6 +5,7 @@ import type { LacunaIdentificada, ComplianceStatus, ThematicAxis } from '@/hooks
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
+import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
@@ -107,7 +108,7 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
 }
 
 // ── Main Hook ──────────────────────────────────────────────────────
-export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined) {
+export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined, overrides?: EvidenceOverrides) {
   // Fetch all three cross-reference sources in parallel
   const { data: indicadores } = useQuery({
     queryKey: ['sensor-indicadores'],
@@ -163,7 +164,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
+    const orcKeyFn = (o: any) => `${o.programa}|${o.orgao}|${o.ano}`;
+
     return recomendacoes.map(rec => {
+      const recOverride = overrides?.[rec.id];
       const signals: DiagnosticSignal[] = [];
 
       const indicadoresVinculados = indicadores
@@ -202,9 +206,35 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         .map(({ item }) => item)
         .slice(0, 20);
 
-      const totalInd = indicadoresVinculados.length;
-      const totalOrc = orcamentosVinculados.length;
-      const totalNorm = normativosVinculados.length;
+      // ── Apply manual overrides ──
+      let finalIndicadores = indicadoresVinculados;
+      let finalOrcamentos = orcamentosVinculados;
+      let finalNormativos = normativosVinculados;
+
+      if (recOverride) {
+        finalIndicadores = [
+          ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
+          ...recOverride.addedIndicadores
+            .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
+            .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
+        ];
+        finalOrcamentos = [
+          ...finalOrcamentos.filter(o => !recOverride.removedOrcamento.includes(orcKeyFn(o))),
+          ...recOverride.addedOrcamento
+            .filter(a => !finalOrcamentos.some(f => orcKeyFn(f) === orcKeyFn(a)))
+            .map(a => ({ ...a, descritivo: null, eixo_tematico: null, publico_alvo: null, observacoes: null, razao_selecao: null, artigos_convencao: null } as any)),
+        ];
+        finalNormativos = [
+          ...finalNormativos.filter(n => !recOverride.removedNormativos.includes(n.titulo)),
+          ...recOverride.addedNormativos
+            .filter(a => !finalNormativos.some(f => f.titulo === a.titulo))
+            .map(a => ({ ...a, artigos_convencao: null, categoria: '' } as any)),
+        ];
+      }
+
+      const totalInd = finalIndicadores.length;
+      const totalOrc = finalOrcamentos.length;
+      const totalNorm = finalNormativos.length;
 
       // ═══════════════════════════════════════════════════════════
        // MOTOR DE STATUS COMPUTADO v5 — Vinculação Estrita + Score Temático
@@ -215,7 +245,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
+      const tendencias = finalIndicadores.map(i => inferTendencia(i));
       const pioram = tendencias.filter(t => t === 'piora').length;
       const melhoram = tendencias.filter(t => t === 'melhora').length;
       const estaveis = tendencias.filter(t => t === 'estavel').length;
@@ -236,13 +266,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
-        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
       } else if (melhoram > 0) {
-        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
       // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) ──
-      const simbolicos = orcamentosVinculados.filter(o => {
+      const simbolicos = finalOrcamentos.filter(o => {
         const dotacao = Number(o.dotacao_autorizada) || 0;
         const pago = Number(o.pago) || 0;
         return dotacao > 100000 && pago < dotacao * 0.05;
@@ -251,8 +281,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
+        const totalDotacao = finalOrcamentos.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
+        const totalPago = finalOrcamentos.reduce((s, o) => s + (Number(o.pago) || 0), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
         if (simbolicos.length > 0) {
@@ -354,12 +384,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: indicadoresVinculados.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
-        linkedOrcamento: orcamentosVinculados.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
-        linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
+        linkedIndicadores: finalIndicadores.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
+        linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [recomendacoes, indicadores, orcamento, normativos]);
+  }, [recomendacoes, indicadores, orcamento, normativos, overrides]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
@@ -411,6 +441,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     diagnosticMap,
     summary,
     isReady: !!(recomendacoes && indicadores && orcamento && normativos),
+    rawIndicadores: indicadores,
+    rawOrcamento: orcamento,
+    rawNormativos: normativos,
   };
 }
 
