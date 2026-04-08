@@ -381,14 +381,15 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       statusReclassificado[d.statusComputado]++;
     });
 
-    // Progress based on computed statuses
+    // Progress based on computed statuses (4 faixas, sem retrocesso)
     const total = diagnostics.length;
     const progressoSensor = total > 0
       ? Math.round((
-          (statusReclassificado.cumprido * 100) + 
-          (statusReclassificado.parcialmente_cumprido * 60) + 
-          (statusReclassificado.em_andamento * 30) +
-          (statusReclassificado.nao_cumprido * 5)
+          (statusReclassificado.cumprido * 90) + 
+          (statusReclassificado.parcialmente_cumprido * 67) + 
+          (statusReclassificado.em_andamento * 45) +
+          (statusReclassificado.nao_cumprido * 15) +
+          (statusReclassificado.retrocesso * 15)
         ) / total)
       : 0;
 
