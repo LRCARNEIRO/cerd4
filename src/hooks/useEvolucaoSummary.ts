@@ -1,13 +1,9 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
-import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { getSafeIndicadores } from '@/utils/inferArtigosIndicador';
+import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
-
-const GENERIC_STOPS = ['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal', 'estado', 'governo', 'medida', 'direito', 'parte', 'comite', 'sobre', 'contra', 'entre', 'todas', 'todos', 'forma', 'podem', 'grupo', 'populacao', 'pessoa', 'acoes', 'acordo', 'ainda', 'alem', 'outro', 'outras', 'outros', 'sendo', 'relacao', 'numero', 'dados'];
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 
 function normalizeArticle(raw: string): ArtigoConvencao | null {
   return normalizeArticleTag(raw);
@@ -20,52 +16,19 @@ function getArtigos(l: { artigos_convencao?: string[] | null; eixo_tematico: str
   return EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
 }
 
+/**
+ * Hook that provides evolution summary consuming evidence from useDiagnosticSensor
+ * (same source as Recomendações), then scoring for trend/impact.
+ * Used by Dashboard and Conclusões panels.
+ */
 export function useEvolucaoSummary() {
   const { data: recomendacoes, isLoading: l1 } = useLacunasIdentificadas({});
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
 
-  const { data: indicadores, isLoading: l2 } = useQuery({
-    queryKey: ['evolucao-summary-ind'],
-    queryFn: async () => {
-      const { data } = await supabase.from('indicadores_interseccionais')
-        .select('nome, categoria, tendencia, dados, artigos_convencao, subcategoria')
-        .neq('categoria', 'common_core');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: orcamento, isLoading: l3 } = useQuery({
-    queryKey: ['evolucao-summary-orc'],
-    queryFn: async () => {
-      let all: any[] = [];
-      let page = 0;
-      while (true) {
-        const { data } = await supabase.from('dados_orcamentarios')
-          .select('programa, orgao, ano, liquidado, descritivo, eixo_tematico, publico_alvo')
-          .range(page * 1000, (page + 1) * 1000 - 1);
-        if (!data || data.length === 0) break;
-        all = all.concat(data);
-        if (data.length < 1000) break;
-        page++;
-      }
-      return all;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: normativos, isLoading: l4 } = useQuery({
-    queryKey: ['evolucao-summary-norm'],
-    queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('titulo, artigos_convencao');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const isLoading = l1 || l2 || l3 || l4;
+  const isLoading = l1 || !sensorReady;
 
   const { summary, artigosSummary } = useMemo(() => {
-    if (!recomendacoes || !indicadores || !orcamento || !normativos) {
+    if (!recomendacoes || !sensorReady) {
       return {
         summary: { evolucao: 0, estagnacao: 0, retrocesso: 0 },
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
@@ -75,7 +38,6 @@ export function useEvolucaoSummary() {
       };
     }
 
-    const dedupedInd = getSafeIndicadores(indicadores);
     let evolCount = 0, estagCount = 0, retroCount = 0;
 
     // Per-article accumulators
@@ -83,43 +45,30 @@ export function useEvolucaoSummary() {
     ARTIGOS_CONVENCAO.forEach(a => { artEvolScores[a.numero] = []; });
 
     recomendacoes.forEach(rec => {
-      const rawText = `${rec.tema} ${rec.descricao_lacuna} ${(rec as any).texto_original_onu || ''}`.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      const tokens = rawText.split(/\s+/).filter(t => t.length >= 5 && !GENERIC_STOPS.includes(t));
+      const diag = diagnosticMap.get(rec.id);
+      const linkedInd = diag?.linkedIndicadores || [];
+      const linkedOrc = diag?.linkedOrcamento || [];
+      const linkedNorm = diag?.linkedNormativos || [];
 
-      // Indicadores
-      const matchedInd = dedupedInd.filter((ind: any) => {
-        const h = `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''}`.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return tokens.some(t => h.includes(t));
-      });
+      // Indicadores — evaluate trends
       let fav = 0, desfav = 0, novos = 0;
-      matchedInd.forEach((ind: any) => {
+      linkedInd.forEach((ind: any) => {
         const r = evaluateIndicadorDetailed(ind).result;
         if (r === 'favoravel') fav++;
         else if (r === 'desfavoravel') desfav++;
         else if (r === 'novo') novos++;
       });
-      const indTotal = matchedInd.length;
+      const indTotal = linkedInd.length;
       const rawIndScore = indTotal > 0 ? ((fav + novos * 0.7 - desfav * 0.5) / indTotal) * 100 : 0;
       const scoreInd = Math.max(0, Math.min(100, rawIndScore));
 
-      // Orçamento
-      const matchedOrc = orcamento.filter((o: any) => {
-        const h = `${o.programa} ${o.orgao} ${o.descritivo || ''} ${o.eixo_tematico || ''} ${o.publico_alvo || ''}`.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return tokens.some(t => h.includes(t));
-      });
-      const progs = new Set(matchedOrc.map((o: any) => o.programa)).size;
-      const totalLiq = matchedOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
+      // Orçamento — R$ liquidado
+      const progs = new Set(linkedOrc.map((o: any) => o.programa)).size;
+      const totalLiq = linkedOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || Number(o.pago) || 0), 0);
       const scoreOrc = Math.min(100, progs > 0 ? 40 + Math.min(60, totalLiq / 1e8) : 0);
 
-      // Normativos
-      const matchedNorm = normativos.filter((d: any) => {
-        const h = d.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return tokens.some(t => h.includes(t));
-      });
-      const scoreNorm = Math.min(100, matchedNorm.length * 12);
+      // Normativos — quantity
+      const scoreNorm = Math.min(100, linkedNorm.length * 12);
 
       const scoreFarol = Math.round(scoreInd * 0.50 + scoreOrc * 0.30 + scoreNorm * 0.20);
       if (scoreFarol >= 60) evolCount++;
@@ -135,11 +84,22 @@ export function useEvolucaoSummary() {
       const scores = artEvolScores[a.numero];
       const avgEvol = scores.length > 0 ? Math.round(scores.reduce((s, v) => s + v, 0) / scores.length) : 0;
       
-      // Count recs per article for status
+      // Count recs per article for status — use computed status from sensor
       const artRecs = recomendacoes.filter(r => getArtigos(r).includes(a.numero));
-      const cumpridas = artRecs.filter(r => r.status_cumprimento === 'cumprido').length;
-      const parciais = artRecs.filter(r => r.status_cumprimento === 'parcialmente_cumprido' || r.status_cumprimento === 'em_andamento').length;
-      const naoCumpridas = artRecs.filter(r => r.status_cumprimento === 'nao_cumprido' || r.status_cumprimento === 'retrocesso').length;
+      const cumpridas = artRecs.filter(r => {
+        const d = diagnosticMap.get(r.id);
+        return (d?.statusComputado ?? r.status_cumprimento) === 'cumprido';
+      }).length;
+      const parciais = artRecs.filter(r => {
+        const d = diagnosticMap.get(r.id);
+        const st = d?.statusComputado ?? r.status_cumprimento;
+        return st === 'parcialmente_cumprido' || st === 'em_andamento';
+      }).length;
+      const naoCumpridas = artRecs.filter(r => {
+        const d = diagnosticMap.get(r.id);
+        const st = d?.statusComputado ?? r.status_cumprimento;
+        return st === 'nao_cumprido' || st === 'retrocesso';
+      }).length;
 
       return {
         numero: a.numero,
@@ -156,7 +116,7 @@ export function useEvolucaoSummary() {
       summary: { evolucao: evolCount, estagnacao: estagCount, retrocesso: retroCount },
       artigosSummary,
     };
-  }, [recomendacoes, indicadores, orcamento, normativos]);
+  }, [recomendacoes, diagnosticMap, sensorReady]);
 
   return { summary, artigosSummary, isLoading };
 }
