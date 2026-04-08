@@ -158,7 +158,7 @@ th{background:#f1f5f9;font-size:10px}
 
 <div class="methodology">
 <h2>🔗 Metodologia de Vinculação e Cálculo de Status (v4)</h2>
-<p><strong>Vinculação Evidências → Recomendação:</strong> Estrita por palavras-chave. Termos extraídos do tema, descrição e texto original ONU (tokenização ≥5 letras + stop-words + sinônimos). Busca nos campos: nome/categoria de indicadores, programa/órgão/descritivo/público-alvo de orçamento, título de normativos. <em>Não</em> utiliza artigos ICERD ou eixos genéricos.</p>
+<p><strong>Vinculação Evidências → Recomendação:</strong> Estrita por palavras-chave. Termos extraídos do tema, descrição e texto original ONU (tokenização ≥5 letras + stop-words + sinônimos), com correspondência por <em>termo/frase inteira normalizada</em>, sem substring solta. Busca nos campos: nome/categoria de indicadores, programa/órgão/descritivo/público-alvo de orçamento, título de normativos. <em>Não</em> utiliza artigos ICERD ou eixos genéricos.</p>
 <p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback). Apenas para classificação temática.</p>
 <p><strong>Cálculo do Status:</strong> Indicadores 40% + Orçamento 30% + Normativos 30%. Cap piora: se indicadores pioram > melhoram, teto = 55 (Parcial).</p>
 <p><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
