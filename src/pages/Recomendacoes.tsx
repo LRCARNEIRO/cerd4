@@ -240,6 +240,7 @@ export default function Recomendacoes() {
           <TabsTrigger value="follow-up">Follow-up 2026</TabsTrigger>
           <TabsTrigger value="rgs">Recomendações Gerais</TabsTrigger>
           <TabsTrigger value="durban">Durban</TabsTrigger>
+          <TabsTrigger value="respostas-cerd">Respostas às Críticas ({respostasCerd?.length || 0})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="relacao">
