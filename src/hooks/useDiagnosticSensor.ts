@@ -237,16 +237,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const totalNorm = finalNormativos.length;
 
       // ═══════════════════════════════════════════════════════════
-       // MOTOR DE STATUS COMPUTADO v5 — Vinculação Estrita + Score Temático
+       // MOTOR DE STATUS COMPUTADO v6 — Cobertura Pura (Esforço Governamental)
       // ═══════════════════════════════════════════════════════════
+      // Mede APENAS se o governo buscou responder (existência de evidências).
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
-      // Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
-       // TODAS as evidências vinculadas por termo/frase inteira + score mínimo
-      // Cap piora: se indicadores pioram > melhoram, teto global = 55
+      // 4 Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido
+      // Análise de execução/tendência pertence ao Motor de Evolução.
 
-      // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      // ESFORÇO GOVERNAMENTAL: mede cobertura (quantos indicadores existem),
-      // NÃO tendência (que pertence ao Motor de Evolução).
+      // ── 1. SCORE INDICADORES (0-100, peso 40%) — contagem ──
       let scoreInd = 0;
       if (totalInd >= 8) scoreInd = 100;
       else if (totalInd >= 5) scoreInd = 85;
@@ -272,41 +270,26 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
-      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) ──
-      const simbolicos = finalOrcamentos.filter(o => {
-        const dotacao = Number(o.dotacao_autorizada) || 0;
-        const pago = Number(o.pago) || 0;
-        return dotacao > 100000 && pago < dotacao * 0.05;
-      });
-
-      let execucaoMedia = 0;
+      // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — CONTAGEM de ações (não execução) ──
+      // A análise de execução financeira pertence ao Motor de Evolução.
       let scoreOrc = 0;
-      if (totalOrc > 0) {
-        const totalDotacao = finalOrcamentos.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        const totalPago = finalOrcamentos.reduce((s, o) => s + (Number(o.pago) || 0), 0);
-        execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
-        scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
-        if (simbolicos.length > 0) {
-          scoreOrc = Math.max(10, scoreOrc - (simbolicos.length / totalOrc) * 30);
-        }
-      } else {
-        scoreOrc = 10;
-      }
-      scoreOrc = Math.round(Math.max(0, Math.min(100, scoreOrc)));
+      if (totalOrc >= 10) scoreOrc = 100;
+      else if (totalOrc >= 6) scoreOrc = 85;
+      else if (totalOrc >= 3) scoreOrc = 70;
+      else if (totalOrc >= 2) scoreOrc = 55;
+      else if (totalOrc >= 1) scoreOrc = 40;
+      else scoreOrc = 5;
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões) vinculada(s), execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''} → ${scoreOrc} pts.`;
+        : `${totalOrc} ação(ões) vinculada(s) por coerência temática → ${scoreOrc} pts.`;
 
       // Signals for budget
-      if (simbolicos.length > 0) {
-        const totalDotSim = simbolicos.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        signals.push({ type: 'orcamento_simbolico', severity: 'warning', message: `${simbolicos.length} ação(ões) com orçamento simbólico`, detail: `R$ ${(totalDotSim / 1e6).toFixed(1)}M autorizados com execução < 5%` });
-      } else if (totalOrc > 0) {
+      if (totalOrc > 0) {
         signals.push({ type: 'orcamento_simbolico', severity: 'info', message: `${totalOrc} ação(ões) orçamentária(s) vinculada(s)` });
       }
 
-      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) ──
+      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — contagem ──
       let scoreNorm = 0;
       if (totalNorm >= 5) scoreNorm = 100;
       else if (totalNorm >= 3) scoreNorm = 80;
@@ -331,20 +314,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const PESO_NORM = 0.30;
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // Nota: Tendência dos indicadores NÃO afeta o score de Esforço Governamental.
-      // A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).
-
-      // ── STATUS COMPUTADO ──
+      // ── STATUS COMPUTADO (4 faixas — sem Retrocesso) ──
       let statusComputado: ComplianceStatus;
-      if (scoreGlobal >= 80) statusComputado = 'cumprido';
-      else if (scoreGlobal >= 55) statusComputado = 'parcialmente_cumprido';
-      else if (scoreGlobal >= 35) statusComputado = 'em_andamento';
-      else if (scoreGlobal >= 15) statusComputado = 'nao_cumprido';
-      else statusComputado = 'retrocesso';
-
-      if (statusComputado === 'retrocesso' && pioram === 0) {
-        statusComputado = 'nao_cumprido';
-      }
+      if (scoreGlobal >= 75) statusComputado = 'cumprido';
+      else if (scoreGlobal >= 50) statusComputado = 'parcialmente_cumprido';
+      else if (scoreGlobal >= 25) statusComputado = 'em_andamento';
+      else statusComputado = 'nao_cumprido';
 
       const statusLabels: Record<ComplianceStatus, string> = {
         cumprido: 'Cumprido', parcialmente_cumprido: 'Parcialmente Cumprido',
@@ -354,24 +329,21 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
-         `Modelo v5: Vinculação Estrita por Keywords + Score Temático Mínimo`,
+         `Motor v6: Cobertura Pura — mede se o governo buscou responder (existência de evidências).`,
          `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
          `A evidência só entra se casar por termo/frase inteira normalizada e atingir coerência temática mínima.`,
-         `Para recomendações com grupo focal, exige-se sinal focal explícito (ex.: quilombola, indígena, LGBTQIA+) ou frase específica correlata.`,
-         `Termos genéricos como "violência", "proteção" ou "discriminação" não vinculam sozinhos.`,
-         `Busca nos campos: nome/categoria de indicadores, programa/órgão/descritivo/eixo/público-alvo de orçamento, título de normativos.`,
+         `Todas as 3 dimensões medem CONTAGEM (quantas evidências vinculadas), não qualidade/execução.`,
+         `A análise de execução financeira e tendência de indicadores pertence ao Motor de Evolução.`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
         ``,
-        `Nota: O score de indicadores mede COBERTURA (existência de dados vinculados), não tendência.`,
-        `A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).`,
-        `Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso`,
+        `Faixas: ≥75 Cumprido | ≥50 Parcial | ≥25 Em Andamento | <25 Não Cumprido`,
       ].filter(Boolean).join('\n');
 
       const auditoria: AuditScoreBreakdown = {
         indicadores: { score: scoreInd, total: totalInd, melhoram, pioram, estaveis, justificativa: justInd },
-        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: simbolicos.length, execucaoMedia: Math.round(execucaoMedia * 10) / 10, justificativa: justOrc },
+        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: 0, execucaoMedia: 0, justificativa: justOrc },
         normativos: { score: scoreNorm, total: totalNorm, justificativa: justNorm },
         scoreGlobal,
         statusComputado,
@@ -409,14 +381,15 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       statusReclassificado[d.statusComputado]++;
     });
 
-    // Progress based on computed statuses
+    // Progress based on computed statuses (4 faixas, sem retrocesso)
     const total = diagnostics.length;
     const progressoSensor = total > 0
       ? Math.round((
-          (statusReclassificado.cumprido * 100) + 
-          (statusReclassificado.parcialmente_cumprido * 60) + 
-          (statusReclassificado.em_andamento * 30) +
-          (statusReclassificado.nao_cumprido * 5)
+          (statusReclassificado.cumprido * 90) + 
+          (statusReclassificado.parcialmente_cumprido * 67) + 
+          (statusReclassificado.em_andamento * 45) +
+          (statusReclassificado.nao_cumprido * 15) +
+          (statusReclassificado.retrocesso * 15)
         ) / total)
       : 0;
 
