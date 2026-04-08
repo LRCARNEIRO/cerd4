@@ -101,9 +101,34 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const indicadoresFavoraveis = indicadoresSummary.favoraveis;
       const indicadoresDesfavoraveis = indicadoresSummary.desfavoraveis;
       const indicadoresNovos = indicadoresSummary.novos;
+      const indicadoresNeutros = indicadoresSummary.neutros;
 
-      const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
-      const scoreNormativa = Math.min(100, normativosCount * 12);
+      // ═══════════════════════════════════════════════════════
+      // SCORING RIGOROSO — Evolução (Impacto Real)
+      // ═══════════════════════════════════════════════════════
+
+      // Orçamento (0-100): escala logarítmica com base em R$ liquidado
+      // 0 programas = 0; exige volume significativo para pontuar alto
+      let scoreOrcamento = 0;
+      if (programasCount > 0) {
+        // Base: presença institucional (max 25 pts)
+        const baseInstitucional = Math.min(25, programasCount * 3);
+        // Volume: R$ liquidado em escala logarítmica (max 75 pts)
+        // R$ 100mi = ~37 pts, R$ 1bi = ~56 pts, R$ 10bi = ~75 pts
+        const volumePts = totalLiquidado > 0 ? Math.min(75, Math.log10(totalLiquidado / 1e6) * 25) : 0;
+        scoreOrcamento = Math.min(100, Math.max(0, Math.round(baseInstitucional + volumePts)));
+      }
+
+      // Normativa (0-100): escala degressiva (primeiros normativos valem mais)
+      // 1=15, 3=40, 6=65, 10=85, 15+=100
+      let scoreNormativa = 0;
+      if (normativosCount >= 15) scoreNormativa = 100;
+      else if (normativosCount >= 10) scoreNormativa = 85;
+      else if (normativosCount >= 6) scoreNormativa = 65;
+      else if (normativosCount >= 3) scoreNormativa = 40;
+      else if (normativosCount >= 1) scoreNormativa = 15;
+
+      // Indicadores (0-100): já calculado rigorosamente no summarizeIndicatorEvolution
       const scoreIndicadores = indicadoresSummary.score;
 
       const scoreFarol = Math.round(
@@ -115,17 +140,18 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const sinal: 'verde' | 'amarelo' | 'vermelho' = scoreFarol >= 60 ? 'verde' : scoreFarol >= 35 ? 'amarelo' : 'vermelho';
 
       const partes: string[] = [];
-      if (programasCount > 0) partes.push(`${programasCount} programa(s) orçamentário(s), ${acoesVinculadas} ação(ões) vinculada(s) (R$ ${(totalLiquidado / 1e9).toFixed(2)} bi liquidado)`);
-      if (normativosCount > 0) partes.push(`${normativosCount} instrumento(s) normativo(s)`);
+      if (programasCount > 0) partes.push(`${programasCount} programa(s), ${acoesVinculadas} ação(ões), R$ ${(totalLiquidado / 1e9).toFixed(2)} bi → Orç: ${scoreOrcamento}/100`);
+      if (normativosCount > 0) partes.push(`${normativosCount} normativo(s) → Norm: ${scoreNormativa}/100`);
       if (artigoInd.length > 0) {
-        partes.push(`${artigoInd.length} indicador(es) vinculados; ${indicadoresFavoraveis + indicadoresNovos} com leitura favorável e ${indicadoresDesfavoraveis} com piora`);
+        partes.push(`${artigoInd.length} indicador(es): ${indicadoresFavoraveis}↑ ${indicadoresNovos}★ ${indicadoresDesfavoraveis}↓ ${indicadoresNeutros}= → Ind: ${scoreIndicadores}/100`);
       }
 
       return {
         numero: artNum, titulo: art.titulo, tituloCompleto: art.tituloCompleto, cor: art.cor,
         programasCount, acoesVinculadas, totalLiquidado, normativosCount,
-        indicadoresFavoraveis, indicadoresDesfavoraveis, indicadoresNovos,
-        indicadoresTotal: artigoInd.length, scoreFarol, sinal,
+        indicadoresFavoraveis, indicadoresDesfavoraveis, indicadoresNovos, indicadoresNeutros,
+        indicadoresTotal: artigoInd.length, scoreOrcamento, scoreNormativa, scoreIndicadores,
+        scoreFarol, sinal,
         resumo: partes.join('. ') + '.',
         rawIndicadores: artigoInd, rawNormativos: artigoNorm, rawOrcamento: artigoOrc,
       };
