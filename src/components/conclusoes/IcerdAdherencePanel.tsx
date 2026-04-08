@@ -412,7 +412,6 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     cumprido: a.lacunasCumpridas,
     parcial: a.lacunasParciais,
     nao_cumprido: a.lacunasNaoCumpridas,
-    retrocesso: a.lacunasRetrocesso,
   }));
 
   const sorted = [...analysis].sort((a, b) => b.grauAderencia - a.grauAderencia);
@@ -654,7 +653,6 @@ ${analysis.map(a => {
                   <Bar dataKey="cumprido" name="Cumprido" stackId="a" fill="hsl(var(--chart-2))" />
                   <Bar dataKey="parcial" name="Parcial" stackId="a" fill="hsl(var(--chart-4))" />
                   <Bar dataKey="nao_cumprido" name="Não Cumprido" stackId="a" fill="hsl(var(--chart-1))" />
-                  <Bar dataKey="retrocesso" name="Retrocesso" stackId="a" fill="hsl(var(--destructive))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
