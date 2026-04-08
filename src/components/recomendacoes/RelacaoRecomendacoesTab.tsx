@@ -112,8 +112,8 @@ export function RelacaoRecomendacoesTab() {
       const artigos = getArtigosFromRecomendacao(l);
       const justificativa = getVinculacaoJustificativa(l);
       const prioridadeLabel = getPrioridadeLabel(l.prioridade);
-      const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
-      const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
+      const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? '#ca8a04' : '#dc2626';
+      const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? 'Parcial' : 'Não Cumprido';
 
       // Evidence details for export
       const auditoria = diag?.auditoria;
@@ -160,18 +160,16 @@ th{background:#f1f5f9;font-size:10px}
 
 <div class="summary">
 <span style="background:#dcfce7;color:#166534">✓ ${statusSummary.cumprido || 0} Cumprida(s)</span>
-<span style="background:#fef9c3;color:#854d0e">~ ${statusSummary.parcialmente_cumprido || 0} Parcial(is)</span>
-<span style="background:#dbeafe;color:#1e40af">⏳ ${statusSummary.em_andamento || 0} Em Andamento</span>
-<span style="background:#fee2e2;color:#991b1b">✗ ${statusSummary.nao_cumprido || 0} Não Cumprida(s)</span>
-<span style="background:#fee2e2;color:#991b1b">↓ ${statusSummary.retrocesso || 0} Retrocesso(s)</span>
+<span style="background:#fef9c3;color:#854d0e">~ ${(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
+<span style="background:#fee2e2;color:#991b1b">✗ ${(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
 </div>
 
         <div class="methodology">
         <h2>🔗 Metodologia de Vinculação e Cálculo de Status (v5.2)</h2>
         <p><strong>Vinculação Evidências → Recomendação:</strong> Híbrida e auditável por palavras-chave, com <strong>score temático mínimo</strong>. Termos extraídos do tema, descrição e texto original ONU (tokenização ≥5 letras, com exceções curtas relevantes como <em>raça</em>, + stop-words + sinônimos), combinando correspondência por <em>termo/frase inteira normalizada</em> com <em>expansão conceitual controlada</em> para casos semanticamente muito próximos (ex.: dados desagregados ↔ Censo/raça-gênero), sem substring solta. Recomendações com grupo focal exigem sinal focal explícito (ex.: quilombola, indígena, LGBTQIA+) ou frase específica correlata; termos genéricos como <em>violência</em>, <em>proteção</em> e <em>discriminação</em> não vinculam sozinhos. Busca nos campos: nome/categoria/subcategoria/análise/documentos de origem dos indicadores, programa/órgão/descritivo/eixo/público-alvo/observações/razão de seleção do orçamento, título/categoria de normativos. <em>Não</em> utiliza artigos ICERD ou eixos genéricos.</p>
 <p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback). Apenas para classificação temática.</p>
-<p><strong>Cálculo do Status:</strong> Indicadores 40% + Orçamento 30% + Normativos 30%. Cap piora: se indicadores pioram > melhoram, teto = 55 (Parcial).</p>
-<p><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso</p>
+<p><strong>Cálculo do Status:</strong> Indicadores 40% + Orçamento 30% + Normativos 30%. Todas as dimensões medem contagem (cobertura).</p>
+<p><strong>Faixas:</strong> ≥65 Cumprido | ≥35 Parcial | &lt;35 Não Cumprido</p>
 <table>
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
@@ -221,10 +219,8 @@ ${renderRows(allItems)}
           </CardTitle>
           <div className="flex flex-wrap gap-2 mt-2">
             {statusCount.cumprido > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{statusCount.cumprido} Cumprida(s)</Badge>}
-            {statusCount.parcialmente_cumprido > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido} Parcial(is)</Badge>}
-            {statusCount.em_andamento > 0 && <Badge variant="outline" className="text-info border-info/30 text-xs">{statusCount.em_andamento} Em Andamento</Badge>}
-            {statusCount.nao_cumprido > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido} Não Cumprida(s)</Badge>}
-            {statusCount.retrocesso > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.retrocesso} Retrocesso(s)</Badge>}
+            {(statusCount.parcialmente_cumprido + statusCount.em_andamento) > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido + statusCount.em_andamento} Parcial(is)</Badge>}
+            {(statusCount.nao_cumprido + statusCount.retrocesso) > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido + statusCount.retrocesso} Não Cumprida(s)</Badge>}
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -315,9 +311,8 @@ ${renderRows(allItems)}
         </p>
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {statusSummary.parcialmente_cumprido || 0} Parcial(is)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-info" /> {statusSummary.em_andamento || 0} Em Andamento</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)/Retrocesso(s)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
         </div>
         {sensorReady && (
           <div className="mt-2">

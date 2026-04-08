@@ -10,8 +10,8 @@ const statusConfig: Record<ComplianceStatus, { label: string; className: string 
   cumprido: { label: 'Cumprido', className: 'status-complete border' },
   parcialmente_cumprido: { label: 'Parcial', className: 'status-partial border' },
   nao_cumprido: { label: 'Não Cumprido', className: 'status-critical border' },
-  retrocesso: { label: 'Retrocesso', className: 'bg-destructive text-destructive-foreground' },
-  em_andamento: { label: 'Em Andamento', className: 'status-pending border' }
+  retrocesso: { label: 'Não Cumprido', className: 'status-critical border' },
+  em_andamento: { label: 'Parcial', className: 'status-partial border' }
 };
 
 export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {

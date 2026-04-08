@@ -181,26 +181,15 @@ export default function Recomendacoes() {
                </Card>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                   <div className="p-2 bg-info/10 rounded-lg">
-                     <Activity className="w-5 h-5 text-info" />
-                   </div>
-                   <div>
-                     <p className="text-xs text-muted-foreground">Em Andamento</p>
-                     <p className="text-xl font-bold text-info">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.em_andamento || 0 : stats?.porStatus.em_andamento || 0}</p>
-                   </div>
-                 </CardContent>
-               </Card>
-               <Card>
-                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                   <div className="p-2 bg-destructive/10 rounded-lg">
-                     <XCircle className="w-5 h-5 text-destructive" />
-                   </div>
-                   <div>
-                     <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                     <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) : stats?.porStatus.nao_cumprido || 0}</p>
-                   </div>
-                 </CardContent>
-               </Card>
+                    <div className="p-2 bg-destructive/10 rounded-lg">
+                      <XCircle className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Não Cumpridas</p>
+                      <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) + (sensorSummary?.statusReclassificado.em_andamento || 0) : stats?.porStatus.nao_cumprido || 0}</p>
+                    </div>
+                  </CardContent>
+                </Card>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
                    <div className="p-2 bg-destructive/10 rounded-lg">
