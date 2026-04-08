@@ -31,11 +31,14 @@ type FarolArtigoResult = {
   indicadoresFavoraveis: number;
   indicadoresDesfavoraveis: number;
   indicadoresNovos: number;
+  indicadoresNeutros: number;
   indicadoresTotal: number;
+  scoreOrcamento: number;
+  scoreNormativa: number;
+  scoreIndicadores: number;
   scoreFarol: number;
   sinal: 'verde' | 'amarelo' | 'vermelho';
   resumo: string;
-  // raw data for drilldown
   rawIndicadores: any[];
   rawNormativos: any[];
   rawOrcamento: any[];
