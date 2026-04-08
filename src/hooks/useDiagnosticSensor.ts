@@ -108,7 +108,7 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
 }
 
 // ── Main Hook ──────────────────────────────────────────────────────
-export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined) {
+export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefined, overrides?: EvidenceOverrides) {
   // Fetch all three cross-reference sources in parallel
   const { data: indicadores } = useQuery({
     queryKey: ['sensor-indicadores'],
