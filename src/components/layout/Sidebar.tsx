@@ -3,13 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
-  ClipboardList,
   FileText,
   BarChart3,
   DollarSign,
   AlertTriangle,
   Database,
-  Users,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -18,14 +16,16 @@ import {
   FileOutput,
   BookOpen,
   Scale,
-  Upload,
   FolderOpen,
   Settings,
-  FlaskConical,
   ClipboardCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
+interface SidebarProps {
+  onNavigate?: () => void;
+}
 
 interface NavItem {
   title: string;
@@ -41,7 +41,6 @@ interface NavSection {
   defaultOpen?: boolean;
 }
 
-// Estrutura reorganizada conforme solicitado
 const navSections: NavSection[] = [
   {
     title: 'Acompanhamento Gerencial',
@@ -49,7 +48,6 @@ const navSections: NavSection[] = [
     defaultOpen: true,
     items: [
       { title: 'Painel Geral', href: '/', icon: LayoutDashboard },
-      
       { title: 'Recomendações', href: '/recomendacoes', icon: AlertTriangle },
       { title: 'Artigos', href: '/artigos', icon: Scale },
       { title: 'Documentos Balizadores', href: '/documentos-balizadores', icon: FileText },
@@ -65,7 +63,6 @@ const navSections: NavSection[] = [
   }
 ];
 
-// Sub-seções do Escopo do Projeto
 const escopoSubsections: NavSection[] = [
   {
     title: 'Base Estatística (Meta 3)',
@@ -104,7 +101,7 @@ const escopoSubsections: NavSection[] = [
   }
 ];
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     'Acompanhamento Gerencial': true,
@@ -128,6 +125,7 @@ export function Sidebar() {
       <li key={item.href}>
         <Link
           to={item.href}
+          onClick={onNavigate}
           className={cn(
             'flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm',
             isActive
@@ -202,7 +200,6 @@ export function Sidebar() {
         collapsed ? 'w-16' : 'w-72'
       )}
     >
-      {/* Header */}
       <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 w-8 h-8 rounded-lg overflow-hidden">
@@ -217,13 +214,10 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 py-3 overflow-y-auto">
         <div className="space-y-2 px-2">
-          {/* Acompanhamento Gerencial */}
           {renderSection(navSections[0])}
 
-          {/* Escopo do Projeto - Seção principal */}
           <Collapsible
             open={openSections['Escopo do Projeto']}
             onOpenChange={() => toggleSection('Escopo do Projeto')}
@@ -251,7 +245,6 @@ export function Sidebar() {
         </div>
       </nav>
 
-      {/* Footer */}
       <div className="p-2 border-t border-sidebar-border">
         <Button
           variant="ghost"
