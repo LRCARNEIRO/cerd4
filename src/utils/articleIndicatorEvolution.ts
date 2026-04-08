@@ -25,8 +25,13 @@ export function summarizeIndicatorEvolution(indicadores: any[]): IndicatorEvolut
   });
 
   const linkedTotal = indicadores.length;
+
+  // Score rigoroso: somente melhorias comprovadas pontuam plenamente.
+  // Novos contam apenas 40% (existência ≠ evolução).
+  // Desfavoráveis penalizam com peso 1.0 (não 0.5).
+  // Neutros não pontuam.
   const rawScore = linkedTotal > 0
-    ? ((favoraveis + novos * 0.7 - desfavoraveis * 0.5) / linkedTotal) * 100
+    ? ((favoraveis + novos * 0.4 - desfavoraveis * 1.0) / linkedTotal) * 100
     : 0;
 
   return {
