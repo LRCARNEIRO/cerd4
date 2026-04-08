@@ -216,7 +216,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao')
+          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -241,69 +241,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Build indices by normalized artigo ───────────────────────────
-  const indicadoresPorArtigo = useMemo(() => {
-    if (!indicadores) return {} as Record<string, typeof indicadores>;
-    const map: Record<string, typeof indicadores> = {};
-    indicadores.forEach(ind => {
-      const arts = ((ind.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(ind);
-      });
-    });
-    return map;
-  }, [indicadores]);
-
-  const orcamentoPorArtigo = useMemo(() => {
-    if (!orcamento) return {} as Record<string, typeof orcamento>;
-    const map: Record<string, typeof orcamento> = {};
-    orcamento.forEach(orc => {
-      const arts = ((orc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(orc);
-      });
-    });
-    return map;
-  }, [orcamento]);
-
-  const normativosPorArtigo = useMemo(() => {
-    if (!normativos) return {} as Record<string, typeof normativos>;
-    const map: Record<string, typeof normativos> = {};
-    normativos.forEach(doc => {
-      const arts = ((doc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => {
-        if (!map[a]) map[a] = [];
-        map[a].push(doc);
-      });
-    });
-    return map;
-  }, [normativos]);
-
-  // ── Frequência de cada artigo nos normativos (anti-coringa) ──
-  const artigoFrequency = useMemo(() => {
-    if (!normativos || normativos.length === 0) return {} as Record<string, number>;
-    const counts: Record<string, number> = {};
-    normativos.forEach(doc => {
-      const arts = ((doc.artigos_convencao as string[] | null) || [])
-        .map(normalizeArticle)
-        .filter(Boolean) as ArtigoConvencao[];
-      arts.forEach(a => { counts[a] = (counts[a] || 0) + 1; });
-    });
-    const total = normativos.length;
-    const freq: Record<string, number> = {};
-    Object.entries(counts).forEach(([a, c]) => { freq[a] = c / total; });
-    return freq;
-  }, [normativos]);
-
   // ── Diagnose each recomendação ────────────────────────────────────
+  // VINCULAÇÃO ESTRITA POR KEYWORDS: evidências são vinculadas APENAS
+  // por palavras-chave extraídas do tema/descrição/texto ONU da recomendação.
+  // NÃO usa artigos ICERD/eixo temático para buscar evidências (evita falsos positivos).
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
@@ -312,98 +253,53 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
-      // ── Vinculação com modelo híbrido (keyword=100%, eixo=50%) ──
-      const baseIndicadores = artigos.flatMap(a => indicadoresPorArtigo[a] || []);
-      const baseOrcamento = artigos.flatMap(a => orcamentoPorArtigo[a] || []);
-      const baseNormativos = artigos.flatMap(a => normativosPorArtigo[a] || []);
-
-      const keywordIndicadores = indicadores.filter(ind => {
+      // ── Vinculação ESTRITA por keywords apenas ──────────────────
+      const indicadoresVinculados = indicadores.filter(ind => {
         const haystack = `${ind.nome} ${ind.categoria}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
-      const keywordOrcamento = orcamento.filter(item => {
-        const haystack = `${item.programa} ${item.orgao}`.toLowerCase();
+      }).slice(0, 20);
+
+      const orcamentosVinculados = orcamento.filter(item => {
+        const haystack = `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
-      const keywordNormativos = normativos.filter(doc => {
+      }).slice(0, 20);
+
+      const normativosVinculados = normativos.filter(doc => {
         const haystack = `${doc.titulo}`.toLowerCase();
         return keywords.some(k => haystack.includes(k));
-      });
+      }).slice(0, 20);
 
-      // ── Peso anti-coringa universal ──────────────────────────────
-      // Artigos que aparecem em >40% dos normativos recebem peso reduzido
-      // proporcional à sua frequência. Ex: Art.V (76%) → eixoWeight = 0.12
-      // Art.III (25%) → eixoWeight = 0.50 (sem penalidade)
-      const getEixoWeight = (artigos_item: string[] | null): number => {
-        const arts = (artigos_item || []).map(normalizeArticle).filter(Boolean) as ArtigoConvencao[];
-        if (arts.length === 0) return 0.5;
-        // Use the LEAST frequent article as representative (most specific)
-        const minFreq = Math.min(...arts.map(a => artigoFrequency[a] || 0));
-        // If freq > 0.4, reduce weight: 0.5 * (1 - freq). Floor at 0.10
-        if (minFreq > 0.4) {
-          return Math.max(0.10, 0.5 * (1 - minFreq));
-        }
-        return 0.5;
-      };
-
-      // Build weight maps: keyword match → 1.0, eixo-only → dynamic (anti-coringa)
-      const keywordIndSet = new Set(keywordIndicadores.map(i => i.nome));
-      const keywordOrcSet = new Set(keywordOrcamento.map(o => `${o.programa}-${o.orgao}-${o.ano}`));
-      const keywordNormSet = new Set(keywordNormativos.map(n => n.titulo));
-
-      const indicadoresVinculados = Array.from(new Map([...baseIndicadores, ...keywordIndicadores].map(i => [i.nome, i])).values()).slice(0, 20);
-      const orcamentosVinculados = Array.from(new Map([...baseOrcamento, ...keywordOrcamento].map(o => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values()).slice(0, 20);
-      const normativosVinculados = Array.from(new Map([...baseNormativos, ...keywordNormativos].map(n => [n.titulo, n])).values()).slice(0, 20);
-
-      // Match quality weights — keyword=1.0, eixo=dynamic anti-coringa
-      const getIndWeight = (i: typeof indicadoresVinculados[0]) =>
-        keywordIndSet.has(i.nome) ? 1.0 : getEixoWeight(i.artigos_convencao as string[] | null);
-      const getOrcWeight = (o: typeof orcamentosVinculados[0]) =>
-        keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`) ? 1.0 : getEixoWeight(o.artigos_convencao as string[] | null);
-      const getNormWeight = (n: typeof normativosVinculados[0]) =>
-        keywordNormSet.has(n.titulo) ? 1.0 : getEixoWeight(n.artigos_convencao as string[] | null);
-
-      const totalIndKeyword = indicadoresVinculados.filter(i => keywordIndSet.has(i.nome)).length;
-      const totalIndEixo = indicadoresVinculados.length - totalIndKeyword;
-      const totalOrcKeyword = orcamentosVinculados.filter(o => keywordOrcSet.has(`${o.programa}-${o.orgao}-${o.ano}`)).length;
-      const totalOrcEixo = orcamentosVinculados.length - totalOrcKeyword;
-      const totalNormKeyword = normativosVinculados.filter(n => keywordNormSet.has(n.titulo)).length;
-      const totalNormEixo = normativosVinculados.length - totalNormKeyword;
+      const totalInd = indicadoresVinculados.length;
+      const totalOrc = orcamentosVinculados.length;
+      const totalNorm = normativosVinculados.length;
 
       // ═══════════════════════════════════════════════════════════
-      // MOTOR DE STATUS COMPUTADO v3 — Calibrado Anti-Coringa
+      // MOTOR DE STATUS COMPUTADO v4 — Vinculação Estrita por Keywords
       // ═══════════════════════════════════════════════════════════
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
       // Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
-      // Anti-coringa: artigos frequentes (>40% da base) recebem peso reduzido
+      // TODAS as evidências vinculadas por keywords (sem eixo/artigo genérico)
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const weightedTendencias = indicadoresVinculados.map(i => ({ t: inferTendencia(i), w: getIndWeight(i) }));
-      const pioramW = weightedTendencias.filter(x => x.t === 'piora').reduce((s, x) => s + x.w, 0);
-      const melhoramW = weightedTendencias.filter(x => x.t === 'melhora').reduce((s, x) => s + x.w, 0);
-      const totalIndW = weightedTendencias.reduce((s, x) => s + x.w, 0);
-      const pioram = weightedTendencias.filter(x => x.t === 'piora').length;
-      const melhoram = weightedTendencias.filter(x => x.t === 'melhora').length;
-      const estaveis = weightedTendencias.filter(x => x.t === 'estavel').length;
-      const totalInd = indicadoresVinculados.length;
+      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
+      const pioram = tendencias.filter(t => t === 'piora').length;
+      const melhoram = tendencias.filter(t => t === 'melhora').length;
+      const estaveis = tendencias.filter(t => t === 'estavel').length;
 
       let scoreInd = 50;
-      if (totalIndW > 0) {
-        const ratioMelhora = melhoramW / totalIndW;
-        const ratioPiora = pioramW / totalIndW;
+      if (totalInd > 0) {
+        const ratioMelhora = melhoram / totalInd;
+        const ratioPiora = pioram / totalInd;
         scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
         scoreInd = Math.max(0, Math.min(100, scoreInd));
       } else {
-        scoreInd = 10; // ← Piso reduzido de 25→10 sem evidência
+        scoreInd = 10;
       }
 
-      const avgEixoWeightInd = totalIndEixo > 0
-        ? (indicadoresVinculados.filter(i => !keywordIndSet.has(i.nome)).reduce((s, i) => s + getIndWeight(i), 0) / totalIndEixo).toFixed(0)
-        : '—';
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es) [${totalIndKeyword} keyword, ${totalIndEixo} eixo×${avgEixoWeightInd}%]: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) vinculado(s) por keywords: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
@@ -418,26 +314,25 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         const pago = Number(o.pago) || 0;
         return dotacao > 100000 && pago < dotacao * 0.05;
       });
-      const totalOrc = orcamentosVinculados.length;
 
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0) * getOrcWeight(o), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0) * getOrcWeight(o), 0);
+        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
+        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
         if (simbolicos.length > 0) {
           scoreOrc = Math.max(10, scoreOrc - (simbolicos.length / totalOrc) * 30);
         }
       } else {
-        scoreOrc = 10; // ← Piso reduzido de 20→10 sem evidência
+        scoreOrc = 10;
       }
       scoreOrc = Math.round(Math.max(0, Math.min(100, scoreOrc)));
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões) [${totalOrcKeyword} keyword, ${totalOrcEixo} eixo], execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) vinculada(s) por keywords, execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
@@ -447,23 +342,17 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         signals.push({ type: 'orcamento_simbolico', severity: 'info', message: `${totalOrc} ação(ões) orçamentária(s) vinculada(s)` });
       }
 
-      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — anti-coringa ──
-      const totalNorm = normativosVinculados.length;
-      const totalNormW = normativosVinculados.reduce((s, n) => s + getNormWeight(n), 0);
+      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) ──
       let scoreNorm = 0;
-      if (totalNormW >= 5) scoreNorm = 100;
-      else if (totalNormW >= 3) scoreNorm = 80;
-      else if (totalNormW >= 2) scoreNorm = 60;
-      else if (totalNormW >= 1) scoreNorm = 40;
-      else if (totalNormW >= 0.3) scoreNorm = 20;
+      if (totalNorm >= 5) scoreNorm = 100;
+      else if (totalNorm >= 3) scoreNorm = 80;
+      else if (totalNorm >= 2) scoreNorm = 60;
+      else if (totalNorm >= 1) scoreNorm = 40;
       else scoreNorm = 5;
 
-      const avgEixoWeightNorm = totalNormEixo > 0
-        ? (normativosVinculados.filter(n => !keywordNormSet.has(n.titulo)).reduce((s, n) => s + getNormWeight(n), 0) / totalNormEixo * 100).toFixed(0)
-        : '—';
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) [${totalNormKeyword} keyword, ${totalNormEixo} eixo×${avgEixoWeightNorm}%], peso efetivo ${totalNormW.toFixed(1)}. Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) vinculado(s) por keywords. Score: ${scoreNorm}/100.`;
 
       // Signals for normatives
       if (totalNorm > 0) {
@@ -479,13 +368,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
       // ── CAP PIORA: se indicadores pioram > melhoram, teto = 55 (Parcial) ──
-      const pioraCapped = pioramW > melhoramW && pioramW > 0;
+      const pioraCapped = pioram > melhoram && pioram > 0;
       if (pioraCapped && scoreGlobal > 55) {
         scoreGlobal = 55;
       }
 
-      // ── STATUS COMPUTADO (faixas recalibradas) ──
-      // ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
+      // ── STATUS COMPUTADO ──
       let statusComputado: ComplianceStatus;
       if (scoreGlobal >= 80) statusComputado = 'cumprido';
       else if (scoreGlobal >= 55) statusComputado = 'parcialmente_cumprido';
@@ -493,7 +381,6 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       else if (scoreGlobal >= 15) statusComputado = 'nao_cumprido';
       else statusComputado = 'retrocesso';
 
-      // Ajuste: retrocesso requer piora detectada — se não há piora, mínimo é nao_cumprido
       if (statusComputado === 'retrocesso' && pioram === 0) {
         statusComputado = 'nao_cumprido';
       }
@@ -506,8 +393,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
-        `Modelo Híbrido v3: keyword=100%, eixo=dinâmico (anti-coringa)`,
-        `Anti-coringa: artigos com freq >40% na base recebem peso = 50%×(1−freq)`,
+        `Modelo v4: Vinculação Estrita por Keywords`,
+        `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
+        `Busca nos campos: nome/título de indicadores, programa/órgão/descritivo/público-alvo de orçamento, título de normativos.`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
@@ -535,7 +423,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [recomendacoes, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
+  }, [recomendacoes, indicadores, orcamento, normativos]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
