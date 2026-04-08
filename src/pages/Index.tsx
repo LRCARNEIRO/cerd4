@@ -216,7 +216,7 @@ export default function Index() {
         <StatCard
           title="Recomendações ONU"
           value={isLoading ? '...' : stats.totalRecomendacoes}
-          subtitle={isLoading ? '...' : `${dashboardStatusData.cumprido} cumpridas estritas · ${totalAtendidasDashboard} atendidas/parciais`}
+          subtitle={isLoading ? '...' : `${totalCumpridas} cumpridas de ${stats.totalRecomendacoes}`}
           icon={AlertTriangle}
           variant="warning"
           sourceInfo={{ label: 'CERD/C/BRA/CO/18-20 — OHCHR', url: 'https://tbinternet.ohchr.org/_layouts/15/treatybodyexternal/Download.aspx?symbolno=CERD%2FC%2FBRA%2FCO%2F18-20&Lang=en' }}
