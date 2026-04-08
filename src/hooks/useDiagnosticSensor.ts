@@ -206,9 +206,29 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         .map(({ item }) => item)
         .slice(0, 20);
 
-      const totalInd = indicadoresVinculados.length;
-      const totalOrc = orcamentosVinculados.length;
-      const totalNorm = normativosVinculados.length;
+      // ── Apply manual overrides ──
+      let finalIndicadores = indicadoresVinculados;
+      let finalOrcamentos = orcamentosVinculados;
+      let finalNormativos = normativosVinculados;
+
+      if (recOverride) {
+        finalIndicadores = [
+          ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
+          ...recOverride.addedIndicadores.filter(a => !finalIndicadores.some(f => f.nome === a.nome)),
+        ];
+        finalOrcamentos = [
+          ...finalOrcamentos.filter(o => !recOverride.removedOrcamento.includes(orcKeyFn(o))),
+          ...recOverride.addedOrcamento.filter(a => !finalOrcamentos.some(f => orcKeyFn(f) === orcKeyFn(a))),
+        ];
+        finalNormativos = [
+          ...finalNormativos.filter(n => !recOverride.removedNormativos.includes(n.titulo)),
+          ...recOverride.addedNormativos.filter(a => !finalNormativos.some(f => f.titulo === a.titulo)),
+        ];
+      }
+
+      const totalInd = finalIndicadores.length;
+      const totalOrc = finalOrcamentos.length;
+      const totalNorm = finalNormativos.length;
 
       // ═══════════════════════════════════════════════════════════
        // MOTOR DE STATUS COMPUTADO v5 — Vinculação Estrita + Score Temático
