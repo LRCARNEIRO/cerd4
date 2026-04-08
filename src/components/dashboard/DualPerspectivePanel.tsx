@@ -71,7 +71,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
     { name: 'Retrocesso', value: evolucaoData.retrocesso, color: EVOL_COLORS.retrocesso },
   ].filter(d => d.value > 0);
 
-  const pctEsforco = totalStatus > 0 ? Math.round(((statusData.cumprido + statusData.parcial) / totalStatus) * 100) : 0;
+  const pctEsforco = totalStatus > 0 ? Math.round((statusData.cumprido / totalStatus) * 100) : 0;
   const pctImpacto = totalEvol > 0 ? Math.round((evolucaoData.evolucao / totalEvol) * 100) : 0;
 
   return (
@@ -221,13 +221,9 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
             Através do atendimento (ou não) às recomendações e da evolução (ou não) das evidências, 
             é possível avaliar como cada artigo se encontra no período 2018–2025.
           </p>
-          <p className="text-[10px] text-muted-foreground mb-4">
-            Na badge de esforço, o percentual considera <strong>recomendações atendidas = cumpridas + parciais</strong>; itens em andamento aparecem no detalhamento gerencial.
-          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {artigosSummary.map(art => {
-              const atendidas = art.cumpridas + art.parciais;
-              const pctCumpridas = art.totalRecs > 0 ? Math.round((atendidas / art.totalRecs) * 100) : 0;
+              const pctCumpridas = art.totalRecs > 0 ? Math.round((art.cumpridas / art.totalRecs) * 100) : 0;
               const evolLabel = art.evolScore >= 60 ? 'Evolução' : art.evolScore >= 35 ? 'Estagnação' : 'Retrocesso';
               const evolColorClass = art.evolScore >= 60 ? 'bg-success text-success-foreground' : art.evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
               const statusColorClass = pctCumpridas >= 60 ? 'bg-success/15 text-success border-success/30' : pctCumpridas >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
@@ -256,7 +252,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                   <div className="flex items-center gap-2 mt-1.5">
                     <Progress value={pctCumpridas} className="h-1.5 flex-1" />
                     <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                      {atendidas}/{art.totalRecs} atend.
+                      {art.cumpridas}/{art.totalRecs} cumpr.
                     </span>
                   </div>
                 </div>
