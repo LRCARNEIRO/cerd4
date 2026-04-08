@@ -340,6 +340,31 @@ export default function Recomendacoes() {
           </div>
         </TabsContent>
 
+        <TabsContent value="respostas-cerd">
+          <Card className="mb-4 border-l-4 border-l-warning">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-6 h-6 text-warning flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold mb-1">Respostas às Críticas do CERD III</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {respostasCerd?.length || 0} respostas oficiais com avaliação dinâmica de cumprimento
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="space-y-4">
+            {(respostasCerd || []).map(resposta => (
+              <RespostaCerdCard
+                key={resposta.id}
+                resposta={resposta}
+                dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
+              />
+            ))}
+          </div>
+        </TabsContent>
+
       </Tabs>
     </DashboardLayout>
   );
