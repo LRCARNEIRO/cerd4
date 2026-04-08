@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -8,9 +8,12 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, i
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
+import { ArtigoAdherenceDrilldownDialog } from '@/components/shared/ArtigoAdherenceDrilldownDialog';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -257,6 +260,10 @@ function generateVerdict(a: ArtigoAnalysis): string {
 
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
+  const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
+
+  // Use diagnostic sensor for consistent compliance counts across panels
+  const { diagnosticMap } = useDiagnosticSensor(lacunas);
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
@@ -278,19 +285,23 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         return mapped ? mapped.includes(art.numero) : false;
       });
       const cumpridas = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'cumprido';
       }).length;
       const parciais = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'parcialmente_cumprido';
       }).length;
       const naoCumpridas = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'nao_cumprido';
       }).length;
       const retrocesso = artLacunas.filter(l => {
-        const s = l._computedStatus || l.status_cumprimento;
+        const diag = diagnosticMap.get(l.id);
+        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
         return s === 'retrocesso';
       }).length;
 
@@ -356,7 +367,26 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle]);
+  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle, diagnosticMap]);
+
+  // Per-article drill-down data
+  const drilldownData = useMemo(() => {
+    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as { titulo: string; status: string }[], orcamentos: [] as { programa: string; orgao: string; ano: number }[] };
+    const artLacunas = lacunas.filter(l => {
+      if (l.artigos_convencao && l.artigos_convencao.length > 0) {
+        return l.artigos_convencao.map(normalizeArticleTag).filter(Boolean).includes(drilldownArtigo);
+      }
+      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+      return mapped ? mapped.includes(drilldownArtigo) : false;
+    });
+    const recomendacoes = artLacunas.map(l => {
+      const diag = diagnosticMap.get(l.id);
+      return { paragrafo: l.paragrafo, tema: l.tema, status: diag?.statusComputado || l._computedStatus || l.status_cumprimento };
+    });
+    const normativos = documentosNormativos.filter(doc => inferArtigosNormativo(doc).includes(drilldownArtigo)).map(d => ({ titulo: d.titulo, status: d.status }));
+    const orcamentos = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(drilldownArtigo)).map(r => ({ programa: r.programa, orgao: r.orgao, ano: r.ano }));
+    return { recomendacoes, normativos, orcamentos };
+  }, [drilldownArtigo, lacunas, documentosNormativos, orcamentoRecords, diagnosticMap]);
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
@@ -646,18 +676,24 @@ ${analysis.map(a => {
                   <div className="min-w-0">
                     <p className="font-semibold text-sm">{a.tituloCompleto}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge
-                        className={`text-[10px] ${
-                          a.grauAderencia >= 70
-                            ? 'bg-success/10 text-success border-success/30'
-                            : a.grauAderencia >= 40
-                              ? 'bg-warning/10 text-warning border-warning/30'
-                              : 'bg-destructive/10 text-destructive border-destructive/30'
-                        }`}
-                        variant="outline"
+                      <button
+                        onClick={() => setDrilldownArtigo(a.numero)}
+                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                        title="Clique para ver evidências detalhadas"
                       >
-                        {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'}
-                      </Badge>
+                        <Badge
+                          className={`text-[10px] ${
+                            a.grauAderencia >= 70
+                              ? 'bg-success/10 text-success border-success/30'
+                              : a.grauAderencia >= 40
+                                ? 'bg-warning/10 text-warning border-warning/30'
+                                : 'bg-destructive/10 text-destructive border-destructive/30'
+                          }`}
+                          variant="outline"
+                        >
+                          {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'} 🔍
+                        </Badge>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -770,6 +806,16 @@ ${analysis.map(a => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Artigo Adherence Drilldown Dialog */}
+      <ArtigoAdherenceDrilldownDialog
+        open={!!drilldownArtigo}
+        onOpenChange={(open) => { if (!open) setDrilldownArtigo(null); }}
+        artigo={drilldownArtigo ? analysis.find(a => a.numero === drilldownArtigo) || null : null}
+        recomendacoes={drilldownData.recomendacoes}
+        normativos={drilldownData.normativos}
+        orcamentos={drilldownData.orcamentos}
+      />
     </div>
   );
 }
