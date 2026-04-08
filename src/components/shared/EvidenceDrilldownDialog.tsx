@@ -493,11 +493,15 @@ export function EvidenceDrilldownDialog({
             </div>
 
             {/* Methodology note */}
-            <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
-              <strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso.
-              Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%.
+            <div className="p-3 bg-muted/30 rounded text-[10px] text-muted-foreground space-y-1">
+              <p><strong>Metodologia — Esforço Governamental (Compliance):</strong></p>
+              <p>Este score mede se o governo brasileiro <em>procurou responder</em> às recomendações, com base na <strong>cobertura de evidências</strong> (existência de indicadores, ações orçamentárias e normativos vinculados).</p>
+              <p><strong>Indicadores (40%):</strong> Score por quantidade — ≥8: 100 | ≥5: 85 | ≥3: 70 | ≥2: 55 | 1: 40 | 0: 5. A tendência (melhora/piora) é informativa, mas <em>não afeta</em> este score — a análise de impacto real pertence ao Motor de Evolução.</p>
+              <p><strong>Orçamento (30%):</strong> Score por execução financeira média das ações vinculadas, com penalização por ações simbólicas (&lt;5% de execução).</p>
+              <p><strong>Normativos (30%):</strong> Score por quantidade — ≥5: 100 | ≥3: 80 | ≥2: 60 | 1: 40 | 0: 5.</p>
+              <p><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso.</p>
               {isEditable && (
-                <span className="block mt-1"><strong>Nota:</strong> Ajustes manuais (inclusão/exclusão) são aplicados em tempo real e recalculam o status automaticamente.</span>
+                <p className="mt-1"><strong>Nota:</strong> Ajustes manuais (inclusão/exclusão) são aplicados em tempo real e recalculam o status automaticamente.</p>
               )}
             </div>
           </div>
