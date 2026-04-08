@@ -13,10 +13,10 @@ interface MethodologyPanelProps {
 }
 
 const progressCategories = [
-  { label: 'Cumprido', weight: 'Score ≥ 75', color: 'bg-emerald-500', desc: 'Cobertura ampla: 5+ indicadores, 3+ normativos, 3+ ações orçamentárias vinculadas' },
-  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 50', color: 'bg-amber-500', desc: 'Cobertura parcial: 2-4 indicadores, 1-2 normativos ou ações orçamentárias' },
-  { label: 'Em Andamento', weight: 'Score ≥ 25', color: 'bg-blue-500', desc: 'Evidências iniciais: ao menos 1 indicador, normativo ou ação orçamentária vinculada' },
-  { label: 'Não Cumprido', weight: 'Score < 25', color: 'bg-red-500', desc: 'Evidências mínimas ou ausentes nas 3 dimensões (indicadores, orçamento, normativos)' },
+  { label: 'Cumprido', weight: 'Score ≥ 75', color: 'bg-emerald-500', desc: 'Cobertura robusta: 7+ indicadores, 4+ normativos, 8+ ações orçamentárias vinculadas' },
+  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 50', color: 'bg-amber-500', desc: 'Cobertura moderada: 3-6 indicadores, 2-3 normativos, 3-7 ações orçamentárias' },
+  { label: 'Em Andamento', weight: 'Score ≥ 25', color: 'bg-blue-500', desc: 'Evidências iniciais: 1-2 indicadores, 1 normativo ou 1-2 ações orçamentárias' },
+  { label: 'Não Cumprido', weight: 'Score < 25', color: 'bg-red-500', desc: 'Evidências insuficientes ou ausentes nas 3 dimensões' },
 ];
 
 const aderenciaWeights = [
@@ -117,11 +117,11 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             )}
 
             <p className="text-[10px] text-muted-foreground italic">
-              Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras, com exceções curtas relevantes como raça) → filtro de stop-words → 
-              expansão por sinônimos temáticos + expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada nos campos de evidências.
-              Recomendações com grupo focal exigem sinal focal explícito para evitar falsos positivos.
-              Escala de indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento (contagem): 1=40, 2=55, 3=70, 6+=85, 10+=100.
-              Análise de execução financeira e tendência de indicadores pertence ao Motor de Evolução (Produtos &gt; Conclusões).
+              Vinculação por keywords: tema + descrição + texto ONU → tokenização → filtro de stop-words → 
+              expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada.
+              Escala de indicadores: 1=20, 2=35, 3=50, 5=65, 7=80, 10+=100. Orçamento (contagem): 1=20, 2=35, 3=50, 5=65, 8=80, 12+=100.
+              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100.
+              Análise de execução financeira e tendência pertence ao Motor de Evolução.
             </p>
           </CardContent>
         </Card>
