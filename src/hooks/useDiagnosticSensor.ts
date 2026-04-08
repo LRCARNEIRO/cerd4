@@ -245,7 +245,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
+      const tendencias = finalIndicadores.map(i => inferTendencia(i));
       const pioram = tendencias.filter(t => t === 'piora').length;
       const melhoram = tendencias.filter(t => t === 'melhora').length;
       const estaveis = tendencias.filter(t => t === 'estavel').length;
@@ -266,13 +266,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
-        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
       } else if (melhoram > 0) {
-        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: indicadoresVinculados.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
       // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) ──
-      const simbolicos = orcamentosVinculados.filter(o => {
+      const simbolicos = finalOrcamentos.filter(o => {
         const dotacao = Number(o.dotacao_autorizada) || 0;
         const pago = Number(o.pago) || 0;
         return dotacao > 100000 && pago < dotacao * 0.05;
@@ -281,8 +281,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
+        const totalDotacao = finalOrcamentos.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
+        const totalPago = finalOrcamentos.reduce((s, o) => s + (Number(o.pago) || 0), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
         if (simbolicos.length > 0) {
@@ -384,12 +384,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: indicadoresVinculados.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
-        linkedOrcamento: orcamentosVinculados.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
-        linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
+        linkedIndicadores: finalIndicadores.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago })),
+        linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [recomendacoes, indicadores, orcamento, normativos]);
+  }, [recomendacoes, indicadores, orcamento, normativos, overrides]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
