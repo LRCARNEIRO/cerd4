@@ -6,14 +6,12 @@ import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, TrendingUp, BarChart3, TrendingDown, Minus, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { useMemo, useCallback, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -59,136 +57,63 @@ type EvolucaoResult = {
   indicadoresDesfavoraveis: number;
   indicadoresNovos: number;
   indicadoresTotal: number;
-  // raw data for drilldown
   rawIndicadores: any[];
   rawNormativos: any[];
   rawOrcamento: any[];
 };
 
 /**
- * Evolução das Recomendações — avalia se evidências vinculadas melhoraram (2018-2025).
- * Pesos: Indicadores (50%) + Orçamento (30%) + Normativos (20%)
+ * Evolução das Recomendações — consome evidências de useDiagnosticSensor (mesma fonte
+ * de Recomendações), depois avalia se melhoraram no período 2018-2025.
+ * Pesos: Indicadores tendência (50%) + Orçamento R$ liquidado (30%) + Normativos qtde (20%)
  * Semáforo: ≥60% Evolução | 35-59% Estagnação | <35% Retrocesso
  */
 export function EvolucaoRecomendacoesPanel() {
   const { data: recomendacoes, isLoading: loadingRecs } = useLacunasIdentificadas({});
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
   const [drilldown, setDrilldown] = useState<{ rec: EvolucaoResult; tab: string } | null>(null);
 
-  const { data: indicadores, isLoading: loadingInd } = useQuery({
-    queryKey: ['evolucao-rec-indicadores'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('indicadores_interseccionais')
-        .select('nome, categoria, tendencia, dados, artigos_convencao')
-        .neq('categoria', 'common_core');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: orcamento, isLoading: loadingOrc } = useQuery({
-    queryKey: ['evolucao-rec-orcamento'],
-    queryFn: async () => {
-      let all: any[] = [];
-      let page = 0;
-      while (true) {
-        const { data, error } = await supabase
-          .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, liquidado, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo')
-          .range(page * 1000, (page + 1) * 1000 - 1);
-        if (error) throw error;
-        if (!data || data.length === 0) break;
-        all = all.concat(data);
-        if (data.length < 1000) break;
-        page++;
-      }
-      return all;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: normativos, isLoading: loadingNorm } = useQuery({
-    queryKey: ['evolucao-rec-normativos'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status, categoria, url_origem');
-      if (error) throw error;
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const isLoading = loadingRecs || loadingInd || loadingOrc || loadingNorm;
+  const isLoading = loadingRecs || !sensorReady;
 
   const results = useMemo<EvolucaoResult[]>(() => {
-    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
-
-    const dedupedIndicadores = getSafeIndicadores(indicadores);
+    if (!recomendacoes || !sensorReady) return [];
 
     return recomendacoes.map(rec => {
       const artigos = getArtigosFromRecomendacao(rec);
+      const diag = diagnosticMap.get(rec.id);
 
-      // Build keyword tokens from recommendation tema + description + texto_original_onu
-      const GENERIC_STOPS = ['brasil', 'racial', 'negro', 'negra', 'politica', 'programa', 'geral', 'nacional', 'federal', 'estado', 'governo', 'medida', 'direito', 'parte', 'comite', 'sobre', 'contra', 'entre', 'todas', 'todos', 'forma', 'podem', 'grupo', 'populacao', 'pessoa', 'acoes', 'acordo', 'ainda', 'alem', 'outro', 'outras', 'outros', 'sendo', 'relacao', 'numero', 'dados'];
-      const rawText = `${rec.tema} ${rec.descricao_lacuna} ${(rec as any).texto_original_onu || ''}`.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      const temaTokens = rawText
-        .split(/\s+/).filter(t => t.length >= 5 && !GENERIC_STOPS.includes(t));
+      // Use the SAME evidence already bound in Recomendações (useDiagnosticSensor)
+      const linkedInd = diag?.linkedIndicadores || [];
+      const linkedOrc = diag?.linkedOrcamento || [];
+      const linkedNorm = diag?.linkedNormativos || [];
 
-      // Also check if normativo/orcamento explicitly references this recommendation paragraph
-      const paragrafoRef = String(rec.paragrafo || '').replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
-
-      // --- ORÇAMENTO: keyword-only + explicit paragraph reference ---
-      const orcByKeyword = orcamento.filter((o: any) => {
-        const h = `${o.programa} ${o.orgao} ${o.descritivo || ''} ${o.eixo_tematico || ''} ${o.publico_alvo || ''}`.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
-          .some(t => h.includes(t));
-      });
-      const allOrc = Array.from(new Map(orcByKeyword.map((o: any) => [`${o.programa}-${o.orgao}-${o.ano}`, o])).values());
-
-      const programasCount = new Set(allOrc.map((o: any) => o.programa)).size;
-      const acoesVinculadas = allOrc.length;
-      const totalLiquidado = allOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0);
-
-      // --- NORMATIVOS: keyword-only matching (no broad article matching) ---
-      const allNorm = normativos.filter((d: any) => {
-        const h = d.titulo.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
-          .some(t => h.includes(t));
-      });
-      const normativosCount = allNorm.length;
-
-      // --- INDICADORES: keyword-only matching (same as normativos — no article-level matching) ---
-      const allInd = dedupedIndicadores.filter((ind: any) => {
-        const h = `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''}`.toLowerCase()
-          .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return temaTokens.filter(t => !GENERIC_STOPS.includes(t))
-          .some(t => h.includes(t));
-      });
-
-      // Evaluate indicator trends
+      // ── INDICADORES: evaluate TRENDS (not coverage) ──
+      // Only indicators with positive trend score positively
       let favoraveis = 0, desfavoraveis = 0, novos = 0;
-      allInd.forEach((ind: any) => {
+      linkedInd.forEach((ind: any) => {
         const result = evaluateIndicadorDetailed(ind).result;
         if (result === 'favoravel') favoraveis++;
         else if (result === 'desfavoravel') desfavoraveis++;
         else if (result === 'novo') novos++;
       });
 
-      const indicadoresTotal = allInd.length;
+      const indicadoresTotal = linkedInd.length;
       const rawIndScore = indicadoresTotal > 0
         ? ((favoraveis + novos * 0.7 - desfavoraveis * 0.5) / indicadoresTotal) * 100
         : 0;
       const scoreIndicadores = Math.max(0, Math.min(100, rawIndScore));
 
-      // NEW WEIGHTS: Indicadores 50%, Orçamento 30%, Normativos 20%
+      // ── ORÇAMENTO: R$ liquidado from linked evidence ──
+      const programasCount = new Set(linkedOrc.map((o: any) => o.programa)).size;
+      const acoesVinculadas = linkedOrc.length;
+      const totalLiquidado = linkedOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || Number(o.pago) || 0), 0);
       const scoreOrcamento = Math.min(100, programasCount > 0 ? 40 + Math.min(60, totalLiquidado / 1e8) : 0);
+
+      // ── NORMATIVOS: quantity from linked evidence ──
+      const normativosCount = linkedNorm.length;
       const scoreNormativa = Math.min(100, normativosCount * 12);
 
+      // Weighted score: Indicadores 50%, Orçamento 30%, Normativos 20%
       const scoreFarol = Math.round(
         scoreIndicadores * 0.50 +
         scoreOrcamento * 0.30 +
@@ -217,12 +142,12 @@ export function EvolucaoRecomendacoesPanel() {
         indicadoresDesfavoraveis: desfavoraveis,
         indicadoresNovos: novos,
         indicadoresTotal,
-        rawIndicadores: allInd,
-        rawNormativos: allNorm,
-        rawOrcamento: allOrc,
+        rawIndicadores: linkedInd,
+        rawNormativos: linkedNorm,
+        rawOrcamento: linkedOrc,
       };
     });
-  }, [recomendacoes, indicadores, orcamento, normativos]);
+  }, [recomendacoes, diagnosticMap, sensorReady]);
 
   const grouped = useMemo(() => {
     const r: Record<OrigemLacuna, EvolucaoResult[]> = { cerd: [], rg: [], durban: [] };
@@ -247,7 +172,6 @@ export function EvolucaoRecomendacoesPanel() {
       const corSinal = r.sinal === 'verde' ? '#16a34a' : r.sinal === 'amarelo' ? '#ca8a04' : '#dc2626';
       const labelSinal = r.sinal === 'verde' ? 'Evolução' : r.sinal === 'amarelo' ? 'Estagnação' : 'Retrocesso';
 
-      // Evidence details for export
       const indDetails = r.rawIndicadores.map((ind: any) => {
         const ev = evaluateIndicadorDetailed(ind);
         const trendLabel = ev.result === 'favoravel' ? '↑ Melhoria' : ev.result === 'desfavoravel' ? '↓ Piora' : ev.result === 'novo' ? '★ Novo' : '— Neutro';
@@ -257,7 +181,7 @@ export function EvolucaoRecomendacoesPanel() {
       const normDetails = r.rawNormativos.map((n: any) => `<li>${n.titulo}</li>`).join('');
 
       const orcDetails = r.rawOrcamento.slice(0, 15).map((o: any) =>
-        `<li>${o.programa} — ${o.orgao} (${o.ano}) — R$ ${((Number(o.liquidado) || 0) / 1e6).toFixed(1)}M liquidado</li>`
+        `<li>${o.programa} — ${o.orgao} (${o.ano}) — R$ ${((Number(o.liquidado) || Number(o.pago) || 0) / 1e6).toFixed(1)}M</li>`
       ).join('');
 
       return `<tr>
@@ -292,6 +216,7 @@ ul{font-size:10px}
 </style></head><body>
 <h1>📈 Evolução das Recomendações — Tendência de Evidências (2018-2025)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+<p class="nota"><strong>Fonte de evidências:</strong> Mesma vinculação utilizada em Recomendações (Motor v5.3), avaliando aqui a tendência de impacto.</p>
 
 <div class="summary-box">
   <div><strong>Score Médio:</strong> ${mediaGeral}%</div>
@@ -303,12 +228,12 @@ ul{font-size:10px}
 
 <div class="methodology">
 <h2>📐 Metodologia</h2>
-<p>Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período 2018-2025.</p>
+<p>Utiliza as <strong>mesmas evidências vinculadas em Recomendações</strong> (Motor v5.3) e avalia se <strong>melhoraram</strong> no período 2018-2025.</p>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>O que mede</th><th>Justificativa</th></tr>
 <tr><td><strong>Indicadores</strong></td><td><strong>50%</strong></td><td>Tendência na série histórica (somente variação positiva pontua)</td><td>Termômetro real da efetividade — demonstra se a política alcançou a ponta</td></tr>
-<tr><td><strong>Orçamento</strong></td><td><strong>30%</strong></td><td>Programas com execução rastreável + R$ liquidado</td><td>Demonstra investimento concreto, embora não garanta resultado na ponta</td></tr>
-<tr><td><strong>Normativos</strong></td><td><strong>20%</strong></td><td>Instrumentos legislativos vinculados</td><td>Inicia o ciclo de políticas, mas é o mais distante do resultado final</td></tr>
+<tr><td><strong>Orçamento</strong></td><td><strong>30%</strong></td><td>Somatório R$ liquidado das ações vinculadas</td><td>Demonstra investimento concreto, embora não garanta resultado na ponta</td></tr>
+<tr><td><strong>Normativos</strong></td><td><strong>20%</strong></td><td>Quantidade de instrumentos normativos vinculados</td><td>Inicia o ciclo de políticas, mas é o mais distante do resultado final</td></tr>
 </table>
 <p class="nota"><strong>Semáforo:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
 <p class="nota"><strong>Diferença vs. Status (Relação Completa):</strong> O <em>Status</em> avalia se a recomendação foi cumprida (cobertura de dados). A <em>Evolução</em> avalia se os dados mostram melhora no período.</p>
@@ -521,10 +446,10 @@ ${renderDetailRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Avalia se as evidências vinculadas a cada recomendação <strong>melhoraram</strong> no período, com pesos:
-          <strong> Indicadores (50%)</strong> — termômetro real de efetividade;
-          <strong> Orçamento (30%)</strong> — investimento concreto;
-          <strong> Normativos (20%)</strong> — início do ciclo de políticas.
+          Utiliza as <strong>mesmas evidências vinculadas em Recomendações</strong> (Motor v5.3) e avalia se <strong>melhoraram</strong> no período, com pesos:
+          <strong> Indicadores tendência (50%)</strong> — só resultados positivos pontuam;
+          <strong> Orçamento R$ (30%)</strong> — somatório liquidado;
+          <strong> Normativos qtde (20%)</strong> — quantidade de instrumentos mapeados.
           <em> Clique nos contadores para auditar as evidências.</em>
         </p>
       </div>
@@ -541,16 +466,11 @@ ${renderDetailRows([...grouped.cerd, ...grouped.rg, ...grouped.durban])}
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive" /> <strong>Retrocesso (&lt;35%):</strong> Indicadores em piora ou sem evidências</span>
         </div>
         <p className="text-[10px] text-muted-foreground mt-2">
-          <strong>Pesos:</strong> Indicadores (50%) — verdadeiro termômetro da efetividade |
-          Orçamento (30%) — investimento concreto, mas não garante resultado na ponta |
-          Normativos (20%) — início do ciclo, menor peso pois não significa alcance.
-        </p>
-        <p className="text-[10px] text-muted-foreground mt-1 italic">
-          <strong>Diferença vs. Status (Relação Completa):</strong> O Status avalia se a recomendação foi cumprida (cobertura). A Evolução avalia se os dados mostram melhora.
+          <strong>Fonte de evidências:</strong> Mesma vinculação de Recomendações (Motor v5.3 — Concept Bundles + anti-ubíquos).
+          A diferença é que aqui avalia-se a <em>tendência</em> (melhora/piora) e não a <em>cobertura</em> (existência).
         </p>
       </div>
 
-      {/* Drilldown dialog reusing FarolDrilldownDialog */}
       {drilldown && (
         <FarolDrilldownDialog
           open={!!drilldown}
