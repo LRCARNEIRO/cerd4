@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useState } from 'react';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 
 const additionalSources = [
   {
