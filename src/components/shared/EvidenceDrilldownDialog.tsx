@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search } from 'lucide-react';
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
 
@@ -53,9 +52,9 @@ export function EvidenceDrilldownDialog({
   allIndicadores, allOrcamento, allNormativos,
   overrides, onOverridesChange,
 }: EvidenceDrilldownDialogProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [addTab, setAddTab] = useState<'indicadores' | 'orcamento' | 'normativos'>('indicadores');
-  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [searchInd, setSearchInd] = useState('');
+  const [searchOrc, setSearchOrc] = useState('');
+  const [searchNorm, setSearchNorm] = useState('');
 
   const isEditable = !!onOverridesChange && !!overrides;
 
@@ -86,20 +85,22 @@ export function EvidenceDrilldownDialog({
     return [...base, ...added];
   }, [linkedNormativos, overrides]);
 
-  // ── Search results ──
-  const searchResults = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 3) return { indicadores: [], orcamento: [], normativos: [] };
-    const term = searchTerm.toLowerCase();
-
-    const indicadores = (allIndicadores || [])
+  const searchIndResults = useMemo(() => {
+    if (!searchInd || searchInd.length < 1) return [];
+    const term = searchInd.toLowerCase();
+    return (allIndicadores || [])
       .filter((i: any) => {
         const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);
       })
       .slice(0, 15)
       .map((i: any) => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados }));
+  }, [searchInd, allIndicadores, effectiveIndicadores]);
 
-    const orcamento = (allOrcamento || [])
+  const searchOrcResults = useMemo(() => {
+    if (!searchOrc || searchOrc.length < 1) return [];
+    const term = searchOrc.toLowerCase();
+    return (allOrcamento || [])
       .filter((o: any) => {
         const text = `${o.programa} ${o.orgao} ${o.descritivo || ''}`.toLowerCase();
         const key = `${o.programa}|${o.orgao}|${o.ano}`;
@@ -107,17 +108,19 @@ export function EvidenceDrilldownDialog({
       })
       .slice(0, 15)
       .map((o: any) => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago }));
+  }, [searchOrc, allOrcamento, effectiveOrcamento]);
 
-    const normativos = (allNormativos || [])
+  const searchNormResults = useMemo(() => {
+    if (!searchNorm || searchNorm.length < 1) return [];
+    const term = searchNorm.toLowerCase();
+    return (allNormativos || [])
       .filter((n: any) => {
         const text = `${n.titulo} ${n.categoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveNormativos.some(e => e.titulo === n.titulo);
       })
       .slice(0, 15)
       .map((n: any) => ({ titulo: n.titulo, status: n.status }));
-
-    return { indicadores, orcamento, normativos };
-  }, [searchTerm, allIndicadores, allOrcamento, allNormativos, effectiveIndicadores, effectiveOrcamento, effectiveNormativos, addTab]);
+  }, [searchNorm, allNormativos, effectiveNormativos]);
 
   // ── Handlers ──
   const removeIndicador = (nome: string) => {
@@ -275,6 +278,42 @@ export function EvidenceDrilldownDialog({
                 </div>
               )}
               <p className="text-[10px] text-muted-foreground mt-1">{auditoria.indicadores.justificativa}</p>
+              {isEditable && (
+                <div className="mt-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar indicador para adicionar..."
+                      value={searchInd}
+                      onChange={(e) => setSearchInd(e.target.value)}
+                      className="pl-8 h-8 text-xs"
+                    />
+                  </div>
+                  {searchInd.length >= 1 && (
+                    <div className="rounded-md border mt-1 max-h-32 overflow-auto bg-background">
+                      {searchIndResults.length === 0 ? (
+                        <p className="text-[10px] text-muted-foreground p-2">Nenhum resultado.</p>
+                      ) : (
+                        <Table>
+                          <TableBody>
+                            {searchIndResults.map((ind: any, i: number) => (
+                              <TableRow key={i}>
+                                <TableCell className="text-[10px] py-1">{ind.nome}</TableCell>
+                                <TableCell className="text-[10px] text-muted-foreground w-16 py-1">{ind.categoria}</TableCell>
+                                <TableCell className="w-8 py-1">
+                                  <Button variant="ghost" size="icon" className="h-5 w-5 text-accent" onClick={() => { addIndicador(ind); setSearchInd(''); }}>
+                                    <Plus className="w-3 h-3" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Orçamento */}
@@ -326,6 +365,43 @@ export function EvidenceDrilldownDialog({
                 </div>
               )}
               <p className="text-[10px] text-muted-foreground mt-1">{auditoria.orcamento.justificativa}</p>
+              {isEditable && (
+                <div className="mt-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar ação orçamentária para adicionar..."
+                      value={searchOrc}
+                      onChange={(e) => setSearchOrc(e.target.value)}
+                      className="pl-8 h-8 text-xs"
+                    />
+                  </div>
+                  {searchOrc.length >= 1 && (
+                    <div className="rounded-md border mt-1 max-h-32 overflow-auto bg-background">
+                      {searchOrcResults.length === 0 ? (
+                        <p className="text-[10px] text-muted-foreground p-2">Nenhum resultado.</p>
+                      ) : (
+                        <Table>
+                          <TableBody>
+                            {searchOrcResults.map((orc: any, i: number) => (
+                              <TableRow key={i}>
+                                <TableCell className="text-[10px] py-1">{orc.programa}</TableCell>
+                                <TableCell className="text-[10px] text-muted-foreground w-16 py-1">{orc.orgao}</TableCell>
+                                <TableCell className="text-[10px] w-10 py-1">{orc.ano}</TableCell>
+                                <TableCell className="w-8 py-1">
+                                  <Button variant="ghost" size="icon" className="h-5 w-5 text-accent" onClick={() => { addOrcamentoItem(orc); setSearchOrc(''); }}>
+                                    <Plus className="w-3 h-3" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Normativos */}
@@ -373,127 +449,42 @@ export function EvidenceDrilldownDialog({
                 </div>
               )}
               <p className="text-[10px] text-muted-foreground mt-1">{auditoria.normativos.justificativa}</p>
-            </div>
-
-            {/* Add Panel */}
-            {isEditable && (
-              <div className="border rounded-lg">
-                <button
-                  onClick={() => setShowAddPanel(!showAddPanel)}
-                  className="w-full flex items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50 transition-colors"
-                >
-                  <Plus className="w-4 h-4 text-accent" />
-                  Adicionar evidência da base completa
-                  {showAddPanel && <X className="w-4 h-4 ml-auto" />}
-                </button>
-
-                {showAddPanel && (
-                  <div className="p-3 pt-0 space-y-3">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Buscar na base completa (mín. 3 caracteres)..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 text-sm"
-                      />
-                    </div>
-
-                    <Tabs value={addTab} onValueChange={(v) => setAddTab(v as any)}>
-                      <TabsList className="h-8">
-                        <TabsTrigger value="indicadores" className="text-xs h-7">
-                          📊 Indicadores ({searchResults.indicadores.length})
-                        </TabsTrigger>
-                        <TabsTrigger value="orcamento" className="text-xs h-7">
-                          💰 Orçamento ({searchResults.orcamento.length})
-                        </TabsTrigger>
-                        <TabsTrigger value="normativos" className="text-xs h-7">
-                          📋 Normativos ({searchResults.normativos.length})
-                        </TabsTrigger>
-                      </TabsList>
-
-                      <TabsContent value="indicadores">
-                        {searchTerm.length < 3 ? (
-                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
-                        ) : searchResults.indicadores.length === 0 ? (
-                          <p className="text-xs text-muted-foreground p-2">Nenhum indicador encontrado.</p>
-                        ) : (
-                          <div className="rounded-md border max-h-40 overflow-auto">
-                            <Table>
-                              <TableBody>
-                                {searchResults.indicadores.map((ind: any, i: number) => (
-                                  <TableRow key={i}>
-                                    <TableCell className="text-xs">{ind.nome}</TableCell>
-                                    <TableCell className="text-[10px] text-muted-foreground w-20">{ind.categoria}</TableCell>
-                                    <TableCell className="w-10">
-                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addIndicador(ind)}>
-                                        <Plus className="w-3 h-3" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-                      </TabsContent>
-
-                      <TabsContent value="orcamento">
-                        {searchTerm.length < 3 ? (
-                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
-                        ) : searchResults.orcamento.length === 0 ? (
-                          <p className="text-xs text-muted-foreground p-2">Nenhuma ação orçamentária encontrada.</p>
-                        ) : (
-                          <div className="rounded-md border max-h-40 overflow-auto">
-                            <Table>
-                              <TableBody>
-                                {searchResults.orcamento.map((orc: any, i: number) => (
-                                  <TableRow key={i}>
-                                    <TableCell className="text-xs">{orc.programa}</TableCell>
-                                    <TableCell className="text-[10px] text-muted-foreground w-20">{orc.orgao}</TableCell>
-                                    <TableCell className="text-[10px] w-12">{orc.ano}</TableCell>
-                                    <TableCell className="w-10">
-                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addOrcamentoItem(orc)}>
-                                        <Plus className="w-3 h-3" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-                      </TabsContent>
-
-                      <TabsContent value="normativos">
-                        {searchTerm.length < 3 ? (
-                          <p className="text-xs text-muted-foreground p-2">Digite ao menos 3 caracteres para buscar...</p>
-                        ) : searchResults.normativos.length === 0 ? (
-                          <p className="text-xs text-muted-foreground p-2">Nenhum normativo encontrado.</p>
-                        ) : (
-                          <div className="rounded-md border max-h-40 overflow-auto">
-                            <Table>
-                              <TableBody>
-                                {searchResults.normativos.map((norm: any, i: number) => (
-                                  <TableRow key={i}>
-                                    <TableCell className="text-xs">{norm.titulo}</TableCell>
-                                    <TableCell className="w-10">
-                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-accent hover:text-accent" onClick={() => addNormativoItem(norm)}>
-                                        <Plus className="w-3 h-3" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-                      </TabsContent>
-                    </Tabs>
+              {isEditable && (
+                <div className="mt-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar normativo para adicionar..."
+                      value={searchNorm}
+                      onChange={(e) => setSearchNorm(e.target.value)}
+                      className="pl-8 h-8 text-xs"
+                    />
                   </div>
-                )}
-              </div>
-            )}
+                  {searchNorm.length >= 1 && (
+                    <div className="rounded-md border mt-1 max-h-32 overflow-auto bg-background">
+                      {searchNormResults.length === 0 ? (
+                        <p className="text-[10px] text-muted-foreground p-2">Nenhum resultado.</p>
+                      ) : (
+                        <Table>
+                          <TableBody>
+                            {searchNormResults.map((norm: any, i: number) => (
+                              <TableRow key={i}>
+                                <TableCell className="text-[10px] py-1">{norm.titulo}</TableCell>
+                                <TableCell className="w-8 py-1">
+                                  <Button variant="ghost" size="icon" className="h-5 w-5 text-accent" onClick={() => { addNormativoItem(norm); setSearchNorm(''); }}>
+                                    <Plus className="w-3 h-3" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Methodology note */}
             <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
