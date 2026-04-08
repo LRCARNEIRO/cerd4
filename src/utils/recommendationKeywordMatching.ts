@@ -272,7 +272,8 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
       // Ex: grupo 'negros' — exige phrase + group OU strong temático ≥3
       isRelevant =
         (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 3)
-        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4);
+        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4)
+        || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 2 && score >= 5);
     } else {
       // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
       isRelevant =
