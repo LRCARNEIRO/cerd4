@@ -86,20 +86,22 @@ export function EvidenceDrilldownDialog({
     return [...base, ...added];
   }, [linkedNormativos, overrides]);
 
-  // ── Search results ──
-  const searchResults = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 3) return { indicadores: [], orcamento: [], normativos: [] };
-    const term = searchTerm.toLowerCase();
-
-    const indicadores = (allIndicadores || [])
+  const searchIndResults = useMemo(() => {
+    if (!searchInd || searchInd.length < 1) return [];
+    const term = searchInd.toLowerCase();
+    return (allIndicadores || [])
       .filter((i: any) => {
         const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);
       })
       .slice(0, 15)
       .map((i: any) => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados }));
+  }, [searchInd, allIndicadores, effectiveIndicadores]);
 
-    const orcamento = (allOrcamento || [])
+  const searchOrcResults = useMemo(() => {
+    if (!searchOrc || searchOrc.length < 1) return [];
+    const term = searchOrc.toLowerCase();
+    return (allOrcamento || [])
       .filter((o: any) => {
         const text = `${o.programa} ${o.orgao} ${o.descritivo || ''}`.toLowerCase();
         const key = `${o.programa}|${o.orgao}|${o.ano}`;
@@ -107,17 +109,19 @@ export function EvidenceDrilldownDialog({
       })
       .slice(0, 15)
       .map((o: any) => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago }));
+  }, [searchOrc, allOrcamento, effectiveOrcamento]);
 
-    const normativos = (allNormativos || [])
+  const searchNormResults = useMemo(() => {
+    if (!searchNorm || searchNorm.length < 1) return [];
+    const term = searchNorm.toLowerCase();
+    return (allNormativos || [])
       .filter((n: any) => {
         const text = `${n.titulo} ${n.categoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveNormativos.some(e => e.titulo === n.titulo);
       })
       .slice(0, 15)
       .map((n: any) => ({ titulo: n.titulo, status: n.status }));
-
-    return { indicadores, orcamento, normativos };
-  }, [searchTerm, allIndicadores, allOrcamento, allNormativos, effectiveIndicadores, effectiveOrcamento, effectiveNormativos, addTab]);
+  }, [searchNorm, allNormativos, effectiveNormativos]);
 
   // ── Handlers ──
   const removeIndicador = (nome: string) => {
