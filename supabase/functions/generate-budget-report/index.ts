@@ -1690,18 +1690,19 @@ tr:nth-child(even){background:#f8fafc;}
   </div>
 
   <div class="table-container" style="margin-bottom:20px;">
-    <div class="table-header"><h3>1. Política de Conformidade Equilibrada (v2)</h3>
-    <p>Fórmula de Progresso: Progresso = Σ (status × peso) / total_recomendações</p></div>
+    <div class="table-header"><h3>1. Score de Esforço Governamental (por Recomendação)</h3>
+    <p>Score = (Indicadores × 40%) + (Orçamento × 30%) + (Normativos × 30%). Cada dimensão pontua 0-100 conforme quantidade de evidências vinculadas.</p></div>
     <table>
-      <thead><tr><th>Status</th><th>Peso</th><th>Critério</th></tr></thead>
+      <thead><tr><th>Status</th><th>Faixa de Score</th><th>Critério (quantidade de evidências)</th></tr></thead>
       <tbody>
-        <tr><td><span style="color:#166534;font-weight:700">✅ Cumprido</span></td><td style="text-align:center;font-weight:700">100%</td><td>Recomendação plenamente atendida com evidências e ações documentadas</td></tr>
-        <tr><td><span style="color:#b45309;font-weight:700">⚠️ Parcialmente Cumprido</span></td><td style="text-align:center;font-weight:700">60%</td><td>Ações registradas ou 3+ evidências, mas sem cobertura completa</td></tr>
-        <tr><td><span style="color:#2563eb;font-weight:700">🔄 Em Andamento</span></td><td style="text-align:center;font-weight:700">30%</td><td>Esforço normativo/institucional identificado (1-2 evidências)</td></tr>
-        <tr><td><span style="color:#991b1b;font-weight:700">❌ Não Cumprido</span></td><td style="text-align:center;font-weight:700">5%</td><td>Sem evidências documentadas (reconhece existência do tema)</td></tr>
+        <tr><td><span style="color:#166534;font-weight:700">✅ Cumprido</span></td><td style="text-align:center;font-weight:700">≥ 80</td><td>Cobertura ampla: 5+ indicadores, 3+ normativos e ações orçamentárias com boa execução</td></tr>
+        <tr><td><span style="color:#b45309;font-weight:700">⚠️ Parcialmente Cumprido</span></td><td style="text-align:center;font-weight:700">≥ 55</td><td>Cobertura parcial: 2-4 indicadores, 1-2 normativos ou orçamento com execução moderada</td></tr>
+        <tr><td><span style="color:#2563eb;font-weight:700">🔄 Em Andamento</span></td><td style="text-align:center;font-weight:700">≥ 35</td><td>Evidências iniciais: ao menos 1 indicador ou normativo vinculado por coerência temática</td></tr>
+        <tr><td><span style="color:#991b1b;font-weight:700">❌ Não Cumprido</span></td><td style="text-align:center;font-weight:700">≥ 15</td><td>Evidências mínimas ou ausentes nas 3 dimensões</td></tr>
+        <tr><td><span style="color:#7f1d1d;font-weight:700">⛔ Retrocesso</span></td><td style="text-align:center;font-weight:700">&lt; 15</td><td>Nenhuma evidência e indicadores com tendência de piora comprovada</td></tr>
       </tbody>
     </table>
-    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Reclassificação automática: lacunas com ações do Brasil → parcial; com 1-2 evidências → em andamento; parciais com 2+ ações e 3+ evidências → cumprido.</p>
+    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Escalas de cobertura — Indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento: execução média × 1.3, penalização para dotações simbólicas (&lt;5%).</p>
   </div>
 
   <div class="table-container" style="margin-bottom:20px;">

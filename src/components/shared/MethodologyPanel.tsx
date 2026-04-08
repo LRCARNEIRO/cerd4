@@ -13,10 +13,11 @@ interface MethodologyPanelProps {
 }
 
 const progressCategories = [
-  { label: 'Cumprido', weight: '100%', color: 'bg-emerald-500', desc: 'Recomendação plenamente atendida com evidências e ações documentadas' },
-  { label: 'Parcialmente Cumprido', weight: '60%', color: 'bg-amber-500', desc: 'Ações registradas ou 3+ evidências, mas sem cobertura completa' },
-  { label: 'Em Andamento', weight: '30%', color: 'bg-blue-500', desc: 'Esforço normativo/institucional identificado (1-2 evidências)' },
-  { label: 'Não Cumprido', weight: '5%', color: 'bg-red-500', desc: 'Sem evidências documentadas (reconhece existência do tema)' },
+  { label: 'Cumprido', weight: 'Score ≥ 80', color: 'bg-emerald-500', desc: 'Cobertura ampla: 5+ indicadores, 3+ normativos e ações orçamentárias com boa execução' },
+  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 55', color: 'bg-amber-500', desc: 'Cobertura parcial: 2-4 indicadores, 1-2 normativos ou orçamento com execução moderada' },
+  { label: 'Em Andamento', weight: 'Score ≥ 35', color: 'bg-blue-500', desc: 'Evidências iniciais: ao menos 1 indicador ou normativo vinculado por coerência temática' },
+  { label: 'Não Cumprido', weight: 'Score ≥ 15', color: 'bg-red-500', desc: 'Evidências mínimas ou ausentes nas 3 dimensões (indicadores, orçamento, normativos)' },
+  { label: 'Retrocesso', weight: 'Score < 15', color: 'bg-destructive', desc: 'Nenhuma evidência relevante e indicadores com tendência de piora comprovada' },
 ];
 
 const aderenciaWeights = [
@@ -72,11 +73,15 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">Fórmula de Progresso Geral</span>
+                  <span className="text-xs font-semibold text-foreground">Fórmula do Score por Recomendação</span>
                 </div>
                 <div className="bg-background/80 rounded-md p-3 border border-border/50">
-                  <p className="text-[11px] font-mono text-muted-foreground mb-2">
-                    Progresso = Σ (status × peso) / total_recomendações
+                  <p className="text-[11px] font-mono text-muted-foreground mb-1">
+                    Score = (Indicadores × 40%) + (Orçamento × 30%) + (Normativos × 30%)
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mb-2">
+                    Cada dimensão pontua de 0 a 100 conforme a quantidade de evidências vinculadas por coerência temática.
+                    O status final é atribuído pela faixa do score combinado:
                   </p>
                   <div className="space-y-1.5">
                     {progressCategories.map((cat) => (
@@ -115,8 +120,8 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             <p className="text-[10px] text-muted-foreground italic">
               Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras, com exceções curtas relevantes como raça) → filtro de stop-words → 
               expansão por sinônimos temáticos + expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada nos campos de evidências.
-              Recomendações com grupo focal exigem sinal focal explícito para evitar falsos positivos. Pesos do status: Indicadores 40% + Orçamento 30% + Normativos 30%.
-              Cap piora: se indicadores em piora &gt; melhora, teto = 55 (Parcial).
+              Recomendações com grupo focal exigem sinal focal explícito para evitar falsos positivos.
+              Escala de indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento: execução média × 1.3, penalização para dotações simbólicas (&lt;5%).
             </p>
           </CardContent>
         </Card>

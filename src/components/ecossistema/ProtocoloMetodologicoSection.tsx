@@ -8,9 +8,9 @@ import { SectionHeader } from './BaseEvidenciasSection';
 const PROTOCOLS = [
   {
     icon: Calculator,
-    title: 'Índice de Progresso Ponderado',
-    description: 'Fórmula de cálculo do progresso geral com pesos diferenciados por status de cumprimento (Cumprido 100%, Parcial 60%, Em Andamento 30%, Não Cumprido 5%).',
-    sources: ['Lacunas Identificadas', 'Sensor Diagnóstico'],
+    title: 'Score de Esforço Governamental',
+    description: 'Cada recomendação recebe um score 0-100 composto por 3 dimensões de evidências: Indicadores (40%), Orçamento (30%) e Normativos (30%). O status final (Cumprido ≥80, Parcial ≥55, Em Andamento ≥35, Não Cumprido ≥15) reflete a quantidade e qualidade das evidências vinculadas.',
+    sources: ['Base Estatística', 'Base Orçamentária', 'Base Normativa'],
   },
   {
     icon: Scale,

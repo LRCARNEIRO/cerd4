@@ -20,12 +20,12 @@ export function useDashboardStats() {
   const naoCumpridas = lacunasStats?.porStatus.nao_cumprido || 0;
   const retrocesso = lacunasStats?.porStatus.retrocesso || 0;
 
-  // Progresso real — política de conformidade equilibrada
-  // Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=5%, Retrocesso=0%
+  // Progresso real — baseado nos scores médios das faixas reais de evidências
+  // Cada status reflete a faixa média de score: Cumprido≈90, Parcial≈67, Em Andamento≈45, Não Cumprido≈15, Retrocesso≈5
   const emAndamento = lacunasStats?.porStatus.em_andamento || 0;
   const progressoReal = totalRecomendacoes > 0 
     ? Math.round(
-        ((cumpridas * 100) + (parciais * 60) + (emAndamento * 30) + (naoCumpridas * 5)) / totalRecomendacoes
+        ((cumpridas * 90) + (parciais * 67) + (emAndamento * 45) + (naoCumpridas * 15) + (retrocesso * 5)) / totalRecomendacoes
       ) 
     : 0;
 
