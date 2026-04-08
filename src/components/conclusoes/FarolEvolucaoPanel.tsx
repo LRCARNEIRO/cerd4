@@ -104,20 +104,17 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
       const indicadoresNeutros = indicadoresSummary.neutros;
 
       // ═══════════════════════════════════════════════════════
-      // SCORING RIGOROSO — Evolução (Impacto Real)
+      // SCORING — Evolução (Impacto Real) — Faixas quantitativas
       // ═══════════════════════════════════════════════════════
 
-      // Orçamento (0-100): escala logarítmica com base em R$ liquidado
-      // 0 programas = 0; exige volume significativo para pontuar alto
+      // Orçamento (0-100): faixas por quantidade de ações vinculadas
+      // 0=0, 1-2=20, 3-5=40, 6-10=60, 11-20=80, 21+=100
       let scoreOrcamento = 0;
-      if (programasCount > 0) {
-        // Base: presença institucional (max 25 pts)
-        const baseInstitucional = Math.min(25, programasCount * 3);
-        // Volume: R$ liquidado em escala logarítmica (max 75 pts)
-        // R$ 100mi = ~37 pts, R$ 1bi = ~56 pts, R$ 10bi = ~75 pts
-        const volumePts = totalLiquidado > 0 ? Math.min(75, Math.log10(totalLiquidado / 1e6) * 25) : 0;
-        scoreOrcamento = Math.min(100, Math.max(0, Math.round(baseInstitucional + volumePts)));
-      }
+      if (acoesVinculadas >= 21) scoreOrcamento = 100;
+      else if (acoesVinculadas >= 11) scoreOrcamento = 80;
+      else if (acoesVinculadas >= 6) scoreOrcamento = 60;
+      else if (acoesVinculadas >= 3) scoreOrcamento = 40;
+      else if (acoesVinculadas >= 1) scoreOrcamento = 20;
 
       // Normativa (0-100): escala degressiva (primeiros normativos valem mais)
       // 1=15, 3=40, 6=65, 10=85, 15+=100
@@ -244,9 +241,9 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
           <div className="mt-3 p-3 bg-muted/30 rounded-lg text-[10px] text-muted-foreground space-y-1">
             <p className="font-semibold text-xs text-foreground">Metodologia de Cálculo — Evolução por Artigo</p>
             <p><strong>Score = Orçamento (35%) + Normativos (35%) + Indicadores (30%)</strong></p>
-            <p>• <strong>Orçamento (0-100):</strong> Base institucional: min(25, programas × 3). Volume R$: min(75, log₁₀(liquidado/1M) × 25). Ex: R$ 100mi → ~37 pts volume; R$ 1bi → ~56 pts; R$ 10bi → 75 pts.</p>
-            <p>• <strong>Normativos (0-100):</strong> Escala degressiva: 1=15, 3=40, 6=65, 10=85, 15+=100.</p>
-            <p>• <strong>Indicadores (0-100):</strong> (favoráveis + novos×0.4 - desfavoráveis×1.0) / total × 100. Só melhoria comprovada pontua 100%; piora penaliza integralmente.</p>
+            <p>• <strong>Orçamento (0-100):</strong> Faixas por qtde de ações: 1-2=20, 3-5=40, 6-10=60, 11-20=80, 21+=100.</p>
+            <p>• <strong>Normativos (0-100):</strong> Faixas por qtde: 1=15, 3=40, 6=65, 10=85, 15+=100.</p>
+            <p>• <strong>Indicadores (0-100):</strong> (favoráveis + novos×0.4 − desfavoráveis) / total × 100. Só melhoria comprovada pontua 100%; piora penaliza 1:1.</p>
             <p>• <strong>Faixas:</strong> ≥60% Evolução (verde) | 35-59% Estagnação (amarelo) | &lt;35% Retrocesso (vermelho)</p>
           </div>
         </CardContent>
