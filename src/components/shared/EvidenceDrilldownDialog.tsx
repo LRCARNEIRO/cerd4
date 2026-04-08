@@ -192,11 +192,16 @@ export function EvidenceDrilldownDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className={`overflow-hidden flex flex-col transition-all ${maximized ? 'max-w-[95vw] max-h-[95vh] w-[95vw] h-[95vh]' : 'max-w-4xl max-h-[90vh]'}`}>
         <DialogHeader>
-          <DialogTitle className="text-base flex items-center gap-2">
-            §{paragrafo} — {tema}
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-base flex items-center gap-2">
+              §{paragrafo} — {tema}
+            </DialogTitle>
+            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setMaximized(!maximized)} title={maximized ? 'Reduzir' : 'Maximizar'}>
+              {maximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </Button>
+          </div>
           <DialogDescription className="text-xs">
             {isEditable
               ? 'Evidências vinculadas — remova ou adicione itens para ajustar a avaliação.'
