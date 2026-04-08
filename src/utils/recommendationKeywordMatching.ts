@@ -74,12 +74,17 @@ const GRUPO_SPECIFIC: Record<string, string[]> = {
   ciganos: ['ciganos', 'cigano', 'romani'],
   religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
   juventude_negra: ['juventude negra', 'jovens negros'],
-  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio'],
+  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher', 'gestante', 'parto', 'pre natal'],
   lgbtqia_negros: ['lgbtqia', 'pessoas trans', 'trans', 'transexual', 'homofobia', 'transfobia'],
   pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
   idosos_negros: ['idosos negros', 'idosas negras'],
   geral: [],
 };
+
+const NOISE_PHRASE_FRAGMENTS = new Set([
+  'comite', 'expressa', 'preocupacao', 'recomenda', 'estado', 'parte',
+  'acelere', 'proteja', 'abordem', 'integradas', 'sofrida', 'multipla',
+]);
 
 export function normalizeSearchText(text: string): string {
   return String(text || '')
@@ -129,6 +134,7 @@ function extractPhraseKeywords(text: string): string[] {
       const relevantWords = slice.filter((word) => word.length >= 4 && !KEYWORD_STOPWORDS.has(word));
       if (relevantWords.length < 2) continue;
       if (relevantWords.every((word) => LOW_SIGNAL_KEYWORDS.has(word))) continue;
+      if (relevantWords.every((word) => NOISE_PHRASE_FRAGMENTS.has(word))) continue;
       phrases.push(slice.join(' '));
     }
   }
@@ -223,7 +229,8 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
 
   const requiresFocalSignal = profile.groupKeywords.length > 0;
   const isRelevant = requiresFocalSignal
-    ? matchedGroupKeywords.length > 0 && (matchedPhraseKeywords.length > 0 || score >= 3)
+    ? (matchedGroupKeywords.length > 0 && (matchedPhraseKeywords.length > 0 || score >= 2))
+      || (matchedPhraseKeywords.length >= 1 && score >= 3)
     : matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
 
   return {
