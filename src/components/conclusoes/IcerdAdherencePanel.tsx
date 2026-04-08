@@ -676,18 +676,24 @@ ${analysis.map(a => {
                   <div className="min-w-0">
                     <p className="font-semibold text-sm">{a.tituloCompleto}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge
-                        className={`text-[10px] ${
-                          a.grauAderencia >= 70
-                            ? 'bg-success/10 text-success border-success/30'
-                            : a.grauAderencia >= 40
-                              ? 'bg-warning/10 text-warning border-warning/30'
-                              : 'bg-destructive/10 text-destructive border-destructive/30'
-                        }`}
-                        variant="outline"
+                      <button
+                        onClick={() => setDrilldownArtigo(a.numero)}
+                        className="cursor-pointer hover:opacity-80 transition-opacity"
+                        title="Clique para ver evidências detalhadas"
                       >
-                        {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'}
-                      </Badge>
+                        <Badge
+                          className={`text-[10px] ${
+                            a.grauAderencia >= 70
+                              ? 'bg-success/10 text-success border-success/30'
+                              : a.grauAderencia >= 40
+                                ? 'bg-warning/10 text-warning border-warning/30'
+                                : 'bg-destructive/10 text-destructive border-destructive/30'
+                          }`}
+                          variant="outline"
+                        >
+                          {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'} 🔍
+                        </Badge>
+                      </button>
                     </div>
                   </div>
                 </div>
