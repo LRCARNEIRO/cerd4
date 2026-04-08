@@ -60,7 +60,7 @@ export default function Index() {
     retrocesso: stats.recomendacoesRetrocesso,
     emAndamento: 0,
   };
-  const totalAtendidasDashboard = dashboardStatusData.cumprido + dashboardStatusData.parcial;
+  const totalCumpridas = dashboardStatusData.cumprido;
 
   // Mirror per-article data from existing panels — no local recalculation
   const artigosSummary = useMemo(() => {
