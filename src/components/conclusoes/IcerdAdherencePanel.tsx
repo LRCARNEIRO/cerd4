@@ -714,8 +714,12 @@ ${analysis.map(a => {
                   <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas + a.lacunasParciais}</p>
-                  <p className="text-[10px] text-muted-foreground">Atendidas</p>
+                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas}</p>
+                  <p className="text-[10px] text-muted-foreground">Cumpridas</p>
+                </div>
+                <div className="bg-muted/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-warning">{a.lacunasParciais}</p>
+                  <p className="text-[10px] text-muted-foreground">Parciais</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
