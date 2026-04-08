@@ -53,9 +53,9 @@ export function BudgetChart({ data }: BudgetChartProps) {
               height={36}
               formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
             />
-            <Bar dataKey="autorizado" name="Autorizado" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="empenhado" name="Empenhado" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="autorizado" name="Autorizado" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+            <Bar dataKey="empenhado" name="Empenhado" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+            <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>
       </div>

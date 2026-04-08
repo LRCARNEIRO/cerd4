@@ -10,7 +10,6 @@ import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import { ArtigoAdherenceDrilldownDialog } from '@/components/shared/ArtigoAdherenceDrilldownDialog';
 import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
-import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
@@ -21,16 +20,6 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
 
-interface DocumentoNormativo {
-  id: string;
-  titulo: string;
-  categoria: string;
-  status: string;
-  secoes_impactadas?: string[] | null;
-  recomendacoes_impactadas?: string[] | null;
-  metas_impactadas?: string[] | null;
-}
-
 interface IcerdAdherencePanelProps {
   fiosCondutores: FioCondutor[];
   conclusoes: ConclusaoDinamica[];
@@ -39,7 +28,7 @@ interface IcerdAdherencePanelProps {
   indicadores: any[];
   stats: any;
   respostas: RespostaLacunaCerdIII[];
-  documentosNormativos: DocumentoNormativo[];
+  documentosNormativosCount: number;
 }
 
 type ArtigoAnalysis = {
@@ -256,13 +245,13 @@ function generateVerdict(a: ArtigoAnalysis): string {
   return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
 }
 
-export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
+export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativosCount }: IcerdAdherencePanelProps) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
   const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
   const [drilldownFocus, setDrilldownFocus] = useState<'recomendacoes' | 'indicadores' | 'orcamento' | 'normativos' | null>(null);
 
   // Use diagnostic sensor for consistent compliance counts across panels
-  const { diagnosticMap, diagnostics } = useDiagnosticSensor(lacunas);
+  const { diagnosticMap } = useDiagnosticSensor(lacunas);
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
@@ -421,7 +410,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const avgAdherencia = Math.round(analysis.reduce((s, a) => s + a.grauAderencia, 0) / analysis.length);
 
   // Total data sources summary
-  const totalNormativos = documentosNormativos.length;
+  const totalNormativos = documentosNormativosCount;
   const totalRespostas = respostas.length;
   const totalStatSeries = Object.values(statSeriesPerArticle).reduce((s, v) => s + v, 0);
 
@@ -626,7 +615,7 @@ ${analysis.map(a => {
                   <PolarGrid stroke="hsl(var(--border))" />
                   <PolarAngleAxis dataKey="artigo" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Radar name="Aderência (%)" dataKey="aderencia" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} strokeWidth={2} />
+                  <Radar name="Aderência (%)" dataKey="aderencia" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} strokeWidth={2} isAnimationActive={false} />
                   <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -650,9 +639,9 @@ ${analysis.map(a => {
                   <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                   <Legend wrapperStyle={{ fontSize: '10px' }} />
-                  <Bar dataKey="cumprido" name="Cumprido" stackId="a" fill="hsl(var(--chart-2))" />
-                  <Bar dataKey="parcial" name="Parcial" stackId="a" fill="hsl(var(--chart-4))" />
-                  <Bar dataKey="nao_cumprido" name="Não Cumprido" stackId="a" fill="hsl(var(--chart-1))" />
+                  <Bar dataKey="cumprido" name="Cumprido" stackId="a" fill="hsl(var(--chart-2))" isAnimationActive={false} />
+                  <Bar dataKey="parcial" name="Parcial" stackId="a" fill="hsl(var(--chart-4))" isAnimationActive={false} />
+                  <Bar dataKey="nao_cumprido" name="Não Cumprido" stackId="a" fill="hsl(var(--chart-1))" isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

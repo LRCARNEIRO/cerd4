@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/accordion';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useDynamicStats';
-import { useLacunasIdentificadas, useDadosOrcamentarios } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -26,11 +26,11 @@ import { History } from 'lucide-react';
 
 export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
+  const [historyAccordionValue, setHistoryAccordionValue] = useState('');
   const queryClient = useQueryClient();
-  const { stats, isLoading, lacunasStats, orcamentoStats, indicadores } = useDashboardStats();
+  const { stats, isLoading, orcamentoStats } = useDashboardStats();
   const { data: allLacunas } = useLacunasIdentificadas();
-  const { data: allOrcamento } = useDadosOrcamentarios();
-  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
+  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(allLacunas);
   const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol } = useEvolucaoSummary();
 
   const dashboardStatusData = sensorReady ? {
@@ -164,7 +164,7 @@ export default function Index() {
       </div>
 
       {/* Histórico de Versões — collapsible */}
-      <Accordion type="single" collapsible className="mb-6">
+      <Accordion type="single" collapsible className="mb-6" value={historyAccordionValue} onValueChange={setHistoryAccordionValue}>
         <AccordionItem value="snapshots" className="border rounded-lg">
           <AccordionTrigger className="px-4 py-3 hover:no-underline">
             <span className="flex items-center gap-2 text-base font-semibold">
@@ -174,7 +174,7 @@ export default function Index() {
           </AccordionTrigger>
           <AccordionContent>
             <div className="px-4 pb-4">
-              <SnapshotManager />
+              {historyAccordionValue === 'snapshots' ? <SnapshotManager /> : null}
             </div>
           </AccordionContent>
         </AccordionItem>

@@ -25,6 +25,21 @@ export type RecommendationKeywordMatch = {
   score: number;
 };
 
+const NORMALIZE_CACHE_LIMIT = 5000;
+const PROFILE_CACHE_LIMIT = 500;
+
+const normalizedTextCache = new Map<string, string>();
+const profileCache = new Map<string, RecommendationKeywordProfile>();
+
+function setCacheValue<T>(cache: Map<string, T>, key: string, value: T, limit: number): T {
+  cache.set(key, value);
+  if (cache.size > limit) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
+  }
+  return value;
+}
+
 const KEYWORD_STOPWORDS = new Set([
   'sobre', 'entre', 'contra', 'desde', 'ainda', 'outros', 'outras',
   'sendo', 'foram', 'todos', 'todas', 'nivel', 'forma', 'areas',
@@ -106,13 +121,19 @@ const NOISE_PHRASE_FRAGMENTS = new Set([
 ]);
 
 export function normalizeSearchText(text: string): string {
-  return String(text || '')
+  const rawText = String(text || '');
+  const cached = normalizedTextCache.get(rawText);
+  if (cached !== undefined) return cached;
+
+  const normalized = rawText
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+
+  return setCacheValue(normalizedTextCache, rawText, normalized, NORMALIZE_CACHE_LIMIT);
 }
 
 function tokenize(text: string): string[] {
@@ -179,6 +200,10 @@ function extractConceptKeywords(text: string, rawTokens: string[], phraseKeyword
 
 function getRecommendationKeywordProfile(rec: RecommendationKeywordSource): RecommendationKeywordProfile {
   const sourceText = extractSourceText(rec);
+  const cacheKey = `${rec.grupo_focal || ''}::${normalizeSearchText(sourceText)}`;
+  const cachedProfile = profileCache.get(cacheKey);
+  if (cachedProfile) return cachedProfile;
+
   const rawTokens = tokenize(sourceText).filter((token) => !KEYWORD_STOPWORDS.has(token));
   const synonymTokens = rawTokens.flatMap((token) => SYNONYMS[token] || []);
   const groupKeywords = uniqueNonEmpty(GRUPO_SPECIFIC[rec.grupo_focal || ''] || []);
@@ -200,13 +225,15 @@ function getRecommendationKeywordProfile(rec: RecommendationKeywordSource): Reco
     allCandidateKeywords.filter((keyword) => !groupKeywordSet.has(keyword) && !weakKeywordSet.has(keyword))
   );
 
-  return {
+  const profile = {
     allKeywords: uniqueNonEmpty([...phraseKeywords, ...groupKeywords, ...strongKeywords, ...weakKeywords]),
     phraseKeywords,
     groupKeywords,
     strongKeywords,
     weakKeywords,
   };
+
+  return setCacheValue(profileCache, cacheKey, profile, PROFILE_CACHE_LIMIT);
 }
 
 export function getRecomendacaoKeywords(rec: RecommendationKeywordSource): string[] {
