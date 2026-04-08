@@ -191,44 +191,43 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
 
 function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
   // Aderência = visão GERENCIAL — "O Estado está respondendo às obrigações CERD?"
-  // Peso maior para Recomendações ONU atendidas (o core da aderência ao Comitê).
+  // O cumprimento das recomendações é o CERNE da aderência à Convenção.
   //
-  // Pesos: Recomendações ONU (30%), Normativos (20%), Orçamento (15%),
-  //         Indicadores+Séries (25%), Amplitude de Fontes (10%)
+  // Pesos REBALANCEADOS: Recomendações ONU (50%), Normativos (15%), Orçamento (10%),
+  //         Indicadores (15%), Amplitude de Fontes (10%)
   let score = 0;
 
-  // Recomendações ONU (0-30) — PESO PRINCIPAL — conta apenas CUMPRIDAS
+  // Recomendações ONU (0-50) — PESO DOMINANTE — taxa relativa cumpridas/total
   if (a.lacunasTotal > 0) {
     const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.15;
-    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 30;
+    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.1;
+    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 50;
   } else {
-    score += 15;
+    score += 25;
   }
 
-  // Cobertura Normativa (0-20) — esforço legislativo
+  // Cobertura Normativa (0-15) — esforço legislativo
   if (a.normativosCount > 0) {
-    score += Math.min(20, a.normativosCount * 2.5);
+    score += Math.min(15, a.normativosCount * 1.5);
   }
 
-  // Cobertura Orçamentária (0-15) — quantidade de ações vinculadas
+  // Cobertura Orçamentária (0-10) — quantidade de ações vinculadas
   if (a.orcamentoProgramas > 0) {
-    score += Math.min(15, a.orcamentoProgramas * 1.8);
+    score += Math.min(10, a.orcamentoProgramas * 1.0);
   }
 
-  // Indicadores + Séries Estatísticas (0-25) — dados quantitativos
-  const indScore = a.indicadoresCount > 0 ? Math.min(15, a.indicadoresCount * 1.5) : 0;
-  const seriesScore = a.seriesEstatisticas > 0 ? Math.min(10, a.seriesEstatisticas * 0.8) : 0;
-  score += indScore + seriesScore;
+  // Indicadores (0-15) — dados quantitativos disponíveis
+  if (a.indicadoresCount > 0) {
+    score += Math.min(15, a.indicadoresCount * 1.2);
+  }
 
   // Amplitude de Fontes (0-10) — diversidade de tipos de evidência
-  const hasRecomendacoes = a.lacunasTotal > 0;
+  const hasRecomendacoes = a.lacunasCumpridas > 0;
   const hasOrc = a.orcamentoProgramas > 0;
   const hasInd = a.indicadoresCount > 0;
   const hasNorm = a.normativosCount > 0;
-  const hasSeries = a.seriesEstatisticas > 0;
-  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm, hasSeries].filter(Boolean).length;
-  score += (breadth / 5) * 10;
+  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm].filter(Boolean).length;
+  score += (breadth / 4) * 10;
 
   return Math.round(Math.min(100, Math.max(0, score)));
 }
