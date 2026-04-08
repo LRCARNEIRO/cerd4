@@ -47,6 +47,30 @@ function computeArticleEvolScore(
 }
 
 /**
+ * Simplified adherence score matching IcerdAdherencePanel logic:
+ * Recomendações ONU (50%) + Normativos (15%) + Orçamento (10%) + Indicadores (15%) + Amplitude (10%)
+ */
+function computeAdherenceScoreSimple(
+  cumpridas: number, total: number, retrocesso: number,
+  normCount: number, orcCount: number, indCount: number,
+): number {
+  let score = 0;
+  if (total > 0) {
+    const taxaCumprimento = cumpridas / total;
+    const retPenalty = retrocesso / total * 0.1;
+    score += Math.max(0, (taxaCumprimento - retPenalty)) * 50;
+  } else {
+    score += 25;
+  }
+  if (normCount > 0) score += Math.min(15, normCount * 1.5);
+  if (orcCount > 0) score += Math.min(10, orcCount * 1.0);
+  if (indCount > 0) score += Math.min(15, indCount * 1.2);
+  const breadth = [cumpridas > 0, orcCount > 0, indCount > 0, normCount > 0].filter(Boolean).length;
+  score += (breadth / 4) * 10;
+  return Math.round(Math.min(100, Math.max(0, score)));
+}
+
+/**
  * Hook that provides evolution summary consuming evidence from useDiagnosticSensor
  * (same source as Recomendações and Artigos), using the same scoring as FarolEvolucaoPanel.
  * Used by Dashboard and Conclusões panels.
@@ -63,7 +87,7 @@ export function useEvolucaoSummary() {
         summary: { evolucao: 0, estagnacao: 0, retrocesso: 0 },
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
           numero: a.numero, titulo: a.titulo, totalRecs: 0,
-          cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0,
+          cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0, aderenciaScore: 0,
         })),
       };
     }
@@ -107,9 +131,14 @@ export function useEvolucaoSummary() {
         else naoCumpridas++;
       });
 
+      // Aderência score (same formula as IcerdAdherencePanel)
+      const aderenciaScore = computeAdherenceScoreSimple(
+        cumpridas, artRecs.length, 0, normMap.size, orcMap.size, indMap.size,
+      );
+
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
-        cumpridas, parciais, naoCumpridas, evolScore,
+        cumpridas, parciais, naoCumpridas, evolScore, aderenciaScore,
       };
     });
 

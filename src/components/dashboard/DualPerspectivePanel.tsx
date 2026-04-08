@@ -8,10 +8,9 @@ import {
   ArrowRight, Scale, ShieldCheck, BarChart3, BookOpen, Landmark, FileText
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 interface DualPerspectivePanelProps {
-  /** Status/Compliance data from the Diagnostic Sensor */
   statusData: {
     cumprido: number;
     parcial: number;
@@ -19,13 +18,11 @@ interface DualPerspectivePanelProps {
     retrocesso: number;
     emAndamento: number;
   };
-  /** Evolution data computed from Evolução Recomendações */
   evolucaoData: {
     evolucao: number;
     estagnacao: number;
     retrocesso: number;
   };
-  /** Per-article summary for the article lens */
   artigosSummary: {
     numero: ArtigoConvencao;
     titulo: string;
@@ -35,6 +32,7 @@ interface DualPerspectivePanelProps {
     emAndamento: number;
     naoCumpridas: number;
     evolScore: number;
+    aderenciaScore?: number;
   }[];
   isLoading?: boolean;
 }
@@ -42,9 +40,7 @@ interface DualPerspectivePanelProps {
 const STATUS_COLORS = {
   cumprido: 'hsl(var(--success))',
   parcial: 'hsl(var(--warning))',
-  emAndamento: 'hsl(var(--info))',
   naoCumprido: 'hsl(var(--destructive))',
-  retrocesso: 'hsl(var(--chart-4))',
 };
 
 const EVOL_COLORS = {
@@ -54,15 +50,17 @@ const EVOL_COLORS = {
 };
 
 export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary, isLoading }: DualPerspectivePanelProps) {
-  const totalStatus = statusData.cumprido + statusData.parcial + statusData.naoCumprido + statusData.retrocesso + statusData.emAndamento;
+  // 3 faixas only for Esforço: Cumprido, Parcial, Não Cumprido
+  const totalCumprido = statusData.cumprido;
+  const totalParcial = statusData.parcial + statusData.emAndamento;
+  const totalNaoCumprido = statusData.naoCumprido + statusData.retrocesso;
+  const totalStatus = totalCumprido + totalParcial + totalNaoCumprido;
   const totalEvol = evolucaoData.evolucao + evolucaoData.estagnacao + evolucaoData.retrocesso;
 
   const statusChartData = [
-    { name: 'Cumprido', value: statusData.cumprido, color: STATUS_COLORS.cumprido },
-    { name: 'Parcial', value: statusData.parcial, color: STATUS_COLORS.parcial },
-    { name: 'Em Andamento', value: statusData.emAndamento, color: STATUS_COLORS.emAndamento },
-    { name: 'Não Cumprido', value: statusData.naoCumprido, color: STATUS_COLORS.naoCumprido },
-    ...(statusData.retrocesso > 0 ? [{ name: 'Retrocesso', value: statusData.retrocesso, color: STATUS_COLORS.retrocesso }] : []),
+    { name: 'Cumprido', value: totalCumprido, color: STATUS_COLORS.cumprido },
+    { name: 'Parcial', value: totalParcial, color: STATUS_COLORS.parcial },
+    { name: 'Não Cumprido', value: totalNaoCumprido, color: STATUS_COLORS.naoCumprido },
   ].filter(d => d.value > 0);
 
   const evolChartData = [
@@ -71,7 +69,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
     { name: 'Retrocesso', value: evolucaoData.retrocesso, color: EVOL_COLORS.retrocesso },
   ].filter(d => d.value > 0);
 
-  const pctEsforco = totalStatus > 0 ? Math.round((statusData.cumprido / totalStatus) * 100) : 0;
+  const pctEsforco = totalStatus > 0 ? Math.round((totalCumprido / totalStatus) * 100) : 0;
   const pctImpacto = totalEvol > 0 ? Math.round((evolucaoData.evolucao / totalEvol) * 100) : 0;
 
   return (
@@ -97,8 +95,8 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong>O governo procurou responder?</strong> Mede se o Estado brasileiro criou políticas, 
-                programas e marcos normativos para atender a cada recomendação. Resultado: <em>Cumprido, Parcial, 
-                Em Andamento ou Não Cumprido</em>.
+                programas e marcos normativos para atender a cada recomendação. Resultado: <em>Cumprido, Parcial 
+                ou Não Cumprido</em>.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-card border border-border/60">
@@ -120,7 +118,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
 
       {/* Side-by-side charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* LEFT: Status / Esforço */}
+        {/* LEFT: Status / Esforço — 3 faixas */}
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
@@ -129,7 +127,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                 Esforço Governamental
               </h3>
               <Badge variant="outline" className="text-xs">
-                {pctEsforco}% com resposta
+                {pctEsforco}% cumpridas
               </Badge>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
@@ -149,11 +147,10 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <MiniStat icon={CheckCircle2} label="Cumprido" value={statusData.cumprido} className="text-success" />
-              <MiniStat icon={Clock} label="Parcial / Andamento" value={statusData.parcial + statusData.emAndamento} className="text-warning" />
-              <MiniStat icon={XCircle} label="Não Cumprido" value={statusData.naoCumprido} className="text-destructive" />
-              <MiniStat icon={AlertTriangle} label="Retrocesso" value={statusData.retrocesso} className="text-destructive" />
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              <MiniStat icon={CheckCircle2} label="Cumprido" value={totalCumprido} className="text-success" />
+              <MiniStat icon={Clock} label="Parcial" value={totalParcial} className="text-warning" />
+              <MiniStat icon={XCircle} label="Não Cumprido" value={totalNaoCumprido} className="text-destructive" />
             </div>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/recomendacoes" className="text-xs text-primary hover:underline flex items-center gap-1">
@@ -198,7 +195,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
               <MiniStat icon={TrendingDown} label="Retrocesso" value={evolucaoData.retrocesso} className="text-destructive" />
             </div>
             <p className="text-[10px] text-muted-foreground mt-2 italic">
-              Pesos: Indicadores (50%) · Orçamento (30%) · Normativos (20%)
+              Pesos: R$ Liquidado (35%) · Normativos (35%) · Indicadores com melhoria (30%)
             </p>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/conclusoes" className="text-xs text-primary hover:underline flex items-center gap-1">
@@ -209,7 +206,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
         </Card>
       </div>
 
-      {/* Article lens narrative */}
+      {/* Article lens — mirrors Artigos (Aderência) + Evolução Artigos */}
       <Card className="border-border/50">
         <CardContent className="pt-5">
           <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm mb-2">
@@ -218,15 +215,16 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
           </h3>
           <p className="text-[11px] text-muted-foreground mb-4 leading-relaxed">
             Cada recomendação está vinculada a um ou mais <strong>Artigos da Convenção (I–VII)</strong>. 
-            Através do atendimento (ou não) às recomendações e da evolução (ou não) das evidências, 
-            é possível avaliar como cada artigo se encontra no período 2018–2025.
+            A etiqueta <strong>Esforço</strong> reflete a <em>Aderência ICERD</em> (Acompanhamento Gerencial → Artigos) 
+            e a etiqueta de <strong>Evolução</strong> reflete o <em>Impacto Real</em> (Produtos → Conclusões → Evolução Artigos).
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {artigosSummary.map(art => {
-              const pctCumpridas = art.totalRecs > 0 ? Math.round((art.cumpridas / art.totalRecs) * 100) : 0;
+              const aderencia = art.aderenciaScore ?? (art.totalRecs > 0 ? Math.round((art.cumpridas / art.totalRecs) * 100) : 0);
               const evolLabel = art.evolScore >= 60 ? 'Evolução' : art.evolScore >= 35 ? 'Estagnação' : 'Retrocesso';
               const evolColorClass = art.evolScore >= 60 ? 'bg-success text-success-foreground' : art.evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
-              const statusColorClass = pctCumpridas >= 60 ? 'bg-success/15 text-success border-success/30' : pctCumpridas >= 35 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
+              const aderenciaLabel = aderencia >= 70 ? 'Boa' : aderencia >= 40 ? 'Parcial' : 'Baixa';
+              const statusColorClass = aderencia >= 70 ? 'bg-success/15 text-success border-success/30' : aderencia >= 40 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
 
               return (
                 <div
@@ -237,7 +235,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                     <Badge variant="default" className="text-xs">Art. {art.numero}</Badge>
                     <Link to="/artigos">
                       <Badge variant="outline" className={`text-[9px] cursor-pointer hover:opacity-80 ${statusColorClass}`}>
-                        Esforço {pctCumpridas}%
+                        Esforço {aderencia}%
                       </Badge>
                     </Link>
                     <Link to="/conclusoes">
@@ -250,7 +248,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                     {art.titulo}
                   </p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <Progress value={pctCumpridas} className="h-1.5 flex-1" />
+                    <Progress value={aderencia} className="h-1.5 flex-1" />
                     <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                       {art.cumpridas}/{art.totalRecs} cumpr.
                     </span>
