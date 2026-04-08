@@ -718,24 +718,6 @@ ${analysis.map(a => {
                 </div>
               </div>
 
-  // Per-article drill-down data
-  const drilldownData = useMemo(() => {
-    if (!drilldownArtigo) return { recomendacoes: [], normativos: [], orcamentos: [] };
-    const artLacunas = lacunas.filter(l => {
-      if (l.artigos_convencao && l.artigos_convencao.length > 0) {
-        return l.artigos_convencao.map(normalizeArticleTag).filter(Boolean).includes(drilldownArtigo);
-      }
-      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
-      return mapped ? mapped.includes(drilldownArtigo) : false;
-    });
-    const recomendacoes = artLacunas.map(l => {
-      const diag = diagnosticMap.get(l.id);
-      return { paragrafo: l.paragrafo, tema: l.tema, status: diag?.statusComputado || l._computedStatus || l.status_cumprimento };
-    });
-    const normativos = documentosNormativos.filter(doc => inferArtigosNormativo(doc).includes(drilldownArtigo)).map(d => ({ titulo: d.titulo, status: d.status }));
-    const orcamentos = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(drilldownArtigo)).map(r => ({ programa: r.programa, orgao: r.orgao, ano: r.ano }));
-    return { recomendacoes, normativos, orcamentos };
-  }, [drilldownArtigo, lacunas, documentosNormativos, orcamentoRecords, diagnosticMap]);
 
               <div className="p-3 bg-muted/30 rounded-lg">
                 <p className="text-xs text-muted-foreground leading-relaxed">{a.veredito}</p>
