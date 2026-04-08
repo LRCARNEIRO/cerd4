@@ -11,16 +11,19 @@ const p14 = {
 describe('§14 keyword debug', () => {
   it('extracts keywords', () => {
     const kw = getRecomendacaoKeywords(p14);
-    console.log('Keywords §14:', kw);
     expect(kw.length).toBeGreaterThan(0);
+    expect(kw).toContain('mortalidade materna');
+    expect(kw).toContain('mulheres negras');
   });
 
-  it('matches mortalidade materna', () => {
-    console.log('match mortalidade materna:', matchesRecommendationEvidence(p14, 'Razão de Mortalidade Materna por 100 mil nascidos vivos ods_racial'));
-    console.log('match saude materna:', matchesRecommendationEvidence(p14, 'Saúde — mortalidade materna e infantil por raça (2018-2024) saude'));
-    console.log('match violencia domestica:', matchesRecommendationEvidence(p14, 'Notificações de violência doméstica por raça — mulheres (2024)'));
-    console.log('match violencia policial:', matchesRecommendationEvidence(p14, 'Vítimas negras de violência policial (Disque 100)'));
+  it('vincula indicadores de mortalidade materna', () => {
     expect(matchesRecommendationEvidence(p14, 'Razão de Mortalidade Materna por 100 mil nascidos vivos ods_racial')).toBe(true);
     expect(matchesRecommendationEvidence(p14, 'Saúde — mortalidade materna e infantil por raça (2018-2024) saude')).toBe(true);
+    expect(matchesRecommendationEvidence(p14, 'Saúde materna — raça e gênero saude')).toBe(true);
+  });
+
+  it('rejeita indicadores sem relação com §14', () => {
+    expect(matchesRecommendationEvidence(p14, 'Taxa de Desocupação por Raça (2018-2025)')).toBe(false);
+    expect(matchesRecommendationEvidence(p14, 'Moradores de Favelas e Comunidades Urbanas por raca cor Censo 2022')).toBe(false);
   });
 });
