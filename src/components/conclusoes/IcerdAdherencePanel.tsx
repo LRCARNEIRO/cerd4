@@ -369,6 +369,25 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     });
   }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle, diagnosticMap]);
 
+  // Per-article drill-down data
+  const drilldownData = useMemo(() => {
+    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as { titulo: string; status: string }[], orcamentos: [] as { programa: string; orgao: string; ano: number }[] };
+    const artLacunas = lacunas.filter(l => {
+      if (l.artigos_convencao && l.artigos_convencao.length > 0) {
+        return l.artigos_convencao.map(normalizeArticleTag).filter(Boolean).includes(drilldownArtigo);
+      }
+      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
+      return mapped ? mapped.includes(drilldownArtigo) : false;
+    });
+    const recomendacoes = artLacunas.map(l => {
+      const diag = diagnosticMap.get(l.id);
+      return { paragrafo: l.paragrafo, tema: l.tema, status: diag?.statusComputado || l._computedStatus || l.status_cumprimento };
+    });
+    const normativos = documentosNormativos.filter(doc => inferArtigosNormativo(doc).includes(drilldownArtigo)).map(d => ({ titulo: d.titulo, status: d.status }));
+    const orcamentos = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(drilldownArtigo)).map(r => ({ programa: r.programa, orgao: r.orgao, ano: r.ano }));
+    return { recomendacoes, normativos, orcamentos };
+  }, [drilldownArtigo, lacunas, documentosNormativos, orcamentoRecords, diagnosticMap]);
+
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
     aderencia: a.grauAderencia,
