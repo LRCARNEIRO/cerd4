@@ -709,11 +709,11 @@ ${analysis.map(a => {
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-3">
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Recomendações ONU</p>
+                  <p className="text-[10px] text-muted-foreground">Recom. ONU</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas}</p>
-                  <p className="text-[10px] text-muted-foreground">Cumpridas</p>
+                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas}/{a.lacunasTotal}</p>
+                  <p className="text-[10px] text-muted-foreground">Cumpridas ({a.lacunasTotal > 0 ? Math.round((a.lacunasCumpridas / a.lacunasTotal) * 100) : 0}%)</p>
                 </div>
                 <div className="bg-muted/50 rounded p-2 text-center">
                   <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
