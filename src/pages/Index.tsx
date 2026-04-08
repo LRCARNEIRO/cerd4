@@ -62,50 +62,19 @@ export default function Index() {
   };
   const totalCumpridas = dashboardStatusData.cumprido;
 
-  // Mirror per-article data from existing panels — no local recalculation
+  // Mirror per-article data directly from useEvolucaoSummary — no local recalculation
   const artigosSummary = useMemo(() => {
-    if (!allLacunas || !evolArtigosSummary) {
+    if (!evolArtigosSummary) {
       return ARTIGOS_CONVENCAO.map(a => ({
         numero: a.numero, titulo: a.titulo, totalRecs: 0,
         cumpridas: 0, parciais: 0, emAndamento: 0, naoCumpridas: 0, evolScore: 0,
       }));
     }
-
-    return ARTIGOS_CONVENCAO.map(art => {
-      const artNum = art.numero;
-
-      // COMPLIANCE: from diagnostic sensor (same as Acompanhamento Gerencial)
-      const artRecs = allLacunas.filter(r => {
-        const raw = (r as any).artigos_convencao;
-        const explicit = Array.isArray(raw)
-          ? raw.map(normalizeArticleTag).filter(Boolean) as ArtigoConvencao[]
-          : [];
-        const arts = explicit.length > 0
-          ? [...new Set(explicit)]
-          : (EIXO_PARA_ARTIGOS[r.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || []);
-        return arts.includes(artNum);
-      });
-
-      let cumpridas = 0, parciais = 0, emAndamento = 0, naoCumpridas = 0;
-      artRecs.forEach(r => {
-        const diag = diagnosticMap.get(r.id);
-        const status = diag?.statusComputado ?? r.status_cumprimento;
-        if (status === 'cumprido') cumpridas++;
-        else if (status === 'parcialmente_cumprido') parciais++;
-        else if (status === 'em_andamento') emAndamento++;
-        else naoCumpridas++;
-      });
-
-      // EVOLUTION: mirror from useEvolucaoSummary (same as Evolução Artigos panel)
-      const evolArt = evolArtigosSummary.find(e => e.numero === artNum);
-      const evolScore = evolArt?.evolScore ?? 0;
-
-      return {
-        numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
-        cumpridas, parciais, emAndamento, naoCumpridas, evolScore,
-      };
-    });
-  }, [allLacunas, evolArtigosSummary, diagnosticMap]);
+    return evolArtigosSummary.map(a => ({
+      ...a,
+      emAndamento: 0, // no longer used as separate status
+    }));
+  }, [evolArtigosSummary]);
 
 
 
