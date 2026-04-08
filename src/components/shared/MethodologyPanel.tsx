@@ -21,10 +21,10 @@ const progressCategories = [
 ];
 
 const aderenciaWeights = [
-  { label: 'Recomendações ONU Atendidas', weight: '30%', icon: '⚠️' },
-  { label: 'Cobertura Normativa', weight: '20%', icon: '📜' },
-  { label: 'Orçamento', weight: '15%', icon: '💰' },
-  { label: 'Indicadores + Séries Estatísticas', weight: '25%', icon: '📊' },
+  { label: 'Recomendações ONU Cumpridas', weight: '50%', icon: '⚠️' },
+  { label: 'Cobertura Normativa', weight: '15%', icon: '📜' },
+  { label: 'Orçamento (contagem de ações)', weight: '10%', icon: '💰' },
+  { label: 'Indicadores', weight: '15%', icon: '📊' },
   { label: 'Amplitude de Fontes', weight: '10%', icon: '📈' },
 ];
 

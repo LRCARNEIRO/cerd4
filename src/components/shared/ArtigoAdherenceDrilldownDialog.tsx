@@ -80,20 +80,20 @@ export function ArtigoAdherenceDrilldownDialog({ open, onOpenChange, artigo, rec
         {/* Composição do Score */}
         <div className="grid grid-cols-5 gap-2 text-center">
           <div className="p-2 bg-muted/30 rounded">
-            <p className="text-sm font-bold">{artigo.lacunasTotal}</p>
-            <p className="text-[10px] text-muted-foreground">Recom. ONU (30%)</p>
+            <p className="text-sm font-bold">{artigo.lacunasCumpridas}/{artigo.lacunasTotal}</p>
+            <p className="text-[10px] text-muted-foreground">Recom. Cumpr. (50%)</p>
           </div>
           <div className="p-2 bg-muted/30 rounded">
             <p className="text-sm font-bold">{artigo.normativosCount}</p>
-            <p className="text-[10px] text-muted-foreground">Normativos (20%)</p>
+            <p className="text-[10px] text-muted-foreground">Normativos (15%)</p>
           </div>
           <div className="p-2 bg-muted/30 rounded">
             <p className="text-sm font-bold">{artigo.orcamentoProgramas}</p>
-            <p className="text-[10px] text-muted-foreground">Orçamento (15%)</p>
+            <p className="text-[10px] text-muted-foreground">Orçamento (10%)</p>
           </div>
           <div className="p-2 bg-muted/30 rounded">
             <p className="text-sm font-bold">{artigo.indicadoresCount}</p>
-            <p className="text-[10px] text-muted-foreground">Indicadores (25%)</p>
+            <p className="text-[10px] text-muted-foreground">Indicadores (15%)</p>
           </div>
           <div className="p-2 bg-muted/30 rounded">
             <p className="text-sm font-bold">{artigo.seriesEstatisticas}</p>

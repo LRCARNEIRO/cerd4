@@ -469,11 +469,11 @@ ${analysis.map(a => {
 <p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
 <table>
 <tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Recomendações ONU Atendidas</td><td>30%</td><td>Cumprido=100%, Parcial=60%, Em Andamento=30%, Não Cumprido=0%, Retrocesso=penalidade. Peso principal: reflete o grau de resposta do Estado ao Comitê.</td></tr>
-<tr><td>Cobertura Normativa</td><td>20%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>15%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
-<tr><td>Indicadores + Séries Estatísticas</td><td>25%</td><td>Registros do BD (15%) + séries temporais do espelho de dados (10%)</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis</td></tr>
+<tr><td>Recomendações ONU Cumpridas</td><td>50%</td><td>Taxa relativa: cumpridas/total × 50. Peso dominante — reflete diretamente o grau de resposta do Estado ao Comitê CERD.</td></tr>
+<tr><td>Cobertura Normativa</td><td>15%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
+<tr><td>Cobertura Orçamentária</td><td>10%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
+<tr><td>Indicadores</td><td>15%</td><td>Registros estatísticos do BD vinculados ao artigo</td></tr>
+<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recom. cumpridas, orçamento, indicadores, normativos)</td></tr>
 </table>
 <p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> é uma visão <strong>gerencial</strong> — mede se o Estado está respondendo às obrigações do Comitê CERD (por isso o peso maior para recomendações atendidas). A <em>Evolução dos Artigos</em> é uma visão de <strong>evidências</strong> — avalia se orçamento, normativos e indicadores melhoraram ou pioraram ao longo do período.</p>
 </body></html>`;
@@ -786,7 +786,7 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-muted/30 rounded-lg">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU atendidas (30%), cobertura normativa (20%), cobertura orçamentária — apenas contagem de ações vinculadas (15%), indicadores + séries estatísticas (25%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo do score. O orçamento não considera valores em R$. Base Estatística inclui segurança pública, feminicídio, educação, saúde, renda e povos tradicionais. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
+              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU cumpridas — taxa relativa cumpridas/total (50%), cobertura normativa (15%), cobertura orçamentária — contagem de ações (10%), indicadores (15%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo. O orçamento não considera valores em R$. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
           </div>
         </CardContent>
