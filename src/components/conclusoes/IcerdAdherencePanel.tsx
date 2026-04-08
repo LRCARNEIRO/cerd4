@@ -279,7 +279,6 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
             .filter(Boolean) as ArtigoConvencao[];
           return explicit.includes(art.numero);
         }
-        // Fallback: infer from eixo_tematico
         const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
         return mapped ? mapped.includes(art.numero) : false;
       });
@@ -291,18 +290,33 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       const parciais = artLacunas.filter(l => {
         const diag = diagnosticMap.get(l.id);
         const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'parcialmente_cumprido';
+        return s === 'parcialmente_cumprido' || s === 'em_andamento';
       }).length;
       const naoCumpridas = artLacunas.filter(l => {
         const diag = diagnosticMap.get(l.id);
         const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'nao_cumprido';
+        return s === 'nao_cumprido' || s === 'retrocesso';
       }).length;
-      const retrocesso = artLacunas.filter(l => {
+
+      // ── AGGREGATE evidence from diagnosticMap (same source as Recomendações) ──
+      const indSet = new Map<string, LinkedIndicador>();
+      const orcSet = new Map<string, LinkedOrcamento>();
+      const normSet = new Map<string, LinkedNormativo>();
+
+      for (const l of artLacunas) {
         const diag = diagnosticMap.get(l.id);
-        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'retrocesso';
-      }).length;
+        if (!diag) continue;
+        for (const ind of diag.linkedIndicadores) {
+          if (!indSet.has(ind.nome)) indSet.set(ind.nome, ind);
+        }
+        for (const orc of diag.linkedOrcamento) {
+          const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
+          if (!orcSet.has(key)) orcSet.set(key, orc);
+        }
+        for (const norm of diag.linkedNormativos) {
+          if (!normSet.has(norm.titulo)) normSet.set(norm.titulo, norm);
+        }
+      }
 
       // Fios by article
       const artFios = fiosCondutores.filter(f => f.artigosConvencao?.includes(art.numero));
@@ -315,24 +329,10 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       const concRetrocesso = artConc.filter(c => c.tipo === 'retrocesso').length;
       const concLacuna = artConc.filter(c => c.tipo === 'lacuna_persistente').length;
 
-      // Orçamento by article
-      const artOrc = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(art.numero));
-      const liquidado = artOrc.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-      const programas = new Set(artOrc.map(r => r.programa)).size;
-
-      // Indicadores by article — excludes common_core, deduped
-      const artInd = safeIndicadores.filter((ind: any) => inferArtigosIndicador(ind).includes(art.numero));
-
-      // Respostas CERD III by article — mapeamento direto temático
+      // Respostas CERD III by article
       const artRespostas = mapRespostasToArticle(respostas, art.numero);
       const respCumpridas = artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length;
       const respNaoCumpridas = artRespostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso').length;
-
-      // NEW: Documentos normativos by article
-      const artNormativos = documentosNormativos.filter(doc => {
-        const docArts = inferArtigosNormativo(doc);
-        return docArts.includes(art.numero);
-      });
 
       const base = {
         numero: art.numero,
@@ -343,20 +343,20 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         lacunasCumpridas: cumpridas,
         lacunasParciais: parciais,
         lacunasNaoCumpridas: naoCumpridas,
-        lacunasRetrocesso: retrocesso,
+        lacunasRetrocesso: 0,
         fiosTotal: artFios.length,
         fiosAvanco,
         fiosRetrocesso,
         conclusoesAvanco: concAvanco,
         conclusoesRetrocesso: concRetrocesso,
         conclusoesLacuna: concLacuna,
-        orcamentoLiquidado: liquidado,
-        orcamentoProgramas: programas,
-        indicadoresCount: artInd.length,
+        orcamentoLiquidado: 0,
+        orcamentoProgramas: orcSet.size,
+        indicadoresCount: indSet.size,
         respostasTotal: artRespostas.length,
         respostasCumpridas: respCumpridas,
         respostasNaoCumpridas: respNaoCumpridas,
-        normativosCount: artNormativos.length,
+        normativosCount: normSet.size,
         seriesEstatisticas: statSeriesPerArticle[art.numero] || 0,
       };
 
@@ -366,11 +366,11 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, orcamentoRecords, safeIndicadores, respostas, documentosNormativos, statSeriesPerArticle, diagnosticMap]);
+  }, [fiosCondutores, conclusoes, lacunas, respostas, statSeriesPerArticle, diagnosticMap]);
 
-  // Per-article drill-down data
+  // Aggregated evidence per article for drilldown (from diagnosticMap)
   const drilldownData = useMemo(() => {
-    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as { titulo: string; status: string }[], orcamentos: [] as { programa: string; orgao: string; ano: number }[] };
+    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as LinkedNormativo[], orcamentos: [] as LinkedOrcamento[], indicadores: [] as LinkedIndicador[] };
     const artLacunas = lacunas.filter(l => {
       if (l.artigos_convencao && l.artigos_convencao.length > 0) {
         return l.artigos_convencao.map(normalizeArticleTag).filter(Boolean).includes(drilldownArtigo);
@@ -380,12 +380,24 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     });
     const recomendacoes = artLacunas.map(l => {
       const diag = diagnosticMap.get(l.id);
-      return { paragrafo: l.paragrafo, tema: l.tema, status: diag?.statusComputado || l._computedStatus || l.status_cumprimento };
+      const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
+      return { paragrafo: l.paragrafo, tema: l.tema, status: s };
     });
-    const normativos = documentosNormativos.filter(doc => inferArtigosNormativo(doc).includes(drilldownArtigo)).map(d => ({ titulo: d.titulo, status: d.status }));
-    const orcamentos = orcamentoRecords.filter(r => inferArtigosOrcamento(r).includes(drilldownArtigo)).map(r => ({ programa: r.programa, orgao: r.orgao, ano: r.ano }));
-    return { recomendacoes, normativos, orcamentos };
-  }, [drilldownArtigo, lacunas, documentosNormativos, orcamentoRecords, diagnosticMap]);
+
+    // Aggregate from diagnosticMap
+    const indMap = new Map<string, LinkedIndicador>();
+    const orcMap = new Map<string, LinkedOrcamento>();
+    const normMap = new Map<string, LinkedNormativo>();
+    for (const l of artLacunas) {
+      const diag = diagnosticMap.get(l.id);
+      if (!diag) continue;
+      for (const ind of diag.linkedIndicadores) { if (!indMap.has(ind.nome)) indMap.set(ind.nome, ind); }
+      for (const orc of diag.linkedOrcamento) { const k = `${orc.programa}|${orc.orgao}|${orc.ano}`; if (!orcMap.has(k)) orcMap.set(k, orc); }
+      for (const norm of diag.linkedNormativos) { if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, norm); }
+    }
+
+    return { recomendacoes, normativos: Array.from(normMap.values()), orcamentos: Array.from(orcMap.values()), indicadores: Array.from(indMap.values()) };
+  }, [drilldownArtigo, lacunas, diagnosticMap]);
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
