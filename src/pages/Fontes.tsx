@@ -399,6 +399,7 @@ export default function Fontes() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </DashboardLayout>
   );
 }
