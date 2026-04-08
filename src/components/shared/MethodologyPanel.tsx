@@ -55,15 +55,16 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               <Badge variant="outline" className="text-[10px]">v5</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O sistema utiliza <strong>vinculação estrita por palavras-chave</strong> para associar evidências
+              O sistema utiliza <strong>vinculação híbrida e auditável por palavras-chave</strong> para associar evidências
               (indicadores, orçamento e normativos) a cada recomendação. As palavras-chave são extraídas
               do <em>tema</em>, <em>descrição</em> e <em>texto original da ONU</em>, com sinônimos temáticos e
-              filtro de termos jurídicos/genéricos. O cruzamento é feito por <strong>termo ou frase inteira normalizada</strong>,
-              sem substring solta (ex.: <em>norma</em> não casa com <em>normal</em>) e com <strong>score temático mínimo</strong>.
+              filtro de termos jurídicos/genéricos. O cruzamento combina <strong>termo/frase inteira normalizada</strong>
+              com <strong>expansão conceitual controlada</strong> para casos quase equivalentes (ex.: dados desagregados ↔ Censo/raça-gênero),
+              mantendo <strong>score temático mínimo</strong> e sem substring solta (ex.: <em>norma</em> não casa com <em>normal</em>).
               Recomendações com grupo focal só aceitam evidências com sinal focal explícito (ex.: quilombola,
               indígena, LGBTQIA+) ou frase específica correlata; termos genéricos como <em>violência</em>, <em>proteção</em>
-              e <em>discriminação</em> não vinculam sozinhos. A busca é realizada nos campos: nome/categoria de indicadores,
-              programa/órgão/descritivo/eixo/público-alvo de ações orçamentárias e título de normativos.
+              e <em>discriminação</em> não vinculam sozinhos. A busca é realizada nos campos: nome/categoria/subcategoria/análise dos indicadores,
+              programa/órgão/descritivo/eixo/público-alvo/observações/razão de seleção das ações orçamentárias e título/categoria dos normativos.
               <strong> Não</strong> utiliza artigos ICERD ou eixos temáticos genéricos.
             </p>
 
@@ -112,8 +113,8 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             )}
 
             <p className="text-[10px] text-muted-foreground italic">
-              Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras) → filtro de stop-words → 
-              expansão por sinônimos temáticos → frase inteira/termo inteiro + score temático mínimo → busca nos campos de evidências.
+              Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras, com exceções curtas relevantes como raça) → filtro de stop-words → 
+              expansão por sinônimos temáticos + expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada nos campos de evidências.
               Recomendações com grupo focal exigem sinal focal explícito para evitar falsos positivos. Pesos do status: Indicadores 40% + Orçamento 30% + Normativos 30%.
               Cap piora: se indicadores em piora &gt; melhora, teto = 55 (Parcial).
             </p>

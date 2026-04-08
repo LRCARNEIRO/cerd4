@@ -114,7 +114,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     queryFn: async () => {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
-        .select('nome, categoria, tendencia, dados, artigos_convencao')
+        .select('nome, categoria, subcategoria, tendencia, dados, artigos_convencao, analise_interseccional, documento_origem')
         .neq('categoria', 'common_core');
       if (error) throw error;
       return data || [];
@@ -130,7 +130,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo')
+          .select('programa, orgao, ano, dotacao_autorizada, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo, observacoes, razao_selecao')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -148,7 +148,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status');
+        .select('titulo, artigos_convencao, status, categoria');
       if (error) throw error;
       return data || [];
     },
@@ -156,9 +156,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   });
 
   // ── Diagnose each recomendação ────────────────────────────────────
-  // VINCULAÇÃO ESTRITA POR KEYWORDS + SCORE TEMÁTICO MÍNIMO:
+  // VINCULAÇÃO HÍBRIDA AUDITÁVEL:
   // evidências só entram se houver coerência temática suficiente com o
   // tema/descrição/texto ONU da recomendação, sem usar eixo ou artigo genérico.
+  // Combina frase/termo exato + expansão conceitual + campos textuais auxiliares.
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
@@ -168,7 +169,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const indicadoresVinculados = indicadores
         .map((ind) => ({
           item: ind,
-          match: getRecommendationKeywordMatch(rec, `${ind.nome} ${ind.categoria}`),
+          match: getRecommendationKeywordMatch(
+            rec,
+            `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''} ${ind.analise_interseccional || ''} ${Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ') : ''}`
+          ),
         }))
         .filter(({ match }) => match.isRelevant)
         .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
@@ -180,7 +184,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
           item,
           match: getRecommendationKeywordMatch(
             rec,
-            `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`
+            `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''} ${item.observacoes || ''} ${item.razao_selecao || ''}`
           ),
         }))
         .filter(({ match }) => match.isRelevant)
@@ -191,7 +195,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const normativosVinculados = normativos
         .map((doc) => ({
           item: doc,
-          match: getRecommendationKeywordMatch(rec, `${doc.titulo}`),
+          match: getRecommendationKeywordMatch(rec, `${doc.titulo} ${doc.categoria || ''}`),
         }))
         .filter(({ match }) => match.isRelevant)
         .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))

@@ -1,3 +1,5 @@
+import { IMPORTANT_SHORT_KEYWORDS, RECOMMENDATION_CONCEPT_BUNDLES } from '@/utils/recommendationKeywordConcepts';
+
 type RecommendationKeywordSource = {
   tema?: string | null;
   descricao_lacuna?: string | null;
@@ -65,6 +67,11 @@ const SYNONYMS: Record<string, string[]> = {
   indigena: ['indigenas', 'povos originarios'],
   indigenas: ['indigena', 'povos originarios'],
   racismo: ['racial', 'antirracista', 'racista'],
+  coleta: ['censo', 'registro administrativo', 'registros administrativos'],
+  coletar: ['censo', 'registro administrativo', 'registros administrativos'],
+  estatisticos: ['estatisticas', 'demografia', 'censo'],
+  demograficos: ['demografia', 'censo'],
+  desagregados: ['desagregacao', 'por raca', 'por genero', 'por etnia', 'raca cor', 'genero raca', 'quesito raca cor'],
 };
 
 const GRUPO_SPECIFIC: Record<string, string[]> = {
@@ -99,7 +106,7 @@ export function normalizeSearchText(text: string): string {
 function tokenize(text: string): string[] {
   return normalizeSearchText(text)
     .split(' ')
-    .filter(word => word.length >= 5);
+    .filter(word => word.length >= 5 || IMPORTANT_SHORT_KEYWORDS.has(word));
 }
 
 function uniqueNonEmpty(values: string[]): string[] {
@@ -142,19 +149,37 @@ function extractPhraseKeywords(text: string): string[] {
   return uniqueNonEmpty(phrases);
 }
 
+function extractConceptKeywords(text: string, rawTokens: string[], phraseKeywords: string[]): string[] {
+  const normalizedSource = ` ${normalizeSearchText(text)} `;
+  const sourceTokenSet = new Set([...rawTokens, ...phraseKeywords.flatMap(tokenize)]);
+
+  return uniqueNonEmpty(
+    RECOMMENDATION_CONCEPT_BUNDLES.flatMap((bundle) => {
+      const triggerMatches = bundle.triggerTokens.filter(
+        (token) => sourceTokenSet.has(token) || includesWholeTerm(normalizedSource, token)
+      ).length;
+
+      if (triggerMatches < bundle.minTriggerMatches) return [];
+      return bundle.expansions;
+    })
+  );
+}
+
 function getRecommendationKeywordProfile(rec: RecommendationKeywordSource): RecommendationKeywordProfile {
   const sourceText = extractSourceText(rec);
   const rawTokens = tokenize(sourceText).filter((token) => !KEYWORD_STOPWORDS.has(token));
   const synonymTokens = rawTokens.flatMap((token) => SYNONYMS[token] || []);
   const groupKeywords = uniqueNonEmpty(GRUPO_SPECIFIC[rec.grupo_focal || ''] || []);
-  const phraseKeywords = uniqueNonEmpty([
+  const basePhraseKeywords = uniqueNonEmpty([
     ...extractPhraseKeywords(sourceText),
     ...synonymTokens.filter((token) => normalizeSearchText(token).includes(' ')),
     ...groupKeywords.filter((token) => normalizeSearchText(token).includes(' ')),
   ]);
+  const conceptKeywords = extractConceptKeywords(sourceText, rawTokens, basePhraseKeywords);
+  const phraseKeywords = basePhraseKeywords;
 
   const groupKeywordSet = new Set(groupKeywords);
-  const allCandidateKeywords = uniqueNonEmpty([...rawTokens, ...synonymTokens, ...groupKeywords]);
+  const allCandidateKeywords = uniqueNonEmpty([...rawTokens, ...synonymTokens, ...groupKeywords, ...conceptKeywords]);
   const weakKeywords = uniqueNonEmpty(
     allCandidateKeywords.filter((keyword) => !groupKeywordSet.has(keyword) && LOW_SIGNAL_KEYWORDS.has(keyword))
   );
