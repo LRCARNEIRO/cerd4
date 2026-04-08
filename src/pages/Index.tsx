@@ -7,7 +7,7 @@ import { ComplianceChart } from '@/components/dashboard/ComplianceChart';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
-import { SensorAlertPanel } from '@/components/dashboard/SensorAlertPanel';
+
 import { cerdRecommendations } from '@/data/mockData';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { 
