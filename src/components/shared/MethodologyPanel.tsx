@@ -119,8 +119,7 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               Vinculação por keywords: tema + descrição + texto ONU → tokenização → filtro de stop-words → 
               expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada.
               Escala de indicadores: 1=20, 2=35, 3=50, 5=65, 7=80, 10+=100. Orçamento (contagem): 1=20, 2=35, 3=50, 5=65, 8=80, 12+=100.
-              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100.
-              Análise de execução financeira e tendência pertence ao Motor de Evolução.
+              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100. Faixas: ≥65 Cumprido | ≥35 Parcial | &lt;35 Não Cumprido.
             </p>
           </CardContent>
         </Card>
