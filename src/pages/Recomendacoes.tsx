@@ -145,63 +145,74 @@ export default function Recomendacoes() {
         const totalGeral = (lacunas?.length) || 0;
         return (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-              <Card>
-                <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                  <div className="p-2 bg-muted rounded-lg">
-                    <Database className="w-5 h-5 text-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total Monitoradas</p>
-                    <p className="text-xl font-bold">{isLoading ? '...' : totalGeral}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                  <div className="p-2 bg-success/10 rounded-lg">
-                    <CheckCircle2 className="w-5 h-5 text-success" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Cumpridas</p>
-                    <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                  <div className="p-2 bg-warning/10 rounded-lg">
-                    <Clock className="w-5 h-5 text-warning" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Parciais</p>
-                    <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.parcialmente_cumprido || 0) + (sensorSummary?.statusReclassificado.em_andamento || 0) : stats?.porStatus.parcialmente_cumprido || 0}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                  <div className="p-2 bg-destructive/10 rounded-lg">
-                    <XCircle className="w-5 h-5 text-destructive" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                    <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) : stats?.porStatus.nao_cumprido || 0}</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                  <div className="p-2 bg-destructive/10 rounded-lg">
-                    <AlertTriangle className="w-5 h-5 text-destructive" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Críticas</p>
-                    <p className="text-xl font-bold">{isLoading ? '...' : stats?.porPrioridade.critica || 0}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+             <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-muted rounded-lg">
+                     <Database className="w-5 h-5 text-foreground" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Total Monitoradas</p>
+                     <p className="text-xl font-bold">{isLoading ? '...' : totalGeral}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-success/10 rounded-lg">
+                     <CheckCircle2 className="w-5 h-5 text-success" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Cumpridas</p>
+                     <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-warning/10 rounded-lg">
+                     <Clock className="w-5 h-5 text-warning" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Parciais</p>
+                     <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.parcialmente_cumprido || 0 : stats?.porStatus.parcialmente_cumprido || 0}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-info/10 rounded-lg">
+                     <Activity className="w-5 h-5 text-info" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Em Andamento</p>
+                     <p className="text-xl font-bold text-info">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.em_andamento || 0 : stats?.porStatus.em_andamento || 0}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-destructive/10 rounded-lg">
+                     <XCircle className="w-5 h-5 text-destructive" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Não Cumpridas</p>
+                     <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) : stats?.porStatus.nao_cumprido || 0}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+               <Card>
+                 <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                   <div className="p-2 bg-destructive/10 rounded-lg">
+                     <AlertTriangle className="w-5 h-5 text-destructive" />
+                   </div>
+                   <div>
+                     <p className="text-xs text-muted-foreground">Críticas</p>
+                     <p className="text-xl font-bold">{isLoading ? '...' : stats?.porPrioridade.critica || 0}</p>
+                   </div>
+                 </CardContent>
+               </Card>
+             </div>
 
             {/* Resumo por origem */}
             <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
