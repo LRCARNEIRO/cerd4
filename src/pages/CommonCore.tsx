@@ -561,6 +561,7 @@ export default function CommonCore() {
             </Card>
           </TabsContent>
         ))}
+      </Tabs>
       </div>
     </DashboardLayout>
   );
