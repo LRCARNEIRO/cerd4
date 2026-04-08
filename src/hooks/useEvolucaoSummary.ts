@@ -87,7 +87,7 @@ export function useEvolucaoSummary() {
         summary: { evolucao: 0, estagnacao: 0, retrocesso: 0 },
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
           numero: a.numero, titulo: a.titulo, totalRecs: 0,
-          cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0,
+          cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0, aderenciaScore: 0,
         })),
       };
     }
@@ -131,9 +131,14 @@ export function useEvolucaoSummary() {
         else naoCumpridas++;
       });
 
+      // Aderência score (same formula as IcerdAdherencePanel)
+      const aderenciaScore = computeAdherenceScoreSimple(
+        cumpridas, artRecs.length, 0, normMap.size, orcMap.size, indMap.size,
+      );
+
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
-        cumpridas, parciais, naoCumpridas, evolScore,
+        cumpridas, parciais, naoCumpridas, evolScore, aderenciaScore,
       };
     });
 
