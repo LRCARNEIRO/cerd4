@@ -274,39 +274,32 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const totalNorm = normativosVinculados.length;
 
       // ═══════════════════════════════════════════════════════════
-      // MOTOR DE STATUS COMPUTADO v3 — Calibrado Anti-Coringa
+      // MOTOR DE STATUS COMPUTADO v4 — Vinculação Estrita por Keywords
       // ═══════════════════════════════════════════════════════════
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
       // Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
-      // Anti-coringa: artigos frequentes (>40% da base) recebem peso reduzido
+      // TODAS as evidências vinculadas por keywords (sem eixo/artigo genérico)
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const weightedTendencias = indicadoresVinculados.map(i => ({ t: inferTendencia(i), w: getIndWeight(i) }));
-      const pioramW = weightedTendencias.filter(x => x.t === 'piora').reduce((s, x) => s + x.w, 0);
-      const melhoramW = weightedTendencias.filter(x => x.t === 'melhora').reduce((s, x) => s + x.w, 0);
-      const totalIndW = weightedTendencias.reduce((s, x) => s + x.w, 0);
-      const pioram = weightedTendencias.filter(x => x.t === 'piora').length;
-      const melhoram = weightedTendencias.filter(x => x.t === 'melhora').length;
-      const estaveis = weightedTendencias.filter(x => x.t === 'estavel').length;
-      const totalInd = indicadoresVinculados.length;
+      const tendencias = indicadoresVinculados.map(i => inferTendencia(i));
+      const pioram = tendencias.filter(t => t === 'piora').length;
+      const melhoram = tendencias.filter(t => t === 'melhora').length;
+      const estaveis = tendencias.filter(t => t === 'estavel').length;
 
       let scoreInd = 50;
-      if (totalIndW > 0) {
-        const ratioMelhora = melhoramW / totalIndW;
-        const ratioPiora = pioramW / totalIndW;
+      if (totalInd > 0) {
+        const ratioMelhora = melhoram / totalInd;
+        const ratioPiora = pioram / totalInd;
         scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
         scoreInd = Math.max(0, Math.min(100, scoreInd));
       } else {
-        scoreInd = 10; // ← Piso reduzido de 25→10 sem evidência
+        scoreInd = 10;
       }
 
-      const avgEixoWeightInd = totalIndEixo > 0
-        ? (indicadoresVinculados.filter(i => !keywordIndSet.has(i.nome)).reduce((s, i) => s + getIndWeight(i), 0) / totalIndEixo).toFixed(0)
-        : '—';
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es) [${totalIndKeyword} keyword, ${totalIndEixo} eixo×${avgEixoWeightInd}%]: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) vinculado(s) por keywords: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
@@ -321,26 +314,25 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         const pago = Number(o.pago) || 0;
         return dotacao > 100000 && pago < dotacao * 0.05;
       });
-      const totalOrc = orcamentosVinculados.length;
 
       let execucaoMedia = 0;
       let scoreOrc = 0;
       if (totalOrc > 0) {
-        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0) * getOrcWeight(o), 0);
-        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0) * getOrcWeight(o), 0);
+        const totalDotacao = orcamentosVinculados.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
+        const totalPago = orcamentosVinculados.reduce((s, o) => s + (Number(o.pago) || 0), 0);
         execucaoMedia = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
         scoreOrc = Math.round(Math.min(100, execucaoMedia * 1.3));
         if (simbolicos.length > 0) {
           scoreOrc = Math.max(10, scoreOrc - (simbolicos.length / totalOrc) * 30);
         }
       } else {
-        scoreOrc = 10; // ← Piso reduzido de 20→10 sem evidência
+        scoreOrc = 10;
       }
       scoreOrc = Math.round(Math.max(0, Math.min(100, scoreOrc)));
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões) [${totalOrcKeyword} keyword, ${totalOrcEixo} eixo], execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) vinculada(s) por keywords, execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
@@ -350,23 +342,17 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         signals.push({ type: 'orcamento_simbolico', severity: 'info', message: `${totalOrc} ação(ões) orçamentária(s) vinculada(s)` });
       }
 
-      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) — anti-coringa ──
-      const totalNorm = normativosVinculados.length;
-      const totalNormW = normativosVinculados.reduce((s, n) => s + getNormWeight(n), 0);
+      // ── 3. SCORE NORMATIVOS (0-100, peso 30%) ──
       let scoreNorm = 0;
-      if (totalNormW >= 5) scoreNorm = 100;
-      else if (totalNormW >= 3) scoreNorm = 80;
-      else if (totalNormW >= 2) scoreNorm = 60;
-      else if (totalNormW >= 1) scoreNorm = 40;
-      else if (totalNormW >= 0.3) scoreNorm = 20;
+      if (totalNorm >= 5) scoreNorm = 100;
+      else if (totalNorm >= 3) scoreNorm = 80;
+      else if (totalNorm >= 2) scoreNorm = 60;
+      else if (totalNorm >= 1) scoreNorm = 40;
       else scoreNorm = 5;
 
-      const avgEixoWeightNorm = totalNormEixo > 0
-        ? (normativosVinculados.filter(n => !keywordNormSet.has(n.titulo)).reduce((s, n) => s + getNormWeight(n), 0) / totalNormEixo * 100).toFixed(0)
-        : '—';
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) [${totalNormKeyword} keyword, ${totalNormEixo} eixo×${avgEixoWeightNorm}%], peso efetivo ${totalNormW.toFixed(1)}. Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) vinculado(s) por keywords. Score: ${scoreNorm}/100.`;
 
       // Signals for normatives
       if (totalNorm > 0) {
@@ -382,13 +368,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
       // ── CAP PIORA: se indicadores pioram > melhoram, teto = 55 (Parcial) ──
-      const pioraCapped = pioramW > melhoramW && pioramW > 0;
+      const pioraCapped = pioram > melhoram && pioram > 0;
       if (pioraCapped && scoreGlobal > 55) {
         scoreGlobal = 55;
       }
 
-      // ── STATUS COMPUTADO (faixas recalibradas) ──
-      // ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
+      // ── STATUS COMPUTADO ──
       let statusComputado: ComplianceStatus;
       if (scoreGlobal >= 80) statusComputado = 'cumprido';
       else if (scoreGlobal >= 55) statusComputado = 'parcialmente_cumprido';
@@ -396,7 +381,6 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       else if (scoreGlobal >= 15) statusComputado = 'nao_cumprido';
       else statusComputado = 'retrocesso';
 
-      // Ajuste: retrocesso requer piora detectada — se não há piora, mínimo é nao_cumprido
       if (statusComputado === 'retrocesso' && pioram === 0) {
         statusComputado = 'nao_cumprido';
       }
@@ -409,8 +393,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
-        `Modelo Híbrido v3: keyword=100%, eixo=dinâmico (anti-coringa)`,
-        `Anti-coringa: artigos com freq >40% na base recebem peso = 50%×(1−freq)`,
+        `Modelo v4: Vinculação Estrita por Keywords`,
+        `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
+        `Busca nos campos: nome/título de indicadores, programa/órgão/descritivo/público-alvo de orçamento, título de normativos.`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
@@ -438,7 +423,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         linkedNormativos: normativosVinculados.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
-  }, [recomendacoes, indicadores, orcamento, normativos, indicadoresPorArtigo, orcamentoPorArtigo, normativosPorArtigo]);
+  }, [recomendacoes, indicadores, orcamento, normativos]);
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
