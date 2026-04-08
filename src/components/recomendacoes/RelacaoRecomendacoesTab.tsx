@@ -315,9 +315,8 @@ ${renderRows(allItems)}
         </p>
         <div className="flex flex-wrap gap-3 mt-2 text-xs">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {statusSummary.parcialmente_cumprido || 0} Parcial(is)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-info" /> {statusSummary.em_andamento || 0} Em Andamento</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)/Retrocesso(s)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
         </div>
         {sensorReady && (
           <div className="mt-2">
