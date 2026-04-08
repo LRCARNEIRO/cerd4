@@ -206,10 +206,7 @@ export default function Index() {
       </div>
 
 
-      {/* Sensor Diagnóstico — Alertas */}
-      <div className="mb-6">
-        <SensorAlertPanel summary={sensorSummary} isReady={sensorReady} />
-      </div>
+
 
       {/* Removed: 4 initial StatCards — data is already visible in the Dual Perspective Panel below */}
 
