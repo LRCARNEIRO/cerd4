@@ -71,7 +71,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
     { name: 'Retrocesso', value: evolucaoData.retrocesso, color: EVOL_COLORS.retrocesso },
   ].filter(d => d.value > 0);
 
-  const pctEsforco = totalStatus > 0 ? Math.round(((statusData.cumprido + statusData.parcial) / totalStatus) * 100) : 0;
+  const pctEsforco = totalStatus > 0 ? Math.round((statusData.cumprido / totalStatus) * 100) : 0;
   const pctImpacto = totalEvol > 0 ? Math.round((evolucaoData.evolucao / totalEvol) * 100) : 0;
 
   return (
