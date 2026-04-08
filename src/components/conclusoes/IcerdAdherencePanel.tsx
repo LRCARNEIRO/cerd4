@@ -806,6 +806,16 @@ ${analysis.map(a => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Artigo Adherence Drilldown Dialog */}
+      <ArtigoAdherenceDrilldownDialog
+        open={!!drilldownArtigo}
+        onOpenChange={(open) => { if (!open) setDrilldownArtigo(null); }}
+        artigo={drilldownArtigo ? analysis.find(a => a.numero === drilldownArtigo) || null : null}
+        recomendacoes={drilldownData.recomendacoes}
+        normativos={drilldownData.normativos}
+        orcamentos={drilldownData.orcamentos}
+      />
     </div>
   );
 }
