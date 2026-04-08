@@ -36,6 +36,7 @@ import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/compone
 import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
 import { EvolucaoRecomendacoesPanel } from '@/components/conclusoes/EvolucaoRecomendacoesPanel';
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
+import { DiagnosticoLacunasPanel } from '@/components/conclusoes/DiagnosticoLacunasPanel';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
@@ -411,7 +412,7 @@ export default function Conclusoes() {
               <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
               <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
               <TabsTrigger value="evolucao-recomendacoes" className="gap-1"><TrendingUp className="w-4 h-4" /> Evolução Recomendações</TabsTrigger>
-              <TabsTrigger value="lacunas-ident" className="gap-1"><Database className="w-4 h-4" /> Lacunas x Evidências ({lacunas?.length || 0})</TabsTrigger>
+              <TabsTrigger value="diagnostico-lacunas" className="gap-1"><FileText className="w-4 h-4" /> Diagnóstico de Lacunas</TabsTrigger>
             </TabsList>
 
             {/* ABA: INFOGRÁFICOS */}
@@ -624,25 +625,8 @@ export default function Conclusoes() {
             </TabsContent>
 
 
-            <TabsContent value="lacunas-ident">
-              <Card className="mb-4 border-l-4 border-l-primary">
-                <CardContent className="pt-6">
-                  <div className="flex items-start gap-3">
-                    <Database className="w-6 h-6 text-primary flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Lacunas Identificadas — CERD/C/BRA/CO/18-20</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {lacunas?.length || 0} recomendações do Comitê CERD (§4–§65)
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {(lacunas || []).map(lacuna => (
-                  <LacunaCard key={lacuna.id} lacuna={lacuna} diagnostic={diagnosticMap.get(lacuna.id)} />
-                ))}
-              </div>
+            <TabsContent value="diagnostico-lacunas">
+              <DiagnosticoLacunasPanel />
             </TabsContent>
 
             {/* Respostas às Críticas movida para Recomendações; Lacunas CERD removida */}
