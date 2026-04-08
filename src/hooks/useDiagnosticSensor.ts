@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { LacunaIdentificada, ComplianceStatus, ThematicAxis } from '@/hooks/useLacunasData';
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
-import { getRecomendacaoKeywords, hasKeywordMatch } from '@/utils/recommendationKeywordMatching';
+import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
@@ -156,26 +156,46 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   });
 
   // ── Diagnose each recomendação ────────────────────────────────────
-  // VINCULAÇÃO ESTRITA POR KEYWORDS: evidências são vinculadas APENAS
-  // por termos/frases extraídos do tema/descrição/texto ONU da recomendação.
-  // O match é por termo/frase inteira normalizada, sem substring solta.
+  // VINCULAÇÃO ESTRITA POR KEYWORDS + SCORE TEMÁTICO MÍNIMO:
+  // evidências só entram se houver coerência temática suficiente com o
+  // tema/descrição/texto ONU da recomendação, sem usar eixo ou artigo genérico.
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
     return recomendacoes.map(rec => {
-      const keywords = getRecomendacaoKeywords(rec);
       const signals: DiagnosticSignal[] = [];
 
       const indicadoresVinculados = indicadores
-        .filter((ind) => hasKeywordMatch(`${ind.nome} ${ind.categoria}`, keywords))
+        .map((ind) => ({
+          item: ind,
+          match: getRecommendationKeywordMatch(rec, `${ind.nome} ${ind.categoria}`),
+        }))
+        .filter(({ match }) => match.isRelevant)
+        .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
+        .map(({ item }) => item)
         .slice(0, 20);
 
       const orcamentosVinculados = orcamento
-        .filter((item) => hasKeywordMatch(`${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`, keywords))
+        .map((item) => ({
+          item,
+          match: getRecommendationKeywordMatch(
+            rec,
+            `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''}`
+          ),
+        }))
+        .filter(({ match }) => match.isRelevant)
+        .sort((a, b) => b.match.score - a.match.score || a.item.programa.localeCompare(b.item.programa))
+        .map(({ item }) => item)
         .slice(0, 20);
 
       const normativosVinculados = normativos
-        .filter((doc) => hasKeywordMatch(`${doc.titulo}`, keywords))
+        .map((doc) => ({
+          item: doc,
+          match: getRecommendationKeywordMatch(rec, `${doc.titulo}`),
+        }))
+        .filter(({ match }) => match.isRelevant)
+        .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))
+        .map(({ item }) => item)
         .slice(0, 20);
 
       const totalInd = indicadoresVinculados.length;
@@ -183,11 +203,11 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const totalNorm = normativosVinculados.length;
 
       // ═══════════════════════════════════════════════════════════
-      // MOTOR DE STATUS COMPUTADO v4 — Vinculação Estrita por Keywords
+       // MOTOR DE STATUS COMPUTADO v5 — Vinculação Estrita + Score Temático
       // ═══════════════════════════════════════════════════════════
       // Pesos: Indicadores 40% | Orçamento 30% | Normativos 30%
       // Faixas: ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso
-      // TODAS as evidências vinculadas por keywords (sem eixo/artigo genérico)
+       // TODAS as evidências vinculadas por termo/frase inteira + score mínimo
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
@@ -208,7 +228,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justInd = totalInd === 0
         ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es) vinculado(s) por keywords: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        : `${totalInd} indicador(es) vinculado(s) por coerência temática: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
@@ -241,7 +261,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justOrc = totalOrc === 0
         ? 'Nenhuma ação orçamentária vinculada — sem evidência de investimento público.'
-        : `${totalOrc} ação(ões) vinculada(s) por keywords, execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
+        : `${totalOrc} ação(ões) vinculada(s) por coerência temática, execução média ${execucaoMedia.toFixed(1)}%${simbolicos.length > 0 ? `, ${simbolicos.length} simbólica(s) (<5%)` : ''}. Score: ${scoreOrc}/100.`;
 
       // Signals for budget
       if (simbolicos.length > 0) {
@@ -261,7 +281,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       const justNorm = totalNorm === 0
         ? 'Sem cobertura normativa identificada — ausência de marco legal/regulamentar vinculado.'
-        : `${totalNorm} instrumento(s) vinculado(s) por keywords. Score: ${scoreNorm}/100.`;
+        : `${totalNorm} instrumento(s) vinculado(s) por coerência temática. Score: ${scoreNorm}/100.`;
 
       // Signals for normatives
       if (totalNorm > 0) {
@@ -302,9 +322,12 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const justificativaCompleta = [
         `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
         ``,
-        `Modelo v4: Vinculação Estrita por Keywords`,
-        `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
-        `Busca nos campos: nome/título de indicadores, programa/órgão/descritivo/público-alvo de orçamento, título de normativos.`,
+         `Modelo v5: Vinculação Estrita por Keywords + Score Temático Mínimo`,
+         `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
+         `A evidência só entra se casar por termo/frase inteira normalizada e atingir coerência temática mínima.`,
+         `Para recomendações com grupo focal, exige-se sinal focal explícito (ex.: quilombola, indígena, LGBTQIA+) ou frase específica correlata.`,
+         `Termos genéricos como "violência", "proteção" ou "discriminação" não vinculam sozinhos.`,
+         `Busca nos campos: nome/categoria de indicadores, programa/órgão/descritivo/eixo/público-alvo de orçamento, título de normativos.`,
         `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
         `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
         `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
