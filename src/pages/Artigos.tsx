@@ -5,6 +5,7 @@ import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { useLacunasIdentificadas, useDadosOrcamentarios, useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { useMemo } from 'react';
 
 export default function Artigos() {
@@ -35,16 +36,25 @@ export default function Artigos() {
       title="Artigos — Aderência ICERD"
       subtitle="Avaliação sistêmica da conformidade com os Artigos I-VII da Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial"
     >
-      <IcerdAdherencePanel
-        fiosCondutores={fiosCondutores}
-        conclusoes={conclusoesDinamicas}
-        lacunas={enrichedLacunas}
-        orcamentoRecords={orcDados || []}
-        indicadores={indicadores || []}
-        stats={stats}
-        respostas={respostas || []}
-        documentosNormativos={allNormativos || []}
-      />
+      <div className="flex justify-end mb-4">
+        <ExportTabButtons
+          targetSelector="#export-artigos-aderencia"
+          fileName="artigos-aderencia-icerd"
+          compact
+        />
+      </div>
+      <div id="export-artigos-aderencia">
+        <IcerdAdherencePanel
+          fiosCondutores={fiosCondutores}
+          conclusoes={conclusoesDinamicas}
+          lacunas={enrichedLacunas}
+          orcamentoRecords={orcDados || []}
+          indicadores={indicadores || []}
+          stats={stats}
+          respostas={respostas || []}
+          documentosNormativos={allNormativos || []}
+        />
+      </div>
     </DashboardLayout>
   );
 }
