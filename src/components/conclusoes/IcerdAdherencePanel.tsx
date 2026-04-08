@@ -260,6 +260,10 @@ function generateVerdict(a: ArtigoAnalysis): string {
 
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativos }: IcerdAdherencePanelProps) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
+  const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
+
+  // Use diagnostic sensor for consistent compliance counts across panels
+  const { diagnosticMap } = useDiagnosticSensor(lacunas);
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
