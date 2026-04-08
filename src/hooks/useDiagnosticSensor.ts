@@ -331,11 +331,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const PESO_NORM = 0.30;
       let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // ── CAP PIORA: se indicadores pioram > melhoram, teto = 55 (Parcial) ──
-      const pioraCapped = pioram > melhoram && pioram > 0;
-      if (pioraCapped && scoreGlobal > 55) {
-        scoreGlobal = 55;
-      }
+      // Nota: Tendência dos indicadores NÃO afeta o score de Esforço Governamental.
+      // A análise de tendência pertence ao Motor de Evolução (Produtos > Conclusões).
 
       // ── STATUS COMPUTADO ──
       let statusComputado: ComplianceStatus;
