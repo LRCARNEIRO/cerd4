@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { NormativaUpload } from '@/components/normativa/NormativaUpload';
+import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { NormativaDocCard } from '@/components/normativa/NormativaDocCard';
 import { NormativaBalizadorFilter } from '@/components/normativa/NormativaBalizadorFilter';
 import { ArtigoEngagementPanel } from '@/components/normativa/ArtigoEngagementPanel';
@@ -138,8 +139,9 @@ export default function Normativa() {
       title="Base Normativa/Institucional"
       subtitle="Gestão de dados jurídicos e institucionais para Meta 1 e Meta 2 do CERD IV"
     >
-      {/* GoBack button - top right prominent */}
-      <div className="flex justify-end mb-4">
+      {/* Export + GoBack button - top right prominent */}
+      <div className="flex justify-end mb-4 gap-2">
+        <ExportTabButtons targetSelector="#export-normativa" fileName="Base-Normativa-Institucional" compact />
         <Button
           variant="destructive"
           size="lg"
