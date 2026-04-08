@@ -245,24 +245,19 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       // Cap piora: se indicadores pioram > melhoram, teto global = 55
 
       // ── 1. SCORE INDICADORES (0-100, peso 40%) ──
-      const tendencias = finalIndicadores.map(i => inferTendencia(i));
-      const pioram = tendencias.filter(t => t === 'piora').length;
-      const melhoram = tendencias.filter(t => t === 'melhora').length;
-      const estaveis = tendencias.filter(t => t === 'estavel').length;
-
-      let scoreInd = 50;
-      if (totalInd > 0) {
-        const ratioMelhora = melhoram / totalInd;
-        const ratioPiora = pioram / totalInd;
-        scoreInd = Math.round(50 + (ratioMelhora * 50) - (ratioPiora * 50));
-        scoreInd = Math.max(0, Math.min(100, scoreInd));
-      } else {
-        scoreInd = 10;
-      }
+      // ESFORÇO GOVERNAMENTAL: mede cobertura (quantos indicadores existem),
+      // NÃO tendência (que pertence ao Motor de Evolução).
+      let scoreInd = 0;
+      if (totalInd >= 8) scoreInd = 100;
+      else if (totalInd >= 5) scoreInd = 85;
+      else if (totalInd >= 3) scoreInd = 70;
+      else if (totalInd >= 2) scoreInd = 55;
+      else if (totalInd >= 1) scoreInd = 40;
+      else scoreInd = 5;
 
       const justInd = totalInd === 0
-        ? 'Nenhum indicador vinculado — sem base estatística para avaliar tendência.'
-        : `${totalInd} indicador(es) vinculado(s) por coerência temática: ${melhoram} melhora(m), ${pioram} piora(m), ${estaveis} estável(is). Score: ${scoreInd}/100.`;
+        ? 'Nenhum indicador vinculado — sem base estatística disponível.'
+        : `${totalInd} indicador(es) vinculado(s) por coerência temática. Score de cobertura: ${scoreInd}/100.`;
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
