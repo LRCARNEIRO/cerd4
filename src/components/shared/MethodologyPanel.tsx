@@ -52,12 +52,16 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             <div className="flex items-center gap-2 mb-1">
               <Scale className="w-4 h-4 text-primary" />
               <span className="text-sm font-semibold text-foreground">Política de Conformidade Equilibrada</span>
-              <Badge variant="outline" className="text-[10px]">v2</Badge>
+              <Badge variant="outline" className="text-[10px]">v4</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O sistema adota uma interpretação <strong>equilibrada</strong> das recomendações internacionais, 
-              reconhecendo que marcos legais e esforços institucionais precedem resultados estatísticos. 
-              A reclassificação valoriza a iniciativa do Estado brasileiro sem ignorar lacunas reais.
+              O sistema utiliza <strong>vinculação estrita por palavras-chave</strong> para associar evidências 
+              (indicadores, orçamento e normativos) a cada recomendação. As palavras-chave são extraídas 
+              do <em>tema</em>, <em>descrição</em> e <em>texto original da ONU</em> de cada recomendação, 
+              aplicando sinônimos temáticos e filtragem de termos genéricos. A busca é realizada nos campos: 
+              nome/categoria de indicadores, programa/órgão/descritivo/público-alvo de ações orçamentárias, 
+              e título de normativos. <strong>Não</strong> utiliza artigos ICERD ou eixos temáticos genéricos 
+              para vincular evidências, evitando falsos positivos.
             </p>
 
             {showSensor && (
@@ -105,8 +109,9 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             )}
 
             <p className="text-[10px] text-muted-foreground italic">
-              Reclassificação automática: lacunas com ações do Brasil → parcial; com 1-2 evidências → em andamento; 
-              parciais com 2+ ações e 3+ evidências → cumprido.
+              Vinculação por keywords: tema + descrição + texto ONU → tokenização (mín. 5 letras) → filtro de stop-words → 
+              expansão por sinônimos temáticos → busca nos campos de evidências. Pesos do status: Indicadores 40% + Orçamento 30% + Normativos 30%.
+              Cap piora: se indicadores em piora &gt; melhora, teto = 55 (Parcial).
             </p>
           </CardContent>
         </Card>
