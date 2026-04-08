@@ -4,6 +4,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/ut
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { useDiagnosticSensor, type LinkedIndicador, type LinkedOrcamento, type LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
+import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 
 function getArtigos(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): ArtigoConvencao[] {
   const raw = (l as any).artigos_convencao;
@@ -142,19 +143,40 @@ export function useEvolucaoSummary() {
       };
     });
 
-    // ── Per-recommendation evolution (for the global summary pie chart) ──
+    // ── Per-recommendation evolution — SAME scoring as EvolucaoRecomendacoesPanel ──
+    // Weights: Indicadores 50%, Orçamento 30%, Normativos 20%
     let evolCount = 0, estagCount = 0, retroCount = 0;
     recomendacoes.forEach(rec => {
       const diag = diagnosticMap.get(rec.id);
       if (!diag) { retroCount++; return; }
 
-      const score = computeArticleEvolScore(
-        diag.linkedIndicadores,
-        diag.linkedOrcamento,
-        diag.linkedNormativos,
-      );
-      if (score >= 60) evolCount++;
-      else if (score >= 35) estagCount++;
+      const linkedInd = diag.linkedIndicadores;
+      const linkedOrc = diag.linkedOrcamento;
+      const linkedNorm = diag.linkedNormativos;
+
+      // Indicadores: trend evaluation
+      let fav = 0, desfav = 0, novos = 0;
+      linkedInd.forEach((ind: any) => {
+        const r = evaluateIndicadorDetailed(ind).result;
+        if (r === 'favoravel') fav++;
+        else if (r === 'desfavoravel') desfav++;
+        else if (r === 'novo') novos++;
+      });
+      const indTotal = linkedInd.length;
+      const rawInd = indTotal > 0 ? ((fav + novos * 0.7 - desfav * 0.5) / indTotal) * 100 : 0;
+      const scoreInd = Math.max(0, Math.min(100, rawInd));
+
+      // Orçamento: R$ liquidado
+      const progs = new Set(linkedOrc.map((o: any) => o.programa)).size;
+      const totalLiq = linkedOrc.reduce((s: number, o: any) => s + (Number(o.liquidado) || Number(o.pago) || 0), 0);
+      const scoreOrc = Math.min(100, progs > 0 ? 40 + Math.min(60, totalLiq / 1e8) : 0);
+
+      // Normativos: quantity
+      const scoreNorm = Math.min(100, linkedNorm.length * 12);
+
+      const scoreFarol = Math.round(scoreInd * 0.50 + scoreOrc * 0.30 + scoreNorm * 0.20);
+      if (scoreFarol >= 60) evolCount++;
+      else if (scoreFarol >= 35) estagCount++;
       else retroCount++;
     });
 
