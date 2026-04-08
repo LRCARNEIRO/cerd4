@@ -221,10 +221,8 @@ ${renderRows(allItems)}
           </CardTitle>
           <div className="flex flex-wrap gap-2 mt-2">
             {statusCount.cumprido > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{statusCount.cumprido} Cumprida(s)</Badge>}
-            {statusCount.parcialmente_cumprido > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido} Parcial(is)</Badge>}
-            {statusCount.em_andamento > 0 && <Badge variant="outline" className="text-info border-info/30 text-xs">{statusCount.em_andamento} Em Andamento</Badge>}
-            {statusCount.nao_cumprido > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido} Não Cumprida(s)</Badge>}
-            {statusCount.retrocesso > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.retrocesso} Retrocesso(s)</Badge>}
+            {(statusCount.parcialmente_cumprido + statusCount.em_andamento) > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido + statusCount.em_andamento} Parcial(is)</Badge>}
+            {(statusCount.nao_cumprido + statusCount.retrocesso) > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido + statusCount.retrocesso} Não Cumprida(s)</Badge>}
           </div>
         </CardHeader>
         <CardContent className="pt-0">
