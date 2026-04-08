@@ -5,12 +5,13 @@ import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, ListChecks } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
+import { EvidenceDrilldownDialog } from '@/components/shared/EvidenceDrilldownDialog';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -59,13 +60,10 @@ function getPrioridadeLabel(prioridade: string): string {
   return prioridade;
 }
 
-/**
- * Relação Completa — visão institucional com vinculação + status computado.
- * Restaurada com colunas de status, score e breakdown por dimensão.
- */
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
   const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const [drilldownId, setDrilldownId] = useState<string | null>(null);
 
   const grouped = useMemo(() => {
     if (!recomendacoes) return { cerd: [] as typeof recomendacoes, rg: [] as typeof recomendacoes, durban: [] as typeof recomendacoes };
@@ -90,6 +88,10 @@ export function RelacaoRecomendacoesTab() {
     return counts;
   }, [recomendacoes, diagnosticMap]);
 
+  // Drilldown data
+  const drilldownRec = recomendacoes?.find(r => r.id === drilldownId);
+  const drilldownDiag = drilldownId ? diagnosticMap.get(drilldownId) : undefined;
+
   const generateExportHTML = useCallback(() => {
     if (!recomendacoes) return '<html><body>Sem dados</body></html>';
     const allItems = [...grouped.cerd, ...grouped.rg, ...grouped.durban];
@@ -103,6 +105,20 @@ export function RelacaoRecomendacoesTab() {
       const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
       const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' ? 'Parcial' : effectiveStatus === 'em_andamento' ? 'Em Andamento' : effectiveStatus === 'retrocesso' ? 'Retrocesso' : 'Não Cumprido';
 
+      // Evidence details for export
+      const auditoria = diag?.auditoria;
+      const evidenceHtml = auditoria ? `
+        <div style="font-size:9px;color:#555;margin-top:4px">
+          <strong>Score: ${auditoria.scoreGlobal}/100</strong><br/>
+          📊 Ind: ${auditoria.indicadores.total} (${auditoria.indicadores.melhoram}↑ ${auditoria.indicadores.pioram}↓) · Score: ${auditoria.indicadores.score}<br/>
+          💰 Orç: ${auditoria.orcamento.total} ações, exec ${auditoria.orcamento.execucaoMedia}% · Score: ${auditoria.orcamento.score}<br/>
+          📋 Norm: ${auditoria.normativos.total} · Score: ${auditoria.normativos.score}<br/>
+          ${diag?.linkedIndicadores?.slice(0, 5).map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || ''}
+          ${diag?.linkedNormativos?.slice(0, 5).map(n => `• ${n.titulo}`).join('<br/>') || ''}
+          ${diag?.linkedOrcamento?.slice(0, 5).map(o => `• ${o.programa} (${o.orgao}, ${o.ano})`).join('<br/>') || ''}
+        </div>
+      ` : '<span style="font-size:9px;color:#999">Sem auditoria</span>';
+
       return `<tr>
         <td style="font-family:monospace;font-weight:bold">${l.paragrafo}</td>
         <td>${l.tema}</td>
@@ -110,24 +126,25 @@ export function RelacaoRecomendacoesTab() {
         <td style="font-size:10px;color:#555">${justificativa}</td>
         <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
         <td style="font-size:10px">${prioridadeLabel}</td>
+        <td>${evidenceHtml}</td>
       </tr>`;
     }).join('');
 
     return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-<title>Relação Completa — Recomendações, Vinculações e Status</title>
+<title>Relação Completa — Recomendações, Vinculações, Status e Evidências</title>
 <style>
-body{font-family:Arial,sans-serif;max-width:1200px;margin:20px auto;color:#222;font-size:12px}
+body{font-family:Arial,sans-serif;max-width:1400px;margin:20px auto;color:#222;font-size:12px}
 h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
 h2{font-size:14px;margin-top:20px;color:#1e40af}
 table{width:100%;border-collapse:collapse;margin:8px 0}
-th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:11px}
+th,td{border:1px solid #ddd;padding:5px 7px;text-align:left;font-size:11px;vertical-align:top}
 th{background:#f1f5f9;font-size:10px}
 .methodology{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:14px;margin:12px 0}
 .nota{font-size:10px;color:#666}
-.summary{display:flex;gap:12px;margin:12px 0}
+.summary{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
 .summary span{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:bold}
 </style></head><body>
-<h1>📋 Relação Completa — Recomendações, Vinculações e Status</h1>
+<h1>📋 Relação Completa — Recomendações, Vinculações, Status e Evidências</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Total:</strong> ${recomendacoes.length} recomendações — CERD (${grouped.cerd.length}), RG (${grouped.rg.length}), Durban (${grouped.durban.length})</p>
 
@@ -140,19 +157,19 @@ th{background:#f1f5f9;font-size:10px}
 </div>
 
 <div class="methodology">
-<h2>🔗 Metodologia de Vinculação</h2>
+<h2>🔗 Metodologia de Vinculação e Cálculo de Status</h2>
 <p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback).</p>
+<p><strong>Cálculo do Status:</strong> Modelo híbrido ponderado — Indicadores 40% + Orçamento 30% + Normativos 30%. Anti-coringa: artigos com freq >40% recebem peso reduzido. Cap piora: se indicadores pioram > melhoram, teto = 55 (Parcial).</p>
+<p><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | <15 Retrocesso</p>
 <table>
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
 </table>
-<p class="nota"><strong>Prioridade cadastrada:</strong> a coluna de prioridade é lida diretamente do campo <code>prioridade</code> da base. Ela não é recalculada por esta tela nem pelo score do sensor.</p>
-<p class="nota"><strong>Status:</strong> Avaliação computada disponível em Produtos → Conclusões → Evolução Recomendações.</p>
 </div>
 
-<h2>Detalhamento</h2>
+<h2>Detalhamento com Evidências</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade cadastrada</th></tr>
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade</th><th>Evidências (Indicadores, Orçamento, Normativos)</th></tr>
 ${renderRows(allItems)}
 </table>
 
@@ -231,7 +248,13 @@ ${renderRows(allItems)}
                       </TableCell>
                       <TableCell className="text-[10px] text-muted-foreground">{justificativa}</TableCell>
                       <TableCell>
-                        <StatusBadge status={effectiveStatus} size="sm" />
+                        <button
+                          onClick={() => setDrilldownId(l.id)}
+                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                          title="Clique para ver evidências"
+                        >
+                          <StatusBadge status={effectiveStatus} size="sm" />
+                        </button>
                       </TableCell>
                       <TableCell>
                         <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs">
@@ -266,6 +289,7 @@ ${renderRows(allItems)}
         </div>
         <p className="text-xs text-muted-foreground">
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
+          <strong className="ml-1">Clique no status de cada recomendação</strong> para ver as evidências que fundamentam a classificação.
         </p>
         <p className="text-[10px] text-muted-foreground mt-1">
           <strong>Prioridade cadastrada:</strong> este campo vem pronto da base de recomendações e não é calculado pelo sensor nem por esta tela.
@@ -286,6 +310,15 @@ ${renderRows(allItems)}
       {renderGroup('cerd', grouped.cerd)}
       {renderGroup('rg', grouped.rg)}
       {renderGroup('durban', grouped.durban)}
+
+      {/* Evidence Drilldown Dialog */}
+      <EvidenceDrilldownDialog
+        open={!!drilldownId}
+        onOpenChange={(open) => { if (!open) setDrilldownId(null); }}
+        paragrafo={drilldownRec?.paragrafo || ''}
+        tema={drilldownRec?.tema || ''}
+        diagnostic={drilldownDiag}
+      />
     </div>
   );
 }
