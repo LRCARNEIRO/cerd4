@@ -356,7 +356,7 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
       isRelevant =
         (matchedGroupKeywords.length > 0 && score >= 2)
         || (matchedPhraseKeywords.length >= 1 && score >= 3)
-        || (standaloneStrongKeywords.length >= 2 && score >= 3);
+        || (standaloneStrongKeywords.length >= 3 && score >= 4.5);
     }
   } else {
     isRelevant = matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
