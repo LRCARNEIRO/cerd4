@@ -123,7 +123,7 @@ const GRUPO_SPECIFIC: Record<string, string[]> = {
   ciganos: ['ciganos', 'cigano', 'romani'],
   religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
   juventude_negra: ['juventude negra', 'jovens negros'],
-  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher', 'gestante', 'parto', 'pre natal'],
+  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher'],
   lgbtqia_negros: ['lgbtqia', 'pessoas trans', 'trans', 'transexual', 'homofobia', 'transfobia'],
   pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
   idosos_negros: ['idosos negros', 'idosas negras'],
@@ -164,7 +164,18 @@ function uniqueNonEmpty(values: string[]): string[] {
 function includesWholeTerm(normalizedHaystack: string, keyword: string): boolean {
   const normalizedKeyword = normalizeSearchText(keyword);
   if (!normalizedKeyword) return false;
-  return normalizedHaystack.includes(` ${normalizedKeyword} `);
+  // Direct whole-word match
+  if (normalizedHaystack.includes(` ${normalizedKeyword} `)) return true;
+  // Allow matching through common Portuguese prepositions (de, da, do, das, dos, e, em, no, na, nos, nas, ao, aos, a, o, os, as, por)
+  // E.g. "lei cotas" matches "lei de cotas", "audiencia custodia" matches "audiencia de custodia"
+  const parts = normalizedKeyword.split(' ');
+  if (parts.length >= 2) {
+    const PREPOSITIONS = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'aos', 'a', 'o', 'os', 'as', 'por']);
+    const pattern = parts.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(?:\\s+(?:' + [...PREPOSITIONS].join('|') + '))?\\s+');
+    const regex = new RegExp(`(?:^|\\s)${pattern}(?:\\s|$)`);
+    if (regex.test(normalizedHaystack)) return true;
+  }
+  return false;
 }
 
 function extractSourceText(rec: RecommendationKeywordSource): string {
