@@ -351,10 +351,12 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
         || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 1 && score >= 3)
         || (standaloneStrongKeywords.length >= 2 && score >= 3);
     } else {
-      // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
+      // Ex: grupo 'quilombolas', 'indigenas', 'mulheres_negras' — group match + score mínimo suficiente
+      // Também aceita strong keywords temáticos expandidos por concept bundles (≥2 com score ≥3)
       isRelevant =
         (matchedGroupKeywords.length > 0 && score >= 2)
-        || (matchedPhraseKeywords.length >= 1 && score >= 3);
+        || (matchedPhraseKeywords.length >= 1 && score >= 3)
+        || (standaloneStrongKeywords.length >= 2 && score >= 3);
     }
   } else {
     isRelevant = matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
