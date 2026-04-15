@@ -47,7 +47,7 @@ const KEYWORD_STOPWORDS = new Set([
   'estado', 'governo', 'publico', 'publica', 'sistema', 'programa',
   'politica', 'politicas', 'direitos', 'direito', 'humanos', 'povos',
   'populacao', 'comunidades', 'combate', 'promocao', 'protecao',
-  'implementacao', 'garantir', 'inclui', 'impacto', 'social',
+  'implementacao', 'garantir', 'inclui', 'social',
   'grupo', 'grupos', 'norma', 'normas', 'conduta', 'condutas',
   'passados', 'promulgacao', 'constituicao', 'congresso', 'aprovou',
   'violando', 'dever', 'estatal', 'especialmente', 'vulneravel',
@@ -93,6 +93,16 @@ const SYNONYMS: Record<string, string[]> = {
   reparacao: ['escravidao', 'reparatorio', 'memoria', 'comissao verdade'],
   curriculo: ['curricular', 'didatico', 'educacao antirracista'],
   curricular: ['curriculo', 'didatico', 'educacao antirracista'],
+  criminal: ['justica criminal', 'penal', 'encarceramento', 'sistema prisional'],
+  perfilamento: ['perfil racial', 'abordagem policial', 'reconhecimento facial', 'seletividade'],
+  assembleia: ['manifestacao', 'reuniao', 'protesto'],
+  manifestacao: ['assembleia', 'reuniao', 'protesto'],
+  interseccoes: ['interseccional', 'interseccionalidade', 'multipla discriminacao'],
+  multipla: ['interseccional', 'interseccionalidade'],
+  implementacao: ['harmonizacao', 'legislativa'],
+  convencao: ['icerd', 'tratado', 'ratificacao'],
+  ambiente: ['ambiental', 'mineracao', 'garimpo', 'desmatamento'],
+  ambiental: ['ambiente', 'mineracao', 'garimpo', 'sustentavel'],
   afrodescendentes: ['decada', 'decenio', 'populacao negra'],
   decada: ['afrodescendentes', 'decenio', 'durban'],
   representacao: ['sub representacao', 'cadeiras', 'cargos eletivos', 'parlamento', 'vereador', 'candidatura'],
@@ -123,7 +133,7 @@ const GRUPO_SPECIFIC: Record<string, string[]> = {
   ciganos: ['ciganos', 'cigano', 'romani'],
   religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
   juventude_negra: ['juventude negra', 'jovens negros'],
-  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher'],
+  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher', 'violencia domestica', 'violencia contra mulher'],
   lgbtqia_negros: ['lgbtqia', 'pessoas trans', 'trans', 'transexual', 'homofobia', 'transfobia'],
   pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
   idosos_negros: ['idosos negros', 'idosas negras'],
@@ -341,10 +351,12 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
         || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 1 && score >= 3)
         || (standaloneStrongKeywords.length >= 2 && score >= 3);
     } else {
-      // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
+      // Ex: grupo 'quilombolas', 'indigenas', 'mulheres_negras' — group match + score mínimo suficiente
+      // Também aceita strong keywords temáticos expandidos por concept bundles (≥2 com score ≥3)
       isRelevant =
         (matchedGroupKeywords.length > 0 && score >= 2)
-        || (matchedPhraseKeywords.length >= 1 && score >= 3);
+        || (matchedPhraseKeywords.length >= 1 && score >= 3)
+        || (standaloneStrongKeywords.length >= 3 && score >= 4.5);
     }
   } else {
     isRelevant = matchedPhraseKeywords.length > 0 || (matchedStrongKeywords.length > 0 && score >= 3);
