@@ -47,7 +47,7 @@ const KEYWORD_STOPWORDS = new Set([
   'estado', 'governo', 'publico', 'publica', 'sistema', 'programa',
   'politica', 'politicas', 'direitos', 'direito', 'humanos', 'povos',
   'populacao', 'comunidades', 'combate', 'promocao', 'protecao',
-  'implementacao', 'garantir', 'inclui', 'impacto', 'social',
+  'implementacao', 'garantir', 'inclui', 'social',
   'grupo', 'grupos', 'norma', 'normas', 'conduta', 'condutas',
   'passados', 'promulgacao', 'constituicao', 'congresso', 'aprovou',
   'violando', 'dever', 'estatal', 'especialmente', 'vulneravel',
