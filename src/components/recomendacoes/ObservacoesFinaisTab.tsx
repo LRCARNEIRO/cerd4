@@ -5,44 +5,44 @@ import { AlertTriangle, Star } from 'lucide-react';
 interface RecomendacaoCEDR {
   tema: string;
   paragrafo: string;
-  numRecomendacoes: string;
+  artigos: string;
   prioritaria: boolean;
   detalhePrioritaria?: string;
 }
 
 const indiceRecomendacoes: RecomendacaoCEDR[] = [
-  { tema: 'Coleta de dados demográficos desagregados', paragrafo: '6', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Implementação doméstica da Convenção', paragrafo: '8', numRecomendacoes: '3 (a-c)', prioritaria: false },
-  { tema: 'Estrutura institucional', paragrafo: '10', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Acesso à justiça', paragrafo: '12', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Situação de mulheres afro-brasileiras, indígenas e quilombolas', paragrafo: '14', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Direito à saúde e impacto da COVID-19', paragrafo: '17', numRecomendacoes: '6 (a-f)', prioritaria: true, detalhePrioritaria: 'a-c, e-f' },
-  { tema: 'Disparidades no acesso à educação', paragrafo: '19', numRecomendacoes: '3 (a-c)', prioritaria: true, detalhePrioritaria: 'c' },
-  { tema: 'Pobreza, trabalho e renda', paragrafo: '23', numRecomendacoes: '6 (a-f)', prioritaria: true, detalhePrioritaria: 'a' },
-  { tema: 'Discriminação e segregação na moradia', paragrafo: '25', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Representação política', paragrafo: '27', numRecomendacoes: '3 (a-c)', prioritaria: true, detalhePrioritaria: 'c' },
-  { tema: 'Medidas especiais', paragrafo: '29', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Discurso de ódio racista e crimes de ódio', paragrafo: '31', numRecomendacoes: '6 (a-f)', prioritaria: false },
-  { tema: 'Homicídios motivados pela raça', paragrafo: '33', numRecomendacoes: '3 (a-c)', prioritaria: true },
-  { tema: 'Uso excessivo da força pela polícia e militares', paragrafo: '36', numRecomendacoes: '8 (a-h)', prioritaria: true, detalhePrioritaria: 'a-d' },
-  { tema: 'Justiça criminal', paragrafo: '38', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Perfilamento racial (racial profiling)', paragrafo: '40', numRecomendacoes: '4 (a-d)', prioritaria: false },
-  { tema: 'Reunião pacífica (peaceful assembly)', paragrafo: '42', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Perseguição a religiões afro-brasileiras', paragrafo: '44', numRecomendacoes: '5 (a-e)', prioritaria: false },
-  { tema: 'Defensores de direitos humanos', paragrafo: '46', numRecomendacoes: '1', prioritaria: true },
-  { tema: 'Desenvolvimento, meio-ambiente e direitos humanos', paragrafo: '48', numRecomendacoes: '5 (a-e)', prioritaria: true },
-  { tema: 'Comunidades indígenas e quilombolas', paragrafo: '50', numRecomendacoes: '4 (a-d)', prioritaria: true },
-  { tema: 'Proteção legal de terras indígenas e quilombolas', paragrafo: '53', numRecomendacoes: '1', prioritaria: true },
-  { tema: 'Imigrantes, refugiados e requerentes de asilo', paragrafo: '55', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Povos ciganos', paragrafo: '57', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Combate a preconceitos e legados de injustiças históricas', paragrafo: '60', numRecomendacoes: '5 (a-e)', prioritaria: true, detalhePrioritaria: 'e' },
-  { tema: 'Ratificação de outros tratados', paragrafo: '61', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Emenda ao artigo 8º da Convenção', paragrafo: '62', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Declaração opcional (artigo 14)', paragrafo: '63', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Declaração e Programa de Ação de Durban', paragrafo: '64', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Década Internacional Afrodescendentes', paragrafo: '65', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Consultas à sociedade civil', paragrafo: '66', numRecomendacoes: '1', prioritaria: false },
-  { tema: 'Disseminação da informação', paragrafo: '67', numRecomendacoes: '1', prioritaria: false },
+  { tema: 'Coleta de dados demográficos desagregados', paragrafo: '6', artigos: 'I, II', prioritaria: false },
+  { tema: 'Implementação doméstica da Convenção', paragrafo: '8', artigos: 'I, II', prioritaria: false },
+  { tema: 'Fortalecimento da estrutura institucional', paragrafo: '10', artigos: 'II', prioritaria: false },
+  { tema: 'Acesso à justiça por vítimas de crimes raciais', paragrafo: '12', artigos: 'VI, VII', prioritaria: false },
+  { tema: 'Situação de mulheres afro-brasileiras, indígenas e quilombolas', paragrafo: '14', artigos: 'V', prioritaria: false },
+  { tema: 'Disparidades em Saúde e impactos da COVID-19', paragrafo: '17', artigos: 'V', prioritaria: true, detalhePrioritaria: 'a-c, e-f' },
+  { tema: 'Disparidades no acesso à educação', paragrafo: '19', artigos: 'V, VII', prioritaria: true, detalhePrioritaria: 'c' },
+  { tema: 'Pobreza, trabalho e renda', paragrafo: '23', artigos: 'V', prioritaria: true, detalhePrioritaria: 'a' },
+  { tema: 'Discriminação e segregação na moradia', paragrafo: '25', artigos: 'III, V', prioritaria: false },
+  { tema: 'Sub-representação política de afrodescendentes', paragrafo: '27', artigos: 'V', prioritaria: true, detalhePrioritaria: 'c' },
+  { tema: 'Medidas especiais e ações afirmativas', paragrafo: '29', artigos: 'II', prioritaria: false },
+  { tema: 'Discurso de ódio racista e crimes de ódio', paragrafo: '31', artigos: 'IV', prioritaria: false },
+  { tema: 'Homicídios motivados pela raça', paragrafo: '33', artigos: 'VI', prioritaria: true },
+  { tema: 'Uso excessivo da força pela polícia e militares', paragrafo: '36', artigos: 'VI', prioritaria: true, detalhePrioritaria: 'a-d' },
+  { tema: 'Justiça criminal', paragrafo: '38', artigos: 'VI', prioritaria: false },
+  { tema: 'Perfilamento racial', paragrafo: '40', artigos: 'VI', prioritaria: false },
+  { tema: 'Direito à livre assembleia', paragrafo: '42', artigos: 'V', prioritaria: false },
+  { tema: 'Perseguição a religiões afro-brasileiras', paragrafo: '44', artigos: 'V', prioritaria: false },
+  { tema: 'Proteção aos defensores de direitos humanos', paragrafo: '46', artigos: 'VI', prioritaria: true },
+  { tema: 'Desenvolvimento, meio-ambiente e direitos humanos', paragrafo: '48', artigos: 'V', prioritaria: true },
+  { tema: 'Direitos de comunidades indígenas e quilombolas', paragrafo: '50', artigos: 'III, V', prioritaria: true },
+  { tema: 'Proteção legal às terras indígenas e quilombolas', paragrafo: '53', artigos: 'III, V', prioritaria: true },
+  { tema: 'Imigrantes, refugiados e requerentes de asilo', paragrafo: '55', artigos: 'V', prioritaria: false },
+  { tema: 'Direitos civis e coleta de dados sobre povos ciganos', paragrafo: '57', artigos: 'V', prioritaria: false },
+  { tema: 'Combate a preconceitos raciais e legados de injustiças históricas', paragrafo: '60', artigos: 'VII', prioritaria: true },
+  { tema: 'Ratificação de outros tratados internacionais', paragrafo: '61', artigos: 'II', prioritaria: false },
+  { tema: 'Emenda ao artigo 8º da Convenção', paragrafo: '62', artigos: 'I, II', prioritaria: false },
+  { tema: 'Declaração opcional sob o artigo 14', paragrafo: '63', artigos: 'I, II', prioritaria: false },
+  { tema: 'Declaração e Programa de Ação de Durban', paragrafo: '64', artigos: 'II', prioritaria: false },
+  { tema: 'Década Internacional dos Afrodescendentes', paragrafo: '65', artigos: 'I, II', prioritaria: false },
+  { tema: 'Consultas à sociedade civil', paragrafo: '66', artigos: 'II, V', prioritaria: false },
+  { tema: 'Disseminação da informação', paragrafo: '67', artigos: 'VII', prioritaria: false },
 ];
 
 export function ObservacoesFinaisTab() {
@@ -82,7 +82,7 @@ export function ObservacoesFinaisTab() {
                 <tr className="bg-muted/50">
                   <th className="text-left p-3 font-medium text-xs">Tema</th>
                   <th className="text-center p-3 font-medium text-xs w-20">§</th>
-                  <th className="text-center p-3 font-medium text-xs w-28">Nº Rec.</th>
+                  <th className="text-center p-3 font-medium text-xs w-28">Artigos</th>
                   <th className="text-center p-3 font-medium text-xs w-24">Status</th>
                 </tr>
               </thead>
@@ -102,7 +102,7 @@ export function ObservacoesFinaisTab() {
                         </div>
                       </td>
                       <td className="p-3 text-center font-mono text-xs">{rec.paragrafo}</td>
-                      <td className="p-3 text-center text-xs">{rec.numRecomendacoes}</td>
+                      <td className="p-3 text-center text-xs font-mono">{rec.artigos}</td>
                       <td className="p-3 text-center">
                         {rec.prioritaria && (
                           <Badge variant="outline" className="text-xs bg-warning/10 text-warning border-warning/30">
