@@ -69,7 +69,7 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
     id: 'seguranca_policial',
     triggerTokens: ['policial', 'forca', 'letalidade', 'seguranca', 'homicidio', 'homicidios', 'violencia policial', 'perfilamento'],
     minTriggerMatches: 1,
-    expansions: ['policial', 'letalidade', 'homicidio', 'seguranca publica', 'atlas violencia', 'camera corporal', 'cameras corporais', 'custodia', 'audiencia', 'operacao policial', 'abordagem policial'],
+    expansions: ['policial', 'letalidade', 'homicidio', 'seguranca publica', 'atlas violencia', 'camera corporal', 'cameras corporais', 'operacao policial', 'abordagem policial'],
   },
   {
     id: 'moradia_habitacao',
