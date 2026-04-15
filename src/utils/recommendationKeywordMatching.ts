@@ -75,15 +75,18 @@ const SYNONYMS: Record<string, string[]> = {
   segregacao: ['segregacao residencial', 'favelas'],
   demarcacao: ['titulacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
   titulacao: ['demarcacao', 'regularizacao fundiaria', 'territorio quilombola', 'terras quilombolas'],
-  encarceramento: ['sistema prisional', 'penitenciario', 'custodia'],
-  prisional: ['encarceramento', 'penitenciario', 'custodia', 'preso', 'detencao'],
+  encarceramento: ['sistema prisional', 'penitenciario', 'custodia', 'depen'],
+  prisional: ['encarceramento', 'penitenciario', 'custodia', 'preso', 'detencao', 'depen'],
   detencao: ['encarceramento', 'sistema prisional', 'custodia'],
+  custodia: ['encarceramento', 'prisional', 'audiencia custodia'],
   feminicidio: ['violencia domestica', 'violencia mulher'],
   'trabalho infantil': ['erradicacao trabalho infantil'],
   discriminacao: ['preconceito', 'desigualdade'],
   indigena: ['indigenas', 'povos originarios'],
   indigenas: ['indigena', 'povos originarios'],
-  racismo: ['racial', 'antirracista', 'racista'],
+  racismo: ['racial', 'antirracista', 'racista', 'raciais'],
+  racial: ['racismo', 'raciais', 'antirracista'],
+  raciais: ['racismo', 'racial', 'antirracista'],
   odio: ['discurso odio', 'crime odio', 'injuria racial', 'tipificacao'],
   supremacia: ['neonazi', 'extremismo', 'propaganda racista'],
   escravidao: ['reparacao', 'reparatorio', 'memoria', 'verdade', 'trabalho escravo', 'trabalho analogo'],
@@ -94,11 +97,23 @@ const SYNONYMS: Record<string, string[]> = {
   decada: ['afrodescendentes', 'decenio', 'durban'],
   representacao: ['sub representacao', 'cadeiras', 'cargos eletivos', 'parlamento', 'vereador', 'candidatura'],
   eletivos: ['representacao', 'parlamento', 'vereador', 'candidatura'],
+  candidatura: ['candidaturas', 'eleicao', 'eleicoes', 'representacao'],
+  candidaturas: ['candidatura', 'eleicao', 'eleicoes', 'representacao'],
   coleta: ['censo', 'registro administrativo', 'registros administrativos'],
   coletar: ['censo', 'registro administrativo', 'registros administrativos'],
   estatisticos: ['estatisticas', 'demografia', 'censo'],
   demograficos: ['demografia', 'censo'],
   desagregados: ['desagregacao', 'por raca', 'por genero', 'por etnia', 'raca cor', 'genero raca', 'quesito raca cor'],
+  judiciais: ['judicial', 'processos judiciais'],
+  judiciario: ['judicial', 'poder judiciario'],
+  policial: ['policiais', 'forca policial', 'operacao policial', 'camera corporal'],
+  policiais: ['policial', 'forca policial', 'camera corporal'],
+  cotas: ['cotistas', 'reserva vagas', 'lei cotas', 'acoes afirmativas'],
+  escolar: ['escola', 'ensino', 'matricula', 'evasao escolar'],
+  evasao: ['abandono escolar', 'evasao escolar', 'distorcao idade serie'],
+  mortalidade: ['obitos', 'taxa mortalidade', 'letalidade'],
+  materna: ['mortalidade materna', 'obstetricia', 'gestante', 'pre natal', 'obstetrica'],
+  parto: ['obstetricia', 'gestante', 'mortalidade materna', 'obstetrica'],
 };
 
 const GRUPO_SPECIFIC: Record<string, string[]> = {
@@ -108,7 +123,7 @@ const GRUPO_SPECIFIC: Record<string, string[]> = {
   ciganos: ['ciganos', 'cigano', 'romani'],
   religioes_matriz_africana: ['candomble', 'umbanda', 'matriz africana', 'terreiro'],
   juventude_negra: ['juventude negra', 'jovens negros'],
-  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher', 'gestante', 'parto', 'pre natal'],
+  mulheres_negras: ['mulheres negras', 'mulher negra', 'feminicidio', 'mortalidade materna', 'violencia obstetrica', 'saude da mulher'],
   lgbtqia_negros: ['lgbtqia', 'pessoas trans', 'trans', 'transexual', 'homofobia', 'transfobia'],
   pcd_negros: ['deficiencia', 'pessoa com deficiencia'],
   idosos_negros: ['idosos negros', 'idosas negras'],
@@ -149,7 +164,18 @@ function uniqueNonEmpty(values: string[]): string[] {
 function includesWholeTerm(normalizedHaystack: string, keyword: string): boolean {
   const normalizedKeyword = normalizeSearchText(keyword);
   if (!normalizedKeyword) return false;
-  return normalizedHaystack.includes(` ${normalizedKeyword} `);
+  // Direct whole-word match
+  if (normalizedHaystack.includes(` ${normalizedKeyword} `)) return true;
+  // Allow matching through common Portuguese prepositions (de, da, do, das, dos, e, em, no, na, nos, nas, ao, aos, a, o, os, as, por)
+  // E.g. "lei cotas" matches "lei de cotas", "audiencia custodia" matches "audiencia de custodia"
+  const parts = normalizedKeyword.split(' ');
+  if (parts.length >= 2) {
+    const PREPOSITIONS = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'aos', 'a', 'o', 'os', 'as', 'por']);
+    const pattern = parts.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(?:\\s+(?:' + [...PREPOSITIONS].join('|') + '))?\\s+');
+    const regex = new RegExp(`(?:^|\\s)${pattern}(?:\\s|$)`);
+    if (regex.test(normalizedHaystack)) return true;
+  }
+  return false;
 }
 
 function extractSourceText(rec: RecommendationKeywordSource): string {
@@ -311,8 +337,9 @@ export function getRecommendationKeywordMatch(rec: RecommendationKeywordSource, 
       // Ex: grupo 'negros' — exige phrase + group OU strong temático ≥3
       isRelevant =
         (matchedGroupKeywords.length > 0 && matchedPhraseKeywords.length > 0 && score >= 3)
-        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 4)
-        || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 1 && score >= 4);
+        || (matchedPhraseKeywords.length >= 1 && standaloneStrongKeywords.length >= 1 && score >= 3)
+        || (matchedGroupKeywords.length > 0 && standaloneStrongKeywords.length >= 1 && score >= 3)
+        || (standaloneStrongKeywords.length >= 2 && score >= 3);
     } else {
       // Ex: grupo 'quilombolas', 'indigenas' — group match + score mínimo suficiente
       isRelevant =

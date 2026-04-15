@@ -51,13 +51,13 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
     id: 'saude_racial',
     triggerTokens: ['saude', 'mortalidade', 'morbidade', 'epidemiologia', 'covid', 'materna', 'infantil', 'hospitalar'],
     minTriggerMatches: 1,
-    expansions: ['saude', 'mortalidade', 'datasus', 'morbidade', 'vacinacao', 'pnsipn', 'sus'],
+    expansions: ['saude', 'mortalidade', 'datasus', 'morbidade', 'vacinacao', 'pnsipn', 'sus', 'obstetricia', 'gestante', 'parto'],
   },
   {
     id: 'educacao',
     triggerTokens: ['educacao', 'escolar', 'escola', 'ensino', 'cotas', 'alfabetizacao', 'evasao'],
     minTriggerMatches: 1,
-    expansions: ['educacao', 'escolar', 'escola', 'ensino', 'ideb', 'enem', 'alfabetizacao', 'evasao', 'matricula', 'cotas'],
+    expansions: ['educacao', 'escolar', 'escola', 'ensino', 'ideb', 'enem', 'alfabetizacao', 'evasao', 'matricula', 'cotas', 'distorcao idade serie'],
   },
   {
     id: 'trabalho_renda',
@@ -69,7 +69,7 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
     id: 'seguranca_policial',
     triggerTokens: ['policial', 'forca', 'letalidade', 'seguranca', 'homicidio', 'homicidios', 'violencia policial', 'perfilamento'],
     minTriggerMatches: 1,
-    expansions: ['policial', 'letalidade', 'homicidio', 'seguranca publica', 'atlas violencia', 'camera corporal', 'custodia', 'audiencia'],
+    expansions: ['policial', 'letalidade', 'homicidio', 'seguranca publica', 'atlas violencia', 'camera corporal', 'cameras corporais', 'operacao policial', 'abordagem policial'],
   },
   {
     id: 'moradia_habitacao',
@@ -109,21 +109,21 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
   },
   {
     id: 'encarceramento',
-    triggerTokens: ['encarceramento', 'prisional', 'penitenciario', 'custodia', 'preso', 'presos', 'carceraria'],
+    triggerTokens: ['encarceramento', 'prisional', 'penitenciario', 'custodia', 'preso', 'presos', 'carceraria', 'depen'],
     minTriggerMatches: 1,
-    expansions: ['encarceramento', 'prisional', 'penitenciario', 'custodia', 'preso', 'presos', 'audiencia custodia', 'socioeducativo'],
+    expansions: ['encarceramento', 'prisional', 'penitenciario', 'custodia', 'preso', 'presos', 'audiencia custodia', 'socioeducativo', 'depen'],
   },
   {
     id: 'politica_representacao',
-    triggerTokens: ['representacao', 'parlamento', 'parlamentar', 'candidatura', 'vereador', 'eleicao', 'politica'],
+    triggerTokens: ['representacao', 'parlamento', 'parlamentar', 'candidatura', 'candidaturas', 'vereador', 'eleicao', 'eleicoes', 'politica'],
     minTriggerMatches: 2,
-    expansions: ['representacao', 'parlamento', 'vereador', 'candidatura', 'eleicao', 'assentos locais', 'paridade racial'],
+    expansions: ['representacao', 'parlamento', 'vereador', 'candidatura', 'candidaturas', 'eleicao', 'eleicoes', 'assentos locais', 'paridade racial'],
   },
   {
     id: 'afirmativas_cotas',
-    triggerTokens: ['afirmativas', 'cotas', 'reserva vagas', 'concurso', 'pronaa'],
+    triggerTokens: ['afirmativas', 'cotas', 'reserva vagas', 'concurso', 'pronaa', 'cotistas'],
     minTriggerMatches: 1,
-    expansions: ['afirmativas', 'cotas', 'reserva vagas', 'concurso', 'pronaa', 'acoes afirmativas'],
+    expansions: ['afirmativas', 'cotas', 'reserva vagas', 'concurso', 'pronaa', 'acoes afirmativas', 'lei cotas', 'cotistas'],
   },
   {
     id: 'religiao',
@@ -142,5 +142,11 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
     triggerTokens: ['defensores', 'ativistas', 'liderancas', 'direitos humanos'],
     minTriggerMatches: 1,
     expansions: ['defensores', 'ativistas', 'liderancas', 'quilombola', 'indigena', 'lideres'],
+  },
+  {
+    id: 'justica_racial',
+    triggerTokens: ['justica', 'vitimas', 'crimes', 'raciais', 'judicial', 'judiciais', 'judiciario', 'treinamento'],
+    minTriggerMatches: 2,
+    expansions: ['justica', 'judicial', 'judiciais', 'judiciario', 'tribunal', 'defensoria', 'processos', 'racismo', 'crimes raciais', 'injuria racial', 'capacitacao', 'treinamento'],
   },
 ];
