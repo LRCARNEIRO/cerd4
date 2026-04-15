@@ -5,7 +5,7 @@ import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, ListChecks } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
@@ -61,11 +61,45 @@ function getPrioridadeLabel(prioridade: string): string {
   return prioridade;
 }
 
+const OVERRIDES_STORAGE_KEY = 'cerd-evidence-overrides-v1';
+
+function loadPersistedOverrides(): EvidenceOverrides {
+  try {
+    const raw = localStorage.getItem(OVERRIDES_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return {};
+}
+
+function persistOverrides(ov: EvidenceOverrides) {
+  try {
+    // Only persist non-empty overrides
+    const filtered: EvidenceOverrides = {};
+    for (const [k, v] of Object.entries(ov)) {
+      if (v.addedIndicadores.length || v.removedIndicadores.length ||
+          v.addedOrcamento.length || v.removedOrcamento.length ||
+          v.addedNormativos.length || v.removedNormativos.length) {
+        filtered[k] = v;
+      }
+    }
+    if (Object.keys(filtered).length > 0) {
+      localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify(filtered));
+    } else {
+      localStorage.removeItem(OVERRIDES_STORAGE_KEY);
+    }
+  } catch { /* ignore quota errors */ }
+}
+
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
-  const [evidenceOverrides, setEvidenceOverrides] = useState<EvidenceOverrides>({});
+  const [evidenceOverrides, setEvidenceOverrides] = useState<EvidenceOverrides>(loadPersistedOverrides);
   const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
+
+  // Persist overrides to localStorage whenever they change
+  useEffect(() => {
+    persistOverrides(evidenceOverrides);
+  }, [evidenceOverrides]);
   const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
   const grouped = useMemo(() => {
