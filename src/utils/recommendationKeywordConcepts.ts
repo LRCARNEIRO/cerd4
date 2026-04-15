@@ -83,7 +83,7 @@ export const RECOMMENDATION_CONCEPT_BUNDLES: RecommendationConceptBundle[] = [
     id: 'terra_territorio',
     triggerTokens: ['terras', 'territorio', 'demarcacao', 'titulacao', 'fundiaria', 'incra', 'funai'],
     minTriggerMatches: 1,
-    expansions: ['terras', 'territorio', 'demarcacao', 'titulacao', 'fundiaria', 'incra', 'funai', 'regularizacao', 'terra indigena', 'terras indigenas'],
+    expansions: ['terras', 'territorio', 'demarcacao', 'titulacao', 'fundiaria', 'incra', 'funai', 'regularizacao'],
   },
   {
     id: 'discurso_odio',
