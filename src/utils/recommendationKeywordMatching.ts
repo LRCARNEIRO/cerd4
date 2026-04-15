@@ -114,7 +114,8 @@ const SYNONYMS: Record<string, string[]> = {
   escolar: ['escola', 'ensino', 'matricula', 'evasao escolar'],
   evasao: ['abandono escolar', 'evasao escolar', 'distorcao idade serie'],
   mortalidade: ['obitos', 'taxa mortalidade', 'letalidade'],
-  materna: ['mortalidade materna', 'obstetricia', 'gestante', 'parto', 'pre natal', 'obstetrica'],
+  materna: ['mortalidade materna', 'obstetricia', 'gestante', 'pre natal', 'obstetrica'],
+  parto: ['obstetricia', 'gestante', 'mortalidade materna', 'obstetrica'],
 };
 
 const GRUPO_SPECIFIC: Record<string, string[]> = {
