@@ -59,7 +59,11 @@ export default function GerarRelatorios() {
     em_andamento: respostasCerd?.filter(r => r.grau_atendimento === 'em_andamento').length || 0,
   };
 
-  // Generate Recomendações ONU report HTML
+  const getComputedStatus = (l: { id: string; status_cumprimento: string }) => {
+    const diag = diagnosticMap.get(l.id);
+    return diag?.statusComputado ?? l.status_cumprimento;
+  };
+
   const generateLacunasHTML = () => {
     const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const statusIcon = (s: string) => {
