@@ -11,6 +11,7 @@ import {
   type IndicadorInterseccional,
   type DadoOrcamentario
 } from './useLacunasData';
+import { useDiagnosticSensor, type RecomendacaoDiagnostic } from './useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // =============================================
@@ -125,6 +126,9 @@ export function useAnalyticalInsights() {
   const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresAnaliticos();
   const { data: orcDados, isLoading: l6, isFetching: f6 } = useDadosOrcamentarios();
 
+  // Sensor for reclassified status
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
   const isFetching = f1 || f2 || f3 || f4 || f5 || f6;
 
@@ -146,11 +150,11 @@ export function useAnalyticalInsights() {
     return gerarInsightsCruzamento(lacunas, stats, respostas, orcStats, indicadores || [], orcDados || []);
   }, [lacunas, stats, respostas, orcStats, indicadores, orcDados]);
 
-  // Síntese executiva dinâmica
+  // Síntese executiva dinâmica — uses sensor-reclassified status
   const sinteseExecutiva = useMemo(() => {
     if (!stats || !respostas || !lacunas) return null;
-    return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || []);
-  }, [lacunas, stats, respostas, orcStats, indicadores]);
+    return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || [], sensorReady ? diagnosticMap : undefined);
+  }, [lacunas, stats, respostas, orcStats, indicadores, sensorReady, diagnosticMap]);
 
   // Compute last updated timestamp from all data sources
   const lastUpdated = useMemo(() => {
@@ -1124,21 +1128,31 @@ function gerarSinteseExecutiva(
   stats: any,
   respostas: RespostaLacunaCerdIII[],
   orcStats: any,
-  indicadores: IndicadorInterseccional[]
+  indicadores: IndicadorInterseccional[],
+  diagnosticMap?: Map<string, RecomendacaoDiagnostic>
 ) {
+  // Use sensor-reclassified status when available, fallback to raw DB
+  const getStatus = (l: LacunaIdentificada) => {
+    if (diagnosticMap) {
+      const diag = diagnosticMap.get(l.id);
+      if (diag) return diag.statusComputado;
+    }
+    return l.status_cumprimento;
+  };
+
   const total = stats.total;
-  const cumpridas = stats.porStatus.cumprido;
-  const parciais = stats.porStatus.parcialmente_cumprido;
-  const naoCumpridas = stats.porStatus.nao_cumprido;
-  const retrocesso = stats.porStatus.retrocesso;
+  const cumpridas = lacunas.filter(l => getStatus(l) === 'cumprido').length;
+  const parciais = lacunas.filter(l => getStatus(l) === 'parcialmente_cumprido').length;
+  const naoCumpridas = lacunas.filter(l => getStatus(l) === 'nao_cumprido').length;
+  const retrocesso = lacunas.filter(l => getStatus(l) === 'retrocesso').length;
 
   const percentualPositivo = total > 0 ? Math.round(((cumpridas + parciais) / total) * 100) : 0;
   const percentualNegativo = total > 0 ? Math.round(((naoCumpridas + retrocesso) / total) * 100) : 0;
 
-  // Eixos mais problemáticos
+  // Eixos mais problemáticos — using reclassified status
   const eixosMaisProblematicos = Object.entries(stats.porEixo || {})
     .map(([eixo, count]: any) => {
-      const naoCumpridasEixo = lacunas.filter(l => l.eixo_tematico === eixo && (l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso')).length;
+      const naoCumpridasEixo = lacunas.filter(l => l.eixo_tematico === eixo && (getStatus(l) === 'nao_cumprido' || getStatus(l) === 'retrocesso')).length;
       return { eixo: eixoLabels[eixo], gravidade: count > 0 ? naoCumpridasEixo / count : 0, total: count };
     })
     .sort((a, b) => b.gravidade - a.gravidade);
