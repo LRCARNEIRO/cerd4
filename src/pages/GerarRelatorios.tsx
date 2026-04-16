@@ -12,6 +12,7 @@ import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
 import { DocumentReportCards } from '@/components/reports/DocumentReportCards';
 import { ConsolidatedScopeReport } from '@/components/reports/ConsolidatedScopeReport';
 import { StatisticsInventoryReport } from '@/components/reports/StatisticsInventoryReport';
+import { EvidenceInventoryReport } from '@/components/reports/EvidenceInventoryReport';
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { FinalCerdIVReport } from '@/components/reports/FinalCerdIVReport';
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
