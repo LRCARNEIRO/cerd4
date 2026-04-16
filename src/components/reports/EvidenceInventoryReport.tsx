@@ -97,18 +97,23 @@ function generateEvidenceInventoryHTML(
           const totalLiq = regs.reduce((s: number, r: any) => s + (r.liquidado || 0), 0);
           const artigos = [...new Set(regs.flatMap((r: any) => r.artigos_convencao || []))].join(', ') || '—';
           const eixo = regs[0]?.eixo_tematico?.replace(/_/g, ' ') || '—';
+          const grupoFocal = [...new Set(regs.map((r: any) => r.grupo_focal).filter(Boolean))].join(', ') || '—';
+          const publicoAlvo = [...new Set(regs.map((r: any) => r.publico_alvo).filter(Boolean))].join(', ') || '—';
+          const razaoSelecao = [...new Set(regs.map((r: any) => r.razao_selecao).filter(Boolean))].join('; ') || '—';
           return `<tr>
             <td>${prog}</td>
             <td>${regs.length}</td>
             <td>${anos}</td>
             <td style="text-align:right">${totalLiq > 0 ? 'R$ ' + totalLiq.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) : '—'}</td>
             <td>${eixo}</td>
+            <td>${grupoFocal}</td>
+            <td style="font-size:9px">${publicoAlvo !== '—' ? publicoAlvo : razaoSelecao}</td>
             <td style="font-family:monospace;font-size:9px">${artigos}</td>
           </tr>`;
         }).join('');
 
       return `<h3>${orgao} (${items.length} registros, ${Object.keys(porProg).length} programas)</h3>
-      <table><tr><th>Programa / Ação</th><th>Reg.</th><th>Anos</th><th>Liquidado Acum.</th><th>Eixo</th><th>Artigos ICERD</th></tr>
+      <table><tr><th>Programa / Ação</th><th>Reg.</th><th>Anos</th><th>Liquidado Acum.</th><th>Eixo</th><th>Grupo Focal</th><th>Público-Alvo / Razão</th><th>Artigos ICERD</th></tr>
       ${progRows}</table>`;
     }).join('');
 
