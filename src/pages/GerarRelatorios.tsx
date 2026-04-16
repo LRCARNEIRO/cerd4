@@ -124,26 +124,30 @@ ${Object.entries(stats?.porGrupo || {}).sort((a, b) => (b[1] as number) - (a[1] 
 <h2>Todas as Lacunas (${totalLacunas})</h2>
 <table>
   <tr><th>§</th><th>Tema</th><th>Eixo</th><th>Grupo</th><th>Status</th><th>Prioridade</th><th>Descrição</th></tr>
-  ${(lacunas || []).map(l => `<tr>
+  ${(lacunas || []).map(l => {
+    const st = getComputedStatus(l);
+    return `<tr>
     <td>${l.paragrafo}</td>
     <td>${l.tema}</td>
     <td>${l.eixo_tematico.replace(/_/g, ' ')}</td>
     <td>${l.grupo_focal.replace(/_/g, ' ')}</td>
-    <td>${statusIcon(l.status_cumprimento)} ${statusLabels[l.status_cumprimento]?.label || l.status_cumprimento}</td>
+    <td>${statusIcon(st)} ${statusLabels[st]?.label || st}</td>
     <td>${l.prioridade}</td>
     <td>${l.descricao_lacuna}</td>
-  </tr>`).join('')}
+  </tr>`;}).join('')}
 </table>
 
-${(lacunas || []).map(l => `
+${(lacunas || []).map(l => {
+  const st = getComputedStatus(l);
+  return `
 <div class="lacuna-card">
-  <h4>§${l.paragrafo} — ${l.tema} | ${statusIcon(l.status_cumprimento)} ${statusLabels[l.status_cumprimento]?.label}</h4>
+  <h4>§${l.paragrafo} — ${l.tema} | ${statusIcon(st)} ${statusLabels[st]?.label}</h4>
   <p><strong>Lacuna:</strong> ${l.descricao_lacuna}</p>
   ${l.texto_original_onu ? `<p style="background:#fef2f2;padding:6px;border-radius:4px;font-size:10px;"><strong>Texto ONU:</strong> ${l.texto_original_onu}</p>` : ''}
   ${l.resposta_sugerida_cerd_iv ? `<p style="background:#f0fdf4;padding:6px;border-radius:4px;font-size:10px;"><strong>Resposta sugerida (CERD IV):</strong> ${l.resposta_sugerida_cerd_iv}</p>` : ''}
   ${l.evidencias_encontradas?.length ? `<p class="source"><strong>Evidências:</strong> ${l.evidencias_encontradas.join('; ')}</p>` : ''}
   ${l.acoes_brasil?.length ? `<p class="source"><strong>Ações Brasil:</strong> ${l.acoes_brasil.join('; ')}</p>` : ''}
-</div>`).join('')}
+</div>`;}).join('')}
 
 <div class="source" style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;">
   📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}
