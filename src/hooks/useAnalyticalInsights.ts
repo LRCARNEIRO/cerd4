@@ -11,6 +11,7 @@ import {
   type IndicadorInterseccional,
   type DadoOrcamentario
 } from './useLacunasData';
+import { useDiagnosticSensor, type RecomendacaoDiagnostic } from './useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // =============================================
