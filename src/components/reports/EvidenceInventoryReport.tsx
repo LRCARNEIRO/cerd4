@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
 import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
+import { inferArtigosOrcamento } from '@/utils/artigosConvencao';
 import { toast } from 'sonner';
 
 type Rec = {
@@ -17,6 +18,14 @@ type Rec = {
   texto_original_onu?: string | null;
   grupo_focal?: string | null;
 };
+
+const ARTICLE_ORDER = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'] as const;
+
+function formatArticleList(articles: string[]): string {
+  const articleSet = new Set(articles.filter(Boolean));
+  const ordered = ARTICLE_ORDER.filter(article => articleSet.has(article));
+  return ordered.length > 0 ? ordered.join(', ') : '—';
+}
 
 /** For each evidence item text, find which recommendations match via keyword engine */
 function computeReverseMap(
@@ -143,7 +152,7 @@ function generateEvidenceInventoryHTML(
         .map(([prog, regs]) => {
           const anos = [...new Set(regs.map((r: any) => r.ano))].sort().join(', ');
           const totalLiq = regs.reduce((s: number, r: any) => s + (r.liquidado || 0), 0);
-          const artigos = [...new Set(regs.flatMap((r: any) => r.artigos_convencao || []))].join(', ') || '—';
+          const artigos = formatArticleList(regs.flatMap((r: any) => inferArtigosOrcamento(r)));
           const eixo = regs[0]?.eixo_tematico?.replace(/_/g, ' ') || '—';
           const grupoFocal = [...new Set(regs.map((r: any) => r.grupo_focal).filter(Boolean))].join(', ') || '—';
           const publicoAlvo = [...new Set(regs.map((r: any) => r.publico_alvo).filter(Boolean))].join(', ') || '—';
