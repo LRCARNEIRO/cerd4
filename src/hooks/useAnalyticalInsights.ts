@@ -1128,21 +1128,31 @@ function gerarSinteseExecutiva(
   stats: any,
   respostas: RespostaLacunaCerdIII[],
   orcStats: any,
-  indicadores: IndicadorInterseccional[]
+  indicadores: IndicadorInterseccional[],
+  diagnosticMap?: Map<string, RecomendacaoDiagnostic>
 ) {
+  // Use sensor-reclassified status when available, fallback to raw DB
+  const getStatus = (l: LacunaIdentificada) => {
+    if (diagnosticMap) {
+      const diag = diagnosticMap.get(l.id);
+      if (diag) return diag.statusComputado;
+    }
+    return l.status_cumprimento;
+  };
+
   const total = stats.total;
-  const cumpridas = stats.porStatus.cumprido;
-  const parciais = stats.porStatus.parcialmente_cumprido;
-  const naoCumpridas = stats.porStatus.nao_cumprido;
-  const retrocesso = stats.porStatus.retrocesso;
+  const cumpridas = lacunas.filter(l => getStatus(l) === 'cumprido').length;
+  const parciais = lacunas.filter(l => getStatus(l) === 'parcialmente_cumprido').length;
+  const naoCumpridas = lacunas.filter(l => getStatus(l) === 'nao_cumprido').length;
+  const retrocesso = lacunas.filter(l => getStatus(l) === 'retrocesso').length;
 
   const percentualPositivo = total > 0 ? Math.round(((cumpridas + parciais) / total) * 100) : 0;
   const percentualNegativo = total > 0 ? Math.round(((naoCumpridas + retrocesso) / total) * 100) : 0;
 
-  // Eixos mais problemáticos
+  // Eixos mais problemáticos — using reclassified status
   const eixosMaisProblematicos = Object.entries(stats.porEixo || {})
     .map(([eixo, count]: any) => {
-      const naoCumpridasEixo = lacunas.filter(l => l.eixo_tematico === eixo && (l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso')).length;
+      const naoCumpridasEixo = lacunas.filter(l => l.eixo_tematico === eixo && (getStatus(l) === 'nao_cumprido' || getStatus(l) === 'retrocesso')).length;
       return { eixo: eixoLabels[eixo], gravidade: count > 0 ? naoCumpridasEixo / count : 0, total: count };
     })
     .sort((a, b) => b.gravidade - a.gravidade);
