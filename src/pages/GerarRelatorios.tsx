@@ -44,7 +44,7 @@ export default function GerarRelatorios() {
   const isLoading = loadingLacunas || loadingRespostas || loadingStats;
 
   // Use sensor-reclassified status (same source as Dashboard/Painel Geral)
-  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
   const totalLacunas = stats?.total || 0;
   const cumpridas = sensorReady ? sensorSummary.statusReclassificado.cumprido : (stats?.porStatus.cumprido || 0);
