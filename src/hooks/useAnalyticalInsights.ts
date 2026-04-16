@@ -126,6 +126,9 @@ export function useAnalyticalInsights() {
   const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresAnaliticos();
   const { data: orcDados, isLoading: l6, isFetching: f6 } = useDadosOrcamentarios();
 
+  // Sensor for reclassified status
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
   const isFetching = f1 || f2 || f3 || f4 || f5 || f6;
 
@@ -147,11 +150,11 @@ export function useAnalyticalInsights() {
     return gerarInsightsCruzamento(lacunas, stats, respostas, orcStats, indicadores || [], orcDados || []);
   }, [lacunas, stats, respostas, orcStats, indicadores, orcDados]);
 
-  // Síntese executiva dinâmica
+  // Síntese executiva dinâmica — uses sensor-reclassified status
   const sinteseExecutiva = useMemo(() => {
     if (!stats || !respostas || !lacunas) return null;
-    return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || []);
-  }, [lacunas, stats, respostas, orcStats, indicadores]);
+    return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || [], sensorReady ? diagnosticMap : undefined);
+  }, [lacunas, stats, respostas, orcStats, indicadores, sensorReady, diagnosticMap]);
 
   // Compute last updated timestamp from all data sources
   const lastUpdated = useMemo(() => {
