@@ -1,21 +1,67 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ClipboardList, Loader2, Printer, FileDown } from 'lucide-react';
 import { useIndicadoresInterseccionais, useDadosOrcamentarios } from '@/hooks/useLacunasData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
+import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
 import { toast } from 'sonner';
+
+type Rec = {
+  paragrafo: string;
+  tema: string;
+  descricao_lacuna: string;
+  texto_original_onu?: string | null;
+  grupo_focal?: string | null;
+};
+
+/** For each evidence item text, find which recommendations match via keyword engine */
+function computeReverseMap(
+  recomendacoes: Rec[],
+  items: { text: string; id: string }[]
+): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const item of items) {
+    const matched: string[] = [];
+    for (const rec of recomendacoes) {
+      if (matchesRecommendationEvidence(rec, item.text)) {
+        matched.push(`§${rec.paragrafo}`);
+      }
+    }
+    map.set(item.id, matched);
+  }
+  return map;
+}
 
 function generateEvidenceInventoryHTML(
   indicadores: any[],
   normativos: any[],
   orcamento: any[],
+  recomendacoes: Rec[],
 ): string {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // Pre-compute reverse recommendation mappings
+  const indItems = indicadores.map(i => ({
+    id: i.id,
+    text: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' ')
+  }));
+  const indRecMap = computeReverseMap(recomendacoes, indItems);
+
+  const normItems = normativos.map(n => ({
+    id: n.id,
+    text: [n.titulo, n.categoria].filter(Boolean).join(' ')
+  }));
+  const normRecMap = computeReverseMap(recomendacoes, normItems);
+
+  const orcItems = orcamento.map(o => ({
+    id: o.id,
+    text: [o.programa, o.orgao, o.descritivo, o.observacoes, o.eixo_tematico, o.publico_alvo, o.razao_selecao, o.grupo_focal].filter(Boolean).join(' ')
+  }));
+  const orcRecMap = computeReverseMap(recomendacoes, orcItems);
 
   // ── Indicadores por categoria
   const indPorCat: Record<string, any[]> = {};
@@ -31,16 +77,18 @@ function generateEvidenceInventoryHTML(
     .map(([cat, items]) => {
       const rows = items.map(i => {
         const artigos = (i.artigos_convencao || []).join(', ') || '—';
+        const recs = (indRecMap.get(i.id) || []).join(', ') || '—';
         return `<tr>
           <td>${i.nome}</td>
           <td>${i.subcategoria || '—'}</td>
           <td>${i.fonte}</td>
           <td>${i.tendencia || '—'}</td>
           <td style="font-family:monospace;font-size:9px">${artigos}</td>
+          <td style="font-size:9px">${recs}</td>
         </tr>`;
       }).join('');
       return `<h3>${catLabel(cat)} (${items.length})</h3>
-      <table><tr><th>Indicador</th><th>Subcategoria</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th></tr>
+      <table><tr><th>Indicador</th><th>Subcategoria</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
       ${rows}</table>`;
     }).join('');
 
@@ -57,16 +105,18 @@ function generateEvidenceInventoryHTML(
     .map(([cat, items]) => {
       const rows = items.map(n => {
         const artigos = (n.artigos_convencao || []).join(', ') || '—';
-        const recs = (n.recomendacoes_impactadas || []).join(', ') || '—';
+        const recsCadastradas = (n.recomendacoes_impactadas || []).join(', ') || '—';
+        const recsMotor = (normRecMap.get(n.id) || []).join(', ') || '—';
         return `<tr>
           <td>${n.titulo}</td>
           <td>${n.status}</td>
           <td style="font-family:monospace;font-size:9px">${artigos}</td>
-          <td style="font-size:9px">${recs}</td>
+          <td style="font-size:9px">${recsCadastradas}</td>
+          <td style="font-size:9px">${recsMotor}</td>
         </tr>`;
       }).join('');
       return `<h3>${catLabel(cat)} (${items.length})</h3>
-      <table><tr><th>Título</th><th>Status</th><th>Artigos ICERD</th><th>Recomendações Impactadas</th></tr>
+      <table><tr><th>Título</th><th>Status</th><th>Artigos ICERD</th><th>Recs. Cadastradas</th><th>Recs. Motor Keyword</th></tr>
       ${rows}</table>`;
     }).join('');
 
@@ -78,11 +128,9 @@ function generateEvidenceInventoryHTML(
     orcPorOrgao[org].push(o);
   });
 
-  // Deduplicate programs within each orgao
   const orcRows = Object.entries(orcPorOrgao)
     .sort((a, b) => b[1].length - a[1].length)
     .map(([orgao, items]) => {
-      // Group by programa
       const porProg: Record<string, any[]> = {};
       items.forEach(i => {
         const prog = i.programa || 'Sem programa';
@@ -100,6 +148,12 @@ function generateEvidenceInventoryHTML(
           const grupoFocal = [...new Set(regs.map((r: any) => r.grupo_focal).filter(Boolean))].join(', ') || '—';
           const publicoAlvo = [...new Set(regs.map((r: any) => r.publico_alvo).filter(Boolean))].join(', ') || '—';
           const razaoSelecao = [...new Set(regs.map((r: any) => r.razao_selecao).filter(Boolean))].join('; ') || '—';
+          // Aggregate recommendation matches from all records in this program
+          const recsSet = new Set<string>();
+          regs.forEach((r: any) => {
+            (orcRecMap.get(r.id) || []).forEach(p => recsSet.add(p));
+          });
+          const recsStr = recsSet.size > 0 ? [...recsSet].sort().join(', ') : '—';
           return `<tr>
             <td>${prog}</td>
             <td>${regs.length}</td>
@@ -109,18 +163,19 @@ function generateEvidenceInventoryHTML(
             <td>${grupoFocal}</td>
             <td style="font-size:9px">${publicoAlvo !== '—' ? publicoAlvo : razaoSelecao}</td>
             <td style="font-family:monospace;font-size:9px">${artigos}</td>
+            <td style="font-size:9px">${recsStr}</td>
           </tr>`;
         }).join('');
 
       return `<h3>${orgao} (${items.length} registros, ${Object.keys(porProg).length} programas)</h3>
-      <table><tr><th>Programa / Ação</th><th>Reg.</th><th>Anos</th><th>Liquidado Acum.</th><th>Eixo</th><th>Grupo Focal</th><th>Público-Alvo / Razão</th><th>Artigos ICERD</th></tr>
+      <table><tr><th>Programa / Ação</th><th>Reg.</th><th>Anos</th><th>Liquidado Acum.</th><th>Eixo</th><th>Grupo Focal</th><th>Público-Alvo / Razão</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
       ${progRows}</table>`;
     }).join('');
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Inventário Consolidado das 3 Bases de Evidências — CERD IV</title>
 <style>
-body{font-family:'Segoe UI',Arial,sans-serif;max-width:1100px;margin:0 auto;padding:20px;font-size:11px;line-height:1.5;color:#1a1a2e}
+body{font-family:'Segoe UI',Arial,sans-serif;max-width:1200px;margin:0 auto;padding:20px;font-size:11px;line-height:1.5;color:#1a1a2e}
 h1{font-size:20px;color:#0f3460;border-bottom:3px solid #0f3460;padding-bottom:8px}
 h2{font-size:16px;color:#16213e;margin-top:30px;border-left:4px solid #0f3460;padding-left:10px;page-break-after:avoid}
 h3{font-size:12px;margin-top:14px;color:#0f3460;page-break-after:avoid}
@@ -154,9 +209,9 @@ ${getExportToolbarHTML('Inventario-3-Bases-Evidencias-CERD-IV')}
 </div>
 
 <div class="note">
-<strong>Como usar:</strong> Cada item lista os Artigos ICERD vinculados (tags explícitas do banco de dados). 
-O motor de vinculação automática também cruza palavras-chave dos temas/parágrafos das recomendações com os nomes e descritivos de cada item abaixo.
-Ao editar evidências no pop-up de auditoria (Acompanhamento Gerencial → Recomendações), consulte este inventário para identificar itens relevantes que possam ter escapado do cruzamento automático.
+<strong>Como usar:</strong> A coluna <em>Artigos ICERD</em> mostra as tags explícitas do banco de dados. 
+A coluna <em>Recomendações Vinculadas</em> mostra os parágrafos vinculados pelo motor de palavras-chave (mesma lógica do Sensor Diagnóstico).
+Para Normativos, são exibidas tanto as recomendações cadastradas manualmente quanto as detectadas automaticamente pelo motor.
 </div>
 
 <!-- ═══════════ BASE ESTATÍSTICA ═══════════ -->
@@ -173,7 +228,7 @@ ${orcRows}
 
 <div class="footer">
 📋 Inventário gerado pelo Sistema de Subsídios CERD IV — ${now}<br/>
-Dados extraídos em tempo real do banco de dados. Qualquer alteração nas bases se reflete automaticamente na próxima geração.
+Dados extraídos em tempo real do banco de dados. A coluna "Recomendações Vinculadas" reflete o motor de palavras-chave v5.3 com concept bundles e tokens de sinal focal.
 </div>
 </body></html>`;
 }
@@ -188,6 +243,13 @@ export function EvidenceInventoryReport() {
       return data || [];
     },
   });
+  const { data: recomendacoes } = useQuery({
+    queryKey: ['recomendacoes_for_inventory'],
+    queryFn: async () => {
+      const { data } = await supabase.from('lacunas_identificadas').select('paragrafo, tema, descricao_lacuna, texto_original_onu, grupo_focal').order('paragrafo');
+      return (data || []) as Rec[];
+    },
+  });
 
   const [generating, setGenerating] = useState<string | null>(null);
 
@@ -195,7 +257,7 @@ export function EvidenceInventoryReport() {
     setGenerating(format);
     const previewWindow = format === 'html' ? prepareHtmlPreview('Inventario-3-Bases-Evidencias') : null;
     try {
-      const html = generateEvidenceInventoryHTML(indicadores || [], normativos || [], orcamento || []);
+      const html = generateEvidenceInventoryHTML(indicadores || [], normativos || [], orcamento || [], recomendacoes || []);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Inventario-3-Bases-Evidencias-CERD-IV');
       } else {
@@ -221,7 +283,7 @@ export function EvidenceInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Listagem completa de <strong>Indicadores</strong>, <strong>Normativos</strong> e <strong>Ações Orçamentárias</strong> 
-          {' '}com seus respectivos Artigos ICERD vinculados — para auditoria manual da vinculação de evidências.
+          {' '}com seus respectivos <strong>Artigos ICERD</strong> e <strong>Recomendações vinculadas</strong> (§ parágrafos) — para auditoria manual.
         </p>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 bg-muted/50 rounded-lg">
