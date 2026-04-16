@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity, Shield, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
@@ -42,12 +43,14 @@ export default function GerarRelatorios() {
 
   const isLoading = loadingLacunas || loadingRespostas || loadingStats;
 
+  // Use sensor-reclassified status (same source as Dashboard/Painel Geral)
+  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
   const totalLacunas = stats?.total || 0;
-  const cumpridas = stats?.porStatus.cumprido || 0;
-  const parciais = stats?.porStatus.parcialmente_cumprido || 0;
-  const naoCumpridas = stats?.porStatus.nao_cumprido || 0;
-  const retrocessos = stats?.porStatus.retrocesso || 0;
+  const cumpridas = sensorReady ? sensorSummary.statusReclassificado.cumprido : (stats?.porStatus.cumprido || 0);
+  const parciais = sensorReady ? sensorSummary.statusReclassificado.parcialmente_cumprido : (stats?.porStatus.parcialmente_cumprido || 0);
+  const naoCumpridas = sensorReady ? sensorSummary.statusReclassificado.nao_cumprido : (stats?.porStatus.nao_cumprido || 0);
+  const retrocessos = sensorReady ? sensorSummary.statusReclassificado.retrocesso : (stats?.porStatus.retrocesso || 0);
 
   const respostasStats = {
     cumprido: respostasCerd?.filter(r => r.grau_atendimento === 'cumprido').length || 0,
