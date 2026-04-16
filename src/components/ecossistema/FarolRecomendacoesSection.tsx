@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, AlertTriangle, Info } from 'lucide-react';
 import { SectionHeader } from './BaseEvidenciasSection';
-import { useLacunasStats } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 
 const STATUS_CONFIG = [
   { key: 'cumprido', label: 'Atendida', color: 'hsl(var(--success))', bgClass: 'bg-[hsl(145,55%,32%)]/10', weight: '100%' },
@@ -15,16 +16,20 @@ const STATUS_CONFIG = [
 ];
 
 export default function FarolRecomendacoesSection() {
-  const { data: stats, isLoading } = useLacunasStats();
+  const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas();
+  const { data: stats } = useLacunasStats();
+  const { summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
-  const total = stats?.total || 87;
-  const porStatus = stats?.porStatus || {} as Record<string, number>;
+  const isLoading = loadingLacunas || !sensorReady;
 
-  const cumpridas = porStatus.cumprido || 0;
-  const parciais = porStatus.parcialmente_cumprido || 0;
-  const emAndamento = porStatus.em_andamento || 0;
-  const naoCumpridas = porStatus.nao_cumprido || 0;
-  const retrocesso = porStatus.retrocesso || 0;
+  const total = stats?.total || 43;
+  const sr = sensorSummary.statusReclassificado;
+
+  const cumpridas = sensorReady ? sr.cumprido : 0;
+  const parciais = sensorReady ? sr.parcialmente_cumprido : 0;
+  const emAndamento = sensorReady ? (sr.em_andamento || 0) : 0;
+  const naoCumpridas = sensorReady ? sr.nao_cumprido : 0;
+  const retrocesso = sensorReady ? (sr.retrocesso || 0) : 0;
 
   const progresso = total > 0
     ? Math.round(((cumpridas * 100) + (parciais * 60) + (emAndamento * 30) + (naoCumpridas * 5)) / total)

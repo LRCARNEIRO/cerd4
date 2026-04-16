@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity, Shield, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
@@ -42,12 +43,14 @@ export default function GerarRelatorios() {
 
   const isLoading = loadingLacunas || loadingRespostas || loadingStats;
 
+  // Use sensor-reclassified status (same source as Dashboard/Painel Geral)
+  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
   const totalLacunas = stats?.total || 0;
-  const cumpridas = stats?.porStatus.cumprido || 0;
-  const parciais = stats?.porStatus.parcialmente_cumprido || 0;
-  const naoCumpridas = stats?.porStatus.nao_cumprido || 0;
-  const retrocessos = stats?.porStatus.retrocesso || 0;
+  const cumpridas = sensorReady ? sensorSummary.statusReclassificado.cumprido : (stats?.porStatus.cumprido || 0);
+  const parciais = sensorReady ? sensorSummary.statusReclassificado.parcialmente_cumprido : (stats?.porStatus.parcialmente_cumprido || 0);
+  const naoCumpridas = sensorReady ? sensorSummary.statusReclassificado.nao_cumprido : (stats?.porStatus.nao_cumprido || 0);
+  const retrocessos = sensorReady ? sensorSummary.statusReclassificado.retrocesso : (stats?.porStatus.retrocesso || 0);
 
   const respostasStats = {
     cumprido: respostasCerd?.filter(r => r.grau_atendimento === 'cumprido').length || 0,
@@ -56,7 +59,11 @@ export default function GerarRelatorios() {
     em_andamento: respostasCerd?.filter(r => r.grau_atendimento === 'em_andamento').length || 0,
   };
 
-  // Generate Recomendações ONU report HTML
+  const getComputedStatus = (l: { id: string; status_cumprimento: string }) => {
+    const diag = diagnosticMap.get(l.id);
+    return diag?.statusComputado ?? l.status_cumprimento;
+  };
+
   const generateLacunasHTML = () => {
     const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const statusIcon = (s: string) => {
@@ -117,26 +124,30 @@ ${Object.entries(stats?.porGrupo || {}).sort((a, b) => (b[1] as number) - (a[1] 
 <h2>Todas as Lacunas (${totalLacunas})</h2>
 <table>
   <tr><th>§</th><th>Tema</th><th>Eixo</th><th>Grupo</th><th>Status</th><th>Prioridade</th><th>Descrição</th></tr>
-  ${(lacunas || []).map(l => `<tr>
+  ${(lacunas || []).map(l => {
+    const st = getComputedStatus(l);
+    return `<tr>
     <td>${l.paragrafo}</td>
     <td>${l.tema}</td>
     <td>${l.eixo_tematico.replace(/_/g, ' ')}</td>
     <td>${l.grupo_focal.replace(/_/g, ' ')}</td>
-    <td>${statusIcon(l.status_cumprimento)} ${statusLabels[l.status_cumprimento]?.label || l.status_cumprimento}</td>
+    <td>${statusIcon(st)} ${statusLabels[st]?.label || st}</td>
     <td>${l.prioridade}</td>
     <td>${l.descricao_lacuna}</td>
-  </tr>`).join('')}
+  </tr>`;}).join('')}
 </table>
 
-${(lacunas || []).map(l => `
+${(lacunas || []).map(l => {
+  const st = getComputedStatus(l);
+  return `
 <div class="lacuna-card">
-  <h4>§${l.paragrafo} — ${l.tema} | ${statusIcon(l.status_cumprimento)} ${statusLabels[l.status_cumprimento]?.label}</h4>
+  <h4>§${l.paragrafo} — ${l.tema} | ${statusIcon(st)} ${statusLabels[st]?.label}</h4>
   <p><strong>Lacuna:</strong> ${l.descricao_lacuna}</p>
   ${l.texto_original_onu ? `<p style="background:#fef2f2;padding:6px;border-radius:4px;font-size:10px;"><strong>Texto ONU:</strong> ${l.texto_original_onu}</p>` : ''}
   ${l.resposta_sugerida_cerd_iv ? `<p style="background:#f0fdf4;padding:6px;border-radius:4px;font-size:10px;"><strong>Resposta sugerida (CERD IV):</strong> ${l.resposta_sugerida_cerd_iv}</p>` : ''}
   ${l.evidencias_encontradas?.length ? `<p class="source"><strong>Evidências:</strong> ${l.evidencias_encontradas.join('; ')}</p>` : ''}
   ${l.acoes_brasil?.length ? `<p class="source"><strong>Ações Brasil:</strong> ${l.acoes_brasil.join('; ')}</p>` : ''}
-</div>`).join('')}
+</div>`;}).join('')}
 
 <div class="source" style="margin-top:20px;padding-top:10px;border-top:1px solid #e2e8f0;">
   📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}
