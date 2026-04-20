@@ -612,7 +612,7 @@ function extractLatestValue(data: any): number | null {
   return years.length > 0 ? data[years[0]] : null;
 }
 
-function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: any[]): string {
+function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: any[], normativos: any[]): string {
   const stats = {
     total: lacunas.length,
     cumpridas: lacunas.filter(l => l.status_cumprimento === 'cumprido').length,
@@ -942,7 +942,7 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
   `;
 }
 
-function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[], indicadores: any[]): string {
+function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[], indicadores: any[], normativos: any[]): string {
   const statusLabels: Record<string, string> = {
     cumprido: 'Cumprido',
     parcialmente_cumprido: 'Parcialmente Cumprido',
