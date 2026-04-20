@@ -182,7 +182,39 @@ export function renderArticleIVNarrative(d: ArticleNarrativeData): string {
   ${renderNormativosVinculados(d.normativos, 'IV')}
 
   <h4>4.2 Indicadores de aplicação penal</h4>
-  <p>19. Os processos judiciais de racismo/injúria racial saltaram de 50 em 2020 para 4.633 em 2025, crescimento de 9.166% (Fonte: CNJ — Justiça em Números). As denúncias no Disque 100 saltaram de 3.535 em 2022 para 16.245 em 2025 (Fonte: ONDH/MDHC).</p>
+  ${(() => {
+    const racism = findIndicador(d.indicadores, ['racismo'], 'seguranca_publica')
+      || findIndicador(d.indicadores, ['injúria racial'])
+      || findIndicador(d.indicadores, ['injuria racial']);
+    const disque = findIndicador(d.indicadores, ['disque 100'])
+      || findIndicador(d.indicadores, ['discriminação racial'])
+      || findIndicador(d.indicadores, ['discriminacao racial']);
+    const partes: string[] = [];
+    if (racism) {
+      const dados = racism.dados as any;
+      const anos = Object.keys(dados || {}).filter((k) => /^\d{4}$/.test(k)).sort();
+      if (anos.length >= 2) {
+        const first = anos[0], last = anos[anos.length - 1];
+        const v1 = pickNum(dados, [first]);
+        const v2 = pickNum(dados, [last]);
+        if (v1 != null && v2 != null && v1 > 0) {
+          const pct = (((v2 - v1) / v1) * 100).toFixed(0);
+          partes.push(`Os processos judiciais de racismo/injúria racial cresceram de ${fmtNum(v1)} (${first}) para ${fmtNum(v2)} (${last}), variação de ${pct}%. ${fonteLink(racism)}`);
+        }
+      }
+    }
+    if (disque) {
+      const dados = disque.dados as any;
+      const anos = Object.keys(dados || {}).filter((k) => /^\d{4}$/.test(k)).sort();
+      if (anos.length >= 2) {
+        const first = anos[0], last = anos[anos.length - 1];
+        const v1 = pickNum(dados, [first]);
+        const v2 = pickNum(dados, [last]);
+        if (v1 != null && v2 != null) partes.push(`As denúncias no Disque 100 evoluíram de ${fmtNum(v1)} (${first}) para ${fmtNum(v2)} (${last}). ${fonteLink(disque)}`);
+      }
+    }
+    return partes.length ? `<p>19. ${partes.join(' ')}</p>` : '';
+  })()}
 
   <p>20. O Estado reconhece, em resposta ao §31(c) das Observações Finais, que entre 2019 e 2022 ocorreram múltiplos incidentes de discurso de ódio com teor racial por parte de autoridades públicas de alto escalão, sem que as responsabilizações tenham sido aplicadas de forma adequada.</p>
 
