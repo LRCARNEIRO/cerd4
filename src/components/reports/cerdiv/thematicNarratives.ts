@@ -187,7 +187,7 @@ export function renderEducationNarrative(edu: any[], evasao: any[], analfabetism
 
     <div class="advance-box">
       <h4>✅ Avanço: Acesso ao ensino superior</h4>
-      <p>O percentual de negros com ensino superior completo saiu de <strong>${num(first?.superiorNegroPercent).toFixed(1)}%</strong> em ${first?.ano} para <strong>${num(last?.superiorNegroPercent).toFixed(1)}%</strong> em ${last?.ano}, um crescimento de ${(num(last?.superiorNegroPercent) - num(first?.superiorNegroPercent)).toFixed(1)} pontos percentuais. Este avanço é atribuível à política de cotas (Lei 12.711/2012, renovada pela Lei 14.723/2023). No entanto, o patamar branco permanece em ${num(last?.superiorBrancoPercent).toFixed(1)}%, indicando que a diferença absoluta ainda é de ${(num(last?.superiorBrancoPercent) - num(last?.superiorNegroPercent)).toFixed(1)} pontos percentuais.</p>
+      <p>O percentual de negros com ensino superior completo saiu de <strong>${num(first?.superiorNegroPercent).toFixed(1)}%</strong> em ${first?.ano} para <strong>${num(last?.superiorNegroPercent).toFixed(1)}%</strong> em ${last?.ano}, um crescimento de ${(num(last?.superiorNegroPercent) - num(first?.superiorNegroPercent)).toFixed(1)} pontos percentuais. Este avanço é atribuível à política de cotas no ensino superior (instrumentos formais cadastrados na Base Normativa do sistema vinculados ao Artigo V). No entanto, o patamar branco permanece em ${num(last?.superiorBrancoPercent).toFixed(1)}%, indicando que a diferença absoluta ainda é de ${(num(last?.superiorBrancoPercent) - num(last?.superiorNegroPercent)).toFixed(1)} pontos percentuais.</p>
     </div>
 
     <h4>Analfabetismo</h4>
