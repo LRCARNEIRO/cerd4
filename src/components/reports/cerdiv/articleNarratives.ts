@@ -494,11 +494,8 @@ export function renderArticleVIINarrative(d: ArticleNarrativeData): string {
   <h4>7.4 Cultura afro-brasileira e patrimônio</h4>
   <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>
 
-  <h4>7.5 Revisão de materiais didáticos</h4>
-  <p>48. O PNLD incorporou, a partir de 2021, critério obrigatório de avaliação racial: 97,3% das obras selecionadas no PNLD 2024 cumpriram os critérios, ante 84,1% em 2019 (Fonte: MEC/FNDE).</p>
-
-  <h4>7.6 Autorregulação da mídia</h4>
-  <p>49. O CONAR registrou crescimento de processos sobre publicidade racista: de 2,9% (2013) para 6,2% (2023).</p>`;
+  <h4>7.5 Avaliação consolidada</h4>
+  <p>48. Os instrumentos formais de revisão de materiais didáticos, autorregulação publicitária e avaliação curricular vinculados ao Artigo VII constam exclusivamente da Base Normativa cadastrada no sistema, conforme listagem acima.</p>`;
 }
 
 // ═══════════════════════════════════════════
