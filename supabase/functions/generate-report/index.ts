@@ -62,11 +62,12 @@ serve(async (req) => {
     
     console.log(`Gerando relatório ${type} em formato ${format}`);
 
-    const [lacunasResult, respostasResult, conclusoesResult, indicadoresResult] = await Promise.all([
+    const [lacunasResult, respostasResult, conclusoesResult, indicadoresResult, normativosResult] = await Promise.all([
       supabase.from('lacunas_identificadas').select('*').order('paragrafo'),
       supabase.from('respostas_lacunas_cerd_iii').select('*').order('paragrafo_cerd_iii'),
       supabase.from('conclusoes_analiticas').select('*').order('created_at'),
       supabase.from('indicadores_interseccionais').select('*').order('categoria'),
+      supabase.from('documentos_normativos').select('*').order('created_at', { ascending: false }),
     ]);
 
     if (lacunasResult.error) throw lacunasResult.error;
@@ -78,6 +79,7 @@ serve(async (req) => {
     const respostas = respostasResult.data || [];
     const conclusoes = conclusoesResult.data || [];
     const indicadores = indicadoresResult.data || [];
+    const normativos = normativosResult.data || [];
 
     console.log(`Dados: ${lacunas.length} lacunas, ${respostas.length} respostas, ${conclusoes.length} conclusões, ${indicadores.length} indicadores`);
 
@@ -86,10 +88,10 @@ serve(async (req) => {
 
     if (type === 'common-core') {
       title = 'HRI/CORE/BRA/2026 - Documento Básico Comum';
-      htmlContent = generateCommonCoreHTML(lacunas, indicadores, conclusoes);
+      htmlContent = generateCommonCoreHTML(lacunas, indicadores, conclusoes, normativos);
     } else {
       title = 'CERD/C/BRA/21-23 - Relatório Periódico';
-      htmlContent = generateCERDIVHTML(lacunas, respostas, conclusoes, indicadores);
+      htmlContent = generateCERDIVHTML(lacunas, respostas, conclusoes, indicadores, normativos);
     }
 
     const fullHTML = generateFullHTML(title, htmlContent, type, indicadores, lacunas);
