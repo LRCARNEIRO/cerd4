@@ -70,6 +70,7 @@ export function DocumentReportCards() {
         ccTablesFromBD: mirror.ccTablesFromBD,
         dadosDemograficos: mirror.dadosDemograficos,
         povosTradicionais: mirror.povosTradicionais,
+        normativos: normativos || [],
       });
       openHtmlPreview(html, 'Common-Core-HRI-CORE-BRA');
     } finally {
@@ -206,6 +207,7 @@ export function DocumentReportCards() {
                   ccTablesFromBD: mirror.ccTablesFromBD,
                   dadosDemograficos: mirror.dadosDemograficos,
                   povosTradicionais: mirror.povosTradicionais,
+                  normativos: normativos || [],
                 });
                 downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
               }}

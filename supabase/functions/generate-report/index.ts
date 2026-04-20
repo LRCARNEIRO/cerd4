@@ -62,11 +62,12 @@ serve(async (req) => {
     
     console.log(`Gerando relatório ${type} em formato ${format}`);
 
-    const [lacunasResult, respostasResult, conclusoesResult, indicadoresResult] = await Promise.all([
+    const [lacunasResult, respostasResult, conclusoesResult, indicadoresResult, normativosResult] = await Promise.all([
       supabase.from('lacunas_identificadas').select('*').order('paragrafo'),
       supabase.from('respostas_lacunas_cerd_iii').select('*').order('paragrafo_cerd_iii'),
       supabase.from('conclusoes_analiticas').select('*').order('created_at'),
       supabase.from('indicadores_interseccionais').select('*').order('categoria'),
+      supabase.from('documentos_normativos').select('*').order('created_at', { ascending: false }),
     ]);
 
     if (lacunasResult.error) throw lacunasResult.error;
@@ -78,6 +79,7 @@ serve(async (req) => {
     const respostas = respostasResult.data || [];
     const conclusoes = conclusoesResult.data || [];
     const indicadores = indicadoresResult.data || [];
+    const normativos = normativosResult.data || [];
 
     console.log(`Dados: ${lacunas.length} lacunas, ${respostas.length} respostas, ${conclusoes.length} conclusões, ${indicadores.length} indicadores`);
 
@@ -86,10 +88,10 @@ serve(async (req) => {
 
     if (type === 'common-core') {
       title = 'HRI/CORE/BRA/2026 - Documento Básico Comum';
-      htmlContent = generateCommonCoreHTML(lacunas, indicadores, conclusoes);
+      htmlContent = generateCommonCoreHTML(lacunas, indicadores, conclusoes, normativos);
     } else {
       title = 'CERD/C/BRA/21-23 - Relatório Periódico';
-      htmlContent = generateCERDIVHTML(lacunas, respostas, conclusoes, indicadores);
+      htmlContent = generateCERDIVHTML(lacunas, respostas, conclusoes, indicadores, normativos);
     }
 
     const fullHTML = generateFullHTML(title, htmlContent, type, indicadores, lacunas);
@@ -610,7 +612,7 @@ function extractLatestValue(data: any): number | null {
   return years.length > 0 ? data[years[0]] : null;
 }
 
-function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: any[]): string {
+function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: any[], normativos: any[]): string {
   const stats = {
     total: lacunas.length,
     cumpridas: lacunas.filter(l => l.status_cumprimento === 'cumprido').length,
@@ -766,38 +768,22 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
         </ul>
       </div>
       
-      <h4>Principais marcos legislativos</h4>
+      <h4>Marcos normativos cadastrados no sistema</h4>
+      ${normativos.length > 0 ? `
       <table>
-        <thead>
-          <tr>
-            <th>Lei/Decreto</th>
-            <th>Ano</th>
-            <th>Objeto</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Documento</th><th>Categoria</th><th>Fonte</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Lei 14.532</td>
-            <td>2023</td>
-            <td>Equipara injúria racial a crime de racismo (2-5 anos)</td>
-          </tr>
-          <tr>
-            <td>Lei 14.723</td>
-            <td>2023</td>
-            <td>Renova cotas no ensino superior por mais 10 anos</td>
-          </tr>
-          <tr>
-            <td>Decreto 11.956</td>
-            <td>2024</td>
-            <td>Institui Programa Juventude Negra Viva</td>
-          </tr>
-          <tr>
-            <td>Decreto 11.786</td>
-            <td>2023</td>
-            <td>Política Nacional de Gestão Territorial Quilombola (PNGTAQ)</td>
-          </tr>
+          ${normativos.slice(0, 20).map((n: any) => `
+            <tr>
+              <td>${n.titulo}</td>
+              <td>${n.categoria || '—'}</td>
+              <td>${n.url_origem ? `<a href="${n.url_origem}" target="_blank">link</a>` : '<em>sem URL</em>'}</td>
+            </tr>
+          `).join('')}
         </tbody>
       </table>
+      <p style="font-size:9pt;color:#64748b;">Total cadastrado: <strong>${normativos.length}</strong>. Fonte: <code>documentos_normativos</code>.</p>
+      ` : `<p style="font-size:9pt;color:#64748b;border-left:3px solid #cbd5e1;padding-left:12px;"><em>Nenhum documento normativo cadastrado na base. A tabela será preenchida automaticamente quando documentos forem cadastrados.</em></p>`}
     </div>
 
     <h2>III. Informações sobre Não Discriminação, Igualdade e Recursos Efetivos</h2>
@@ -940,7 +926,7 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
   `;
 }
 
-function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[], indicadores: any[]): string {
+function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[], indicadores: any[], normativos: any[]): string {
   const statusLabels: Record<string, string> = {
     cumprido: 'Cumprido',
     parcialmente_cumprido: 'Parcialmente Cumprido',
@@ -1107,43 +1093,22 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
     <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2025)</h2>
     
     <div class="section">
-      <h3>A. Principais Avanços Legislativos</h3>
+      <h3>A. Marcos Normativos Cadastrados</h3>
+      ${normativos.length > 0 ? `
       <table>
-        <thead>
-          <tr>
-            <th>Norma</th>
-            <th>Ano</th>
-            <th>Descrição</th>
-            <th>Impacto</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Documento</th><th>Categoria</th><th>Fonte</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Lei 14.532/2023</strong></td>
-            <td>2023</td>
-            <td>Equipara injúria racial ao crime de racismo</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
-          <tr>
-            <td><strong>Lei 14.723/2023</strong></td>
-            <td>2023</td>
-            <td>Renova sistema de cotas no ensino superior por 10 anos</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
-          <tr>
-            <td><strong>Decreto 11.956/2024</strong></td>
-            <td>2024</td>
-            <td>Programa Juventude Negra Viva</td>
-            <td><span class="badge badge-info">Médio</span></td>
-          </tr>
-          <tr>
-            <td><strong>Decreto 11.786/2023</strong></td>
-            <td>2023</td>
-            <td>Política Nacional de Gestão Territorial Quilombola (PNGTAQ)</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
+          ${normativos.slice(0, 25).map((n: any) => `
+            <tr>
+              <td><strong>${n.titulo}</strong></td>
+              <td>${n.categoria || '—'}</td>
+              <td>${n.url_origem ? `<a href="${n.url_origem}" target="_blank">link</a>` : '<em>sem URL</em>'}</td>
+            </tr>
+          `).join('')}
         </tbody>
       </table>
+      <p style="font-size:9pt;color:#64748b;">Total cadastrado: <strong>${normativos.length}</strong>. Fonte: <code>documentos_normativos</code>.</p>
+      ` : `<p style="font-size:9pt;color:#64748b;border-left:3px solid #cbd5e1;padding-left:12px;"><em>Nenhum documento normativo cadastrado. Cadastre marcos legislativos em documentos_normativos para preenchimento automático.</em></p>`}
 
       <h3>B. Mudanças Institucionais</h3>
       <ul>
@@ -1303,7 +1268,7 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
         <ul>
           <li>Acelerar a demarcação de territórios indígenas e quilombolas</li>
           <li>Implementar medidas efetivas para reduzir a letalidade policial contra jovens negros</li>
-          <li>Fortalecer a implementação da Lei 10.639/2003 sobre ensino de história afro-brasileira</li>
+          <li>Fortalecer a implementação da legislação sobre ensino de história e cultura afro-brasileira e indígena</li>
           <li>Continuar a produção de dados estatísticos desagregados sobre todos os grupos protegidos</li>
           <li>Expandir políticas interseccionais que abordem discriminações múltiplas</li>
         </ul>
