@@ -323,7 +323,7 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
       <p>Das ${fmtNum(num(chefia.mulheresChefesMonoparentais))} famílias monoparentais chefiadas por mulheres, <strong>${num(chefia.percentualNegras).toFixed(1)}% são negras</strong>. A insegurança alimentar grave (fome) atinge <strong>${num(chefia.fomePretos).toFixed(1)}%</strong> dos domicílios chefiados por pretos e <strong>${num(chefia.fomePardos).toFixed(1)}%</strong> dos chefiados por pardos, contra ${num(chefia.fomeBrancos).toFixed(1)}% dos chefiados por brancos. Mulheres negras com escolaridade ≥8 anos ainda sofrem <strong>${num(chefia.iaModeradaGraveMulheresNegrasEscolarizadas).toFixed(0)}%</strong> de insegurança alimentar moderada/grave, contra ${num(chefia.iaModeradaGraveMulheresBrancasEscolarizadas).toFixed(1)}% das brancas — evidenciando que a escolaridade não protege igualmente contra a fome.</p>
     </div>` : ''}
 
-    <p><strong>Conclusão:</strong> O mercado de trabalho melhorou para todos, mas a estrutura da desigualdade permanece: negros ganham 59% do rendimento de brancos, mulheres negras ocupam a base da pirâmide salarial, e a pobreza segue racialmente concentrada.</p>
+    <p><strong>Conclusão:</strong> O mercado de trabalho melhorou para todos, mas a estrutura da desigualdade permanece: a razão de renda negra/branca em ${last?.ano} é de ${(num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)).toFixed(2)}, mulheres negras ocupam a base da pirâmide salarial, e a pobreza segue racialmente concentrada.</p>
   </div>`;
 }
 
