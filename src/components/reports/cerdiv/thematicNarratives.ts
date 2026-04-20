@@ -352,7 +352,7 @@ export function renderTerritoryNarrative(povos: any, deficit: any[]): string {
     ])}
 
     <div class="analysis-box">
-      <p>O Censo 2022 revelou que <strong>63,4% da população indígena vive fora de Terras Indígenas</strong>, enfrentando vulnerabilidades urbanas e invisibilidade estatística. A homologação de TIs saltou de ${ind.terrasHomologadas2018_2022 || 1} (2018-2022) para ${ind.terrasHomologadas2023_2025 || 20} (2023-2025), mas o acumulado total (${ind.totalTIsHomologadasReservadas2025 || 536}) ainda é insuficiente frente às demandas históricas.</p>
+      <p>A homologação de TIs saltou de ${ind.terrasHomologadas2018_2022 || 1} (2018-2022) para ${ind.terrasHomologadas2023_2025 || 20} (2023-2025), mas o acumulado total (${ind.totalTIsHomologadasReservadas2025 || 536}) ainda é insuficiente frente às demandas históricas.</p>
     </div>
 
     <h4>Comunidades quilombolas</h4>
