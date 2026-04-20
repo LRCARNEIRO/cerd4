@@ -80,6 +80,42 @@ export function renderNormativosVinculados(
 }
 
 /**
+ * Filtra normativos cuja `titulo` contém ao menos uma das palavras-chave.
+ * Opcionalmente cruza com vínculo a um Artigo ICERD.
+ */
+export function filtrarNormativosPorPalavraChave(
+  normativos: NormativoRecord[] | undefined | null,
+  palavrasChave: string[],
+  artigo?: string,
+): NormativoRecord[] {
+  if (!normativos?.length || !palavrasChave?.length) return [];
+  const base = artigo ? filtrarNormativosPorArtigo(normativos, artigo) : normativos;
+  const lcKeys = palavrasChave.map((k) => k.toLowerCase());
+  return base.filter((n) => {
+    const t = String(n.titulo || '').toLowerCase();
+    return lcKeys.some((k) => t.includes(k));
+  });
+}
+
+/**
+ * Renderiza inline uma lista compacta (até N) de normativos filtrados por
+ * palavras-chave. Retorna string vazia se nenhum encontrado — para permitir
+ * omissão silenciosa do parágrafo na narrativa (regra SSoT).
+ */
+export function renderNormativosInlineList(
+  normativos: NormativoRecord[] | undefined | null,
+  palavrasChave: string[],
+  artigo?: string,
+  max: number = 4,
+): string {
+  const filtrados = filtrarNormativosPorPalavraChave(normativos, palavrasChave, artigo);
+  if (filtrados.length === 0) return '';
+  const items = filtrados.slice(0, max).map((n) => escapeHtml(n.titulo)).join('; ');
+  const sufixo = filtrados.length > max ? ` (e mais ${filtrados.length - max} cadastrados)` : '';
+  return `${items}${sufixo}`;
+}
+
+/**
  * Renderiza parágrafo narrativo curto que cita o número de normativos cadastrados
  * por artigo, sem inventar nomes de leis. Usado para abrir seções que antes
  * tinham parágrafos com leis hardcoded.
