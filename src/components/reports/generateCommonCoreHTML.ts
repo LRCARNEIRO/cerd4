@@ -22,6 +22,11 @@ export interface CommonCoreMirrorData {
   dadosDemograficos?: any;
   povosTradicionais?: any;
   ccTablesFromBD?: CommonCoreTable[];
+  normativos?: any[];
+}
+
+function escapeHtml(s: string): string {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 const STYLES = `
@@ -132,6 +137,7 @@ export function generateCommonCoreHTML(
   // Local aliases for SSoT fallback
   const dadosDemograficos = mirror?.dadosDemograficos || hcDemo;
   const povosTradicionais = mirror?.povosTradicionais || hcPovos;
+  const normativos = mirror?.normativos;
 
   const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
   const seg2024 = segurancaPublica[segurancaPublica.length - 1];
