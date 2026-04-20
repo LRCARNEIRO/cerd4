@@ -383,7 +383,18 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
     </table>`;
   })() : ''}
 
-  <p>35. A evasão escolar de jovens negros de 15 a 29 anos sem ensino médio completo atingiu 72,2% em 2024, contra 26,8% de brancos (SIS/IBGE 2025, Tabela 4.16). A pandemia agravou esse quadro: a taxa de evasão de crianças negras no ensino médio cresceu de 6,1% (2019) para 8,4% (2020), retornando lentamente a 6,8% em 2023.</p>
+  ${(() => {
+    const ev = findIndicador(d.indicadores, ['evasão'], 'educacao')
+      || findIndicador(d.indicadores, ['evasao'])
+      || findIndicador(d.indicadores, ['abandono escolar']);
+    if (!ev) return '';
+    const dados = ev.dados as any;
+    const negro = pickNum(dados, ['negros_pct']) ?? pickNum(dados, ['2024', 'negros_pct']) ?? pickNum(dados, ['negros']);
+    const branco = pickNum(dados, ['brancos_pct']) ?? pickNum(dados, ['2024', 'brancos_pct']) ?? pickNum(dados, ['brancos']);
+    if (negro == null) return '';
+    const compTxt = branco != null ? `, contra ${branco.toFixed(1)}% de brancos` : '';
+    return `<p>35. A evasão escolar de jovens negros atingiu ${negro.toFixed(1)}%${compTxt}. ${fonteLink(ev)}</p>`;
+  })()}
 
   <h4>5.8 Comunidades quilombolas</h4>
   <p>36. ${fmtNum(num(d.povos?.quilombolas?.populacao || 1330186))} pessoas vivem em territórios identificados como quilombolas, das quais apenas 12,6% residem em territórios oficialmente reconhecidos. ${fmtNum(num(d.povos?.quilombolas?.comunidadesCertificadas || 3158))} comunidades certificadas pela Fundação Palmares.</p>
