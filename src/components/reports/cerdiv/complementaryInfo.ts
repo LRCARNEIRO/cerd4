@@ -1,8 +1,10 @@
 /**
  * complementaryInfo.ts — Informações Complementares, Diálogo Sociedade Civil,
  * Considerações Finais e Anexos de Dados Consolidados para o Relatório CERD IV.
- * 
- * Todos os textos são templates com dados dinâmicos injetados do sistema.
+ *
+ * REGRA SSoT: Nenhuma referência a leis, decretos, PLs, portarias ou
+ * resoluções aparece hardcoded. Onde havia, foi substituído por linguagem
+ * neutra que remete à Base Normativa cadastrada do sistema.
  */
 
 import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
@@ -23,37 +25,37 @@ export function renderComplementaryInfo(): string {
 
   <h3>I. Definição de 'vida pública' e escopo da lei antidiscriminatória</h3>
   <div class="section">
-    <p>75. O ordenamento brasileiro interpreta 'vida pública' de forma ampla: abrange as esferas política, econômica, social, cultural e qualquer outro domínio da vida em sociedade, tanto no setor público quanto nas relações privadas de relevância coletiva. Essa interpretação é sustentada pelo STF e pelo Estatuto da Igualdade Racial (Lei n.º 12.288/2010). O escopo da legislação antidiscriminatória cobre tanto relações verticais (Estado–cidadão) quanto horizontais (entre particulares).</p>
+    <p>50. O ordenamento brasileiro interpreta 'vida pública' de forma ampla: abrange as esferas política, econômica, social, cultural e qualquer outro domínio da vida em sociedade, tanto no setor público quanto nas relações privadas de relevância coletiva. Essa interpretação é sustentada pela jurisprudência do STF e pelo arcabouço legal vigente cadastrado na Base Normativa do sistema. O escopo da legislação antidiscriminatória cobre tanto relações verticais (Estado–cidadão) quanto horizontais (entre particulares).</p>
   </div>
 
   <h3>II. Monitoramento de segregação sem iniciativa estatal direta</h3>
   <div class="section">
-    <p>76. O IBGE produz dados sobre distribuição espacial por cor/raça que permitem identificar padrões de segregação residencial sem política segregacionista explícita. O IPEA publicou, em 2023, o Índice de Segregação Racial Urbana (ISRU) para as 30 maiores regiões metropolitanas: 24 delas apresentam índice moderado ou alto. O MIR incorporou o ISRU como indicador de monitoramento das metas habitacionais no Plano Nacional de Igualdade Racial 2023–2027.</p>
+    <p>51. O IBGE produz dados sobre distribuição espacial por cor/raça que permitem identificar padrões de segregação residencial. O IPEA publicou estudos sobre segregação racial urbana nas principais regiões metropolitanas, indicadores incorporados ao Plano Nacional de Igualdade Racial vigente.</p>
   </div>
 
   <h3>III. Antiterrorismo e não-discriminação racial</h3>
   <div class="section">
-    <p>77. A Lei n.º 13.260/2016 (Lei Antiterrorismo) foi objeto de preocupações quanto ao potencial uso discriminatório contra movimentos sociais negros, indígenas e quilombolas. O MPF emitiu, em 2022, parecer orientando que a lei antiterrorismo não se aplica a movimentos sociais de reivindicação de direitos. O Estado reafirma que o exercício dos direitos de reunião, manifestação e organização coletiva por afro-brasileiros, indígenas e quilombolas não pode ser enquadrado em qualquer tipo penal antiterrorista.</p>
+    <p>52. A legislação brasileira sobre prevenção ao terrorismo foi objeto de pareceres orientativos do MPF reafirmando que não se aplica a movimentos sociais de reivindicação de direitos. O Estado reafirma que o exercício dos direitos de reunião, manifestação e organização coletiva por afro-brasileiros, indígenas e quilombolas não pode ser enquadrado em qualquer tipo penal antiterrorista.</p>
   </div>
 
   <h3>IV. Direito de sindicalização de não-cidadãos</h3>
   <div class="section">
-    <p>78. A Constituição Federal (art. 8.º) garante o direito à livre associação sindical sem distinção de nacionalidade. A Lei de Migração (Lei n.º 13.445/2017) reforçou essa garantia ao assegurar ao migrante acesso igualitário ao exercício de atividade laboral.</p>
+    <p>53. A Constituição Federal (art. 8.º) garante o direito à livre associação sindical sem distinção de nacionalidade. A legislação migratória vigente reforçou essa garantia ao assegurar ao migrante acesso igualitário ao exercício de atividade laboral.</p>
   </div>
 
   <h3>V. Ônus da prova em processos cíveis de discriminação racial</h3>
   <div class="section">
-    <p>79. O ordenamento brasileiro adota, em regra, o sistema clássico de ônus da prova incumbido ao autor da ação. O MPF publicou, em 2024, manual orientando o uso da inversão do ônus da prova em casos de discriminação racial indireta. O PLP n.º 60/2023 (novo Estatuto da Igualdade Racial) inclui dispositivo explícito de inversão do ônus em ações de discriminação racial indireta, em linha com o direito comparado.</p>
+    <p>54. O ordenamento brasileiro adota, em regra, o sistema clássico de ônus da prova incumbido ao autor da ação. O MPF publicou manual orientando o uso da inversão do ônus da prova em casos de discriminação racial indireta. As propostas legislativas em tramitação para incorporar inversão expressa do ônus em ações de discriminação racial indireta, quando formalmente cadastradas, constam da Base Normativa do sistema.</p>
   </div>
 
   <h3>VI. Declaração facultativa do Artigo 14 da Convenção</h3>
   <div class="section">
-    <p>80. O Brasil ainda não realizou a declaração facultativa do artigo 14, que reconheceria a competência do Comitê para receber petições individuais. O processo de consulta interministerial foi iniciado em 2024 e deverá ser concluído até 2026. O Estado reitera a intenção de avançar nessa direção.</p>
+    <p>55. O Brasil ainda não realizou a declaração facultativa do artigo 14, que reconheceria a competência do Comitê para receber petições individuais. O processo de consulta interministerial encontra-se em curso. O Estado reitera a intenção de avançar nessa direção.</p>
   </div>
 
   <h3>VII. Declaração de Durban e Década para Afrodescendentes</h3>
   <div class="section">
-    <p>81. O Brasil participou das comemorações do 20.º aniversário de Durban em 2021. No âmbito da Década (2015–2024), o MIR coordenou programa que incluiu: portal 'Afrodescendentes no Brasil' com dados desagregados; campanha 'Reconhecer para Reparar'; e criação do Prêmio Nacional de Igualdade Racial. A proposta de Fundo de Reparação Histórica pela Escravidão foi encaminhada ao Congresso em 2024.</p>
+    <p>56. O Brasil participou ativamente das comemorações de Durban e da Década Internacional dos Afrodescendentes (2015–2024). Os programas executados no âmbito dessa agenda — incluindo portais de dados desagregados, campanhas e prêmios nacionais — têm seus instrumentos formais registrados na Base Normativa do sistema, quando aplicável.</p>
   </div>`;
 }
 
@@ -69,13 +71,15 @@ export function renderConsideracoesFinais(
   <div style="page-break-before:always"></div>
   <h2>Considerações Finais</h2>
   <div class="section">
-    <p>82. O presente relatório demonstra que o Brasil vivenciou, entre 2018 e 2025, dois movimentos opostos: um período de desmonte institucional e retrocesso nas políticas de igualdade racial (2019–2022) e um processo de reconstrução e avanço (2023–2025). Esse ciclo — claramente identificável nos dados — impõe ao Estado brasileiro a obrigação não apenas de retomar o que foi desfeito, mas de avançar além dos patamares anteriores para cumprir as obrigações da Convenção.</p>
+    <p>57. O presente relatório demonstra que o Brasil vivenciou, entre 2018 e 2025, dois movimentos opostos: um período de desmonte institucional e retrocesso nas políticas de igualdade racial (2019–2022) e um processo de reconstrução e avanço (2023–2025). Esse ciclo — claramente identificável nos dados — impõe ao Estado brasileiro a obrigação não apenas de retomar o que foi desfeito, mas de avançar além dos patamares anteriores para cumprir as obrigações da Convenção.</p>
 
-    <p>83. Os principais avanços do período incluem: a criação do Ministério da Igualdade Racial; a equiparação da injúria racial ao racismo (Lei n.º 14.532/2023); a renovação e ampliação das cotas na educação superior (Lei n.º 14.723/2023); a derrota da tese do Marco Temporal no STF; a retomada das demarcações indígenas e do Programa Brasil Quilombola; a Operação Yanomami; e o crescimento exponencial das denúncias e processos judiciais de racismo.</p>
+    <p>58. O sistema CERD4 monitora <strong>${total}</strong> recomendações ONU, das quais <strong>${cumpridas}</strong> foram avaliadas como cumpridas, <strong>${parciais}</strong> como parcialmente cumpridas e <strong>${naoCumpridas}</strong> como não cumpridas, com base em <strong>${totalNormativos}</strong> documentos normativos cadastrados na Base Normativa, <strong>${totalIndicadores}</strong> indicadores estatísticos auditados e variação orçamentária consolidada de <strong>${variacao > 0 ? '+' : ''}${variacao.toFixed(1)}%</strong> entre os períodos analisados.</p>
 
-    <p>84. Os desafios persistentes que exigem ação urgente incluem: a manutenção do risco relativo de homicídio negros/não negros em 2,7× ao longo de todo o período; o crescimento da letalidade policial contra negros; o feminicídio de mulheres negras em trajetória de alta; a persistência das desigualdades de renda; o lento ritmo de titulação de terras quilombolas; a intolerância religiosa em crescimento; e a ausência de INDH conforme os Princípios de Paris.</p>
+    <p>59. Os principais avanços do período — incluindo a recomposição da arquitetura institucional de promoção da igualdade racial, a renovação de políticas afirmativas, a retomada de demarcações territoriais e o crescimento exponencial das denúncias e processos judiciais de racismo — encontram-se documentados nos instrumentos normativos cadastrados na Base Normativa do sistema, vinculados aos respectivos Artigos da Convenção.</p>
 
-    <p>85. O Estado brasileiro reitera seu compromisso com a Convenção e com as Observações Finais do Comitê. Reconhece que as desigualdades raciais no Brasil são estruturais, históricas e multidimensionais — e que somente políticas deliberadas, sustentadas, adequadamente financiadas e avaliadas com dados desagregados terão a escala e o tempo necessários para reverter séculos de exclusão.</p>
+    <p>60. Os desafios persistentes que exigem ação urgente incluem: a manutenção do risco relativo de homicídio negros/não negros em 2,7× ao longo de todo o período; o crescimento da letalidade policial contra negros; o feminicídio de mulheres negras em trajetória de alta; a persistência das desigualdades de renda; o lento ritmo de titulação de terras quilombolas; a intolerância religiosa em crescimento; e a ausência de Instituição Nacional de Direitos Humanos conforme os Princípios de Paris.</p>
+
+    <p>61. O Estado brasileiro reitera seu compromisso com a Convenção e com as Observações Finais do Comitê. Reconhece que as desigualdades raciais no Brasil são estruturais, históricas e multidimensionais — e que somente políticas deliberadas, sustentadas, adequadamente financiadas e avaliadas com dados desagregados terão a escala e o tempo necessários para reverter séculos de exclusão.</p>
   </div>`;
 }
 
@@ -89,26 +93,15 @@ export function renderDialogoSociedadeCivil(): string {
   <h2>Diálogo com a Sociedade Civil: Relatório Sombra</h2>
   <p style="font-style:italic;color:#64748b">(Criola, GELEDÉS, Coalizão Negra por Direitos e Comunidade Bahá'í do Brasil)</p>
   <div class="section">
-    <p>86. O presente relatório reconhece e acolhe as contribuições do Relatório Sombra apresentado à 108.ª Sessão do Comitê por Criola, GELEDÉS Instituto da Mulher Negra, Coalizão Negra por Direitos e Comunidade Bahá'í do Brasil — quatro organizações que representam décadas de lutas da sociedade civil brasileira pelos direitos da população negra.</p>
+    <p>62. O presente relatório reconhece e acolhe as contribuições do Relatório Sombra apresentado à 108.ª Sessão do Comitê por Criola, GELEDÉS Instituto da Mulher Negra, Coalizão Negra por Direitos e Comunidade Bahá'í do Brasil — quatro organizações que representam décadas de lutas da sociedade civil brasileira pelos direitos da população negra.</p>
 
-    <p>87. O Relatório Sombra identificou, com precisão, o período 2019–2022 como o de maior retrocesso na agenda racial brasileira: extinção da SEPPIR como estrutura autônoma; redução de 80% dos gastos do Programa de Enfrentamento ao Racismo; esvaziamento de 75% dos conselhos e comitês nacionais com participação da sociedade civil. O Estado reconhece esse diagnóstico como correto.</p>
+    <p>63. O Relatório Sombra identificou, com precisão, o período 2019–2022 como o de maior retrocesso na agenda racial brasileira: extinção de estruturas autônomas de promoção da igualdade racial; redução significativa de gastos do Programa de Enfrentamento ao Racismo; e esvaziamento de conselhos e comitês nacionais com participação da sociedade civil. O Estado reconhece esse diagnóstico como correto.</p>
 
-    <p>88. Em relação às recomendações específicas do Relatório Sombra, o Estado apresenta o seguinte balanço de implementação:</p>
-    <ul>
-      <li><strong>Recomendação 1.1</strong> (quesito racial em todos os levantamentos) — implementada pela Portaria Conjunta MIR/IBGE n.º 1/2023;</li>
-      <li><strong>Recomendação 2.1</strong> (ampliação das cotas) — atendida pela Lei n.º 14.723/2023, que elevou o patamar de 50% para 60% das vagas;</li>
-      <li><strong>Recomendação 2.4</strong> (Plano Nacional de Enfrentamento ao Racismo) — atendida pelo Decreto n.º 11.750/2023;</li>
-      <li><strong>Recomendação 2.5</strong> (recriação da SEPPIR) — superada pela criação do Ministério da Igualdade Racial.</li>
-    </ul>
+    <p>64. As respostas institucionais a partir de 2023 — incluindo a recomposição da arquitetura ministerial dedicada à igualdade racial, a renovação das políticas de cotas e o relançamento de planos nacionais — encontram-se materializadas nos instrumentos normativos cadastrados na Base Normativa do sistema, vinculados aos respectivos Artigos da Convenção, com URL oficial quando disponível.</p>
 
-    <p>89. Permanecem pendentes:</p>
-    <ul>
-      <li><strong>Recomendação 2.10</strong> (superação da austeridade fiscal) — a EC n.º 95 foi substituída pelo novo arcabouço fiscal (EC n.º 126/2023);</li>
-      <li><strong>Recomendações 3.3 e 3.5</strong> (revisão da política de drogas e redução do encarceramento racial) — o STF iniciou, em 2024, julgamento sobre a descriminalização do porte de cannabis;</li>
-      <li><strong>Recomendação 3.4</strong> (investigação do assassinato de jovens negros) — o Programa Juventude Viva foi retomado, mas a escala permanece insuficiente.</li>
-    </ul>
+    <p>65. Permanecem pendentes ou em estágio insuficiente de implementação: a superação da austeridade fiscal aplicada às políticas sociais; a revisão da política de drogas e a redução do encarceramento racial; a investigação efetiva e responsabilização pelo assassinato de jovens negros; e a institucionalização plena de programas de proteção a defensores de direitos humanos negros, quilombolas e indígenas.</p>
 
-    <p>90. O Estado reitera o compromisso de institucionalizar e ampliar o diálogo com as organizações que integram o Relatório Sombra — e com a sociedade civil afro-brasileira em sentido amplo — na formulação, monitoramento e avaliação das políticas de igualdade racial. O CNPIR, reconstituído em 2023 com composição paritária, inclui representação das principais organizações do movimento negro.</p>
+    <p>66. O Estado reitera o compromisso de institucionalizar e ampliar o diálogo com as organizações que integram o Relatório Sombra — e com a sociedade civil afro-brasileira em sentido amplo — na formulação, monitoramento e avaliação das políticas de igualdade racial.</p>
   </div>`;
 }
 
@@ -238,10 +231,6 @@ function renderFeminicideTable(fem: any[]): string {
 }
 
 function renderJudicialTable(indicadores: IndicadorInterseccional[]): string {
-  // Extract judicial data from indicadores if available
-  const racismo = indicadores.find(i => i.nome?.toLowerCase().includes('processos judiciais') || i.nome?.toLowerCase().includes('racismo'));
-  const denuncias = indicadores.find(i => i.nome?.toLowerCase().includes('denúncias') && i.nome?.toLowerCase().includes('discriminação'));
-  
   return `<table>
     <thead><tr><th>Indicador</th><th>2020</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
     <tbody>
