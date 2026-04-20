@@ -7,6 +7,7 @@ import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, Dollar
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
@@ -139,12 +140,16 @@ ${Object.entries(stats?.porGrupo || {}).sort((a, b) => (b[1] as number) - (a[1] 
 
 ${(lacunas || []).map(l => {
   const st = getComputedStatus(l);
+  const diag = diagnosticMap.get(l.id);
+  // Resposta dinâmica gerada a partir das evidências cruzadas atuais
+  // (independe do campo estático gravado no banco).
+  const respostaDinamica = generateSuggestedResponse(l as any, diag) || l.resposta_sugerida_cerd_iv;
   return `
 <div class="lacuna-card">
   <h4>§${l.paragrafo} — ${l.tema} | ${statusIcon(st)} ${statusLabels[st]?.label}</h4>
   <p><strong>Lacuna:</strong> ${l.descricao_lacuna}</p>
   ${l.texto_original_onu ? `<p style="background:#fef2f2;padding:6px;border-radius:4px;font-size:10px;"><strong>Texto ONU:</strong> ${l.texto_original_onu}</p>` : ''}
-  ${l.resposta_sugerida_cerd_iv ? `<p style="background:#f0fdf4;padding:6px;border-radius:4px;font-size:10px;"><strong>Resposta sugerida (CERD IV):</strong> ${l.resposta_sugerida_cerd_iv}</p>` : ''}
+  ${respostaDinamica ? `<p style="background:#f0fdf4;padding:6px;border-radius:4px;font-size:10px;"><strong>Resposta sugerida (CERD IV — gerada dinamicamente):</strong> ${respostaDinamica.replace(/\n/g, '<br>')}</p>` : ''}
   ${l.evidencias_encontradas?.length ? `<p class="source"><strong>Evidências:</strong> ${l.evidencias_encontradas.join('; ')}</p>` : ''}
   ${l.acoes_brasil?.length ? `<p class="source"><strong>Ações Brasil:</strong> ${l.acoes_brasil.join('; ')}</p>` : ''}
 </div>`;}).join('')}
