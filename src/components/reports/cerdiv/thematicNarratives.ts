@@ -418,7 +418,7 @@ export function renderLGBTandDisabilityNarrative(serieAntra: any[], lgbtqia: any
         [{ name: 'Total assassinatos', color: '#8b5cf6', values: serieAntra.filter((s: any) => s.ano >= 2018).map((s: any) => num(s.totalAssassinatos)) }],
         650, 200
       )}
-      <p style="font-size:8.5pt;margin-top:0.25cm"><strong>Fonte:</strong> Dossiê ANTRA 2026 (série histórica). Média 2017-2025: 77% das vítimas eram negras.</p>
+      <p style="font-size:8.5pt;margin-top:0.25cm"><strong>Fonte:</strong> Dossiê ANTRA 2026 (série histórica).</p>
     </div>
     <p>Em ${last?.ano}, foram registrados <strong>${last?.totalAssassinatos} assassinatos de pessoas trans</strong>, com <strong>${last?.negros}% de vítimas negras</strong>. A sobreposição de raça e identidade de gênero coloca mulheres trans negras como o grupo mais vulnerável à violência letal no Brasil.</p>`);
   }
