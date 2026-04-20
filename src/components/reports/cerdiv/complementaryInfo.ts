@@ -224,7 +224,7 @@ function renderFeminicideTable(fem: any[]): string {
       <td>${f.ano}${f.ano === Math.max(...fem.map((x: any) => x.ano)) ? ' — RECORDE' : ''}</td>
       <td>${fmtNum(num(f.totalFeminicidios))}</td>
       <td>${num(f.percentualNegras).toFixed(1)}%</td>
-      <td>FBSP (Anuário ${num(f.ano) - 2018 + 13}.º, dados ${f.ano})</td>
+      <td>FBSP — Anuário Brasileiro de Segurança Pública</td>
     </tr>`).join('')}</tbody>
   </table>`;
 }
