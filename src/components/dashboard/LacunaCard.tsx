@@ -63,7 +63,10 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
     () => generateSuggestedResponse(lacuna, diagnostic),
     [lacuna, diagnostic]
   );
-  const respostaCerdIV = lacuna.resposta_sugerida_cerd_iv || dynamicResponse;
+  // Resposta SEMPRE dinâmica quando o sensor diagnóstico está disponível —
+  // reflete a base de evidências atualizada (inclusão/alteração/exclusão) sem
+  // depender de regeneração manual do campo gravado no banco.
+  const respostaCerdIV = dynamicResponse || lacuna.resposta_sugerida_cerd_iv;
 
   const origem = classificarOrigemLacuna(lacuna.paragrafo);
   const origemCfg = ORIGEM_CONFIG[origem];
@@ -151,8 +154,8 @@ export function LacunaCard({ lacuna, diagnostic }: LacunaCardProps) {
               <div className="p-2 bg-primary/5 rounded-md border border-primary/20">
                 <p className="text-xs font-medium text-primary mb-1">
                   Resposta sugerida (CERD IV):
-                  {!lacuna.resposta_sugerida_cerd_iv && dynamicResponse && (
-                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">— gerada automaticamente a partir das evidências cruzadas</span>
+                  {dynamicResponse && (
+                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">— gerada dinamicamente a partir das evidências cruzadas atuais</span>
                   )}
                 </p>
                 {respostaCerdIV ? (
