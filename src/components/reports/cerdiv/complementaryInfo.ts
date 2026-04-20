@@ -230,13 +230,46 @@ function renderFeminicideTable(fem: any[]): string {
 }
 
 function renderJudicialTable(indicadores: IndicadorInterseccional[]): string {
+  const findByName = (tokens: string[]) =>
+    indicadores.find((i) => {
+      const blob = `${i.nome} ${i.subcategoria || ''} ${i.categoria || ''}`.toLowerCase();
+      return tokens.every((t) => blob.includes(t.toLowerCase()));
+    });
+
+  const cnj = findByName(['cnj']) || findByName(['processos', 'racismo']) || findByName(['racismo', 'judiciais']);
+  const disque = findByName(['disque 100']) || findByName(['discriminação racial']) || findByName(['discriminacao racial']);
+  const intol = findByName(['intolerância', 'religiosa']) || findByName(['intolerancia', 'religiosa']);
+
+  const linhas: { label: string; ind: IndicadorInterseccional | undefined }[] = [
+    { label: 'Novos processos racismo/injúria racial (CNJ)', ind: cnj },
+    { label: 'Denúncias discriminação racial (Disque 100)', ind: disque },
+    { label: 'Denúncias intolerância religiosa (Disque 100)', ind: intol },
+  ].filter((x) => x.ind);
+
+  if (!linhas.length) return '';
+
+  // Coleta todos os anos presentes em qualquer indicador
+  const anosSet = new Set<number>();
+  linhas.forEach(({ ind }) => {
+    const dados = (ind as any)?.dados || {};
+    Object.keys(dados).filter((k) => /^\d{4}$/.test(k)).forEach((a) => anosSet.add(Number(a)));
+  });
+  const anos = Array.from(anosSet).sort();
+  if (!anos.length) return '';
+
+  const fontes = Array.from(new Set(linhas.map((l) => l.ind?.fonte).filter(Boolean))).join('; ');
+
   return `<table>
-    <thead><tr><th>Indicador</th><th>2020</th><th>2022</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+    <thead><tr><th>Indicador</th>${anos.map((a) => `<th>${a}</th>`).join('')}</tr></thead>
     <tbody>
-      <tr><td><strong>Novos processos racismo/injúria racial (CNJ)</strong></td><td>50</td><td>234</td><td>973</td><td>2.874</td><td>4.633</td></tr>
-      <tr><td><strong>Denúncias discriminação racial (Disque 100)</strong></td><td>nd</td><td>3.535</td><td>9.738</td><td>14.543</td><td>16.245</td></tr>
-      <tr><td><strong>Denúncias intolerância religiosa (Disque 100)</strong></td><td>566</td><td>898</td><td>1.482</td><td>2.472</td><td>2.723</td></tr>
+      ${linhas.map(({ label, ind }) => {
+        const dados = (ind as any)?.dados || {};
+        return `<tr><td><strong>${label}</strong></td>${anos.map((a) => {
+          const v = Number(dados[String(a)]);
+          return `<td>${Number.isFinite(v) ? fmtNum(v) : 'nd'}</td>`;
+        }).join('')}</tr>`;
+      }).join('')}
     </tbody>
   </table>
-  <p style="font-size:8.5pt;color:#64748b">Fonte: CNJ — Painel Estatísticas/Justiça em Números. ONDH/MDHC — Painel de Dados Disque 100.</p>`;
+  <p style="font-size:8.5pt;color:#64748b">Fonte: ${fontes}.</p>`;
 }
