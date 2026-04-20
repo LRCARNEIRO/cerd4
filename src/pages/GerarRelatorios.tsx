@@ -7,6 +7,7 @@ import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, Dollar
 import { cn } from '@/lib/utils';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';
 import { BudgetReportGenerator } from '@/components/reports/BudgetReportGenerator';
 import { AIReportGenerator } from '@/components/reports/AIReportGenerator';
