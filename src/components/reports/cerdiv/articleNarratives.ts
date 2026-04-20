@@ -260,21 +260,67 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
   </table>
   <p style="font-size:8.5pt;color:#64748b">Fonte: PNAD Contínua/SIDRA 6402 e 6405; SIS/IBGE 2024–2025.</p>` : ''}
 
-  <p>23. Mulheres negras recebem apenas R$ 2.264 mensais, correspondendo a 46,8% do rendimento de homens não negros (R$ 4.835), configurando a maior desigualdade entre os quatro grupos analisados.</p>
+  ${(() => {
+    const mn = findIndicador(d.indicadores, ['mulheres negras'], 'genero_raca')
+      || findIndicador(d.indicadores, ['rendimento', 'mulher']);
+    if (!mn) return '';
+    const dados = mn.dados as any;
+    const valMN = pickNum(dados, ['mulher_negra_renda']) ?? pickNum(dados, ['mulheres_negras']) ?? pickNum(dados, ['valor_mulher_negra']);
+    const valHNN = pickNum(dados, ['homem_nao_negro_renda']) ?? pickNum(dados, ['homens_nao_negros']) ?? pickNum(dados, ['valor_homem_nao_negro']);
+    if (valMN == null || valHNN == null || valHNN === 0) return '';
+    const pct = ((valMN / valHNN) * 100).toFixed(1);
+    return `<p>23. Mulheres negras recebem ${fmtBRL(valMN)} mensais, correspondendo a ${pct}% do rendimento de homens não negros (${fmtBRL(valHNN)}), configurando a maior desigualdade entre os grupos analisados. ${fonteLink(mn)}</p>`;
+  })()}
 
   <h4>5.2 Marco normativo cadastrado vinculado ao Artigo V</h4>
   ${renderNormativosResumoParagrafo(d.normativos, 'V', '24. O Artigo V — pelo amplo escopo de direitos econômicos, sociais e culturais que cobre — concentra a maior parte dos instrumentos normativos cadastrados no sistema.')}
   ${renderNormativosVinculados(d.normativos, 'V')}
 
   <h4>5.3 Pobreza e transferência de renda</h4>
-  <p>25. 65.383.976 negros (pretos e pardos) inscritos no CadÚnico, correspondendo a 69,8% do total de inscritos — refletindo a sobre-representação da população negra na pobreza estrutural brasileira.</p>
-
-  <p>26. Os dados da SIS/IBGE 2025 (ref. 2024) indicam taxa de pobreza de 29,8% entre pardos e 25,8% entre pretos, contra 15,1% entre brancos — razão de aproximadamente 1,8. A maior parte das famílias quilombolas (74,2%) e indígenas (78,3%) vive em situação de extrema pobreza, segundo dados do CadÚnico de 2024.</p>
+  ${(() => {
+    const cad = findIndicador(d.indicadores, ['cadúnico'], 'habitacao')
+      || findIndicador(d.indicadores, ['cadunico'])
+      || findIndicador(d.indicadores, ['mcmv']);
+    if (!cad) return '';
+    const dados = cad.dados as any;
+    const negros = dados?.negros || {};
+    const brancos = dados?.brancos || {};
+    const anos = Object.keys(negros).filter((k) => /^\d{4}$/.test(k)).sort();
+    if (!anos.length) return '';
+    const last = anos[anos.length - 1];
+    const vN = pickNum(negros, [last]);
+    const vB = pickNum(brancos, [last]);
+    if (vN == null) return '';
+    const total = vN + (vB || 0);
+    const pct = total > 0 ? ((vN / total) * 100).toFixed(1) : null;
+    return `<p>25. ${fmtNum(vN)} negros (pretos e pardos) inscritos no CadÚnico em ${last}${pct ? `, correspondendo a ${pct}% do total registrado` : ''} — refletindo a sobre-representação da população negra nos cadastros de proteção social. ${fonteLink(cad)}</p>`;
+  })()}
 
   <h4>5.4 Trabalho infantil e trabalho escravo</h4>
-  <p>27. 66% das crianças de 5 a 17 anos em situação de trabalho infantil são negras em 2024, proporção praticamente estável desde 2018 (64,8%). Em 2024, estimava-se 1.650.000 crianças nessa situação.</p>
+  ${(() => {
+    const ti = findIndicador(d.indicadores, ['trabalho infantil']);
+    if (!ti) return '';
+    const dados = ti.dados as any;
+    const pctNeg = pickNum(dados, ['percentual_negros_2024']) ?? pickNum(dados, ['2024', 'pct_negros']) ?? pickNum(dados, ['pct_negros']);
+    const total = pickNum(dados, ['total_2024']) ?? pickNum(dados, ['2024', 'total']);
+    if (pctNeg == null) return '';
+    const totTxt = total != null ? ` Em 2024, estimava-se ${fmtNum(total)} crianças nessa situação.` : '';
+    return `<p>27. ${pctNeg.toFixed(1)}% das crianças de 5 a 17 anos em situação de trabalho infantil são negras.${totTxt} ${fonteLink(ti)}</p>`;
+  })()}
 
-  <p>28. 66,8% dos resgatados de situações de trabalho escravo eram negros (pardos 52,7% + pretos 14,1%). O Estado reforçou a fiscalização no período, com 3.142 resgatados em 2023 e 2.786 em 2024.</p>
+  ${(() => {
+    const te = findIndicador(d.indicadores, ['trabalho escravo']);
+    if (!te) return '';
+    const dados = te.dados as any;
+    const pctNeg = pickNum(dados, ['percentual_negros']) ?? pickNum(dados, ['pct_negros']);
+    const r2023 = pickNum(dados, ['resgatados', '2023']) ?? pickNum(dados, ['2023']);
+    const r2024 = pickNum(dados, ['resgatados', '2024']) ?? pickNum(dados, ['2024']);
+    if (pctNeg == null && r2023 == null && r2024 == null) return '';
+    const partes: string[] = [];
+    if (pctNeg != null) partes.push(`${pctNeg.toFixed(1)}% dos resgatados de situações de trabalho escravo são negros`);
+    if (r2023 != null && r2024 != null) partes.push(`${fmtNum(r2023)} resgatados em 2023 e ${fmtNum(r2024)} em 2024`);
+    return `<p>28. ${partes.join('; ')}. ${fonteLink(te)}</p>`;
+  })()}
 
   <h4>5.5 Mortalidade materna — indicador-sentinela</h4>
   <div class="highlight-box" style="font-size:9.5pt">
