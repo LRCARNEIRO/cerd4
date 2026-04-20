@@ -124,15 +124,38 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
   </div>
 
   <h4>3.1 Habitação e segregação urbana</h4>
-  <p>13. 78,2% dos domicílios chefiados por negros têm acesso à rede geral de água, contra 88,1% dos brancos; 68,6% têm esgotamento adequado, contra 83,2%; e 88,4% têm coleta de lixo, contra 94,1% (Censo 2022, IBGE). Pretos e pardos representam 69% da população sem esgoto adequado e 72% sem água adequada no Brasil.</p>
+  ${(() => {
+    const favelas = findIndicador(d.indicadores, ['favelas'], 'habitacao');
+    if (!favelas) return '';
+    const negPct = pickNum(favelas.dados, ['2022', 'negros_pct']);
+    const totalMor = pickNum(favelas.dados, ['2022', 'total_moradores']);
+    if (negPct == null || totalMor == null) return '';
+    return `<p>13. ${negPct.toFixed(1)}% dos moradores em favelas e comunidades urbanas são negros (${fmtNum(totalMor)} pessoas, Censo 2022), proporção significativamente superior aos 55,5% que negros representam na população total brasileira. ${fonteLink(favelas)}</p>`;
+  })()}
 
-  <p>14. O déficit habitacional mantém viés racial acentuado. Dados da Fundação João Pinheiro indicam que o déficit habitacional de famílias negras era de 4.122.625 unidades em 2022, contra 1.973.211 para brancas — razão de 2,09. As políticas habitacionais com dispositivos de equidade racial e os respectivos instrumentos legais constam da Base Normativa do sistema vinculados ao Artigo III (relação abaixo).</p>
+  ${(() => {
+    const def = findIndicador(d.indicadores, ['déficit habitacional'], 'habitacao') || findIndicador(d.indicadores, ['deficit habitacional'], 'habitacao');
+    if (!def) return '';
+    const neg = pickNum(def.dados, ['2022', 'negros']) ?? pickNum(def.dados, ['negros', '2022']);
+    const bra = pickNum(def.dados, ['2022', 'brancos']) ?? pickNum(def.dados, ['brancos', '2022']);
+    if (neg == null || bra == null) return '';
+    const razao = (neg / Math.max(bra, 1)).toFixed(2);
+    return `<p>14. O déficit habitacional mantém viés racial acentuado: ${fmtNum(neg)} unidades para famílias negras contra ${fmtNum(bra)} para brancas (razão ${razao}). ${fonteLink(def)}</p>`;
+  })()}
 
   <h4>3.2 Marco normativo cadastrado vinculado ao Artigo III</h4>
   ${renderNormativosVinculados(d.normativos, 'III')}
 
   <h4>3.3 Sistema prisional e segregação institucional</h4>
-  <p>15. <strong>68,7%</strong> da população carcerária é negra — com possível subnotificação, dado que 14,7% dos registros não contêm o quesito racial. A população encarcerada atingiu 832 mil pessoas em 2023, mantendo o Brasil como terceiro maior contingente carcerário do mundo. A superlotação permanece crítica: 36% dos estabelecimentos operavam com taxa de ocupação superior a 200% em 2023.</p>
+  ${(() => {
+    const pris = findIndicador(d.indicadores, ['prisional'], 'seguranca_publica') || findIndicador(d.indicadores, ['carcer'], 'seguranca_publica');
+    if (!pris) return '';
+    const pct2024 = pickNum(pris.dados, ['percentual_negros', '2024']);
+    const total2024 = pickNum(pris.dados, ['total_com_domiciliar', '2024']) ?? pickNum(pris.dados, ['total_celas_fisicas', '2024_dez']);
+    if (pct2024 == null) return '';
+    const totalTxt = total2024 != null ? ` A população encarcerada total atingiu ${fmtNum(total2024)} pessoas em 2024.` : '';
+    return `<p>15. ${pct2024.toFixed(1)}% da população carcerária é negra em 2024.${totalTxt} ${fonteLink(pris)}</p>`;
+  })()}
 
   <p>16. As respostas institucionais — incluindo diagnósticos raciais sobre impacto de decisões penais e protocolos de uso da força com perspectiva racial — quando formalizadas em instrumentos normativos, constam da Base Normativa cadastrada no sistema.</p>
 
