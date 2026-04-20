@@ -300,7 +300,7 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
       if (!mn || !hnn || !num(hnn.renda)) return '';
       const pct = ((num(mn.renda) / num(hnn.renda)) * 100).toFixed(1);
       return `<p>A <strong>mulher negra</strong> ocupa a posição mais desfavorável: renda de R$ ${fmtNum(num(mn.renda))}, correspondendo a <strong>${pct}% do rendimento de ${hnn.grupo.toLowerCase()}</strong> (R$ ${fmtNum(num(hnn.renda))}).</p>`;
-    })()}
+    })()}` : ''}
 
     ${classePorRaca?.length > 0 ? `
     <h4>Pobreza por raça</h4>
