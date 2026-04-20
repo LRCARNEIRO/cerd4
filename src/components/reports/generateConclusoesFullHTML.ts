@@ -751,7 +751,7 @@ ${icerdData.map(a => `
       <li>Desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}%</li>
       <li>Renda média negra: R$ ${eco2018.rendaMediaNegra} → R$ ${eco2024.rendaMediaNegra}</li>
       <li>Censo 2022: ${povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')} quilombolas</li>
-      <li>Recriação MIR + Lei 14.532/2023</li>
+      <li>Recriação MIR + marcos normativos do período (ver Base Normativa)</li>
     </ul>
   </div>
 </div>
@@ -759,7 +759,7 @@ ${icerdData.map(a => `
 <div class="highlight" style="margin-top:16px;">
   <p style="font-weight:700;margin-bottom:6px;font-size:12px;">⚖️ Avaliação Geral</p>
   <p style="font-size:10px;line-height:1.7;">O Estado brasileiro apresenta um padrão de <strong>paradoxo normativo-implementação</strong>: avanços legislativos significativos 
-  (Lei 14.532/2023, recriação do MIR, cotas ampliadas) coexistem com <strong>agravamento de indicadores estruturais</strong> 
+  (marcos normativos cadastrados no sistema, recriação do MIR, políticas afirmativas) coexistem com <strong>agravamento de indicadores estruturais</strong> 
   (violência letal, feminicídio, disparidade de renda). A média de aderência ICERD é de 
   <strong>${icerdData.length > 0 ? Math.round(icerdData.reduce((s, a) => s + a.score, 0) / icerdData.length) : 0}%</strong>, 
   indicando cumprimento parcial das obrigações convencionais. Foram identificados <strong>${fiosCondutores.length} fios condutores</strong>, 
