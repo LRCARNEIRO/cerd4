@@ -157,7 +157,70 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
     return `<p>15. ${pct2024.toFixed(1)}% da população carcerária é negra em 2024.${totalTxt} ${fonteLink(pris)}</p>`;
   })()}
 
-  <p>16. As respostas institucionais — incluindo diagnósticos raciais sobre impacto de decisões penais e protocolos de uso da força com perspectiva racial — quando formalizadas em instrumentos normativos, constam da Base Normativa cadastrada no sistema.</p>
+  ${(() => {
+    // §16 SSoT — busca em indicadores_interseccionais (encarceramento jovem, vítimas de violência policial, série prisional)
+    const enc = findIndicador(d.indicadores, ['encarceramento', 'jovens'], 'seguranca_publica');
+    const vitNeg = findIndicador(d.indicadores, ['vítimas negras de violência policial'])
+      || findIndicador(d.indicadores, ['vitimas negras', 'violência policial']);
+    const vitBra = findIndicador(d.indicadores, ['vítimas brancas de violência policial'])
+      || findIndicador(d.indicadores, ['vitimas brancas', 'violência policial']);
+    const serie = findIndicador(d.indicadores, ['prisional', 'série'], 'seguranca_publica')
+      || findIndicador(d.indicadores, ['população prisional'], 'seguranca_publica');
+
+    const partesEstat: string[] = [];
+    if (enc) {
+      const v = pickNum(enc.dados, ['valor_negros']);
+      const vb = pickNum(enc.dados, ['valor_brancos']);
+      if (v != null && vb != null) {
+        partesEstat.push(`o encarceramento entre jovens negros atinge ${v.toFixed(1)}% (vs ${vb.toFixed(1)}% entre brancos) ${fonteLink(enc)}`);
+      }
+    }
+    if (vitNeg && vitBra) {
+      const vn = pickNum(vitNeg.dados, ['negros', '2017-2019']);
+      const vb = pickNum(vitBra.dados, ['geral', '2017-2019']);
+      if (vn != null && vb != null) {
+        partesEstat.push(`vítimas negras de violência policial concentram ${(vn * 100).toFixed(0)}% das ocorrências registradas no Disque 100 (2017–2019), contra ${(vb * 100).toFixed(0)}% entre brancos ${fonteLink(vitNeg)}`);
+      }
+    }
+    if (serie) {
+      const total2024 = pickNum(serie.dados, ['total_com_domiciliar', '2024']);
+      const pct2024 = pickNum(serie.dados, ['percentual_negros', '2024']);
+      if (total2024 != null && pct2024 != null) {
+        partesEstat.push(`a população prisional total alcançou ${fmtNum(total2024)} pessoas em 2024, com ${pct2024.toFixed(1)}% autodeclaradas negras ${fonteLink(serie)}`);
+      }
+    }
+
+    // Normativos com tema sistema penal / uso da força / custódia / socioeducativo
+    const normPenal = renderNormativosInlineList(
+      d.normativos,
+      ['polici', 'prision', 'custódia', 'custodia', 'tortura', 'socioeduc', 'segurança pública', 'seguranca publica', 'audiência', 'audiencia'],
+      'III',
+      4,
+    );
+
+    // Orçamento de Justiça/Segurança vinculado a recorte racial
+    const orcSeg = (d.orcDados || []).filter((o: any) => {
+      const eixo = String(o.eixo_tematico || '').toLowerCase();
+      const desc = `${o.programa || ''} ${o.descritivo || ''} ${o.publico_alvo || ''}`.toLowerCase();
+      return eixo.includes('seguranca') || eixo.includes('legislacao_justica')
+        || /(juventude negra viva|polici|prision|socioeduc|justi[çc]a)/i.test(desc);
+    });
+    const orcSegPago = orcSeg.reduce((s, o: any) => s + num(o.pago), 0);
+    const orcSegDot = orcSeg.reduce((s, o: any) => s + num(o.dotacao_autorizada), 0);
+
+    const blocos: string[] = [];
+    if (partesEstat.length) {
+      blocos.push(`<p>16. As respostas institucionais às disparidades raciais no sistema penal são lastreadas em evidências estatísticas registradas no sistema: ${partesEstat.join('; ')}.</p>`);
+    }
+    if (normPenal) {
+      blocos.push(`<p>16-a. Os marcos normativos cadastrados com vínculo direto à atuação penal e ao uso da força com perspectiva racial incluem: ${normPenal}. A relação completa consta da seção 3.2 acima.</p>`);
+    }
+    if (orcSeg.length > 0 && orcSegDot > 0) {
+      const exec = (orcSegPago / orcSegDot * 100).toFixed(1);
+      blocos.push(`<p>16-b. No campo orçamentário, foram rastreadas <strong>${orcSeg.length} ações</strong> em segurança pública e justiça com recorte racial vinculadas ao Artigo III, totalizando ${fmtBRL(orcSegDot)} de dotação autorizada e ${fmtBRL(orcSegPago)} pagos (execução ${exec}%).</p>`);
+    }
+    return blocos.join('\n  ');
+  })()}
 
   <h4>3.4 Povos ciganos: segregação e documentação</h4>
   <p>17. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira. Programas de documentação civil em acampamentos ciganos foram implementados no período, e o Plano Nacional de Políticas para Povos Ciganos estrutura metas específicas, conforme instrumentos cadastrados na Base Normativa.</p>`;
