@@ -399,7 +399,22 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
   <h4>5.8 Comunidades quilombolas</h4>
   <p>36. ${fmtNum(num(d.povos?.quilombolas?.populacao || 1330186))} pessoas vivem em territórios identificados como quilombolas, das quais apenas 12,6% residem em territórios oficialmente reconhecidos. ${fmtNum(num(d.povos?.quilombolas?.comunidadesCertificadas || 3158))} comunidades certificadas pela Fundação Palmares.</p>
 
-  <p>37. Apenas 33,6% dos domicílios quilombolas têm acesso à rede geral de água (versus 82,9% da média nacional); 25,1% têm esgotamento adequado (versus 62,5%); e 50,4% têm coleta de lixo (versus 82,5%).</p>
+  ${(() => {
+    const sn = findIndicador(d.indicadores, ['saneamento', 'quilombola'])
+      || findIndicador(d.indicadores, ['quilombola', 'água'])
+      || findIndicador(d.indicadores, ['quilombola', 'agua']);
+    if (!sn) return '';
+    const dados = sn.dados as any;
+    const agua = pickNum(dados, ['agua_pct']) ?? pickNum(dados, ['quilombolas', 'agua']) ?? pickNum(dados, ['agua']);
+    const esgoto = pickNum(dados, ['esgoto_pct']) ?? pickNum(dados, ['quilombolas', 'esgoto']) ?? pickNum(dados, ['esgoto']);
+    const lixo = pickNum(dados, ['lixo_pct']) ?? pickNum(dados, ['quilombolas', 'lixo']) ?? pickNum(dados, ['lixo']);
+    const partes: string[] = [];
+    if (agua != null) partes.push(`${agua.toFixed(1)}% têm acesso à rede geral de água`);
+    if (esgoto != null) partes.push(`${esgoto.toFixed(1)}% têm esgotamento adequado`);
+    if (lixo != null) partes.push(`${lixo.toFixed(1)}% têm coleta de lixo`);
+    if (!partes.length) return '';
+    return `<p>37. Domicílios quilombolas: ${partes.join('; ')}. ${fonteLink(sn)}</p>`;
+  })()}
 
   <h4>5.9 Povos indígenas</h4>
   <p>38. ${fmtNum(num(d.demo?.populacaoIndigena || 1694836))} pessoas indígenas pela contagem específica, das quais mais da metade (53,97%) vive em áreas urbanas. São 391 etnias e 295 línguas indígenas identificadas. A retomada do processo demarcatório — com 20 homologações entre 2023 e 2025, contra apenas 1 no período 2019–2022 — representa avanço significativo. Os instrumentos normativos correspondentes constam da Base Normativa cadastrada.</p>
