@@ -6,6 +6,7 @@ import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { generateCerdIVFullHTML, type CerdIVFullData } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview } from '@/utils/reportPreview';
@@ -17,6 +18,7 @@ export function FinalCerdIVReport() {
   } = useAnalyticalInsights();
 
   const mirror = useMirrorData();
+  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
 
   const { data: documentosNormativos, isLoading: loadingNorm } = useQuery({
     queryKey: ['documentos_normativos_final_cerd'],
@@ -26,12 +28,39 @@ export function FinalCerdIVReport() {
     },
   });
 
-  const loading = isLoading || loadingNorm;
+  const loading = isLoading || loadingNorm || !sensorReady;
+
+  const lacunasComputadas = (lacunas || []).map((lacuna) => {
+    const diagnostico = diagnosticMap.get(lacuna.id);
+    return diagnostico
+      ? { ...lacuna, status_cumprimento: diagnostico.statusComputado }
+      : lacuna;
+  });
+
+  const statsComputados = {
+    ...(stats || {}),
+    total: lacunasComputadas.length,
+    porStatus: sensorReady
+      ? {
+          cumprido: sensorSummary.statusReclassificado.cumprido || 0,
+          parcialmente_cumprido: sensorSummary.statusReclassificado.parcialmente_cumprido || 0,
+          nao_cumprido: sensorSummary.statusReclassificado.nao_cumprido || 0,
+          retrocesso: sensorSummary.statusReclassificado.retrocesso || 0,
+          em_andamento: sensorSummary.statusReclassificado.em_andamento || 0,
+        }
+      : (stats?.porStatus || {
+          cumprido: 0,
+          parcialmente_cumprido: 0,
+          nao_cumprido: 0,
+          retrocesso: 0,
+          em_andamento: 0,
+        }),
+  };
 
   const buildFullData = (): CerdIVFullData => ({
-    lacunas: lacunas || [],
+    lacunas: lacunasComputadas,
     respostas: respostas || [],
-    stats,
+    stats: statsComputados,
     indicadores: indicadores || [],
     orcStats,
     orcDados: orcDados || [],
@@ -78,11 +107,11 @@ export function FinalCerdIVReport() {
     downloadAsDocx(html, 'Relatorio-Final-CERD-IV');
   };
 
-  const totalLacunas = stats?.total || 0;
-  const cumpridas = stats?.porStatus?.cumprido || 0;
-  const parciais = stats?.porStatus?.parcialmente_cumprido || 0;
-  const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
-  const retrocessos = stats?.porStatus?.retrocesso || 0;
+  const totalLacunas = statsComputados.total || 0;
+  const cumpridas = statsComputados.porStatus?.cumprido || 0;
+  const parciais = statsComputados.porStatus?.parcialmente_cumprido || 0;
+  const naoCumpridas = statsComputados.porStatus?.nao_cumprido || 0;
+  const retrocessos = statsComputados.porStatus?.retrocesso || 0;
 
   return (
     <div className="space-y-6">
