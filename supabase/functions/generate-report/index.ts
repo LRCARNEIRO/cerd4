@@ -768,38 +768,22 @@ function generateCommonCoreHTML(lacunas: any[], indicadores: any[], conclusoes: 
         </ul>
       </div>
       
-      <h4>Principais marcos legislativos</h4>
+      <h4>Marcos normativos cadastrados no sistema</h4>
+      ${normativos.length > 0 ? `
       <table>
-        <thead>
-          <tr>
-            <th>Lei/Decreto</th>
-            <th>Ano</th>
-            <th>Objeto</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Documento</th><th>Categoria</th><th>Fonte</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Lei 14.532</td>
-            <td>2023</td>
-            <td>Equipara injúria racial a crime de racismo (2-5 anos)</td>
-          </tr>
-          <tr>
-            <td>Lei 14.723</td>
-            <td>2023</td>
-            <td>Renova cotas no ensino superior por mais 10 anos</td>
-          </tr>
-          <tr>
-            <td>Decreto 11.956</td>
-            <td>2024</td>
-            <td>Institui Programa Juventude Negra Viva</td>
-          </tr>
-          <tr>
-            <td>Decreto 11.786</td>
-            <td>2023</td>
-            <td>Política Nacional de Gestão Territorial Quilombola (PNGTAQ)</td>
-          </tr>
+          ${normativos.slice(0, 20).map((n: any) => `
+            <tr>
+              <td>${n.titulo}</td>
+              <td>${n.categoria || '—'}</td>
+              <td>${n.url_origem ? `<a href="${n.url_origem}" target="_blank">link</a>` : '<em>sem URL</em>'}</td>
+            </tr>
+          `).join('')}
         </tbody>
       </table>
+      <p style="font-size:9pt;color:#64748b;">Total cadastrado: <strong>${normativos.length}</strong>. Fonte: <code>documentos_normativos</code>.</p>
+      ` : `<p style="font-size:9pt;color:#64748b;border-left:3px solid #cbd5e1;padding-left:12px;"><em>Nenhum documento normativo cadastrado na base. A tabela será preenchida automaticamente quando documentos forem cadastrados.</em></p>`}
     </div>
 
     <h2>III. Informações sobre Não Discriminação, Igualdade e Recursos Efetivos</h2>
