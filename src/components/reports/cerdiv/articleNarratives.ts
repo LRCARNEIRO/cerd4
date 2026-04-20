@@ -480,7 +480,10 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
   })()}
 
   <h4>5.9 Povos indígenas</h4>
-  <p>38. ${fmtNum(num(d.demo?.populacaoIndigena || 1694836))} pessoas indígenas pela contagem específica, das quais mais da metade (53,97%) vive em áreas urbanas. São 391 etnias e 295 línguas indígenas identificadas. A retomada do processo demarcatório — com 20 homologações entre 2023 e 2025, contra apenas 1 no período 2019–2022 — representa avanço significativo. Os instrumentos normativos correspondentes constam da Base Normativa cadastrada.</p>
+  <p>38. ${fmtNum(num(d.demo?.populacaoIndigena || 1694836))} pessoas indígenas pela contagem específica, das quais mais da metade (53,97%) vive em áreas urbanas. São 391 etnias e 295 línguas indígenas identificadas. A retomada do processo demarcatório — com 20 homologações entre 2023 e 2025, contra apenas 1 no período 2019–2022 — representa avanço significativo.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['indígen', 'indigen', 'demarca', 'funai', 'yanomami', 'quilombo'], 'V', 4);
+    return norm ? ` Os marcos normativos cadastrados que sustentam essa retomada incluem: ${norm}.` : '';
+  })()}</p>
 
   <h4>5.10 Comunidades de terreiro e liberdade religiosa</h4>
   <p>39. Crescimento de 382% nas denúncias de intolerância religiosa entre 2020 e 2025 (566 para 2.723 denúncias), com umbanda e candomblé respondendo por 268 dos 2.472 casos com religião específica identificada em 2024 (Fonte: ONDH — Disque 100).</p>
@@ -552,13 +555,13 @@ export function renderArticleVIINarrative(d: ArticleNarrativeData): string {
   <p>45. A implementação das diretrizes que tornam obrigatório o ensino de história e cultura africana e afro-brasileira avançou no período, mas permanece irregular. Avaliação do MEC (2023) concluiu que 78% das escolas públicas declaravam trabalhar os conteúdos correspondentes, mas apenas 42% o faziam de forma sistemática e curricular. A formação continuada de professores capacitou 78.000 profissionais entre 2018 e 2024.</p>
 
   <h4>7.3 Reparações históricas</h4>
-  <p>46. O Estado reconhece que a agenda reparatória encontra resistências políticas e que o processo de construção de consenso é lento. Os instrumentos institucionais correspondentes, quando formalizados, constam da Base Normativa cadastrada no sistema.</p>
+  <p>46. O Estado reconhece que a agenda reparatória encontra resistências políticas e que o processo de construção de consenso é lento.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['afirmativ', 'repara', 'década', 'decada', 'afrodesc', 'cota', 'palmares'], 'VII', 4);
+    return norm ? ` Os instrumentos institucionais cadastrados que materializam, parcialmente, essa agenda incluem: ${norm}.` : '';
+  })()}</p>
 
   <h4>7.4 Cultura afro-brasileira e patrimônio</h4>
-  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>
-
-  <h4>7.5 Avaliação consolidada</h4>
-  <p>48. Os instrumentos formais de revisão de materiais didáticos, autorregulação publicitária e avaliação curricular vinculados ao Artigo VII constam exclusivamente da Base Normativa cadastrada no sistema, conforme listagem acima.</p>`;
+  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>`;
 }
 
 // ═══════════════════════════════════════════
