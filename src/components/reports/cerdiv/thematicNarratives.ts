@@ -437,7 +437,20 @@ export function renderLGBTandDisabilityNarrative(serieAntra: any[], lgbtqia: any
         </tr>`).join('')}</tbody>
     </table>
     <p style="font-size:8.5pt"><strong>Fonte:</strong> Censo 2022 (SIDRA 10126) / PNAD Contínua (SIDRA 4178/9384).</p>
-    <p>A prevalência de deficiência é maior entre pretos (${num(deficiencia.find((d: any) => d.raca === 'Preta')?.taxaDeficiencia || 8.6).toFixed(1)}%) do que entre brancos (${num(deficiencia.find((d: any) => d.raca === 'Branca')?.taxaDeficiencia || 7.1).toFixed(1)}%), e a renda média de PcD pretas (R$ ${fmtNum(num(deficiencia.find((d: any) => d.raca === 'Preta')?.rendaMedia || 1485))}) é 37% inferior à de PcD brancas.</p>`);
+    ${(() => {
+      const preta = deficiencia.find((d: any) => d.raca === 'Preta');
+      const branca = deficiencia.find((d: any) => d.raca === 'Branca');
+      if (!preta || !branca) return '';
+      const tp = num(preta.taxaDeficiencia), tb = num(branca.taxaDeficiencia);
+      const rp = num(preta.rendaMedia), rb = num(branca.rendaMedia);
+      const partes: string[] = [];
+      if (tp && tb) partes.push(`A prevalência de deficiência é de ${tp.toFixed(1)}% entre pretos e ${tb.toFixed(1)}% entre brancos`);
+      if (rp && rb) {
+        const dif = (((rb - rp) / rb) * 100).toFixed(0);
+        partes.push(`a renda média de PcD pretas (R$ ${fmtNum(rp)}) é ${dif}% inferior à de PcD brancas (R$ ${fmtNum(rb)})`);
+      }
+      return partes.length ? `<p>${partes.join('; ')}.</p>` : '';
+    })()}`);
   }
 
   if (blocks.length === 0) return '';
