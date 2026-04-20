@@ -88,7 +88,7 @@ export function renderSecurityNarrative(seg: any[], fem: any[], atlas: any, jove
     ${juventudeData?.length > 0 ? `
     <h4>Juventude negra</h4>
     <div class="highlight-box">
-      <p><strong>47,8% das vítimas de homicídio</strong> tinham entre 15 e 29 anos em 2023 (Atlas da Violência 2025). O IVJ-N (Índice de Vulnerabilidade Juvenil) indica que jovens negros têm <strong>risco ${num(atlas?.ivjn?.riscoRelativo || 2.0).toFixed(1)}x maior</strong> de homicídio que jovens brancos.</p>
+      <p>O IVJ-N (Índice de Vulnerabilidade Juvenil) indica que jovens negros têm <strong>risco ${num(atlas?.ivjn?.riscoRelativo || 2.0).toFixed(1)}× maior</strong> de homicídio que jovens brancos.</p>
       ${dataCards(juventudeData.slice(0, 5).map((j: any) => ({
         value: typeof j.valor === 'number' ? `${j.valor}${j.indicador.includes('%') ? '%' : ''}` : String(j.valor),
         label: j.indicador.substring(0, 40),
