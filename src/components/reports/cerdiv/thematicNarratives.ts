@@ -88,7 +88,7 @@ export function renderSecurityNarrative(seg: any[], fem: any[], atlas: any, jove
     ${juventudeData?.length > 0 ? `
     <h4>Juventude negra</h4>
     <div class="highlight-box">
-      <p><strong>47,8% das vítimas de homicídio</strong> tinham entre 15 e 29 anos em 2023 (Atlas da Violência 2025). O IVJ-N (Índice de Vulnerabilidade Juvenil) indica que jovens negros têm <strong>risco ${num(atlas?.ivjn?.riscoRelativo || 2.0).toFixed(1)}x maior</strong> de homicídio que jovens brancos.</p>
+      <p>O IVJ-N (Índice de Vulnerabilidade Juvenil) indica que jovens negros têm <strong>risco ${num(atlas?.ivjn?.riscoRelativo || 2.0).toFixed(1)}× maior</strong> de homicídio que jovens brancos.</p>
       ${dataCards(juventudeData.slice(0, 5).map((j: any) => ({
         value: typeof j.valor === 'number' ? `${j.valor}${j.indicador.includes('%') ? '%' : ''}` : String(j.valor),
         label: j.indicador.substring(0, 40),
@@ -278,7 +278,7 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
 
     <div class="analysis-box">
       <h4>📊 Evolução comparativa</h4>
-      <p>O desemprego negro caiu de <strong>${num(first?.desempregoNegro).toFixed(1)}% para ${num(last?.desempregoNegro).toFixed(1)}%</strong>, e o branco de ${num(first?.desempregoBranco).toFixed(1)}% para ${num(last?.desempregoBranco).toFixed(1)}%. A renda nominal negra cresceu de R$ ${fmtNum(num(first?.rendaMediaNegra))} para R$ ${fmtNum(num(last?.rendaMediaNegra))} (+${((num(last?.rendaMediaNegra) / num(first?.rendaMediaNegra) - 1) * 100).toFixed(0)}%). Contudo, a <strong>razão de renda negra/branca permanece em torno de 0,59</strong> — ou seja, uma pessoa negra ganha em média 59% do que uma branca.</p>
+      <p>O desemprego negro caiu de <strong>${num(first?.desempregoNegro).toFixed(1)}% para ${num(last?.desempregoNegro).toFixed(1)}%</strong>, e o branco de ${num(first?.desempregoBranco).toFixed(1)}% para ${num(last?.desempregoBranco).toFixed(1)}%. A renda nominal negra cresceu de R$ ${fmtNum(num(first?.rendaMediaNegra))} para R$ ${fmtNum(num(last?.rendaMediaNegra))} (+${((num(last?.rendaMediaNegra) / num(first?.rendaMediaNegra) - 1) * 100).toFixed(0)}%). A razão de renda negra/branca em ${last?.ano} é de <strong>${(num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)).toFixed(2)}</strong> — ou seja, uma pessoa negra ganha em média ${((num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)) * 100).toFixed(0)}% do que uma branca.</p>
     </div>
 
     ${trabalhoRG?.length > 0 ? `
@@ -294,7 +294,13 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
         </tr>`).join('')}</tbody>
     </table>
     <p style="font-size:8.5pt"><strong>Fonte:</strong> DIEESE — Infográfico Consciência Negra 2025. Nota: DIEESE usa "negros/não negros".</p>
-    <p>A <strong>mulher negra</strong> ocupa a posição mais desfavorável: renda de R$ ${fmtNum(num(trabalhoRG[0]?.renda))}, correspondendo a apenas <strong>46,8% do rendimento do homem não negro</strong> (R$ ${fmtNum(num(trabalhoRG[3]?.renda || trabalhoRG[trabalhoRG.length - 1]?.renda))}).</p>` : ''}
+    ${(() => {
+      const mn = trabalhoRG.find((t: any) => /mulher.*neg/i.test(t.grupo));
+      const hnn = trabalhoRG.find((t: any) => /homem.*n[ãa]o\s*neg/i.test(t.grupo) || /homem.*branc/i.test(t.grupo)) || trabalhoRG[trabalhoRG.length - 1];
+      if (!mn || !hnn || !num(hnn.renda)) return '';
+      const pct = ((num(mn.renda) / num(hnn.renda)) * 100).toFixed(1);
+      return `<p>A <strong>mulher negra</strong> ocupa a posição mais desfavorável: renda de R$ ${fmtNum(num(mn.renda))}, correspondendo a <strong>${pct}% do rendimento de ${hnn.grupo.toLowerCase()}</strong> (R$ ${fmtNum(num(hnn.renda))}).</p>`;
+    })()}` : ''}
 
     ${classePorRaca?.length > 0 ? `
     <h4>Pobreza por raça</h4>
@@ -317,7 +323,7 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
       <p>Das ${fmtNum(num(chefia.mulheresChefesMonoparentais))} famílias monoparentais chefiadas por mulheres, <strong>${num(chefia.percentualNegras).toFixed(1)}% são negras</strong>. A insegurança alimentar grave (fome) atinge <strong>${num(chefia.fomePretos).toFixed(1)}%</strong> dos domicílios chefiados por pretos e <strong>${num(chefia.fomePardos).toFixed(1)}%</strong> dos chefiados por pardos, contra ${num(chefia.fomeBrancos).toFixed(1)}% dos chefiados por brancos. Mulheres negras com escolaridade ≥8 anos ainda sofrem <strong>${num(chefia.iaModeradaGraveMulheresNegrasEscolarizadas).toFixed(0)}%</strong> de insegurança alimentar moderada/grave, contra ${num(chefia.iaModeradaGraveMulheresBrancasEscolarizadas).toFixed(1)}% das brancas — evidenciando que a escolaridade não protege igualmente contra a fome.</p>
     </div>` : ''}
 
-    <p><strong>Conclusão:</strong> O mercado de trabalho melhorou para todos, mas a estrutura da desigualdade permanece: negros ganham 59% do rendimento de brancos, mulheres negras ocupam a base da pirâmide salarial, e a pobreza segue racialmente concentrada.</p>
+    <p><strong>Conclusão:</strong> O mercado de trabalho melhorou para todos, mas a estrutura da desigualdade permanece: a razão de renda negra/branca em ${last?.ano} é de ${(num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)).toFixed(2)}, mulheres negras ocupam a base da pirâmide salarial, e a pobreza segue racialmente concentrada.</p>
   </div>`;
 }
 
@@ -346,7 +352,7 @@ export function renderTerritoryNarrative(povos: any, deficit: any[]): string {
     ])}
 
     <div class="analysis-box">
-      <p>O Censo 2022 revelou que <strong>63,4% da população indígena vive fora de Terras Indígenas</strong>, enfrentando vulnerabilidades urbanas e invisibilidade estatística. A homologação de TIs saltou de ${ind.terrasHomologadas2018_2022 || 1} (2018-2022) para ${ind.terrasHomologadas2023_2025 || 20} (2023-2025), mas o acumulado total (${ind.totalTIsHomologadasReservadas2025 || 536}) ainda é insuficiente frente às demandas históricas.</p>
+      <p>A homologação de TIs saltou de ${ind.terrasHomologadas2018_2022 || 1} (2018-2022) para ${ind.terrasHomologadas2023_2025 || 20} (2023-2025), mas o acumulado total (${ind.totalTIsHomologadasReservadas2025 || 536}) ainda é insuficiente frente às demandas históricas.</p>
     </div>
 
     <h4>Comunidades quilombolas</h4>
@@ -412,7 +418,7 @@ export function renderLGBTandDisabilityNarrative(serieAntra: any[], lgbtqia: any
         [{ name: 'Total assassinatos', color: '#8b5cf6', values: serieAntra.filter((s: any) => s.ano >= 2018).map((s: any) => num(s.totalAssassinatos)) }],
         650, 200
       )}
-      <p style="font-size:8.5pt;margin-top:0.25cm"><strong>Fonte:</strong> Dossiê ANTRA 2026 (série histórica). Média 2017-2025: 77% das vítimas eram negras.</p>
+      <p style="font-size:8.5pt;margin-top:0.25cm"><strong>Fonte:</strong> Dossiê ANTRA 2026 (série histórica).</p>
     </div>
     <p>Em ${last?.ano}, foram registrados <strong>${last?.totalAssassinatos} assassinatos de pessoas trans</strong>, com <strong>${last?.negros}% de vítimas negras</strong>. A sobreposição de raça e identidade de gênero coloca mulheres trans negras como o grupo mais vulnerável à violência letal no Brasil.</p>`);
   }
@@ -431,7 +437,20 @@ export function renderLGBTandDisabilityNarrative(serieAntra: any[], lgbtqia: any
         </tr>`).join('')}</tbody>
     </table>
     <p style="font-size:8.5pt"><strong>Fonte:</strong> Censo 2022 (SIDRA 10126) / PNAD Contínua (SIDRA 4178/9384).</p>
-    <p>A prevalência de deficiência é maior entre pretos (${num(deficiencia.find((d: any) => d.raca === 'Preta')?.taxaDeficiencia || 8.6).toFixed(1)}%) do que entre brancos (${num(deficiencia.find((d: any) => d.raca === 'Branca')?.taxaDeficiencia || 7.1).toFixed(1)}%), e a renda média de PcD pretas (R$ ${fmtNum(num(deficiencia.find((d: any) => d.raca === 'Preta')?.rendaMedia || 1485))}) é 37% inferior à de PcD brancas.</p>`);
+    ${(() => {
+      const preta = deficiencia.find((d: any) => d.raca === 'Preta');
+      const branca = deficiencia.find((d: any) => d.raca === 'Branca');
+      if (!preta || !branca) return '';
+      const tp = num(preta.taxaDeficiencia), tb = num(branca.taxaDeficiencia);
+      const rp = num(preta.rendaMedia), rb = num(branca.rendaMedia);
+      const partes: string[] = [];
+      if (tp && tb) partes.push(`A prevalência de deficiência é de ${tp.toFixed(1)}% entre pretos e ${tb.toFixed(1)}% entre brancos`);
+      if (rp && rb) {
+        const dif = (((rb - rp) / rb) * 100).toFixed(0);
+        partes.push(`a renda média de PcD pretas (R$ ${fmtNum(rp)}) é ${dif}% inferior à de PcD brancas (R$ ${fmtNum(rb)})`);
+      }
+      return partes.length ? `<p>${partes.join('; ')}.</p>` : '';
+    })()}`);
   }
 
   if (blocks.length === 0) return '';
