@@ -278,7 +278,7 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
 
     <div class="analysis-box">
       <h4>📊 Evolução comparativa</h4>
-      <p>O desemprego negro caiu de <strong>${num(first?.desempregoNegro).toFixed(1)}% para ${num(last?.desempregoNegro).toFixed(1)}%</strong>, e o branco de ${num(first?.desempregoBranco).toFixed(1)}% para ${num(last?.desempregoBranco).toFixed(1)}%. A renda nominal negra cresceu de R$ ${fmtNum(num(first?.rendaMediaNegra))} para R$ ${fmtNum(num(last?.rendaMediaNegra))} (+${((num(last?.rendaMediaNegra) / num(first?.rendaMediaNegra) - 1) * 100).toFixed(0)}%). Contudo, a <strong>razão de renda negra/branca permanece em torno de 0,59</strong> — ou seja, uma pessoa negra ganha em média 59% do que uma branca.</p>
+      <p>O desemprego negro caiu de <strong>${num(first?.desempregoNegro).toFixed(1)}% para ${num(last?.desempregoNegro).toFixed(1)}%</strong>, e o branco de ${num(first?.desempregoBranco).toFixed(1)}% para ${num(last?.desempregoBranco).toFixed(1)}%. A renda nominal negra cresceu de R$ ${fmtNum(num(first?.rendaMediaNegra))} para R$ ${fmtNum(num(last?.rendaMediaNegra))} (+${((num(last?.rendaMediaNegra) / num(first?.rendaMediaNegra) - 1) * 100).toFixed(0)}%). A razão de renda negra/branca em ${last?.ano} é de <strong>${(num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)).toFixed(2)}</strong> — ou seja, uma pessoa negra ganha em média ${((num(last?.rendaMediaNegra) / Math.max(num(last?.rendaMediaBranca), 1)) * 100).toFixed(0)}% do que uma branca.</p>
     </div>
 
     ${trabalhoRG?.length > 0 ? `
