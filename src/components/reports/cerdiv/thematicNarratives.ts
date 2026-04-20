@@ -294,7 +294,13 @@ export function renderLaborNarrative(eco: any[], classePorRaca: any[], trabalhoR
         </tr>`).join('')}</tbody>
     </table>
     <p style="font-size:8.5pt"><strong>Fonte:</strong> DIEESE — Infográfico Consciência Negra 2025. Nota: DIEESE usa "negros/não negros".</p>
-    <p>A <strong>mulher negra</strong> ocupa a posição mais desfavorável: renda de R$ ${fmtNum(num(trabalhoRG[0]?.renda))}, correspondendo a apenas <strong>46,8% do rendimento do homem não negro</strong> (R$ ${fmtNum(num(trabalhoRG[3]?.renda || trabalhoRG[trabalhoRG.length - 1]?.renda))}).</p>` : ''}
+    ${(() => {
+      const mn = trabalhoRG.find((t: any) => /mulher.*neg/i.test(t.grupo));
+      const hnn = trabalhoRG.find((t: any) => /homem.*n[ãa]o\s*neg/i.test(t.grupo) || /homem.*branc/i.test(t.grupo)) || trabalhoRG[trabalhoRG.length - 1];
+      if (!mn || !hnn || !num(hnn.renda)) return '';
+      const pct = ((num(mn.renda) / num(hnn.renda)) * 100).toFixed(1);
+      return `<p>A <strong>mulher negra</strong> ocupa a posição mais desfavorável: renda de R$ ${fmtNum(num(mn.renda))}, correspondendo a <strong>${pct}% do rendimento de ${hnn.grupo.toLowerCase()}</strong> (R$ ${fmtNum(num(hnn.renda))}).</p>`;
+    })()}
 
     ${classePorRaca?.length > 0 ? `
     <h4>Pobreza por raça</h4>
