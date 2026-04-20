@@ -1093,43 +1093,22 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
     <h2>III. Medidas Legislativas, Judiciais e Administrativas (2018-2025)</h2>
     
     <div class="section">
-      <h3>A. Principais Avanços Legislativos</h3>
+      <h3>A. Marcos Normativos Cadastrados</h3>
+      ${normativos.length > 0 ? `
       <table>
-        <thead>
-          <tr>
-            <th>Norma</th>
-            <th>Ano</th>
-            <th>Descrição</th>
-            <th>Impacto</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Documento</th><th>Categoria</th><th>Fonte</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>Lei 14.532/2023</strong></td>
-            <td>2023</td>
-            <td>Equipara injúria racial ao crime de racismo</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
-          <tr>
-            <td><strong>Lei 14.723/2023</strong></td>
-            <td>2023</td>
-            <td>Renova sistema de cotas no ensino superior por 10 anos</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
-          <tr>
-            <td><strong>Decreto 11.956/2024</strong></td>
-            <td>2024</td>
-            <td>Programa Juventude Negra Viva</td>
-            <td><span class="badge badge-info">Médio</span></td>
-          </tr>
-          <tr>
-            <td><strong>Decreto 11.786/2023</strong></td>
-            <td>2023</td>
-            <td>Política Nacional de Gestão Territorial Quilombola (PNGTAQ)</td>
-            <td><span class="badge badge-success">Alto</span></td>
-          </tr>
+          ${normativos.slice(0, 25).map((n: any) => `
+            <tr>
+              <td><strong>${n.titulo}</strong></td>
+              <td>${n.categoria || '—'}</td>
+              <td>${n.url_origem ? `<a href="${n.url_origem}" target="_blank">link</a>` : '<em>sem URL</em>'}</td>
+            </tr>
+          `).join('')}
         </tbody>
       </table>
+      <p style="font-size:9pt;color:#64748b;">Total cadastrado: <strong>${normativos.length}</strong>. Fonte: <code>documentos_normativos</code>.</p>
+      ` : `<p style="font-size:9pt;color:#64748b;border-left:3px solid #cbd5e1;padding-left:12px;"><em>Nenhum documento normativo cadastrado. Cadastre marcos legislativos em documentos_normativos para preenchimento automático.</em></p>`}
 
       <h3>B. Mudanças Institucionais</h3>
       <ul>
@@ -1289,7 +1268,7 @@ function generateCERDIVHTML(lacunas: any[], respostas: any[], conclusoes: any[],
         <ul>
           <li>Acelerar a demarcação de territórios indígenas e quilombolas</li>
           <li>Implementar medidas efetivas para reduzir a letalidade policial contra jovens negros</li>
-          <li>Fortalecer a implementação da Lei 10.639/2003 sobre ensino de história afro-brasileira</li>
+          <li>Fortalecer a implementação da legislação sobre ensino de história e cultura afro-brasileira e indígena</li>
           <li>Continuar a produção de dados estatísticos desagregados sobre todos os grupos protegidos</li>
           <li>Expandir políticas interseccionais que abordem discriminações múltiplas</li>
         </ul>
