@@ -17,6 +17,7 @@
 import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import { fmtBRL, fmtNum } from './chartUtils';
 import { renderNormativosVinculados, renderNormativosResumoParagrafo, type NormativoRecord } from './normativosHelper';
+import { findIndicador, pickNum, fonteLink } from './indicadoresHelper';
 
 function num(v: unknown): number {
   const p = Number(v); return Number.isFinite(p) ? p : 0;
@@ -123,15 +124,38 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
   </div>
 
   <h4>3.1 Habitação e segregação urbana</h4>
-  <p>13. 78,2% dos domicílios chefiados por negros têm acesso à rede geral de água, contra 88,1% dos brancos; 68,6% têm esgotamento adequado, contra 83,2%; e 88,4% têm coleta de lixo, contra 94,1% (Censo 2022, IBGE). Pretos e pardos representam 69% da população sem esgoto adequado e 72% sem água adequada no Brasil.</p>
+  ${(() => {
+    const favelas = findIndicador(d.indicadores, ['favelas'], 'habitacao');
+    if (!favelas) return '';
+    const negPct = pickNum(favelas.dados, ['2022', 'negros_pct']);
+    const totalMor = pickNum(favelas.dados, ['2022', 'total_moradores']);
+    if (negPct == null || totalMor == null) return '';
+    return `<p>13. ${negPct.toFixed(1)}% dos moradores em favelas e comunidades urbanas são negros (${fmtNum(totalMor)} pessoas, Censo 2022), proporção significativamente superior aos 55,5% que negros representam na população total brasileira. ${fonteLink(favelas)}</p>`;
+  })()}
 
-  <p>14. O déficit habitacional mantém viés racial acentuado. Dados da Fundação João Pinheiro indicam que o déficit habitacional de famílias negras era de 4.122.625 unidades em 2022, contra 1.973.211 para brancas — razão de 2,09. As políticas habitacionais com dispositivos de equidade racial e os respectivos instrumentos legais constam da Base Normativa do sistema vinculados ao Artigo III (relação abaixo).</p>
+  ${(() => {
+    const def = findIndicador(d.indicadores, ['déficit habitacional'], 'habitacao') || findIndicador(d.indicadores, ['deficit habitacional'], 'habitacao');
+    if (!def) return '';
+    const neg = pickNum(def.dados, ['2022', 'negros']) ?? pickNum(def.dados, ['negros', '2022']);
+    const bra = pickNum(def.dados, ['2022', 'brancos']) ?? pickNum(def.dados, ['brancos', '2022']);
+    if (neg == null || bra == null) return '';
+    const razao = (neg / Math.max(bra, 1)).toFixed(2);
+    return `<p>14. O déficit habitacional mantém viés racial acentuado: ${fmtNum(neg)} unidades para famílias negras contra ${fmtNum(bra)} para brancas (razão ${razao}). ${fonteLink(def)}</p>`;
+  })()}
 
   <h4>3.2 Marco normativo cadastrado vinculado ao Artigo III</h4>
   ${renderNormativosVinculados(d.normativos, 'III')}
 
   <h4>3.3 Sistema prisional e segregação institucional</h4>
-  <p>15. <strong>68,7%</strong> da população carcerária é negra — com possível subnotificação, dado que 14,7% dos registros não contêm o quesito racial. A população encarcerada atingiu 832 mil pessoas em 2023, mantendo o Brasil como terceiro maior contingente carcerário do mundo. A superlotação permanece crítica: 36% dos estabelecimentos operavam com taxa de ocupação superior a 200% em 2023.</p>
+  ${(() => {
+    const pris = findIndicador(d.indicadores, ['prisional'], 'seguranca_publica') || findIndicador(d.indicadores, ['carcer'], 'seguranca_publica');
+    if (!pris) return '';
+    const pct2024 = pickNum(pris.dados, ['percentual_negros', '2024']);
+    const total2024 = pickNum(pris.dados, ['total_com_domiciliar', '2024']) ?? pickNum(pris.dados, ['total_celas_fisicas', '2024_dez']);
+    if (pct2024 == null) return '';
+    const totalTxt = total2024 != null ? ` A população encarcerada total atingiu ${fmtNum(total2024)} pessoas em 2024.` : '';
+    return `<p>15. ${pct2024.toFixed(1)}% da população carcerária é negra em 2024.${totalTxt} ${fonteLink(pris)}</p>`;
+  })()}
 
   <p>16. As respostas institucionais — incluindo diagnósticos raciais sobre impacto de decisões penais e protocolos de uso da força com perspectiva racial — quando formalizadas em instrumentos normativos, constam da Base Normativa cadastrada no sistema.</p>
 
@@ -158,7 +182,39 @@ export function renderArticleIVNarrative(d: ArticleNarrativeData): string {
   ${renderNormativosVinculados(d.normativos, 'IV')}
 
   <h4>4.2 Indicadores de aplicação penal</h4>
-  <p>19. Os processos judiciais de racismo/injúria racial saltaram de 50 em 2020 para 4.633 em 2025, crescimento de 9.166% (Fonte: CNJ — Justiça em Números). As denúncias no Disque 100 saltaram de 3.535 em 2022 para 16.245 em 2025 (Fonte: ONDH/MDHC).</p>
+  ${(() => {
+    const racism = findIndicador(d.indicadores, ['racismo'], 'seguranca_publica')
+      || findIndicador(d.indicadores, ['injúria racial'])
+      || findIndicador(d.indicadores, ['injuria racial']);
+    const disque = findIndicador(d.indicadores, ['disque 100'])
+      || findIndicador(d.indicadores, ['discriminação racial'])
+      || findIndicador(d.indicadores, ['discriminacao racial']);
+    const partes: string[] = [];
+    if (racism) {
+      const dados = racism.dados as any;
+      const anos = Object.keys(dados || {}).filter((k) => /^\d{4}$/.test(k)).sort();
+      if (anos.length >= 2) {
+        const first = anos[0], last = anos[anos.length - 1];
+        const v1 = pickNum(dados, [first]);
+        const v2 = pickNum(dados, [last]);
+        if (v1 != null && v2 != null && v1 > 0) {
+          const pct = (((v2 - v1) / v1) * 100).toFixed(0);
+          partes.push(`Os processos judiciais de racismo/injúria racial cresceram de ${fmtNum(v1)} (${first}) para ${fmtNum(v2)} (${last}), variação de ${pct}%. ${fonteLink(racism)}`);
+        }
+      }
+    }
+    if (disque) {
+      const dados = disque.dados as any;
+      const anos = Object.keys(dados || {}).filter((k) => /^\d{4}$/.test(k)).sort();
+      if (anos.length >= 2) {
+        const first = anos[0], last = anos[anos.length - 1];
+        const v1 = pickNum(dados, [first]);
+        const v2 = pickNum(dados, [last]);
+        if (v1 != null && v2 != null) partes.push(`As denúncias no Disque 100 evoluíram de ${fmtNum(v1)} (${first}) para ${fmtNum(v2)} (${last}). ${fonteLink(disque)}`);
+      }
+    }
+    return partes.length ? `<p>19. ${partes.join(' ')}</p>` : '';
+  })()}
 
   <p>20. O Estado reconhece, em resposta ao §31(c) das Observações Finais, que entre 2019 e 2022 ocorreram múltiplos incidentes de discurso de ódio com teor racial por parte de autoridades públicas de alto escalão, sem que as responsabilizações tenham sido aplicadas de forma adequada.</p>
 
@@ -204,21 +260,67 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
   </table>
   <p style="font-size:8.5pt;color:#64748b">Fonte: PNAD Contínua/SIDRA 6402 e 6405; SIS/IBGE 2024–2025.</p>` : ''}
 
-  <p>23. Mulheres negras recebem apenas R$ 2.264 mensais, correspondendo a 46,8% do rendimento de homens não negros (R$ 4.835), configurando a maior desigualdade entre os quatro grupos analisados.</p>
+  ${(() => {
+    const mn = findIndicador(d.indicadores, ['mulheres negras'], 'genero_raca')
+      || findIndicador(d.indicadores, ['rendimento', 'mulher']);
+    if (!mn) return '';
+    const dados = mn.dados as any;
+    const valMN = pickNum(dados, ['mulher_negra_renda']) ?? pickNum(dados, ['mulheres_negras']) ?? pickNum(dados, ['valor_mulher_negra']);
+    const valHNN = pickNum(dados, ['homem_nao_negro_renda']) ?? pickNum(dados, ['homens_nao_negros']) ?? pickNum(dados, ['valor_homem_nao_negro']);
+    if (valMN == null || valHNN == null || valHNN === 0) return '';
+    const pct = ((valMN / valHNN) * 100).toFixed(1);
+    return `<p>23. Mulheres negras recebem ${fmtBRL(valMN)} mensais, correspondendo a ${pct}% do rendimento de homens não negros (${fmtBRL(valHNN)}), configurando a maior desigualdade entre os grupos analisados. ${fonteLink(mn)}</p>`;
+  })()}
 
   <h4>5.2 Marco normativo cadastrado vinculado ao Artigo V</h4>
   ${renderNormativosResumoParagrafo(d.normativos, 'V', '24. O Artigo V — pelo amplo escopo de direitos econômicos, sociais e culturais que cobre — concentra a maior parte dos instrumentos normativos cadastrados no sistema.')}
   ${renderNormativosVinculados(d.normativos, 'V')}
 
   <h4>5.3 Pobreza e transferência de renda</h4>
-  <p>25. 65.383.976 negros (pretos e pardos) inscritos no CadÚnico, correspondendo a 69,8% do total de inscritos — refletindo a sobre-representação da população negra na pobreza estrutural brasileira.</p>
-
-  <p>26. Os dados da SIS/IBGE 2025 (ref. 2024) indicam taxa de pobreza de 29,8% entre pardos e 25,8% entre pretos, contra 15,1% entre brancos — razão de aproximadamente 1,8. A maior parte das famílias quilombolas (74,2%) e indígenas (78,3%) vive em situação de extrema pobreza, segundo dados do CadÚnico de 2024.</p>
+  ${(() => {
+    const cad = findIndicador(d.indicadores, ['cadúnico'], 'habitacao')
+      || findIndicador(d.indicadores, ['cadunico'])
+      || findIndicador(d.indicadores, ['mcmv']);
+    if (!cad) return '';
+    const dados = cad.dados as any;
+    const negros = dados?.negros || {};
+    const brancos = dados?.brancos || {};
+    const anos = Object.keys(negros).filter((k) => /^\d{4}$/.test(k)).sort();
+    if (!anos.length) return '';
+    const last = anos[anos.length - 1];
+    const vN = pickNum(negros, [last]);
+    const vB = pickNum(brancos, [last]);
+    if (vN == null) return '';
+    const total = vN + (vB || 0);
+    const pct = total > 0 ? ((vN / total) * 100).toFixed(1) : null;
+    return `<p>25. ${fmtNum(vN)} negros (pretos e pardos) inscritos no CadÚnico em ${last}${pct ? `, correspondendo a ${pct}% do total registrado` : ''} — refletindo a sobre-representação da população negra nos cadastros de proteção social. ${fonteLink(cad)}</p>`;
+  })()}
 
   <h4>5.4 Trabalho infantil e trabalho escravo</h4>
-  <p>27. 66% das crianças de 5 a 17 anos em situação de trabalho infantil são negras em 2024, proporção praticamente estável desde 2018 (64,8%). Em 2024, estimava-se 1.650.000 crianças nessa situação.</p>
+  ${(() => {
+    const ti = findIndicador(d.indicadores, ['trabalho infantil']);
+    if (!ti) return '';
+    const dados = ti.dados as any;
+    const pctNeg = pickNum(dados, ['percentual_negros_2024']) ?? pickNum(dados, ['2024', 'pct_negros']) ?? pickNum(dados, ['pct_negros']);
+    const total = pickNum(dados, ['total_2024']) ?? pickNum(dados, ['2024', 'total']);
+    if (pctNeg == null) return '';
+    const totTxt = total != null ? ` Em 2024, estimava-se ${fmtNum(total)} crianças nessa situação.` : '';
+    return `<p>27. ${pctNeg.toFixed(1)}% das crianças de 5 a 17 anos em situação de trabalho infantil são negras.${totTxt} ${fonteLink(ti)}</p>`;
+  })()}
 
-  <p>28. 66,8% dos resgatados de situações de trabalho escravo eram negros (pardos 52,7% + pretos 14,1%). O Estado reforçou a fiscalização no período, com 3.142 resgatados em 2023 e 2.786 em 2024.</p>
+  ${(() => {
+    const te = findIndicador(d.indicadores, ['trabalho escravo']);
+    if (!te) return '';
+    const dados = te.dados as any;
+    const pctNeg = pickNum(dados, ['percentual_negros']) ?? pickNum(dados, ['pct_negros']);
+    const r2023 = pickNum(dados, ['resgatados', '2023']) ?? pickNum(dados, ['2023']);
+    const r2024 = pickNum(dados, ['resgatados', '2024']) ?? pickNum(dados, ['2024']);
+    if (pctNeg == null && r2023 == null && r2024 == null) return '';
+    const partes: string[] = [];
+    if (pctNeg != null) partes.push(`${pctNeg.toFixed(1)}% dos resgatados de situações de trabalho escravo são negros`);
+    if (r2023 != null && r2024 != null) partes.push(`${fmtNum(r2023)} resgatados em 2023 e ${fmtNum(r2024)} em 2024`);
+    return `<p>28. ${partes.join('; ')}. ${fonteLink(te)}</p>`;
+  })()}
 
   <h4>5.5 Mortalidade materna — indicador-sentinela</h4>
   <div class="highlight-box" style="font-size:9.5pt">
@@ -281,12 +383,38 @@ export function renderArticleVNarrative(d: ArticleNarrativeData): string {
     </table>`;
   })() : ''}
 
-  <p>35. A evasão escolar de jovens negros de 15 a 29 anos sem ensino médio completo atingiu 72,2% em 2024, contra 26,8% de brancos (SIS/IBGE 2025, Tabela 4.16). A pandemia agravou esse quadro: a taxa de evasão de crianças negras no ensino médio cresceu de 6,1% (2019) para 8,4% (2020), retornando lentamente a 6,8% em 2023.</p>
+  ${(() => {
+    const ev = findIndicador(d.indicadores, ['evasão'], 'educacao')
+      || findIndicador(d.indicadores, ['evasao'])
+      || findIndicador(d.indicadores, ['abandono escolar']);
+    if (!ev) return '';
+    const dados = ev.dados as any;
+    const negro = pickNum(dados, ['negros_pct']) ?? pickNum(dados, ['2024', 'negros_pct']) ?? pickNum(dados, ['negros']);
+    const branco = pickNum(dados, ['brancos_pct']) ?? pickNum(dados, ['2024', 'brancos_pct']) ?? pickNum(dados, ['brancos']);
+    if (negro == null) return '';
+    const compTxt = branco != null ? `, contra ${branco.toFixed(1)}% de brancos` : '';
+    return `<p>35. A evasão escolar de jovens negros atingiu ${negro.toFixed(1)}%${compTxt}. ${fonteLink(ev)}</p>`;
+  })()}
 
   <h4>5.8 Comunidades quilombolas</h4>
   <p>36. ${fmtNum(num(d.povos?.quilombolas?.populacao || 1330186))} pessoas vivem em territórios identificados como quilombolas, das quais apenas 12,6% residem em territórios oficialmente reconhecidos. ${fmtNum(num(d.povos?.quilombolas?.comunidadesCertificadas || 3158))} comunidades certificadas pela Fundação Palmares.</p>
 
-  <p>37. Apenas 33,6% dos domicílios quilombolas têm acesso à rede geral de água (versus 82,9% da média nacional); 25,1% têm esgotamento adequado (versus 62,5%); e 50,4% têm coleta de lixo (versus 82,5%).</p>
+  ${(() => {
+    const sn = findIndicador(d.indicadores, ['saneamento', 'quilombola'])
+      || findIndicador(d.indicadores, ['quilombola', 'água'])
+      || findIndicador(d.indicadores, ['quilombola', 'agua']);
+    if (!sn) return '';
+    const dados = sn.dados as any;
+    const agua = pickNum(dados, ['agua_pct']) ?? pickNum(dados, ['quilombolas', 'agua']) ?? pickNum(dados, ['agua']);
+    const esgoto = pickNum(dados, ['esgoto_pct']) ?? pickNum(dados, ['quilombolas', 'esgoto']) ?? pickNum(dados, ['esgoto']);
+    const lixo = pickNum(dados, ['lixo_pct']) ?? pickNum(dados, ['quilombolas', 'lixo']) ?? pickNum(dados, ['lixo']);
+    const partes: string[] = [];
+    if (agua != null) partes.push(`${agua.toFixed(1)}% têm acesso à rede geral de água`);
+    if (esgoto != null) partes.push(`${esgoto.toFixed(1)}% têm esgotamento adequado`);
+    if (lixo != null) partes.push(`${lixo.toFixed(1)}% têm coleta de lixo`);
+    if (!partes.length) return '';
+    return `<p>37. Domicílios quilombolas: ${partes.join('; ')}. ${fonteLink(sn)}</p>`;
+  })()}
 
   <h4>5.9 Povos indígenas</h4>
   <p>38. ${fmtNum(num(d.demo?.populacaoIndigena || 1694836))} pessoas indígenas pela contagem específica, das quais mais da metade (53,97%) vive em áreas urbanas. São 391 etnias e 295 línguas indígenas identificadas. A retomada do processo demarcatório — com 20 homologações entre 2023 e 2025, contra apenas 1 no período 2019–2022 — representa avanço significativo. Os instrumentos normativos correspondentes constam da Base Normativa cadastrada.</p>
@@ -336,10 +464,8 @@ export function renderArticleVINarrative(d: ArticleNarrativeData): string {
 
   <p>42. O crescimento exponencial nos processos judiciais — de 50 em 2020 para 4.633 em 2025 — reflete o impacto combinado dos avanços legislativos cadastrados na Base Normativa, do crescimento das denúncias e da maior consciência das vítimas.</p>
 
-  <h4>6.3 Composição racial do Judiciário</h4>
-  <p>43. Magistrados negros representavam 18,1% do total em dezembro de 2023, chegando a 19,6% em junho de 2025. O Estado reconhece que esse patamar, em um país onde 55,5% da população é negra, representa sub-representação grave (Fonte: CNJ — Diagnóstico da Diversidade do Poder Judiciário).</p>
-
-  <p>44. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras.</p>`;
+  <h4>6.3 Acesso à Defensoria Pública</h4>
+  <p>43. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras, limitando o acesso à justiça das vítimas de discriminação racial em todo o território nacional.</p>`;
 }
 
 // ═══════════════════════════════════════════
@@ -368,11 +494,8 @@ export function renderArticleVIINarrative(d: ArticleNarrativeData): string {
   <h4>7.4 Cultura afro-brasileira e patrimônio</h4>
   <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>
 
-  <h4>7.5 Revisão de materiais didáticos</h4>
-  <p>48. O PNLD incorporou, a partir de 2021, critério obrigatório de avaliação racial: 97,3% das obras selecionadas no PNLD 2024 cumpriram os critérios, ante 84,1% em 2019 (Fonte: MEC/FNDE).</p>
-
-  <h4>7.6 Autorregulação da mídia</h4>
-  <p>49. O CONAR registrou crescimento de processos sobre publicidade racista: de 2,9% (2013) para 6,2% (2023).</p>`;
+  <h4>7.5 Avaliação consolidada</h4>
+  <p>48. Os instrumentos formais de revisão de materiais didáticos, autorregulação publicitária e avaliação curricular vinculados ao Artigo VII constam exclusivamente da Base Normativa cadastrada no sistema, conforme listagem acima.</p>`;
 }
 
 // ═══════════════════════════════════════════
