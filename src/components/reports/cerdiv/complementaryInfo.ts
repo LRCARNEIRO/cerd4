@@ -200,8 +200,7 @@ function renderMaternalMortalityTable(sau: any[]): string {
       <td>${num(s.mortalidadeMaternaBranca).toFixed(1)}</td>
       <td>DataSUS/SIM+SINASC</td>
     </tr>`).join('')}</tbody>
-  </table>
-  <p style="font-size:8.5pt;color:#64748b">IEPS (Boletim jul/2025): razão mortalidade materna pretas/brancas = 2,3× na série 2010–2023.</p>`;
+  </table>`;
 }
 
 function renderEducationTable(edu: any[]): string {
