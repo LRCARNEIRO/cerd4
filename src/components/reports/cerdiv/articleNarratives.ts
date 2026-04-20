@@ -464,10 +464,8 @@ export function renderArticleVINarrative(d: ArticleNarrativeData): string {
 
   <p>42. O crescimento exponencial nos processos judiciais — de 50 em 2020 para 4.633 em 2025 — reflete o impacto combinado dos avanços legislativos cadastrados na Base Normativa, do crescimento das denúncias e da maior consciência das vítimas.</p>
 
-  <h4>6.3 Composição racial do Judiciário</h4>
-  <p>43. Magistrados negros representavam 18,1% do total em dezembro de 2023, chegando a 19,6% em junho de 2025. O Estado reconhece que esse patamar, em um país onde 55,5% da população é negra, representa sub-representação grave (Fonte: CNJ — Diagnóstico da Diversidade do Poder Judiciário).</p>
-
-  <p>44. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras.</p>`;
+  <h4>6.3 Acesso à Defensoria Pública</h4>
+  <p>43. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras, limitando o acesso à justiça das vítimas de discriminação racial em todo o território nacional.</p>`;
 }
 
 // ═══════════════════════════════════════════
