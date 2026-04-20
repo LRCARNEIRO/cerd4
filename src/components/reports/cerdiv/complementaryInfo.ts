@@ -45,7 +45,7 @@ export function renderComplementaryInfo(): string {
 
   <h3>V. Ônus da prova em processos cíveis de discriminação racial</h3>
   <div class="section">
-    <p>54. O ordenamento brasileiro adota, em regra, o sistema clássico de ônus da prova incumbido ao autor da ação. O MPF publicou manual orientando o uso da inversão do ônus da prova em casos de discriminação racial indireta. As propostas legislativas em tramitação para incorporar inversão expressa do ônus em ações de discriminação racial indireta, quando formalmente cadastradas, constam da Base Normativa do sistema.</p>
+    <p>54. O ordenamento brasileiro adota, em regra, o sistema clássico de ônus da prova incumbido ao autor da ação. O MPF publicou manual orientando o uso da inversão do ônus da prova em casos de discriminação racial indireta.</p>
   </div>
 
   <h3>VI. Declaração facultativa do Artigo 14 da Convenção</h3>
@@ -55,7 +55,7 @@ export function renderComplementaryInfo(): string {
 
   <h3>VII. Declaração de Durban e Década para Afrodescendentes</h3>
   <div class="section">
-    <p>56. O Brasil participou ativamente das comemorações de Durban e da Década Internacional dos Afrodescendentes (2015–2024). Os programas executados no âmbito dessa agenda — incluindo portais de dados desagregados, campanhas e prêmios nacionais — têm seus instrumentos formais registrados na Base Normativa do sistema, quando aplicável.</p>
+    <p>56. O Brasil participou ativamente das comemorações de Durban e da Década Internacional dos Afrodescendentes (2015–2024).</p>
   </div>`;
 }
 
