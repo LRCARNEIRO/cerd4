@@ -2,25 +2,20 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useState, useMemo } from 'react';
+import { lazy, useState, useMemo } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
-import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
-import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
-import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
-import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
-import {
-  generateObservacoesFinaisHTML, generateLacunasExportHTML,
-  generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
-  generateRecomendacoesGeraisHTML,
-} from '@/components/recomendacoes/generateRecomendacoesHTML';
-import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowUpHTML';
 import type { ArtigoConvencao } from '@/utils/artigosConvencao';
+
+const ObservacoesFinaisTab = lazy(() => import('@/components/recomendacoes/ObservacoesFinaisTab').then(m => ({ default: m.ObservacoesFinaisTab })));
+const RecomendacoesGeraisTab = lazy(() => import('@/components/recomendacoes/RecomendacoesGeraisTab').then(m => ({ default: m.RecomendacoesGeraisTab })));
+const DurbanTab = lazy(() => import('@/components/recomendacoes/DurbanTab').then(m => ({ default: m.DurbanTab })));
+const RespostaCerdCard = lazy(() => import('@/components/dashboard/RespostaCerdCard').then(m => ({ default: m.RespostaCerdCard })));
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
