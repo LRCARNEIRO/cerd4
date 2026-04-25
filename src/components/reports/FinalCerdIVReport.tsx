@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileDown, Download, Loader2, BookOpen, FileText } from 'lucide-react';
+import { FileDown, Download, Loader2, BookOpen, FileText, CheckCircle2, RefreshCw } from 'lucide-react';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,6 +32,31 @@ export function FinalCerdIVReport() {
   });
 
   const loading = isLoading || loadingNorm || !sensorReady;
+
+  // Indicador de "Relatório atualizado" — reage a qualquer mudança de evidências
+  // (overrides manuais via pop-up de Status) e ao recálculo do Sensor Diagnóstico.
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [justUpdated, setJustUpdated] = useState(false);
+  const overridesSignature = JSON.stringify(evidenceOverrides);
+  const summarySignature = sensorReady ? JSON.stringify(sensorSummary.statusReclassificado) : '';
+  const isFirstSync = useRef(true);
+
+  useEffect(() => {
+    if (!sensorReady) return;
+    const now = new Date();
+    setLastUpdated(now);
+    if (isFirstSync.current) {
+      isFirstSync.current = false;
+      return; // Não pulsa na carga inicial — só em alterações reais.
+    }
+    setJustUpdated(true);
+    const t = setTimeout(() => setJustUpdated(false), 4000);
+    return () => clearTimeout(t);
+  }, [overridesSignature, summarySignature, sensorReady]);
+
+  const formatTimestamp = (d: Date) =>
+    d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
 
   const lacunasComputadas = (lacunas || []).map((lacuna) => {
     const diagnostico = diagnosticMap.get(lacuna.id);
@@ -202,7 +228,7 @@ export function FinalCerdIVReport() {
           </div>
 
           {/* Generate buttons */}
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap items-center">
             <Button
               onClick={handleGenerateHTML}
               disabled={loading}
@@ -222,6 +248,31 @@ export function FinalCerdIVReport() {
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Exportar DOCX Editável
             </Button>
+
+            {/* Indicador de sincronização — confirma reatividade às edições de evidência */}
+            {lastUpdated && (
+              <div
+                className={`flex items-center gap-2 text-sm rounded-md px-3 py-2 border transition-colors ${
+                  justUpdated
+                    ? 'bg-success/10 border-success/40 text-success animate-pulse'
+                    : 'bg-muted/50 border-border text-muted-foreground'
+                }`}
+                aria-live="polite"
+              >
+                {justUpdated ? (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    <span className="font-medium">Relatório atualizado</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-success" />
+                    <span>Sincronizado</span>
+                  </>
+                )}
+                <span className="font-mono text-xs">{formatTimestamp(lastUpdated)}</span>
+              </div>
+            )}
           </div>
 
           {loading && (
