@@ -33,6 +33,31 @@ export function FinalCerdIVReport() {
 
   const loading = isLoading || loadingNorm || !sensorReady;
 
+  // Indicador de "Relatório atualizado" — reage a qualquer mudança de evidências
+  // (overrides manuais via pop-up de Status) e ao recálculo do Sensor Diagnóstico.
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [justUpdated, setJustUpdated] = useState(false);
+  const overridesSignature = JSON.stringify(evidenceOverrides);
+  const summarySignature = sensorReady ? JSON.stringify(sensorSummary.statusReclassificado) : '';
+  const isFirstSync = useRef(true);
+
+  useEffect(() => {
+    if (!sensorReady) return;
+    const now = new Date();
+    setLastUpdated(now);
+    if (isFirstSync.current) {
+      isFirstSync.current = false;
+      return; // Não pulsa na carga inicial — só em alterações reais.
+    }
+    setJustUpdated(true);
+    const t = setTimeout(() => setJustUpdated(false), 4000);
+    return () => clearTimeout(t);
+  }, [overridesSignature, summarySignature, sensorReady]);
+
+  const formatTimestamp = (d: Date) =>
+    d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+
   const lacunasComputadas = (lacunas || []).map((lacuna) => {
     const diagnostico = diagnosticMap.get(lacuna.id);
     return diagnostico
