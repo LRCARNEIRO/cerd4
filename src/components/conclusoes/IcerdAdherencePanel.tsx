@@ -12,6 +12,7 @@ import { ArtigoAdherenceDrilldownDialog } from '@/components/shared/ArtigoAdhere
 import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useMirrorData } from '@/hooks/useMirrorData';
@@ -249,9 +250,10 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
   const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
   const [drilldownFocus, setDrilldownFocus] = useState<'recomendacoes' | 'indicadores' | 'orcamento' | 'normativos' | null>(null);
+  const evidenceOverrides = useEvidenceOverridesReadOnly();
 
-  // Use diagnostic sensor for consistent compliance counts across panels
-  const { diagnosticMap } = useDiagnosticSensor(lacunas);
+  // Use diagnostic sensor with manual evidence overrides for immediate parity with recommendation popups
+  const { diagnosticMap } = useDiagnosticSensor(lacunas, evidenceOverrides);
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
