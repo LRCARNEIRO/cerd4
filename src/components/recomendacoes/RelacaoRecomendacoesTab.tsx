@@ -327,7 +327,9 @@ ${renderRows(allItems)}
         </div>
         {sensorReady && (
           <div className="mt-2">
-            <MethodologyPanel variant="sensor" />
+            <Suspense fallback={null}>
+              <MethodologyPanel variant="sensor" />
+            </Suspense>
           </div>
         )}
       </div>
@@ -337,19 +339,23 @@ ${renderRows(allItems)}
       {renderGroup('durban', grouped.durban)}
 
       {/* Evidence Drilldown Dialog */}
-      <EvidenceDrilldownDialog
-        open={!!drilldownId}
-        onOpenChange={(open) => { if (!open) setDrilldownId(null); }}
-        paragrafo={drilldownRec?.paragrafo || ''}
-        tema={drilldownRec?.tema || ''}
-        diagnostic={drilldownDiag}
-        recomendacaoId={drilldownId || undefined}
-        allIndicadores={rawIndicadores}
-        allOrcamento={rawOrcamento}
-        allNormativos={rawNormativos}
-        overrides={drilldownId ? (evidenceOverrides[drilldownId] || emptyOverride()) : undefined}
-        onOverridesChange={drilldownId ? (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov })) : undefined}
-      />
+      {drilldownId && (
+        <Suspense fallback={null}>
+          <EvidenceDrilldownDialog
+            open={!!drilldownId}
+            onOpenChange={(open) => { if (!open) setDrilldownId(null); }}
+            paragrafo={drilldownRec?.paragrafo || ''}
+            tema={drilldownRec?.tema || ''}
+            diagnostic={drilldownDiag}
+            recomendacaoId={drilldownId || undefined}
+            allIndicadores={rawIndicadores}
+            allOrcamento={rawOrcamento}
+            allNormativos={rawNormativos}
+            overrides={evidenceOverrides[drilldownId] || emptyOverride()}
+            onOverridesChange={(ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov }))}
+          />
+        </Suspense>
+      )}
 
       <ParagraphTextDialog
         open={!!paragraphDialogId}
