@@ -4,7 +4,7 @@ import { FileDown, Download, Loader2 } from 'lucide-react';
 
 interface ExportTabButtonsProps {
   /** Function that generates the HTML content for export */
-  generateHTML?: () => string;
+  generateHTML?: () => string | Promise<string>;
   /** Optional DOM target selector to export exactly the rendered content */
   targetSelector?: string;
   /** Base filename for the export (no extension) */
@@ -36,7 +36,7 @@ export function ExportTabButtons({ generateHTML, targetSelector, fileName, label
       throw new Error('Nenhum conteúdo de exportação foi configurado.');
     }
 
-    return generateHTML();
+    return await generateHTML();
   };
 
   const handlePdfHtml = async () => {
