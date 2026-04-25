@@ -77,7 +77,11 @@ export function renderArticleINarrative(d: ArticleNarrativeData): string {
   ${renderNormativosVinculados(d.normativos, 'I')}
 
   <h4>1.3 Proteção de migrantes, refugiados e estrangeiros</h4>
-  <p>8. A política migratória brasileira, em conformidade com o §54–55 das Observações Finais, adota a perspectiva dos direitos humanos, vedando distinção baseada em raça, etnia, cor ou origem nacional. Entre 2018 e 2024, mais de 1 milhão de venezuelanos foram atendidos pela Operação Acolhida, coordenada pelo governo federal com participação de organizações internacionais e da sociedade civil. As medidas normativas correspondentes constam da relação acima quando vinculadas ao Artigo I.</p>`;
+  <p>8. A política migratória brasileira, em conformidade com o §54–55 das Observações Finais, adota a perspectiva dos direitos humanos, vedando distinção baseada em raça, etnia, cor ou origem nacional. Entre 2018 e 2024, mais de 1 milhão de venezuelanos foram atendidos pela Operação Acolhida, coordenada pelo governo federal com participação de organizações internacionais e da sociedade civil.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['migra', 'refug', 'estrange', 'acolhida'], 'I', 4);
+    return norm ? ` Os instrumentos normativos cadastrados que sustentam essa política incluem: ${norm}.` : '';
+  })()}</p>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'I', '8-a', 'No campo orçamentário,')}
 }
 
 // ═══════════════════════════════════════════
