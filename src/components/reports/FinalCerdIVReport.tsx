@@ -228,7 +228,7 @@ export function FinalCerdIVReport() {
           </div>
 
           {/* Generate buttons */}
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap items-center">
             <Button
               onClick={handleGenerateHTML}
               disabled={loading}
@@ -248,6 +248,31 @@ export function FinalCerdIVReport() {
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Exportar DOCX Editável
             </Button>
+
+            {/* Indicador de sincronização — confirma reatividade às edições de evidência */}
+            {lastUpdated && (
+              <div
+                className={`flex items-center gap-2 text-sm rounded-md px-3 py-2 border transition-colors ${
+                  justUpdated
+                    ? 'bg-success/10 border-success/40 text-success animate-pulse'
+                    : 'bg-muted/50 border-border text-muted-foreground'
+                }`}
+                aria-live="polite"
+              >
+                {justUpdated ? (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    <span className="font-medium">Relatório atualizado</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-success" />
+                    <span>Sincronizado</span>
+                  </>
+                )}
+                <span className="font-mono text-xs">{formatTimestamp(lastUpdated)}</span>
+              </div>
+            )}
           </div>
 
           {loading && (
