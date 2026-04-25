@@ -12,6 +12,7 @@ import {
   type DadoOrcamentario
 } from './useLacunasData';
 import { useDiagnosticSensor, type RecomendacaoDiagnostic } from './useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from './useEvidenceOverrides';
 import { EIXO_PARA_ARTIGOS, ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 // =============================================
@@ -126,8 +127,9 @@ export function useAnalyticalInsights() {
   const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresAnaliticos();
   const { data: orcDados, isLoading: l6, isFetching: f6 } = useDadosOrcamentarios();
 
-  // Sensor for reclassified status
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+  // Sensor for reclassified status — agora reativo a edições manuais de evidência
+  const evidenceOverrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
 
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
   const isFetching = f1 || f2 || f3 || f4 || f5 || f6;

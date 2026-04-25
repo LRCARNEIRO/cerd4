@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { generateCerdIVFullHTML, type CerdIVFullData } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview } from '@/utils/reportPreview';
@@ -18,7 +19,8 @@ export function FinalCerdIVReport() {
   } = useAnalyticalInsights();
 
   const mirror = useMirrorData();
-  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+  const evidenceOverrides = useEvidenceOverridesReadOnly();
+  const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
 
   const { data: documentosNormativos, isLoading: loadingNorm } = useQuery({
     queryKey: ['documentos_normativos_final_cerd'],
