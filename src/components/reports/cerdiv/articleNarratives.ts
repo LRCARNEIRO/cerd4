@@ -575,7 +575,10 @@ export function renderArticleVIINarrative(d: ArticleNarrativeData): string {
   })()}</p>
 
   <h4>7.4 Cultura afro-brasileira e patrimônio</h4>
-  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>`;
+  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>
+
+  <h4>7.5 Execução orçamentária vinculada ao Artigo VII</h4>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'VII', '47-a', 'No campo orçamentário,')}`;
 }
 
 // ═══════════════════════════════════════════
