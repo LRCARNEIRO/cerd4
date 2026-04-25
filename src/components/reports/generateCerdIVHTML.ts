@@ -63,6 +63,8 @@ export interface CerdIVFullData {
   sinteseExecutiva?: any;
   // Normativa
   normativos?: any[];
+  // Diagnostic map (mesma base do popup ICERD — agrega evidências por recomendação vinculada)
+  diagnosticMap?: Map<string, { linkedIndicadores: any[]; linkedOrcamento: any[]; linkedNormativos: any[] }>;
   // Mirror data (SSoT)
   mirror?: {
     segurancaPublica?: any[];
@@ -959,14 +961,52 @@ function renderArticleAnalysisExpanded(
       if (explicit.length > 0) return explicit.includes(artigo);
       return (EIXO_PARA_ARTIGOS[l.eixo_tematico] || []).includes(artigo as any);
     });
-    const artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
-    const artigoNormativos = (d.normativos || []).filter((n: any) => {
-      const explicit = (n.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
-      if (explicit.length > 0) return explicit.includes(artigo);
-      const inferred = inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas });
-      return inferred.includes(artigo as any);
-    });
-    const artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
+
+    // ── Agregação de evidências: SSoT espelhada do popup ICERD ──
+    // Quando há diagnosticMap, agregamos evidências a partir das recomendações
+    // vinculadas ao artigo (mesma base do Acompanhamento Gerencial). Caso
+    // contrário, recai para inferência por palavra-chave (legacy).
+    let artigoOrc: DadoOrcamentario[];
+    let artigoNormativos: any[];
+    let artigoIndicadores: IndicadorInterseccional[];
+
+    if (d.diagnosticMap && d.diagnosticMap.size > 0) {
+      const indMap = new Map<string, IndicadorInterseccional>();
+      const orcMap = new Map<string, DadoOrcamentario>();
+      const normMap = new Map<string, any>();
+
+      // Index DB completo por chave para enriquecer os "linked*" (que vêm projetados)
+      const indByName = new Map((d.indicadores || []).map(i => [i.nome, i] as const));
+      const orcByKey = new Map<string, DadoOrcamentario>((d.orcDados || []).map(o => [`${o.programa}|${o.orgao}|${o.ano}`, o]));
+      const normByTitle = new Map((d.normativos || []).map(n => [n.titulo, n] as const));
+
+      for (const l of artigoLacunas) {
+        const diag = d.diagnosticMap.get(l.id);
+        if (!diag) continue;
+        for (const ind of (diag.linkedIndicadores || [])) {
+          if (!indMap.has(ind.nome)) indMap.set(ind.nome, indByName.get(ind.nome) || (ind as any));
+        }
+        for (const orc of (diag.linkedOrcamento || [])) {
+          const k = `${orc.programa}|${orc.orgao}|${orc.ano}`;
+          if (!orcMap.has(k)) orcMap.set(k, orcByKey.get(k) || (orc as any));
+        }
+        for (const norm of (diag.linkedNormativos || [])) {
+          if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, normByTitle.get(norm.titulo) || norm);
+        }
+      }
+      artigoOrc = Array.from(orcMap.values());
+      artigoNormativos = Array.from(normMap.values());
+      artigoIndicadores = Array.from(indMap.values());
+    } else {
+      artigoOrc = (d.orcDados || []).filter(o => inferArtigosOrcamento(o).includes(artigo as any));
+      artigoNormativos = (d.normativos || []).filter((n: any) => {
+        const explicit = (n.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+        if (explicit.length > 0) return explicit.includes(artigo);
+        const inferred = inferArtigosDocumentoNormativo({ titulo: n.titulo || '', categoria: n.categoria, secoes_impactadas: n.secoes_impactadas, recomendacoes_impactadas: n.recomendacoes_impactadas });
+        return inferred.includes(artigo as any);
+      });
+      artigoIndicadores = d.indicadores.filter(i => inferArtigosIndicador(i).includes(artigo));
+    }
 
     // Article narrative from DOCX template (dynamic text)
     const narrativeData = {
