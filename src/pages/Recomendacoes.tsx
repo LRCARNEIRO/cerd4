@@ -170,7 +170,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="observacoes">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-observacoes" generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-observacoes" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateObservacoesFinaisHTML()} fileName="Observacoes-Finais-CERD" compact />
           </div>
           <div id="export-recomendacoes-observacoes">
             <ObservacoesFinaisTab />
@@ -179,7 +179,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="follow-up">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-followup" generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-followup" generateHTML={async () => (await import('@/components/recomendacoes/generateFollowUpHTML')).generateFollowUpHTML()} fileName="Follow-Up-CERD-2026" compact />
           </div>
           <div id="export-recomendacoes-followup">
           <Card>
@@ -245,7 +245,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="rgs">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-rgs" generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-rgs" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateRecomendacoesGeraisHTML()} fileName="Recomendacoes-Gerais-CERD" compact />
           </div>
           <div id="export-recomendacoes-rgs">
             <RecomendacoesGeraisTab />
@@ -254,7 +254,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="durban">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-durban" generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-durban" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateDurbanExportHTML()} fileName="Durban-Cruzamento" compact />
           </div>
           <div id="export-recomendacoes-durban">
             <DurbanTab />
