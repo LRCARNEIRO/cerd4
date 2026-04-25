@@ -75,6 +75,23 @@ export interface DiagnosticSummary {
   progressoSensor: number;
 }
 
+const diagnosticsCache = new Map<string, RecomendacaoDiagnostic[]>();
+const DIAGNOSTICS_CACHE_LIMIT = 20;
+
+function setDiagnosticsCache(key: string, value: RecomendacaoDiagnostic[]): RecomendacaoDiagnostic[] {
+  diagnosticsCache.set(key, value);
+  if (diagnosticsCache.size > DIAGNOSTICS_CACHE_LIMIT) {
+    const oldestKey = diagnosticsCache.keys().next().value;
+    if (oldestKey !== undefined) diagnosticsCache.delete(oldestKey);
+  }
+  return value;
+}
+
+function arrayDataSignature(values: any[] | undefined, fields: string[]): string {
+  if (!values) return 'pending';
+  return `${values.length}:${values.map((item) => fields.map((field) => item?.[field] ?? '').join('|')).join('¬')}`;
+}
+
 function normalizeArticle(raw: string): ArtigoConvencao | null {
   return normalizeArticleTag(raw);
 }
@@ -174,9 +191,19 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
     if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
 
+    const cacheKey = JSON.stringify({
+      recs: arrayDataSignature(recomendacoes, ['id', 'tema', 'descricao_lacuna', 'grupo_focal', 'updated_at']),
+      indicadores: arrayDataSignature(indicadores, ['nome', 'categoria', 'subcategoria', 'updated_at']),
+      orcamento: arrayDataSignature(orcamento, ['programa', 'orgao', 'ano', 'dotacao_autorizada', 'pago']),
+      normativos: arrayDataSignature(normativos, ['titulo', 'status', 'categoria']),
+      overrides,
+    });
+    const cachedDiagnostics = diagnosticsCache.get(cacheKey);
+    if (cachedDiagnostics) return cachedDiagnostics;
+
     const orcKeyFn = (o: any) => `${o.programa}|${o.orgao}|${o.ano}`;
 
-    return recomendacoes.map(rec => {
+    const nextDiagnostics = recomendacoes.map(rec => {
       const recOverride = overrides?.[rec.id];
       const signals: DiagnosticSignal[] = [];
 
@@ -372,6 +399,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
+
+    return setDiagnosticsCache(cacheKey, nextDiagnostics);
   }, [recomendacoes, indicadores, orcamento, normativos, overrides]);
 
   // ── Summary ──────────────────────────────────────────────────────

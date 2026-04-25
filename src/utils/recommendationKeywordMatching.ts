@@ -27,9 +27,14 @@ export type RecommendationKeywordMatch = {
 
 const NORMALIZE_CACHE_LIMIT = 5000;
 const PROFILE_CACHE_LIMIT = 500;
+const TERM_MATCH_CACHE_LIMIT = 3000;
+const TERM_REGEX_CACHE_LIMIT = 1000;
 
 const normalizedTextCache = new Map<string, string>();
 const profileCache = new Map<string, RecommendationKeywordProfile>();
+const termMatchCache = new Map<string, Map<string, boolean>>();
+const termRegexCache = new Map<string, RegExp>();
+const PREPOSITION_PATTERN = '(?:\\s+(?:de|da|do|das|dos|e|em|no|na|nos|nas|ao|aos|a|o|os|as|por))?\\s+';
 
 function setCacheValue<T>(cache: Map<string, T>, key: string, value: T, limit: number): T {
   cache.set(key, value);
@@ -174,18 +179,33 @@ function uniqueNonEmpty(values: string[]): string[] {
 function includesWholeTerm(normalizedHaystack: string, keyword: string): boolean {
   const normalizedKeyword = normalizeSearchText(keyword);
   if (!normalizedKeyword) return false;
+  const cachedByKeyword = termMatchCache.get(normalizedHaystack);
+  const cached = cachedByKeyword?.get(normalizedKeyword);
+  if (cached !== undefined) return cached;
+
+  let matched = false;
   // Direct whole-word match
-  if (normalizedHaystack.includes(` ${normalizedKeyword} `)) return true;
+  if (normalizedHaystack.includes(` ${normalizedKeyword} `)) {
+    matched = true;
+  }
   // Allow matching through common Portuguese prepositions (de, da, do, das, dos, e, em, no, na, nos, nas, ao, aos, a, o, os, as, por)
   // E.g. "lei cotas" matches "lei de cotas", "audiencia custodia" matches "audiencia de custodia"
-  const parts = normalizedKeyword.split(' ');
-  if (parts.length >= 2) {
-    const PREPOSITIONS = new Set(['de', 'da', 'do', 'das', 'dos', 'e', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'aos', 'a', 'o', 'os', 'as', 'por']);
-    const pattern = parts.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(?:\\s+(?:' + [...PREPOSITIONS].join('|') + '))?\\s+');
-    const regex = new RegExp(`(?:^|\\s)${pattern}(?:\\s|$)`);
-    if (regex.test(normalizedHaystack)) return true;
+  if (!matched) {
+    const parts = normalizedKeyword.split(' ');
+    if (parts.length >= 2) {
+      let regex = termRegexCache.get(normalizedKeyword);
+      if (!regex) {
+        const pattern = parts.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(PREPOSITION_PATTERN);
+        regex = new RegExp(`(?:^|\\s)${pattern}(?:\\s|$)`);
+        setCacheValue(termRegexCache, normalizedKeyword, regex, TERM_REGEX_CACHE_LIMIT);
+      }
+      matched = regex.test(normalizedHaystack);
+    }
   }
-  return false;
+
+  const keywordCache = cachedByKeyword || setCacheValue(termMatchCache, normalizedHaystack, new Map<string, boolean>(), TERM_MATCH_CACHE_LIMIT);
+  keywordCache.set(normalizedKeyword, matched);
+  return matched;
 }
 
 function extractSourceText(rec: RecommendationKeywordSource): string {
