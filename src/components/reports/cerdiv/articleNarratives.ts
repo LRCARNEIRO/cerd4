@@ -18,6 +18,7 @@ import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } fr
 import { fmtBRL, fmtNum } from './chartUtils';
 import { renderNormativosVinculados, renderNormativosResumoParagrafo, renderNormativosInlineList, type NormativoRecord } from './normativosHelper';
 import { findIndicador, pickNum, fonteLink } from './indicadoresHelper';
+import { renderOrcamentoArtigoBlock } from './orcamentoArtigoHelper';
 
 function num(v: unknown): number {
   const p = Number(v); return Number.isFinite(p) ? p : 0;
