@@ -63,6 +63,8 @@ export interface CerdIVFullData {
   sinteseExecutiva?: any;
   // Normativa
   normativos?: any[];
+  // Diagnostic map (mesma base do popup ICERD — agrega evidências por recomendação vinculada)
+  diagnosticMap?: Map<string, { linkedIndicadores: any[]; linkedOrcamento: any[]; linkedNormativos: any[] }>;
   // Mirror data (SSoT)
   mirror?: {
     segurancaPublica?: any[];
