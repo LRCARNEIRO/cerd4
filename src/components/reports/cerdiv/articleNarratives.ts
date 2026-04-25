@@ -18,6 +18,7 @@ import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } fr
 import { fmtBRL, fmtNum } from './chartUtils';
 import { renderNormativosVinculados, renderNormativosResumoParagrafo, renderNormativosInlineList, type NormativoRecord } from './normativosHelper';
 import { findIndicador, pickNum, fonteLink } from './indicadoresHelper';
+import { renderOrcamentoArtigoBlock } from './orcamentoArtigoHelper';
 
 function num(v: unknown): number {
   const p = Number(v); return Number.isFinite(p) ? p : 0;
@@ -76,7 +77,11 @@ export function renderArticleINarrative(d: ArticleNarrativeData): string {
   ${renderNormativosVinculados(d.normativos, 'I')}
 
   <h4>1.3 Proteção de migrantes, refugiados e estrangeiros</h4>
-  <p>8. A política migratória brasileira, em conformidade com o §54–55 das Observações Finais, adota a perspectiva dos direitos humanos, vedando distinção baseada em raça, etnia, cor ou origem nacional. Entre 2018 e 2024, mais de 1 milhão de venezuelanos foram atendidos pela Operação Acolhida, coordenada pelo governo federal com participação de organizações internacionais e da sociedade civil. As medidas normativas correspondentes constam da relação acima quando vinculadas ao Artigo I.</p>`;
+  <p>8. A política migratória brasileira, em conformidade com o §54–55 das Observações Finais, adota a perspectiva dos direitos humanos, vedando distinção baseada em raça, etnia, cor ou origem nacional. Entre 2018 e 2024, mais de 1 milhão de venezuelanos foram atendidos pela Operação Acolhida, coordenada pelo governo federal com participação de organizações internacionais e da sociedade civil.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['migra', 'refug', 'estrange', 'acolhida'], 'I', 4);
+    return norm ? ` Os instrumentos normativos cadastrados que sustentam essa política incluem: ${norm}.` : '';
+  })()}</p>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'I', '8-a', 'No campo orçamentário,')}`;
 }
 
 // ═══════════════════════════════════════════
@@ -223,7 +228,10 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
   })()}
 
   <h4>3.4 Povos ciganos: segregação e documentação</h4>
-  <p>17. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira. Programas de documentação civil em acampamentos ciganos foram implementados no período, e o Plano Nacional de Políticas para Povos Ciganos estrutura metas específicas, conforme instrumentos cadastrados na Base Normativa.</p>`;
+  <p>17. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['cigan', 'rom'], 'III', 4);
+    return norm ? ` Os instrumentos normativos cadastrados que estruturam a política para povos ciganos incluem: ${norm}.` : '';
+  })()}</p>`;
 }
 
 // ═══════════════════════════════════════════
@@ -282,7 +290,10 @@ export function renderArticleIVNarrative(d: ArticleNarrativeData): string {
   <p>20. O Estado reconhece, em resposta ao §31(c) das Observações Finais, que entre 2019 e 2022 ocorreram múltiplos incidentes de discurso de ódio com teor racial por parte de autoridades públicas de alto escalão, sem que as responsabilizações tenham sido aplicadas de forma adequada.</p>
 
   <h4>4.3 Racismo digital</h4>
-  <p>21. O racismo digital tornou-se a manifestação mais prevalente e de crescimento mais acelerado no período. Registros oficiais indicam crescimento de 382% nas denúncias de intolerância religiosa de matriz africana entre 2020 e 2025 (Fonte: ONDH — Disque 100).</p>`;
+  <p>21. O racismo digital tornou-se a manifestação mais prevalente e de crescimento mais acelerado no período. Registros oficiais indicam crescimento de 382% nas denúncias de intolerância religiosa de matriz africana entre 2020 e 2025 (Fonte: ONDH — Disque 100).</p>
+
+  <h4>4.4 Execução orçamentária vinculada ao Artigo IV</h4>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'IV', '21-a', 'Em complemento à dimensão normativa,')}`;
 }
 
 // ═══════════════════════════════════════════
@@ -531,7 +542,10 @@ export function renderArticleVINarrative(d: ArticleNarrativeData): string {
   <p>42. O crescimento exponencial nos processos judiciais — de 50 em 2020 para 4.633 em 2025 — reflete o impacto combinado dos avanços legislativos cadastrados na Base Normativa, do crescimento das denúncias e da maior consciência das vítimas.</p>
 
   <h4>6.3 Acesso à Defensoria Pública</h4>
-  <p>43. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras, limitando o acesso à justiça das vítimas de discriminação racial em todo o território nacional.</p>`;
+  <p>43. A Defensoria Pública permanece presente em apenas 32% das comarcas brasileiras, limitando o acesso à justiça das vítimas de discriminação racial em todo o território nacional.</p>
+
+  <h4>6.4 Execução orçamentária vinculada ao Artigo VI</h4>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'VI', '43-a', 'No campo orçamentário,')}`;
 }
 
 // ═══════════════════════════════════════════
@@ -561,7 +575,10 @@ export function renderArticleVIINarrative(d: ArticleNarrativeData): string {
   })()}</p>
 
   <h4>7.4 Cultura afro-brasileira e patrimônio</h4>
-  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>`;
+  <p>47. A Fundação Cultural Palmares teve suas competências restauradas em 2023. Programas de fomento à cultura afro-brasileira apoiaram mais de mil projetos culturais no período. O IPHAN inscreveu novos bens culturais de matriz africana no Livro de Registro do Patrimônio Imaterial entre 2018 e 2024.</p>
+
+  <h4>7.5 Execução orçamentária vinculada ao Artigo VII</h4>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'VII', '47-a', 'No campo orçamentário,')}`;
 }
 
 // ═══════════════════════════════════════════
