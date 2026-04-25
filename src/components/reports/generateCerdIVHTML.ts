@@ -977,7 +977,7 @@ function renderArticleAnalysisExpanded(
 
       // Index DB completo por chave para enriquecer os "linked*" (que vêm projetados)
       const indByName = new Map((d.indicadores || []).map(i => [i.nome, i] as const));
-      const orcByKey = new Map((d.orcDados || []).map(o => [`${o.programa}|${o.orgao}|${o.ano}`, o] as const));
+      const orcByKey = new Map<string, DadoOrcamentario>((d.orcDados || []).map(o => [`${o.programa}|${o.orgao}|${o.ano}`, o]));
       const normByTitle = new Map((d.normativos || []).map(n => [n.titulo, n] as const));
 
       for (const l of artigoLacunas) {
