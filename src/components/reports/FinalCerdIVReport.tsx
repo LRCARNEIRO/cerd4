@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileDown, Download, Loader2, BookOpen, FileText } from 'lucide-react';
+import { FileDown, Download, Loader2, BookOpen, FileText, CheckCircle2, RefreshCw } from 'lucide-react';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
