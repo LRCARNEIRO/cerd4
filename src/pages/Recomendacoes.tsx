@@ -101,7 +101,7 @@ export default function Recomendacoes() {
                    </div>
                    <div>
                      <p className="text-xs text-muted-foreground">Cumpridas</p>
-                     <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
+                      <p className="text-xl font-bold text-success">{isLoading ? '...' : statusStats?.cumprido || 0}</p>
                    </div>
                  </CardContent>
                </Card>
@@ -112,7 +112,7 @@ export default function Recomendacoes() {
                    </div>
                    <div>
                      <p className="text-xs text-muted-foreground">Parciais</p>
-                     <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.parcialmente_cumprido || 0 : stats?.porStatus.parcialmente_cumprido || 0}</p>
+                      <p className="text-xl font-bold text-warning">{isLoading ? '...' : statusStats?.parcialmente_cumprido || 0}</p>
                    </div>
                  </CardContent>
                </Card>
@@ -123,7 +123,7 @@ export default function Recomendacoes() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                      <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) + (sensorSummary?.statusReclassificado.em_andamento || 0) : stats?.porStatus.nao_cumprido || 0}</p>
+                       <p className="text-xl font-bold text-destructive">{isLoading ? '...' : (statusStats?.nao_cumprido || 0) + (statusStats?.retrocesso || 0) + (statusStats?.em_andamento || 0)}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -159,7 +159,7 @@ export default function Recomendacoes() {
       })()}
 
 
-      <Tabs defaultValue="relacao" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="relacao">📋 Relação Completa</TabsTrigger>
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
@@ -285,7 +285,7 @@ export default function Recomendacoes() {
               <RespostaCerdCard
                 key={resposta.id}
                 resposta={resposta}
-                dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
+                dynamicJustificativa={null}
               />
             ))}
           </div>
