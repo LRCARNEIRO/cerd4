@@ -97,6 +97,7 @@ export function FinalCerdIVReport() {
     insightsCruzamento,
     sinteseExecutiva,
     normativos: documentosNormativos || [],
+    diagnosticMap,
     mirror: {
       segurancaPublica: mirror.segurancaPublica,
       feminicidioSerie: mirror.feminicidioSerie,
