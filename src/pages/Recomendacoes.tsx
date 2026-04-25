@@ -2,14 +2,9 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles, Scale, Filter } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresAnaliticos, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
-import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
+import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
+import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
@@ -25,12 +20,7 @@ import {
   generateRecomendacoesGeraisHTML,
 } from '@/components/recomendacoes/generateRecomendacoesHTML';
 import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowUpHTML';
-import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
-import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
-import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
-import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
-import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
+import type { ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -64,8 +54,8 @@ export default function Recomendacoes() {
   const [filterPriority, setFilterPriority] = useState<PriorityLevel | 'all'>('all');
   const [filterEixo, setFilterEixo] = useState<ThematicAxis | 'all'>('all');
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
+  const [activeTab, setActiveTab] = useState('relacao');
   
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
@@ -77,62 +67,9 @@ export default function Recomendacoes() {
 
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
-  const { data: allIndicadores } = useIndicadoresAnaliticos();
-  const { data: allOrcamento } = useDadosOrcamentarios();
-
-  // Fetch normativos for dynamic cross-referencing
-  const { data: allNormativos } = useQuery({
-    queryKey: ['normativos-justificativa'],
-    queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('*');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // All lacunas (unfiltered) for Aderência ICERD
-  const { data: allLacunas } = useLacunasIdentificadas({});
-
-  // Analytical insights for Aderência
-  const { fiosCondutores, conclusoesDinamicas, respostas: respostasInsights, orcDados, indicadores: indicadoresInsights, stats: insightsStats } = useAnalyticalInsights();
-
-  // Build dynamic justificativas from ALL three bases (indicadores + orçamento + normativos)
-  const dynamicJustificativas = useMemo(() => {
-    if (!allIndicadores || !allOrcamento) return {};
-    const map: Record<string, string | null> = {};
-    const paragrafos = ['12', '14', '16', '18', '20', '22', '24', '26'];
-    for (const p of paragrafos) {
-      map[p] = generateDynamicJustificativa(p, allIndicadores as any, allOrcamento as any, allNormativos || []);
-    }
-    return map;
-  }, [allIndicadores, allOrcamento, allNormativos]);
-
-  // Diagnostic Sensor — Level 1
-  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
-
-  const filteredLacunas = lacunas?.filter(lacuna => {
-    // Filtro por artigo da Convenção
-    if (filterArtigo) {
-      const artigosDoEixo = EIXO_PARA_ARTIGOS[lacuna.eixo_tematico] || [];
-      if (!artigosDoEixo.includes(filterArtigo)) return false;
-    }
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      lacuna.tema.toLowerCase().includes(term) ||
-      lacuna.descricao_lacuna.toLowerCase().includes(term) ||
-      lacuna.paragrafo.toLowerCase().includes(term)
-    );
-  }) || [];
-
-  // Contagens por artigo para o filtro
-  const artigoCounts = lacunas?.reduce((acc, l) => {
-    const artigos = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
-    artigos.forEach(a => { acc[a] = (acc[a] || 0) + 1; });
-    return acc;
-  }, {} as Record<ArtigoConvencao, number>) || {} as Record<ArtigoConvencao, number>;
 
   const isLoading = loadingLacunas || loadingStats;
+  const statusStats = stats?.porStatus;
 
   return (
     <DashboardLayout
