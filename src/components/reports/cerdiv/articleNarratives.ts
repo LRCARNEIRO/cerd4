@@ -287,7 +287,10 @@ export function renderArticleIVNarrative(d: ArticleNarrativeData): string {
   <p>20. O Estado reconhece, em resposta ao §31(c) das Observações Finais, que entre 2019 e 2022 ocorreram múltiplos incidentes de discurso de ódio com teor racial por parte de autoridades públicas de alto escalão, sem que as responsabilizações tenham sido aplicadas de forma adequada.</p>
 
   <h4>4.3 Racismo digital</h4>
-  <p>21. O racismo digital tornou-se a manifestação mais prevalente e de crescimento mais acelerado no período. Registros oficiais indicam crescimento de 382% nas denúncias de intolerância religiosa de matriz africana entre 2020 e 2025 (Fonte: ONDH — Disque 100).</p>`;
+  <p>21. O racismo digital tornou-se a manifestação mais prevalente e de crescimento mais acelerado no período. Registros oficiais indicam crescimento de 382% nas denúncias de intolerância religiosa de matriz africana entre 2020 e 2025 (Fonte: ONDH — Disque 100).</p>
+
+  <h4>4.4 Execução orçamentária vinculada ao Artigo IV</h4>
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'IV', '21-a', 'Em complemento à dimensão normativa,')}`;
 }
 
 // ═══════════════════════════════════════════
