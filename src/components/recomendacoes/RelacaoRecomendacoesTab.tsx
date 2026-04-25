@@ -5,15 +5,25 @@ import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, ListChecks } from 'lucide-react';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { useMemo, useCallback, useState } from 'react';
+import { lazy, Suspense, useMemo, useCallback, useState } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
-import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
-import { EvidenceDrilldownDialog, emptyOverride, type EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+
+const MethodologyPanel = lazy(() => import('@/components/shared/MethodologyPanel').then(m => ({ default: m.MethodologyPanel })));
+const EvidenceDrilldownDialog = lazy(() => import('@/components/shared/EvidenceDrilldownDialog').then(m => ({ default: m.EvidenceDrilldownDialog })));
+
+const emptyOverride = () => ({
+  removedIndicadores: [],
+  removedOrcamento: [],
+  removedNormativos: [],
+  addedIndicadores: [],
+  addedOrcamento: [],
+  addedNormativos: [],
+});
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -317,7 +327,9 @@ ${renderRows(allItems)}
         </div>
         {sensorReady && (
           <div className="mt-2">
-            <MethodologyPanel variant="sensor" />
+            <Suspense fallback={null}>
+              <MethodologyPanel variant="sensor" />
+            </Suspense>
           </div>
         )}
       </div>
@@ -327,19 +339,23 @@ ${renderRows(allItems)}
       {renderGroup('durban', grouped.durban)}
 
       {/* Evidence Drilldown Dialog */}
-      <EvidenceDrilldownDialog
-        open={!!drilldownId}
-        onOpenChange={(open) => { if (!open) setDrilldownId(null); }}
-        paragrafo={drilldownRec?.paragrafo || ''}
-        tema={drilldownRec?.tema || ''}
-        diagnostic={drilldownDiag}
-        recomendacaoId={drilldownId || undefined}
-        allIndicadores={rawIndicadores}
-        allOrcamento={rawOrcamento}
-        allNormativos={rawNormativos}
-        overrides={drilldownId ? (evidenceOverrides[drilldownId] || emptyOverride()) : undefined}
-        onOverridesChange={drilldownId ? (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov })) : undefined}
-      />
+      {drilldownId && (
+        <Suspense fallback={null}>
+          <EvidenceDrilldownDialog
+            open={!!drilldownId}
+            onOpenChange={(open) => { if (!open) setDrilldownId(null); }}
+            paragrafo={drilldownRec?.paragrafo || ''}
+            tema={drilldownRec?.tema || ''}
+            diagnostic={drilldownDiag}
+            recomendacaoId={drilldownId || undefined}
+            allIndicadores={rawIndicadores}
+            allOrcamento={rawOrcamento}
+            allNormativos={rawNormativos}
+            overrides={evidenceOverrides[drilldownId] || emptyOverride()}
+            onOverridesChange={(ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov }))}
+          />
+        </Suspense>
+      )}
 
       <ParagraphTextDialog
         open={!!paragraphDialogId}

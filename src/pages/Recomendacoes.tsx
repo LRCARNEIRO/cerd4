@@ -2,35 +2,20 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { useState, useMemo } from 'react';
-import { Search, AlertTriangle, CheckCircle2, Clock, XCircle, Database, Loader2, Activity, Sparkles, Scale, Filter } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, useDadosOrcamentarios, useIndicadoresAnaliticos, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
-import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
+import { lazy, useState, useMemo } from 'react';
+import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
+import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
-import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
-import { RecomendacoesGeraisTab } from '@/components/recomendacoes/RecomendacoesGeraisTab';
-import { DurbanTab } from '@/components/recomendacoes/DurbanTab';
-import { ObservacoesFinaisTab } from '@/components/recomendacoes/ObservacoesFinaisTab';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
-import {
-  generateObservacoesFinaisHTML, generateLacunasExportHTML,
-  generateRespostasCerdIIIExportHTML, generateDurbanExportHTML,
-  generateRecomendacoesGeraisHTML,
-} from '@/components/recomendacoes/generateRecomendacoesHTML';
-import { generateFollowUpHTML } from '@/components/recomendacoes/generateFollowUpHTML';
-import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
-import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
-import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
-import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
-import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
+import type { ArtigoConvencao } from '@/utils/artigosConvencao';
+
+const ObservacoesFinaisTab = lazy(() => import('@/components/recomendacoes/ObservacoesFinaisTab').then(m => ({ default: m.ObservacoesFinaisTab })));
+const RecomendacoesGeraisTab = lazy(() => import('@/components/recomendacoes/RecomendacoesGeraisTab').then(m => ({ default: m.RecomendacoesGeraisTab })));
+const DurbanTab = lazy(() => import('@/components/recomendacoes/DurbanTab').then(m => ({ default: m.DurbanTab })));
+const RespostaCerdCard = lazy(() => import('@/components/dashboard/RespostaCerdCard').then(m => ({ default: m.RespostaCerdCard })));
 
 const eixoLabels: Record<ThematicAxis, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -64,8 +49,8 @@ export default function Recomendacoes() {
   const [filterPriority, setFilterPriority] = useState<PriorityLevel | 'all'>('all');
   const [filterEixo, setFilterEixo] = useState<ThematicAxis | 'all'>('all');
   const [filterGrupo, setFilterGrupo] = useState<FocalGroupType | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterArtigo, setFilterArtigo] = useState<ArtigoConvencao | null>(null);
+  const [activeTab, setActiveTab] = useState('relacao');
   
 
   const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
@@ -77,62 +62,9 @@ export default function Recomendacoes() {
 
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
-  const { data: allIndicadores } = useIndicadoresAnaliticos();
-  const { data: allOrcamento } = useDadosOrcamentarios();
-
-  // Fetch normativos for dynamic cross-referencing
-  const { data: allNormativos } = useQuery({
-    queryKey: ['normativos-justificativa'],
-    queryFn: async () => {
-      const { data } = await supabase.from('documentos_normativos').select('*');
-      return data || [];
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  // All lacunas (unfiltered) for Aderência ICERD
-  const { data: allLacunas } = useLacunasIdentificadas({});
-
-  // Analytical insights for Aderência
-  const { fiosCondutores, conclusoesDinamicas, respostas: respostasInsights, orcDados, indicadores: indicadoresInsights, stats: insightsStats } = useAnalyticalInsights();
-
-  // Build dynamic justificativas from ALL three bases (indicadores + orçamento + normativos)
-  const dynamicJustificativas = useMemo(() => {
-    if (!allIndicadores || !allOrcamento) return {};
-    const map: Record<string, string | null> = {};
-    const paragrafos = ['12', '14', '16', '18', '20', '22', '24', '26'];
-    for (const p of paragrafos) {
-      map[p] = generateDynamicJustificativa(p, allIndicadores as any, allOrcamento as any, allNormativos || []);
-    }
-    return map;
-  }, [allIndicadores, allOrcamento, allNormativos]);
-
-  // Diagnostic Sensor — Level 1
-  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas);
-
-  const filteredLacunas = lacunas?.filter(lacuna => {
-    // Filtro por artigo da Convenção
-    if (filterArtigo) {
-      const artigosDoEixo = EIXO_PARA_ARTIGOS[lacuna.eixo_tematico] || [];
-      if (!artigosDoEixo.includes(filterArtigo)) return false;
-    }
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      lacuna.tema.toLowerCase().includes(term) ||
-      lacuna.descricao_lacuna.toLowerCase().includes(term) ||
-      lacuna.paragrafo.toLowerCase().includes(term)
-    );
-  }) || [];
-
-  // Contagens por artigo para o filtro
-  const artigoCounts = lacunas?.reduce((acc, l) => {
-    const artigos = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
-    artigos.forEach(a => { acc[a] = (acc[a] || 0) + 1; });
-    return acc;
-  }, {} as Record<ArtigoConvencao, number>) || {} as Record<ArtigoConvencao, number>;
 
   const isLoading = loadingLacunas || loadingStats;
+  const statusStats = stats?.porStatus;
 
   return (
     <DashboardLayout
@@ -164,7 +96,7 @@ export default function Recomendacoes() {
                    </div>
                    <div>
                      <p className="text-xs text-muted-foreground">Cumpridas</p>
-                     <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.cumprido || 0 : stats?.porStatus.cumprido || 0}</p>
+                      <p className="text-xl font-bold text-success">{isLoading ? '...' : statusStats?.cumprido || 0}</p>
                    </div>
                  </CardContent>
                </Card>
@@ -175,7 +107,7 @@ export default function Recomendacoes() {
                    </div>
                    <div>
                      <p className="text-xs text-muted-foreground">Parciais</p>
-                     <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorReady ? sensorSummary?.statusReclassificado.parcialmente_cumprido || 0 : stats?.porStatus.parcialmente_cumprido || 0}</p>
+                      <p className="text-xl font-bold text-warning">{isLoading ? '...' : statusStats?.parcialmente_cumprido || 0}</p>
                    </div>
                  </CardContent>
                </Card>
@@ -186,7 +118,7 @@ export default function Recomendacoes() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                      <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorReady ? (sensorSummary?.statusReclassificado.nao_cumprido || 0) + (sensorSummary?.statusReclassificado.retrocesso || 0) + (sensorSummary?.statusReclassificado.em_andamento || 0) : stats?.porStatus.nao_cumprido || 0}</p>
+                       <p className="text-xl font-bold text-destructive">{isLoading ? '...' : (statusStats?.nao_cumprido || 0) + (statusStats?.retrocesso || 0) + (statusStats?.em_andamento || 0)}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -222,7 +154,7 @@ export default function Recomendacoes() {
       })()}
 
 
-      <Tabs defaultValue="relacao" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="relacao">📋 Relação Completa</TabsTrigger>
           <TabsTrigger value="observacoes">Observações Finais</TabsTrigger>
@@ -238,7 +170,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="observacoes">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-observacoes" generateHTML={generateObservacoesFinaisHTML} fileName="Observacoes-Finais-CERD" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-observacoes" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateObservacoesFinaisHTML()} fileName="Observacoes-Finais-CERD" compact />
           </div>
           <div id="export-recomendacoes-observacoes">
             <ObservacoesFinaisTab />
@@ -247,7 +179,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="follow-up">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-followup" generateHTML={generateFollowUpHTML} fileName="Follow-Up-CERD-2026" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-followup" generateHTML={async () => (await import('@/components/recomendacoes/generateFollowUpHTML')).generateFollowUpHTML()} fileName="Follow-Up-CERD-2026" compact />
           </div>
           <div id="export-recomendacoes-followup">
           <Card>
@@ -313,7 +245,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="rgs">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-rgs" generateHTML={generateRecomendacoesGeraisHTML} fileName="Recomendacoes-Gerais-CERD" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-rgs" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateRecomendacoesGeraisHTML()} fileName="Recomendacoes-Gerais-CERD" compact />
           </div>
           <div id="export-recomendacoes-rgs">
             <RecomendacoesGeraisTab />
@@ -322,7 +254,7 @@ export default function Recomendacoes() {
 
         <TabsContent value="durban">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-recomendacoes-durban" generateHTML={generateDurbanExportHTML} fileName="Durban-Cruzamento" compact />
+            <ExportTabButtons targetSelector="#export-recomendacoes-durban" generateHTML={async () => (await import('@/components/recomendacoes/generateRecomendacoesHTML')).generateDurbanExportHTML()} fileName="Durban-Cruzamento" compact />
           </div>
           <div id="export-recomendacoes-durban">
             <DurbanTab />
@@ -348,7 +280,7 @@ export default function Recomendacoes() {
               <RespostaCerdCard
                 key={resposta.id}
                 resposta={resposta}
-                dynamicJustificativa={dynamicJustificativas[resposta.paragrafo_cerd_iii] || null}
+                dynamicJustificativa={null}
               />
             ))}
           </div>
