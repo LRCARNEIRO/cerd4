@@ -228,7 +228,10 @@ export function renderArticleIIINarrative(d: ArticleNarrativeData): string {
   })()}
 
   <h4>3.4 Povos ciganos: segregação e documentação</h4>
-  <p>17. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira. Programas de documentação civil em acampamentos ciganos foram implementados no período, e o Plano Nacional de Políticas para Povos Ciganos estrutura metas específicas, conforme instrumentos cadastrados na Base Normativa.</p>`;
+  <p>17. O Censo 2022 identificou ${fmtNum(num(d.demo?.populacaoCigana || 41738))} pessoas que se autodeclararam ciganas — a primeira contagem oficial dessa população na história brasileira.${(() => {
+    const norm = renderNormativosInlineList(d.normativos, ['cigan', 'rom'], 'III', 4);
+    return norm ? ` Os instrumentos normativos cadastrados que estruturam a política para povos ciganos incluem: ${norm}.` : '';
+  })()}</p>`;
 }
 
 // ═══════════════════════════════════════════
