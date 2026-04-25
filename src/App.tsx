@@ -20,7 +20,17 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Ecossistema = lazy(() => import("./pages/Ecossistema"));
 const Artigos = lazy(() => import("./pages/Artigos"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 min — evita refetch a cada navegação
+      gcTime: 30 * 60 * 1000, // 30 min em memória
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: 1,
+    },
+  },
+});
 
 const PageLoader = () => (
   <div className="flex h-screen items-center justify-center bg-background">
