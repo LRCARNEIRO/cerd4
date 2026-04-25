@@ -81,7 +81,7 @@ export function renderArticleINarrative(d: ArticleNarrativeData): string {
     const norm = renderNormativosInlineList(d.normativos, ['migra', 'refug', 'estrange', 'acolhida'], 'I', 4);
     return norm ? ` Os instrumentos normativos cadastrados que sustentam essa política incluem: ${norm}.` : '';
   })()}</p>
-  ${renderOrcamentoArtigoBlock(d.orcDados, 'I', '8-a', 'No campo orçamentário,')}
+  ${renderOrcamentoArtigoBlock(d.orcDados, 'I', '8-a', 'No campo orçamentário,')}`;
 }
 
 // ═══════════════════════════════════════════
