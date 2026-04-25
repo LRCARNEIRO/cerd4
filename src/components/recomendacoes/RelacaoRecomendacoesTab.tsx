@@ -13,6 +13,7 @@ import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
 import { EvidenceDrilldownDialog, emptyOverride, type EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
+import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -61,45 +62,11 @@ function getPrioridadeLabel(prioridade: string): string {
   return prioridade;
 }
 
-const OVERRIDES_STORAGE_KEY = 'cerd-evidence-overrides-v1';
-
-function loadPersistedOverrides(): EvidenceOverrides {
-  try {
-    const raw = localStorage.getItem(OVERRIDES_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return {};
-}
-
-function persistOverrides(ov: EvidenceOverrides) {
-  try {
-    // Only persist non-empty overrides
-    const filtered: EvidenceOverrides = {};
-    for (const [k, v] of Object.entries(ov)) {
-      if (v.addedIndicadores.length || v.removedIndicadores.length ||
-          v.addedOrcamento.length || v.removedOrcamento.length ||
-          v.addedNormativos.length || v.removedNormativos.length) {
-        filtered[k] = v;
-      }
-    }
-    if (Object.keys(filtered).length > 0) {
-      localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify(filtered));
-    } else {
-      localStorage.removeItem(OVERRIDES_STORAGE_KEY);
-    }
-  } catch { /* ignore quota errors */ }
-}
-
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
-  const [evidenceOverrides, setEvidenceOverrides] = useState<EvidenceOverrides>(loadPersistedOverrides);
+  const [evidenceOverrides, setEvidenceOverrides] = useEvidenceOverrides();
   const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
-
-  // Persist overrides to localStorage whenever they change
-  useEffect(() => {
-    persistOverrides(evidenceOverrides);
-  }, [evidenceOverrides]);
   const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
   const grouped = useMemo(() => {
