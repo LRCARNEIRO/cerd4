@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,31 @@ export default function Estatisticas() {
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
+
+  // Deep-link p/ indicador específico: /estatisticas?ind=<id>#indicador-<id>
+  // Força aba "indicadores-db" e dispara scrollIntoView quando o card renderiza.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const indId = params.get('ind') || (window.location.hash.match(/^#indicador-(.+)$/)?.[1]);
+    if (!indId) return;
+    setActiveTab('indicadores-db');
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      attempts++;
+      const el = document.getElementById(`indicador-${indId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-2', 'ring-primary', 'shadow-lg');
+        window.setTimeout(() => el.classList.remove('ring-2', 'ring-primary', 'shadow-lg'), 4000);
+        window.clearInterval(timer);
+      } else if (attempts > 40) {
+        window.clearInterval(timer);
+      }
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, []);
+
   
   const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
   
