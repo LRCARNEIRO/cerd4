@@ -307,13 +307,22 @@ ${renderRows(allItems)}
             <ListChecks className="w-4 h-4" />
             Relação Completa — Recomendações, Vinculações e Status
           </h3>
-          <ExportTabButtons
-            generateHTML={generateExportHTML}
-            fileName="relacao-completa-recomendacoes"
-            label="Exportar"
-            compact
-          />
-        </div>
+          <div className="flex items-center gap-2">
+            <ExportAllRecomendacoesButton
+              recomendacoes={recomendacoes || []}
+              diagnosticMap={diagnosticMap}
+              rawIndicadores={rawIndicadores}
+              rawOrcamento={rawOrcamento}
+              rawNormativos={rawNormativos}
+              disabled={!sensorReady}
+            />
+            <ExportTabButtons
+              generateHTML={generateExportHTML}
+              fileName="relacao-completa-recomendacoes"
+              label="Exportar"
+              compact
+            />
+          </div>
         <p className="text-xs text-muted-foreground">
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
           <strong className="ml-1">Clique no status de cada recomendação</strong> para ver as evidências que fundamentam a classificação.
