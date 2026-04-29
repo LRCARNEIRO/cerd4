@@ -323,7 +323,8 @@ ${renderRows(allItems)}
               compact
             />
           </div>
-        <p className="text-xs text-muted-foreground">
+        </div>
+
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
           <strong className="ml-1">Clique no status de cada recomendação</strong> para ver as evidências que fundamentam a classificação.
         </p>
