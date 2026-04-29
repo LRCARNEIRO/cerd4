@@ -52,6 +52,32 @@ function downloadReport(title: string, content: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Extrai ano de uma data ISO ou de string contendo 4 dígitos. */
+function extractAno(d: any): string {
+  if (!d) return '—';
+  const s = String(d);
+  const m = s.match(/(19|20)\d{2}/);
+  return m ? m[0] : '—';
+}
+
+/** Heurística para extrair órgão do título do normativo (siglas comuns). */
+function extractOrgao(titulo: string): string {
+  if (!titulo) return '—';
+  const t = titulo.toUpperCase();
+  const siglas = ['MIR', 'MDHC', 'SEPPIR', 'STF', 'STJ', 'TSE', 'TST', 'CNJ', 'CNMP', 'AGU', 'PGR', 'MJ', 'MPF', 'MEC', 'MS', 'INCRA', 'FUNAI', 'SESAI', 'IBGE', 'DPU', 'DPF', 'IPHAN', 'CONANDA', 'CONAQ'];
+  for (const s of siglas) {
+    const re = new RegExp(`\\b${s}\\b`);
+    if (re.test(t)) return s;
+  }
+  return '—';
+}
+
+/** Constrói URL absoluta para o indicador, com âncora p/ scroll automático. */
+function buildIndicadorLink(id: string): string {
+  if (typeof window === 'undefined') return `/estatisticas?ind=${id}#indicador-${id}`;
+  return `${window.location.origin}/estatisticas?ind=${id}#indicador-${id}`;
+}
+
 export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoTitulo, indicadores, normativos, orcamento, initialTab = 'indicadores' }: FarolDrilldownDialogProps) {
 
   const indEvals = indicadores.map(ind => ({
