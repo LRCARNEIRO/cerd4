@@ -178,7 +178,6 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs">Indicador</TableHead>
-                    <TableHead className="text-xs">Categoria</TableHead>
                     <TableHead className="text-xs text-center">Ano Antigo</TableHead>
                     <TableHead className="text-xs text-right">Valor</TableHead>
                     <TableHead className="text-xs text-center">Ano Recente</TableHead>
@@ -189,8 +188,17 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
                 <TableBody>
                   {indEvals.map(({ ind, detail }) => (
                     <TableRow key={ind.id}>
-                      <TableCell className="text-xs max-w-[200px] truncate" title={ind.nome}>{ind.nome}</TableCell>
-                      <TableCell className="text-xs">{ind.categoria}</TableCell>
+                      <TableCell className="text-xs max-w-[260px] truncate" title={ind.nome}>
+                        <a
+                          href={buildIndicadorLink(ind.id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                          title={`Abrir indicador no sistema: ${ind.nome}`}
+                        >
+                          {ind.nome}
+                        </a>
+                      </TableCell>
                       <TableCell className="text-xs text-center">{detail.anoAntigo ?? '—'}</TableCell>
                       <TableCell className="text-xs text-right">{detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</TableCell>
                       <TableCell className="text-xs text-center">{detail.anoRecente ?? '—'}</TableCell>
