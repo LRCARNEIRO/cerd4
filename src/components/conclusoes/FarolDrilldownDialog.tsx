@@ -86,41 +86,58 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
   }));
 
   const handleDownload = () => {
-    const indRows = indEvals.map(({ ind, detail }) => `
+    const indRows = indEvals.map(({ ind, detail }) => {
+      const link = buildIndicadorLink(ind.id);
+      return `
       <tr>
-        <td>${ind.nome}</td>
-        <td>${ind.categoria}</td>
-        <td>${ind.fonte || '—'}</td>
+        <td><a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${ind.nome}</a></td>
         <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
         <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
         <td style="text-align:center">${detail.anoRecente ?? '—'}</td>
         <td style="text-align:right">${detail.valorRecente !== undefined ? fmtNum(detail.valorRecente) : '—'}</td>
         <td style="text-align:center;color:${detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : '#6b7280'}">${detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro'}</td>
-      </tr>`).join('');
+      </tr>`;
+    }).join('');
 
-    const normRows = normativos.map(d => `
-      <tr><td>${d.titulo}</td><td>${d.categoria}</td><td>${d.status}</td><td>${(d.artigos_convencao || []).join(', ')}</td></tr>`).join('');
+    const normRows = normativos.map(d => {
+      const ano = extractAno(d.created_at) !== '—' ? extractAno(d.created_at) : extractAno(d.titulo);
+      const orgao = extractOrgao(d.titulo);
+      const tipo = d.categoria || '—';
+      const titulo = d.url_origem
+        ? `<a href="${d.url_origem}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${d.titulo}</a>`
+        : d.titulo;
+      return `<tr><td style="text-align:center">${ano}</td><td>${orgao}</td><td>${tipo}</td><td>${titulo}</td></tr>`;
+    }).join('');
 
-    const orcRows = orcamento.map(o => `
-      <tr><td>${o.programa}</td><td>${o.orgao}</td><td>${o.esfera}</td><td style="text-align:right">R$ ${((o.dotacao_autorizada || 0) / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${((o.liquidado || 0) / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${((o.pago || 0) / 1e6).toFixed(2)}M</td></tr>`).join('');
+    const orcRows = orcamento.map(o => {
+      const dot = Number(o.dotacao_autorizada || 0);
+      const pago = Number(o.pago || 0);
+      const exec = Number(o.percentual_execucao);
+      const execStr = Number.isFinite(exec) && exec > 0
+        ? `${exec.toFixed(1)}%`
+        : (dot > 0 ? `${(pago / dot * 100).toFixed(1)}%` : '—');
+      return `
+      <tr><td style="text-align:center">${o.ano ?? '—'}</td><td>${o.programa}</td><td>${o.orgao}</td><td style="text-align:right">R$ ${(dot / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${(Number(o.liquidado || 0) / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${(pago / 1e6).toFixed(2)}M</td><td style="text-align:center">${execStr}</td></tr>`;
+    }).join('');
 
     const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Auditoria Art. ${artigoNumero}</title>
-      <style>body{font-family:system-ui;padding:2rem;max-width:1400px;margin:auto}table{width:100%;border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #ddd;padding:6px 8px;font-size:11px}th{background:#f5f5f5;font-weight:600}h2{margin-top:2rem;color:#333}h3{color:#555}</style></head>
+      <style>body{font-family:system-ui;padding:2rem;max-width:1400px;margin:auto}table{width:100%;border-collapse:collapse;margin:1rem 0}th,td{border:1px solid #ddd;padding:6px 8px;font-size:11px}th{background:#f5f5f5;font-weight:600}h2{margin-top:2rem;color:#333}h3{color:#555}a{color:#2563eb}</style></head>
       <body>
       <h1>Auditoria — Art. ${artigoNumero}: ${artigoTitulo}</h1>
       <p>Gerado em ${new Date().toLocaleString('pt-BR')}</p>
 
       <h2>📊 Indicadores (${indicadores.length})</h2>
       <p>${indEvals.filter(e => e.detail.result === 'favoravel').length} com melhoria, ${indEvals.filter(e => e.detail.result === 'desfavoravel').length} com piora, ${indEvals.filter(e => e.detail.result === 'novo').length} recém-mensurados, ${indEvals.filter(e => e.detail.result === 'neutro').length} neutros</p>
-      <table><thead><tr><th>Indicador</th><th>Categoria</th><th>Fonte</th><th>Ano Antigo</th><th>Valor Antigo</th><th>Ano Recente</th><th>Valor Recente</th><th>Resultado</th></tr></thead>
+      <p style="font-size:10px;color:#64748b">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
+      <table><thead><tr><th>Indicador</th><th>Ano Antigo</th><th>Valor Antigo</th><th>Ano Recente</th><th>Valor Recente</th><th>Resultado</th></tr></thead>
       <tbody>${indRows}</tbody></table>
 
       <h2>⚖️ Normativos (${normativos.length})</h2>
-      <table><thead><tr><th>Título</th><th>Categoria</th><th>Status</th><th>Artigos</th></tr></thead>
+      <table><thead><tr><th>Ano</th><th>Órgão</th><th>Tipo</th><th>Título</th></tr></thead>
       <tbody>${normRows}</tbody></table>
 
       <h2>💰 Orçamento (${orcamento.length} ações)</h2>
-      <table><thead><tr><th>Programa</th><th>Órgão</th><th>Esfera</th><th>Dotação Autorizada</th><th>Liquidado</th><th>Pago</th></tr></thead>
+      <table><thead><tr><th>Ano</th><th>Programa</th><th>Órgão</th><th>Dotação Autorizada</th><th>Liquidado</th><th>Pago</th><th>Execução (%)</th></tr></thead>
       <tbody>${orcRows}</tbody></table>
       </body></html>`;
 
