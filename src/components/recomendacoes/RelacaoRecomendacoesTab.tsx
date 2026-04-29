@@ -12,6 +12,7 @@ import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+import { ExportAllRecomendacoesButton } from './ExportAllRecomendacoesButton';
 
 const MethodologyPanel = lazy(() => import('@/components/shared/MethodologyPanel').then(m => ({ default: m.MethodologyPanel })));
 const EvidenceDrilldownDialog = lazy(() => import('@/components/shared/EvidenceDrilldownDialog').then(m => ({ default: m.EvidenceDrilldownDialog })));
@@ -306,12 +307,22 @@ ${renderRows(allItems)}
             <ListChecks className="w-4 h-4" />
             Relação Completa — Recomendações, Vinculações e Status
           </h3>
-          <ExportTabButtons
-            generateHTML={generateExportHTML}
-            fileName="relacao-completa-recomendacoes"
-            label="Exportar"
-            compact
-          />
+          <div className="flex items-center gap-2">
+            <ExportAllRecomendacoesButton
+              recomendacoes={recomendacoes || []}
+              diagnosticMap={diagnosticMap}
+              rawIndicadores={rawIndicadores}
+              rawOrcamento={rawOrcamento}
+              rawNormativos={rawNormativos}
+              disabled={!sensorReady}
+            />
+            <ExportTabButtons
+              generateHTML={generateExportHTML}
+              fileName="relacao-completa-recomendacoes"
+              label="Exportar"
+              compact
+            />
+          </div>
         </div>
         <p className="text-xs text-muted-foreground">
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
