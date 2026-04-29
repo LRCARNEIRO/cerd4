@@ -216,21 +216,30 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="text-xs text-center">Ano</TableHead>
+                    <TableHead className="text-xs">Órgão</TableHead>
+                    <TableHead className="text-xs">Tipo</TableHead>
                     <TableHead className="text-xs">Título</TableHead>
-                    <TableHead className="text-xs">Categoria</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs">Artigos</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {normativos.map(d => (
-                    <TableRow key={d.id}>
-                      <TableCell className="text-xs max-w-[250px] truncate" title={d.titulo}>{d.titulo}</TableCell>
-                      <TableCell className="text-xs">{d.categoria}</TableCell>
-                      <TableCell className="text-xs">{d.status}</TableCell>
-                      <TableCell className="text-xs">{(d.artigos_convencao || []).join(', ')}</TableCell>
-                    </TableRow>
-                  ))}
+                  {normativos.map(d => {
+                    const ano = extractAno(d.created_at) !== '—' ? extractAno(d.created_at) : extractAno(d.titulo);
+                    const orgao = extractOrgao(d.titulo);
+                    const tipo = d.categoria || '—';
+                    return (
+                      <TableRow key={d.id}>
+                        <TableCell className="text-xs text-center">{ano}</TableCell>
+                        <TableCell className="text-xs">{orgao}</TableCell>
+                        <TableCell className="text-xs capitalize">{tipo}</TableCell>
+                        <TableCell className="text-xs max-w-[320px] truncate" title={d.titulo}>
+                          {d.url_origem ? (
+                            <a href={d.url_origem} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{d.titulo}</a>
+                          ) : d.titulo}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -241,25 +250,35 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="text-xs text-center">Ano</TableHead>
                     <TableHead className="text-xs">Programa</TableHead>
                     <TableHead className="text-xs">Órgão</TableHead>
-                    <TableHead className="text-xs">Esfera</TableHead>
                     <TableHead className="text-xs text-right">Dotação Aut.</TableHead>
                     <TableHead className="text-xs text-right">Liquidado</TableHead>
                     <TableHead className="text-xs text-right">Pago</TableHead>
+                    <TableHead className="text-xs text-center">Execução (%)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orcamento.map(o => (
-                    <TableRow key={o.id}>
-                      <TableCell className="text-xs max-w-[200px] truncate" title={o.programa}>{o.programa}</TableCell>
-                      <TableCell className="text-xs">{o.orgao}</TableCell>
-                      <TableCell className="text-xs">{o.esfera}</TableCell>
-                      <TableCell className="text-xs text-right">R$ {((o.dotacao_autorizada || 0) / 1e6).toFixed(2)}M</TableCell>
-                      <TableCell className="text-xs text-right">R$ {((o.liquidado || 0) / 1e6).toFixed(2)}M</TableCell>
-                      <TableCell className="text-xs text-right">R$ {((o.pago || 0) / 1e6).toFixed(2)}M</TableCell>
-                    </TableRow>
-                  ))}
+                  {orcamento.map(o => {
+                    const dot = Number(o.dotacao_autorizada || 0);
+                    const pago = Number(o.pago || 0);
+                    const exec = Number(o.percentual_execucao);
+                    const execStr = Number.isFinite(exec) && exec > 0
+                      ? `${exec.toFixed(1)}%`
+                      : (dot > 0 ? `${(pago / dot * 100).toFixed(1)}%` : '—');
+                    return (
+                      <TableRow key={o.id}>
+                        <TableCell className="text-xs text-center">{o.ano ?? '—'}</TableCell>
+                        <TableCell className="text-xs max-w-[220px] truncate" title={o.programa}>{o.programa}</TableCell>
+                        <TableCell className="text-xs">{o.orgao}</TableCell>
+                        <TableCell className="text-xs text-right">R$ {(dot / 1e6).toFixed(2)}M</TableCell>
+                        <TableCell className="text-xs text-right">R$ {(Number(o.liquidado || 0) / 1e6).toFixed(2)}M</TableCell>
+                        <TableCell className="text-xs text-right">R$ {(pago / 1e6).toFixed(2)}M</TableCell>
+                        <TableCell className="text-xs text-center font-medium">{execStr}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
