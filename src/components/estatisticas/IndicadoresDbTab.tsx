@@ -1426,7 +1426,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
                 className="w-full text-left px-4 py-3 hover:bg-accent/50 border-b border-border/50 last:border-b-0 transition-colors"
                 onClick={() => handleSelectResult(ind)}
               >
-                <p className="text-sm font-medium text-foreground">{(ind as any).codigo ? `${(ind as any).codigo} — ` : ''}{ind.nome}</p>
+                <p className="text-sm font-medium text-foreground">{ind.codigo ? `${ind.codigo} — ` : ''}{ind.nome}</p>
                 <p className="text-xs text-muted-foreground">{ind.categoria} • {ind.fonte}</p>
               </button>
             ))}
@@ -1551,7 +1551,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
                     </TableHeader>
                     <TableBody>
                       {pending.map(ind => {
-                        const codigo = (ind as any).codigo as string | undefined;
+                        const codigo = ind.codigo;
                         return (
                         <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                           <TableCell className="text-sm font-medium">
