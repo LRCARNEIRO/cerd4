@@ -517,8 +517,16 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
+function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const systemBaseUrl = window.location.origin;
+
+  // Regra de Ouro: Common Core não pode constar no inventário de evidências aptas.
+  // Filtra qualquer indicador com categoria 'common_core' OU prefixo "[CC-N]".
+  const isCommonCore = (i: any) =>
+    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
+  const indicadoresBD = (indicadoresBDRaw || []).filter((i: any) => !isCommonCore(i));
+
   const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
     segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
     interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
@@ -586,7 +594,7 @@ function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m:
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -626,19 +634,23 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <p style="color:#666;">Sistema de Subsídios para o IV Relatório CERD — Gerado em ${now}</p>
 
 <div class="meta-box">
-  <strong>Objetivo:</strong> Consolidar a dimensão total dos dados disponíveis na Base Estatística do sistema, 
-  incluindo séries temporais, tabelas do Common Core (HRI/CORE), indicadores do banco de dados e dados novos auditáveis.
-  Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis.
+  <strong>Objetivo:</strong> Consolidar a dimensão total dos <em>indicadores aptos a serem utilizados como evidências</em>
+  na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
+  Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
+  <br><br>
+  <strong>⚠️ Nota metodológica:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
+  e <strong>não constam</strong> deste inventário, pois não são utilizáveis como evidência de cumprimento
+  de recomendações da ONU (não possuem desagregação racial comparável).
 </div>
 
 <div class="stats-grid">
   <div class="stat-card">
     <div class="value">${safeNum(totalGeral)}</div>
-    <div class="label">TOTAL GERAL</div>
+    <div class="label">TOTAL GERAL (aptos)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${TOTAL_TABELAS_COMMON_CORE}</div>
-    <div class="label">TABELAS COMMON CORE</div>
+    <div class="value">${series.length}</div>
+    <div class="label">SÉRIES TEMPORAIS</div>
   </div>
   <div class="stat-card">
     <div class="value">${indicadoresBD.length}</div>
@@ -667,31 +679,15 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   </tfoot>
 </table>
 
-<h2>2. Common Core — ${TOTAL_TABELAS_COMMON_CORE} Tabelas</h2>
-${ccCategorias.map(cat => `
-<h3>${cat.nome} (${cat.tabelas.length})</h3>
-<table>
-  <thead>
-    <tr><th>Nº</th><th>Título</th><th>Fonte</th><th>Período</th><th>Status</th><th>Linhas</th></tr>
-  </thead>
-  <tbody>
-    ${cat.tabelas.map(t => `<tr>
-      <td>${t.numero}</td>
-      <td>${t.titulo}</td>
-      <td>${t.fonte}</td>
-      <td>${t.periodoAtualizado}</td>
-      <td><span class="badge ${t.statusAtualizacao === 'atualizado' ? 'badge-green' : t.statusAtualizacao === 'parcial' ? 'badge-amber' : 'badge-red'}">${t.statusAtualizacao}</span></td>
-      <td>${t.dados.rows.length}</td>
-    </tr>`).join('')}
-  </tbody>
-</table>`).join('')}
-
-<h2>3. Indicadores BD — ${indicadoresBD.length}</h2>
+<h2>2. Indicadores BD — ${indicadoresBD.length}</h2>
+<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
+  💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
+</p>
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
 <table>
   <thead>
-    <tr><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Desagregações</th></tr>
+    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Desagregações</th></tr>
   </thead>
   <tbody>
     ${inds.map((ind: any) => {
@@ -703,7 +699,12 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
       if (ind.desagregacao_classe) desags.push('Classe');
       if (ind.desagregacao_deficiencia) desags.push('Deficiência');
       const arts = (ind.artigos_convencao || []).map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join('');
-      return `<tr>
+      const codigo = ind.codigo || '';
+      const codigoCell = codigo
+        ? `<a href="${systemBaseUrl}/estatisticas?ind=${encodeURIComponent(codigo)}#ind-${encodeURIComponent(codigo)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${codigo}</a>`
+        : '<span style="color:#94a3b8;">—</span>';
+      return `<tr id="ind-${codigo}">
+        <td>${codigoCell}</td>
         <td>${ind.nome}</td>
         <td>${ind.fonte}</td>
         <td>${arts || '—'}</td>
@@ -713,13 +714,14 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
   </tbody>
 </table>`).join('')}
 
-<h2>4. Dados Novos — ${TOTAL_DADOS_NOVOS}</h2>
+<h2>3. Dados Novos — ${TOTAL_DADOS_NOVOS}</h2>
 <div class="section-summary">
   <strong>${TOTAL_DADOS_NOVOS} indicadores auditáveis</strong> em 9 categorias temáticas com deep links para fontes oficiais.
 </div>
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
+  <p>Common Core (HRI/CORE/BRA) excluído por não ser apto como evidência de cumprimento (sem recorte racial).</p>
 </div>
 
 </body>
