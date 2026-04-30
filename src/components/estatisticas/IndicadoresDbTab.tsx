@@ -1200,13 +1200,14 @@ function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
 
 interface IndicadoresDbTabProps {
   filtroAuditoria?: 'todos' | 'auditados' | 'pendentes';
+  initialSearchTerm?: string;
 }
 
-export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTabProps) {
+export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm = '' }: IndicadoresDbTabProps) {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
@@ -1257,7 +1258,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
 
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
-    setSearchTerm('');
+    setSearchTerm(realCodigo || indId);
     setHighlightedId(realId);
 
     let attempts = 0;
@@ -1268,6 +1269,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         window.clearInterval(timer);
       } else if (attempts > 80) {
         console.warn('[deep-link] elemento não renderizou em 16s; alvo:', realCodigo || realId);
+        setSearchTerm(realCodigo || target.nome || indId);
         window.clearInterval(timer);
       }
     }, 200);
@@ -1319,7 +1321,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const handleSelectResult = useCallback((ind: IndicadorData) => {
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
-    setSearchTerm('');
+    setSearchTerm((ind as any).codigo || ind.nome);
     setHighlightedId(ind.id);
     setTimeout(() => {
       if (scrollToIndicadorElement(ind.id, (ind as any).codigo)) {
