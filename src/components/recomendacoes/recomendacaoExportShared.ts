@@ -19,9 +19,9 @@ export interface ExportLookupMaps {
 }
 
 /**
- * Constrói os mapas de lookup uma única vez e devolve a base pública
- * (ou preview, mas preferindo cerd4.lovable.app sempre que possível,
- * pois links abertos no preview pedem login).
+ * Constrói os mapas de lookup uma única vez e devolve a origem atual.
+ * Isso mantém os deep-links apontando para a mesma versão do app que
+ * gerou o relatório (preview → preview; publicado → publicado).
  */
 export function buildExportLookups(
   rawIndicadores: any[],
@@ -54,9 +54,7 @@ export function buildExportLookups(
     if (!orcamentoMetaByKey.has(key)) orcamentoMetaByKey.set(key, o);
   }
 
-  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-  const isPreview = /(-preview--|lovableproject\.com)/.test(currentOrigin);
-  const origin = isPreview ? 'https://cerd4.lovable.app' : currentOrigin;
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
   return { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
 }

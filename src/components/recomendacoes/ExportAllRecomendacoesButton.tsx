@@ -6,6 +6,7 @@
  * garantindo paridade exata com o popup de gerenciamento de evidências.
  */
 import { useState } from 'react';
+import JSZip from 'jszip';
 import { Button } from '@/components/ui/button';
 import { Archive, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -43,7 +44,6 @@ export function ExportAllRecomendacoesButton({
         rawNormativos: rawNormativos?.length,
       });
 
-      const { default: JSZip } = await import('jszip');
       const zip = new JSZip();
 
       // Index file

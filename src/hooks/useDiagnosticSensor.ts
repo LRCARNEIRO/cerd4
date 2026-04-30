@@ -5,6 +5,7 @@ import type { LacunaIdentificada, ComplianceStatus, ThematicAxis } from '@/hooks
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
+import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -143,10 +144,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
         .select('*')
-        .neq('categoria', 'common_core')
-        .order('categoria', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
       if (error) throw error;
-      return data || [];
+      const all = data || [];
+      const codigos = buildIndicadorCodigoMap(all);
+      return all
+        .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
+        .filter(i => i.categoria !== 'common_core');
     },
   });
 

@@ -608,6 +608,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
                           id={`indicador-${c.indicador.id}`}
+                          data-indicador-id={c.indicador.id}
                           data-codigo={codigo}
                           className={cn(
                             idx % 2 === 0 && 'bg-muted/10',
@@ -739,7 +740,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                     const { years } = normalizeIndicadorData(ind.dados || {});
                     const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
                           <div className="flex items-start gap-1.5">
                             {codigo && (
@@ -962,6 +963,7 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
   return (
     <Card
       id={`indicador-${indicador.id}`}
+      data-indicador-id={indicador.id}
       data-codigo={codigo}
       className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
     >
@@ -1207,7 +1209,23 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  const typedIndicadores = (indicadores || []) as IndicadorData[];
+  const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
+
+  const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
+    const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
+    const escapedCodigo = codigo && typeof CSS !== 'undefined' ? CSS.escape(codigo) : codigo?.replace(/"/g, '\\"');
+    const el = document.getElementById(`indicador-${id}`)
+      || (codigo ? document.getElementById(`ind-${codigo}`) : null)
+      || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
+      || document.querySelector<HTMLElement>(`[data-indicador-id="${escapedId}"]`);
+
+    if (!el) return false;
+    window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      window.setTimeout(() => el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' }), 650);
+    });
+    return true;
+  }, []);
 
   // ── Deep-link p/ indicador específico vindo de relatórios externos ──
   // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
@@ -1252,10 +1270,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;
-      const el = document.getElementById(`indicador-${realId}`)
-        || (realCodigo ? document.getElementById(`ind-${realCodigo}`) : null);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (scrollToIndicadorElement(realId, realCodigo)) {
         window.setTimeout(() => setHighlightedId(null), 6000);
         window.clearInterval(timer);
       } else if (attempts > 80) {
@@ -1264,7 +1279,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       }
     }, 200);
     return () => window.clearInterval(timer);
-  }, [typedIndicadores]);
+  }, [typedIndicadores, scrollToIndicadorElement]);
 
   // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
@@ -1292,13 +1307,11 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     setSearchTerm('');
     setHighlightedId(ind.id);
     setTimeout(() => {
-      const el = document.getElementById(`indicador-${ind.id}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (scrollToIndicadorElement(ind.id, (ind as any).codigo)) {
         setTimeout(() => setHighlightedId(null), 3000);
       }
     }, 100);
-  }, []);
+  }, [scrollToIndicadorElement]);
 
   const handleExportPDF = useCallback(() => {
     const html = generateIndicadoresHTML(typedIndicadores);
