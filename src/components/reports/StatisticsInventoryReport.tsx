@@ -814,6 +814,38 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
   </tbody>
 </table>
 
+<h2>4. Detalhe das Métricas de Séries Temporais</h2>
+<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
+  Tabela de valores por ano para cada métrica listada na seção 1. Os âncoras correspondem aos códigos S-XXX-NN clicáveis acima.
+</p>
+${seriesExpandidas.map((s) => {
+  const rows = (s.rows || []).filter((r: any) => r && r[s.metricKey] !== undefined && r[s.metricKey] !== null);
+  if (!rows.length) return '';
+  const yearKey = rows[0].ano !== undefined ? 'ano' : (rows[0].periodo !== undefined ? 'periodo' : Object.keys(rows[0])[0]);
+  const fmt = (v: any) => {
+    if (v == null) return '—';
+    if (typeof v === 'number') return v.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+    return String(v);
+  };
+  return `
+<div id="serie-${s.codigo}" style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:12px 0;page-break-inside:avoid;">
+  <h3 style="margin:0 0 6px;">
+    <span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span>
+    ${s.nome}
+  </h3>
+  <p class="meta" style="font-size:11px;color:#64748b;margin:0 0 8px;">
+    Série: <strong>${s.serie}</strong> · Fonte: ${s.fonte} · Período: ${s.periodo}
+  </p>
+  <table>
+    <thead><tr><th>${yearKey === 'ano' ? 'Ano' : 'Período'}</th><th>${s.nome}</th></tr></thead>
+    <tbody>
+      ${rows.map((r: any) => `<tr><td>${fmt(r[yearKey])}</td><td>${fmt(r[s.metricKey])}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:10px;color:#94a3b8;margin:6px 0 0;"><a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Voltar ao topo</a></p>
+</div>`;
+}).join('')}
+
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
   <p>Common Core (HRI/CORE/BRA) excluído por não ser apto como evidência de cumprimento (sem recorte racial).</p>
