@@ -209,7 +209,7 @@ export function RacaGeneroTab() {
 
       {/* ═══ 2. Chefia Familiar + Saúde Materna ═══ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card id="serie-deficiencia" className="scroll-mt-24">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Home className="w-5 h-5 text-warning" />
@@ -277,7 +277,7 @@ export function RacaGeneroTab() {
           </CardContent>
         </Card>
 
-        <Card id="serie-classe" className="scroll-mt-24">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Stethoscope className="w-5 h-5 text-destructive" />
@@ -659,7 +659,7 @@ export function LgbtqiaTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tabela da série com recorte racial completo */}
-        <Card>
+        <Card id="serie-deficiencia" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base">Dados Anuais — Assassinatos de Pessoas Trans e Travestis</CardTitle>
             <CardDescription>Dossiê ANTRA — perfil racial das vítimas (2017-2025)</CardDescription>
@@ -701,7 +701,7 @@ export function LgbtqiaTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="serie-classe" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base">Dados-Chave (2025)</CardTitle>
           </CardHeader>
