@@ -27,7 +27,6 @@ serve(async (req) => {
     // Clear existing mirror categories before re-inserting
     if (clearCategories && Array.isArray(clearCategories)) {
       for (const cat of clearCategories) {
-        // Only delete records that have 'espelho_estatico' in documento_origem
         const { error: delErr } = await supabase
           .from('indicadores_interseccionais')
           .delete()
@@ -37,9 +36,11 @@ serve(async (req) => {
       }
     }
 
-    // Insert in batches of 25
+    // Insert in batches of 25, with per-row retry on batch failure for granular errors
     let inserted = 0;
     let errors = 0;
+    const failedItems: Array<{ nome: string; categoria: string; error: string }> = [];
+
     for (let i = 0; i < indicators.length; i += 25) {
       const batch = indicators.slice(i, i + 25);
       const { error: insertError } = await supabase
@@ -47,8 +48,24 @@ serve(async (req) => {
         .insert(batch);
 
       if (insertError) {
-        console.error(`Batch ${i} error:`, insertError);
-        errors++;
+        console.warn(`Batch ${i} failed (${insertError.message}). Retrying row-by-row...`);
+        // Retry one-by-one to isolate failing items
+        for (const item of batch) {
+          const { error: rowErr } = await supabase
+            .from('indicadores_interseccionais')
+            .insert([item]);
+          if (rowErr) {
+            errors++;
+            failedItems.push({
+              nome: item.nome,
+              categoria: item.categoria,
+              error: rowErr.message,
+            });
+            console.error(`Failed: ${item.nome} (${item.categoria}) — ${rowErr.message}`);
+          } else {
+            inserted++;
+          }
+        }
       } else {
         inserted += batch.length;
       }
@@ -56,10 +73,11 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
-      message: `${inserted} indicadores espelhados inseridos (${errors} lotes com erro)`,
+      message: `${inserted} indicadores espelhados inseridos (${errors} falhas individuais)`,
       total: indicators.length,
       inserted,
       errors,
+      failedItems,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
