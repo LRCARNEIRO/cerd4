@@ -410,6 +410,8 @@ export const categoriasDadosNovos = [
   { id: 'habitacao', nome: 'Habitação e Moradia (§42-44)', icon: Home, indicadores: indicadoresHabitacao, cor: 'bg-amber-600' },
 ];
 
+const categorias = categoriasDadosNovos;
+
 /** Total de indicadores auditáveis na aba Dados Novos */
 export const TOTAL_DADOS_NOVOS = categorias.reduce((acc, cat) => acc + cat.indicadores.length, 0);
 
