@@ -697,54 +697,61 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
   Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
   <br><br>
-  <strong>⚠️ Nota metodológica:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
+  <strong>⚠️ Nota metodológica — Common Core:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
   e <strong>não constam</strong> deste inventário, pois não são utilizáveis como evidência de cumprimento
   de recomendações da ONU (não possuem desagregação racial comparável).
+  <br><br>
+  <strong>🔢 Reconciliação de contagens:</strong> O painel <em>"Espelho Seguro"</em> da página <em>Estatísticas e Indicadores</em>
+  exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
+  (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
+  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
+  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e quebra cada série temporal
+  em suas métricas individuais. Por isso o <strong>${'$'}{totalGeral}</strong> abaixo é menor que o número do painel de espelho.
 </div>
 
 <div class="stats-grid">
   <div class="stat-card">
-    <div class="value">${safeNum(totalGeral)}</div>
+    <div class="value">${'$'}{safeNum(totalGeral)}</div>
     <div class="label">TOTAL GERAL (aptos)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${seriesExpandidas.length}</div>
-    <div class="label">INDICADORES DE SÉRIES (${series.length} séries)</div>
+    <div class="value">${'$'}{seriesExpandidas.length}</div>
+    <div class="label">INDICADORES DE SÉRIES (${'$'}{series.length} séries)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${indicadoresBD.length}</div>
-    <div class="label">INDICADORES BD</div>
+    <div class="value">${'$'}{indicadoresBDUnicos.length}</div>
+    <div class="label">INDICADORES BD (únicos, sem espelhos)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${dadosNovosIndividuais.length}</div>
+    <div class="value">${'$'}{dadosNovosIndividuais.length}</div>
     <div class="label">DADOS NOVOS</div>
   </div>
 </div>
 
 <div class="section-summary">
-  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores extraídos das ${series.length} séries temporais hardcoded
-  + ${indicadoresBD.length} indicadores do banco de dados (com código IND-NNN)
-  + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
+  <strong>Como o total é composto:</strong> ${'$'}{seriesExpandidas.length} indicadores extraídos das ${'$'}{series.length} séries temporais hardcoded
+  + ${'$'}{indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
+  + ${'$'}{dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${'$'}{totalGeral} indicadores aptos</strong>.
   Cada item abaixo é listado individualmente para garantir auditabilidade.
 </div>
 
-<h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
+<h2>1. Indicadores extraídos de Séries Temporais — ${'$'}{seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  Cada série temporal contém múltiplas métricas. Aqui cada métrica é listada como um indicador individual.
+  💡 Clique no código <strong>S-XXX-NN</strong> para ir até a tabela de detalhe da métrica (no fim deste relatório).
 </p>
 <table>
   <thead>
     <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th></tr>
   </thead>
   <tbody>
-    ${seriesExpandidas.map((s, i) => `<tr>
-      <td>${i + 1}</td>
-      <td><span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span></td>
-      <td>${s.nome}</td>
-      <td>${s.serie}</td>
-      <td>${s.fonte}</td>
-      <td>${s.periodo}</td>
-      <td>${s.registros}</td>
+    ${'$'}{seriesExpandidas.map((s, i) => `<tr>
+      <td>${'$'}{i + 1}</td>
+      <td><a href="#serie-${'$'}{s.codigo}" style="display:inline-block;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${'$'}{s.codigo}</a></td>
+      <td>${'$'}{s.nome}</td>
+      <td>${'$'}{s.serie}</td>
+      <td>${'$'}{s.fonte}</td>
+      <td>${'$'}{s.periodo}</td>
+      <td>${'$'}{s.registros}</td>
     </tr>`).join('')}
   </tbody>
 </table>
