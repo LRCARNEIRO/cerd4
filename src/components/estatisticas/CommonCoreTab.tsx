@@ -9,6 +9,7 @@ import { ExternalLink, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
 
 // ============================================
 // COMMON CORE DOCUMENT - 77 TABELAS COMPLETAS
@@ -2309,13 +2310,21 @@ const TrendIcon = ({ trend }: { trend?: 'crescente' | 'decrescente' | 'estavel' 
 
 // Componente de Tabela Individual
 const CommonCoreTableCard = ({ table }: { table: CommonCoreTable }) => {
+  const codigosMap = useStaticIndicadorCodigos();
+  const nomeBd = `[CC-${table.numero}] ${table.titulo}`;
+  const codigo = lookupCodigo(codigosMap, nomeBd);
   return (
-    <AccordionItem value={table.id}>
+    <AccordionItem value={table.id} id={codigo ? `ind-${codigo}` : undefined}>
       <AccordionTrigger className="hover:no-underline">
         <div className="flex items-center gap-3 flex-1 text-left">
           <Badge variant="outline" className="font-mono text-xs shrink-0">
             T{table.numero.toString().padStart(2, '0')}
           </Badge>
+          {codigo && (
+            <Badge variant="outline" className="font-mono text-[10px] shrink-0 bg-primary/5 border-primary/30 text-primary">
+              {codigo}
+            </Badge>
+          )}
           <span className="font-medium text-sm flex-1">{table.titulo}</span>
           <div className="flex items-center gap-2">
             <TrendIcon trend={table.tendencia} />
