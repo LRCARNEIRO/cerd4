@@ -520,9 +520,28 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[], m: any) {
+function generateInventoryHTML(
+  indicadoresBDRaw: any[],
+  juventudeNegraBD: any[],
+  m: any,
+  recsByNomeLower: Map<string, string[]>,
+) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
+
+  // Helper: render badges com § de recomendações vinculadas a um indicador (busca case-insensitive)
+  const recsBadges = (nome: string): string => {
+    const recs = recsByNomeLower.get(String(nome || '').trim().toLowerCase()) || [];
+    if (!recs.length) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
+    const head = recs.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ');
+    return recs.length > 8 ? `${head} <span style="font-size:10px;color:#64748b;">+${recs.length - 8}</span>` : head;
+  };
+  // Helper: badges de Artigos ICERD inferidos
+  const artigosBadges = (ind: any): string => {
+    const arts = inferArtigosIndicador(ind);
+    if (!arts.length) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
+    return arts.map(a => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ');
+  };
 
   // Regra de Ouro: Common Core não pode constar no inventário de evidências aptas.
   // Filtra qualquer indicador com categoria 'common_core' OU prefixo "[CC-N]".
