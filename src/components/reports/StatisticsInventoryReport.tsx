@@ -45,7 +45,7 @@ import {
   tabelasHabitacao,
   tabelasSistemaPolitico,
 } from '@/components/estatisticas/CommonCoreTab';
-import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
+import { TOTAL_DADOS_NOVOS, categoriasDadosNovos } from '@/components/estatisticas/DadosNovosTab';
 import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
 import { prepareHtmlPreview } from '@/utils/reportPreview';
 import { toast } from 'sonner';
