@@ -42,6 +42,7 @@ const RACE_COLORS: Record<string, string> = {
 
 interface IndicadorData {
   id: string;
+  codigo?: string;
   nome: string;
   categoria: string;
   subcategoria?: string;
@@ -1237,9 +1238,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
 
     // 1) Match por código curto (ex.: 'IND-042' ou só '42').
     const codigoNorm = normalizeCodigoInput(indId);
-    if (codigoNorm) {
-      target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
-    }
+    if (codigoNorm) target = typedIndicadores.find(i => i.codigo === codigoNorm);
     // 2) Match por UUID exato.
     if (!target) target = typedIndicadores.find(i => i.id === indId || (preferredId && i.id === preferredId));
     // 3) Fallback por nome (case-insensitive).
@@ -1254,7 +1253,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
       return false;
     }
     const realId = target.id;
-    const realCodigo = (target as any).codigo as string | undefined;
+    const realCodigo = target.codigo;
 
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
@@ -1301,9 +1300,9 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   const matchesSearchTerm = useCallback((i: IndicadorData, rawTerm: string) => {
     if (!rawTerm.trim()) return true;
     const codigoNorm = normalizeCodigoInput(rawTerm);
-    if (codigoNorm) return (i as any).codigo === codigoNorm;
+    if (codigoNorm) return i.codigo === codigoNorm;
     const term = rawTerm.toLowerCase();
-    return ((i as any).codigo || '').toLowerCase().includes(term)
+    return (i.codigo || '').toLowerCase().includes(term)
       || i.nome.toLowerCase().includes(term)
       || i.categoria.toLowerCase().includes(term)
       || (i.subcategoria || '').toLowerCase().includes(term)
@@ -1313,11 +1312,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   // Search results — aceita IND-NNN, ID 060, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
     if (!searchTerm || searchTerm.length < 1) return [];
-    const term = searchTerm.toLowerCase();
     // Match prioritário por código curto: digitar 'IND-42', 'ind42' ou apenas '42'.
     const codigoNorm = normalizeCodigoInput(searchTerm);
     if (codigoNorm) {
-      const exact = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+      const exact = typedIndicadores.find(i => i.codigo === codigoNorm);
       if (exact) return [exact];
     }
     if (searchTerm.length < 2) return [];
@@ -1327,10 +1325,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   const handleSelectResult = useCallback((ind: IndicadorData) => {
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
-    setSearchTerm((ind as any).codigo || ind.nome);
+    setSearchTerm(ind.codigo || ind.nome);
     setHighlightedId(ind.id);
     setTimeout(() => {
-      if (scrollToIndicadorElement(ind.id, (ind as any).codigo)) {
+      if (scrollToIndicadorElement(ind.id, ind.codigo)) {
         setTimeout(() => setHighlightedId(null), 3000);
       }
     }, 100);
