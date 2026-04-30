@@ -599,7 +599,16 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
   // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
   // Aqui listamos cada métrica individual para que o inventário reflita o
   // total real de indicadores aptos como evidência.
-  type SubInd = { codigo: string; nome: string; serie: string; fonte: string; periodo: string; registros: number };
+  type SubInd = {
+    codigo: string;
+    nome: string;
+    serie: string;
+    fonte: string;
+    periodo: string;
+    registros: number;
+    metricKey: string;
+    rows: any[];
+  };
   const expandirSerie = (serie: string, fonte: string, periodo: string, rows: any[], excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota']): SubInd[] => {
     if (!rows?.length) return [];
     const keys = Object.keys(rows[0] || {}).filter(k => !excludeKeys.includes(k) && typeof rows[0][k] !== 'object');
@@ -610,6 +619,8 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
       fonte,
       periodo,
       registros: rows.length,
+      metricKey: k,
+      rows,
     }));
   };
 
