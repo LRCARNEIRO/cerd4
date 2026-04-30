@@ -15,7 +15,7 @@
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
-import type { ExportLookupMaps } from './recomendacaoExportShared';
+import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
