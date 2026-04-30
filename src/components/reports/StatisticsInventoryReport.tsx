@@ -880,8 +880,32 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
   const { data: juventudeNegraBD } = useJuventudeAuditados();
+  const { data: recomendacoes } = useLacunasIdentificadas();
+  const overrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap } = useDiagnosticSensor(recomendacoes, overrides);
   const mirror = useMirrorData();
   const [generating, setGenerating] = useState<string | null>(null);
+
+  // Constrói mapa: nome do indicador (lowercase) → lista de §recomendações vinculadas
+  // Usa o SSoT do diagnóstico (mesma fonte do popup de evidências) para garantir
+  // paridade exata com o sistema.
+  const recsByNomeLower = (() => {
+    const map = new Map<string, string[]>();
+    if (!recomendacoes || !diagnosticMap) return map;
+    for (const rec of recomendacoes) {
+      const diag = diagnosticMap.get(rec.id);
+      const par = String(rec.paragrafo || '').trim();
+      if (!diag || !par) continue;
+      for (const li of diag.linkedIndicadores || []) {
+        const k = String(li.nome || '').trim().toLowerCase();
+        if (!k) continue;
+        const arr = map.get(k) || [];
+        if (!arr.includes(par)) arr.push(par);
+        map.set(k, arr);
+      }
+    }
+    return map;
+  })();
 
   const handleFullReport = async (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
