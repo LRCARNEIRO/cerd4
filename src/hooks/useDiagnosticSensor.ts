@@ -19,6 +19,8 @@ export interface DiagnosticSignal {
 }
 
 export interface LinkedIndicador {
+  id?: string;
+  codigo?: string;
   nome: string;
   categoria: string;
   tendencia: string | null;
@@ -399,7 +401,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: finalIndicadores.map(i => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedIndicadores: finalIndicadores.map(i => ({ id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
         linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago })),
         linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
