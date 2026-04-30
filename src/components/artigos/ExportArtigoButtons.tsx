@@ -8,6 +8,7 @@
  * de evidências usado em todas as demais visões.
  */
 import { useState } from 'react';
+import JSZip from 'jszip';
 import { Button } from '@/components/ui/button';
 import { Archive, FileDown, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -71,7 +72,6 @@ export function ExportAllArtigosButton(common: CommonProps) {
       console.time('[ExportAllArtigos] total');
       const lookups = buildExportLookups(common.rawIndicadores || [], common.rawOrcamento || [], common.rawNormativos || []);
 
-      const { default: JSZip } = await import('jszip');
       const zip = new JSZip();
       const indexRows: string[] = [];
       const errors: string[] = [];
