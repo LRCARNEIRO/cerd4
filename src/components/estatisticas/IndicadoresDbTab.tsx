@@ -1224,7 +1224,6 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     let target: IndicadorData | undefined;
 
     // 1) Match por código curto (ex.: 'IND-042' ou só '42').
-    const { normalizeCodigoInput } = await import('@/utils/indicadorCodigo').catch(() => ({ normalizeCodigoInput: () => null as string | null })) as any;
     const codigoNorm = normalizeCodigoInput(indId);
     if (codigoNorm) {
       target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
