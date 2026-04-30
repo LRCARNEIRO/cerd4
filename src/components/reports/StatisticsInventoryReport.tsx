@@ -77,7 +77,10 @@ function arrayToHTMLTable(data: any[], title?: string): string {
 function indicadorToHTML(ind: any): string {
   const dados = ind.dados || {};
   const objectKeys = Object.keys(dados).filter(k => typeof dados[k] === 'object' && !['por_uf_2024','idade_media_vitima','unidade'].includes(k));
-  if (objectKeys.length === 0) return `<div class="card"><h4>${ind.nome}</h4><p class="meta">${ind.fonte} — Dados não disponíveis para tabulação</p></div>`;
+  if (objectKeys.length === 0) {
+    const codBadge = ind.codigo ? `<span class="badge badge-blue" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.05em">${ind.codigo}</span> ` : '';
+    return `<div class="card"${ind.codigo ? ` id="ind-${ind.codigo}"` : ''}><h4>${codBadge}${ind.nome}</h4><p class="meta">${ind.fonte} — Dados não disponíveis para tabulação</p></div>`;
+  }
 
   const topKeysAreYears = objectKeys.every((k: string) => /^\d{4}$/.test(k));
   let groups: string[], years: string[], chartData: Record<string, any>[];
@@ -108,8 +111,13 @@ function indicadorToHTML(ind: any): string {
   const tendBadge = ind.tendencia
     ? `<span class="badge ${ind.tendencia.includes('melhora') ? 'badge-green' : ind.tendencia.includes('piora') ? 'badge-red' : 'badge-amber'}">${ind.tendencia}</span>`
     : '';
+  // Código curto IND-NNN (canônico, gerado em useIndicadoresInterseccionais)
+  // — facilita citação cruzada em relatórios e auditoria humana.
+  const codigoBadge = ind.codigo
+    ? `<span class="badge badge-blue" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.05em">${ind.codigo}</span> `
+    : '';
 
-  let html = `<div class="card"><h4>${ind.nome} ${tendBadge}</h4>
+  let html = `<div class="card"${ind.codigo ? ` id="ind-${ind.codigo}"` : ''}><h4>${codigoBadge}${ind.nome} ${tendBadge}</h4>
 <p class="meta">${ind.subcategoria ? ind.subcategoria + ' • ' : ''}${ind.fonte}</p>
 <table><thead><tr><th>Grupo</th>${years.map(y => `<th>${y}</th>`).join('')}<th>Var.</th></tr></thead><tbody>`;
 

@@ -89,7 +89,12 @@ export function EvidenceDrilldownDialog({
   const searchIndResults = useMemo(() => {
     if (!searchInd || searchInd.length < 1) return [];
     const term = searchInd.toLowerCase();
+    // ⚠️ REGRA DE OURO: Common Core JAMAIS aparece como opção de inserção
+    // manual. Defesa explícita (categoria + prefixo "[CC-N]" no nome).
+    const isCommonCore = (i: any) =>
+      i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
     return (allIndicadores || [])
+      .filter((i: any) => !isCommonCore(i))
       .filter((i: any) => {
         const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);
