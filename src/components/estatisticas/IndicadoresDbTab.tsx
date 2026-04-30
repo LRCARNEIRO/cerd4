@@ -1217,7 +1217,6 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     const el = (codigo ? document.getElementById(`ind-${codigo}`) : null)
       || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
       || document.getElementById(`indicador-${id}`)
-      || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
       || document.querySelector<HTMLElement>(`[data-indicador-id="${escapedId}"]`);
 
     if (!el) return false;
@@ -1228,17 +1227,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     return true;
   }, []);
 
-  // ── Deep-link p/ indicador específico vindo de relatórios externos ──
-  // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
-  useEffect(() => {
-    if (typeof window === 'undefined' || !typedIndicadores.length) return;
-    const params = new URLSearchParams(window.location.search);
-    const rawHash = window.location.hash || '';
-    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
-    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
-    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
-    let indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
-    if (!indId) return;
+  const focusIndicador = useCallback((rawTarget: string, preferredId?: string) => {
+    if (typeof window === 'undefined' || !typedIndicadores.length) return false;
+    let indId = (rawTarget || preferredId || '').trim();
+    if (!indId) return false;
 
     let target: IndicadorData | undefined;
 
@@ -1248,7 +1240,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
     }
     // 2) Match por UUID exato.
-    if (!target) target = typedIndicadores.find(i => i.id === indId);
+    if (!target) target = typedIndicadores.find(i => i.id === indId || (preferredId && i.id === preferredId));
     // 3) Fallback por nome (case-insensitive).
     if (!target) {
       try { indId = decodeURIComponent(indId); } catch { /* ignore */ }
@@ -1258,7 +1250,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     }
     if (!target) {
       console.warn('[deep-link] indicador não localizado:', indId);
-      return;
+      return false;
     }
     const realId = target.id;
     const realCodigo = (target as any).codigo as string | undefined;
@@ -1279,8 +1271,30 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         window.clearInterval(timer);
       }
     }, 200);
-    return () => window.clearInterval(timer);
+    return true;
   }, [typedIndicadores, scrollToIndicadorElement]);
+
+  // ── Deep-link p/ indicador específico vindo de relatórios externos ──
+  // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !typedIndicadores.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const rawHash = window.location.hash || '';
+    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
+    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
+    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
+    const indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
+    if (indId) focusIndicador(indId);
+  }, [typedIndicadores, focusIndicador]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ id?: string; codigo?: string }>).detail || {};
+      focusIndicador(detail.codigo || detail.id || '', detail.id);
+    };
+    window.addEventListener('indicador-focus', handler as EventListener);
+    return () => window.removeEventListener('indicador-focus', handler as EventListener);
+  }, [focusIndicador]);
 
   // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
