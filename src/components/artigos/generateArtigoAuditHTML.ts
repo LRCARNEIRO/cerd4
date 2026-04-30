@@ -90,7 +90,10 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
     for (const li of diag?.linkedIndicadores || []) {
       // ⚠️ REGRA DE OURO: bloquear Common Core como evidência de Artigo.
-      if ((li as any)?.categoria === 'common_core') continue;
+      // Detecção dupla: categoria + prefixo "[CC-" no nome (cobre overrides
+      // antigos persistidos sem categoria).
+      const liAny = li as any;
+      if (liAny?.categoria === 'common_core' || /^\[CC-/i.test(String(li?.nome || ''))) continue;
       const cur = indByNome.get(li.nome);
       if (cur) cur.recomendacoes.push(tag);
       else indByNome.set(li.nome, { ...li, recomendacoes: [tag] });
