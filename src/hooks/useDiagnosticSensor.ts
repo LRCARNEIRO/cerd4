@@ -256,9 +256,16 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let finalNormativos = normativosVinculados;
 
       if (recOverride) {
+        // ⚠️ REGRA DE OURO: bloquear injeção manual de Common Core como
+        // evidência. Mesmo se um override antigo (localStorage) trouxer
+        // um indicador `[CC-N]`, ele é silenciosamente descartado aqui.
+        // Detecção dupla: categoria explícita + nome com prefixo "[CC-".
+        const isCommonCore = (a: any) =>
+          a?.categoria === 'common_core' || /^\[CC-/i.test(String(a?.nome || ''));
         finalIndicadores = [
           ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
           ...recOverride.addedIndicadores
+            .filter(a => !isCommonCore(a))
             .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
             .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
         ];
