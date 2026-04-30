@@ -55,7 +55,13 @@ export function ExportAllRecomendacoesButton({
         if (!orcamentoMetaByKey.has(key)) orcamentoMetaByKey.set(key, o);
       }
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      // Sempre usar a URL publicada (não exige login). Caso o usuário esteja
+      // gerando o .zip dentro do preview (id-preview--*.lovable.app ou
+      // *.lovableproject.com), os links abertos no preview pediriam login —
+      // por isso forçamos a base pública.
+      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+      const isPreview = /(-preview--|lovableproject\.com)/.test(currentOrigin);
+      const origin = isPreview ? 'https://cerd4.lovable.app' : currentOrigin;
 
       const { default: JSZip } = await import('jszip');
       const zip = new JSZip();
