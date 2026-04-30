@@ -1214,14 +1214,23 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     if (typeof window === 'undefined' || !typedIndicadores.length) return;
     const params = new URLSearchParams(window.location.search);
     const rawHash = window.location.hash || '';
-    const hashMatch = rawHash.match(/^#indicador-(.+)$/);
-    let indId = (params.get('ind') || hashMatch?.[1] || '').trim();
+    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
+    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
+    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
+    let indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
     if (!indId) return;
 
-    // 1) Tenta match por ID exato.
-    let target = typedIndicadores.find(i => i.id === indId);
-    // 2) Fallback: se vier nome no hash (`#indicador-Nome%20do%20Indicador`),
-    //    tenta resolver por nome (case-insensitive).
+    let target: IndicadorData | undefined;
+
+    // 1) Match por código curto (ex.: 'IND-042' ou só '42').
+    const { normalizeCodigoInput } = await import('@/utils/indicadorCodigo').catch(() => ({ normalizeCodigoInput: () => null as string | null })) as any;
+    const codigoNorm = normalizeCodigoInput(indId);
+    if (codigoNorm) {
+      target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+    }
+    // 2) Match por UUID exato.
+    if (!target) target = typedIndicadores.find(i => i.id === indId);
+    // 3) Fallback por nome (case-insensitive).
     if (!target) {
       try { indId = decodeURIComponent(indId); } catch { /* ignore */ }
       const lower = indId.toLowerCase();
@@ -1233,8 +1242,8 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       return;
     }
     const realId = target.id;
+    const realCodigo = (target as any).codigo as string | undefined;
 
-    // Resetar filtros p/ garantir que o card está renderizado.
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
     setSearchTerm('');
@@ -1243,14 +1252,14 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;
-      const el = document.getElementById(`indicador-${realId}`);
+      const el = document.getElementById(`indicador-${realId}`)
+        || (realCodigo ? document.getElementById(`ind-${realCodigo}`) : null);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // mantém destaque visível por mais tempo
         window.setTimeout(() => setHighlightedId(null), 6000);
         window.clearInterval(timer);
       } else if (attempts > 80) {
-        console.warn('[deep-link] elemento #indicador-' + realId + ' não renderizou após 16s');
+        console.warn('[deep-link] elemento não renderizou em 16s; alvo:', realCodigo || realId);
         window.clearInterval(timer);
       }
     }, 200);
