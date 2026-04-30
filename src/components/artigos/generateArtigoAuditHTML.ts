@@ -89,6 +89,8 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const tag = `§${rec.paragrafo}`;
 
     for (const li of diag?.linkedIndicadores || []) {
+      // ⚠️ REGRA DE OURO: bloquear Common Core como evidência de Artigo.
+      if ((li as any)?.categoria === 'common_core') continue;
       const cur = indByNome.get(li.nome);
       if (cur) cur.recomendacoes.push(tag);
       else indByNome.set(li.nome, { ...li, recomendacoes: [tag] });
