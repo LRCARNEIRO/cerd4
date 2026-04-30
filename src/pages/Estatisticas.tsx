@@ -59,13 +59,23 @@ export default function Estatisticas() {
     const indId = params.get('ind')
       || rawHash.match(/^#ind-(IND-\d+)$/i)?.[1]
       || rawHash.match(/^#indicador-(.+)$/)?.[1];
-    if (!indId && params.get('tab') !== 'indicadores-db') return;
-    setActiveTab('indicadores-db');
-    if (!indId) return;
-    const timer = window.setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { codigo: indId, id: indId } }));
-    }, 250);
-    return () => window.clearTimeout(timer);
+    const tabParam = params.get('tab');
+    // Lista de abas válidas para deep-link via ?tab=
+    const VALID_TABS = new Set([
+      'common-core','complemento-cerd3','dados-gerais','seguranca-saude-educacao',
+      'indicadores-db','adm-publica','covid-racial','grupos-focais','ods-racial',
+      'vulnerabilidades','raca-genero','lgbtqia','deficiencia','juventude','classe',
+    ]);
+    if (indId) {
+      setActiveTab('indicadores-db');
+      const timer = window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { codigo: indId, id: indId } }));
+      }, 250);
+      return () => window.clearTimeout(timer);
+    }
+    if (tabParam && VALID_TABS.has(tabParam)) {
+      setActiveTab(tabParam);
+    }
   }, []);
 
   

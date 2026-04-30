@@ -623,45 +623,90 @@ function generateInventoryHTML(
   // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
   // Aqui listamos cada métrica individual para que o inventário reflita o
   // total real de indicadores aptos como evidência.
+  // CRÍTICO: cada nome final torna explícito o RECORTE (raça/cor, gênero,
+  // PCD, LGBTQIA+, etc.) — sem isso o keyword-engine não casa o indicador
+  // como evidência das recomendações ONU racializadas.
   type SubInd = {
     codigo: string;
-    nome: string;
+    nome: string;       // nome legível auto-explicativo (já com recorte)
+    nomeBruto: string;  // rótulo bruto da métrica (para busca)
     serie: string;
     fonte: string;
     periodo: string;
     registros: number;
     metricKey: string;
     rows: any[];
+    tab: string;        // aba alvo p/ deep-link em /estatisticas?tab=...
+    recorte: string;    // descrição do recorte (raça, gênero, etc.)
   };
-  const expandirSerie = (serie: string, fonte: string, periodo: string, rows: any[], excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota']): SubInd[] => {
+
+  // Heurística: detecta o recorte da métrica pelo nome da chave.
+  const detectarRecorte = (key: string): { recorte: string; sufixo: string } => {
+    const k = key.toLowerCase();
+    if (/\b(negr|pret|pard|branc|amarel|indigen|quilombol)/.test(k))
+      return { recorte: 'por raça/cor', sufixo: ' (recorte raça/cor)' };
+    if (/feminicid/.test(k))
+      return { recorte: 'feminicídio (gênero × raça)', sufixo: ' (gênero × raça)' };
+    if (/\b(mulher|feminin|masculin|homem|genero|trans|travesti)\b/.test(k))
+      return { recorte: 'por gênero', sufixo: ' (recorte gênero)' };
+    if (/lgbt|antra|lesbic|gay|bissex/.test(k))
+      return { recorte: 'LGBTQIA+', sufixo: ' (recorte LGBTQIA+)' };
+    if (/defici/.test(k))
+      return { recorte: 'pessoa com deficiência', sufixo: ' (recorte PCD)' };
+    if (/jovem|jovens|juventud|crianca|adolescen/.test(k))
+      return { recorte: 'por faixa etária', sufixo: ' (recorte etário)' };
+    if (/letalidade|policial|encarcera|prisional/.test(k))
+      return { recorte: 'segurança × raça', sufixo: ' (segurança × raça)' };
+    return { recorte: '', sufixo: '' };
+  };
+
+  const expandirSerie = (
+    serie: string,
+    fonte: string,
+    periodo: string,
+    rows: any[],
+    tab: string,
+    recorteSerieDefault: string = '',
+    excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota'],
+  ): SubInd[] => {
     if (!rows?.length) return [];
     const keys = Object.keys(rows[0] || {}).filter(k => !excludeKeys.includes(k) && typeof rows[0][k] !== 'object');
-    return keys.map((k, i) => ({
-      codigo: `S-${serie.slice(0,3).toUpperCase().replace(/\s/g,'')}-${String(i+1).padStart(2,'0')}`,
-      nome: k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).trim(),
-      serie,
-      fonte,
-      periodo,
-      registros: rows.length,
-      metricKey: k,
-      rows,
-    }));
+    return keys.map((k, i) => {
+      const labelBruto = k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).trim();
+      const det = detectarRecorte(k);
+      const sufixoFinal = det.sufixo || (recorteSerieDefault ? ` (${recorteSerieDefault})` : '');
+      const recorte = det.recorte || recorteSerieDefault;
+      const nome = `${serie} — ${labelBruto}${sufixoFinal}`;
+      return {
+        codigo: `S-${serie.slice(0,3).toUpperCase().replace(/\s/g,'')}-${String(i+1).padStart(2,'0')}`,
+        nome,
+        nomeBruto: labelBruto,
+        serie,
+        fonte,
+        periodo,
+        registros: rows.length,
+        metricKey: k,
+        rows,
+        tab,
+        recorte,
+      };
+    });
   };
 
   const seriesExpandidas: SubInd[] = [
-    ...expandirSerie('Composição Racial PNAD', 'SIDRA/IBGE 6403', '2018-2024', evolucaoComposicaoRacial),
-    ...expandirSerie('Indicadores Socioeconômicos', 'PNAD Contínua', '2018-2024', indicadoresSocioeconomicos),
-    ...expandirSerie('Segurança Pública', 'FBSP / SIM-DataSUS', '2018-2024', segurancaPublica),
-    ...expandirSerie('Feminicídio', 'FBSP', '2018-2024', feminicidioSerie),
-    ...expandirSerie('Educação Histórica', 'INEP / PNAD', '2018-2024', educacaoSerieHistorica),
-    ...expandirSerie('Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica),
-    ...expandirSerie('Trabalho Interseccional', 'PNAD Contínua', '2018-2024', interseccionalidadeTrabalho),
-    ...expandirSerie('Deficiência × Raça', 'IBGE / Censo 2022', '2022', deficienciaPorRaca),
-    ...expandirSerie('LGBTQIA+ ANTRA', 'ANTRA / FBSP', '2018-2024', serieAntraTrans),
-    ...expandirSerie('LGBTQIA+ × Raça', 'IBGE Sexualidade', '2022', lgbtqiaPorRaca),
-    ...expandirSerie('Classe × Raça', 'PNAD Contínua / SIS', '2022', classePorRaca),
-    ...expandirSerie('Violência Interseccional', 'FBSP / DataSUS', '2018-2024', violenciaInterseccional),
-    ...expandirSerie('Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade),
+    ...expandirSerie('Composição Racial PNAD', 'SIDRA/IBGE 6403', '2018-2024', evolucaoComposicaoRacial, 'dados-gerais', 'por raça/cor'),
+    ...expandirSerie('Indicadores Socioeconômicos', 'PNAD Contínua', '2018-2024', indicadoresSocioeconomicos, 'dados-gerais', 'por raça/cor'),
+    ...expandirSerie('Segurança Pública', 'FBSP / SIM-DataSUS', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'por raça/cor'),
+    ...expandirSerie('Feminicídio', 'FBSP', '2018-2024', feminicidioSerie, 'seguranca-saude-educacao', 'gênero × raça'),
+    ...expandirSerie('Educação Histórica', 'INEP / PNAD', '2018-2024', educacaoSerieHistorica, 'seguranca-saude-educacao', 'por raça/cor'),
+    ...expandirSerie('Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica, 'seguranca-saude-educacao', 'por raça/cor'),
+    ...expandirSerie('Trabalho Interseccional', 'PNAD Contínua', '2018-2024', interseccionalidadeTrabalho, 'raca-genero', 'raça × gênero'),
+    ...expandirSerie('Deficiência × Raça', 'IBGE / Censo 2022', '2022', deficienciaPorRaca, 'deficiencia', 'PCD × raça'),
+    ...expandirSerie('LGBTQIA+ ANTRA', 'ANTRA / FBSP', '2018-2024', serieAntraTrans, 'lgbtqia', 'LGBTQIA+ × raça'),
+    ...expandirSerie('LGBTQIA+ × Raça', 'IBGE Sexualidade', '2022', lgbtqiaPorRaca, 'lgbtqia', 'LGBTQIA+ × raça'),
+    ...expandirSerie('Classe × Raça', 'PNAD Contínua / SIS', '2022', classePorRaca, 'classe', 'classe × raça'),
+    ...expandirSerie('Violência Interseccional', 'FBSP / DataSUS', '2018-2024', violenciaInterseccional, 'vulnerabilidades', 'raça × gênero × território'),
+    ...expandirSerie('Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade, 'dados-gerais', 'por raça/cor'),
   ];
 
   // Dados Novos individualmente
@@ -761,17 +806,18 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Cada indicador linka diretamente para a aba correspondente em <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> no sistema (sem replicar dados aqui — para auditar valores, abra no sistema).
-  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
+  💡 Cada linha indica explicitamente o <strong>recorte</strong> (raça/cor, gênero, PCD, LGBTQIA+ etc.) para que o leitor — e o motor de vinculação a recomendações ONU — saiba que o dado está desagregado pela dimensão racializada.
+  O link <strong>↗ abrir no sistema</strong> leva à <em>aba específica</em> da <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> onde o gráfico/tabela do indicador é renderizado (não há replicação de valores aqui — para auditar, abra no sistema).
+  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações (§)</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador (com recorte)</th><th>Recorte</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
     ${seriesExpandidas.map((s, i) => {
-      // Mapeia o nome da métrica + da série para tentar achar evidências vinculadas via SSoT
-      const lookupNomes = [s.nome, s.serie, `${s.serie} ${s.nome}`, s.metricKey];
+      // Mapeia variações do nome para tentar achar evidências vinculadas via SSoT
+      const lookupNomes = [s.nome, s.serie, s.nomeBruto, `${s.serie} ${s.nomeBruto}`, s.metricKey];
       const recsAgg = new Set<string>();
       for (const n of lookupNomes) {
         const k = String(n || '').trim().toLowerCase();
@@ -783,13 +829,18 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
         ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
       const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
-      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?q=${encodeURIComponent(s.nome)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;">↗ abrir</a>`;
+      // Link inteligente: leva à aba específica + termo de busca da série
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&q=${encodeURIComponent(s.serie)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
+      const recorteCell = s.recorte
+        ? `<span class="badge badge-purple" style="font-size:9px;">${s.recorte}</span>`
+        : '<span style="color:#94a3b8;font-size:10px;">—</span>';
       return `<tr>
       <td>${i + 1}</td>
       <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
-      <td>${s.nome}</td>
-      <td>${s.serie}</td>
-      <td>${s.fonte}</td>
+      <td style="font-weight:500;">${s.nome}</td>
+      <td>${recorteCell}</td>
+      <td style="font-size:11px;color:#64748b;">${s.serie}</td>
+      <td style="font-size:11px;">${s.fonte}</td>
       <td>${s.periodo}</td>
       <td>${s.registros}</td>
       <td>${arts}</td>
