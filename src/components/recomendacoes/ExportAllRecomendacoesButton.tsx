@@ -73,24 +73,47 @@ export function ExportAllRecomendacoesButton({
       const isPreview = /(-preview--|lovableproject\.com)/.test(currentOrigin);
       const origin = isPreview ? 'https://cerd4.lovable.app' : currentOrigin;
 
+      console.time('[ExportAll] total');
+      console.log('[ExportAll] start', {
+        recomendacoes: recomendacoes.length,
+        diagnosticMapSize: diagnosticMap?.size,
+        rawIndicadores: rawIndicadores?.length,
+        rawOrcamento: rawOrcamento?.length,
+        rawNormativos: rawNormativos?.length,
+      });
+
       const { default: JSZip } = await import('jszip');
       const zip = new JSZip();
 
       // Index file
       const indexRows: string[] = [];
+      const errors: string[] = [];
 
-      for (const rec of recomendacoes) {
+      for (let i = 0; i < recomendacoes.length; i++) {
+        const rec = recomendacoes[i];
+        // Yield to the UI thread between iterations so the spinner repaints
+        // and the browser does not appear "frozen" on slow devices.
+        if (i % 3 === 0) await new Promise(r => setTimeout(r, 0));
+
         const diag = diagnosticMap.get(rec.id);
-        const html = generateRecomendacaoAuditHTML({
-          recomendacao: rec,
-          diagnostic: diag,
-          indicadorIdByNome,
-          indicadorCodigoByNome,
-          normativoMetaByTitulo,
-          orcamentoMetaByKey,
-          origin,
-        });
-        const fileName = `paragrafo-${safeFileName(rec.paragrafo)}-${safeFileName(rec.tema)}.html`;
+        let html = '';
+        try {
+          html = generateRecomendacaoAuditHTML({
+            recomendacao: rec,
+            diagnostic: diag,
+            indicadorIdByNome,
+            indicadorCodigoByNome,
+            normativoMetaByTitulo,
+            orcamentoMetaByKey,
+            origin,
+          });
+        } catch (err: any) {
+          const msg = `Falha em §${rec.paragrafo} (${rec.tema}): ${err?.message || err}`;
+          console.error('[ExportAll]', msg, err);
+          errors.push(msg);
+          html = `<!DOCTYPE html><html><body><h1>Erro ao gerar relatório</h1><pre>${msg}</pre></body></html>`;
+        }
+        const fileName = `paragrafo-${safeFileName(rec.paragrafo || String(i))}-${safeFileName(rec.tema || 'sem-tema')}.html`;
         zip.file(fileName, html);
 
         const status = diag?.statusComputado || rec.status_cumprimento;
