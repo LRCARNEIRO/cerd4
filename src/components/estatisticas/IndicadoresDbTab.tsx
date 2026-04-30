@@ -1214,8 +1214,9 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
     const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
     const escapedCodigo = codigo && typeof CSS !== 'undefined' ? CSS.escape(codigo) : codigo?.replace(/"/g, '\\"');
-    const el = document.getElementById(`indicador-${id}`)
-      || (codigo ? document.getElementById(`ind-${codigo}`) : null)
+    const el = (codigo ? document.getElementById(`ind-${codigo}`) : null)
+      || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
+      || document.getElementById(`indicador-${id}`)
       || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
       || document.querySelector<HTMLElement>(`[data-indicador-id="${escapedId}"]`);
 
