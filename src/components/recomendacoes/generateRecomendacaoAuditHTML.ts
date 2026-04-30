@@ -102,8 +102,8 @@ export function generateRecomendacaoAuditHTML({
 
   // ── Indicadores ────────────────────────────────────────────────
   const indEvals = linkedInd.map(li => {
-    const id = indicadorIdByNome.get(li.nome) || '';
-    const codigo = indicadorCodigoByNome?.get(li.nome);
+    const id = li.id || indicadorIdByNome.get(li.nome) || '';
+    const codigo = li.codigo || indicadorCodigoByNome?.get(li.nome);
     const detail = evaluateIndicadorDetailed({
       nome: li.nome,
       categoria: li.categoria,
