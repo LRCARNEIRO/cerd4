@@ -634,14 +634,6 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <p style="color:#666;">Sistema de Subsídios para o IV Relatório CERD — Gerado em ${now}</p>
 
 <div class="meta-box">
-  <strong>Objetivo:</strong> Consolidar a dimensão total dos dados disponíveis na Base Estatística do sistema, 
-  incluindo séries temporais, tabelas do Common Core (HRI/CORE), indicadores do banco de dados e dados novos auditáveis.
-  Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis.
-</div>
-
-<div class="stats-grid">
-  <div class="stat-card">
-<div class="meta-box">
   <strong>Objetivo:</strong> Consolidar a dimensão total dos <em>indicadores aptos a serem utilizados como evidências</em>
   na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
   Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
