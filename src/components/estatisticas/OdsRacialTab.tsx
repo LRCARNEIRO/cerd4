@@ -76,6 +76,7 @@ export function OdsRacialTab() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isRestoring, setIsRestoring] = useState(false);
   const { data: odsRacialIndicators = [], isLoading } = useOdsRacialData();
+  const codigosMap = useStaticIndicadorCodigos();
   const queryClient = useQueryClient();
 
   const TOTAL_ODS_RACIAL = odsRacialIndicators.length;
