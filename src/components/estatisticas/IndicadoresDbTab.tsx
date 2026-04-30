@@ -1298,7 +1298,19 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
     return () => window.removeEventListener('indicador-focus', handler as EventListener);
   }, [focusIndicador]);
 
-  // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
+  const matchesSearchTerm = useCallback((i: IndicadorData, rawTerm: string) => {
+    if (!rawTerm.trim()) return true;
+    const codigoNorm = normalizeCodigoInput(rawTerm);
+    if (codigoNorm) return (i as any).codigo === codigoNorm;
+    const term = rawTerm.toLowerCase();
+    return ((i as any).codigo || '').toLowerCase().includes(term)
+      || i.nome.toLowerCase().includes(term)
+      || i.categoria.toLowerCase().includes(term)
+      || (i.subcategoria || '').toLowerCase().includes(term)
+      || i.fonte.toLowerCase().includes(term);
+  }, []);
+
+  // Search results — aceita IND-NNN, ID 060, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
     if (!searchTerm || searchTerm.length < 1) return [];
     const term = searchTerm.toLowerCase();
@@ -1309,14 +1321,8 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
       if (exact) return [exact];
     }
     if (searchTerm.length < 2) return [];
-    return typedIndicadores.filter(i =>
-      ((i as any).codigo || '').toLowerCase().includes(term) ||
-      i.nome.toLowerCase().includes(term) ||
-      i.categoria.toLowerCase().includes(term) ||
-      (i.subcategoria || '').toLowerCase().includes(term) ||
-      i.fonte.toLowerCase().includes(term)
-    ).slice(0, 10);
-  }, [typedIndicadores, searchTerm]);
+    return typedIndicadores.filter(i => matchesSearchTerm(i, searchTerm)).slice(0, 10);
+  }, [typedIndicadores, searchTerm, matchesSearchTerm]);
 
   const handleSelectResult = useCallback((ind: IndicadorData) => {
     setCategoriaAtiva('todas');
@@ -1381,7 +1387,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
     const auditMatch = filtroAuditoria === 'todos' 
       || (filtroAuditoria === 'auditados' && i.auditado_manualmente)
       || (filtroAuditoria === 'pendentes' && !i.auditado_manualmente);
-    return catMatch && docMatch && auditMatch;
+    return catMatch && docMatch && auditMatch && matchesSearchTerm(i, searchTerm);
   });
 
   const totalAuditados = typedIndicadores.filter(i => i.auditado_manualmente).length;
@@ -1406,7 +1412,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar indicador por nome, categoria ou fonte..."
+            placeholder="Buscar por ID/código (ex.: 060, ID 060, IND-060), nome, categoria ou fonte..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -1420,7 +1426,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
                 className="w-full text-left px-4 py-3 hover:bg-accent/50 border-b border-border/50 last:border-b-0 transition-colors"
                 onClick={() => handleSelectResult(ind)}
               >
-                <p className="text-sm font-medium text-foreground">{ind.nome}</p>
+                <p className="text-sm font-medium text-foreground">{(ind as any).codigo ? `${(ind as any).codigo} — ` : ''}{ind.nome}</p>
                 <p className="text-xs text-muted-foreground">{ind.categoria} • {ind.fonte}</p>
               </button>
             ))}
