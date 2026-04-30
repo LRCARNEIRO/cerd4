@@ -736,11 +736,21 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                   {noComparison.map((ind, idx) => {
                     const kvs = extractKeyValues(ind.dados || {});
                     const { years } = normalizeIndicadorData(ind.dados || {});
+                    const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
-                          <p className="text-xs font-medium leading-tight">{ind.nome}</p>
-                          {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                          <div className="flex items-start gap-1.5">
+                            {codigo && (
+                              <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">
+                                {codigo}
+                              </span>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium leading-tight">{ind.nome}</p>
+                              {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline" className="text-[10px] px-1.5">{years.length > 0 ? years.join(', ') : '—'}</Badge>
