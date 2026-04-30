@@ -4,6 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+import { ExportAllArtigosButton } from '@/components/artigos/ExportArtigoButtons';
 
 export default function Artigos() {
   const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats, lacunas } = useAnalyticalInsights();
@@ -23,12 +27,26 @@ export default function Artigos() {
     },
   });
 
+  // SSoT: mesmas evidências usadas em Recomendações, agora agregadas por Artigo.
+  const { data: recomendacoes } = useLacunasIdentificadas({});
+  const [evidenceOverrides] = useEvidenceOverrides();
+  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } =
+    useDiagnosticSensor(recomendacoes, evidenceOverrides);
+
   return (
     <DashboardLayout
       title="Artigos — Aderência ICERD"
       subtitle="Avaliação sistêmica da conformidade com os Artigos I-VII da Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial"
     >
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-2 mb-4">
+        <ExportAllArtigosButton
+          recomendacoes={recomendacoes || []}
+          diagnosticMap={diagnosticMap}
+          rawIndicadores={rawIndicadores}
+          rawOrcamento={rawOrcamento}
+          rawNormativos={rawNormativos}
+          disabled={!sensorReady}
+        />
         <ExportTabButtons
           targetSelector="#export-artigos-aderencia"
           fileName="artigos-aderencia-icerd"
