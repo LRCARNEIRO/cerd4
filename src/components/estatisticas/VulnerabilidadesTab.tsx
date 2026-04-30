@@ -194,7 +194,7 @@ export function VulnerabilidadesTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 2: Evolução das Razões de Desigualdade */}
-        <Card>
+        <Card id="serie-evolucao-desigualdade" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base">Evolução das Razões de Desigualdade Racial (2018-2024)</CardTitle>
             <CardDescription>

@@ -619,95 +619,154 @@ function generateInventoryHTML(
   };
 
 
-  // ── Expansão das séries temporais em indicadores subjacentes ──
-  // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
-  // Aqui listamos cada métrica individual para que o inventário reflita o
-  // total real de indicadores aptos como evidência.
-  // CRÍTICO: cada nome final torna explícito o RECORTE (raça/cor, gênero,
-  // PCD, LGBTQIA+, etc.) — sem isso o keyword-engine não casa o indicador
-  // como evidência das recomendações ONU racializadas.
+  // ── Consolidação das séries temporais em indicadores auditáveis ──
+  // Regra: raça/cor, gênero, idade etc. entram em coluna própria de
+  // DESAGREGAÇÕES. Não se cria uma linha para "Branca" e outra para "Negra",
+  // pois o indicador é único e as categorias são recortes internos.
   type SubInd = {
-    codigo: string;
-    nome: string;       // nome legível auto-explicativo (já com recorte)
-    nomeBruto: string;  // rótulo bruto da métrica (para busca)
+    nome: string;
     serie: string;
     fonte: string;
     periodo: string;
     registros: number;
-    metricKey: string;
+    metricKeys: string[];
     rows: any[];
-    tab: string;        // aba alvo p/ deep-link em /estatisticas?tab=...
-    recorte: string;    // descrição do recorte (raça, gênero, etc.)
+    tab: string;
+    anchor: string;
+    desagregacoes: string[];
+    lookupNomes: string[];
   };
 
-  // Heurística: detecta o recorte da métrica pelo nome da chave.
-  const detectarRecorte = (key: string): { recorte: string; sufixo: string } => {
-    const k = key.toLowerCase();
-    if (/\b(negr|pret|pard|branc|amarel|indigen|quilombol)/.test(k))
-      return { recorte: 'por raça/cor', sufixo: ' (recorte raça/cor)' };
-    if (/feminicid/.test(k))
-      return { recorte: 'feminicídio (gênero × raça)', sufixo: ' (gênero × raça)' };
-    if (/\b(mulher|feminin|masculin|homem|genero|trans|travesti)\b/.test(k))
-      return { recorte: 'por gênero', sufixo: ' (recorte gênero)' };
-    if (/lgbt|antra|lesbic|gay|bissex/.test(k))
-      return { recorte: 'LGBTQIA+', sufixo: ' (recorte LGBTQIA+)' };
-    if (/defici/.test(k))
-      return { recorte: 'pessoa com deficiência', sufixo: ' (recorte PCD)' };
-    if (/jovem|jovens|juventud|crianca|adolescen/.test(k))
-      return { recorte: 'por faixa etária', sufixo: ' (recorte etário)' };
-    if (/letalidade|policial|encarcera|prisional/.test(k))
-      return { recorte: 'segurança × raça', sufixo: ' (segurança × raça)' };
-    return { recorte: '', sufixo: '' };
-  };
-
-  const expandirSerie = (
+  const uniq = (arr: string[]) => Array.from(new Set(arr.filter(Boolean)));
+  const hasMetric = (rows: any[], key: string) => rows?.some(r => r?.[key] !== undefined && r?.[key] !== null);
+  const makeSerie = (
+    nome: string,
     serie: string,
     fonte: string,
     periodo: string,
     rows: any[],
     tab: string,
-    recorteSerieDefault: string = '',
-    excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota'],
-  ): SubInd[] => {
-    if (!rows?.length) return [];
-    const keys = Object.keys(rows[0] || {}).filter(k => !excludeKeys.includes(k) && typeof rows[0][k] !== 'object');
-    return keys.map((k, i) => {
-      const labelBruto = k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).trim();
-      const det = detectarRecorte(k);
-      const sufixoFinal = det.sufixo || (recorteSerieDefault ? ` (${recorteSerieDefault})` : '');
-      const recorte = det.recorte || recorteSerieDefault;
-      const nome = `${serie} — ${labelBruto}${sufixoFinal}`;
-      return {
-        codigo: `S-${serie.slice(0,3).toUpperCase().replace(/\s/g,'')}-${String(i+1).padStart(2,'0')}`,
-        nome,
-        nomeBruto: labelBruto,
-        serie,
-        fonte,
-        periodo,
-        registros: rows.length,
-        metricKey: k,
-        rows,
-        tab,
-        recorte,
-      };
-    });
+    anchor: string,
+    metricDefs: { key: string; desag: string[] }[],
+    lookupExtra: string[] = [],
+  ): SubInd | null => {
+    const present = metricDefs.filter(mdef => hasMetric(rows, mdef.key));
+    if (!rows?.length || !present.length) return null;
+    return {
+      nome,
+      serie,
+      fonte,
+      periodo,
+      registros: rows.length,
+      metricKeys: present.map(mdef => mdef.key),
+      rows,
+      tab,
+      anchor,
+      desagregacoes: uniq(present.flatMap(mdef => mdef.desag)),
+      lookupNomes: uniq([nome, serie, ...present.map(mdef => mdef.key), ...lookupExtra]),
+    };
   };
 
+  const pobrezaRows = classePorRaca.filter((r: any) => /^Pobreza\s+\d{4}/i.test(String(r.faixa || '')));
+  const extremaPobrezaRows = classePorRaca.filter((r: any) => /^Extrema pobreza/i.test(String(r.faixa || '')));
+  const violenciaPorTipo = violenciaInterseccional.map((row: any) => ({
+    nome: row.tipo === 'Feminicídio' ? 'Feminicídio de mulheres' : `${row.tipo} contra mulheres`,
+    serie: 'Violência Interseccional',
+    fonte: row.fonte || 'FBSP / DataSUS',
+    periodo: '2024',
+    registros: 1,
+    metricKeys: ['mulherNegra', 'mulherBranca'].filter(k => row[k] !== undefined && row[k] !== null),
+    rows: [row],
+    tab: 'raca-genero',
+    anchor: 'serie-violencia-interseccional',
+    desagregacoes: ['Mulher Negra', 'Mulher Branca'],
+    lookupNomes: uniq([row.tipo, `${row.tipo} mulheres negras`, `${row.tipo} mulher negra`, 'violência contra mulheres por raça']),
+  })).filter(s => s.metricKeys.length > 0) as SubInd[];
+
   const seriesExpandidas: SubInd[] = [
-    ...expandirSerie('Composição Racial PNAD', 'SIDRA/IBGE 6403', '2018-2024', evolucaoComposicaoRacial, 'dados-gerais', 'por raça/cor'),
-    ...expandirSerie('Indicadores Socioeconômicos', 'PNAD Contínua', '2018-2024', indicadoresSocioeconomicos, 'dados-gerais', 'por raça/cor'),
-    ...expandirSerie('Segurança Pública', 'FBSP / SIM-DataSUS', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'por raça/cor'),
-    ...expandirSerie('Feminicídio', 'FBSP', '2018-2024', feminicidioSerie, 'seguranca-saude-educacao', 'gênero × raça'),
-    ...expandirSerie('Educação Histórica', 'INEP / PNAD', '2018-2024', educacaoSerieHistorica, 'seguranca-saude-educacao', 'por raça/cor'),
-    ...expandirSerie('Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica, 'seguranca-saude-educacao', 'por raça/cor'),
-    ...expandirSerie('Trabalho Interseccional', 'PNAD Contínua', '2018-2024', interseccionalidadeTrabalho, 'raca-genero', 'raça × gênero'),
-    ...expandirSerie('Deficiência × Raça', 'IBGE / Censo 2022', '2022', deficienciaPorRaca, 'deficiencia', 'PCD × raça'),
-    ...expandirSerie('LGBTQIA+ ANTRA', 'ANTRA / FBSP', '2018-2024', serieAntraTrans, 'lgbtqia', 'LGBTQIA+ × raça'),
-    ...expandirSerie('LGBTQIA+ × Raça', 'IBGE Sexualidade', '2022', lgbtqiaPorRaca, 'lgbtqia', 'LGBTQIA+ × raça'),
-    ...expandirSerie('Classe × Raça', 'PNAD Contínua / SIS', '2022', classePorRaca, 'classe', 'classe × raça'),
-    ...expandirSerie('Violência Interseccional', 'FBSP / DataSUS', '2018-2024', violenciaInterseccional, 'vulnerabilidades', 'raça × gênero × território'),
-    ...expandirSerie('Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade, 'dados-gerais', 'por raça/cor'),
-  ];
+    makeSerie('Composição racial da população — Censo 2022', 'Dados Demográficos Censo', 'SIDRA/IBGE 9605', '2022', dadosDemograficos.composicaoRacial || [], 'dados-gerais', 'serie-composicao-racial-censo', [
+      { key: 'raca', desag: ['Branca', 'Parda', 'Preta', 'Indígena', 'Amarela'] },
+    ]),
+    makeSerie('Composição racial da população — PNAD Contínua', 'Composição Racial PNAD', 'SIDRA/IBGE 6403', '2018-2025', evolucaoComposicaoRacial, 'dados-gerais', 'serie-composicao-racial', [
+      { key: 'branca', desag: ['Branca'] }, { key: 'negra', desag: ['Negra'] },
+    ]),
+    makeSerie('Renda média mensal', 'Indicadores Socioeconômicos', 'SIDRA/IBGE 6405', '2018-2025', indicadoresSocioeconomicos, 'dados-gerais', 'serie-socioeconomicos', [
+      { key: 'rendaMediaNegra', desag: ['Negra'] }, { key: 'rendaMediaBranca', desag: ['Branca'] }, { key: 'rendaPreta', desag: ['Preta'] }, { key: 'rendaParda', desag: ['Parda'] },
+    ]),
+    makeSerie('Taxa de desocupação', 'Indicadores Socioeconômicos', 'SIDRA/IBGE 6402', '2018-2025', indicadoresSocioeconomicos, 'dados-gerais', 'serie-socioeconomicos', [
+      { key: 'desempregoNegro', desag: ['Negra'] }, { key: 'desempregoBranco', desag: ['Branca'] }, { key: 'desempregoPreta', desag: ['Preta'] }, { key: 'desempregoParda', desag: ['Parda'] },
+    ], ['desemprego', 'desocupação']),
+    makeSerie('Taxa de pobreza', 'Indicadores Socioeconômicos', 'SIS/IBGE', '2018-2024', indicadoresSocioeconomicos, 'dados-gerais', 'serie-socioeconomicos', [
+      { key: 'pobreza_negra', desag: ['Negra'] }, { key: 'pobreza_branca', desag: ['Branca'] },
+    ]),
+    makeSerie('Taxa de homicídio', 'Segurança Pública', 'Atlas da Violência / FBSP', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'serie-seguranca-publica', [
+      { key: 'homicidioNegro', desag: ['Negros'] }, { key: 'homicidioBranco', desag: ['Não Negros'] },
+    ]),
+    makeSerie('Letalidade policial', 'Segurança Pública', 'FBSP', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'serie-seguranca-publica', [
+      { key: 'letalidadePolicial', desag: ['Negros entre vítimas'] },
+    ]),
+    makeSerie('Vítimas de homicídio', 'Segurança Pública', 'FBSP', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'serie-seguranca-publica', [
+      { key: 'percentualVitimasNegras', desag: ['Negros entre vítimas'] },
+    ]),
+    makeSerie('Risco relativo de homicídio', 'Segurança Pública', 'Atlas da Violência', '2018-2024', segurancaPublica, 'seguranca-saude-educacao', 'serie-seguranca-publica', [
+      { key: 'razaoRisco', desag: ['Negros vs Não Negros'] },
+    ]),
+    makeSerie('Feminicídio', 'Feminicídio', 'FBSP', '2018-2024', feminicidioSerie, 'raca-genero', 'serie-violencia-interseccional', [
+      { key: 'percentualNegras', desag: ['Mulheres Negras'] },
+    ]),
+    makeSerie('Ensino superior completo', 'Educação Histórica', 'INEP / PNAD', '2018-2024', educacaoSerieHistorica, 'seguranca-saude-educacao', 'serie-educacao', [
+      { key: 'superiorNegroPercent', desag: ['Negros'] }, { key: 'superiorBrancoPercent', desag: ['Brancos'] },
+    ]),
+    makeSerie('Taxa de analfabetismo', 'Educação Histórica', 'PNAD Educação', '2018-2024', educacaoSerieHistorica, 'seguranca-saude-educacao', 'serie-educacao', [
+      { key: 'analfabetismoNegro', desag: ['Negros'] }, { key: 'analfabetismoBranco', desag: ['Brancos'] },
+    ]),
+    makeSerie('Mortalidade materna', 'Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica, 'seguranca-saude-educacao', 'serie-saude', [
+      { key: 'mortalidadeMaternaNegra', desag: ['Negra'] }, { key: 'mortalidadeMaternaBranca', desag: ['Branca'] }, { key: 'mortalidadeMaternaPretas', desag: ['Preta'] }, { key: 'mortalidadeMaternaPardas', desag: ['Parda'] },
+    ]),
+    makeSerie('Mortalidade infantil', 'Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica, 'seguranca-saude-educacao', 'serie-saude', [
+      { key: 'mortalidadeInfantilNegra', desag: ['Negra'] }, { key: 'mortalidadeInfantilBranca', desag: ['Branca'] },
+    ]),
+    makeSerie('Renda do trabalho', 'Trabalho Interseccional', 'DIEESE / PNAD Contínua', '2024-2025', interseccionalidadeTrabalho, 'raca-genero', 'serie-trabalho-interseccional', [
+      { key: 'renda', desag: ['Raça × Gênero'] },
+    ]),
+    makeSerie('Desocupação no trabalho', 'Trabalho Interseccional', 'DIEESE / PNAD Contínua', '2024-2025', interseccionalidadeTrabalho, 'raca-genero', 'serie-trabalho-interseccional', [
+      { key: 'desemprego', desag: ['Raça × Gênero'] },
+    ]),
+    makeSerie('Informalidade no trabalho', 'Trabalho Interseccional', 'DIEESE / PNAD Contínua', '2024-2025', interseccionalidadeTrabalho, 'raca-genero', 'serie-trabalho-interseccional', [
+      { key: 'informalidade', desag: ['Raça × Gênero'] },
+    ]),
+    makeSerie('Pessoas com deficiência', 'Deficiência × Raça', 'IBGE / Censo 2022', '2022', deficienciaPorRaca, 'deficiencia', 'serie-deficiencia', [
+      { key: 'taxaDeficiencia', desag: ['Branca', 'Preta', 'Amarela', 'Parda', 'Indígena'] },
+    ]),
+    makeSerie('Empregabilidade de pessoas com deficiência', 'Deficiência × Raça', 'PNAD Contínua', '2022', deficienciaPorRaca, 'deficiencia', 'serie-deficiencia', [
+      { key: 'empregabilidade', desag: ['Branca', 'Preta', 'Parda'] },
+    ]),
+    makeSerie('Renda média de pessoas com deficiência', 'Deficiência × Raça', 'PNAD Contínua', '2022', deficienciaPorRaca, 'deficiencia', 'serie-deficiencia', [
+      { key: 'rendaMedia', desag: ['Branca', 'Preta', 'Parda'] },
+    ]),
+    makeSerie('Assassinatos de pessoas trans e travestis', 'LGBTQIA+ ANTRA', 'ANTRA', '2017-2025', serieAntraTrans, 'lgbtqia', 'serie-lgbtqia', [
+      { key: 'negros', desag: ['Negros'] }, { key: 'brancos', desag: ['Brancos'] }, { key: 'indigenas', desag: ['Indígenas'] },
+    ]),
+    makeSerie('Vítimas LGBTQIA+ por raça/cor', 'LGBTQIA+ × Raça', 'ANTRA', '2025', lgbtqiaPorRaca, 'lgbtqia', 'serie-lgbtqia', [
+      { key: 'negroLGBT', desag: ['Negra'] }, { key: 'brancoLGBT', desag: ['Branca'] }, { key: 'indigenaLGBT', desag: ['Indígena'] },
+    ]),
+    makeSerie('Pobreza por raça/cor', 'Classe × Raça', 'SIS/IBGE', '2018-2024', pobrezaRows, 'classe', 'serie-classe', [
+      { key: 'branca', desag: ['Branca'] }, { key: 'parda', desag: ['Parda'] }, { key: 'preta', desag: ['Preta'] }, { key: 'pretosOuPardos', desag: ['Pretos ou Pardos'] },
+    ]),
+    makeSerie('Extrema pobreza por raça/cor', 'Classe × Raça', 'SIS/IBGE', '2022-2024', extremaPobrezaRows, 'classe', 'serie-classe', [
+      { key: 'branca', desag: ['Branca'] }, { key: 'parda', desag: ['Parda'] }, { key: 'preta', desag: ['Preta'] }, { key: 'pretosOuPardos', desag: ['Pretos ou Pardos'] },
+    ]),
+    ...violenciaPorTipo,
+    makeSerie('Razão de renda', 'Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade, 'vulnerabilidades', 'serie-evolucao-desigualdade', [
+      { key: 'razaoRenda', desag: ['Brancos / Negros'] },
+    ]),
+    makeSerie('Razão de desocupação', 'Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade, 'vulnerabilidades', 'serie-evolucao-desigualdade', [
+      { key: 'razaoDesemprego', desag: ['Negros / Brancos'] },
+    ]),
+    makeSerie('Razão de homicídio', 'Evolução Desigualdade', 'Atlas / FBSP', '2018-2024', evolucaoDesigualdade, 'vulnerabilidades', 'serie-evolucao-desigualdade', [
+      { key: 'razaoHomicidio', desag: ['Negros / Não Negros'] },
+    ]),
+  ].filter(Boolean) as SubInd[];
 
   // Dados Novos individualmente
   const dadosNovosIndividuais = categoriasDadosNovos.flatMap((c: any) =>
@@ -774,8 +833,8 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
   (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
   Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
-  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e quebra cada série temporal
-  em suas métricas individuais. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
+  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
+  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
 </div>
 
 <div class="stats-grid">
@@ -798,28 +857,27 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 </div>
 
 <div class="section-summary">
-  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores extraídos das ${series.length} séries temporais hardcoded
+  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores consolidados das ${series.length} séries temporais hardcoded
   + ${indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
   + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
-  Cada item abaixo é listado individualmente para garantir auditabilidade.
+  Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 
-<h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
+<h2>1. Indicadores de Séries Históricas — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Cada linha indica explicitamente o <strong>recorte</strong> (raça/cor, gênero, PCD, LGBTQIA+ etc.) para que o leitor — e o motor de vinculação a recomendações ONU — saiba que o dado está desagregado pela dimensão racializada.
+  💡 Cada linha representa <strong>um indicador</strong>; as categorias internas (Branca, Negra, Preta, Parda, gênero, PCD etc.) aparecem na coluna <strong>Desagregações</strong>.
   O link <strong>↗ abrir no sistema</strong> leva à <em>aba específica</em> da <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> onde o gráfico/tabela do indicador é renderizado (não há replicação de valores aqui — para auditar, abra no sistema).
   As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações (§)</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador (com recorte)</th><th>Recorte</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Desagregações</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
     ${seriesExpandidas.map((s, i) => {
       // Mapeia variações do nome para tentar achar evidências vinculadas via SSoT
-      const lookupNomes = [s.nome, s.serie, s.nomeBruto, `${s.serie} ${s.nomeBruto}`, s.metricKey];
       const recsAgg = new Set<string>();
-      for (const n of lookupNomes) {
+      for (const n of s.lookupNomes) {
         const k = String(n || '').trim().toLowerCase();
         const r = recsByNomeLower.get(k);
         if (r) r.forEach(p => recsAgg.add(p));
@@ -828,17 +886,17 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
       const recsCell = recsArr.length
         ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
-      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
-      // Link inteligente: leva à aba específica + termo de busca da série
-      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&q=${encodeURIComponent(s.serie)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
-      const recorteCell = s.recorte
-        ? `<span class="badge badge-purple" style="font-size:9px;">${s.recorte}</span>`
+      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKeys.join(' ') });
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&serie=${encodeURIComponent(s.anchor)}#${encodeURIComponent(s.anchor)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
+      const desagCell = s.desagregacoes.length
+        ? s.desagregacoes.map(d => `<span class="badge badge-blue" style="font-size:9px;">${d}</span>`).join(' ')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
+      const codigo = `S-${String(i + 1).padStart(3, '0')}`;
       return `<tr>
       <td>${i + 1}</td>
-      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
+      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${codigo}</span></td>
       <td style="font-weight:500;">${s.nome}</td>
-      <td>${recorteCell}</td>
+      <td>${desagCell}</td>
       <td style="font-size:11px;color:#64748b;">${s.serie}</td>
       <td style="font-size:11px;">${s.fonte}</td>
       <td>${s.periodo}</td>

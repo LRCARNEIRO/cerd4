@@ -25,7 +25,7 @@ export function SegurancaSaudeEducacaoTab() {
   return (
     <div className="space-y-6">
       {/* Segurança Pública */}
-      <Card>
+      <Card id="serie-seguranca-publica">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Shield className="w-5 h-5 text-destructive" />
@@ -184,7 +184,7 @@ export function SegurancaSaudeEducacaoTab() {
       </Card>
 
       {/* Educação */}
-      <Card>
+      <Card id="serie-educacao">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
@@ -376,7 +376,7 @@ export function SegurancaSaudeEducacaoTab() {
       </Card>
 
       {/* Saúde */}
-      <Card>
+      <Card id="serie-saude">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />

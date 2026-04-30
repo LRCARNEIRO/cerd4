@@ -60,6 +60,7 @@ export default function Estatisticas() {
       || rawHash.match(/^#ind-(IND-\d+)$/i)?.[1]
       || rawHash.match(/^#indicador-(.+)$/)?.[1];
     const tabParam = params.get('tab');
+    const serieAnchor = params.get('serie') || rawHash.replace(/^#/, '');
     // Lista de abas válidas para deep-link via ?tab=
     const VALID_TABS = new Set([
       'common-core','complemento-cerd3','dados-gerais','seguranca-saude-educacao',
@@ -75,6 +76,12 @@ export default function Estatisticas() {
     }
     if (tabParam && VALID_TABS.has(tabParam)) {
       setActiveTab(tabParam);
+      if (serieAnchor) {
+        const timer = window.setTimeout(() => {
+          document.getElementById(serieAnchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+        return () => window.clearTimeout(timer);
+      }
     }
   }, []);
 
