@@ -1180,23 +1180,44 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   useEffect(() => {
     if (typeof window === 'undefined' || !typedIndicadores.length) return;
     const params = new URLSearchParams(window.location.search);
-    const indId = params.get('ind') || (window.location.hash.match(/^#indicador-(.+)$/)?.[1]);
+    const rawHash = window.location.hash || '';
+    const hashMatch = rawHash.match(/^#indicador-(.+)$/);
+    let indId = (params.get('ind') || hashMatch?.[1] || '').trim();
     if (!indId) return;
-    // Confirma que o indicador existe na base — senão não tem o que rolar.
-    if (!typedIndicadores.some(i => i.id === indId)) return;
+
+    // 1) Tenta match por ID exato.
+    let target = typedIndicadores.find(i => i.id === indId);
+    // 2) Fallback: se vier nome no hash (`#indicador-Nome%20do%20Indicador`),
+    //    tenta resolver por nome (case-insensitive).
+    if (!target) {
+      try { indId = decodeURIComponent(indId); } catch { /* ignore */ }
+      const lower = indId.toLowerCase();
+      target = typedIndicadores.find(i => i.nome?.toLowerCase() === lower)
+        || typedIndicadores.find(i => i.nome?.toLowerCase().includes(lower));
+    }
+    if (!target) {
+      console.warn('[deep-link] indicador não localizado:', indId);
+      return;
+    }
+    const realId = target.id;
+
+    // Resetar filtros p/ garantir que o card está renderizado.
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
     setSearchTerm('');
-    setHighlightedId(indId);
+    setHighlightedId(realId);
+
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;
-      const el = document.getElementById(`indicador-${indId}`);
+      const el = document.getElementById(`indicador-${realId}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        window.setTimeout(() => setHighlightedId(null), 4000);
+        // mantém destaque visível por mais tempo
+        window.setTimeout(() => setHighlightedId(null), 6000);
         window.clearInterval(timer);
-      } else if (attempts > 60) {
+      } else if (attempts > 80) {
+        console.warn('[deep-link] elemento #indicador-' + realId + ' não renderizou após 16s');
         window.clearInterval(timer);
       }
     }, 200);
