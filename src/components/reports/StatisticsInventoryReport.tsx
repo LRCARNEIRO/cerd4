@@ -852,8 +852,12 @@ export function StatisticsInventoryReport() {
     }
   };
 
-  const indicadoresBDUnicos = (indicadoresBD || []).filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  // Aptos como evidência: BD sem Common Core + Dados Novos.
+  const indicadoresBDSemCC = (indicadoresBD || []).filter((i: any) =>
+    i.categoria !== 'common_core' && !/^\[CC-/i.test(String(i.nome || ''))
+  );
+  const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+  const totalGeral = indicadoresBDSemCC.length + TOTAL_DADOS_NOVOS;
 
   return (
     <Card className="border-l-4 border-l-chart-3">
