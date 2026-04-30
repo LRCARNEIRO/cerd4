@@ -1417,7 +1417,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
             })}
 
             {/* Retrato pontual for single-point new indicators */}
-            <RetratoPontualSection indicadores={withData.filter(i => !hasTimeSeries(i.dados || {}))} />
+            <RetratoPontualSection indicadores={withData.filter(i => !hasTimeSeries(i.dados || {}))} highlightedId={highlightedId} />
 
             {/* Pending indicators */}
             {pending.length > 0 && (
