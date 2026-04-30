@@ -250,16 +250,28 @@ export function OdsRacialTab() {
                   const yearRange = years.length > 0 ? `${years[0]}-${years[years.length - 1]}` : '';
                   const formatoLabel = ind.formato === 'percent' ? '%' : ind.formato === 'money' ? 'R$' : '№';
 
+                  const codigo = lookupCodigo(codigosMap, ind.name);
                   return (
-                    <div key={ind.id} className="py-3 first:pt-0 last:pb-0">
+                    <div key={ind.id} id={codigo ? `ind-${codigo}` : undefined} className="py-3 first:pt-0 last:pb-0">
                       <div 
                         className="flex items-start justify-between gap-3 cursor-pointer"
                         onClick={() => toggleExpand(ind.id)}
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground leading-tight">
-                            {ind.name}
-                          </p>
+                          <div className="flex items-start gap-2 flex-wrap">
+                            {codigo ? (
+                              <Badge variant="default" className="text-[10px] px-1.5 py-0 font-mono shrink-0">
+                                {codigo}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground shrink-0" title="Indicador ainda não espelhado no banco">
+                                sem ID
+                              </Badge>
+                            )}
+                            <p className="text-sm font-medium text-foreground leading-tight">
+                              {ind.name}
+                            </p>
+                          </div>
                           <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                               {ind.fonte}
