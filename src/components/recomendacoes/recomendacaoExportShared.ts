@@ -23,7 +23,7 @@ function getReportLinkOrigin(): string {
   const { origin, hostname } = window.location;
   // HTML baixado a partir do editor/live preview não deve apontar para
   // lovableproject.com, pois esse domínio pode exigir login Lovable.
-  if (hostname.endsWith('.lovableproject.com')) return 'https://cerd4.lovable.app';
+  if (hostname.endsWith('.lovableproject.com')) return 'https://id-preview--dff7a9ee-d3da-4130-8f26-8249e48cfe70.lovable.app';
   return origin;
 }
 
