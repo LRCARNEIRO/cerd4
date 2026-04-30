@@ -66,6 +66,12 @@ interface Args {
   diagnostic: RecomendacaoDiagnostic | undefined;
   /** Mapa nome → id dos indicadores (do raw da DB) p/ resolver deep-link. */
   indicadorIdByNome: Map<string, string>;
+  /**
+   * Mapa nome → código curto (IND-NNN). Quando informado, o link e o
+   * cabeçalho de cada indicador exibem o código antes do nome — facilita
+   * citação em PDF/auditoria humana.
+   */
+  indicadorCodigoByNome?: Map<string, string>;
   /** Mapa título → metadata do normativo p/ resolver url_origem, categoria. */
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   /** Mapa composto orçamento → metadata p/ resolver dotação, execução. */
@@ -81,6 +87,7 @@ export function generateRecomendacaoAuditHTML({
   recomendacao,
   diagnostic,
   indicadorIdByNome,
+  indicadorCodigoByNome,
   normativoMetaByTitulo,
   orcamentoMetaByKey,
   origin,
@@ -96,20 +103,24 @@ export function generateRecomendacaoAuditHTML({
   // ── Indicadores ────────────────────────────────────────────────
   const indEvals = linkedInd.map(li => {
     const id = indicadorIdByNome.get(li.nome) || '';
+    const codigo = indicadorCodigoByNome?.get(li.nome);
     const detail = evaluateIndicadorDetailed({
       nome: li.nome,
       categoria: li.categoria,
       tendencia: li.tendencia,
       dados: li.dados,
     });
-    return { id, nome: li.nome, detail };
+    return { id, codigo, nome: li.nome, detail };
   });
 
-  const indRows = indEvals.map(({ id, nome, detail }) => {
-    const link = id ? buildIndicadorLink(id, origin) : '';
-    const nomeCell = id
-      ? `<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${nome}</a>`
-      : nome;
+  const indRows = indEvals.map(({ id, codigo, nome, detail }) => {
+    const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin) : '';
+    const codigoBadge = codigo
+      ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
+      : '';
+    const nomeCell = link
+      ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${nome}</a>`
+      : `${codigoBadge}${nome}`;
     const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
     const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
     return `<tr>
