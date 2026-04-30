@@ -726,7 +726,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                     const kvs = extractKeyValues(ind.dados || {});
                     const { years } = normalizeIndicadorData(ind.dados || {});
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} className={cn(idx % 2 === 0 && 'bg-muted/10')}>
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
                           <p className="text-xs font-medium leading-tight">{ind.nome}</p>
                           {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
