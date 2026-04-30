@@ -1381,7 +1381,9 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
   // Filter by category and document
+  const isExactCodigoSearch = !!normalizeCodigoInput(searchTerm);
   const indicadoresFiltrados = typedIndicadores.filter(i => {
+    if (isExactCodigoSearch) return matchesSearchTerm(i, searchTerm);
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
     const docMatch = documentoAtivo === 'Todos' || (i.documento_origem || []).includes(documentoAtivo);
     const auditMatch = filtroAuditoria === 'todos' 
