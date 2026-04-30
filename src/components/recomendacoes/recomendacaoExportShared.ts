@@ -18,6 +18,15 @@ export interface ExportLookupMaps {
   origin: string;
 }
 
+function getReportLinkOrigin(): string {
+  if (typeof window === 'undefined') return '';
+  const { origin, hostname } = window.location;
+  // HTML baixado a partir do editor/live preview não deve apontar para
+  // lovableproject.com, pois esse domínio pode exigir login Lovable.
+  if (hostname.endsWith('.lovableproject.com')) return 'https://id-preview--dff7a9ee-d3da-4130-8f26-8249e48cfe70.lovable.app';
+  return origin;
+}
+
 /**
  * Constrói os mapas de lookup uma única vez e devolve a origem atual.
  * Isso mantém os deep-links apontando para a mesma versão do app que
@@ -54,7 +63,7 @@ export function buildExportLookups(
     if (!orcamentoMetaByKey.has(key)) orcamentoMetaByKey.set(key, o);
   }
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const origin = getReportLinkOrigin();
 
   return { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
 }

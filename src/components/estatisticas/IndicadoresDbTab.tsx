@@ -607,7 +607,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
-                          id={`indicador-${c.indicador.id}`}
+                          id={codigo ? `ind-${codigo}` : `indicador-${c.indicador.id}`}
                           data-indicador-id={c.indicador.id}
                           data-codigo={codigo}
                           className={cn(
@@ -740,7 +740,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                     const { years } = normalizeIndicadorData(ind.dados || {});
                     const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
                           <div className="flex items-start gap-1.5">
                             {codigo && (
@@ -962,13 +962,13 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
   const codigo = (indicador as any).codigo as string | undefined;
   return (
     <Card
-      id={`indicador-${indicador.id}`}
+      id={codigo ? `ind-${codigo}` : `indicador-${indicador.id}`}
       data-indicador-id={indicador.id}
       data-codigo={codigo}
       className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
     >
-      {/* Âncora secundária pelo código curto (ex.: #ind-IND-042) */}
-      {codigo && <span id={`ind-${codigo}`} className="block -mt-2 invisible h-0" aria-hidden />}
+      {/* Âncora secundária legada pelo UUID. */}
+      {codigo && <span id={`indicador-${indicador.id}`} className="block -mt-2 invisible h-0" aria-hidden />}
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -1214,9 +1214,9 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
     const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
     const escapedCodigo = codigo && typeof CSS !== 'undefined' ? CSS.escape(codigo) : codigo?.replace(/"/g, '\\"');
-    const el = document.getElementById(`indicador-${id}`)
-      || (codigo ? document.getElementById(`ind-${codigo}`) : null)
+    const el = (codigo ? document.getElementById(`ind-${codigo}`) : null)
       || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
+      || document.getElementById(`indicador-${id}`)
       || document.querySelector<HTMLElement>(`[data-indicador-id="${escapedId}"]`);
 
     if (!el) return false;
@@ -1227,17 +1227,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     return true;
   }, []);
 
-  // ── Deep-link p/ indicador específico vindo de relatórios externos ──
-  // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
-  useEffect(() => {
-    if (typeof window === 'undefined' || !typedIndicadores.length) return;
-    const params = new URLSearchParams(window.location.search);
-    const rawHash = window.location.hash || '';
-    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
-    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
-    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
-    let indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
-    if (!indId) return;
+  const focusIndicador = useCallback((rawTarget: string, preferredId?: string) => {
+    if (typeof window === 'undefined' || !typedIndicadores.length) return false;
+    let indId = (rawTarget || preferredId || '').trim();
+    if (!indId) return false;
 
     let target: IndicadorData | undefined;
 
@@ -1247,7 +1240,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
     }
     // 2) Match por UUID exato.
-    if (!target) target = typedIndicadores.find(i => i.id === indId);
+    if (!target) target = typedIndicadores.find(i => i.id === indId || (preferredId && i.id === preferredId));
     // 3) Fallback por nome (case-insensitive).
     if (!target) {
       try { indId = decodeURIComponent(indId); } catch { /* ignore */ }
@@ -1257,7 +1250,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     }
     if (!target) {
       console.warn('[deep-link] indicador não localizado:', indId);
-      return;
+      return false;
     }
     const realId = target.id;
     const realCodigo = (target as any).codigo as string | undefined;
@@ -1278,8 +1271,30 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         window.clearInterval(timer);
       }
     }, 200);
-    return () => window.clearInterval(timer);
+    return true;
   }, [typedIndicadores, scrollToIndicadorElement]);
+
+  // ── Deep-link p/ indicador específico vindo de relatórios externos ──
+  // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !typedIndicadores.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const rawHash = window.location.hash || '';
+    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
+    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
+    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
+    const indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
+    if (indId) focusIndicador(indId);
+  }, [typedIndicadores, focusIndicador]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ id?: string; codigo?: string }>).detail || {};
+      focusIndicador(detail.codigo || detail.id || '', detail.id);
+    };
+    window.addEventListener('indicador-focus', handler as EventListener);
+    return () => window.removeEventListener('indicador-focus', handler as EventListener);
+  }, [focusIndicador]);
 
   // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {

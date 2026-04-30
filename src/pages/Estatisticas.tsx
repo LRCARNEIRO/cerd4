@@ -45,28 +45,21 @@ export default function Estatisticas() {
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
 
-  // Deep-link p/ indicador específico: /estatisticas?ind=<id>#indicador-<id>
-  // Força aba "indicadores-db" e dispara scrollIntoView quando o card renderiza.
+  // Deep-link p/ indicador específico: /estatisticas?ind=IND-018#ind-IND-018
+  // Só troca a aba aqui; a rolagem exata é resolvida pela própria IndicadoresDbTab.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    const indId = params.get('ind') || (window.location.hash.match(/^#indicador-(.+)$/)?.[1]);
+    const rawHash = window.location.hash || '';
+    const indId = params.get('ind')
+      || rawHash.match(/^#ind-(IND-\d+)$/i)?.[1]
+      || rawHash.match(/^#indicador-(.+)$/)?.[1];
     if (!indId) return;
     setActiveTab('indicadores-db');
-    let attempts = 0;
-    const timer = window.setInterval(() => {
-      attempts++;
-      const el = document.getElementById(`indicador-${indId}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('ring-2', 'ring-primary', 'shadow-lg');
-        window.setTimeout(() => el.classList.remove('ring-2', 'ring-primary', 'shadow-lg'), 4000);
-        window.clearInterval(timer);
-      } else if (attempts > 40) {
-        window.clearInterval(timer);
-      }
+    const timer = window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { codigo: indId, id: indId } }));
     }, 250);
-    return () => window.clearInterval(timer);
+    return () => window.clearTimeout(timer);
   }, []);
 
   
