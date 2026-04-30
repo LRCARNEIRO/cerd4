@@ -608,6 +608,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
                           id={`indicador-${c.indicador.id}`}
+                          data-indicador-id={c.indicador.id}
                           data-codigo={codigo}
                           className={cn(
                             idx % 2 === 0 && 'bg-muted/10',
@@ -739,7 +740,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                     const { years } = normalizeIndicadorData(ind.dados || {});
                     const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
                           <div className="flex items-start gap-1.5">
                             {codigo && (
