@@ -440,13 +440,17 @@ export function getStage3Categories(): string[] {
   return ['common_core', 'adm_publica', 'covid_racial', 'grupos_focais'];
 }
 
-/** Stage 4 categories (Complemento CERD 3) — must include ALL categories used by complementoCerd3Indicators */
+/** Stage 4 categories (Complemento CERD 3) — must include ALL categories used by complementoCerd3Indicators.
+ * IMPORTANT: any new `categoria` added in ComplementoCerd3Data.ts MUST be added here,
+ * otherwise the corresponding mirror records won't be re-inserted on refresh.
+ * Inclui formas com case alternativo (Demografia/demografia) e Cultura/cultura_patrimonio.
+ */
 export function getStage4Categories(): string[] {
   return [
     'trabalho_renda', 'cultura_patrimonio', 'legislacao_justica',
-    'terra_territorio', 'Cultura', 'participacao_social',
+    'terra_territorio', 'Cultura', 'cultura', 'participacao_social',
     'saude', 'educacao', 'seguranca_publica', 'habitacao',
-    'Demografia', 'Infraestrutura',
+    'Demografia', 'demografia', 'Infraestrutura',
   ];
 }
 
