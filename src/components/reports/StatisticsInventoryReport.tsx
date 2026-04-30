@@ -517,8 +517,16 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBD: any[], juventudeNegraBD: any[], m: any) {
+function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[], m: any) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const systemBaseUrl = window.location.origin;
+
+  // Regra de Ouro: Common Core não pode constar no inventário de evidências aptas.
+  // Filtra qualquer indicador com categoria 'common_core' OU prefixo "[CC-N]".
+  const isCommonCore = (i: any) =>
+    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
+  const indicadoresBD = (indicadoresBDRaw || []).filter((i: any) => !isCommonCore(i));
+
   const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
     segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
     interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
