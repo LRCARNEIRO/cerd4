@@ -108,8 +108,13 @@ function indicadorToHTML(ind: any): string {
   const tendBadge = ind.tendencia
     ? `<span class="badge ${ind.tendencia.includes('melhora') ? 'badge-green' : ind.tendencia.includes('piora') ? 'badge-red' : 'badge-amber'}">${ind.tendencia}</span>`
     : '';
+  // Código curto IND-NNN (canônico, gerado em useIndicadoresInterseccionais)
+  // — facilita citação cruzada em relatórios e auditoria humana.
+  const codigoBadge = ind.codigo
+    ? `<span class="badge badge-blue" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.05em">${ind.codigo}</span> `
+    : '';
 
-  let html = `<div class="card"><h4>${ind.nome} ${tendBadge}</h4>
+  let html = `<div class="card"${ind.codigo ? ` id="ind-${ind.codigo}"` : ''}><h4>${codigoBadge}${ind.nome} ${tendBadge}</h4>
 <p class="meta">${ind.subcategoria ? ind.subcategoria + ' • ' : ''}${ind.fonte}</p>
 <table><thead><tr><th>Grupo</th>${years.map(y => `<th>${y}</th>`).join('')}<th>Var.</th></tr></thead><tbody>`;
 
