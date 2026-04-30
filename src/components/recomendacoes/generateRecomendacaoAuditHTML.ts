@@ -205,7 +205,7 @@ ${auditoria ? `<div class="summary">
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
-    <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Liquidado</th>
+    <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Empenhado</th><th style="text-align:right">Liquidado</th>
     <th style="text-align:right">Pago</th><th style="text-align:center">Execução (%)</th>
   </tr></thead>
   <tbody>${orcRows}</tbody>
