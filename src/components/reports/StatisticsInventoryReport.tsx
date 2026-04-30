@@ -594,7 +594,7 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
