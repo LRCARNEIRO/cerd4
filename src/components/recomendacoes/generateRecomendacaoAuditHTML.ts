@@ -92,7 +92,13 @@ export function generateRecomendacaoAuditHTML({
   orcamentoMetaByKey,
   origin,
 }: Args): string {
-  const linkedInd = diagnostic?.linkedIndicadores || [];
+  // ⚠️ REGRA DE OURO: indicadores Common Core JAMAIS podem aparecer como
+  // evidência de recomendação ou Artigo. Camada de defesa redundante ao
+  // filtro do useDiagnosticSensor — bloqueia também eventuais inclusões
+  // por override manual.
+  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(
+    (i: any) => i?.categoria !== 'common_core',
+  );
   const linkedOrc = diagnostic?.linkedOrcamento || [];
   const linkedNorm = diagnostic?.linkedNormativos || [];
 
