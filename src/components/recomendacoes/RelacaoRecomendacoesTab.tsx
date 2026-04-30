@@ -290,6 +290,16 @@ ${renderRows(allItems)}
                           {getPrioridadeLabel(l.prioridade)}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-center">
+                        <ExportSingleRecomendacaoButton
+                          recomendacao={l}
+                          diagnostic={diagnosticMap.get(l.id)}
+                          rawIndicadores={rawIndicadores}
+                          rawOrcamento={rawOrcamento}
+                          rawNormativos={rawNormativos}
+                          disabled={!sensorReady}
+                        />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
