@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -1167,6 +1167,34 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const typedIndicadores = (indicadores || []) as IndicadorData[];
+
+  // ── Deep-link p/ indicador específico vindo de relatórios externos ──
+  // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !typedIndicadores.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const indId = params.get('ind') || (window.location.hash.match(/^#indicador-(.+)$/)?.[1]);
+    if (!indId) return;
+    // Confirma que o indicador existe na base — senão não tem o que rolar.
+    if (!typedIndicadores.some(i => i.id === indId)) return;
+    setCategoriaAtiva('todas');
+    setDocumentoAtivo('Todos');
+    setSearchTerm('');
+    setHighlightedId(indId);
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      attempts++;
+      const el = document.getElementById(`indicador-${indId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.setTimeout(() => setHighlightedId(null), 4000);
+        window.clearInterval(timer);
+      } else if (attempts > 60) {
+        window.clearInterval(timer);
+      }
+    }, 200);
+    return () => window.clearInterval(timer);
+  }, [typedIndicadores]);
 
   // Search results — must be before early return
   const searchResults = useMemo(() => {
