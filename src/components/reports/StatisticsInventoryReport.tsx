@@ -570,9 +570,13 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
     { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
   ];
 
-  // BD indicators by category
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+
+  // BD indicators by category — usa APENAS indicadoresBDUnicos para evitar
+  // double-counting com séries temporais expandidas.
   const bdCategorias: Record<string, any[]> = {};
-  indicadoresBD.forEach(i => {
+  indicadoresBDUnicos.forEach((i: any) => {
     const cat = i.categoria || 'outros';
     if (!bdCategorias[cat]) bdCategorias[cat] = [];
     bdCategorias[cat].push(i);
@@ -592,8 +596,6 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
     habitacao: 'Habitação',
   };
 
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
 
   // ── Expansão das séries temporais em indicadores subjacentes ──
   // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
