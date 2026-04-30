@@ -697,34 +697,45 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
     <div class="label">TOTAL GERAL (aptos)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${series.length}</div>
-    <div class="label">SÉRIES TEMPORAIS</div>
+    <div class="value">${seriesExpandidas.length}</div>
+    <div class="label">INDICADORES DE SÉRIES (${series.length} séries)</div>
   </div>
   <div class="stat-card">
     <div class="value">${indicadoresBD.length}</div>
     <div class="label">INDICADORES BD</div>
   </div>
   <div class="stat-card">
-    <div class="value">${TOTAL_DADOS_NOVOS}</div>
+    <div class="value">${dadosNovosIndividuais.length}</div>
     <div class="label">DADOS NOVOS</div>
   </div>
 </div>
 
-<h2>1. Séries Temporais</h2>
+<div class="section-summary">
+  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores extraídos das ${series.length} séries temporais hardcoded
+  + ${indicadoresBD.length} indicadores do banco de dados (com código IND-NNN)
+  + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
+  Cada item abaixo é listado individualmente para garantir auditabilidade.
+</div>
+
+<h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
+<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
+  Cada série temporal contém múltiplas métricas. Aqui cada métrica é listada como um indicador individual.
+</p>
 <table>
   <thead>
-    <tr><th>#</th><th>Série</th><th>Registros</th><th>Fonte</th><th>Período</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th></tr>
   </thead>
   <tbody>
-    ${series.map((s, i) => `<tr><td>${i + 1}</td><td>${s.nome}</td><td><strong>${s.registros}</strong></td><td>${s.fonte}</td><td>${s.periodo}</td></tr>`).join('')}
+    ${seriesExpandidas.map((s, i) => `<tr>
+      <td>${i + 1}</td>
+      <td><span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span></td>
+      <td>${s.nome}</td>
+      <td>${s.serie}</td>
+      <td>${s.fonte}</td>
+      <td>${s.periodo}</td>
+      <td>${s.registros}</td>
+    </tr>`).join('')}
   </tbody>
-  <tfoot>
-    <tr style="background:#f0f4ff;font-weight:600;">
-      <td colspan="2">Total</td>
-      <td>${totalSeriesRegistros}</td>
-      <td colspan="2">${series.length} séries</td>
-    </tr>
-  </tfoot>
 </table>
 
 <h2>2. Indicadores BD — ${indicadoresBD.length}</h2>
@@ -762,10 +773,25 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
   </tbody>
 </table>`).join('')}
 
-<h2>3. Dados Novos — ${TOTAL_DADOS_NOVOS}</h2>
-<div class="section-summary">
-  <strong>${TOTAL_DADOS_NOVOS} indicadores auditáveis</strong> em 9 categorias temáticas com deep links para fontes oficiais.
-</div>
+<h2>3. Dados Novos — ${dadosNovosIndividuais.length}</h2>
+<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
+  Indicadores auditáveis listados na aba "Dados Novos" da Base Estatística, com link direto à fonte oficial.
+</p>
+<table>
+  <thead>
+    <tr><th>#</th><th>ID</th><th>Indicador</th><th>Categoria</th><th>Fonte</th><th>Prioridade</th></tr>
+  </thead>
+  <tbody>
+    ${dadosNovosIndividuais.map((d: any, i: number) => `<tr>
+      <td>${i + 1}</td>
+      <td><span class="badge badge-green" style="font-family:ui-monospace,Menlo,monospace;">${d.id}</span></td>
+      <td>${d.url ? `<a href="${d.url}" target="_blank" rel="noopener">${d.nome}</a>` : d.nome}</td>
+      <td>${d.categoria}</td>
+      <td>${d.sigla || d.fonte}</td>
+      <td><span class="badge badge-${d.prioridade === 'alta' ? 'red' : d.prioridade === 'media' ? 'amber' : 'blue'}">${d.prioridade}</span></td>
+    </tr>`).join('')}
+  </tbody>
+</table>
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
