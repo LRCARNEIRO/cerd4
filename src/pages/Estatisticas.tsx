@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +44,11 @@ export default function Estatisticas() {
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
+  const initialIndicatorQuery = useMemo(() => {
+    if (typeof window === 'undefined') return '';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('q') || params.get('ind') || '';
+  }, []);
 
   // Deep-link p/ indicador específico: /estatisticas?ind=IND-018#ind-IND-018
   // Só troca a aba aqui; a rolagem exata é resolvida pela própria IndicadoresDbTab.
@@ -54,8 +59,9 @@ export default function Estatisticas() {
     const indId = params.get('ind')
       || rawHash.match(/^#ind-(IND-\d+)$/i)?.[1]
       || rawHash.match(/^#indicador-(.+)$/)?.[1];
-    if (!indId) return;
+    if (!indId && params.get('tab') !== 'indicadores-db') return;
     setActiveTab('indicadores-db');
+    if (!indId) return;
     const timer = window.setTimeout(() => {
       window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { codigo: indId, id: indId } }));
     }, 250);
@@ -67,7 +73,7 @@ export default function Estatisticas() {
   
   // BD indicators
   const bdTotal = (indicadores || []).length;
-  const bdAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const bdAuditados = (indicadores || []).filter((i) => i.auditado_manualmente).length;
   const bdPendentes = bdTotal - bdAuditados;
 
   // Comprehensive count of ALL auditable data items across static tabs
@@ -289,7 +295,7 @@ export default function Estatisticas() {
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         
-        <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} /></TabsContent>
+        <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} initialSearchTerm={initialIndicatorQuery} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>

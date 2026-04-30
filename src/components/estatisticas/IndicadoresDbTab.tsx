@@ -42,6 +42,7 @@ const RACE_COLORS: Record<string, string> = {
 
 interface IndicadorData {
   id: string;
+  codigo?: string;
   nome: string;
   categoria: string;
   subcategoria?: string;
@@ -1200,13 +1201,14 @@ function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
 
 interface IndicadoresDbTabProps {
   filtroAuditoria?: 'todos' | 'auditados' | 'pendentes';
+  initialSearchTerm?: string;
 }
 
-export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTabProps) {
+export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm = '' }: IndicadoresDbTabProps) {
   const { data: indicadores, isLoading } = useIndicadoresInterseccionais();
   const [categoriaAtiva, setCategoriaAtiva] = useState<string>('todas');
   const [documentoAtivo, setDocumentoAtivo] = useState<string>('Todos');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
@@ -1236,9 +1238,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
 
     // 1) Match por código curto (ex.: 'IND-042' ou só '42').
     const codigoNorm = normalizeCodigoInput(indId);
-    if (codigoNorm) {
-      target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
-    }
+    if (codigoNorm) target = typedIndicadores.find(i => i.codigo === codigoNorm);
     // 2) Match por UUID exato.
     if (!target) target = typedIndicadores.find(i => i.id === indId || (preferredId && i.id === preferredId));
     // 3) Fallback por nome (case-insensitive).
@@ -1253,11 +1253,11 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       return false;
     }
     const realId = target.id;
-    const realCodigo = (target as any).codigo as string | undefined;
+    const realCodigo = target.codigo;
 
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
-    setSearchTerm('');
+    setSearchTerm(realCodigo || indId);
     setHighlightedId(realId);
 
     let attempts = 0;
@@ -1268,6 +1268,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         window.clearInterval(timer);
       } else if (attempts > 80) {
         console.warn('[deep-link] elemento não renderizou em 16s; alvo:', realCodigo || realId);
+        setSearchTerm(realCodigo || target.nome || indId);
         window.clearInterval(timer);
       }
     }, 200);
@@ -1296,33 +1297,38 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     return () => window.removeEventListener('indicador-focus', handler as EventListener);
   }, [focusIndicador]);
 
-  // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
+  const matchesSearchTerm = useCallback((i: IndicadorData, rawTerm: string) => {
+    if (!rawTerm.trim()) return true;
+    const codigoNorm = normalizeCodigoInput(rawTerm);
+    if (codigoNorm) return i.codigo === codigoNorm;
+    const term = rawTerm.toLowerCase();
+    return (i.codigo || '').toLowerCase().includes(term)
+      || i.nome.toLowerCase().includes(term)
+      || i.categoria.toLowerCase().includes(term)
+      || (i.subcategoria || '').toLowerCase().includes(term)
+      || i.fonte.toLowerCase().includes(term);
+  }, []);
+
+  // Search results — aceita IND-NNN, ID 060, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
     if (!searchTerm || searchTerm.length < 1) return [];
-    const term = searchTerm.toLowerCase();
     // Match prioritário por código curto: digitar 'IND-42', 'ind42' ou apenas '42'.
     const codigoNorm = normalizeCodigoInput(searchTerm);
     if (codigoNorm) {
-      const exact = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+      const exact = typedIndicadores.find(i => i.codigo === codigoNorm);
       if (exact) return [exact];
     }
     if (searchTerm.length < 2) return [];
-    return typedIndicadores.filter(i =>
-      ((i as any).codigo || '').toLowerCase().includes(term) ||
-      i.nome.toLowerCase().includes(term) ||
-      i.categoria.toLowerCase().includes(term) ||
-      (i.subcategoria || '').toLowerCase().includes(term) ||
-      i.fonte.toLowerCase().includes(term)
-    ).slice(0, 10);
-  }, [typedIndicadores, searchTerm]);
+    return typedIndicadores.filter(i => matchesSearchTerm(i, searchTerm)).slice(0, 10);
+  }, [typedIndicadores, searchTerm, matchesSearchTerm]);
 
   const handleSelectResult = useCallback((ind: IndicadorData) => {
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
-    setSearchTerm('');
+    setSearchTerm(ind.codigo || ind.nome);
     setHighlightedId(ind.id);
     setTimeout(() => {
-      if (scrollToIndicadorElement(ind.id, (ind as any).codigo)) {
+      if (scrollToIndicadorElement(ind.id, ind.codigo)) {
         setTimeout(() => setHighlightedId(null), 3000);
       }
     }, 100);
@@ -1373,13 +1379,15 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const categorias = ['todas', ...new Set(typedIndicadores.map(i => i.categoria))];
   
   // Filter by category and document
+  const isExactCodigoSearch = !!normalizeCodigoInput(searchTerm);
   const indicadoresFiltrados = typedIndicadores.filter(i => {
+    if (isExactCodigoSearch) return matchesSearchTerm(i, searchTerm);
     const catMatch = categoriaAtiva === 'todas' || i.categoria === categoriaAtiva;
     const docMatch = documentoAtivo === 'Todos' || (i.documento_origem || []).includes(documentoAtivo);
     const auditMatch = filtroAuditoria === 'todos' 
       || (filtroAuditoria === 'auditados' && i.auditado_manualmente)
       || (filtroAuditoria === 'pendentes' && !i.auditado_manualmente);
-    return catMatch && docMatch && auditMatch;
+    return catMatch && docMatch && auditMatch && matchesSearchTerm(i, searchTerm);
   });
 
   const totalAuditados = typedIndicadores.filter(i => i.auditado_manualmente).length;
@@ -1404,7 +1412,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar indicador por nome, categoria ou fonte..."
+            placeholder="Buscar por ID/código (ex.: 060, ID 060, IND-060), nome, categoria ou fonte..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
@@ -1418,7 +1426,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
                 className="w-full text-left px-4 py-3 hover:bg-accent/50 border-b border-border/50 last:border-b-0 transition-colors"
                 onClick={() => handleSelectResult(ind)}
               >
-                <p className="text-sm font-medium text-foreground">{ind.nome}</p>
+                <p className="text-sm font-medium text-foreground">{ind.codigo ? `${ind.codigo} — ` : ''}{ind.nome}</p>
                 <p className="text-xs text-muted-foreground">{ind.categoria} • {ind.fonte}</p>
               </button>
             ))}
@@ -1542,9 +1550,16 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pending.map(ind => (
-                        <TableRow key={ind.id}>
-                          <TableCell className="text-sm font-medium">{ind.nome}</TableCell>
+                      {pending.map(ind => {
+                        const codigo = ind.codigo;
+                        return (
+                        <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                          <TableCell className="text-sm font-medium">
+                            <div className="flex items-start gap-1.5">
+                              {codigo && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-mono tracking-wider bg-primary/10 text-primary border-primary/30 shrink-0">{codigo}</Badge>}
+                              <span>{ind.nome}</span>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="text-[10px]">{ind.categoria}</Badge>
                           </TableCell>
@@ -1563,7 +1578,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
                             )}
                           </TableCell>
                         </TableRow>
-                      ))}
+                      );})}
                     </TableBody>
                   </Table>
                 </CardContent>

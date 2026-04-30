@@ -46,7 +46,7 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 };
 
 function buildIndicadorLink(id: string, codigo: string | undefined, origin: string): string {
-  if (codigo) return `${origin}/estatisticas?ind=${codigo}#ind-${codigo}`;
+  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}#ind-${codigo}`;
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
@@ -134,7 +134,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
       : '';
     const nomeCell = link
-      ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${li.nome}</a>`
+      ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${codigo ? `${codigo} — ` : ''}${li.nome}</a>`
       : `${codigoBadge}${li.nome}`;
     const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
     const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
