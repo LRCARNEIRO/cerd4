@@ -3,8 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileDown, Loader2, Database, BarChart3, Printer } from 'lucide-react';
-import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais, useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
+import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
@@ -517,9 +520,28 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 </body></html>`;
 }
 
-function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[], m: any) {
+function generateInventoryHTML(
+  indicadoresBDRaw: any[],
+  juventudeNegraBD: any[],
+  m: any,
+  recsByNomeLower: Map<string, string[]>,
+) {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const systemBaseUrl = window.location.origin;
+
+  // Helper: render badges com § de recomendações vinculadas a um indicador (busca case-insensitive)
+  const recsBadges = (nome: string): string => {
+    const recs = recsByNomeLower.get(String(nome || '').trim().toLowerCase()) || [];
+    if (!recs.length) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
+    const head = recs.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ');
+    return recs.length > 8 ? `${head} <span style="font-size:10px;color:#64748b;">+${recs.length - 8}</span>` : head;
+  };
+  // Helper: badges de Artigos ICERD inferidos
+  const artigosBadges = (ind: any): string => {
+    const arts = inferArtigosIndicador(ind);
+    if (!arts.length) return '<span style="color:#94a3b8;font-size:10px;">—</span>';
+    return arts.map(a => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ');
+  };
 
   // Regra de Ouro: Common Core não pode constar no inventário de evidências aptas.
   // Filtra qualquer indicador com categoria 'common_core' OU prefixo "[CC-N]".
@@ -739,22 +761,42 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Clique no código <strong>S-XXX-NN</strong> para ir até a tabela de detalhe da métrica (no fim deste relatório).
+  💡 Cada indicador linka diretamente para a aba correspondente em <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> no sistema (sem replicar dados aqui — para auditar valores, abra no sistema).
+  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
-    ${seriesExpandidas.map((s, i) => `<tr>
+    ${seriesExpandidas.map((s, i) => {
+      // Mapeia o nome da métrica + da série para tentar achar evidências vinculadas via SSoT
+      const lookupNomes = [s.nome, s.serie, `${s.serie} ${s.nome}`, s.metricKey];
+      const recsAgg = new Set<string>();
+      for (const n of lookupNomes) {
+        const k = String(n || '').trim().toLowerCase();
+        const r = recsByNomeLower.get(k);
+        if (r) r.forEach(p => recsAgg.add(p));
+      }
+      const recsArr = Array.from(recsAgg);
+      const recsCell = recsArr.length
+        ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
+        : '<span style="color:#94a3b8;font-size:10px;">—</span>';
+      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?q=${encodeURIComponent(s.nome)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;">↗ abrir</a>`;
+      return `<tr>
       <td>${i + 1}</td>
-      <td><a href="#serie-${s.codigo}" style="display:inline-block;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${s.codigo}</a></td>
+      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
       <td>${s.nome}</td>
       <td>${s.serie}</td>
       <td>${s.fonte}</td>
       <td>${s.periodo}</td>
       <td>${s.registros}</td>
-    </tr>`).join('')}
+      <td>${arts}</td>
+      <td>${recsCell}</td>
+      <td>${linkSistema}</td>
+    </tr>`;
+    }).join('')}
   </tbody>
 </table>
 
@@ -762,12 +804,13 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
   Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
+  A coluna <strong>Recomendações</strong> mostra as §§ que vinculam este indicador como evidência (via SSoT do diagnóstico).
 </p>
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
 <table>
   <thead>
-    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Desagregações</th></tr>
+    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Desagregações</th></tr>
   </thead>
   <tbody>
     ${inds.map((ind: any) => {
@@ -778,7 +821,10 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
       if (ind.desagregacao_territorio) desags.push('Território');
       if (ind.desagregacao_classe) desags.push('Classe');
       if (ind.desagregacao_deficiencia) desags.push('Deficiência');
-      const arts = (ind.artigos_convencao || []).map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join('');
+      const artsDb = (ind.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+      const arts = artsDb.length
+        ? artsDb.map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ')
+        : artigosBadges(ind);
       const codigo = ind.codigo || '';
       const codigoCell = codigo
         ? `<a href="${systemBaseUrl}/estatisticas?ind=${encodeURIComponent(codigo)}#ind-${encodeURIComponent(codigo)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${codigo}</a>`
@@ -788,6 +834,7 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
         <td>${ind.nome}</td>
         <td>${ind.fonte}</td>
         <td>${arts || '—'}</td>
+        <td>${recsBadges(ind.nome)}</td>
         <td>${desags.map(d => `<span class="badge badge-blue">${d}</span>`).join('')}</td>
       </tr>`;
     }).join('')}
@@ -797,54 +844,29 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 <h2>3. Dados Novos — ${dadosNovosIndividuais.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   Indicadores auditáveis listados na aba "Dados Novos" da Base Estatística, com link direto à fonte oficial.
+  Vinculação a Artigos ICERD inferida pelo classificador; vinculação a recomendações via SSoT do diagnóstico.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>ID</th><th>Indicador</th><th>Categoria</th><th>Fonte</th><th>Prioridade</th></tr>
+    <tr><th>#</th><th>ID</th><th>Indicador</th><th>Categoria</th><th>Fonte</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Prioridade</th></tr>
   </thead>
   <tbody>
-    ${dadosNovosIndividuais.map((d: any, i: number) => `<tr>
+    ${dadosNovosIndividuais.map((d: any, i: number) => {
+      const arts = artigosBadges({ nome: d.nome, categoria: d.categoria, subcategoria: d.sigla });
+      return `<tr>
       <td>${i + 1}</td>
       <td><span class="badge badge-green" style="font-family:ui-monospace,Menlo,monospace;">${d.id}</span></td>
       <td>${d.url ? `<a href="${d.url}" target="_blank" rel="noopener">${d.nome}</a>` : d.nome}</td>
       <td>${d.categoria}</td>
       <td>${d.sigla || d.fonte}</td>
+      <td>${arts}</td>
+      <td>${recsBadges(d.nome)}</td>
       <td><span class="badge badge-${d.prioridade === 'alta' ? 'red' : d.prioridade === 'media' ? 'amber' : 'blue'}">${d.prioridade}</span></td>
-    </tr>`).join('')}
+    </tr>`;
+    }).join('')}
   </tbody>
 </table>
 
-<h2>4. Detalhe das Métricas de Séries Temporais</h2>
-<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  Tabela de valores por ano para cada métrica listada na seção 1. Os âncoras correspondem aos códigos S-XXX-NN clicáveis acima.
-</p>
-${seriesExpandidas.map((s) => {
-  const rows = (s.rows || []).filter((r: any) => r && r[s.metricKey] !== undefined && r[s.metricKey] !== null);
-  if (!rows.length) return '';
-  const yearKey = rows[0].ano !== undefined ? 'ano' : (rows[0].periodo !== undefined ? 'periodo' : Object.keys(rows[0])[0]);
-  const fmt = (v: any) => {
-    if (v == null) return '—';
-    if (typeof v === 'number') return v.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
-    return String(v);
-  };
-  return `
-<div id="serie-${s.codigo}" style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:12px 0;page-break-inside:avoid;">
-  <h3 style="margin:0 0 6px;">
-    <span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span>
-    ${s.nome}
-  </h3>
-  <p class="meta" style="font-size:11px;color:#64748b;margin:0 0 8px;">
-    Série: <strong>${s.serie}</strong> · Fonte: ${s.fonte} · Período: ${s.periodo}
-  </p>
-  <table>
-    <thead><tr><th>${yearKey === 'ano' ? 'Ano' : 'Período'}</th><th>${s.nome}</th></tr></thead>
-    <tbody>
-      ${rows.map((r: any) => `<tr><td>${fmt(r[yearKey])}</td><td>${fmt(r[s.metricKey])}</td></tr>`).join('')}
-    </tbody>
-  </table>
-  <p style="font-size:10px;color:#94a3b8;margin:6px 0 0;"><a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Voltar ao topo</a></p>
-</div>`;
-}).join('')}
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
@@ -858,8 +880,32 @@ ${seriesExpandidas.map((s) => {
 export function StatisticsInventoryReport() {
   const { data: indicadoresBD } = useIndicadoresInterseccionais();
   const { data: juventudeNegraBD } = useJuventudeAuditados();
+  const { data: recomendacoes } = useLacunasIdentificadas();
+  const overrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap } = useDiagnosticSensor(recomendacoes, overrides);
   const mirror = useMirrorData();
   const [generating, setGenerating] = useState<string | null>(null);
+
+  // Constrói mapa: nome do indicador (lowercase) → lista de §recomendações vinculadas
+  // Usa o SSoT do diagnóstico (mesma fonte do popup de evidências) para garantir
+  // paridade exata com o sistema.
+  const recsByNomeLower = (() => {
+    const map = new Map<string, string[]>();
+    if (!recomendacoes || !diagnosticMap) return map;
+    for (const rec of recomendacoes) {
+      const diag = diagnosticMap.get(rec.id);
+      const par = String(rec.paragrafo || '').trim();
+      if (!diag || !par) continue;
+      for (const li of diag.linkedIndicadores || []) {
+        const k = String(li.nome || '').trim().toLowerCase();
+        if (!k) continue;
+        const arr = map.get(k) || [];
+        if (!arr.includes(par)) arr.push(par);
+        map.set(k, arr);
+      }
+    }
+    return map;
+  })();
 
   const handleFullReport = async (format: 'html' | 'docx') => {
     setGenerating(`full-${format}`);
@@ -890,7 +936,7 @@ export function StatisticsInventoryReport() {
       : null;
 
     try {
-      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror);
+      const html = generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror, recsByNomeLower);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Inventario-Base-Estatistica-CERD-IV');
       } else {
