@@ -1307,13 +1307,11 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     setSearchTerm('');
     setHighlightedId(ind.id);
     setTimeout(() => {
-      const el = document.getElementById(`indicador-${ind.id}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (scrollToIndicadorElement(ind.id, (ind as any).codigo)) {
         setTimeout(() => setHighlightedId(null), 3000);
       }
     }, 100);
-  }, []);
+  }, [scrollToIndicadorElement]);
 
   const handleExportPDF = useCallback(() => {
     const html = generateIndicadoresHTML(typedIndicadores);
