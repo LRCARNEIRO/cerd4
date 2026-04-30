@@ -70,8 +70,8 @@ export function buildCodigoToIdMap<T extends IndicadorCodigoSource>(
 export function normalizeCodigoInput(input: string | null | undefined): string | null {
   if (!input) return null;
   const t = input.trim().toUpperCase();
-  // IND-042 ou IND042
-  let m = t.match(/^IND-?(\d{1,6})$/);
+  // IND-042, IND042, ID 042, indicador 042.
+  let m = t.match(/^(?:IND|ID|INDICADOR)[\s#:-]?(\d{1,6})$/);
   if (m) return `IND-${m[1].padStart(3, '0')}`;
   // só número (precedido ou não de #)
   m = t.match(/^#?(\d{1,6})$/);
