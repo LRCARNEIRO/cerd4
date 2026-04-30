@@ -1552,9 +1552,16 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pending.map(ind => (
-                        <TableRow key={ind.id}>
-                          <TableCell className="text-sm font-medium">{ind.nome}</TableCell>
+                      {pending.map(ind => {
+                        const codigo = (ind as any).codigo as string | undefined;
+                        return (
+                        <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                          <TableCell className="text-sm font-medium">
+                            <div className="flex items-start gap-1.5">
+                              {codigo && <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-mono tracking-wider bg-primary/10 text-primary border-primary/30 shrink-0">{codigo}</Badge>}
+                              <span>{ind.nome}</span>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="text-[10px]">{ind.categoria}</Badge>
                           </TableCell>
@@ -1573,7 +1580,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
                             )}
                           </TableCell>
                         </TableRow>
-                      ))}
+                      );})}
                     </TableBody>
                   </Table>
                 </CardContent>
