@@ -1530,7 +1530,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
         return (
           <>
             {/* Retrato Pontual — single-point indicators grouped by source */}
-            <RetratoPontualSection indicadores={singlePoint} />
+            <RetratoPontualSection indicadores={singlePoint} highlightedId={highlightedId} />
 
             {/* Séries Temporais — indicators with time series */}
             <div className="space-y-4">
