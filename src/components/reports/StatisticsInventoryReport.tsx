@@ -762,7 +762,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Cada indicador linka diretamente para a aba correspondente em <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> no sistema (sem replicar dados aqui — para auditar valores, abra no sistema).
-  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (`useDiagnosticSensor`) e do classificador de artigos.
+  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
