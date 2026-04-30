@@ -39,8 +39,18 @@ export function ExportAllRecomendacoesButton({
     setBusy(true);
     try {
       // ── Construir mapas de lookup uma única vez ──
+      // Códigos curtos canônicos IND-NNN gerados em runtime (mesma regra dos hooks).
+      const { buildIndicadorCodigoMap } = await import('@/utils/indicadorCodigo');
+      const codigosById = buildIndicadorCodigoMap((rawIndicadores || []).filter(i => i?.id && i?.created_at));
       const indicadorIdByNome = new Map<string, string>();
-      for (const i of rawIndicadores || []) if (i?.nome && i?.id) indicadorIdByNome.set(i.nome, i.id);
+      const indicadorCodigoByNome = new Map<string, string>();
+      for (const i of rawIndicadores || []) {
+        if (i?.nome && i?.id) {
+          indicadorIdByNome.set(i.nome, i.id);
+          const c = codigosById.get(i.id);
+          if (c) indicadorCodigoByNome.set(i.nome, c);
+        }
+      }
 
       const normativoMetaByTitulo = new Map<string, any>();
       for (const n of rawNormativos || []) {
