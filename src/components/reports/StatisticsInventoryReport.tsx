@@ -804,6 +804,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
   Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
+  A coluna <strong>Recomendações</strong> mostra as §§ que vinculam este indicador como evidência (via SSoT do diagnóstico).
 </p>
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
