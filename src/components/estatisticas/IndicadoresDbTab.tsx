@@ -602,18 +602,29 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                       const shortName = c.indicador.nome.length > 50
                         ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
                         : c.indicador.nome;
+                      const codigo = (c.indicador as any).codigo as string | undefined;
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
                           id={`indicador-${c.indicador.id}`}
+                          data-codigo={codigo}
                           className={cn(
                             idx % 2 === 0 && 'bg-muted/10',
                             highlightedId === c.indicador.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700',
                           )}
                         >
                           <TableCell className="py-2">
-                            <p className="text-xs font-medium leading-tight">{shortName}</p>
-                            <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                            <div className="flex items-start gap-1.5">
+                              {codigo && (
+                                <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">
+                                  {codigo}
+                                </span>
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-xs font-medium leading-tight">{shortName}</p>
+                                <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                              </div>
+                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             <span className="text-xs font-semibold text-primary tabular-nums">{formatNum(c.negros)}</span>
