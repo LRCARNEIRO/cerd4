@@ -963,6 +963,7 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
   return (
     <Card
       id={`indicador-${indicador.id}`}
+      data-indicador-id={indicador.id}
       data-codigo={codigo}
       className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
     >
