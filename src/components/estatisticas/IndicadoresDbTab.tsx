@@ -607,7 +607,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
-                          id={`indicador-${c.indicador.id}`}
+                          id={codigo ? `ind-${codigo}` : `indicador-${c.indicador.id}`}
                           data-indicador-id={c.indicador.id}
                           data-codigo={codigo}
                           className={cn(
@@ -740,7 +740,7 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                     const { years } = normalizeIndicadorData(ind.dados || {});
                     const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
                           <div className="flex items-start gap-1.5">
                             {codigo && (
@@ -962,13 +962,13 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
   const codigo = (indicador as any).codigo as string | undefined;
   return (
     <Card
-      id={`indicador-${indicador.id}`}
+      id={codigo ? `ind-${codigo}` : `indicador-${indicador.id}`}
       data-indicador-id={indicador.id}
       data-codigo={codigo}
       className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
     >
-      {/* Âncora secundária pelo código curto (ex.: #ind-IND-042) */}
-      {codigo && <span id={`ind-${codigo}`} className="block -mt-2 invisible h-0" aria-hidden />}
+      {/* Âncora secundária legada pelo UUID. */}
+      {codigo && <span id={`indicador-${indicador.id}`} className="block -mt-2 invisible h-0" aria-hidden />}
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
