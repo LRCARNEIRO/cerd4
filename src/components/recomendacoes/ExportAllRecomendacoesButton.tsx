@@ -11,6 +11,7 @@ import { Archive, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateRecomendacaoAuditHTML } from './generateRecomendacaoAuditHTML';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { buildExportLookups, safeFileName, triggerDownload } from './recomendacaoExportShared';
 
 interface Props {
   recomendacoes: any[];
@@ -19,14 +20,6 @@ interface Props {
   rawOrcamento: any[];
   rawNormativos: any[];
   disabled?: boolean;
-}
-
-function safeFileName(s: string): string {
-  return s
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .substring(0, 80);
 }
 
 export function ExportAllRecomendacoesButton({
