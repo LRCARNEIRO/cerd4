@@ -811,12 +811,12 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador (com recorte)</th><th>Recorte</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
     ${seriesExpandidas.map((s, i) => {
-      // Mapeia o nome da métrica + da série para tentar achar evidências vinculadas via SSoT
-      const lookupNomes = [s.nome, s.serie, `${s.serie} ${s.nome}`, s.metricKey];
+      // Mapeia variações do nome para tentar achar evidências vinculadas via SSoT
+      const lookupNomes = [s.nome, s.serie, s.nomeBruto, `${s.serie} ${s.nomeBruto}`, s.metricKey];
       const recsAgg = new Set<string>();
       for (const n of lookupNomes) {
         const k = String(n || '').trim().toLowerCase();
@@ -828,13 +828,18 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
         ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
       const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
-      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?q=${encodeURIComponent(s.nome)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;">↗ abrir</a>`;
+      // Link inteligente: leva à aba específica + termo de busca da série
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&q=${encodeURIComponent(s.serie)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
+      const recorteCell = s.recorte
+        ? `<span class="badge badge-purple" style="font-size:9px;">${s.recorte}</span>`
+        : '<span style="color:#94a3b8;font-size:10px;">—</span>';
       return `<tr>
       <td>${i + 1}</td>
       <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
-      <td>${s.nome}</td>
-      <td>${s.serie}</td>
-      <td>${s.fonte}</td>
+      <td style="font-weight:500;">${s.nome}</td>
+      <td>${recorteCell}</td>
+      <td style="font-size:11px;color:#64748b;">${s.serie}</td>
+      <td style="font-size:11px;">${s.fonte}</td>
       <td>${s.periodo}</td>
       <td>${s.registros}</td>
       <td>${arts}</td>
