@@ -73,7 +73,7 @@ export default function Estatisticas() {
   
   // BD indicators
   const bdTotal = (indicadores || []).length;
-  const bdAuditados = (indicadores || []).filter((i: any) => i.auditado_manualmente).length;
+  const bdAuditados = (indicadores || []).filter((i) => i.auditado_manualmente).length;
   const bdPendentes = bdTotal - bdAuditados;
 
   // Comprehensive count of ALL auditable data items across static tabs
