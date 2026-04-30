@@ -118,14 +118,7 @@ export function ExportAllRecomendacoesButton({
       });
       console.log('[ExportAll] blob ready', { size: blob.size });
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `auditoria-recomendacoes-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      triggerDownload(blob, `auditoria-recomendacoes-${new Date().toISOString().split('T')[0]}.zip`);
 
       console.timeEnd('[ExportAll] total');
       if (errors.length) {
