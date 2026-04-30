@@ -134,29 +134,99 @@ export function useAnalyticalInsights() {
   const isLoading = l1 || l2 || l3 || l4 || l5 || l6;
   const isFetching = f1 || f2 || f3 || f4 || f5 || f6;
 
-  // Gerar fios condutores a partir dos dados reais
+  // ── PROJEÇÃO PÓS-OVERRIDES ───────────────────────────────────────
+  // Sínteses analíticas precisam refletir inclusões/exclusões manuais de
+  // evidências feitas no Gerenciador de Recomendações. Construímos versões
+  // "efetivas" de lacunas/indicadores/orcamento usando o diagnosticMap (que
+  // já aplicou os overrides) — sem alterar o BD.
+  const {
+    lacunasEfetivas,
+    indicadoresEfetivos,
+    orcDadosEfetivos,
+  } = useMemo(() => {
+    if (!sensorReady || !lacunas) {
+      return {
+        lacunasEfetivas: lacunas,
+        indicadoresEfetivos: indicadores || [],
+        orcDadosEfetivos: orcDados || [],
+      };
+    }
+
+    // Index para enriquecer projeções (linked* vêm como projeção mínima)
+    const indByName = new Map((indicadores || []).map(i => [i.nome, i] as const));
+    const orcByKey = new Map<string, DadoOrcamentario>(
+      (orcDados || []).map(o => [`${o.programa}|${o.orgao}|${o.ano}`, o])
+    );
+
+    const indNomesUsados = new Set<string>();
+    const orcKeysUsadas = new Set<string>();
+
+    const lacEf = lacunas.map((l) => {
+      const diag = diagnosticMap.get(l.id);
+      if (!diag) return l;
+
+      // Coletar rótulos sintéticos a partir do que o diagnosticMap considera
+      // efetivamente vinculado (após overrides).
+      const evidIndicadores = (diag.linkedIndicadores || []).map((i) => {
+        indNomesUsados.add(i.nome);
+        const tend = i.tendencia ? ` [${i.tendencia}]` : '';
+        return `📊 ${i.nome}${tend}`;
+      });
+      const evidOrcamento = (diag.linkedOrcamento || []).map((o) => {
+        const k = `${o.programa}|${o.orgao}|${o.ano}`;
+        orcKeysUsadas.add(k);
+        return `💰 ${o.programa} (${o.orgao}, ${o.ano})`;
+      });
+      const evidNormativos = (diag.linkedNormativos || []).map((n) => `⚖️ ${n.titulo}`);
+
+      // Mescla com evidências textuais já cadastradas, deduplicando.
+      const baseEvid = l.evidencias_encontradas || [];
+      const merged = Array.from(new Set([
+        ...baseEvid,
+        ...evidIndicadores,
+        ...evidOrcamento,
+        ...evidNormativos,
+      ]));
+
+      return { ...l, evidencias_encontradas: merged };
+    });
+
+    // Filtra universos para refletir o que está efetivamente vinculado a
+    // alguma recomendação após overrides. Se nada estiver vinculado em
+    // nenhuma recomendação, mantém o conjunto original (evita zerar painéis).
+    const indEf = indNomesUsados.size > 0
+      ? (indicadores || []).filter(i => indNomesUsados.has(i.nome))
+      : (indicadores || []);
+    const orcEf = orcKeysUsadas.size > 0
+      ? (orcDados || []).filter(o => orcKeysUsadas.has(`${o.programa}|${o.orgao}|${o.ano}`))
+      : (orcDados || []);
+
+    return { lacunasEfetivas: lacEf, indicadoresEfetivos: indEf, orcDadosEfetivos: orcEf };
+  }, [lacunas, indicadores, orcDados, diagnosticMap, sensorReady]);
+
+  // Gerar fios condutores a partir dos dados efetivos (pós-overrides)
   const fiosCondutores = useMemo(() => {
-    if (!lacunas || !stats || !respostas) return [];
-    return gerarFiosCondutores(lacunas, stats, respostas, orcStats, indicadores || [], orcDados || []);
-  }, [lacunas, stats, respostas, orcStats, indicadores, orcDados]);
+    if (!lacunasEfetivas || !stats || !respostas) return [];
+    return gerarFiosCondutores(lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos);
+  }, [lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos]);
 
   // Gerar conclusões dinâmicas
   const conclusoesDinamicas = useMemo(() => {
-    if (!lacunas || !stats || !respostas) return [];
-    return gerarConclusoesDinamicas(lacunas, stats, respostas, orcStats, indicadores || [], orcDados || [], fiosCondutores);
-  }, [lacunas, stats, respostas, orcStats, indicadores, orcDados, fiosCondutores]);
+    if (!lacunasEfetivas || !stats || !respostas) return [];
+    return gerarConclusoesDinamicas(lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos, fiosCondutores);
+  }, [lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos, fiosCondutores]);
 
   // Gerar cruzamentos e insights
   const insightsCruzamento = useMemo(() => {
-    if (!lacunas || !stats || !respostas) return [];
-    return gerarInsightsCruzamento(lacunas, stats, respostas, orcStats, indicadores || [], orcDados || []);
-  }, [lacunas, stats, respostas, orcStats, indicadores, orcDados]);
+    if (!lacunasEfetivas || !stats || !respostas) return [];
+    return gerarInsightsCruzamento(lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos);
+  }, [lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, orcDadosEfetivos]);
 
   // Síntese executiva dinâmica — uses sensor-reclassified status
   const sinteseExecutiva = useMemo(() => {
-    if (!stats || !respostas || !lacunas) return null;
-    return gerarSinteseExecutiva(lacunas, stats, respostas, orcStats, indicadores || [], sensorReady ? diagnosticMap : undefined);
-  }, [lacunas, stats, respostas, orcStats, indicadores, sensorReady, diagnosticMap]);
+    if (!stats || !respostas || !lacunasEfetivas) return null;
+    return gerarSinteseExecutiva(lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, sensorReady ? diagnosticMap : undefined);
+  }, [lacunasEfetivas, stats, respostas, orcStats, indicadoresEfetivos, sensorReady, diagnosticMap]);
 
   // Compute last updated timestamp from all data sources
   const lastUpdated = useMemo(() => {
