@@ -603,7 +603,14 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                         ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
                         : c.indicador.nome;
                       return (
-                        <TableRow key={`${c.indicador.id}-${idx}`} className={cn(idx % 2 === 0 && 'bg-muted/10')}>
+                        <TableRow
+                          key={`${c.indicador.id}-${idx}`}
+                          id={`indicador-${c.indicador.id}`}
+                          className={cn(
+                            idx % 2 === 0 && 'bg-muted/10',
+                            highlightedId === c.indicador.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700',
+                          )}
+                        >
                           <TableCell className="py-2">
                             <p className="text-xs font-medium leading-tight">{shortName}</p>
                             <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
