@@ -160,7 +160,7 @@ export function DadosGeraisTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Composição Racial */}
-        <Card>
+        <Card id="serie-composicao-racial-censo">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
@@ -224,7 +224,7 @@ export function DadosGeraisTab() {
         </Card>
 
         {/* Evolução da composição racial */}
-        <Card>
+        <Card id="serie-composicao-racial">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -280,7 +280,7 @@ export function DadosGeraisTab() {
       </div>
 
       {/* Indicadores socioeconômicos - série histórica */}
-      <Card>
+      <Card id="serie-socioeconomicos">
         <CardHeader>
           <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2025)</CardTitle>
           <CardDescription>
