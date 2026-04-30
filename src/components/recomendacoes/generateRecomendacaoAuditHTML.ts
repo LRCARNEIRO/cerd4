@@ -132,6 +132,7 @@ export function generateRecomendacaoAuditHTML({
   const orcRows = linkedOrc.map(o => {
     const meta = orcamentoMetaByKey.get(orcKey(o)) || {};
     const dot = Number(meta.dotacao_autorizada ?? o.dotacao_autorizada ?? 0);
+    const emp = Number(meta.empenhado ?? (o as any).empenhado ?? 0);
     const liq = Number(meta.liquidado ?? o.liquidado ?? 0);
     const pago = Number(meta.pago ?? o.pago ?? 0);
     const exec = Number(meta.percentual_execucao);
@@ -143,11 +144,12 @@ export function generateRecomendacaoAuditHTML({
       <td>${o.programa || '—'}</td>
       <td>${o.orgao || '—'}</td>
       <td style="text-align:right">R$ ${(dot / 1e6).toFixed(2)}M</td>
+      <td style="text-align:right">R$ ${(emp / 1e6).toFixed(2)}M</td>
       <td style="text-align:right">R$ ${(liq / 1e6).toFixed(2)}M</td>
       <td style="text-align:right">R$ ${(pago / 1e6).toFixed(2)}M</td>
       <td style="text-align:center;font-weight:600">${execStr}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias vinculadas.</td></tr>`;
+  }).join('') || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias vinculadas.</td></tr>`;
 
   const artigos = (recomendacao.artigos_convencao || []).join(', ') || '—';
   const textoOriginal = (recomendacao.texto_original_onu || recomendacao.descricao_lacuna || '').trim();
@@ -203,7 +205,7 @@ ${auditoria ? `<div class="summary">
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
-    <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Liquidado</th>
+    <th style="text-align:right">Dotação Autorizada</th><th style="text-align:right">Empenhado</th><th style="text-align:right">Liquidado</th>
     <th style="text-align:right">Pago</th><th style="text-align:center">Execução (%)</th>
   </tr></thead>
   <tbody>${orcRows}</tbody>
