@@ -16,6 +16,7 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
+import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
