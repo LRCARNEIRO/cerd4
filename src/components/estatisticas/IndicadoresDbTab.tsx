@@ -1504,7 +1504,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
               </div>
             </Card>
 
-            <RetratoPontualSection indicadores={censoIndicadores} />
+            <RetratoPontualSection indicadores={censoIndicadores} highlightedId={highlightedId} />
             {censoIndicadores.filter(i => hasTimeSeries(i.dados || {})).map(ind => (
               <IndicadorDetail key={ind.id} indicador={ind} highlighted={highlightedId === ind.id} />
             ))}
