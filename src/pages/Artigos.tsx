@@ -7,7 +7,8 @@ import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
-import { ExportAllArtigosButton } from '@/components/artigos/ExportArtigoButtons';
+import { ExportAllArtigosButton, ExportSingleArtigoButton } from '@/components/artigos/ExportArtigoButtons';
+import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
 
 export default function Artigos() {
   const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats, lacunas } = useAnalyticalInsights();
