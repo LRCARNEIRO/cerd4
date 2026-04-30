@@ -19,12 +19,14 @@ export interface ExportLookupMaps {
 }
 
 function getReportLinkOrigin(): string {
-  if (typeof window === 'undefined') return '';
+  const publicOrigin = 'https://cerd4.lovable.app';
+  if (typeof window === 'undefined') return publicOrigin;
   const { origin, hostname } = window.location;
-  // HTML baixado a partir do editor/live preview não deve apontar para
-  // lovableproject.com, pois esse domínio pode exigir login Lovable.
-  if (hostname.endsWith('.lovableproject.com')) return 'https://id-preview--dff7a9ee-d3da-4130-8f26-8249e48cfe70.lovable.app';
-  return origin;
+  // Relatórios HTML são abertos fora do preview/editor. Portanto, links
+  // internos devem apontar sempre para o domínio publicado, evitando o
+  // domínio auth-gated lovableproject.com que pede login Lovable.
+  if (hostname === 'cerd4.lovable.app') return origin;
+  return publicOrigin;
 }
 
 /**
@@ -45,7 +47,7 @@ export function buildExportLookups(
   for (const i of rawIndicadores || []) {
     if (i?.nome && i?.id) {
       indicadorIdByNome.set(i.nome, i.id);
-      const c = codigosById.get(i.id);
+      const c = i.codigo || codigosById.get(i.id);
       if (c) indicadorCodigoByNome.set(i.nome, c);
     }
   }
