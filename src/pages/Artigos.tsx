@@ -55,6 +55,26 @@ export default function Artigos() {
         />
       </div>
       <div id="export-artigos-aderencia">
+        <div className="bg-muted/30 rounded-lg border p-4 mb-4">
+          <h3 className="text-sm font-semibold mb-2">📥 Relatórios HTML por Artigo (acumulado de evidências)</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Cada relatório agrega todas as recomendações vinculadas ao Artigo e a UNIÃO deduplicada de indicadores, normativos e ações orçamentárias.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {ARTIGOS_CONVENCAO.map(def => (
+              <ExportSingleArtigoButton
+                key={def.numero}
+                artigo={def.numero}
+                recomendacoes={recomendacoes || []}
+                diagnosticMap={diagnosticMap}
+                rawIndicadores={rawIndicadores}
+                rawOrcamento={rawOrcamento}
+                rawNormativos={rawNormativos}
+                disabled={!sensorReady}
+              />
+            ))}
+          </div>
+        </div>
         <IcerdAdherencePanel
           fiosCondutores={fiosCondutores}
           conclusoes={conclusoesDinamicas}
