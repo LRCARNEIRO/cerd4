@@ -810,7 +810,7 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
 <table>
   <thead>
-    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Desagregações</th></tr>
+    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Desagregações</th></tr>
   </thead>
   <tbody>
     ${inds.map((ind: any) => {
@@ -821,7 +821,10 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
       if (ind.desagregacao_territorio) desags.push('Território');
       if (ind.desagregacao_classe) desags.push('Classe');
       if (ind.desagregacao_deficiencia) desags.push('Deficiência');
-      const arts = (ind.artigos_convencao || []).map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join('');
+      const artsDb = (ind.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
+      const arts = artsDb.length
+        ? artsDb.map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ')
+        : artigosBadges(ind);
       const codigo = ind.codigo || '';
       const codigoCell = codigo
         ? `<a href="${systemBaseUrl}/estatisticas?ind=${encodeURIComponent(codigo)}#ind-${encodeURIComponent(codigo)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${codigo}</a>`
@@ -831,6 +834,7 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
         <td>${ind.nome}</td>
         <td>${ind.fonte}</td>
         <td>${arts || '—'}</td>
+        <td>${recsBadges(ind.nome)}</td>
         <td>${desags.map(d => `<span class="badge badge-blue">${d}</span>`).join('')}</td>
       </tr>`;
     }).join('')}
