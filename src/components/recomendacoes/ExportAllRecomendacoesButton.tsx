@@ -149,7 +149,14 @@ export function ExportAllRecomendacoesButton({
 </body></html>`;
       zip.file('00-INDICE.html', indexHtml);
 
-      const blob = await zip.generateAsync({ type: 'blob' });
+      console.log('[ExportAll] generating zip blob…', { files: Object.keys(zip.files).length, errors: errors.length });
+      const blob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+        if (Math.round(meta.percent) % 20 === 0) {
+          console.log(`[ExportAll] zip ${meta.percent.toFixed(0)}% — ${meta.currentFile || ''}`);
+        }
+      });
+      console.log('[ExportAll] blob ready', { size: blob.size });
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -159,9 +166,14 @@ export function ExportAllRecomendacoesButton({
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 5000);
 
-      toast.success(`${recomendacoes.length} relatórios gerados em .zip`);
+      console.timeEnd('[ExportAll] total');
+      if (errors.length) {
+        toast.warning(`${recomendacoes.length - errors.length}/${recomendacoes.length} relatórios gerados. ${errors.length} com erro — veja o console.`);
+      } else {
+        toast.success(`${recomendacoes.length} relatórios gerados em .zip`);
+      }
     } catch (e: any) {
-      console.error(e);
+      console.error('[ExportAll] FATAL', e);
       toast.error(`Falha ao gerar .zip: ${e?.message || e}`);
     } finally {
       setBusy(false);
