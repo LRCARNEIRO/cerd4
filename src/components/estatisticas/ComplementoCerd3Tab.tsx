@@ -9,6 +9,7 @@ import {
 import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIndicador } from './ComplementoCerd3Data';
 import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
 import { cn } from '@/lib/utils';
+import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
 
 const COLOR_ABS = 'hsl(var(--chart-1))';
 const COLOR_PCT = 'hsl(var(--chart-2))';
@@ -548,12 +549,23 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
   const isPending = (ind.dados as any).pendente_extracao;
   const marcos = (ind.dados as any).marcos;
   const hasMultipleSources = ind.urls_fonte && ind.urls_fonte.length > 0;
+  const codigosMap = useStaticIndicadorCodigos();
+  const codigo = lookupCodigo(codigosMap, ind.nome);
 
   return (
-    <Card className={cn('overflow-hidden', isPending && 'border-l-4 border-l-chart-4')}>
+    <Card className={cn('overflow-hidden', isPending && 'border-l-4 border-l-chart-4')} id={codigo ? `ind-${codigo}` : undefined}>
       <CardHeader className="pb-2 border-b border-border/30">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {codigo ? (
+              <Badge variant="outline" className="text-[10px] font-mono bg-primary/5 border-primary/30 text-primary">
+                {codigo}
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground" title="Indicador ainda não espelhado no BD — recarregue a página para disparar a ingestão">
+                sem ID
+              </Badge>
+            )}
             <CardTitle className="text-sm font-semibold">{ind.nome}</CardTitle>
             {isPending && (
               <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4 border-chart-4/30">
