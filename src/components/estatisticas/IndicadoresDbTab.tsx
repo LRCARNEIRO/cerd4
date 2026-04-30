@@ -1022,22 +1022,25 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
 }
 
 function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
-  // Calculate summary stats
-  const porCategoria = indicadores.reduce((acc, ind) => {
+  // ── Regra de Ouro: separar indicadores APTOS (evidência) vs Common Core (contextual)
+  // Common Core não pode ser usado como evidência por falta de desagregação racial comparável.
+  const isCommonCore = (i: any) =>
+    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
+  const indicadoresAptos = indicadores.filter((i) => !isCommonCore(i));
+  const indicadoresCC = indicadores.filter((i) => isCommonCore(i));
+
+  // Calculate summary stats — sempre sobre os APTOS (Common Core é mostrado em badge separado)
+  const porCategoria = indicadoresAptos.reduce((acc, ind) => {
     acc[ind.categoria] = (acc[ind.categoria] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   const desagregacoes = {
-    raca: indicadores.filter(i => i.desagregacao_raca).length,
-    genero: indicadores.filter(i => i.desagregacao_genero).length,
-    idade: indicadores.filter(i => i.desagregacao_idade).length,
-    territorio: indicadores.filter(i => i.desagregacao_territorio).length,
+    raca: indicadoresAptos.filter(i => i.desagregacao_raca).length,
+    genero: indicadoresAptos.filter(i => i.desagregacao_genero).length,
+    idade: indicadoresAptos.filter(i => i.desagregacao_idade).length,
+    territorio: indicadoresAptos.filter(i => i.desagregacao_territorio).length,
   };
-
-  const categoriaData = Object.entries(porCategoria)
-    .map(([categoria, quantidade]) => ({ categoria, quantidade }))
-    .sort((a, b) => b.quantidade - a.quantidade);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -1045,10 +1048,19 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
         <CardContent className="pt-4">
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-primary" />
-            <p className="text-xs text-muted-foreground">Total de Indicadores</p>
+            <p className="text-xs text-muted-foreground">Indicadores Aptos</p>
           </div>
-          <p className="text-2xl font-bold">{indicadores.length}</p>
-          <p className="text-xs text-muted-foreground mt-1">com dados desagregados</p>
+          <div className="flex items-baseline gap-2">
+            <p className="text-2xl font-bold">{indicadoresAptos.length}</p>
+            {indicadoresCC.length > 0 && (
+              <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground border-muted-foreground/30">
+                + {indicadoresCC.length} Common Core (contextual)
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            evidências c/ recorte racial · CC excluído pela Regra de Ouro
+          </p>
         </CardContent>
       </Card>
       <Card className="border-l-4 border-l-chart-1">
@@ -1058,7 +1070,7 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
             <p className="text-xs text-muted-foreground">Categorias</p>
           </div>
           <p className="text-2xl font-bold">{Object.keys(porCategoria).length}</p>
-          <p className="text-xs text-muted-foreground mt-1">áreas temáticas</p>
+          <p className="text-xs text-muted-foreground mt-1">áreas temáticas (aptos)</p>
         </CardContent>
       </Card>
       <Card className="border-l-4 border-l-success">
@@ -1069,7 +1081,7 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
           </div>
           <p className="text-2xl font-bold text-success">{desagregacoes.raca}</p>
           <p className="text-xs text-muted-foreground mt-1">
-            {indicadores.length > 0 ? `${((desagregacoes.raca / indicadores.length) * 100).toFixed(0)}% do total` : ''}
+            {indicadoresAptos.length > 0 ? `${Math.round((desagregacoes.raca / indicadoresAptos.length) * 100)}% dos aptos` : ''}
           </p>
         </CardContent>
       </Card>
@@ -1080,9 +1092,9 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
             <p className="text-xs text-muted-foreground">Fontes Oficiais</p>
           </div>
           <p className="text-2xl font-bold">
-            {new Set(indicadores.map(i => i.fonte)).size}
+            {new Set(indicadoresAptos.map(i => i.fonte)).size}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">instituições</p>
+          <p className="text-xs text-muted-foreground mt-1">instituições (aptos)</p>
         </CardContent>
       </Card>
     </div>
