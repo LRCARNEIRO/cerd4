@@ -73,7 +73,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   const recsDoArtigo = recomendacoes.filter(r => getArtigosOf(r).includes(artigo));
 
   // Dedup das evidências (união)
-  const indByNome = new Map<string, { nome: string; categoria?: string; tendencia?: string; dados: any; recomendacoes: string[] }>();
+  const indByNome = new Map<string, { id?: string; codigo?: string; nome: string; categoria?: string; tendencia?: string; dados: any; recomendacoes: string[] }>();
   const normByTitulo = new Map<string, { titulo: string; recomendacoes: string[] }>();
   const orcByKey = new Map<string, { o: any; recomendacoes: string[] }>();
 
@@ -126,8 +126,8 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
   // ── Indicadores (união dedup) ──
   const indRows = Array.from(indByNome.values()).map(li => {
-    const id = indicadorIdByNome.get(li.nome) || '';
-    const codigo = indicadorCodigoByNome.get(li.nome);
+    const id = li.id || indicadorIdByNome.get(li.nome) || '';
+    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome);
     const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia, dados: li.dados });
     const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin) : '';
     const codigoBadge = codigo
