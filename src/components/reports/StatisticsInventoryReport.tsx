@@ -761,22 +761,42 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Clique no código <strong>S-XXX-NN</strong> para ir até a tabela de detalhe da métrica (no fim deste relatório).
+  💡 Cada indicador linka diretamente para a aba correspondente em <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> no sistema (sem replicar dados aqui — para auditar valores, abra no sistema).
+  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (`useDiagnosticSensor`) e do classificador de artigos.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
-    ${seriesExpandidas.map((s, i) => `<tr>
+    ${seriesExpandidas.map((s, i) => {
+      // Mapeia o nome da métrica + da série para tentar achar evidências vinculadas via SSoT
+      const lookupNomes = [s.nome, s.serie, `${s.serie} ${s.nome}`, s.metricKey];
+      const recsAgg = new Set<string>();
+      for (const n of lookupNomes) {
+        const k = String(n || '').trim().toLowerCase();
+        const r = recsByNomeLower.get(k);
+        if (r) r.forEach(p => recsAgg.add(p));
+      }
+      const recsArr = Array.from(recsAgg);
+      const recsCell = recsArr.length
+        ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
+        : '<span style="color:#94a3b8;font-size:10px;">—</span>';
+      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?q=${encodeURIComponent(s.nome)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;">↗ abrir</a>`;
+      return `<tr>
       <td>${i + 1}</td>
-      <td><a href="#serie-${s.codigo}" style="display:inline-block;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${s.codigo}</a></td>
+      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
       <td>${s.nome}</td>
       <td>${s.serie}</td>
       <td>${s.fonte}</td>
       <td>${s.periodo}</td>
       <td>${s.registros}</td>
-    </tr>`).join('')}
+      <td>${arts}</td>
+      <td>${recsCell}</td>
+      <td>${linkSistema}</td>
+    </tr>`;
+    }).join('')}
   </tbody>
 </table>
 
