@@ -806,8 +806,9 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Cada indicador linka diretamente para a aba correspondente em <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> no sistema (sem replicar dados aqui — para auditar valores, abra no sistema).
-  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
+  💡 Cada linha indica explicitamente o <strong>recorte</strong> (raça/cor, gênero, PCD, LGBTQIA+ etc.) para que o leitor — e o motor de vinculação a recomendações ONU — saiba que o dado está desagregado pela dimensão racializada.
+  O link <strong>↗ abrir no sistema</strong> leva à <em>aba específica</em> da <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> onde o gráfico/tabela do indicador é renderizado (não há replicação de valores aqui — para auditar, abra no sistema).
+  As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações (§)</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
