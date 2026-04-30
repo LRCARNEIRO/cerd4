@@ -215,9 +215,9 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
       onNavigateTab(result.abaValue);
     }
     if (result.abaValue === 'indicadores-db' && (result.codigo || result.id)) {
-      window.setTimeout(() => {
+      [250, 800].forEach((delay) => window.setTimeout(() => {
         window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { id: result.id, codigo: result.codigo } }));
-      }, 250);
+      }, delay));
     }
     setQuery('');
     setIsOpen(false);
