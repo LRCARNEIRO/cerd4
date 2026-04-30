@@ -1207,7 +1207,23 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
   const [searchTerm, setSearchTerm] = useState('');
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  const typedIndicadores = (indicadores || []) as IndicadorData[];
+  const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
+
+  const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
+    const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
+    const escapedCodigo = codigo && typeof CSS !== 'undefined' ? CSS.escape(codigo) : codigo?.replace(/"/g, '\\"');
+    const el = document.getElementById(`indicador-${id}`)
+      || (codigo ? document.getElementById(`ind-${codigo}`) : null)
+      || (escapedCodigo ? document.querySelector<HTMLElement>(`[data-codigo="${escapedCodigo}"]`) : null)
+      || document.querySelector<HTMLElement>(`[data-indicador-id="${escapedId}"]`);
+
+    if (!el) return false;
+    window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      window.setTimeout(() => el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' }), 650);
+    });
+    return true;
+  }, []);
 
   // ── Deep-link p/ indicador específico vindo de relatórios externos ──
   // Reseta categoria/documento (evita ficar "fora do filtro") e rola até o card.
@@ -1252,10 +1268,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;
-      const el = document.getElementById(`indicador-${realId}`)
-        || (realCodigo ? document.getElementById(`ind-${realCodigo}`) : null);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (scrollToIndicadorElement(realId, realCodigo)) {
         window.setTimeout(() => setHighlightedId(null), 6000);
         window.clearInterval(timer);
       } else if (attempts > 80) {
@@ -1264,7 +1277,7 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       }
     }, 200);
     return () => window.clearInterval(timer);
-  }, [typedIndicadores]);
+  }, [typedIndicadores, scrollToIndicadorElement]);
 
   // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
