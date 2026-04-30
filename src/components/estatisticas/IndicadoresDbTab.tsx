@@ -16,6 +16,7 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
+import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
@@ -602,18 +603,29 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                       const shortName = c.indicador.nome.length > 50
                         ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
                         : c.indicador.nome;
+                      const codigo = (c.indicador as any).codigo as string | undefined;
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
                           id={`indicador-${c.indicador.id}`}
+                          data-codigo={codigo}
                           className={cn(
                             idx % 2 === 0 && 'bg-muted/10',
                             highlightedId === c.indicador.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700',
                           )}
                         >
                           <TableCell className="py-2">
-                            <p className="text-xs font-medium leading-tight">{shortName}</p>
-                            <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                            <div className="flex items-start gap-1.5">
+                              {codigo && (
+                                <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">
+                                  {codigo}
+                                </span>
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-xs font-medium leading-tight">{shortName}</p>
+                                <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                              </div>
+                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             <span className="text-xs font-semibold text-primary tabular-nums">{formatNum(c.negros)}</span>
@@ -725,11 +737,21 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                   {noComparison.map((ind, idx) => {
                     const kvs = extractKeyValues(ind.dados || {});
                     const { years } = normalizeIndicadorData(ind.dados || {});
+                    const codigo = (ind as any).codigo as string | undefined;
                     return (
-                      <TableRow key={ind.id} id={`indicador-${ind.id}`} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                      <TableRow key={ind.id} id={`indicador-${ind.id}`} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
                         <TableCell className="py-2.5">
-                          <p className="text-xs font-medium leading-tight">{ind.nome}</p>
-                          {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                          <div className="flex items-start gap-1.5">
+                            {codigo && (
+                              <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">
+                                {codigo}
+                              </span>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium leading-tight">{ind.nome}</p>
+                              {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="outline" className="text-[10px] px-1.5">{years.length > 0 ? years.join(', ') : '—'}</Badge>
@@ -936,12 +958,24 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
 }
 
 function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData; highlighted?: boolean }) {
+  const codigo = (indicador as any).codigo as string | undefined;
   return (
-    <Card id={`indicador-${indicador.id}`} className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}>
+    <Card
+      id={`indicador-${indicador.id}`}
+      data-codigo={codigo}
+      className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
+    >
+      {/* Âncora secundária pelo código curto (ex.: #ind-IND-042) */}
+      {codigo && <span id={`ind-${codigo}`} className="block -mt-2 invisible h-0" aria-hidden />}
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle className="text-base flex items-center gap-2">
+              {codigo && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-mono tracking-wider bg-primary/10 text-primary border-primary/30">
+                  {codigo}
+                </Badge>
+              )}
               {indicador.nome}
               {indicador.auditado_manualmente ? (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
@@ -1181,14 +1215,22 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     if (typeof window === 'undefined' || !typedIndicadores.length) return;
     const params = new URLSearchParams(window.location.search);
     const rawHash = window.location.hash || '';
-    const hashMatch = rawHash.match(/^#indicador-(.+)$/);
-    let indId = (params.get('ind') || hashMatch?.[1] || '').trim();
+    // Aceita 3 padrões de hash: #ind-IND-042, #indicador-{uuid}, #indicador-{nome}
+    const hashCodigo = rawHash.match(/^#ind-(IND-\d+)$/i);
+    const hashLegacy = rawHash.match(/^#indicador-(.+)$/);
+    let indId = (params.get('ind') || hashCodigo?.[1] || hashLegacy?.[1] || '').trim();
     if (!indId) return;
 
-    // 1) Tenta match por ID exato.
-    let target = typedIndicadores.find(i => i.id === indId);
-    // 2) Fallback: se vier nome no hash (`#indicador-Nome%20do%20Indicador`),
-    //    tenta resolver por nome (case-insensitive).
+    let target: IndicadorData | undefined;
+
+    // 1) Match por código curto (ex.: 'IND-042' ou só '42').
+    const codigoNorm = normalizeCodigoInput(indId);
+    if (codigoNorm) {
+      target = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+    }
+    // 2) Match por UUID exato.
+    if (!target) target = typedIndicadores.find(i => i.id === indId);
+    // 3) Fallback por nome (case-insensitive).
     if (!target) {
       try { indId = decodeURIComponent(indId); } catch { /* ignore */ }
       const lower = indId.toLowerCase();
@@ -1200,8 +1242,8 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
       return;
     }
     const realId = target.id;
+    const realCodigo = (target as any).codigo as string | undefined;
 
-    // Resetar filtros p/ garantir que o card está renderizado.
     setCategoriaAtiva('todas');
     setDocumentoAtivo('Todos');
     setSearchTerm('');
@@ -1210,25 +1252,33 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;
-      const el = document.getElementById(`indicador-${realId}`);
+      const el = document.getElementById(`indicador-${realId}`)
+        || (realCodigo ? document.getElementById(`ind-${realCodigo}`) : null);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // mantém destaque visível por mais tempo
         window.setTimeout(() => setHighlightedId(null), 6000);
         window.clearInterval(timer);
       } else if (attempts > 80) {
-        console.warn('[deep-link] elemento #indicador-' + realId + ' não renderizou após 16s');
+        console.warn('[deep-link] elemento não renderizou em 16s; alvo:', realCodigo || realId);
         window.clearInterval(timer);
       }
     }, 200);
     return () => window.clearInterval(timer);
   }, [typedIndicadores]);
 
-  // Search results — must be before early return
+  // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return [];
+    if (!searchTerm || searchTerm.length < 1) return [];
     const term = searchTerm.toLowerCase();
+    // Match prioritário por código curto: digitar 'IND-42', 'ind42' ou apenas '42'.
+    const codigoNorm = normalizeCodigoInput(searchTerm);
+    if (codigoNorm) {
+      const exact = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+      if (exact) return [exact];
+    }
+    if (searchTerm.length < 2) return [];
     return typedIndicadores.filter(i =>
+      ((i as any).codigo || '').toLowerCase().includes(term) ||
       i.nome.toLowerCase().includes(term) ||
       i.categoria.toLowerCase().includes(term) ||
       (i.subcategoria || '').toLowerCase().includes(term) ||

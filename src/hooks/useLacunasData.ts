@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';
 export type PriorityLevel = 'critica' | 'alta' | 'media' | 'baixa';
@@ -34,6 +35,13 @@ export interface LacunaIdentificada {
 
 export interface IndicadorInterseccional {
   id: string;
+  /**
+   * Código curto e estável (ex.: 'IND-042') gerado em runtime ordenando
+   * por (created_at ASC, id ASC). Indicadores novos entram sempre no fim
+   * — códigos antigos NUNCA renumeram. Usado como âncora visível em
+   * relatórios e como deep-link na URL (`?ind=IND-042`).
+   */
+  codigo: string;
   nome: string;
   categoria: string;
   subcategoria: string | null;
@@ -133,23 +141,25 @@ export function useLacunasIdentificadas(filters?: {
 }
 
 // Hook para buscar indicadores interseccionais
+// IMPORTANTE: para garantir que o `codigo` (IND-NNN) seja CANÔNICO e
+// idêntico em qualquer parte do app, sempre buscamos a base inteira
+// para gerar a numeração e só então aplicamos o filtro por categoria.
 export function useIndicadoresInterseccionais(categoria?: string) {
   return useQuery({
     queryKey: ['indicadores-interseccionais', categoria],
     ...DEFAULT_QUERY_OPTIONS,
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('indicadores_interseccionais')
         .select('*')
-        .order('categoria', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
 
-      if (categoria) {
-        query = query.eq('categoria', categoria);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
-      return data as IndicadorInterseccional[];
+      const all = (data || []) as unknown as IndicadorInterseccional[];
+      const codigos = buildIndicadorCodigoMap(all);
+      const enriched = all.map(i => ({ ...i, codigo: codigos.get(i.id) || '' }));
+      return categoria ? enriched.filter(i => i.categoria === categoria) : enriched;
     },
   });
 }
@@ -158,6 +168,9 @@ export function useIndicadoresInterseccionais(categoria?: string) {
  * Hook analítico: retorna indicadores EXCLUINDO common_core.
  * Usado nas seções de cruzamento (Aderência ICERD, Lacunas, Sensor Diagnóstico,
  * Conclusões) para que apenas indicadores temáticos e ODS-Racial participem.
+ *
+ * O `codigo` continua sendo gerado a partir de TODA a base (inclusive
+ * common_core) p/ permanecer canônico — o filtro é aplicado depois.
  */
 export function useIndicadoresAnaliticos() {
   return useQuery({
@@ -167,10 +180,14 @@ export function useIndicadoresAnaliticos() {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
         .select('*')
-        .neq('categoria', 'common_core')
-        .order('categoria', { ascending: true });
+        .order('created_at', { ascending: true })
+        .order('id', { ascending: true });
       if (error) throw error;
-      return data as IndicadorInterseccional[];
+      const all = (data || []) as unknown as IndicadorInterseccional[];
+      const codigos = buildIndicadorCodigoMap(all);
+      return all
+        .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
+        .filter(i => i.categoria !== 'common_core');
     },
   });
 }
