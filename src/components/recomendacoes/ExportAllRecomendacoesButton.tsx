@@ -85,6 +85,7 @@ export function ExportAllRecomendacoesButton({
           recomendacao: rec,
           diagnostic: diag,
           indicadorIdByNome,
+          indicadorCodigoByNome,
           normativoMetaByTitulo,
           orcamentoMetaByKey,
           origin,
