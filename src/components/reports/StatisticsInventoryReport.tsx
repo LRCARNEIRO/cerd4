@@ -570,9 +570,13 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
     { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
   ];
 
-  // BD indicators by category
+  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
+  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
+
+  // BD indicators by category — usa APENAS indicadoresBDUnicos para evitar
+  // double-counting com séries temporais expandidas.
   const bdCategorias: Record<string, any[]> = {};
-  indicadoresBD.forEach(i => {
+  indicadoresBDUnicos.forEach((i: any) => {
     const cat = i.categoria || 'outros';
     if (!bdCategorias[cat]) bdCategorias[cat] = [];
     bdCategorias[cat].push(i);
@@ -592,14 +596,21 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
     habitacao: 'Habitação',
   };
 
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
 
   // ── Expansão das séries temporais em indicadores subjacentes ──
   // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
   // Aqui listamos cada métrica individual para que o inventário reflita o
   // total real de indicadores aptos como evidência.
-  type SubInd = { codigo: string; nome: string; serie: string; fonte: string; periodo: string; registros: number };
+  type SubInd = {
+    codigo: string;
+    nome: string;
+    serie: string;
+    fonte: string;
+    periodo: string;
+    registros: number;
+    metricKey: string;
+    rows: any[];
+  };
   const expandirSerie = (serie: string, fonte: string, periodo: string, rows: any[], excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota']): SubInd[] => {
     if (!rows?.length) return [];
     const keys = Object.keys(rows[0] || {}).filter(k => !excludeKeys.includes(k) && typeof rows[0][k] !== 'object');
@@ -610,6 +621,8 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
       fonte,
       periodo,
       registros: rows.length,
+      metricKey: k,
+      rows,
     }));
   };
 
@@ -686,9 +699,16 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
   Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
   <br><br>
-  <strong>⚠️ Nota metodológica:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
+  <strong>⚠️ Nota metodológica — Common Core:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
   e <strong>não constam</strong> deste inventário, pois não são utilizáveis como evidência de cumprimento
   de recomendações da ONU (não possuem desagregação racial comparável).
+  <br><br>
+  <strong>🔢 Reconciliação de contagens:</strong> O painel <em>"Espelho Seguro"</em> da página <em>Estatísticas e Indicadores</em>
+  exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
+  (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
+  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
+  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e quebra cada série temporal
+  em suas métricas individuais. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
 </div>
 
 <div class="stats-grid">
@@ -701,8 +721,8 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
     <div class="label">INDICADORES DE SÉRIES (${series.length} séries)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${indicadoresBD.length}</div>
-    <div class="label">INDICADORES BD</div>
+    <div class="value">${indicadoresBDUnicos.length}</div>
+    <div class="label">INDICADORES BD (únicos, sem espelhos)</div>
   </div>
   <div class="stat-card">
     <div class="value">${dadosNovosIndividuais.length}</div>
@@ -712,14 +732,14 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <div class="section-summary">
   <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores extraídos das ${series.length} séries temporais hardcoded
-  + ${indicadoresBD.length} indicadores do banco de dados (com código IND-NNN)
+  + ${indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
   + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
   Cada item abaixo é listado individualmente para garantir auditabilidade.
 </div>
 
 <h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  Cada série temporal contém múltiplas métricas. Aqui cada métrica é listada como um indicador individual.
+  💡 Clique no código <strong>S-XXX-NN</strong> para ir até a tabela de detalhe da métrica (no fim deste relatório).
 </p>
 <table>
   <thead>
@@ -728,7 +748,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   <tbody>
     ${seriesExpandidas.map((s, i) => `<tr>
       <td>${i + 1}</td>
-      <td><span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span></td>
+      <td><a href="#serie-${s.codigo}" style="display:inline-block;padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${s.codigo}</a></td>
       <td>${s.nome}</td>
       <td>${s.serie}</td>
       <td>${s.fonte}</td>
@@ -738,9 +758,10 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   </tbody>
 </table>
 
-<h2>2. Indicadores BD — ${indicadoresBD.length}</h2>
+<h2>2. Indicadores BD — ${indicadoresBDUnicos.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
+  Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
 </p>
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
@@ -792,6 +813,38 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
     </tr>`).join('')}
   </tbody>
 </table>
+
+<h2>4. Detalhe das Métricas de Séries Temporais</h2>
+<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
+  Tabela de valores por ano para cada métrica listada na seção 1. Os âncoras correspondem aos códigos S-XXX-NN clicáveis acima.
+</p>
+${seriesExpandidas.map((s) => {
+  const rows = (s.rows || []).filter((r: any) => r && r[s.metricKey] !== undefined && r[s.metricKey] !== null);
+  if (!rows.length) return '';
+  const yearKey = rows[0].ano !== undefined ? 'ano' : (rows[0].periodo !== undefined ? 'periodo' : Object.keys(rows[0])[0]);
+  const fmt = (v: any) => {
+    if (v == null) return '—';
+    if (typeof v === 'number') return v.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+    return String(v);
+  };
+  return `
+<div id="serie-${s.codigo}" style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:12px 0;page-break-inside:avoid;">
+  <h3 style="margin:0 0 6px;">
+    <span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">${s.codigo}</span>
+    ${s.nome}
+  </h3>
+  <p class="meta" style="font-size:11px;color:#64748b;margin:0 0 8px;">
+    Série: <strong>${s.serie}</strong> · Fonte: ${s.fonte} · Período: ${s.periodo}
+  </p>
+  <table>
+    <thead><tr><th>${yearKey === 'ano' ? 'Ano' : 'Período'}</th><th>${s.nome}</th></tr></thead>
+    <tbody>
+      ${rows.map((r: any) => `<tr><td>${fmt(r[yearKey])}</td><td>${fmt(r[s.metricKey])}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <p style="font-size:10px;color:#94a3b8;margin:6px 0 0;"><a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Voltar ao topo</a></p>
+</div>`;
+}).join('')}
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
