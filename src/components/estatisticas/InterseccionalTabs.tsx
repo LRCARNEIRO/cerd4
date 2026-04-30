@@ -358,7 +358,7 @@ export function RacaGeneroTab() {
       </div>
 
       {/* ═══ 3. Educação ═══ */}
-      <Card id="serie-lgbtqia" className="scroll-mt-24">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
@@ -617,7 +617,7 @@ export function LgbtqiaTab() {
       </Card>
 
       {/* Gráfico: Perfil das vítimas por raça e etnia — reproduz gráfico oficial ANTRA */}
-      <Card>
+      <Card id="serie-lgbtqia" className="scroll-mt-24">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Rainbow className="w-5 h-5 text-primary" />
