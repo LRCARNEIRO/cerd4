@@ -209,7 +209,7 @@ export function RacaGeneroTab() {
 
       {/* ═══ 2. Chefia Familiar + Saúde Materna ═══ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card id="serie-deficiencia" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Home className="w-5 h-5 text-warning" />
@@ -277,7 +277,7 @@ export function RacaGeneroTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="serie-classe" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Stethoscope className="w-5 h-5 text-destructive" />
