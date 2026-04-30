@@ -59,6 +59,7 @@ export interface IndicadorInterseccional {
   analise_interseccional: string | null;
   lacunas_relacionadas: string[] | null;
   documento_origem: string[] | null;
+  auditado_manualmente?: boolean | null;
   created_at: string;
   updated_at: string;
 }
