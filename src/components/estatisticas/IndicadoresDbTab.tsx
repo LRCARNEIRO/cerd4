@@ -1266,11 +1266,19 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos' }: IndicadoresDbTab
     return () => window.clearInterval(timer);
   }, [typedIndicadores]);
 
-  // Search results — must be before early return
+  // Search results — aceita IND-NNN, número, nome, categoria, subcategoria ou fonte.
   const searchResults = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return [];
+    if (!searchTerm || searchTerm.length < 1) return [];
     const term = searchTerm.toLowerCase();
+    // Match prioritário por código curto: digitar 'IND-42', 'ind42' ou apenas '42'.
+    const codigoNorm = normalizeCodigoInput(searchTerm);
+    if (codigoNorm) {
+      const exact = typedIndicadores.find(i => (i as any).codigo === codigoNorm);
+      if (exact) return [exact];
+    }
+    if (searchTerm.length < 2) return [];
     return typedIndicadores.filter(i =>
+      ((i as any).codigo || '').toLowerCase().includes(term) ||
       i.nome.toLowerCase().includes(term) ||
       i.categoria.toLowerCase().includes(term) ||
       (i.subcategoria || '').toLowerCase().includes(term) ||
