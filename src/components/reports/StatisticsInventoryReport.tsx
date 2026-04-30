@@ -833,8 +833,8 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
   (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
   Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
-  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e quebra cada série temporal
-  em suas métricas individuais. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
+  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
+  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
 </div>
 
 <div class="stats-grid">
@@ -857,10 +857,10 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 </div>
 
 <div class="section-summary">
-  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores extraídos das ${series.length} séries temporais hardcoded
+  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores consolidados das ${series.length} séries temporais hardcoded
   + ${indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
   + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
-  Cada item abaixo é listado individualmente para garantir auditabilidade.
+  Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 
 <h2>1. Indicadores de Séries Históricas — ${seriesExpandidas.length}</h2>
