@@ -4,6 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { IcerdAdherencePanel } from '@/components/conclusoes/IcerdAdherencePanel';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+import { ExportAllArtigosButton, ExportSingleArtigoButton } from '@/components/artigos/ExportArtigoButtons';
+import { ARTIGOS_CONVENCAO } from '@/utils/artigosConvencao';
 
 export default function Artigos() {
   const { fiosCondutores, conclusoesDinamicas, respostas, orcDados, indicadores, stats, lacunas } = useAnalyticalInsights();
@@ -23,12 +28,26 @@ export default function Artigos() {
     },
   });
 
+  // SSoT: mesmas evidências usadas em Recomendações, agora agregadas por Artigo.
+  const { data: recomendacoes } = useLacunasIdentificadas({});
+  const [evidenceOverrides] = useEvidenceOverrides();
+  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } =
+    useDiagnosticSensor(recomendacoes, evidenceOverrides);
+
   return (
     <DashboardLayout
       title="Artigos — Aderência ICERD"
       subtitle="Avaliação sistêmica da conformidade com os Artigos I-VII da Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial"
     >
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-end gap-2 mb-4">
+        <ExportAllArtigosButton
+          recomendacoes={recomendacoes || []}
+          diagnosticMap={diagnosticMap}
+          rawIndicadores={rawIndicadores}
+          rawOrcamento={rawOrcamento}
+          rawNormativos={rawNormativos}
+          disabled={!sensorReady}
+        />
         <ExportTabButtons
           targetSelector="#export-artigos-aderencia"
           fileName="artigos-aderencia-icerd"
@@ -36,6 +55,26 @@ export default function Artigos() {
         />
       </div>
       <div id="export-artigos-aderencia">
+        <div className="bg-muted/30 rounded-lg border p-4 mb-4">
+          <h3 className="text-sm font-semibold mb-2">📥 Relatórios HTML por Artigo (acumulado de evidências)</h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            Cada relatório agrega todas as recomendações vinculadas ao Artigo e a UNIÃO deduplicada de indicadores, normativos e ações orçamentárias.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {ARTIGOS_CONVENCAO.map(def => (
+              <ExportSingleArtigoButton
+                key={def.numero}
+                artigo={def.numero}
+                recomendacoes={recomendacoes || []}
+                diagnosticMap={diagnosticMap}
+                rawIndicadores={rawIndicadores}
+                rawOrcamento={rawOrcamento}
+                rawNormativos={rawNormativos}
+                disabled={!sensorReady}
+              />
+            ))}
+          </div>
+        </div>
         <IcerdAdherencePanel
           fiosCondutores={fiosCondutores}
           conclusoes={conclusoesDinamicas}

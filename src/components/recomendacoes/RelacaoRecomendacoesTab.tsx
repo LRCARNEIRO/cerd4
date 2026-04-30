@@ -13,6 +13,7 @@ import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
 import { ExportAllRecomendacoesButton } from './ExportAllRecomendacoesButton';
+import { ExportSingleRecomendacaoButton } from './ExportSingleRecomendacaoButton';
 
 const MethodologyPanel = lazy(() => import('@/components/shared/MethodologyPanel').then(m => ({ default: m.MethodologyPanel })));
 const EvidenceDrilldownDialog = lazy(() => import('@/components/shared/EvidenceDrilldownDialog').then(m => ({ default: m.EvidenceDrilldownDialog })));
@@ -246,6 +247,7 @@ ${renderRows(allItems)}
                   <TableHead className="w-[150px]">Justificativa</TableHead>
                   <TableHead className="w-[120px]">Status</TableHead>
                   <TableHead className="w-[140px]">Prioridade cadastrada</TableHead>
+                  <TableHead className="w-[60px] text-center">Relatório</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -287,6 +289,16 @@ ${renderRows(allItems)}
                         <Badge variant={l.prioridade === 'critica' ? 'destructive' : 'outline'} className="text-xs">
                           {getPrioridadeLabel(l.prioridade)}
                         </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <ExportSingleRecomendacaoButton
+                          recomendacao={l}
+                          diagnostic={diagnosticMap.get(l.id)}
+                          rawIndicadores={rawIndicadores}
+                          rawOrcamento={rawOrcamento}
+                          rawNormativos={rawNormativos}
+                          disabled={!sensorReady}
+                        />
                       </TableCell>
                     </TableRow>
                   );

@@ -11,6 +11,7 @@ import { Archive, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateRecomendacaoAuditHTML } from './generateRecomendacaoAuditHTML';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { buildExportLookups, safeFileName, triggerDownload } from './recomendacaoExportShared';
 
 interface Props {
   recomendacoes: any[];
@@ -19,14 +20,6 @@ interface Props {
   rawOrcamento: any[];
   rawNormativos: any[];
   disabled?: boolean;
-}
-
-function safeFileName(s: string): string {
-  return s
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .substring(0, 80);
 }
 
 export function ExportAllRecomendacoesButton({
@@ -38,40 +31,8 @@ export function ExportAllRecomendacoesButton({
     if (!recomendacoes?.length) return;
     setBusy(true);
     try {
-      // ── Construir mapas de lookup uma única vez ──
-      // Códigos curtos canônicos IND-NNN gerados em runtime (mesma regra dos hooks).
-      const { buildIndicadorCodigoMap } = await import('@/utils/indicadorCodigo');
-      const codigosById = buildIndicadorCodigoMap((rawIndicadores || []).filter(i => i?.id && i?.created_at));
-      const indicadorIdByNome = new Map<string, string>();
-      const indicadorCodigoByNome = new Map<string, string>();
-      for (const i of rawIndicadores || []) {
-        if (i?.nome && i?.id) {
-          indicadorIdByNome.set(i.nome, i.id);
-          const c = codigosById.get(i.id);
-          if (c) indicadorCodigoByNome.set(i.nome, c);
-        }
-      }
-
-      const normativoMetaByTitulo = new Map<string, any>();
-      for (const n of rawNormativos || []) {
-        if (n?.titulo) normativoMetaByTitulo.set(n.titulo, {
-          url_origem: n.url_origem, categoria: n.categoria, created_at: n.created_at,
-        });
-      }
-
-      const orcamentoMetaByKey = new Map<string, any>();
-      for (const o of rawOrcamento || []) {
-        const key = `${o?.programa || ''}|${o?.orgao || ''}|${o?.ano ?? ''}`;
-        if (!orcamentoMetaByKey.has(key)) orcamentoMetaByKey.set(key, o);
-      }
-
-      // Sempre usar a URL publicada (não exige login). Caso o usuário esteja
-      // gerando o .zip dentro do preview (id-preview--*.lovable.app ou
-      // *.lovableproject.com), os links abertos no preview pediriam login —
-      // por isso forçamos a base pública.
-      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-      const isPreview = /(-preview--|lovableproject\.com)/.test(currentOrigin);
-      const origin = isPreview ? 'https://cerd4.lovable.app' : currentOrigin;
+      const { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } =
+        buildExportLookups(rawIndicadores || [], rawOrcamento || [], rawNormativos || []);
 
       console.time('[ExportAll] total');
       console.log('[ExportAll] start', {
@@ -157,14 +118,7 @@ export function ExportAllRecomendacoesButton({
       });
       console.log('[ExportAll] blob ready', { size: blob.size });
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `auditoria-recomendacoes-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      triggerDownload(blob, `auditoria-recomendacoes-${new Date().toISOString().split('T')[0]}.zip`);
 
       console.timeEnd('[ExportAll] total');
       if (errors.length) {
