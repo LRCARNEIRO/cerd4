@@ -6,8 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Search, X, ChevronRight, Database } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 
 interface SearchResult {
+  id?: string;
+  codigo?: string;
   titulo: string;
   valor?: string;
   fonte?: string;
@@ -17,8 +21,20 @@ interface SearchResult {
 }
 
 // Static data catalog — searches across all sub-tabs
-function buildSearchCatalog(mirror: any): SearchResult[] {
+function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   const results: SearchResult[] = [];
+
+  (indicadoresDb || []).forEach((ind: any) => {
+    results.push({
+      id: ind.id,
+      codigo: ind.codigo,
+      titulo: `${ind.codigo ? `${ind.codigo} — ` : ''}${ind.nome}`,
+      fonte: ind.fonte,
+      aba: 'Espelho Seguro (BD)',
+      abaValue: 'indicadores-db',
+      categoria: ind.subcategoria || ind.categoria,
+    });
+  });
 
   // Segurança Pública
   (mirror.segurancaPublica || []).forEach((s: any) => {
@@ -176,17 +192,20 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const mirror = useMirrorData();
+  const { data: indicadoresDb = [] } = useIndicadoresInterseccionais();
 
-  const catalog = useMemo(() => buildSearchCatalog(mirror), [mirror]);
+  const catalog = useMemo(() => buildSearchCatalog(mirror, indicadoresDb), [mirror, indicadoresDb]);
 
   const results = useMemo(() => {
     if (query.length < 2) return [];
     const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const codigoNorm = normalizeCodigoInput(query);
     return catalog.filter(item => {
       const text = `${item.titulo} ${item.categoria || ''} ${item.fonte || ''}`
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
+      if (codigoNorm && item.codigo === codigoNorm) return true;
       return text.includes(q);
     }).slice(0, 20);
   }, [query, catalog]);
@@ -194,6 +213,11 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
   const handleSelect = useCallback((result: SearchResult) => {
     if (onNavigateTab) {
       onNavigateTab(result.abaValue);
+    }
+    if (result.abaValue === 'indicadores-db' && (result.codigo || result.id)) {
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { id: result.id, codigo: result.codigo } }));
+      }, 250);
     }
     setQuery('');
     setIsOpen(false);
