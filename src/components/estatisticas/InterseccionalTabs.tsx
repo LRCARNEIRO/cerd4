@@ -43,7 +43,7 @@ export function RacaGeneroTab() {
     <div className="space-y-6">
       {/* ═══ 1. Violência + Mercado de Trabalho ═══ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card id="serie-violencia-interseccional" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Heart className="w-5 h-5 text-destructive" />
@@ -131,7 +131,7 @@ export function RacaGeneroTab() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card id="serie-trabalho-interseccional" className="scroll-mt-24">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-primary" />
@@ -358,7 +358,7 @@ export function RacaGeneroTab() {
       </div>
 
       {/* ═══ 3. Educação ═══ */}
-      <Card>
+      <Card id="serie-lgbtqia" className="scroll-mt-24">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-primary" />
