@@ -33,7 +33,13 @@ function extractOrgao(titulo: string): string {
   return '—';
 }
 
-function buildIndicadorLink(id: string, origin: string): string {
+/**
+ * Monta o deep-link p/ um indicador. Prefere o código curto (IND-NNN), que
+ * é estável, audit-friendly e independente do UUID. O UUID entra como
+ * fallback redundante (`?ind=`) p/ resolução determinística.
+ */
+function buildIndicadorLink(id: string, codigo: string | undefined, origin: string): string {
+  if (codigo) return `${origin}/estatisticas?ind=${codigo}#ind-${codigo}`;
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
