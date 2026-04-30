@@ -863,22 +863,21 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   Cada item abaixo é listado individualmente para garantir auditabilidade.
 </div>
 
-<h2>1. Indicadores extraídos de Séries Temporais — ${seriesExpandidas.length}</h2>
+<h2>1. Indicadores de Séries Históricas — ${seriesExpandidas.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Cada linha indica explicitamente o <strong>recorte</strong> (raça/cor, gênero, PCD, LGBTQIA+ etc.) para que o leitor — e o motor de vinculação a recomendações ONU — saiba que o dado está desagregado pela dimensão racializada.
+  💡 Cada linha representa <strong>um indicador</strong>; as categorias internas (Branca, Negra, Preta, Parda, gênero, PCD etc.) aparecem na coluna <strong>Desagregações</strong>.
   O link <strong>↗ abrir no sistema</strong> leva à <em>aba específica</em> da <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> onde o gráfico/tabela do indicador é renderizado (não há replicação de valores aqui — para auditar, abra no sistema).
   As colunas <strong>Artigos ICERD</strong> e <strong>Recomendações (§)</strong> mostram a vinculação derivada via SSoT (useDiagnosticSensor) e do classificador de artigos.
 </p>
 <table>
   <thead>
-    <tr><th>#</th><th>Código</th><th>Indicador (com recorte)</th><th>Recorte</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
+    <tr><th>#</th><th>Código</th><th>Indicador</th><th>Desagregações</th><th>Série</th><th>Fonte</th><th>Período</th><th>Pontos</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Ver no sistema</th></tr>
   </thead>
   <tbody>
     ${seriesExpandidas.map((s, i) => {
       // Mapeia variações do nome para tentar achar evidências vinculadas via SSoT
-      const lookupNomes = [s.nome, s.serie, s.nomeBruto, `${s.serie} ${s.nomeBruto}`, s.metricKey];
       const recsAgg = new Set<string>();
-      for (const n of lookupNomes) {
+      for (const n of s.lookupNomes) {
         const k = String(n || '').trim().toLowerCase();
         const r = recsByNomeLower.get(k);
         if (r) r.forEach(p => recsAgg.add(p));
@@ -887,17 +886,17 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
       const recsCell = recsArr.length
         ? recsArr.slice(0, 8).map(p => `<span class="badge badge-amber" style="font-family:ui-monospace,Menlo,monospace;">§${p}</span>`).join(' ') + (recsArr.length > 8 ? ` <span style="font-size:10px;color:#64748b;">+${recsArr.length - 8}</span>` : '')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
-      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKey });
-      // Link inteligente: leva à aba específica + termo de busca da série
-      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&q=${encodeURIComponent(s.serie)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
-      const recorteCell = s.recorte
-        ? `<span class="badge badge-purple" style="font-size:9px;">${s.recorte}</span>`
+      const arts = artigosBadges({ nome: s.nome, categoria: s.serie, subcategoria: s.metricKeys.join(' ') });
+      const linkSistema = `<a href="${systemBaseUrl}/estatisticas?tab=${encodeURIComponent(s.tab)}&serie=${encodeURIComponent(s.anchor)}#${encodeURIComponent(s.anchor)}" target="_blank" rel="noopener" style="font-size:10px;color:#1e40af;text-decoration:underline;font-weight:600;">↗ abrir no sistema</a>`;
+      const desagCell = s.desagregacoes.length
+        ? s.desagregacoes.map(d => `<span class="badge badge-blue" style="font-size:9px;">${d}</span>`).join(' ')
         : '<span style="color:#94a3b8;font-size:10px;">—</span>';
+      const codigo = `S-${String(i + 1).padStart(3, '0')}`;
       return `<tr>
       <td>${i + 1}</td>
-      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${s.codigo}</span></td>
+      <td><span class="badge" style="background:#fef3c7;color:#92400e;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;letter-spacing:.05em;">${codigo}</span></td>
       <td style="font-weight:500;">${s.nome}</td>
-      <td>${recorteCell}</td>
+      <td>${desagCell}</td>
       <td style="font-size:11px;color:#64748b;">${s.serie}</td>
       <td style="font-size:11px;">${s.fonte}</td>
       <td>${s.periodo}</td>
