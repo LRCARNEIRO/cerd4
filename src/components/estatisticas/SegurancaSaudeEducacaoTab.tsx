@@ -302,7 +302,7 @@ export function SegurancaSaudeEducacaoTab() {
       </Card>
 
       {/* Evasão Escolar */}
-      <Card id="serie-saude">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-amber-600" />
@@ -376,7 +376,7 @@ export function SegurancaSaudeEducacaoTab() {
       </Card>
 
       {/* Saúde */}
-      <Card>
+      <Card id="serie-saude">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Heart className="w-5 h-5 text-destructive" />
