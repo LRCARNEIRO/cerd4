@@ -594,7 +594,55 @@ function generateInventoryHTML(indicadoresBDRaw: any[], juventudeNegraBD: any[],
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = totalSeriesRegistros + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+
+  // ── Expansão das séries temporais em indicadores subjacentes ──
+  // Cada série é um agregado (ex.: "Segurança Pública" tem N métricas anuais).
+  // Aqui listamos cada métrica individual para que o inventário reflita o
+  // total real de indicadores aptos como evidência.
+  type SubInd = { codigo: string; nome: string; serie: string; fonte: string; periodo: string; registros: number };
+  const expandirSerie = (serie: string, fonte: string, periodo: string, rows: any[], excludeKeys: string[] = ['ano','fonte','url','urlFonte','nota']): SubInd[] => {
+    if (!rows?.length) return [];
+    const keys = Object.keys(rows[0] || {}).filter(k => !excludeKeys.includes(k) && typeof rows[0][k] !== 'object');
+    return keys.map((k, i) => ({
+      codigo: `S-${serie.slice(0,3).toUpperCase().replace(/\s/g,'')}-${String(i+1).padStart(2,'0')}`,
+      nome: k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).trim(),
+      serie,
+      fonte,
+      periodo,
+      registros: rows.length,
+    }));
+  };
+
+  const seriesExpandidas: SubInd[] = [
+    ...expandirSerie('Composição Racial PNAD', 'SIDRA/IBGE 6403', '2018-2024', evolucaoComposicaoRacial),
+    ...expandirSerie('Indicadores Socioeconômicos', 'PNAD Contínua', '2018-2024', indicadoresSocioeconomicos),
+    ...expandirSerie('Segurança Pública', 'FBSP / SIM-DataSUS', '2018-2024', segurancaPublica),
+    ...expandirSerie('Feminicídio', 'FBSP', '2018-2024', feminicidioSerie),
+    ...expandirSerie('Educação Histórica', 'INEP / PNAD', '2018-2024', educacaoSerieHistorica),
+    ...expandirSerie('Saúde Histórica', 'DataSUS / SIM / SINASC', '2018-2024', saudeSerieHistorica),
+    ...expandirSerie('Trabalho Interseccional', 'PNAD Contínua', '2018-2024', interseccionalidadeTrabalho),
+    ...expandirSerie('Deficiência × Raça', 'IBGE / Censo 2022', '2022', deficienciaPorRaca),
+    ...expandirSerie('LGBTQIA+ ANTRA', 'ANTRA / FBSP', '2018-2024', serieAntraTrans),
+    ...expandirSerie('LGBTQIA+ × Raça', 'IBGE Sexualidade', '2022', lgbtqiaPorRaca),
+    ...expandirSerie('Classe × Raça', 'PNAD Contínua / SIS', '2022', classePorRaca),
+    ...expandirSerie('Violência Interseccional', 'FBSP / DataSUS', '2018-2024', violenciaInterseccional),
+    ...expandirSerie('Evolução Desigualdade', 'IBGE / PNAD', '2018-2024', evolucaoDesigualdade),
+  ];
+
+  // Dados Novos individualmente
+  const dadosNovosIndividuais = categoriasDadosNovos.flatMap((c: any) =>
+    c.indicadores.map((ind: any) => ({
+      id: ind.id,
+      nome: ind.nome,
+      categoria: c.nome,
+      fonte: ind.fonte,
+      sigla: ind.siglaFonte,
+      url: ind.urlFonte,
+      prioridade: ind.prioridade,
+    }))
+  );
+
+  const totalGeral = seriesExpandidas.length + indicadoresBDUnicos.length + dadosNovosIndividuais.length;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
