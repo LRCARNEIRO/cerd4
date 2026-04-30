@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';
 export type PriorityLevel = 'critica' | 'alta' | 'media' | 'baixa';
