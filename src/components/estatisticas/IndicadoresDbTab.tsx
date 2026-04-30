@@ -936,12 +936,24 @@ function IndicadorTable({ indicador }: { indicador: IndicadorData }) {
 }
 
 function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData; highlighted?: boolean }) {
+  const codigo = (indicador as any).codigo as string | undefined;
   return (
-    <Card id={`indicador-${indicador.id}`} className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}>
+    <Card
+      id={`indicador-${indicador.id}`}
+      data-codigo={codigo}
+      className={cn("mb-4 indicador-card transition-all duration-700", highlighted && "ring-2 ring-primary shadow-lg shadow-primary/20")}
+    >
+      {/* Âncora secundária pelo código curto (ex.: #ind-IND-042) */}
+      {codigo && <span id={`ind-${codigo}`} className="block -mt-2 invisible h-0" aria-hidden />}
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle className="text-base flex items-center gap-2">
+              {codigo && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-mono tracking-wider bg-primary/10 text-primary border-primary/30">
+                  {codigo}
+                </Badge>
+              )}
               {indicador.nome}
               {indicador.auditado_manualmente ? (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-0.5 bg-success/10 text-success border-success/30">
