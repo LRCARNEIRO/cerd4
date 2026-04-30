@@ -429,7 +429,7 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
   return results;
 }
 
-function RetratoPontualSection({ indicadores }: { indicadores: IndicadorData[] }) {
+function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: IndicadorData[]; highlightedId?: string | null }) {
   const { comparisons, noComparison, themeGroups } = useMemo(() => {
     const comps: RacialComparison[] = [];
     const noComp: IndicadorData[] = [];
