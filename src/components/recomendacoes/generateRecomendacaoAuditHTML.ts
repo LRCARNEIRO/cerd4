@@ -95,10 +95,11 @@ export function generateRecomendacaoAuditHTML({
   // ⚠️ REGRA DE OURO: indicadores Common Core JAMAIS podem aparecer como
   // evidência de recomendação ou Artigo. Camada de defesa redundante ao
   // filtro do useDiagnosticSensor — bloqueia também eventuais inclusões
-  // por override manual.
-  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(
-    (i: any) => i?.categoria !== 'common_core',
-  );
+  // por override manual antigo (localStorage). Detecção dupla:
+  // categoria explícita 'common_core' OU nome com prefixo "[CC-N]".
+  const isCommonCore = (i: any) =>
+    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
+  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(i => !isCommonCore(i));
   const linkedOrc = diagnostic?.linkedOrcamento || [];
   const linkedNorm = diagnostic?.linkedNormativos || [];
 
