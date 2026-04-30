@@ -34,6 +34,13 @@ export interface LacunaIdentificada {
 
 export interface IndicadorInterseccional {
   id: string;
+  /**
+   * Código curto e estável (ex.: 'IND-042') gerado em runtime ordenando
+   * por (created_at ASC, id ASC). Indicadores novos entram sempre no fim
+   * — códigos antigos NUNCA renumeram. Usado como âncora visível em
+   * relatórios e como deep-link na URL (`?ind=IND-042`).
+   */
+  codigo: string;
   nome: string;
   categoria: string;
   subcategoria: string | null;
