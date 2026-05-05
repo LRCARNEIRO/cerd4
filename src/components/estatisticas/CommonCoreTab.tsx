@@ -2121,56 +2121,6 @@ export const tabelasMoradia: CommonCoreTable[] = [
     tendencia: 'crescente'
   },
   {
-    id: 'cc-81',
-    numero: 81,
-    titulo: 'Perfil Racial dos Beneficiários MCMV (CadÚnico)',
-    tituloIngles: 'Racial profile of MCMV housing program beneficiaries (CadÚnico)',
-    categoria: 'Habitação',
-    descricao: 'Composição racial das famílias beneficiárias do Minha Casa Minha Vida por faixa do programa, com base no CadÚnico/MDS.',
-    fonte: 'MDS/CadÚnico',
-    fonteCompleta: 'Ministério do Desenvolvimento Social — CadÚnico / VIS Data',
-    urlFonte: 'https://aplicacoes.mds.gov.br/sagi/vis/data3/',
-    periodoOriginal: '2023',
-    periodoAtualizado: '2023-2024',
-    statusAtualizacao: 'atualizado',
-    dados: {
-      headers: ['Faixa MCMV', '% Negros', '% Brancos', '% Outros', 'Total famílias (mil)'],
-      rows: [
-        ['Faixa 1 (até R$ 2.640)', '72,4%', '24,8%', '2,8%', '4.250'],
-        ['Faixa 2 (R$ 2.640-4.400)', '58,3%', '38,2%', '3,5%', '1.850'],
-        ['Faixa 3 (R$ 4.400-8.000)', '42,1%', '54,6%', '3,3%', '920'],
-        ['Total MCMV', '64,8%', '32,0%', '3,2%', '7.020']
-      ]
-    },
-    notas: '⚠️ Nível B — Cruzamento indireto 🔀: CadÚnico + SISHAB/MCidades. Na Faixa 1 (maior subsídio), 72,4% dos beneficiários são negros. Requer validação humana.',
-    tendencia: 'estavel'
-  },
-  {
-    id: 'cc-82',
-    numero: 82,
-    titulo: 'Titularidade Feminina Negra no MCMV',
-    tituloIngles: 'Black women as titleholders in MCMV housing program',
-    categoria: 'Habitação',
-    descricao: 'Percentual de unidades habitacionais tituladas em nome de mulheres negras, conforme Lei 11.977/2009 §3º.',
-    fonte: 'MCidades/MDS',
-    fonteCompleta: 'Ministério das Cidades / MDS — SISHAB + CadÚnico',
-    urlFonte: 'https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida',
-    periodoOriginal: '2020',
-    periodoAtualizado: '2020-2024',
-    statusAtualizacao: 'atualizado',
-    dados: {
-      headers: ['Indicador', '2020', '2022', '2024'],
-      rows: [
-        ['% titularidade feminina (total)', '82,5%', '84,2%', '85,1%'],
-        ['% titularidade mulher negra', '56,8%', '58,5%', '60,2%'],
-        ['% titularidade mulher branca', '23,2%', '23,5%', '22,8%'],
-        ['UH entregues (Faixa 1, mil)', '285', '142', '380']
-      ]
-    },
-    notas: '⚠️ Nível B — Cruzamento indireto 🔀: SISHAB + CadÚnico. Lei 11.977/2009 §3º prioriza titularidade feminina. Mulheres negras representam 60,2% das titulares. Requer validação humana.',
-    tendencia: 'crescente'
-  },
-  {
     id: 'cc-83',
     numero: 83,
     titulo: 'Acesso a Água Potável por Cor/Raça',
