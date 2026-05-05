@@ -486,6 +486,32 @@ export const deficitHabitacionalRacial: ComplementoIndicador = {
   },
 };
 
+// ===== 18b. INADEQUAÇÃO HABITACIONAL =====
+export const inadequacaoHabitacional: ComplementoIndicador = {
+  nome: 'Inadequação habitacional por raça/cor',
+  categoria: 'habitacao',
+  subcategoria: 'inadequacao_habitacional',
+  fonte: 'IBGE/Censo 2022 — Tabela SIDRA 9878 (Inadequação domiciliar × cor/raça)',
+  url_fonte: 'https://sidra.ibge.gov.br/tabela/9878',
+  artigos_convencao: ['Art.5(e)(iii)'],
+  documento_origem: ['CERD Observações Finais 2022'],
+  tipo: 'complementar',
+  tendencia: 'estável',
+  polaridade: 'menor_melhor',
+  dados: {
+    nota: 'Auditado manualmente. SIDRA 9878 — domicílios com inadequação (sem banheiro exclusivo, adensamento excessivo, material precário, cobertura inadequada, ônus excessivo) por cor/raça do responsável. Realocado de cc-79 (Common Core) por não constar do HRI/CORE/BRA/2020.',
+    pct_inadequacao_2022: {
+      sem_banheiro_exclusivo: { negros: 6.8, brancos: 2.1, razao_n_b: 3.2 },
+      adensamento_excessivo: { negros: 8.5, brancos: 4.2, razao_n_b: 2.0 },
+      material_precario_paredes: { negros: 4.2, brancos: 1.3, razao_n_b: 3.2 },
+      cobertura_inadequada: { negros: 3.8, brancos: 1.5, razao_n_b: 2.5 },
+      onus_excessivo_aluguel: { negros: 12.4, brancos: 7.8, razao_n_b: 1.6 },
+    },
+    unidade: '% domicílios',
+    paragrafos_cerd: '§31-32',
+  },
+};
+
 // ===== 19. FAVELAS E AGLOMERADOS =====
 export const favelasAglomerados: ComplementoIndicador = {
   nome: 'Moradores em favelas/aglomerados subnormais por raça',
