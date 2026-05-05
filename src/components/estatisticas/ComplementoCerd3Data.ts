@@ -768,6 +768,7 @@ export const complementoCerd3Indicators: ComplementoIndicador[] = [
   sistemaPrisional,
   // Habitação
   deficitHabitacionalRacial,
+  inadequacaoHabitacional,
   favelasAglomerados,
   saneamentoRacial,
   // Censo 2022 (quilombolasCenso, ciganosCenso, indigenasTisCenso exibidos apenas nos Mapas Demográficos)
