@@ -2361,7 +2361,7 @@ export const CommonCoreTab = () => {
           <TabsTrigger value="pobreza">VI. Pobreza (8)</TabsTrigger>
           <TabsTrigger value="seguranca">VII. Segurança (11)</TabsTrigger>
           <TabsTrigger value="politico">VIII-IX. Sistema Político (8)</TabsTrigger>
-          <TabsTrigger value="moradia">X. Habitação e Moradia (7)</TabsTrigger>
+          {tabelasMoradia.length > 0 && <TabsTrigger value="moradia">X. Habitação e Moradia ({tabelasMoradia.length})</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="demografia">
