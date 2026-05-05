@@ -2372,13 +2372,15 @@ export const CommonCoreTab = () => {
           />
         </TabsContent>
 
-        <TabsContent value="moradia">
-          <EixoSection 
-            title="Eixo X - Habitação, Moradia e Saneamento — Art. V(e)(iii) ICERD" 
-            tables={tabelasMoradia}
-            icon={<div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-600">X</div>}
-          />
-        </TabsContent>
+        {tabelasMoradia.length > 0 && (
+          <TabsContent value="moradia">
+            <EixoSection 
+              title="Eixo X - Habitação, Moradia e Saneamento — Art. V(e)(iii) ICERD" 
+              tables={tabelasMoradia}
+              icon={<div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-600">X</div>}
+            />
+          </TabsContent>
+        )}
 
         <TabsContent value="economia">
           <EixoSection 
