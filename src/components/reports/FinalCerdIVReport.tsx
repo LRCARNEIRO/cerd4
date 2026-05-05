@@ -17,6 +17,7 @@ export function FinalCerdIVReport() {
   const {
     isLoading, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
+    lacunasEfetivas, indicadoresEfetivos, orcDadosEfetivos,
   } = useAnalyticalInsights();
 
   const mirror = useMirrorData();
