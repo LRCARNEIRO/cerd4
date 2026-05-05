@@ -59,7 +59,9 @@ export function FinalCerdIVReport() {
     d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
 
-  const lacunasComputadas = (lacunas || []).map((lacuna) => {
+  // Usa lacunasEfetivas (já com evidencias_encontradas enriquecidas pós-overrides).
+  const baseLacunas = lacunasEfetivas || lacunas || [];
+  const lacunasComputadas = baseLacunas.map((lacuna) => {
     const diagnostico = diagnosticMap.get(lacuna.id);
     return diagnostico
       ? { ...lacuna, status_cumprimento: diagnostico.statusComputado }
