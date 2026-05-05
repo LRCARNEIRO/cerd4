@@ -2040,10 +2040,12 @@ export const tabelasHabitacao: CommonCoreTable[] = [
 // ============================================
 
 // Eixo X (Habitação/Moradia/Saneamento) NÃO faz parte do Common Core HRI/CORE/BRA/2020
-// (77 tabelas oficiais). Os indicadores foram realocados para a aba "Dados Novos"
-// (indicadoresHabitacao em DadosNovosTab.tsx), onde recebem tratamento auditável
-// com selos de pendência onde aplicável. Mantido apenas o export vazio para
-// preservar imports existentes.
+// (77 tabelas oficiais). Indicadores auditáveis (cc-78 Déficit FJP, cc-79 Inadequação SIDRA 9878,
+// cc-80 Favelas SIDRA 9587, cc-83 Água SIDRA 7110, cc-84 Esgoto SIDRA 7110) foram realocados
+// para a aba "Complemento CERD III" (ComplementoCerd3Data.ts).
+// Os indicadores cc-81 e cc-82 (perfil racial MCMV / titularidade feminina negra) foram
+// DESCARTADOS por violarem a Regra de Ouro: eram cruzamentos indiretos "Nível B" (CadÚnico+SISHAB)
+// sem fonte primária auditável com recorte racial validado.
 export const tabelasMoradia: CommonCoreTable[] = [];
 
 export const tabelasSistemaPolitico: CommonCoreTable[] = [
