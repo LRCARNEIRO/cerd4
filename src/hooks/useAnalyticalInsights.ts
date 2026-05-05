@@ -252,6 +252,11 @@ export function useAnalyticalInsights() {
     orcStats,
     indicadores,
     orcDados,
+    // Versões pós-overrides — usar em relatórios/sínteses para refletir
+    // inclusões/exclusões manuais de evidências (Gerenciador de Recomendações).
+    lacunasEfetivas,
+    indicadoresEfetivos,
+    orcDadosEfetivos,
     lastUpdated,
   };
 }
