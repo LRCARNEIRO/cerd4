@@ -1,4 +1,5 @@
 import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 
 export type MatchQuality = 'explicit' | 'keyword' | 'eixo';
 
@@ -9,11 +10,11 @@ export interface ArtigoMatch {
   weight: number;
 }
 
-export function getSafeIndicadores<T extends { id?: string; categoria?: string | null }>(indicadores: T[]): T[] {
+export function getSafeIndicadores<T extends { id?: string | null; categoria?: string | null; nome?: string | null }>(indicadores: T[]): T[] {
   const seen = new Set<string>();
 
   return indicadores.filter((ind) => {
-    if (ind.categoria === 'common_core') return false;
+    if (!isEvidenceEligibleIndicator(ind)) return false;
 
     const dedupeKey = String(ind.id || '');
     if (!dedupeKey) return true;

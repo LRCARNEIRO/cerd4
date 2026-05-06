@@ -16,6 +16,7 @@ import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndic
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -89,11 +90,9 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const tag = `§${rec.paragrafo}`;
 
     for (const li of diag?.linkedIndicadores || []) {
-      // ⚠️ REGRA DE OURO: bloquear Common Core como evidência de Artigo.
-      // Detecção dupla: categoria + prefixo "[CC-" no nome (cobre overrides
-      // antigos persistidos sem categoria).
-      const liAny = li as any;
-      if (liAny?.categoria === 'common_core' || /^\[CC-/i.test(String(li?.nome || ''))) continue;
+      // ⚠️ REGRA DE OURO: bloquear Common Core e indicadores descartados
+      // por falta de fonte racial auditável.
+      if (!isEvidenceEligibleIndicator(li)) continue;
       const cur = indByNome.get(li.nome);
       if (cur) cur.recomendacoes.push(tag);
       else indByNome.set(li.nome, { ...li, recomendacoes: [tag] });

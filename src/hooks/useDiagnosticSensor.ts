@@ -6,6 +6,7 @@ import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvenca
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -153,7 +154,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const codigos = buildIndicadorCodigoMap(all);
       return all
         .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
-        .filter(i => i.categoria !== 'common_core');
+        .filter(isEvidenceEligibleIndicator);
     },
   });
 
@@ -256,16 +257,13 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let finalNormativos = normativosVinculados;
 
       if (recOverride) {
-        // ⚠️ REGRA DE OURO: bloquear injeção manual de Common Core como
-        // evidência. Mesmo se um override antigo (localStorage) trouxer
-        // um indicador `[CC-N]`, ele é silenciosamente descartado aqui.
-        // Detecção dupla: categoria explícita + nome com prefixo "[CC-".
-        const isCommonCore = (a: any) =>
-          a?.categoria === 'common_core' || /^\[CC-/i.test(String(a?.nome || ''));
+        // ⚠️ REGRA DE OURO: bloquear injeção manual de Common Core e de
+        // indicadores já descartados por falta de fonte racial auditável.
+        // Mesmo overrides antigos (localStorage) são descartados aqui.
         finalIndicadores = [
           ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
           ...recOverride.addedIndicadores
-            .filter(a => !isCommonCore(a))
+            .filter(isEvidenceEligibleIndicator)
             .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
             .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
         ];

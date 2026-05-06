@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
+import { isEvidenceEligibleIndicator, isInvalidEvidenceIndicator } from '@/utils/indicatorEvidenceGuards';
 
 export const OVERRIDES_STORAGE_KEY = 'cerd-evidence-overrides-v1';
 const OVERRIDES_EVENT = 'cerd-evidence-overrides-changed';
@@ -18,7 +19,7 @@ const OVERRIDES_EVENT = 'cerd-evidence-overrides-changed';
 function readFromStorage(): EvidenceOverrides {
   try {
     const raw = localStorage.getItem(OVERRIDES_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return sanitizeOverrides(JSON.parse(raw));
   } catch { /* noop */ }
   return {};
 }
@@ -31,10 +32,33 @@ function isNonEmpty(v: EvidenceOverride): boolean {
   );
 }
 
+function sanitizeOverride(v: EvidenceOverride): EvidenceOverride {
+  const removedIndicadores = Array.isArray(v?.removedIndicadores) ? v.removedIndicadores : [];
+  const addedIndicadores = Array.isArray(v?.addedIndicadores) ? v.addedIndicadores : [];
+  return {
+    ...v,
+    removedIndicadores: removedIndicadores.filter((nome) => !isInvalidEvidenceIndicator({ nome })),
+    addedIndicadores: addedIndicadores.filter(isEvidenceEligibleIndicator),
+    removedOrcamento: Array.isArray(v?.removedOrcamento) ? v.removedOrcamento : [],
+    addedOrcamento: Array.isArray(v?.addedOrcamento) ? v.addedOrcamento : [],
+    removedNormativos: Array.isArray(v?.removedNormativos) ? v.removedNormativos : [],
+    addedNormativos: Array.isArray(v?.addedNormativos) ? v.addedNormativos : [],
+  };
+}
+
+function sanitizeOverrides(overrides: EvidenceOverrides): EvidenceOverrides {
+  const clean: EvidenceOverrides = {};
+  for (const [k, v] of Object.entries(overrides || {})) {
+    const sanitized = sanitizeOverride(v);
+    if (isNonEmpty(sanitized)) clean[k] = sanitized;
+  }
+  return clean;
+}
+
 function writeToStorage(ov: EvidenceOverrides) {
   try {
     const filtered: EvidenceOverrides = {};
-    for (const [k, v] of Object.entries(ov)) if (isNonEmpty(v)) filtered[k] = v;
+    for (const [k, v] of Object.entries(sanitizeOverrides(ov))) if (isNonEmpty(v)) filtered[k] = v;
     if (Object.keys(filtered).length > 0) {
       localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify(filtered));
     } else {

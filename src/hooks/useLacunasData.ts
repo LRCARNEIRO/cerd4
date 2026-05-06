@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';
 export type PriorityLevel = 'critica' | 'alta' | 'media' | 'baixa';
@@ -188,7 +189,7 @@ export function useIndicadoresAnaliticos() {
       const codigos = buildIndicadorCodigoMap(all);
       return all
         .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
-        .filter(i => i.categoria !== 'common_core');
+        .filter(isEvidenceEligibleIndicator);
     },
   });
 }

@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, Maximize2, Minimize2 } from 'lucide-react';
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 
 // ── Override types ─────────────────────────────────────────────
 export interface EvidenceOverride {
@@ -66,9 +67,10 @@ export function EvidenceDrilldownDialog({
 
   // ── Effective lists (with overrides applied) ──
   const effectiveIndicadores = useMemo(() => {
-    if (!overrides) return linkedIndicadores;
-    const base = linkedIndicadores.filter(i => !overrides.removedIndicadores.includes(i.nome));
-    const added = overrides.addedIndicadores.filter(a => !base.some(b => b.nome === a.nome));
+    const eligibleLinked = linkedIndicadores.filter(isEvidenceEligibleIndicator);
+    if (!overrides) return eligibleLinked;
+    const base = eligibleLinked.filter(i => !overrides.removedIndicadores.includes(i.nome));
+    const added = overrides.addedIndicadores.filter(isEvidenceEligibleIndicator).filter(a => !base.some(b => b.nome === a.nome));
     return [...base, ...added];
   }, [linkedIndicadores, overrides]);
 
@@ -89,12 +91,10 @@ export function EvidenceDrilldownDialog({
   const searchIndResults = useMemo(() => {
     if (!searchInd || searchInd.length < 1) return [];
     const term = searchInd.toLowerCase();
-    // ⚠️ REGRA DE OURO: Common Core JAMAIS aparece como opção de inserção
-    // manual. Defesa explícita (categoria + prefixo "[CC-N]" no nome).
-    const isCommonCore = (i: any) =>
-      i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
+    // ⚠️ REGRA DE OURO: indicadores excluídos ou Common Core JAMAIS aparecem
+    // como opção de inserção manual.
     return (allIndicadores || [])
-      .filter((i: any) => !isCommonCore(i))
+      .filter(isEvidenceEligibleIndicator)
       .filter((i: any) => {
         const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
         return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);

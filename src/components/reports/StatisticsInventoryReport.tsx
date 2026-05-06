@@ -8,6 +8,7 @@ import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
@@ -543,11 +544,9 @@ function generateInventoryHTML(
     return arts.map(a => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ');
   };
 
-  // Regra de Ouro: Common Core não pode constar no inventário de evidências aptas.
-  // Filtra qualquer indicador com categoria 'common_core' OU prefixo "[CC-N]".
-  const isCommonCore = (i: any) =>
-    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
-  const indicadoresBD = (indicadoresBDRaw || []).filter((i: any) => !isCommonCore(i));
+  // Regra de Ouro: Common Core e indicadores descartados não podem constar
+  // no inventário de evidências aptas.
+  const indicadoresBD = (indicadoresBDRaw || []).filter(isEvidenceEligibleIndicator);
 
   const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
     segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
@@ -1061,9 +1060,7 @@ export function StatisticsInventoryReport() {
   };
 
   // Aptos como evidência: BD sem Common Core + Dados Novos.
-  const indicadoresBDSemCC = (indicadoresBD || []).filter((i: any) =>
-    i.categoria !== 'common_core' && !/^\[CC-/i.test(String(i.nome || ''))
-  );
+  const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);
   const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const totalGeral = indicadoresBDSemCC.length + TOTAL_DADOS_NOVOS;
 
