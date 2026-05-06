@@ -9,6 +9,7 @@
  */
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { filterEvidenceEligibleIndicators } from '@/utils/indicatorEvidenceGuards';
 
 export interface ExportLookupMaps {
   indicadorIdByNome: Map<string, string>;
@@ -39,12 +40,13 @@ export function buildExportLookups(
   rawOrcamento: any[],
   rawNormativos: any[],
 ): ExportLookupMaps {
+  const safeRawIndicadores = filterEvidenceEligibleIndicators(rawIndicadores || []);
   const codigosById = buildIndicadorCodigoMap(
-    (rawIndicadores || []).filter(i => i?.id && i?.created_at),
+    safeRawIndicadores.filter(i => i?.id && i?.created_at),
   );
   const indicadorIdByNome = new Map<string, string>();
   const indicadorCodigoByNome = new Map<string, string>();
-  for (const i of rawIndicadores || []) {
+  for (const i of safeRawIndicadores) {
     if (i?.nome && i?.id) {
       indicadorIdByNome.set(i.nome, i.id);
       const c = i.codigo || codigosById.get(i.id);
