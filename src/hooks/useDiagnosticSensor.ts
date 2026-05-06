@@ -6,6 +6,7 @@ import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvenca
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -153,7 +154,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       const codigos = buildIndicadorCodigoMap(all);
       return all
         .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
-        .filter(i => i.categoria !== 'common_core');
+        .filter(isEvidenceEligibleIndicator);
     },
   });
 
