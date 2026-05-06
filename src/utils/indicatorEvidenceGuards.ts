@@ -49,6 +49,9 @@ const RACIAL_CUT_MARKERS: RegExp[] = [
   /\bafro/,
   /igualdade racial/,
   /antirracis/,
+  // Instituições/programas com mandato racial explícito (BR):
+  /\bsinapir\b/, /\bsenapir\b/, /\bseppir\b/, /\bconapir\b/, /\bmir\b/,
+  /lei 12\.?288/, /estatuto da igualdade racial/,
 ];
 
 function normalizeEvidenceText(value: unknown): string {
