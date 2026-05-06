@@ -47,6 +47,24 @@ interface InventoryResult {
   items: AuditItem[];
 }
 
+const INVALID_EVIDENCE_INDICATOR_IDS = new Set([
+  '015fc7a1-0b15-4716-9e49-f81788130ed9', // Titularidade Feminina Negra no MCMV
+  '1ab9ca2e-5164-4336-85b1-202be6eeb76e', // Perfil Racial Beneficiários MCMV (CadÚnico)
+]);
+
+function normalizeEvidenceText(value: unknown): string {
+  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function isEvidenceEligibleIndicator(r: any): boolean {
+  if (r?.categoria === 'common_core' || /^\[CC-/i.test(String(r?.nome || ''))) return false;
+  if (r?.id && INVALID_EVIDENCE_INDICATOR_IDS.has(r.id)) return false;
+  const name = normalizeEvidenceText(r?.nome);
+  if (/titularidade feminina negra.*mcmv/.test(name)) return false;
+  if (/perfil racial.*beneficiarios.*mcmv/.test(name)) return false;
+  return true;
+}
+
 // ===============================
 // MAPEAMENTO ESTÁTICO — StatisticsData.ts
 // Itens marcados como auditados = true são os que passaram por verificação humana
