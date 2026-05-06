@@ -12,6 +12,7 @@ import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -70,7 +71,8 @@ type EvolucaoResult = {
  */
 export function EvolucaoRecomendacoesPanel() {
   const { data: recomendacoes, isLoading: loadingRecs } = useLacunasIdentificadas({});
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const overrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(recomendacoes, overrides);
   const [drilldown, setDrilldown] = useState<{ rec: EvolucaoResult; tab: string } | null>(null);
 
   const isLoading = loadingRecs || !sensorReady;

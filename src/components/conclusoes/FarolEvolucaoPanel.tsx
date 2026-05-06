@@ -8,6 +8,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/ut
 import { FarolDrilldownDialog } from './FarolDrilldownDialog';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { useDiagnosticSensor, type LinkedIndicador, type LinkedOrcamento, type LinkedNormativo } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
 
 interface FarolEvolucaoPanelProps {
@@ -49,7 +50,8 @@ export function FarolEvolucaoPanel({ lacunas, orcamentoRecords, indicadores, sta
   const [drilldown, setDrilldown] = useState<{ art: FarolArtigoResult; tab: string } | null>(null);
 
   // Use the same diagnostic sensor as Recomendações and Artigos (Aderência)
-  const { diagnosticMap } = useDiagnosticSensor(lacunas);
+  const overrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap } = useDiagnosticSensor(lacunas, overrides);
 
   const artigoResults = useMemo<FarolArtigoResult[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
