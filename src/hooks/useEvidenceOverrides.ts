@@ -19,7 +19,7 @@ const OVERRIDES_EVENT = 'cerd-evidence-overrides-changed';
 function readFromStorage(): EvidenceOverrides {
   try {
     const raw = localStorage.getItem(OVERRIDES_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return sanitizeOverrides(JSON.parse(raw));
   } catch { /* noop */ }
   return {};
 }
