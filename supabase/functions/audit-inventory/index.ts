@@ -302,7 +302,7 @@ Deno.serve(async (req) => {
       .from('indicadores_interseccionais')
       .select('id, nome, categoria, fonte, url_fonte, documento_origem, auditado_manualmente');
 
-    const indItems: AuditItem[] = (indData || []).map((r: any) => ({
+    const indItems: AuditItem[] = (indData || []).filter(isEvidenceEligibleIndicator).map((r: any) => ({
       id: r.id,
       tipo: 'registro_bd' as const,
       secao: `Indicadores BD — ${r.categoria}`,
