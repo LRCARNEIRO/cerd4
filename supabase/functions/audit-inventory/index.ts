@@ -52,16 +52,33 @@ const INVALID_EVIDENCE_INDICATOR_IDS = new Set([
   '1ab9ca2e-5164-4336-85b1-202be6eeb76e', // Perfil Racial Beneficiários MCMV (CadÚnico)
 ]);
 
+const INVALID_NAME_PATTERNS: RegExp[] = [
+  /titularidade feminina negra.*mcmv/,
+  /perfil racial.*beneficiarios.*mcmv/,
+  /\bmcmv\b(?!.*(negr|indigena|quilombo|cigano|rom\b|racial|raca|cor))/,
+  /\bsishab\b(?!.*(negr|indigena|quilombo|cigano|rom\b|racial|raca|cor))/,
+];
+
+const RACIAL_CUT_MARKERS: RegExp[] = [
+  /\bnegr[oa]s?\b/, /\bpreta?s?\b/, /\bpard[oa]s?\b/, /\bindigena/, /\bquilombo/,
+  /\bcigan[oa]s?\b/, /\brom\b|\broma\b|\bromani\b/, /\bpovos? tradicionai?s?\b/,
+  /\bterreir/, /\bracial\b/, /\bracializad/, /raca.cor|raca\/cor|raca cor/,
+  /\betnic/, /\bafro/, /igualdade racial/, /antirracis/,
+];
+
 function normalizeEvidenceText(value: unknown): string {
-  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s\/\.]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function isEvidenceEligibleIndicator(r: any): boolean {
   if (r?.categoria === 'common_core' || /^\[CC-/i.test(String(r?.nome || ''))) return false;
   if (r?.id && INVALID_EVIDENCE_INDICATOR_IDS.has(r.id)) return false;
-  const name = normalizeEvidenceText(r?.nome);
-  if (/titularidade feminina negra.*mcmv/.test(name)) return false;
-  if (/perfil racial.*beneficiarios.*mcmv/.test(name)) return false;
+  const haystack = normalizeEvidenceText([r?.nome, r?.categoria, r?.subcategoria, r?.fonte].filter(Boolean).join(' '));
+  if (INVALID_NAME_PATTERNS.some((rx) => rx.test(haystack))) return false;
+  if (r?.desagregacao_raca === false) {
+    const hasRacialMarker = RACIAL_CUT_MARKERS.some((rx) => rx.test(haystack));
+    if (!hasRacialMarker) return false;
+  }
   return true;
 }
 
