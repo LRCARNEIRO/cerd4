@@ -8,6 +8,7 @@
  */
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -92,14 +93,10 @@ export function generateRecomendacaoAuditHTML({
   orcamentoMetaByKey,
   origin,
 }: Args): string {
-  // ⚠️ REGRA DE OURO: indicadores Common Core JAMAIS podem aparecer como
-  // evidência de recomendação ou Artigo. Camada de defesa redundante ao
-  // filtro do useDiagnosticSensor — bloqueia também eventuais inclusões
-  // por override manual antigo (localStorage). Detecção dupla:
-  // categoria explícita 'common_core' OU nome com prefixo "[CC-N]".
-  const isCommonCore = (i: any) =>
-    i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
-  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(i => !isCommonCore(i));
+  // ⚠️ REGRA DE OURO: defesa redundante ao sensor — bloqueia Common Core e
+  // indicadores descartados por falta de fonte racial auditável, inclusive
+  // se vierem de override manual antigo (localStorage).
+  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(isEvidenceEligibleIndicator);
   const linkedOrc = diagnostic?.linkedOrcamento || [];
   const linkedNorm = diagnostic?.linkedNormativos || [];
 
