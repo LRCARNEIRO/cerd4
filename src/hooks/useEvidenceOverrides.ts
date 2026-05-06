@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
+import { isEvidenceEligibleIndicator, isInvalidEvidenceIndicator } from '@/utils/indicatorEvidenceGuards';
 
 export const OVERRIDES_STORAGE_KEY = 'cerd-evidence-overrides-v1';
 const OVERRIDES_EVENT = 'cerd-evidence-overrides-changed';
@@ -31,10 +32,27 @@ function isNonEmpty(v: EvidenceOverride): boolean {
   );
 }
 
+function sanitizeOverride(v: EvidenceOverride): EvidenceOverride {
+  return {
+    ...v,
+    removedIndicadores: v.removedIndicadores.filter((nome) => !isInvalidEvidenceIndicator({ nome })),
+    addedIndicadores: v.addedIndicadores.filter(isEvidenceEligibleIndicator),
+  };
+}
+
+function sanitizeOverrides(overrides: EvidenceOverrides): EvidenceOverrides {
+  const clean: EvidenceOverrides = {};
+  for (const [k, v] of Object.entries(overrides || {})) {
+    const sanitized = sanitizeOverride(v);
+    if (isNonEmpty(sanitized)) clean[k] = sanitized;
+  }
+  return clean;
+}
+
 function writeToStorage(ov: EvidenceOverrides) {
   try {
     const filtered: EvidenceOverrides = {};
-    for (const [k, v] of Object.entries(ov)) if (isNonEmpty(v)) filtered[k] = v;
+    for (const [k, v] of Object.entries(sanitizeOverrides(ov))) if (isNonEmpty(v)) filtered[k] = v;
     if (Object.keys(filtered).length > 0) {
       localStorage.setItem(OVERRIDES_STORAGE_KEY, JSON.stringify(filtered));
     } else {
