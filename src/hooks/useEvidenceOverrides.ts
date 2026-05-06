@@ -33,10 +33,16 @@ function isNonEmpty(v: EvidenceOverride): boolean {
 }
 
 function sanitizeOverride(v: EvidenceOverride): EvidenceOverride {
+  const removedIndicadores = Array.isArray(v?.removedIndicadores) ? v.removedIndicadores : [];
+  const addedIndicadores = Array.isArray(v?.addedIndicadores) ? v.addedIndicadores : [];
   return {
     ...v,
-    removedIndicadores: v.removedIndicadores.filter((nome) => !isInvalidEvidenceIndicator({ nome })),
-    addedIndicadores: v.addedIndicadores.filter(isEvidenceEligibleIndicator),
+    removedIndicadores: removedIndicadores.filter((nome) => !isInvalidEvidenceIndicator({ nome })),
+    addedIndicadores: addedIndicadores.filter(isEvidenceEligibleIndicator),
+    removedOrcamento: Array.isArray(v?.removedOrcamento) ? v.removedOrcamento : [],
+    addedOrcamento: Array.isArray(v?.addedOrcamento) ? v.addedOrcamento : [],
+    removedNormativos: Array.isArray(v?.removedNormativos) ? v.removedNormativos : [],
+    addedNormativos: Array.isArray(v?.addedNormativos) ? v.addedNormativos : [],
   };
 }
 
