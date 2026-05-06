@@ -1060,9 +1060,7 @@ export function StatisticsInventoryReport() {
   };
 
   // Aptos como evidência: BD sem Common Core + Dados Novos.
-  const indicadoresBDSemCC = (indicadoresBD || []).filter((i: any) =>
-    i.categoria !== 'common_core' && !/^\[CC-/i.test(String(i.nome || ''))
-  );
+  const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);
   const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const totalGeral = indicadoresBDSemCC.length + TOTAL_DADOS_NOVOS;
 
