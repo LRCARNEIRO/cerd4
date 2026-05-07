@@ -314,6 +314,7 @@ export default function Estatisticas() {
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} initialSearchTerm={initialIndicatorQuery} /></TabsContent>
+        <TabsContent value="pendentes-auditoria"><PendentesAuditoriaTab /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
