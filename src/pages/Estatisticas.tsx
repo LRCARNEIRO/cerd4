@@ -40,7 +40,7 @@ import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
-  const [activeTab, setActiveTab] = useState('common-core');
+  const [activeTab, setActiveTab] = useState('complemento-cerd3');
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
