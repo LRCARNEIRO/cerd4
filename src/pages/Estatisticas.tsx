@@ -37,6 +37,7 @@ import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionP
 import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
 import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
+import { PendentesAuditoriaTab } from '@/components/estatisticas/PendentesAuditoriaTab';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
