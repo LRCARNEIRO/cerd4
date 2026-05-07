@@ -769,76 +769,139 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
         );
       })}
 
-      {/* Non-comparable indicators */}
-      {noComparison.length > 0 && (
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-3 bg-muted/20 border-b border-border/50">
-            <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-muted-foreground" />
-              <CardTitle className="text-sm text-muted-foreground">Sem desagregação racial comparável ({noComparison.length})</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-semibold text-xs w-[35%]">Indicador</TableHead>
-                    <TableHead className="text-xs text-center">Ano</TableHead>
-                    <TableHead className="text-xs">Valores</TableHead>
-                    <TableHead className="text-xs w-[15%]">Fonte</TableHead>
-                    <TableHead className="text-xs text-center w-12">🔗</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {noComparison.map((ind, idx) => {
-                    const kvs = extractKeyValues(ind.dados || {});
-                    const { years } = normalizeIndicadorData(ind.dados || {});
-                    const codigo = (ind as any).codigo as string | undefined;
-                    return (
-                      <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
-                        <TableCell className="py-2.5">
-                          <div className="flex items-start gap-1.5">
-                            {codigo && (
-                              <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">
-                                {codigo}
-                              </span>
-                            )}
-                            <div className="min-w-0">
-                              <p className="text-xs font-medium leading-tight">{ind.nome}</p>
-                              {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="text-[10px] px-1.5">{years.length > 0 ? years.join(', ') : '—'}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {kvs.length > 0 ? kvs.map((kv, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 text-[10px] bg-secondary/60 text-secondary-foreground px-1.5 py-0.5 rounded">
-                                <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span> {kv.value}
-                              </span>
-                            )) : <span className="text-[10px] text-muted-foreground italic">⏳ Pendente</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={ind.fonte}>{ind.fonte}</TableCell>
-                        <TableCell className="text-center">
-                          {ind.url_fonte ? (
-                            <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
-                              <ExternalLink className="w-3.5 h-3.5 inline" />
-                            </a>
-                          ) : <span className="text-muted-foreground/50">—</span>}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Non-comparable indicators — separados em sub-buckets significativos */}
+      {noComparison.length > 0 && (() => {
+        const buckets: Record<NonComparableBucket, IndicadorData[]> = {
+          lacuna: [], indigenas: [], quilombolas: [], ciganos: [], outros: [],
+        };
+        for (const ind of noComparison) buckets[classifyNonComparable(ind)].push(ind);
+
+        const BUCKET_META: Record<NonComparableBucket, { title: string; subtitle: string; icon: string; cardClass: string; headerClass: string }> = {
+          lacuna: {
+            title: 'Lacunas Metodológicas Registradas',
+            subtitle: 'A fonte oficial NÃO desagrega por raça/cor. Estes registros denunciam a ausência do dado — não são evidência empírica e ficam BLOQUEADOS como evidência vinculada em relatórios de Recomendação.',
+            icon: '⚠️',
+            cardClass: 'border-l-4 border-l-chart-4 overflow-hidden',
+            headerClass: 'pb-3 bg-chart-4/10 border-b border-chart-4/30',
+          },
+          indigenas: {
+            title: 'Indicadores Intra-Grupo — Indígenas',
+            subtitle: 'Dados sobre populações indígenas onde a comparação Negro×Branco não se aplica (recorte étnico próprio).',
+            icon: '🪶',
+            cardClass: 'border-l-4 border-l-success overflow-hidden',
+            headerClass: 'pb-3 bg-success/10 border-b border-success/30',
+          },
+          quilombolas: {
+            title: 'Indicadores Intra-Grupo — Quilombolas',
+            subtitle: 'Dados sobre populações quilombolas — comparação Negro×Branco não-aplicável.',
+            icon: '✊🏿',
+            cardClass: 'border-l-4 border-l-primary overflow-hidden',
+            headerClass: 'pb-3 bg-primary/10 border-b border-primary/30',
+          },
+          ciganos: {
+            title: 'Indicadores Intra-Grupo — Ciganos / Roma',
+            subtitle: 'Dados sobre populações ciganas/Roma — comparação Negro×Branco não-aplicável.',
+            icon: '🛤️',
+            cardClass: 'border-l-4 border-l-accent overflow-hidden',
+            headerClass: 'pb-3 bg-accent/30 border-b border-accent/50',
+          },
+          outros: {
+            title: 'Outros Indicadores Sem Par Negro×Branco Direto',
+            subtitle: 'Indicadores que têm racialização parcial ou métricas que não permitem o cálculo direto da razão.',
+            icon: '📋',
+            cardClass: 'overflow-hidden',
+            headerClass: 'pb-3 bg-muted/20 border-b border-border/50',
+          },
+        };
+
+        const order: NonComparableBucket[] = ['lacuna', 'indigenas', 'quilombolas', 'ciganos', 'outros'];
+
+        return (
+          <>
+            {order.filter(b => buckets[b].length > 0).map((bucketKey) => {
+              const list = buckets[bucketKey];
+              const meta = BUCKET_META[bucketKey];
+              return (
+                <Card key={bucketKey} className={meta.cardClass}>
+                  <CardHeader className={meta.headerClass}>
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg">{meta.icon}</span>
+                      <div className="min-w-0">
+                        <CardTitle className="text-sm">{meta.title} ({list.length})</CardTitle>
+                        <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{meta.subtitle}</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="font-semibold text-xs w-[35%]">Indicador</TableHead>
+                            <TableHead className="text-xs text-center">Ano</TableHead>
+                            <TableHead className="text-xs">Valores</TableHead>
+                            <TableHead className="text-xs w-[15%]">Fonte</TableHead>
+                            <TableHead className="text-xs text-center w-12">🔗</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {list.map((ind, idx) => {
+                            const kvs = extractKeyValues(ind.dados || {});
+                            const { years } = normalizeIndicadorData(ind.dados || {});
+                            const codigo = (ind as any).codigo as string | undefined;
+                            const isLacuna = bucketKey === 'lacuna';
+                            const notaTxt = String((ind.dados as any)?.nota || '');
+                            return (
+                              <TableRow key={ind.id} id={codigo ? `ind-${codigo}` : `indicador-${ind.id}`} data-indicador-id={ind.id} data-codigo={codigo} className={cn(idx % 2 === 0 && 'bg-muted/10', highlightedId === ind.id && 'ring-2 ring-primary bg-primary/10 transition-all duration-700')}>
+                                <TableCell className="py-2.5">
+                                  <div className="flex items-start gap-1.5">
+                                    {codigo && (
+                                      <span className="font-mono text-[9px] tracking-wider px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 shrink-0">{codigo}</span>
+                                    )}
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-medium leading-tight">{ind.nome}</p>
+                                      {ind.subcategoria && <span className="text-[10px] text-muted-foreground">{ind.subcategoria}</span>}
+                                      {isLacuna && notaTxt && (
+                                        <p className="text-[10px] text-chart-4 mt-1 italic leading-snug">⚠ {notaTxt}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Badge variant="outline" className="text-[10px] px-1.5">{years.length > 0 ? years.join(', ') : '—'}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex flex-wrap gap-1">
+                                    {isLacuna ? (
+                                      <Badge variant="outline" className="text-[10px] bg-chart-4/10 text-chart-4 border-chart-4/30">⛔ Sem dado — lacuna registrada</Badge>
+                                    ) : kvs.length > 0 ? kvs.map((kv, i) => (
+                                      <span key={i} className="inline-flex items-center gap-1 text-[10px] bg-secondary/60 text-secondary-foreground px-1.5 py-0.5 rounded">
+                                        <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span> {kv.value}
+                                      </span>
+                                    )) : <span className="text-[10px] text-muted-foreground italic">⏳ Pendente</span>}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={ind.fonte}>{ind.fonte}</TableCell>
+                                <TableCell className="text-center">
+                                  {ind.url_fonte ? (
+                                    <a href={ind.url_fonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
+                                      <ExternalLink className="w-3.5 h-3.5 inline" />
+                                    </a>
+                                  ) : <span className="text-muted-foreground/50">—</span>}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </>
+        );
+      })()}
     </div>
   );
 }
