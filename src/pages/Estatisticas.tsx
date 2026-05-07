@@ -63,7 +63,7 @@ export default function Estatisticas() {
     const serieAnchor = params.get('serie') || rawHash.replace(/^#/, '');
     // Lista de abas válidas para deep-link via ?tab=
     const VALID_TABS = new Set([
-      'common-core','complemento-cerd3','dados-gerais','seguranca-saude-educacao',
+      'complemento-cerd3','dados-gerais','seguranca-saude-educacao',
       'indicadores-db','adm-publica','covid-racial','grupos-focais','ods-racial',
       'vulnerabilidades','raca-genero','lgbtqia','deficiencia','juventude','classe',
     ]);
