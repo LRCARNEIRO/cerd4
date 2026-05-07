@@ -273,6 +273,9 @@ export default function Estatisticas() {
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Espelho Seguro (BD)
           </TabsTrigger>
+          <TabsTrigger value="pendentes-auditoria" className="gap-1 bg-chart-4/10">
+            <CircleDashed className="w-4 h-4" /> ⏳ Pendentes de Auditoria
+          </TabsTrigger>
           <TabsTrigger value="adm-publica" className="gap-1 bg-chart-3/10">
             <Landmark className="w-4 h-4" /> Adm Pública
           </TabsTrigger>
