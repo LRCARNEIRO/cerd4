@@ -1,18 +1,21 @@
 // ──────────────────────────────────────────────────────────────────
-// Guard universal de evidências estatísticas (Regra de Ouro CERD)
+// Guard de evidências estatísticas (Regra de Ouro CERD)
 // ──────────────────────────────────────────────────────────────────
-// Objetivo: impedir que qualquer indicador sem recorte racial auditável
-// vaze para listas de evidência vinculada, popups, relatórios PDF/HTML
-// ou inventário — mesmo que tenha sido inserido manualmente via override
-// (localStorage) ou venha de uma migração antiga do banco.
+// Objetivo: impedir que indicadores comprovadamente inválidos
+// (alucinados/inventados) ou Common Core vazem para listas de
+// evidência vinculada, popups, relatórios PDF/HTML ou inventário.
 //
-// Camadas:
-//  1. Blacklist nominal (IDs e regex) — para casos comprovadamente
-//     alucinados (ex.: IND-001/IND-002 MCMV).
-//  2. Heurística genérica — barra qualquer indicador com
-//     desagregacao_raca = false cujo texto (nome/categoria/subcategoria/fonte)
-//     NÃO contenha marcador étnico-racial explícito.
+// Camadas (apenas blacklist explícita + Common Core):
+//  1. Blacklist nominal por ID (casos comprovadamente alucinados).
+//  2. Blacklist por padrão de nome (alucinações reincidentes).
 //  3. Bloqueio de Common Core (mantém regra existente).
+//
+// NOTA: A heurística genérica baseada em `desagregacao_raca=false`
+// foi REMOVIDA — a marcação dessa flag nunca foi obrigatória no
+// processo de carga, então usá-la como filtro perdia indicadores
+// legítimos. O crivo de qualidade dos indicadores deve ser feito
+// por auditoria manual (campo `auditado_manualmente` no DB), não
+// por heurística automática.
 
 const INVALID_EVIDENCE_INDICATOR_IDS = new Set<string>([
   '015fc7a1-0b15-4716-9e49-f81788130ed9', // Titularidade Feminina Negra no MCMV (alucinado)
@@ -23,35 +26,6 @@ const INVALID_EVIDENCE_INDICATOR_IDS = new Set<string>([
 const INVALID_EVIDENCE_INDICATOR_NAME_PATTERNS: RegExp[] = [
   /titularidade feminina negra.*mcmv/,
   /perfil racial.*beneficiarios.*mcmv/,
-  // Fontes universais sem racialização primária — quando reaparecerem como
-  // "indicadores", são alucinação:
-  /\bmcmv\b(?!.*(negr|indigena|quilombo|cigano|rom\b|racial|raca|cor))/,
-  /\bsishab\b(?!.*(negr|indigena|quilombo|cigano|rom\b|racial|raca|cor))/,
-];
-
-// Marcadores que comprovam recorte étnico-racial, mesmo quando o flag
-// `desagregacao_raca` está como false no DB (ex.: indicador é sobre
-// população indígena/quilombola/cigana ou políticas raciais institucionais).
-const RACIAL_CUT_MARKERS: RegExp[] = [
-  /\bnegr[oa]s?\b/,
-  /\bpreta?s?\b/,
-  /\bpard[oa]s?\b/,
-  /\bindigena/,
-  /\bquilombo/,
-  /\bcigan[oa]s?\b/,
-  /\brom\b|\broma\b|\bromani\b/,
-  /\bpovos? tradicionai?s?\b/,
-  /\bterreir/,
-  /\bracial\b/,
-  /\bracializad/,
-  /raca.cor|raca\/cor|raca e cor|raca cor/,
-  /\betnic/,
-  /\bafro/,
-  /igualdade racial/,
-  /antirracis/,
-  // Instituições/programas com mandato racial explícito (BR):
-  /\bsinapir\b/, /\bsenapir\b/, /\bseppir\b/, /\bconapir\b/, /\bmir\b/,
-  /lei 12\.?288/, /estatuto da igualdade racial/,
 ];
 
 function normalizeEvidenceText(value: unknown): string {
@@ -85,13 +59,6 @@ export function isInvalidEvidenceIndicator(indicator: {
   );
 
   if (INVALID_EVIDENCE_INDICATOR_NAME_PATTERNS.some((rx) => rx.test(haystack))) return true;
-
-  // Heurística genérica: sem flag racial e sem qualquer marcador
-  // étnico-racial no texto → não pode entrar como evidência.
-  if (indicator?.desagregacao_raca === false) {
-    const hasRacialMarker = RACIAL_CUT_MARKERS.some((rx) => rx.test(haystack));
-    if (!hasRacialMarker) return true;
-  }
 
   return false;
 }
