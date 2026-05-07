@@ -13,6 +13,7 @@ import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink,
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { isPendingAuditIndicator } from '@/utils/indicatorEvidenceGuards';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
@@ -1443,7 +1444,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
+  const typedIndicadores = useMemo(
+    () => ((indicadores || []) as IndicadorData[]).filter((i) => !isPendingAuditIndicator(i as any)),
+    [indicadores],
+  );
 
   const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
     const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
