@@ -381,9 +381,45 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
   const results: RacialComparison[] = [];
   const unidade = (dados.unidade as string) || '%';
 
-  // Helper: dado um objeto chave→valor, tenta extrair Negros/Brancos/Indígenas/Geral
-  // suportando chaves "negros", "preto", "pardo", "preto+pardo", "negro/pardo",
-  // "pretos e pardos", "branco", "brancas", etc.
+  // Helper: detecta se o valor (ou um filho direto) representa um número exibível,
+  // inclusive em estruturas { "2017-2019": 0.67 } ou { "2024": 12.3 }.
+  const coerceNumber = (rv: any): number | null => {
+    if (typeof rv === 'number' && Number.isFinite(rv)) return rv;
+    if (typeof rv === 'string') {
+      const n = parseFloat(rv.replace(/\./g, '').replace(',', '.'));
+      return Number.isFinite(n) ? n : null;
+    }
+    if (rv && typeof rv === 'object' && !Array.isArray(rv)) {
+      // pega último período (4 dígitos OU "AAAA-AAAA") com número
+      const entries = Object.entries(rv as Record<string, any>)
+        .filter(([k, v]) => /^\d{4}(-\d{4})?$/.test(k) && v !== null && v !== undefined && !String(v).includes('N/D'));
+      if (entries.length === 0) return null;
+      entries.sort(([a], [b]) => Number(b.slice(0, 4)) - Number(a.slice(0, 4)));
+      const [, last] = entries[0];
+      return coerceNumber(last);
+    }
+    return null;
+  };
+
+  // Detecta categoria racial pelo nome da chave — sem depender de `\b`,
+  // que falha em chaves camelCase tipo "mortalidadeMaternaNegra".
+  const classifyRacialKey = (rk: string): 'negros' | 'preto' | 'pardo' | 'brancos' | 'indigenas' | 'nacional' | null => {
+    const k = rk.toLowerCase();
+    if (/preto.*pardo|pardo.*preto|preto\+pardo|preto_pardo|preto e pardo|pretos e pardos|negro.*pardo/.test(k)) return 'negros';
+    if (/negr[oa]s?|naonegr[oa]?|n[aã]o[\s_-]?negr/.test(k)) {
+      // "naoNegros"/"não negros" tratamos como branco/não-negro
+      if (/n[aã]o[\s_-]?negr|naonegr/.test(k)) return 'brancos';
+      return 'negros';
+    }
+    if (/pret[oa]s?/.test(k)) return 'preto';
+    if (/pard[oa]s?/.test(k)) return 'pardo';
+    if (/branc[oa]s?/.test(k)) return 'brancos';
+    if (/ind[ií]gen/.test(k)) return 'indigenas';
+    if (/nacional|geral|total|brasil/.test(k)) return 'nacional';
+    return null;
+  };
+
+  // Helper: extrai N/B/I/Geral de um dict simples (chave→número OU chave→{ano:num})
   const extractFromDict = (obj: Record<string, any>) => {
     let negros: number | null = null;
     let pretos: number | null = null;
@@ -392,21 +428,16 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
     let indigenas: number | null = null;
     let nacional: number | null = null;
     for (const [rk, rv] of Object.entries(obj)) {
-      const rkLower = rk.toLowerCase();
-      const numV = typeof rv === 'number' ? rv : parseFloat(String(rv).replace(/\./g, '').replace(',', '.'));
-      if (!Number.isFinite(numV)) continue;
-      const isNegros = /\bnegr/.test(rkLower) || /preto.*pardo|pardo.*preto|preto\+pardo|preto_pardo|preto e pardo|pretos e pardos/.test(rkLower);
-      const isPreto = !isNegros && /\bpret/.test(rkLower);
-      const isPardo = !isNegros && /\bpard/.test(rkLower);
-      const isBranco = /\bbranc/.test(rkLower);
-      const isIndigena = /ind[ií]gen/.test(rkLower);
-      const isGeral = /nacional|geral|total|brasil/.test(rkLower);
-      if (isNegros) negros = numV;
-      else if (isPreto) pretos = numV;
-      else if (isPardo) pardos = numV;
-      else if (isBranco) brancos = numV;
-      else if (isIndigena) indigenas = numV;
-      else if (isGeral) nacional = numV;
+      const cat = classifyRacialKey(rk);
+      if (!cat) continue;
+      const numV = coerceNumber(rv);
+      if (numV === null) continue;
+      if (cat === 'negros') negros = numV;
+      else if (cat === 'preto') pretos = numV;
+      else if (cat === 'pardo') pardos = numV;
+      else if (cat === 'brancos') brancos = numV;
+      else if (cat === 'indigenas') indigenas = numV;
+      else if (cat === 'nacional') nacional = numV;
     }
     if (negros === null && (pretos !== null || pardos !== null)) {
       negros = (pretos ?? 0) + (pardos ?? 0);
@@ -414,21 +445,92 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
     return { negros, brancos, indigenas, nacional };
   };
 
-  // Recursão limitada (até 3 níveis) para achar dicts com chaves raciais
+  // Detecta linhas no formato { labelNegro, labelReferencia, valor, referencia }
+  // (usado em IND-151 Juventude comparativos)
+  const extractFromLabeledRow = (row: Record<string, any>) => {
+    const labelNegro = String(row.labelNegro || row.label_negro || '').toLowerCase();
+    const labelRef = String(row.labelReferencia || row.label_referencia || '').toLowerCase();
+    const valor = coerceNumber(row.valor);
+    const ref = coerceNumber(row.referencia);
+    if (valor === null || ref === null) return null;
+    const negroLike = /negr|pret|pard/.test(labelNegro);
+    const branLike = /branc|n[aã]o[\s_-]?negr/.test(labelRef);
+    if (!negroLike) return null;
+    return {
+      negros: valor,
+      brancos: branLike ? ref : null,
+      indigenas: null,
+      nacional: !branLike ? ref : null,
+      label: row.indicador ? String(row.indicador) : '',
+    };
+  };
+
+  // Recursão (até 4 níveis) — agora ENTRA em arrays também
   const visit = (node: any, pathLabel: string, depth: number) => {
-    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
-    if (depth > 3) return;
+    if (depth > 4 || node === null || node === undefined) return;
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        if (item && typeof item === 'object' && !Array.isArray(item)) {
+          // 1) tenta linha rotulada (valor/referencia)
+          const labeled = extractFromLabeledRow(item as Record<string, any>);
+          if (labeled && (labeled.negros !== null || labeled.brancos !== null)) {
+            const razao = (labeled.negros !== null && labeled.brancos !== null && labeled.brancos > 0)
+              ? labeled.negros / labeled.brancos : null;
+            const baseNome = ind.nome.split('—')[0].trim();
+            const lab = labeled.label || pathLabel;
+            results.push({
+              indicador: { ...ind, nome: lab ? `${baseNome} — ${lab}` : ind.nome },
+              ano: String(item.ano || dados.ano_referencia || ''),
+              negros: labeled.negros, brancos: labeled.brancos, indigenas: null, nacional: labeled.nacional,
+              unidade: String(item.unidade || unidade), razao,
+            });
+            continue;
+          }
+          // 2) tenta dict racial direto na linha
+          const subKeys = Object.keys(item);
+          const hasRacialKeys = subKeys.some(k => classifyRacialKey(k));
+          if (hasRacialKeys) {
+            const { negros, brancos, indigenas, nacional } = extractFromDict(item as Record<string, any>);
+            if (negros !== null || brancos !== null || indigenas !== null) {
+              const razao = (negros !== null && brancos !== null && brancos > 0) ? negros / brancos : null;
+              const baseNome = ind.nome.split('—')[0].trim();
+              const rowLabel = String(item.indicador || item.tipo || item.metrica || pathLabel || '');
+              results.push({
+                indicador: { ...ind, nome: rowLabel ? `${baseNome} — ${rowLabel}` : ind.nome },
+                ano: String(item.ano || dados.ano_referencia || ''),
+                negros, brancos, indigenas, nacional,
+                unidade: String(item.unidade || unidade), razao,
+              });
+              continue;
+            }
+          }
+          // 3) recursão normal
+          visit(item, pathLabel, depth + 1);
+        }
+      }
+      return;
+    }
+    if (typeof node !== 'object') return;
+
     const subKeys = Object.keys(node);
-    const hasRacialKeys = subKeys.some(k => /negr|pret|pard|branc|ind[ií]gen/.test(k.toLowerCase()));
-    const hasYearKeys = subKeys.some(k => /^\d{4}$/.test(k));
+    const hasRacialKeys = subKeys.some(k => classifyRacialKey(k));
+    const hasYearKeys = subKeys.some(k => /^\d{4}(-\d{4})?$/.test(k));
     if (hasRacialKeys && !hasYearKeys) {
       const { negros, brancos, indigenas, nacional } = extractFromDict(node as Record<string, any>);
       if (negros !== null || brancos !== null || indigenas !== null) {
         const razao = (negros !== null && brancos !== null && brancos > 0) ? negros / brancos : null;
         const baseNome = ind.nome.split('—')[0].trim();
+        // tenta extrair ano da chave interna mais recente
+        let anoDetect = String(dados.ano_referencia || dados.ano || '');
+        for (const v of Object.values(node)) {
+          if (v && typeof v === 'object' && !Array.isArray(v)) {
+            const ys = Object.keys(v as any).filter(k => /^\d{4}(-\d{4})?$/.test(k));
+            if (ys.length) { anoDetect = ys.sort().pop()!; break; }
+          }
+        }
         results.push({
           indicador: { ...ind, nome: pathLabel ? `${baseNome} — ${pathLabel}` : ind.nome },
-          ano: '2022', negros, brancos, indigenas, nacional, unidade, razao,
+          ano: anoDetect, negros, brancos, indigenas, nacional, unidade, razao,
         });
       }
       return;
