@@ -42,6 +42,53 @@ export function isCommonCoreIndicator(indicator: { categoria?: string | null; no
   return indicator?.categoria === 'common_core' || /^\[CC-/i.test(String(indicator?.nome || ''));
 }
 
+/**
+ * Detecta indicadores que são apenas REGISTROS DE LACUNA METODOLÓGICA — i.e.
+ * têm uma `nota` explicando que a fonte não desagrega por raça/cor e
+ * NENHUM valor numérico utilizável em `dados`. Servem para denunciar a
+ * ausência do dado na fonte oficial, NÃO como evidência empírica.
+ *
+ * Critério: dados.lacuna_desagregacao_racial === true OU nota contém
+ * "não desagrega"/"lacuna metodológica"/"sem desagregação racial",
+ * E não há nenhum número extraível em `dados`.
+ */
+export function isMethodologicalGapPlaceholder(indicator: {
+  dados?: any;
+}): boolean {
+  const dados = indicator?.dados;
+  if (!dados || typeof dados !== 'object') return false;
+
+  const flagged =
+    dados.lacuna_desagregacao_racial === true ||
+    dados.lacuna_racial === true;
+  const nota = String(dados.nota || '').toLowerCase();
+  const notaSinaliza =
+    /n[aã]o desagrega|lacuna metodol[oó]gica|sem desagrega[cç][aã]o racial|n[aã]o disponibiliza recorte/.test(
+      nota,
+    );
+
+  if (!flagged && !notaSinaliza) return false;
+
+  // Confirma ausência de número em qualquer profundidade
+  const hasNumber = (v: any): boolean => {
+    if (typeof v === 'number' && Number.isFinite(v)) return true;
+    if (typeof v === 'string') {
+      const n = parseFloat(v.replace(/\./g, '').replace(',', '.'));
+      return Number.isFinite(n) && /\d/.test(v);
+    }
+    if (Array.isArray(v)) return v.some(hasNumber);
+    if (v && typeof v === 'object') return Object.values(v).some(hasNumber);
+    return false;
+  };
+  // Ignora chaves meta para checagem
+  const META = new Set(['unidade', 'nota', 'slug', 'formato', 'regra_ouro', 'deep_links', 'lacuna_racial', 'lacuna_desagregacao_racial', 'status_validacao']);
+  for (const [k, v] of Object.entries(dados)) {
+    if (META.has(k) || k.startsWith('nota_') || k.startsWith('fonte_') || k.endsWith('_url')) continue;
+    if (hasNumber(v)) return false;
+  }
+  return true;
+}
+
 export function isInvalidEvidenceIndicator(indicator: {
   id?: string | null;
   nome?: string | null;
@@ -49,6 +96,7 @@ export function isInvalidEvidenceIndicator(indicator: {
   subcategoria?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
+  dados?: any;
 }): boolean {
   if (indicator?.id && INVALID_EVIDENCE_INDICATOR_IDS.has(indicator.id)) return true;
 
@@ -60,6 +108,10 @@ export function isInvalidEvidenceIndicator(indicator: {
 
   if (INVALID_EVIDENCE_INDICATOR_NAME_PATTERNS.some((rx) => rx.test(haystack))) return true;
 
+  // Placeholders de lacuna metodológica: visíveis na aba Estatísticas
+  // (transparência da denúncia) mas barrados como evidência vinculada.
+  if (isMethodologicalGapPlaceholder(indicator)) return true;
+
   return false;
 }
 
@@ -70,6 +122,7 @@ export function isEvidenceEligibleIndicator(indicator: {
   nome?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
+  dados?: any;
 }): boolean {
   return !isCommonCoreIndicator(indicator) && !isInvalidEvidenceIndicator(indicator);
 }
@@ -82,6 +135,7 @@ export function filterEvidenceEligibleIndicators<
     nome?: string | null;
     fonte?: string | null;
     desagregacao_raca?: boolean | null;
+    dados?: any;
   },
 >(indicators: T[] | undefined | null): T[] {
   return (indicators || []).filter(isEvidenceEligibleIndicator);
