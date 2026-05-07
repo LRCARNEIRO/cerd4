@@ -260,9 +260,6 @@ export default function Estatisticas() {
       <div className="mt-2" />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
-          <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
-            <BookOpen className="w-4 h-4" /> Common Core (77)
-          </TabsTrigger>
           <TabsTrigger value="complemento-cerd3" className="gap-1 bg-chart-4/10">
             <FileText className="w-4 h-4" /> Complemento CERD III ({COMPLEMENTO_CERD3_COUNT})
           </TabsTrigger>
