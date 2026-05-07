@@ -13,6 +13,7 @@ import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink,
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { isPendingAuditIndicator } from '@/utils/indicatorEvidenceGuards';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
