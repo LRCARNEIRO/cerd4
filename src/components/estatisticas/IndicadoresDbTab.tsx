@@ -1444,7 +1444,10 @@ export function IndicadoresDbTab({ filtroAuditoria = 'todos', initialSearchTerm 
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-  const typedIndicadores = useMemo(() => (indicadores || []) as IndicadorData[], [indicadores]);
+  const typedIndicadores = useMemo(
+    () => ((indicadores || []) as IndicadorData[]).filter((i) => !isPendingAuditIndicator(i as any)),
+    [indicadores],
+  );
 
   const scrollToIndicadorElement = useCallback((id: string, codigo?: string) => {
     const escapedId = typeof CSS !== 'undefined' ? CSS.escape(id) : id.replace(/"/g, '\\"');
