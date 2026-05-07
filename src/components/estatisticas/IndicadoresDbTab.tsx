@@ -373,54 +373,74 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
 
   const excludeMeta = new Set([
     'unidade', 'nota', 'serie', 'fonte', 'url', 'slug', 'formato',
-    'regra_ouro', 'deep_links', 'lacuna_racial', 'artigoCerd',
-    'nota_racial', 'nota_refugio', 'nota_registros', 'datamigra_bi_url',
-    'status_validacao',
+    'regra_ouro', 'deep_links', 'lacuna_racial', 'lacuna_desagregacao_racial',
+    'artigoCerd', 'nota_racial', 'nota_refugio', 'nota_registros',
+    'datamigra_bi_url', 'status_validacao',
   ]);
 
   const results: RacialComparison[] = [];
   const unidade = (dados.unidade as string) || '%';
 
-  // Check for nested metric objects like { taxa_X: { "Negros": val, "Brancos": val } }
-  for (const [metricKey, metricVal] of Object.entries(dados)) {
-    if (excludeMeta.has(metricKey)) continue;
-    if (typeof metricVal !== 'object' || metricVal === null || Array.isArray(metricVal)) continue;
+  // Helper: dado um objeto chave→valor, tenta extrair Negros/Brancos/Indígenas/Geral
+  // suportando chaves "negros", "preto", "pardo", "preto+pardo", "negro/pardo",
+  // "pretos e pardos", "branco", "brancas", etc.
+  const extractFromDict = (obj: Record<string, any>) => {
+    let negros: number | null = null;
+    let pretos: number | null = null;
+    let pardos: number | null = null;
+    let brancos: number | null = null;
+    let indigenas: number | null = null;
+    let nacional: number | null = null;
+    for (const [rk, rv] of Object.entries(obj)) {
+      const rkLower = rk.toLowerCase();
+      const numV = typeof rv === 'number' ? rv : parseFloat(String(rv).replace(/\./g, '').replace(',', '.'));
+      if (!Number.isFinite(numV)) continue;
+      const isNegros = /\bnegr/.test(rkLower) || /preto.*pardo|pardo.*preto|preto\+pardo|preto_pardo|preto e pardo|pretos e pardos/.test(rkLower);
+      const isPreto = !isNegros && /\bpret/.test(rkLower);
+      const isPardo = !isNegros && /\bpard/.test(rkLower);
+      const isBranco = /\bbranc/.test(rkLower);
+      const isIndigena = /ind[ií]gen/.test(rkLower);
+      const isGeral = /nacional|geral|total|brasil/.test(rkLower);
+      if (isNegros) negros = numV;
+      else if (isPreto) pretos = numV;
+      else if (isPardo) pardos = numV;
+      else if (isBranco) brancos = numV;
+      else if (isIndigena) indigenas = numV;
+      else if (isGeral) nacional = numV;
+    }
+    if (negros === null && (pretos !== null || pardos !== null)) {
+      negros = (pretos ?? 0) + (pardos ?? 0);
+    }
+    return { negros, brancos, indigenas, nacional };
+  };
 
-    // Check if this sub-object has racial keys (not year keys)
-    const subKeys = Object.keys(metricVal as Record<string, any>);
-    const hasRacialKeys = subKeys.some(k => {
-      const kl = k.toLowerCase();
-      return kl.includes('negro') || kl.includes('branco') || kl.includes('indíg') || kl.includes('indigena');
-    });
+  // Recursão limitada (até 3 níveis) para achar dicts com chaves raciais
+  const visit = (node: any, pathLabel: string, depth: number) => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    if (depth > 3) return;
+    const subKeys = Object.keys(node);
+    const hasRacialKeys = subKeys.some(k => /negr|pret|pard|branc|ind[ií]gen/.test(k.toLowerCase()));
     const hasYearKeys = subKeys.some(k => /^\d{4}$/.test(k));
-
     if (hasRacialKeys && !hasYearKeys) {
-      // This is a racial comparison metric
-      let negros: number | null = null;
-      let brancos: number | null = null;
-      let indigenas: number | null = null;
-      let nacional: number | null = null;
-
-      for (const [rk, rv] of Object.entries(metricVal as Record<string, any>)) {
-        const rkLower = rk.toLowerCase();
-        const numV = typeof rv === 'number' ? rv : parseFloat(String(rv).replace(/\./g, '').replace(',', '.'));
-        if (isNaN(numV)) continue;
-        if (rkLower.includes('negro') || rkLower.includes('pret') || rkLower.includes('pard')) negros = numV;
-        else if (rkLower.includes('branco')) brancos = numV;
-        else if (rkLower.includes('indíg') || rkLower.includes('indigena')) indigenas = numV;
-        else if (rkLower.includes('nacional') || rkLower.includes('geral') || rkLower.includes('total')) nacional = numV;
-      }
-
+      const { negros, brancos, indigenas, nacional } = extractFromDict(node as Record<string, any>);
       if (negros !== null || brancos !== null || indigenas !== null) {
         const razao = (negros !== null && brancos !== null && brancos > 0) ? negros / brancos : null;
-        const metricLabel = metricKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ Pct$/, ' (%)');
+        const baseNome = ind.nome.split('—')[0].trim();
         results.push({
-          indicador: { ...ind, nome: `${ind.nome.split('—')[0].trim()} — ${metricLabel}` },
+          indicador: { ...ind, nome: pathLabel ? `${baseNome} — ${pathLabel}` : ind.nome },
           ano: '2022', negros, brancos, indigenas, nacional, unidade, razao,
         });
       }
+      return;
     }
-  }
+    for (const [k, v] of Object.entries(node)) {
+      if (excludeMeta.has(k) || k.startsWith('nota_') || k.startsWith('fonte_') || k.endsWith('_url')) continue;
+      const label = k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/ Pct$/, ' (%)');
+      visit(v, pathLabel ? `${pathLabel} › ${label}` : label, depth + 1);
+    }
+  };
+
+  visit(dados, '', 0);
 
   // If no nested racial metrics found, try the original flat extraction
   if (results.length === 0) {
@@ -429,6 +449,41 @@ function extractAllRacialComparisons(ind: IndicadorData): RacialComparison[] {
   }
 
   return results;
+}
+
+// Classifica indicadores "sem comparação Negro×Branco" em sub-buckets significativos.
+type NonComparableBucket = 'lacuna' | 'indigenas' | 'quilombolas' | 'ciganos' | 'outros';
+function classifyNonComparable(ind: IndicadorData): NonComparableBucket {
+  const dados = (ind.dados || {}) as Record<string, any>;
+  // Lacuna metodológica: nenhum número + sinalização explícita
+  const flagged = dados.lacuna_desagregacao_racial === true || dados.lacuna_racial === true;
+  const nota = String(dados.nota || '').toLowerCase();
+  const notaSinaliza = /n[aã]o desagrega|lacuna metodol[oó]gica|sem desagrega[cç][aã]o racial/.test(nota);
+  if (flagged || notaSinaliza) {
+    // Confirma ausência de número
+    const hasNumber = (v: any): boolean => {
+      if (typeof v === 'number' && Number.isFinite(v)) return true;
+      if (typeof v === 'string') {
+        const n = parseFloat(v.replace(/\./g, '').replace(',', '.'));
+        return Number.isFinite(n) && /\d/.test(v);
+      }
+      if (Array.isArray(v)) return v.some(hasNumber);
+      if (v && typeof v === 'object') return Object.values(v).some(hasNumber);
+      return false;
+    };
+    const META = new Set(['unidade', 'nota', 'slug', 'formato', 'regra_ouro', 'deep_links', 'lacuna_racial', 'lacuna_desagregacao_racial', 'status_validacao']);
+    let temNum = false;
+    for (const [k, v] of Object.entries(dados)) {
+      if (META.has(k) || k.startsWith('nota_') || k.startsWith('fonte_') || k.endsWith('_url')) continue;
+      if (hasNumber(v)) { temNum = true; break; }
+    }
+    if (!temNum) return 'lacuna';
+  }
+  const blob = `${ind.nome} ${ind.subcategoria || ''} ${ind.categoria || ''}`.toLowerCase();
+  if (/ind[ií]gen/.test(blob)) return 'indigenas';
+  if (/quilombol/.test(blob)) return 'quilombolas';
+  if (/cigan|rom[aá]/.test(blob)) return 'ciganos';
+  return 'outros';
 }
 
 function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: IndicadorData[]; highlightedId?: string | null }) {
