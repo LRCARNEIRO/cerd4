@@ -141,9 +141,13 @@ export function isEvidenceEligibleIndicator(indicator: {
   nome?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
+  auditado_manualmente?: boolean | null;
+  documento_origem?: string[] | null;
   dados?: any;
 }): boolean {
-  return !isCommonCoreIndicator(indicator) && !isInvalidEvidenceIndicator(indicator);
+  return !isCommonCoreIndicator(indicator)
+    && !isInvalidEvidenceIndicator(indicator)
+    && !isPendingAuditIndicator(indicator);
 }
 
 export function filterEvidenceEligibleIndicators<
@@ -154,6 +158,8 @@ export function filterEvidenceEligibleIndicators<
     nome?: string | null;
     fonte?: string | null;
     desagregacao_raca?: boolean | null;
+    auditado_manualmente?: boolean | null;
+    documento_origem?: string[] | null;
     dados?: any;
   },
 >(indicators: T[] | undefined | null): T[] {
