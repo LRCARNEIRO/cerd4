@@ -53,7 +53,7 @@ export function isCommonCoreIndicator(indicator: { categoria?: string | null; no
  * E não há nenhum número extraível em `dados`.
  */
 export function isMethodologicalGapPlaceholder(indicator: {
-  dados?: Record<string, any> | null;
+  dados?: any;
 }): boolean {
   const dados = indicator?.dados;
   if (!dados || typeof dados !== 'object') return false;
@@ -96,7 +96,7 @@ export function isInvalidEvidenceIndicator(indicator: {
   subcategoria?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
-  dados?: Record<string, any> | null;
+  dados?: any;
 }): boolean {
   if (indicator?.id && INVALID_EVIDENCE_INDICATOR_IDS.has(indicator.id)) return true;
 
@@ -122,7 +122,7 @@ export function isEvidenceEligibleIndicator(indicator: {
   nome?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
-  dados?: Record<string, any> | null;
+  dados?: any;
 }): boolean {
   return !isCommonCoreIndicator(indicator) && !isInvalidEvidenceIndicator(indicator);
 }
@@ -135,7 +135,7 @@ export function filterEvidenceEligibleIndicators<
     nome?: string | null;
     fonte?: string | null;
     desagregacao_raca?: boolean | null;
-    dados?: Record<string, any> | null;
+    dados?: any;
   },
 >(indicators: T[] | undefined | null): T[] {
   return (indicators || []).filter(isEvidenceEligibleIndicator);
