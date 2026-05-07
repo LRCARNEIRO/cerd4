@@ -27,7 +27,7 @@ import {
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 
-import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
+
 // DadosNovosTab removed — merged into ComplementoCerd3Tab
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
@@ -40,7 +40,7 @@ import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
-  const [activeTab, setActiveTab] = useState('common-core');
+  const [activeTab, setActiveTab] = useState('complemento-cerd3');
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
@@ -63,7 +63,7 @@ export default function Estatisticas() {
     const serieAnchor = params.get('serie') || rawHash.replace(/^#/, '');
     // Lista de abas válidas para deep-link via ?tab=
     const VALID_TABS = new Set([
-      'common-core','complemento-cerd3','dados-gerais','seguranca-saude-educacao',
+      'complemento-cerd3','dados-gerais','seguranca-saude-educacao',
       'indicadores-db','adm-publica','covid-racial','grupos-focais','ods-racial',
       'vulnerabilidades','raca-genero','lgbtqia','deficiencia','juventude','classe',
     ]);
@@ -260,9 +260,6 @@ export default function Estatisticas() {
       <div className="mt-2" />
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1 justify-start">
-          <TabsTrigger value="common-core" className="gap-1 bg-primary/10">
-            <BookOpen className="w-4 h-4" /> Common Core (77)
-          </TabsTrigger>
           <TabsTrigger value="complemento-cerd3" className="gap-1 bg-chart-4/10">
             <FileText className="w-4 h-4" /> Complemento CERD III ({COMPLEMENTO_CERD3_COUNT})
           </TabsTrigger>
@@ -307,7 +304,7 @@ export default function Estatisticas() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="common-core"><CommonCoreTab /></TabsContent>
+        
         <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
