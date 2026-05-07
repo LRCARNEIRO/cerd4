@@ -43,6 +43,25 @@ export function isCommonCoreIndicator(indicator: { categoria?: string | null; no
 }
 
 /**
+ * Indicadores exclusivos do BD (não-espelho de aba estática) ainda não validados
+ * por auditoria manual ficam BLOQUEADOS como evidência até serem auditados.
+ * Exceção: categoria `ods_racial` (corpus auditado em bloco).
+ * Exceção: registros marcados com `espelho_estatico` em `documento_origem`
+ * (espelhos de abas estáticas já auditadas).
+ */
+export function isPendingAuditIndicator(indicator: {
+  categoria?: string | null;
+  auditado_manualmente?: boolean | null;
+  documento_origem?: string[] | null;
+}): boolean {
+  if (indicator?.auditado_manualmente) return false;
+  if (indicator?.categoria === 'ods_racial') return false;
+  const docs = Array.isArray(indicator?.documento_origem) ? indicator!.documento_origem! : [];
+  if (docs.includes('espelho_estatico')) return false;
+  return true;
+}
+
+/**
  * Detecta indicadores que são apenas REGISTROS DE LACUNA METODOLÓGICA — i.e.
  * têm uma `nota` explicando que a fonte não desagrega por raça/cor e
  * NENHUM valor numérico utilizável em `dados`. Servem para denunciar a
