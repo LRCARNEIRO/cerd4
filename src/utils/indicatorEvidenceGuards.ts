@@ -122,6 +122,7 @@ export function isEvidenceEligibleIndicator(indicator: {
   nome?: string | null;
   fonte?: string | null;
   desagregacao_raca?: boolean | null;
+  dados?: Record<string, any> | null;
 }): boolean {
   return !isCommonCoreIndicator(indicator) && !isInvalidEvidenceIndicator(indicator);
 }
@@ -134,6 +135,7 @@ export function filterEvidenceEligibleIndicators<
     nome?: string | null;
     fonte?: string | null;
     desagregacao_raca?: boolean | null;
+    dados?: Record<string, any> | null;
   },
 >(indicators: T[] | undefined | null): T[] {
   return (indicators || []).filter(isEvidenceEligibleIndicator);
