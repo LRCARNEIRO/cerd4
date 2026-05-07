@@ -27,7 +27,7 @@ import {
 import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 
-import { CommonCoreTab } from '@/components/estatisticas/CommonCoreTab';
+
 // DadosNovosTab removed — merged into ComplementoCerd3Tab
 import { AdmPublicaSection } from '@/components/estatisticas/AdmPublicaSection';
 import { CovidRacialSection } from '@/components/estatisticas/CovidRacialSection';
