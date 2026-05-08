@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Layers, Users, Rainbow, Accessibility, Baby, Briefcase, 
   FileText, BarChart3, Shield, Database, Globe, BookOpen, PlusCircle,
-  Landmark, HeartPulse, UsersRound, CheckCircle2, CircleDashed
+  Landmark, HeartPulse, UsersRound, CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
@@ -273,9 +273,6 @@ export default function Estatisticas() {
           <TabsTrigger value="indicadores-db" className="gap-1">
             <BarChart3 className="w-4 h-4" /> Espelho Seguro (BD)
           </TabsTrigger>
-          <TabsTrigger value="pendentes-auditoria" className="gap-1 bg-chart-4/10">
-            <CircleDashed className="w-4 h-4" /> ⏳ Pendentes de Auditoria
-          </TabsTrigger>
           <TabsTrigger value="adm-publica" className="gap-1 bg-chart-3/10">
             <Landmark className="w-4 h-4" /> Adm Pública
           </TabsTrigger>
@@ -314,7 +311,6 @@ export default function Estatisticas() {
         <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
         
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} initialSearchTerm={initialIndicatorQuery} /></TabsContent>
-        <TabsContent value="pendentes-auditoria"><PendentesAuditoriaTab /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
