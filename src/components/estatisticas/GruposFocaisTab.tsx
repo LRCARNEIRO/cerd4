@@ -502,7 +502,12 @@ export function GruposFocaisTab() {
                   Infraestrutura Domiciliar por Grupo Racial — Censo 2022
                 </CardTitle>
                 <CardDescription>
-                  Comparativo de acesso a saneamento básico entre grupos raciais. Fonte: IBGE - Censo 2022 (Resultados do Universo)
+                  Comparativo de acesso a saneamento básico entre grupos raciais. Fontes: IBGE - Censo 2022 — SIDRA{' '}
+                  <a href="https://sidra.ibge.gov.br/tabela/9852#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 9852</a>
+                  {', '}
+                  <a href="https://sidra.ibge.gov.br/tabela/6894#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 6894</a>
+                  {' e '}
+                  <a href="https://sidra.ibge.gov.br/Tabela/10099#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 10099</a>.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -513,7 +518,8 @@ export function GruposFocaisTab() {
                         <th className="text-left py-2 px-3 font-medium">Indicador</th>
                         <th className="text-center py-2 px-3 font-medium">Nacional</th>
                         <th className="text-center py-2 px-3 font-medium text-primary">Brancos</th>
-                        <th className="text-center py-2 px-3 font-medium text-warning">Negros</th>
+                        <th className="text-center py-2 px-3 font-medium text-warning">Pretos</th>
+                        <th className="text-center py-2 px-3 font-medium text-warning">Pardos</th>
                         <th className="text-center py-2 px-3 font-medium text-accent">Indígenas (total)</th>
                         <th className="text-center py-2 px-3 font-medium text-destructive">Indígenas (TIs)</th>
                         <th className="text-center py-2 px-3 font-medium text-destructive">Quilombolas</th>
@@ -523,17 +529,18 @@ export function GruposFocaisTab() {
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Rede geral de água</td>
                         <td className="text-center py-2 px-3">82,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">88,1%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">78,2%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">56,3%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">34,8%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">33,6%</td>
+                        <td className="text-center py-2 px-3 text-primary">37,67%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">8,54%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">35,98%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">58,14%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">13,86%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">69,63%*</td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Esgoto adequado</td>
                         <td className="text-center py-2 px-3">75,7%</td>
                         <td className="text-center py-2 px-3 text-primary">83,2%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">68,6%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>68,6% (agregado Negros)</td>
                         <td className="text-center py-2 px-3 text-accent font-medium">39,8%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
@@ -542,7 +549,7 @@ export function GruposFocaisTab() {
                         <td className="py-2 px-3 font-medium">Coleta de lixo</td>
                         <td className="text-center py-2 px-3">90,9%</td>
                         <td className="text-center py-2 px-3 text-primary">94,1%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">88,4%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>88,4% (agregado Negros)</td>
                         <td className="text-center py-2 px-3 text-accent font-medium">69,5%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">30,2%</td>
                         <td className="text-center py-2 px-3 text-destructive font-bold">50,4%</td>
@@ -551,12 +558,15 @@ export function GruposFocaisTab() {
                         <td className="py-2 px-3 font-medium">Sem banheiro</td>
                         <td className="text-center py-2 px-3">0,6%</td>
                         <td className="text-center py-2 px-3 text-primary">0,3%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,8%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>0,8% (agregado Negros)</td>
                         <td className="text-center py-2 px-3 text-muted-foreground" colSpan={2}>Dados não desagregados</td>
                         <td className="text-center py-2 px-3 text-muted-foreground">—</td>
                       </tr>
                     </tbody>
                   </table>
+                  <p className="text-[11px] text-muted-foreground mt-2">
+                    * Quilombolas: o valor de rede geral de água também contabiliza a existência de poço, fonte, nascente ou mina encanada até dentro de casa (SIDRA tab. 10099).
+                  </p>
                 </div>
 
                 <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
