@@ -508,6 +508,10 @@ export function GruposFocaisTab() {
                   <a href="https://sidra.ibge.gov.br/tabela/6894#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 6894</a>
                   {', '}
                   <a href="https://sidra.ibge.gov.br/tabela/7555#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 7555</a>
+                  {', '}
+                  <a href="https://sidra.ibge.gov.br/tabela/9854#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 9854</a>
+                  {', '}
+                  <a href="https://sidra.ibge.gov.br/tabela/9541#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 9541</a>
                   {' e '}
                   <a href="https://sidra.ibge.gov.br/Tabela/10099#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 10099</a>.
                 </CardDescription>
