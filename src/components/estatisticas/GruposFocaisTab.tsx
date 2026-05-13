@@ -540,12 +540,13 @@ export function GruposFocaisTab() {
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Esgoto adequado</td>
-                        <td className="text-center py-2 px-3">75,7%</td>
-                        <td className="text-center py-2 px-3 text-primary">83,2%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>68,6% (agregado Negros)</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">39,8%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
+                        <td className="text-center py-2 px-3">75,74%</td>
+                        <td className="text-center py-2 px-3 text-primary">36,33%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">7,61%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">31,23%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">35,47%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">4,01%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">29,47%</td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Coleta de lixo</td>
