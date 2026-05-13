@@ -555,11 +555,12 @@ export function GruposFocaisTab() {
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Coleta de lixo</td>
                         <td className="text-center py-2 px-3">90,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">94,1%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>88,4% (agregado Negros)</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">69,5%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">30,2%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">50,4%</td>
+                        <td className="text-center py-2 px-3 text-primary">41,19%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">9,24%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">39,79%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">55,27%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">5,09%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">51,28%</td>
                       </tr>
                       <tr>
                         <td className="py-2 px-3 font-medium">Sem banheiro</td>
