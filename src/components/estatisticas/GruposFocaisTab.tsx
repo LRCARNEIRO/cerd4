@@ -564,11 +564,13 @@ export function GruposFocaisTab() {
                       </tr>
                       <tr>
                         <td className="py-2 px-3 font-medium">Sem banheiro</td>
-                        <td className="text-center py-2 px-3">0,6%</td>
-                        <td className="text-center py-2 px-3 text-primary">0,3%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>0,8% (agregado Negros)</td>
-                        <td className="text-center py-2 px-3 text-muted-foreground" colSpan={2}>Dados não desagregados</td>
-                        <td className="text-center py-2 px-3 text-muted-foreground">—</td>
+                        <td className="text-center py-2 px-3">0,59%</td>
+                        <td className="text-center py-2 px-3 text-primary">0,08%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">0,06%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">0,36%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">10,93%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">9,37%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">70,53%</td>
                       </tr>
                     </tbody>
                   </table>
