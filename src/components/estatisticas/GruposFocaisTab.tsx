@@ -506,6 +506,8 @@ export function GruposFocaisTab() {
                   <a href="https://sidra.ibge.gov.br/tabela/9852#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 9852</a>
                   {', '}
                   <a href="https://sidra.ibge.gov.br/tabela/6894#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 6894</a>
+                  {', '}
+                  <a href="https://sidra.ibge.gov.br/tabela/7555#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 7555</a>
                   {' e '}
                   <a href="https://sidra.ibge.gov.br/Tabela/10099#resultado" target="_blank" rel="noopener noreferrer" className="underline text-primary">tab. 10099</a>.
                 </CardDescription>
@@ -538,12 +540,13 @@ export function GruposFocaisTab() {
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Esgoto adequado</td>
-                        <td className="text-center py-2 px-3">75,7%</td>
-                        <td className="text-center py-2 px-3 text-primary">83,2%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium" colSpan={2}>68,6% (agregado Negros)</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">39,8%<span className="block text-[9px] text-destructive">🔀 cruzamento</span></td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
+                        <td className="text-center py-2 px-3">75,74%</td>
+                        <td className="text-center py-2 px-3 text-primary">36,33%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">7,61%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">31,23%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">35,47%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">4,01%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">29,47%</td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Coleta de lixo</td>
