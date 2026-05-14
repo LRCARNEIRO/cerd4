@@ -677,18 +677,21 @@ export const povosTradicionais = {
     // Indígenas urbanos fora de TIs: água adequada 89,92%, esgoto adequado 59,24%, lixo precário 5,83%
     // Indígenas em TIs: acesso muito inferior — taxa analfabetismo 20,8% vs 7% nacional
     infraestrutura: {
-      // Total pop. indígena (urbana + rural, dentro e fora de TIs)
-      aguaRedeGeral: 56.3, // Estimativa cruzada: urbanos 89,92% (53,97% da pop.) + rurais ~17% (46,03%)
-      esgotoAdequado: 39.8, // Estimativa cruzada: urbanos 59,24% (53,97%) + rurais ~17% (46,03%)
-      coletaLixo: 69.5,    // Estimativa cruzada: urbanos ~94% + rurais ~40%
-      // Em TIs especificamente (situação mais precária)
+      // Total pop. indígena (urbana + rural, dentro e fora de TIs) — SIDRA 9852/9854
+      aguaRedeGeral: 56.3, // Estimativa cruzada (sem nova fonte canônica fornecida)
+      esgotoAdequado: 35.47, // SIDRA tab. 9852 (Censo 2022)
+      coletaLixo: 55.27,    // SIDRA tab. 9854 (Censo 2022)
+      semBanheiro: 10.93,   // SIDRA tab. 9852 (Censo 2022)
+      // Em TIs especificamente (situação mais precária) — SIDRA 9852/9854
       aguaRedeGeralTIs: 34.8,
-      esgotoAdequadoTIs: 7.6,
-      coletaLixoTIs: 30.2,
-      estimativa: true,
-      metodologia: 'Cruzamento: dados urbanos (IBGE Censo 2022 Indígenas Dez/2024) × proporção urbana/rural. TIs: publicação IBGE Censo 2022 Indígenas (resultados do universo).',
-      fonte: 'IBGE - Censo 2022: Indígenas (Dez/2024)',
-      link: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades',
+      esgotoAdequadoTIs: 4.01, // SIDRA tab. 9852
+      coletaLixoTIs: 5.09,     // SIDRA tab. 9854
+      semBanheiroTIs: 9.37,    // SIDRA tab. 9852
+      estimativa: false,
+      metodologia: 'Valores oficiais do Censo 2022 (Indígenas) — SIDRA tabs. 9852 (esgoto/banheiro) e 9854 (lixo).',
+      fonte: 'IBGE/SIDRA - Censo 2022: Indígenas (tabs. 9852 e 9854)',
+      link: 'https://sidra.ibge.gov.br/tabela/9852',
+      linkColetaLixo: 'https://sidra.ibge.gov.br/tabela/9854',
       linkPDF: 'https://acervo.socioambiental.org/sites/default/files/documents/a4d00019.pdf',
     },
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022',
