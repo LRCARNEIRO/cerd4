@@ -870,62 +870,70 @@ export default function GruposFocais() {
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Esgoto adequado</td>
-                        <td className="text-center py-2 px-3">75,7%</td>
-                        <td className="text-center py-2 px-3 text-primary">83,2%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">68,6%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">
-                          39,8%
-                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        <td className="text-center py-2 px-3">75,74%</td>
+                        <td className="text-center py-2 px-3 text-primary">36,33%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">
+                          38,84%
+                          <span className="block text-[9px] text-muted-foreground">P 7,61% / Pa 31,23%</span>
                         </td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">7,6%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">25,1%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">35,47%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">4,01%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">29,47%</td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="py-2 px-3 font-medium">Coleta de lixo</td>
                         <td className="text-center py-2 px-3">90,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">94,1%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">88,4%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">
-                          69,5%
-                          <span className="block text-[9px] text-destructive">🔀 cruzamento</span>
+                        <td className="text-center py-2 px-3 text-primary">41,19%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">
+                          49,03%
+                          <span className="block text-[9px] text-muted-foreground">P 9,24% / Pa 39,79%</span>
                         </td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">30,2%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">50,4%</td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">55,27%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">5,09%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">51,28%</td>
                       </tr>
                       <tr>
                         <td className="py-2 px-3 font-medium">Sem banheiro</td>
-                        <td className="text-center py-2 px-3">0,6%</td>
-                        <td className="text-center py-2 px-3 text-primary">0,3%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,8%</td>
-                        <td className="text-center py-2 px-3 text-muted-foreground" colSpan={2}>Dados não desagregados</td>
-                        <td className="text-center py-2 px-3 text-muted-foreground">—</td>
+                        <td className="text-center py-2 px-3">0,59%</td>
+                        <td className="text-center py-2 px-3 text-primary">0,08%</td>
+                        <td className="text-center py-2 px-3 text-warning font-medium">
+                          0,42%
+                          <span className="block text-[9px] text-muted-foreground">P 0,06% / Pa 0,36%</span>
+                        </td>
+                        <td className="text-center py-2 px-3 text-accent font-medium">10,93%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">9,37%</td>
+                        <td className="text-center py-2 px-3 text-destructive font-bold">70,53%</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-2 italic">
+                  Fontes: Nacional/Indígenas — SIDRA tabs. <a href="https://sidra.ibge.gov.br/tabela/9852" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">9852</a> e <a href="https://sidra.ibge.gov.br/tabela/9854" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">9854</a>; Brancos/Pretos/Pardos — SIDRA tabs. <a href="https://sidra.ibge.gov.br/tabela/7555" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">7555</a> e <a href="https://sidra.ibge.gov.br/tabela/9541" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">9541</a>; Quilombolas — SIDRA tab. <a href="https://sidra.ibge.gov.br/Tabela/10099" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">10099</a>. Censo 2022. Valores Brancos/Pretos/Pardos expressos como participação no total nacional (SIDRA 7555/9541).
+                </p>
 
                 <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                   <p className="text-sm font-medium text-destructive flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4" /> Racismo Ambiental Estrutural
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Pretos e pardos representam <strong>69% dos sem esgoto adequado</strong> e <strong>72% dos sem água adequada</strong> no Brasil. 
-                    Indígenas em Terras Indígenas e quilombolas em territórios oficiais apresentam os piores indicadores — esgoto adequado em TIs chega a apenas 7,6%.
+                    <strong>(1) Camada racial:</strong> SIDRA tab. 7555 mostra Brancos com 36,33% da cobertura nacional de esgoto adequado contra Pretos 7,61% e Pardos 31,23%. Ajustando pelas participações populacionais (Brancos 43,5%, Pretos 10,2%, Pardos 45,3%), a razão cobertura/população revela Brancos 0,84 &gt; Pretos 0,75 &gt; Pardos 0,69 — Pardos são o subgrupo mais sub-coberto relativamente, e o gap intragrupo Pretos × Pardos (4,1×) expõe heterogeneidade oculta no agregado "Negros".
+                    <br/><strong>(2) Camada territorial:</strong> Esgoto adequado em TIs chega a apenas <strong>4,01%</strong> e em territórios quilombolas a <strong>29,47%</strong> (vs 75,74% nacional). Sem banheiro: <strong>9,37%</strong> nas TIs e <strong>70,53%</strong> em quilombos vs 0,59% nacional.
+                    <br/><em className="text-[10px]">Fontes: SIDRA tabs. 9852 / 7555 / 10099 — Censo 2022.</em>
                   </p>
                 </div>
 
                 <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div className="p-2 bg-muted/50 rounded text-xs">
-                    <p className="font-medium mb-1">📌 Negros</p>
-                    <p className="text-muted-foreground">Gap de -4,7 p.p. em água, -7,1 p.p. em esgoto vs média nacional. Art. V(e)(iii) ICERD.</p>
+                    <p className="font-medium mb-1">📌 Pretos & Pardos</p>
+                    <p className="text-muted-foreground">Razão cobertura/população ajustada: Brancos 0,84 &gt; Pretos 0,75 &gt; Pardos 0,69. Pardos são o subgrupo mais sub-coberto. Gap intragrupo (Pretos × Pardos = 4,1×) exige desagregação obrigatória. Art. V(e)(iii) ICERD.</p>
                   </div>
                   <div className="p-2 bg-muted/50 rounded text-xs">
                     <p className="font-medium mb-1">📌 Indígenas (TIs)</p>
-                    <p className="text-muted-foreground">Gap de -48,1 p.p. em água, -68,1 p.p. em esgoto. Situação crítica. Art. V(e)(iii)+(iv) ICERD.</p>
+                    <p className="text-muted-foreground">Esgoto adequado 4,01% (gap -71,7 p.p.), coleta de lixo 5,09% (-85,8 p.p.) e 9,37% sem banheiro vs 0,59% nacional. Situação crítica. Art. V(e)(iii)+(iv) ICERD.</p>
                   </div>
                   <div className="p-2 bg-muted/50 rounded text-xs">
                     <p className="font-medium mb-1">📌 Quilombolas</p>
-                    <p className="text-muted-foreground">Gap de -49,3 p.p. em água, -50,6 p.p. em esgoto. 90% com alguma precariedade em saneamento.</p>
+                    <p className="text-muted-foreground">Esgoto adequado 29,47% (gap -46,3 p.p.), coleta de lixo 51,28% (-39,6 p.p.) e <strong>70,53% sem banheiro</strong> vs 0,59% nacional.</p>
                   </div>
                 </div>
 
