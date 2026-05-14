@@ -677,18 +677,21 @@ export const povosTradicionais = {
     // Indígenas urbanos fora de TIs: água adequada 89,92%, esgoto adequado 59,24%, lixo precário 5,83%
     // Indígenas em TIs: acesso muito inferior — taxa analfabetismo 20,8% vs 7% nacional
     infraestrutura: {
-      // Total pop. indígena (urbana + rural, dentro e fora de TIs)
-      aguaRedeGeral: 56.3, // Estimativa cruzada: urbanos 89,92% (53,97% da pop.) + rurais ~17% (46,03%)
-      esgotoAdequado: 39.8, // Estimativa cruzada: urbanos 59,24% (53,97%) + rurais ~17% (46,03%)
-      coletaLixo: 69.5,    // Estimativa cruzada: urbanos ~94% + rurais ~40%
-      // Em TIs especificamente (situação mais precária)
+      // Total pop. indígena (urbana + rural, dentro e fora de TIs) — SIDRA 9852/9854
+      aguaRedeGeral: 56.3, // Estimativa cruzada (sem nova fonte canônica fornecida)
+      esgotoAdequado: 35.47, // SIDRA tab. 9852 (Censo 2022)
+      coletaLixo: 55.27,    // SIDRA tab. 9854 (Censo 2022)
+      semBanheiro: 10.93,   // SIDRA tab. 9852 (Censo 2022)
+      // Em TIs especificamente (situação mais precária) — SIDRA 9852/9854
       aguaRedeGeralTIs: 34.8,
-      esgotoAdequadoTIs: 7.6,
-      coletaLixoTIs: 30.2,
-      estimativa: true,
-      metodologia: 'Cruzamento: dados urbanos (IBGE Censo 2022 Indígenas Dez/2024) × proporção urbana/rural. TIs: publicação IBGE Censo 2022 Indígenas (resultados do universo).',
-      fonte: 'IBGE - Censo 2022: Indígenas (Dez/2024)',
-      link: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades',
+      esgotoAdequadoTIs: 4.01, // SIDRA tab. 9852
+      coletaLixoTIs: 5.09,     // SIDRA tab. 9854
+      semBanheiroTIs: 9.37,    // SIDRA tab. 9852
+      estimativa: false,
+      metodologia: 'Valores oficiais do Censo 2022 (Indígenas) — SIDRA tabs. 9852 (esgoto/banheiro) e 9854 (lixo).',
+      fonte: 'IBGE/SIDRA - Censo 2022: Indígenas (tabs. 9852 e 9854)',
+      link: 'https://sidra.ibge.gov.br/tabela/9852',
+      linkColetaLixo: 'https://sidra.ibge.gov.br/tabela/9854',
       linkPDF: 'https://acervo.socioambiental.org/sites/default/files/documents/a4d00019.pdf',
     },
     fonte: 'IBGE/SIDRA - Censo Demográfico 2022',
@@ -713,14 +716,15 @@ export const povosTradicionais = {
     comunidadesAbrangidas: 395,
     // Região Nordeste concentra maior população quilombola
     regiaoNordeste: 868496, // 65,4% do total
-    // Corrigido conforme auditoria: dados do Censo 2022 (infraestrutura quilombola)
+    // Corrigido conforme auditoria: dados do Censo 2022 (infraestrutura quilombola) — SIDRA tab. 10099
     acessoRedeAgua: 33.6, // Rede geral de água (vs 82,9% média nacional)
-    esgotamentoAdequado: 25.1, // vs 62,5% média nacional
-    coletaLixo: 50.4, // vs 82,5% média nacional
+    esgotamentoAdequado: 29.47, // SIDRA tab. 10099 (Censo 2022)
+    coletaLixo: 51.28,          // SIDRA tab. 10099 (Censo 2022)
+    semBanheiro: 70.53,         // SIDRA tab. 10099 (Censo 2022)
     processosAbertosIncra: 2014, // INCRA Nov/2025
     areaHectaresTitulados: 1162002, // 1,16 mi ha
-    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9578',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9578',
+    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabelas 9578 e 10099',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/10099',
     dataReferencia: '22/12/2023'
   },
   // =============================================
@@ -731,28 +735,34 @@ export const povosTradicionais = {
   // Tabela SIDRA complementar: Panorama Censo 2022 (Características domiciliares por cor/raça)
   // =============================================
   populacaoNegra: {
+    // SIDRA tab. 7555 (esgoto/banheiro) e 9541 (lixo) — Censo 2022, por cor/raça do responsável
+    // ATENÇÃO: valores publicados como % de participação no total nacional (não cobertura intragrupo)
+    // Negros = Pretos + Pardos
     infraestrutura: {
-      aguaRedeGeral: 78.2,       // vs 88.1% brancos, 82.9% nacional
-      esgotoAdequado: 68.6,      // vs 83.2% brancos, 75.7% nacional (rede+fossa)
-      coletaLixo: 88.4,          // vs 94.1% brancos, 90.9% nacional
-      semBanheiro: 0.8,          // vs 0.3% brancos, 0.6% nacional
-      fonte: 'IBGE - Censo 2022: Características dos domicílios (Fev/2024)',
-      link: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/39237-censo-2022-rede-de-esgoto-alcanca-62-5-da-populacao-mas-desigualdades-regionais-e-por-cor-e-raca-persistem',
+      aguaRedeGeral: 78.2,         // (sem nova fonte oficial fornecida nesta auditoria)
+      esgotoAdequado: 38.84,       // Pretos 7,61% + Pardos 31,23% (SIDRA tab. 7555)
+      coletaLixo: 49.03,           // Pretos 9,24% + Pardos 39,79% (SIDRA tab. 9541)
+      semBanheiro: 0.42,           // Pretos 0,06% + Pardos 0,36% (SIDRA tab. 7555)
+      pretos: { esgotoAdequado: 7.61, coletaLixo: 9.24, semBanheiro: 0.06 },
+      pardos: { esgotoAdequado: 31.23, coletaLixo: 39.79, semBanheiro: 0.36 },
+      fonte: 'IBGE/SIDRA - Censo 2022 (tabs. 7555 e 9541) por cor/raça do responsável',
+      link: 'https://sidra.ibge.gov.br/tabela/7555',
+      linkColetaLixo: 'https://sidra.ibge.gov.br/tabela/9541',
       linkPanorama: 'https://censo2022.ibge.gov.br/panorama/indicadores.html?localidade=BR&tema=8',
-      nota: 'Dados por cor/raça do responsável pelo domicílio. Pretos e pardos = 69% dos sem esgoto adequado e 72% dos sem água adequada.',
+      nota: 'Valores SIDRA 7555/9541 expressos como participação no total nacional. Heterogeneidade Pretos × Pardos preservada para monitoramento ICERD.',
     },
-    // Comparativo brancos para contexto
+    // Comparativo brancos (mesma metodologia SIDRA 7555/9541)
     infraestruturaBrancos: {
       aguaRedeGeral: 88.1,
-      esgotoAdequado: 83.2,
-      coletaLixo: 94.1,
-      semBanheiro: 0.3,
+      esgotoAdequado: 36.33,       // SIDRA tab. 7555
+      coletaLixo: 41.19,           // SIDRA tab. 9541
+      semBanheiro: 0.08,           // SIDRA tab. 7555
     },
     mediaNacional: {
       aguaRedeGeral: 82.9,
-      esgotoAdequado: 75.7,
-      coletaLixo: 90.9,
-      semBanheiro: 0.6,
+      esgotoAdequado: 75.74,       // SIDRA tab. 9852 (Censo 2022)
+      coletaLixo: 90.9,            // SIDRA tab. 9854 (Censo 2022)
+      semBanheiro: 0.59,           // SIDRA tab. 9852 (Censo 2022)
     },
   },
   ciganos: {
