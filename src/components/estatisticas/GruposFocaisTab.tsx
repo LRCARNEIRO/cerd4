@@ -319,22 +319,29 @@ export function GruposFocaisTab() {
                     </p>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between items-center">
-                        <span>Rede geral de água</span>
-                        <span><strong className="text-destructive">33,6%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-49,3 p.p.</Badge></span>
+                        <span>Rede geral de água*</span>
+                        <span><strong className="text-destructive">69,63%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-13,3 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Esgotamento adequado</span>
-                        <span><strong className="text-destructive">25,1%</strong> vs 62,5% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-37,4 p.p.</Badge></span>
+                        <span><strong className="text-destructive">29,47%</strong> vs 75,74% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-46,3 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Coleta de lixo</span>
-                        <span><strong className="text-warning">50,4%</strong> vs 82,5% <Badge variant="outline" className="text-warning border-warning/30 ml-1">-32,1 p.p.</Badge></span>
+                        <span><strong className="text-warning">51,28%</strong> vs 90,9% <Badge variant="outline" className="text-warning border-warning/30 ml-1">-39,6 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Sem banheiro</span>
+                        <span><strong className="text-destructive">70,53%</strong> vs 0,59% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">+69,9 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Em territórios reconhecidos</span>
                         <span><strong className="text-destructive">12,6%</strong> da população quilombola</span>
                       </div>
                     </div>
+                    <p className="text-[10px] text-muted-foreground mt-1 italic">
+                      * Inclui poço, fonte, nascente ou mina encanada até dentro de casa (SIDRA tab. 10099).
+                    </p>
                     <p className="text-xs text-muted-foreground mt-2 italic">
                       Fonte: {dadosTerritoriais.quilombolas.infraestrutura.fonte} — <a href={dadosTerritoriais.quilombolas.infraestrutura.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{dadosTerritoriais.quilombolas.infraestrutura.nota}</a>
                     </p>
@@ -584,23 +591,22 @@ export function GruposFocaisTab() {
                     <AlertTriangle className="w-4 h-4" /> Racismo Ambiental Estrutural
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Pretos e pardos representam <strong>69% dos sem esgoto adequado</strong> e <strong>72% dos sem água adequada</strong> no Brasil. 
-                    Indígenas em Terras Indígenas e quilombolas em territórios oficiais apresentam os piores indicadores — esgoto adequado em TIs chega a apenas 7,6%.
+                    Quilombolas e indígenas em Terras Indígenas concentram os piores indicadores de saneamento do país: esgoto adequado em TIs chega a apenas <strong>4,01%</strong> e em territórios quilombolas a <strong>29,47%</strong> (vs 75,74% nacional). Sem banheiro: <strong>9,37%</strong> nas TIs e <strong>70,53%</strong> em quilombos vs 0,59% nacional. Fonte: SIDRA tabs. 9852 / 10099 (Censo 2022).
                   </p>
                 </div>
 
                 <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div className="p-2 bg-muted/50 rounded text-xs">
-                    <p className="font-medium mb-1">📌 Negros</p>
-                    <p className="text-muted-foreground">Gap de -4,7 p.p. em água, -7,1 p.p. em esgoto vs média nacional. Art. V(e)(iii) ICERD.</p>
+                    <p className="font-medium mb-1">📌 Pretos &amp; Pardos</p>
+                    <p className="text-muted-foreground">Brancos respondem por 36,33% do esgoto adequado nacional, contra 7,61% dos pretos e 31,23% dos pardos (SIDRA tab. 7555). Desigualdade racial estrutural na cobertura de saneamento. Art. V(e)(iii) ICERD.</p>
                   </div>
                   <div className="p-2 bg-muted/50 rounded text-xs">
                     <p className="font-medium mb-1">📌 Indígenas (TIs)</p>
-                    <p className="text-muted-foreground">Gap de -48,1 p.p. em água, -68,1 p.p. em esgoto. Situação crítica. Art. V(e)(iii)+(iv) ICERD.</p>
+                    <p className="text-muted-foreground">Gap de -69,0 p.p. em água (13,86% vs 82,9%) e -71,7 p.p. em esgoto (4,01% vs 75,74%). 9,37% sem banheiro (vs 0,59% nacional). Situação crítica. Art. V(e)(iii)+(iv) ICERD.</p>
                   </div>
                   <div className="p-2 bg-muted/50 rounded text-xs">
                     <p className="font-medium mb-1">📌 Quilombolas</p>
-                    <p className="text-muted-foreground">Gap de -49,3 p.p. em água, -50,6 p.p. em esgoto. 90% com alguma precariedade em saneamento.</p>
+                    <p className="text-muted-foreground">Gap de -46,3 p.p. em esgoto (29,47%) e -39,6 p.p. em coleta de lixo (51,28%). 70,53% sem banheiro vs 0,59% nacional. Saneamento universalmente precário (SIDRA tab. 10099).</p>
                   </div>
                 </div>
 
