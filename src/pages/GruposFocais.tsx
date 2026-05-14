@@ -590,31 +590,38 @@ export default function GruposFocais() {
                     </div>
                   </div>
 
-                  {/* Infraestrutura Quilombola vs Média Nacional (Censo 2022) */}
+                  {/* Infraestrutura Quilombola vs Média Nacional (Censo 2022 — SIDRA tab. 10099) */}
                   <div className="mt-4 p-3 border border-destructive/30 bg-destructive/5 rounded-lg">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-destructive" /> Infraestrutura vs Média Nacional (Censo 2022)
                     </p>
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between items-center">
-                        <span>Rede geral de água</span>
-                        <span><strong className="text-destructive">33,6%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-49,3 p.p.</Badge></span>
+                        <span>Rede geral de água*</span>
+                        <span><strong className="text-destructive">69,63%</strong> vs 82,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-13,3 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Esgotamento adequado</span>
-                        <span><strong className="text-destructive">25,1%</strong> vs 62,5% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-37,4 p.p.</Badge></span>
+                        <span><strong className="text-destructive">29,47%</strong> vs 75,74% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-46,3 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Coleta de lixo</span>
-                        <span><strong className="text-warning">50,4%</strong> vs 82,5% <Badge variant="outline" className="text-warning border-warning/30 ml-1">-32,1 p.p.</Badge></span>
+                        <span><strong className="text-warning">51,28%</strong> vs 90,9% <Badge variant="outline" className="text-warning border-warning/30 ml-1">-39,6 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Sem banheiro</span>
+                        <span><strong className="text-destructive">70,53%</strong> vs 0,59% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">+69,9 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Em territórios reconhecidos</span>
                         <span><strong className="text-destructive">12,6%</strong> da população quilombola</span>
                       </div>
                     </div>
+                    <p className="text-[10px] text-muted-foreground mt-1 italic">
+                      * Inclui poço, fonte, nascente ou mina encanada até dentro de casa (SIDRA tab. 10099).
+                    </p>
                     <p className="text-xs text-muted-foreground mt-2 italic">
-                      Fonte: {dadosTerritoriais.quilombolas.infraestrutura.fonte} — <a href={dadosTerritoriais.quilombolas.infraestrutura.link} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{dadosTerritoriais.quilombolas.infraestrutura.nota}</a>
+                      Fonte: IBGE/SIDRA Censo 2022 — <a href="https://sidra.ibge.gov.br/Tabela/10099" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Tabela 10099 (Quilombolas)</a>
                     </p>
                   </div>
 
