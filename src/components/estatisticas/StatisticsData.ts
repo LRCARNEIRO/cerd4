@@ -716,14 +716,15 @@ export const povosTradicionais = {
     comunidadesAbrangidas: 395,
     // Região Nordeste concentra maior população quilombola
     regiaoNordeste: 868496, // 65,4% do total
-    // Corrigido conforme auditoria: dados do Censo 2022 (infraestrutura quilombola)
+    // Corrigido conforme auditoria: dados do Censo 2022 (infraestrutura quilombola) — SIDRA tab. 10099
     acessoRedeAgua: 33.6, // Rede geral de água (vs 82,9% média nacional)
-    esgotamentoAdequado: 25.1, // vs 62,5% média nacional
-    coletaLixo: 50.4, // vs 82,5% média nacional
+    esgotamentoAdequado: 29.47, // SIDRA tab. 10099 (Censo 2022)
+    coletaLixo: 51.28,          // SIDRA tab. 10099 (Censo 2022)
+    semBanheiro: 70.53,         // SIDRA tab. 10099 (Censo 2022)
     processosAbertosIncra: 2014, // INCRA Nov/2025
     areaHectaresTitulados: 1162002, // 1,16 mi ha
-    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabela 9578',
-    urlFonte: 'https://sidra.ibge.gov.br/Tabela/9578',
+    fonte: 'IBGE/SIDRA - Censo Demográfico 2022 - Tabelas 9578 e 10099',
+    urlFonte: 'https://sidra.ibge.gov.br/Tabela/10099',
     dataReferencia: '22/12/2023'
   },
   // =============================================
