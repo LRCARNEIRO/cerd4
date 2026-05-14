@@ -762,7 +762,7 @@ export default function GruposFocais() {
                     </div>
                   </div>
 
-                  {/* Infraestrutura Indígena vs Média Nacional (Censo 2022) */}
+                  {/* Infraestrutura Indígena vs Média Nacional (Censo 2022 — SIDRA 9852/9854) */}
                   <div className="p-3 border border-destructive/30 bg-destructive/5 rounded-lg mb-4">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-destructive" /> Infraestrutura em Terras Indígenas vs Média Nacional (Censo 2022)
@@ -774,15 +774,19 @@ export default function GruposFocais() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Esgotamento adequado</span>
-                        <span><strong className="text-destructive">7,6%</strong> vs 75,7% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-68,1 p.p.</Badge></span>
+                        <span><strong className="text-destructive">4,01%</strong> vs 75,74% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-71,7 p.p.</Badge></span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Coleta de lixo</span>
-                        <span><strong className="text-destructive">30,2%</strong> vs 90,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-60,7 p.p.</Badge></span>
+                        <span><strong className="text-destructive">5,09%</strong> vs 90,9% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">-85,8 p.p.</Badge></span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Sem banheiro</span>
+                        <span><strong className="text-destructive">9,37%</strong> vs 0,59% <Badge variant="outline" className="text-destructive border-destructive/30 ml-1">+8,8 p.p.</Badge></span>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 italic">
-                      Fonte: IBGE - Censo 2022: Indígenas (Dez/2024) — <a href="https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/42277-censo-2022-mais-da-metade-da-populacao-indigena-vive-nas-cidades" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Resultados do Universo</a>
+                      Fonte: IBGE/SIDRA Censo 2022 — <a href="https://sidra.ibge.gov.br/tabela/9852" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">tabs. 9852 (esgoto/banheiro) e 9854 (lixo)</a>
                     </p>
                   </div>
 
