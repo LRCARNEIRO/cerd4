@@ -591,7 +591,16 @@ export function GruposFocaisTab() {
                     <AlertTriangle className="w-4 h-4" /> Racismo Ambiental Estrutural
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Quilombolas e indígenas em Terras Indígenas concentram os piores indicadores de saneamento do país: esgoto adequado em TIs chega a apenas <strong>4,01%</strong> e em territórios quilombolas a <strong>29,47%</strong> (vs 75,74% nacional). Sem banheiro: <strong>9,37%</strong> nas TIs e <strong>70,53%</strong> em quilombos vs 0,59% nacional. Fonte: SIDRA tabs. 9852 / 10099 (Censo 2022).
+                    A precariedade de saneamento se manifesta em <strong>duas camadas sobrepostas</strong>:
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    <strong>(1) Camada racial (pretos × pardos × brancos):</strong> a participação no total nacional de domicílios com esgoto adequado é de <strong>36,33% para brancos</strong>, <strong>31,23% para pardos</strong> e apenas <strong>7,61% para pretos</strong> (SIDRA tab. 7555). Ajustando pela participação populacional (Censo 2022 — Brancos 43,5%, Pretos 10,2%, Pardos 45,3%), a razão cobertura/população é <strong>0,84 (brancos) &gt; 0,75 (pretos) &gt; 0,69 (pardos)</strong> — pretos e pardos recebem proporcionalmente menos saneamento que sua participação demográfica indicaria, com <strong>pardos no pior patamar relativo</strong>. O contraste pretos × pardos (4,1× de diferença em volume absoluto) revela a heterogeneidade intragrupo geralmente mascarada pela agregação "Negros" e exige <strong>desagregação obrigatória</strong> nas estatísticas de monitoramento ICERD.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    <strong>(2) Camada territorial (TIs e quilombos):</strong> esgoto adequado em Terras Indígenas chega a apenas <strong>4,01%</strong> e em territórios quilombolas a <strong>29,47%</strong> (vs 75,74% nacional). Sem banheiro: <strong>9,37%</strong> nas TIs e <strong>70,53%</strong> em quilombos vs 0,59% nacional.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-2 italic">
+                    Fontes: SIDRA tabs. 9852 (Nacional/Indígenas) · 7555 (Brancos/Pretos/Pardos) · 10099 (Quilombolas) — Censo 2022.
                   </p>
                 </div>
 
