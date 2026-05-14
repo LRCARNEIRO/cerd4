@@ -288,7 +288,6 @@ const indicadoresHabitacao: NovoIndicador[] = [
       { ano: 2022, valor: 'Nacional 75,74% | Brancos 36,33% | Pretos 7,61% | Pardos 31,23% | Indígenas (total) 35,47% | Indígenas (TIs) 4,01% | Quilombolas 29,47%', fonte: 'IBGE Censo 2022 — SIDRA 9852/7555/10099' },
       { ano: '2018-2021', valor: '⏳ N/D', nota: 'Dados PnadC disponíveis via SIDRA/IBGE — pendente extração' },
     ]
-    ]
   }
 ];
 
