@@ -595,10 +595,19 @@ export function GruposFocaisTab() {
                   </p>
                 </div>
 
+                <div className="mt-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+                  <p className="text-xs font-semibold text-warning flex items-center gap-1 mb-1">
+                    <AlertTriangle className="w-3 h-3" /> Gap intragrupo: Pretos × Pardos (heterogeneidade oculta na categoria "Negros")
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Os valores do SIDRA tab. 7555 representam a <strong>participação de cada grupo no total nacional de domicílios com esgoto adequado</strong> (não taxa de cobertura intragrupo). Ajustando pela participação populacional (Censo 2022: Brancos 43,5%, Pretos 10,2%, Pardos 45,3%), a razão cobertura/população é <strong>0,84 para Brancos</strong>, <strong>0,75 para Pretos</strong> e <strong>0,69 para Pardos</strong> — ou seja, pretos e pardos recebem proporcionalmente <strong>menos saneamento adequado</strong> do que sua participação demográfica indicaria, com pardos no pior patamar relativo. A agregação "Negros" mascara diferenças intragrupo: pretos somam apenas <strong>7,61%</strong> do total nacional de domicílios com esgoto adequado (4,8× menos que brancos em volume absoluto), enquanto pardos somam <strong>31,23%</strong>. Recomenda-se <strong>desagregação obrigatória Pretos / Pardos</strong> em todos os indicadores de saneamento para fins de monitoramento ICERD.
+                  </p>
+                </div>
+
                 <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div className="p-2 bg-muted/50 rounded text-xs">
-                    <p className="font-medium mb-1">📌 Pretos &amp; Pardos</p>
-                    <p className="text-muted-foreground">Brancos respondem por 36,33% do esgoto adequado nacional, contra 7,61% dos pretos e 31,23% dos pardos (SIDRA tab. 7555). Desigualdade racial estrutural na cobertura de saneamento. Art. V(e)(iii) ICERD.</p>
+                    <p className="font-medium mb-1">📌 Pretos &amp; Pardos (desagregado)</p>
+                    <p className="text-muted-foreground">Participação nacional em esgoto adequado: Brancos <strong>36,33%</strong> | Pretos <strong>7,61%</strong> | Pardos <strong>31,23%</strong> (SIDRA 7555). Ajustada pela população: razão cobertura/pop. Brancos 0,84 &gt; Pretos 0,75 &gt; Pardos 0,69. Pardos são o subgrupo mais sub-coberto em termos relativos. Art. V(e)(iii) ICERD.</p>
                   </div>
                   <div className="p-2 bg-muted/50 rounded text-xs">
                     <p className="font-medium mb-1">📌 Indígenas (TIs)</p>
