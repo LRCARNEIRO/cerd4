@@ -281,12 +281,13 @@ const indicadoresHabitacao: NovoIndicador[] = [
     periodicidade: 'Anual/Decenal',
     ultimaAtualizacao: '2023 (Censo 2022)',
     desagregacoes: { raca: true, genero: false, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: 'Negros: 26,2% sem esgoto adequado vs 14,95% brancos (SIDRA 7555). Quilombolas: 36,21% (SIDRA 9812). TIs: 26,33% sem água canalizada (SIDRA 9956). Vinculado ao Art. V(e)(iii) ICERD.',
+    relevanciaRacial: 'Brancos 36,33% / Pretos 7,61% / Pardos 31,23% da cobertura nacional de esgoto adequado (SIDRA 7555). Indígenas total 35,47% e em TIs apenas 4,01% (SIDRA 9852). Quilombolas 29,47% (SIDRA 10099). Sem banheiro: TIs 9,37% e quilombolas 70,53% vs 0,59% nacional. Vinculado ao Art. V(e)(iii) ICERD.',
     prioridade: 'alta',
-    unidadeSerie: '% sem esgoto adequado',
+    unidadeSerie: '% com esgoto adequado',
     serieHistorica: [
-      { ano: 2022, valor: 'Negros: 26,2% | Brancos: 14,95% | Quilombolas: 36,21% | TIs: 26,33% sem água', fonte: 'IBGE Censo 2022 — SIDRA 7555/9812/9956' },
+      { ano: 2022, valor: 'Nacional 75,74% | Brancos 36,33% | Pretos 7,61% | Pardos 31,23% | Indígenas (total) 35,47% | Indígenas (TIs) 4,01% | Quilombolas 29,47%', fonte: 'IBGE Censo 2022 — SIDRA 9852/7555/10099' },
       { ano: '2018-2021', valor: '⏳ N/D', nota: 'Dados PnadC disponíveis via SIDRA/IBGE — pendente extração' },
+    ]
     ]
   }
 ];
