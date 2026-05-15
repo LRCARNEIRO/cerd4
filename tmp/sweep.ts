@@ -1,6 +1,9 @@
+// @ts-nocheck
+(globalThis as any).localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+(globalThis as any).window = globalThis;
 import { createClient } from '@supabase/supabase-js';
-import { buildMirrorIndicators } from '/dev-server/src/utils/staticToDbTransformer.ts';
-import { buildAllStage3Indicators, buildStage4Indicators } from '/dev-server/src/utils/stage3Transformers.ts';
+import { buildMirrorIndicators } from '../src/utils/staticToDbTransformer';
+import { buildAllStage3Indicators, buildStage4Indicators } from '../src/utils/stage3Transformers';
 
 const url = process.env.VITE_SUPABASE_URL || 'https://dglurebltgfusdpzccdt.supabase.co';
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
