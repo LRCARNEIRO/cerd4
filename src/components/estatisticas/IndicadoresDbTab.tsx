@@ -350,7 +350,7 @@ function extractRacialComparison(ind: IndicadorData): RacialComparison | null {
 function formatNum(val: number | null, large = false): string {
   if (val === null) return '—';
   if (large || val >= 10000) return val.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
-  return val.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  return val.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 }
 
 // Detect if an indicator is "lower is better" (mortality, violence, poverty, deficit, etc.)
@@ -834,8 +834,11 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                       const lb = isLowerBetter(c.indicador.nome, c.indicador.categoria);
                       return lb ? c.razao! > 2 : c.razao! < 0.5;
                     });
+                    if (groupWithRatio.length === 0) {
+                      return 'Sem par Negro×Branco direto neste eixo; os dados devem ser lidos como evidência territorial/intragrupo, não como cálculo de razão N/B.';
+                    }
                     
-                    if (disadvantaged.length === 0 && groupWithRatio.length > 0) {
+                    if (disadvantaged.length === 0) {
                       return 'Paridade racial aproximada neste eixo — situação rara que merece destaque positivo no relatório.';
                     }
                     
