@@ -6,8 +6,8 @@ const { createClient } = await import('@supabase/supabase-js');
 const { buildMirrorIndicators } = await import('../src/utils/staticToDbTransformer');
 const { buildAllStage3Indicators, buildStage4Indicators } = await import('../src/utils/stage3Transformers');
 
-const url = process.env.VITE_SUPABASE_URL || 'https://dglurebltgfusdpzccdt.supabase.co';
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const url = 'https://dglurebltgfusdpzccdt.supabase.co';
+const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnbHVyZWJsdGdmdXNkcHpjY2R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5NjI5NjgsImV4cCI6MjA4NTUzODk2OH0.4LjlVngtW3g4VhpFP7b8iGOXEMbRBillYOYrxuNPH-0';
 const sb = createClient(url, key);
 
 const expected = [
