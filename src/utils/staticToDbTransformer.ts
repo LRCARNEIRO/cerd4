@@ -425,19 +425,61 @@ export function buildMirrorIndicators(): DbRecord[] {
     }
   ));
 
-  all.push(rec(
-    'População negra — infraestrutura domiciliar',
-    'povos_tradicionais', 'pop_negra_infra',
-    'IBGE — Censo 2022: Características dos domicílios (Fev/2024)',
-    povosTradicionais.populacaoNegra.infraestrutura.link,
-    ['Art. 2', 'Art. 5'],
+  // ─── INFRAESTRUTURA DOMICILIAR — granular por métrica × grupo (Censo 2022) ───
+  // Valores oficiais SSoT espelhados de GruposFocaisTab (SIDRA tab. 9852, 6894, 7555, 9854, 9541, 10099)
+  // Cada registro é discreto → indexável na busca global e selecionável como evidência.
+  const FONTE_INFRA = 'IBGE — Censo 2022: Características dos domicílios';
+  const URL_INFRA_BASE = 'https://sidra.ibge.gov.br/tabela/';
+  const infraMatrix: Array<{ metrica: string; subcat: string; tab: string; valores: Record<string, number>; nota?: string }> = [
     {
-      negros: povosTradicionais.populacaoNegra.infraestrutura,
-      brancos: povosTradicionais.populacaoNegra.infraestruturaBrancos,
-      mediaNacional: povosTradicionais.populacaoNegra.mediaNacional,
-      paragrafos_cerd: '§31-32',
+      metrica: 'Rede geral de água',
+      subcat: 'agua',
+      tab: '9852',
+      valores: { Nacional: 82.9, Brancos: 37.67, Pretos: 8.54, Pardos: 35.98, 'Indígenas (total)': 58.14, 'Indígenas (TIs)': 13.86, Quilombolas: 69.63 },
+      nota: 'Quilombolas: inclui poço/fonte/nascente/mina encanada até dentro de casa (SIDRA 10099).',
+    },
+    {
+      metrica: 'Esgoto adequado',
+      subcat: 'saneamento',
+      tab: '7555',
+      valores: { Nacional: 75.74, Brancos: 36.33, Pretos: 7.61, Pardos: 31.23, 'Indígenas (total)': 35.47, 'Indígenas (TIs)': 4.01, Quilombolas: 29.47 },
+    },
+    {
+      metrica: 'Coleta de lixo',
+      subcat: 'saneamento',
+      tab: '9854',
+      valores: { Nacional: 90.9, Brancos: 41.19, Pretos: 9.24, Pardos: 39.79, 'Indígenas (total)': 55.27, 'Indígenas (TIs)': 5.09, Quilombolas: 51.28 },
+    },
+    {
+      metrica: 'Sem banheiro',
+      subcat: 'saneamento',
+      tab: '9541',
+      valores: { Nacional: 0.59, Brancos: 0.08, Pretos: 0.06, Pardos: 0.36, 'Indígenas (total)': 10.93, 'Indígenas (TIs)': 9.37, Quilombolas: 70.53 },
+    },
+  ];
+  for (const { metrica, subcat, tab, valores, nota } of infraMatrix) {
+    for (const [grupo, valor] of Object.entries(valores)) {
+      all.push(rec(
+        `${metrica} — ${grupo}`,
+        'habitacao', subcat,
+        `${FONTE_INFRA} — SIDRA tab. ${tab}`,
+        `${URL_INFRA_BASE}${tab}`,
+        ['Art. 2', 'Art. 5'],
+        {
+          ano: 2022,
+          valor,
+          unidade: '%',
+          grupo,
+          metrica,
+          comparador_nacional: valores['Nacional'],
+          fonte_sidra: tab,
+          paragrafos_cerd: '§31-32',
+          ...(nota && grupo === 'Quilombolas' ? { nota } : {}),
+        },
+        { desagregacao_territorio: grupo.includes('Indígenas') || grupo === 'Quilombolas' }
+      ));
     }
-  ));
+  }
 
   all.push(rec(
     'Povos ciganos/Romani — dados disponíveis',
