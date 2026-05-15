@@ -1,9 +1,10 @@
 // @ts-nocheck
 (globalThis as any).localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 (globalThis as any).window = globalThis;
-import { createClient } from '@supabase/supabase-js';
-import { buildMirrorIndicators } from '../src/utils/staticToDbTransformer';
-import { buildAllStage3Indicators, buildStage4Indicators } from '../src/utils/stage3Transformers';
+
+const { createClient } = await import('@supabase/supabase-js');
+const { buildMirrorIndicators } = await import('../src/utils/staticToDbTransformer');
+const { buildAllStage3Indicators, buildStage4Indicators } = await import('../src/utils/stage3Transformers');
 
 const url = process.env.VITE_SUPABASE_URL || 'https://dglurebltgfusdpzccdt.supabase.co';
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -24,35 +25,33 @@ if (error) throw error;
 console.log(`BD tem: ${bd!.length} indicadores espelho`);
 
 const keyOf = (r: any) => `${r.categoria}::${r.nome}`;
-const bdMap = new Map(bd!.map(r => [keyOf(r), r]));
-const expMap = new Map(expected.map(r => [keyOf(r), r]));
+const bdMap = new Map(bd!.map((r: any) => [keyOf(r), r]));
+const expMap = new Map(expected.map((r: any) => [keyOf(r), r]));
 
 const rows: string[] = ['status|categoria|nome|subcategoria|valor_mirror|valor_bd|fonte_mirror|fonte_bd'];
+const esc = (s: any) => String(s ?? '').replace(/\|/g, '/').replace(/\n/g, ' ');
 
-// 1) Em mirror mas faltando no BD
 for (const [k, e] of expMap) {
   if (!bdMap.has(k)) {
-    const v = e.dados?.valor ?? JSON.stringify(e.dados).slice(0, 80);
-    rows.push(`FALTA_NO_BD|${e.categoria}|${e.nome}|${e.subcategoria||''}|${v}||${e.fonte}|`);
+    const v = (e as any).dados?.valor ?? JSON.stringify((e as any).dados).slice(0, 80);
+    rows.push(`FALTA_NO_BD|${esc(e.categoria)}|${esc(e.nome)}|${esc(e.subcategoria)}|${esc(v)}||${esc(e.fonte)}|`);
   }
 }
-// 2) No BD mas não está mais no mirror
 for (const [k, b] of bdMap) {
   if (!expMap.has(k)) {
-    const v = b.dados?.valor ?? JSON.stringify(b.dados).slice(0, 80);
-    rows.push(`ORFAO_NO_BD|${b.categoria}|${b.nome}|${b.subcategoria||''}||${v}||${b.fonte}`);
+    const v = (b as any).dados?.valor ?? JSON.stringify((b as any).dados).slice(0, 80);
+    rows.push(`ORFAO_NO_BD|${esc(b.categoria)}|${esc(b.nome)}|${esc(b.subcategoria)}||${esc(v)}||${esc(b.fonte)}`);
   }
 }
-// 3) Em ambos: comparar valores
 for (const [k, e] of expMap) {
   const b = bdMap.get(k);
   if (!b) continue;
-  const ve = e.dados?.valor;
-  const vb = b.dados?.valor;
-  if (ve != null && vb != null && Math.abs(Number(ve) - Number(vb)) > 0.01) {
-    rows.push(`DIVERGENTE|${e.categoria}|${e.nome}|${e.subcategoria||''}|${ve}|${vb}|${e.fonte}|${b.fonte}`);
+  const ve = (e as any).dados?.valor;
+  const vb = (b as any).dados?.valor;
+  if (ve != null && vb != null && !isNaN(Number(ve)) && !isNaN(Number(vb)) && Math.abs(Number(ve) - Number(vb)) > 0.01) {
+    rows.push(`DIVERGENTE|${esc(e.categoria)}|${esc(e.nome)}|${esc(e.subcategoria)}|${esc(ve)}|${esc(vb)}|${esc(e.fonte)}|${esc(b.fonte)}`);
   } else if (e.fonte !== b.fonte) {
-    rows.push(`FONTE_DIFERENTE|${e.categoria}|${e.nome}|${e.subcategoria||''}|${ve||''}|${vb||''}|${e.fonte}|${b.fonte}`);
+    rows.push(`FONTE_DIFERENTE|${esc(e.categoria)}|${esc(e.nome)}|${esc(e.subcategoria)}|${esc(ve)}|${esc(vb)}|${esc(e.fonte)}|${esc(b.fonte)}`);
   }
 }
 
@@ -65,5 +64,5 @@ for (const r of rows.slice(1)) {
   counts[s] = (counts[s] || 0) + 1;
 }
 console.log('Resumo:', counts);
-console.log(`Total linhas: ${rows.length - 1}`);
+console.log(`Total divergências: ${rows.length - 1}`);
 console.log(`Saída: /mnt/documents/sweep-mirror-vs-bd.csv`);
