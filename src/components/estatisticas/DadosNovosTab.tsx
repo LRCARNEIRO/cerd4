@@ -237,23 +237,6 @@ const indicadoresHabitacao: NovoIndicador[] = [
     ]
   },
   {
-    id: 'hab-2',
-    nome: 'Beneficiários MCMV por raça/cor',
-    descricao: 'Perfil racial dos beneficiários do Minha Casa Minha Vida (Faixa 1)',
-    fonte: 'Ministério das Cidades / CadÚnico',
-    siglaFonte: 'MCidades/MDS',
-    urlFonte: 'https://www.gov.br/cidades/pt-br/assuntos/habitacao/minha-casa-minha-vida',
-    periodicidade: 'Anual',
-    ultimaAtualizacao: '2024',
-    desagregacoes: { raca: true, genero: true, idade: false, territorio: true, rendaClasse: true, orientacaoSexual: false, deficiencia: false },
-    relevanciaRacial: '⏳ Perfil racial de beneficiários MCMV Faixa 1: pendente de verificação humana via CadÚnico/MDS.',
-    prioridade: 'alta',
-    unidadeSerie: 'Beneficiários',
-    serieHistorica: [
-      { ano: '2018-2024', valor: '⏳ N/D', nota: 'Dados de perfil racial disponíveis via CadÚnico — pendente extração' },
-    ]
-  },
-  {
     id: 'hab-3',
     nome: 'Inadequação habitacional e favelas por raça/cor',
     descricao: 'Moradores em aglomerados subnormais (favelas) por raça/cor',
