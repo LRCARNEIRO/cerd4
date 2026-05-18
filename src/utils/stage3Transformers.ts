@@ -477,3 +477,104 @@ export function buildAllStage3Indicators(): DbRecord[] {
     ...buildGruposFocaisIndicators(),
   ];
 }
+
+// ─── STAGE 5 — DADOS NOVOS (DadosNovosTab.tsx) — apenas pontos numéricos auditáveis ───
+const ORIGIN_DN = ['espelho_estatico', 'DadosNovosTab.tsx'];
+
+export function getStage5Categories(): string[] {
+  return ['legislacao_justica'];
+}
+
+/** Build Stage 5 indicators (séries com valores reais já presentes em DadosNovosTab) */
+export function buildStage5Indicators(): DbRecord[] {
+  const out: DbRecord[] = [];
+
+  // aj-1 — Denúncias de discriminação racial Disque 100 (2021-2024 com valores)
+  out.push(rec(
+    'Denúncias de discriminação racial — Disque 100 (racismo e injúria racial)',
+    'legislacao_justica',
+    'denuncias_disque100',
+    'ONDH / Painel de Dados — Ministério dos Direitos Humanos e da Cidadania',
+    'https://www.gov.br/mdh/pt-br/ondh/painel-de-dados/2024',
+    ['Art. 2', 'Art. 4', 'Art. 6'],
+    {
+      unidade: 'denuncias_ano',
+      series: {
+        '2021': { denuncias: 1400, violacoes: 1400, fonte: 'MDHC (nov/2024)' },
+        '2022': { denuncias: 1800, violacoes: 2300, fonte: 'MDHC (nov/2024)' },
+        '2023': { denuncias: 3100, violacoes: 4600, fonte: 'MDHC (nov/2024)' },
+        '2024': { denuncias: 4228, fonte: 'MDHC (mai/2025) — racismo, injúria racial e violência étnico-racial (ano completo)' },
+      },
+      nota: 'Crescimento expressivo pós Lei 14.532/2023 (equiparou injúria racial a racismo). Dados pré-2021 e 2025 ainda pendentes de extração via LAI.',
+    },
+    ORIGIN_DN,
+    { tendencia: 'aumento', desagregacao_raca: true, desagregacao_genero: true, desagregacao_territorio: true },
+  ));
+
+  // aj-3 — Denúncias de intolerância religiosa (2020-2025)
+  out.push(rec(
+    'Denúncias de intolerância religiosa — Disque 100',
+    'legislacao_justica',
+    'denuncias_disque100',
+    'ONDH / Painel de Dados — Ministério dos Direitos Humanos e da Cidadania',
+    'https://www.gov.br/mdh/pt-br/acesso-a-informacao/dados-abertos/disque100',
+    ['Art. 2', 'Art. 5', 'Art. 6'],
+    {
+      unidade: 'denuncias_ano',
+      series: {
+        '2020': { denuncias: 566, fonte: 'Disque 100 — Painel ONDH/MDHC' },
+        '2021': { denuncias: 584, fonte: 'Disque 100 — Painel ONDH/MDHC' },
+        '2022': { denuncias: 898, fonte: 'Disque 100 — Painel ONDH/MDHC' },
+        '2023': { denuncias: 1482, fonte: 'Disque 100 — Painel ONDH/MDHC' },
+        '2024': { denuncias: 2472, fonte: 'Disque 100 — Painel ONDH/MDHC' },
+        '2025': { denuncias: 2723, fonte: 'Disque 100 — Painel ONDH/MDHC (parcial/acumulado)' },
+      },
+      nota: 'Maioria das denúncias envolve religiões de matriz africana (candomblé, umbanda). Vinculado ao Art. V(d)(vii) ICERD — liberdade de pensamento, consciência e religião.',
+    },
+    ORIGIN_DN,
+    { tendencia: 'aumento', desagregacao_raca: true, desagregacao_genero: true, desagregacao_territorio: true },
+  ));
+
+  // pr-1 — Casos novos racismo no Judiciário (CNJ Painel Justiça Racial)
+  out.push(rec(
+    'Casos novos de racismo e injúria racial no Judiciário — CNJ Painel Justiça Racial',
+    'legislacao_justica',
+    'judiciario_justica_racial',
+    'Conselho Nacional de Justiça — Painel Justiça Racial',
+    'https://paineisanalytics.cnj.jus.br/single/?appid=dd3d7742-c558-4f2f-8ab1-a10a2e67c48f',
+    ['Art. 2', 'Art. 4', 'Art. 6'],
+    {
+      unidade: 'processos_novos_ano',
+      series: {
+        '2024': { processos_novos: 4205, periodo_referencia: '10 meses', fonte: 'CNJ Painel Justiça Racial (nov/2025)' },
+        '2025': { processos_novos: 7000, processos_pendentes_acumulados: 13440, periodo_referencia: '11 meses', percentual_justica_estadual: 97.4, fonte: 'CNJ Painel Justiça Racial (nov/2025)' },
+      },
+      nota: 'Painel Justiça Racial lançado em nov/2024. Lei 7.716/89 e Art. 140§3º CP. Crescimento acelerado após Lei 14.532/2023.',
+    },
+    ORIGIN_DN,
+    { tendencia: 'aumento', desagregacao_raca: true, desagregacao_genero: true, desagregacao_territorio: true },
+  ));
+
+  // pr-4 — Composição racial do Judiciário
+  out.push(rec(
+    'Composição racial do Judiciário — magistrados e servidores negros',
+    'legislacao_justica',
+    'judiciario_composicao_racial',
+    'CNJ — Censo do Poder Judiciário / Painel Justiça Racial',
+    'https://www.cnj.jus.br/pesquisas-judiciarias/censo-do-poder-judiciario/',
+    ['Art. 1', 'Art. 2', 'Art. 5'],
+    {
+      unidade: 'percentual',
+      series: {
+        '2023': { percentual_magistrados_negros: 18.1, fonte: 'Censo Judiciário CNJ 2023' },
+        '2024': { percentual_total_negros_judiciario: 24.76, total_pessoas: 74079, fonte: 'Painel Justiça Racial CNJ (nov/2025)' },
+        '2025': { percentual_total_negros_judiciario: 26.82, total_pessoas: 81183, total_magistrados_negros: 2702, fonte: 'Painel Justiça Racial CNJ (nov/2025)' },
+      },
+      nota: 'Sub-representação estrutural: 18,1% de magistrados negros vs 55,5% da população (Censo IBGE 2022). Cotas ampliadas de 20% para 30% pela Resolução CNJ nov/2025.',
+    },
+    ORIGIN_DN,
+    { tendencia: 'melhora', desagregacao_raca: true, desagregacao_genero: true, desagregacao_territorio: true },
+  ));
+
+  return out;
+}
