@@ -17,13 +17,14 @@ export function MirrorIngestionPanel() {
     setResult(null);
 
     try {
-      // Combine Stage 1+2, Stage 3, and Stage 4 (Complemento CERD 3) indicators
+      // Combine Stage 1+2, Stage 3, Stage 4 and Stage 5 indicators
       const stage12 = buildMirrorIndicators();
       const stage3 = buildAllStage3Indicators();
       const stage4 = buildStage4Indicators();
-      const indicators = [...stage12, ...stage3, ...stage4];
+      const stage5 = buildStage5Indicators();
+      const indicators = [...stage12, ...stage3, ...stage4, ...stage5];
 
-      const clearCategories = [...getMirrorCategories(), ...getStage3Categories(), ...getStage4Categories()];
+      const clearCategories = [...getMirrorCategories(), ...getStage3Categories(), ...getStage4Categories(), ...getStage5Categories()];
 
       const { data, error } = await supabase.functions.invoke('ingest-static-mirror', {
         body: { indicators, clearCategories },
