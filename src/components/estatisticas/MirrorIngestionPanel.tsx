@@ -61,9 +61,9 @@ export function MirrorIngestionPanel() {
           <div className="flex items-center gap-3">
             <Database className="w-5 h-5 text-primary" />
             <div>
-              <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD (Etapas 1-3)</p>
+              <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD (Etapas 1-5)</p>
               <p className="text-xs text-muted-foreground">
-                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais + Complemento CERD 3
+                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais + Complemento CERD 3 + DadosNovos (Disque 100 / CNJ)
               </p>
             </div>
           </div>
