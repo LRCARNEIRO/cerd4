@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { buildMirrorIndicators, getMirrorCategories } from '@/utils/staticToDbTransformer';
-import { buildAllStage3Indicators, getStage3Categories, buildStage4Indicators, getStage4Categories } from '@/utils/stage3Transformers';
+import { buildAllStage3Indicators, getStage3Categories, buildStage4Indicators, getStage4Categories, buildStage5Indicators, getStage5Categories } from '@/utils/stage3Transformers';
 import { toast } from 'sonner';
 
 export function MirrorIngestionPanel() {
