@@ -384,7 +384,7 @@ export function RacaGeneroTab() {
               <strong>Leitura:</strong> a população negra é maioria entre os beneficiários do CadÚnico em toda a série (razão ~2,3× brancos), evidenciando a concentração racial da pobreza administrada pelo Estado. Fonte primária: <a href={cadUnicoFonte.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">SAGICAD/MDS</a>.
             </p>
           </div>
-          <AuditFooter fontes={[cadUnicoFonte.nome]} documentos={['CERD 2022 §31-32', 'Common Core']} />
+          <AuditFooter fontes={[{ nome: cadUnicoFonte.nome, url: cadUnicoFonte.url }]} documentos={['CERD 2022 §31-32', 'Common Core']} />
         </CardContent>
       </Card>
 
