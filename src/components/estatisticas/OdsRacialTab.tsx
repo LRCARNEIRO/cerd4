@@ -17,6 +17,12 @@ import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndica
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  ODS18_SUBTEMAS,
+  getOds18Subtema,
+  getSubtemaColor,
+  type Ods18Subtema,
+} from '@/utils/ods18Subtemas';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
@@ -73,6 +79,7 @@ function SeriesTable({ indicator }: { indicator: OdsRacialIndicator }) {
 export function OdsRacialTab() {
   const [search, setSearch] = useState('');
   const [odsFilter, setOdsFilter] = useState<string>('todos');
+  const [subtema18Filter, setSubtema18Filter] = useState<Ods18Subtema | 'todos'>('todos');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isRestoring, setIsRestoring] = useState(false);
   const { data: odsRacialIndicators = [], isLoading } = useOdsRacialData();
@@ -135,12 +142,19 @@ export function OdsRacialTab() {
     );
   }
 
+  // Contagem por subtema ODS 18 (calculada sobre TODOS os indicadores)
+  const subtema18Counts = ODS18_SUBTEMAS.reduce((acc, s) => {
+    acc[s.id] = odsRacialIndicators.filter(i => getOds18Subtema(i.id) === s.id).length;
+    return acc;
+  }, {} as Record<Ods18Subtema, number>);
+
   const filtered = odsRacialIndicators.filter(ind => {
     const matchSearch = !search || ind.name.toLowerCase().includes(search.toLowerCase()) || 
       ind.id.toLowerCase().includes(search.toLowerCase()) ||
       ind.fonte.toLowerCase().includes(search.toLowerCase());
     const matchOds = odsFilter === 'todos' || ind.group === odsFilter;
-    return matchSearch && matchOds;
+    const matchSubtema = subtema18Filter === 'todos' || getOds18Subtema(ind.id) === subtema18Filter;
+    return matchSearch && matchOds && matchSubtema;
   });
 
   const grouped = odsGroups.reduce((acc, group) => {
@@ -218,11 +232,50 @@ export function OdsRacialTab() {
         </Select>
       </div>
 
+      {/* Filtro por subtema ODS 18 (taxonomia ODSR/UFPB) */}
+      <Card className="bg-muted/30">
+        <CardContent className="py-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline" className="text-[10px] font-mono">ODS 18</Badge>
+            <span className="text-xs font-medium text-foreground">Igualdade Étnico-Racial — filtrar por subtema</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              onClick={() => setSubtema18Filter('todos')}
+              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                subtema18Filter === 'todos'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background border-border hover:bg-muted'
+              }`}
+            >
+              Todos ({TOTAL_ODS_RACIAL})
+            </button>
+            {ODS18_SUBTEMAS.map(s => {
+              const count = subtema18Counts[s.id] ?? 0;
+              const active = subtema18Filter === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setSubtema18Filter(s.id)}
+                  className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                    active ? 'text-white border-transparent' : 'bg-background border-border hover:bg-muted'
+                  }`}
+                  style={active ? { backgroundColor: s.color } : { borderLeftWidth: 3, borderLeftColor: s.color }}
+                >
+                  {s.label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Contagem */}
       <p className="text-sm text-muted-foreground">
         Exibindo <strong>{filtered.length}</strong> de {TOTAL_ODS_RACIAL} indicadores — 
         clique em um indicador para expandir a série temporal
       </p>
+
 
       {/* Indicadores agrupados por ODS */}
       {grouped.map(({ group, items }) => {
@@ -279,6 +332,20 @@ export function OdsRacialTab() {
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                               {formatoLabel}
                             </Badge>
+                            {(() => {
+                              const sub = getOds18Subtema(ind.id);
+                              if (!sub) return null;
+                              const label = ODS18_SUBTEMAS.find(s => s.id === sub)?.label ?? sub;
+                              return (
+                                <Badge
+                                  className="text-[10px] px-1.5 py-0 text-white border-transparent"
+                                  style={{ backgroundColor: getSubtemaColor(sub) }}
+                                  title="Subtema ODS 18 — Igualdade Étnico-Racial (ODSR/UFPB)"
+                                >
+                                  ODS {label}
+                                </Badge>
+                              );
+                            })()}
                             <span className="text-[10px] text-muted-foreground font-mono">
                               {yearRange} · {years.length} anos
                             </span>
