@@ -142,12 +142,19 @@ export function OdsRacialTab() {
     );
   }
 
+  // Contagem por subtema ODS 18 (calculada sobre TODOS os indicadores)
+  const subtema18Counts = ODS18_SUBTEMAS.reduce((acc, s) => {
+    acc[s.id] = odsRacialIndicators.filter(i => getOds18Subtema(i.id) === s.id).length;
+    return acc;
+  }, {} as Record<Ods18Subtema, number>);
+
   const filtered = odsRacialIndicators.filter(ind => {
     const matchSearch = !search || ind.name.toLowerCase().includes(search.toLowerCase()) || 
       ind.id.toLowerCase().includes(search.toLowerCase()) ||
       ind.fonte.toLowerCase().includes(search.toLowerCase());
     const matchOds = odsFilter === 'todos' || ind.group === odsFilter;
-    return matchSearch && matchOds;
+    const matchSubtema = subtema18Filter === 'todos' || getOds18Subtema(ind.id) === subtema18Filter;
+    return matchSearch && matchOds && matchSubtema;
   });
 
   const grouped = odsGroups.reduce((acc, group) => {
