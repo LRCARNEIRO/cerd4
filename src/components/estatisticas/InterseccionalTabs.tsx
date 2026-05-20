@@ -16,6 +16,8 @@ import {
   trabalhoRacaGeneroFontes,
   educacaoRacaGeneroFontes,
   povosTradicionais,
+  cadUnicoPerfilRacial,
+  cadUnicoFonte,
 } from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { fmt } from '@/utils/narrativeHelpers';
@@ -326,7 +328,68 @@ export function RacaGeneroTab() {
         </Card>
       </div>
 
+      {/* ═══ 2b. Perfil Racial Beneficiários CadÚnico (SAGICAD/MDS) ═══ */}
+      <Card id="serie-cadunico-perfil-racial" className="scroll-mt-24">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
+            Perfil Racial dos Beneficiários do CadÚnico — Negros × Brancos (2018–2025)
+          </CardTitle>
+          <CardDescription>
+            {cadUnicoFonte.nome} · {cadUnicoFonte.unidade} · {cadUnicoFonte.nota}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={cadUnicoPerfilRacial}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ano" />
+                  <YAxis tickFormatter={(v) => `${(v / 1_000_000).toFixed(0)}M`} />
+                  <Tooltip formatter={(v: number) => v.toLocaleString('pt-BR')} />
+                  <Legend />
+                  <Line type="monotone" dataKey="negros" stroke="hsl(var(--destructive))" strokeWidth={2} name="Negros (pretos+pardos)" />
+                  <Line type="monotone" dataKey="brancos" stroke="hsl(var(--primary))" strokeWidth={2} name="Brancos" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ano</TableHead>
+                    <TableHead className="text-right">Negros</TableHead>
+                    <TableHead className="text-right">Brancos</TableHead>
+                    <TableHead className="text-right">Razão N/B</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {cadUnicoPerfilRacial.map((row) => (
+                    <TableRow key={row.ano}>
+                      <TableCell className="font-medium">{row.ano}</TableCell>
+                      <TableCell className="text-right">{row.negros.toLocaleString('pt-BR')}</TableCell>
+                      <TableCell className="text-right">{row.brancos.toLocaleString('pt-BR')}</TableCell>
+                      <TableCell className="text-right font-semibold text-destructive">
+                        {(row.negros / row.brancos).toFixed(2).replace('.', ',')}×
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+          <div className="mt-3 p-3 bg-muted/30 border border-border/40 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              <strong>Leitura:</strong> a população negra é maioria entre os beneficiários do CadÚnico em toda a série (razão ~2,3× brancos), evidenciando a concentração racial da pobreza administrada pelo Estado. Fonte primária: <a href={cadUnicoFonte.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">SAGICAD/MDS</a>.
+            </p>
+          </div>
+          <AuditFooter fontes={[{ nome: cadUnicoFonte.nome, url: cadUnicoFonte.url }]} documentos={['CERD 2022 §31-32', 'Common Core']} />
+        </CardContent>
+      </Card>
+
       {/* Análise: Chefia Familiar + Saúde Materna */}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
          <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
            <h4 className="text-sm font-semibold mb-1" style={{ color: 'hsl(var(--warning))' }}>📊 Análise: Feminização e Racialização da Pobreza</h4>
