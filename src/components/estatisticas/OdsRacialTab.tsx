@@ -17,6 +17,12 @@ import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndica
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  ODS18_SUBTEMAS,
+  getOds18Subtema,
+  getSubtemaColor,
+  type Ods18Subtema,
+} from '@/utils/ods18Subtemas';
 
 function formatValue(value: number | null, formato: OdsFormat): string {
   if (value === null || value === undefined) return 'N/D';
