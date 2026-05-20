@@ -232,11 +232,50 @@ export function OdsRacialTab() {
         </Select>
       </div>
 
+      {/* Filtro por subtema ODS 18 (taxonomia ODSR/UFPB) */}
+      <Card className="bg-muted/30">
+        <CardContent className="py-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline" className="text-[10px] font-mono">ODS 18</Badge>
+            <span className="text-xs font-medium text-foreground">Igualdade Étnico-Racial — filtrar por subtema</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              onClick={() => setSubtema18Filter('todos')}
+              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                subtema18Filter === 'todos'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background border-border hover:bg-muted'
+              }`}
+            >
+              Todos ({TOTAL_ODS_RACIAL})
+            </button>
+            {ODS18_SUBTEMAS.map(s => {
+              const count = subtema18Counts[s.id] ?? 0;
+              const active = subtema18Filter === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setSubtema18Filter(s.id)}
+                  className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                    active ? 'text-white border-transparent' : 'bg-background border-border hover:bg-muted'
+                  }`}
+                  style={active ? { backgroundColor: s.color } : { borderLeftWidth: 3, borderLeftColor: s.color }}
+                >
+                  {s.label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Contagem */}
       <p className="text-sm text-muted-foreground">
         Exibindo <strong>{filtered.length}</strong> de {TOTAL_ODS_RACIAL} indicadores — 
         clique em um indicador para expandir a série temporal
       </p>
+
 
       {/* Indicadores agrupados por ODS */}
       {grouped.map(({ group, items }) => {
