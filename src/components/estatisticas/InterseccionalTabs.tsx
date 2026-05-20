@@ -16,6 +16,8 @@ import {
   trabalhoRacaGeneroFontes,
   educacaoRacaGeneroFontes,
   povosTradicionais,
+  cadUnicoPerfilRacial,
+  cadUnicoFonte,
 } from './StatisticsData';
 import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { fmt } from '@/utils/narrativeHelpers';
