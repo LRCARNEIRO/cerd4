@@ -332,6 +332,20 @@ export function OdsRacialTab() {
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                               {formatoLabel}
                             </Badge>
+                            {(() => {
+                              const sub = getOds18Subtema(ind.id);
+                              if (!sub) return null;
+                              const label = ODS18_SUBTEMAS.find(s => s.id === sub)?.label ?? sub;
+                              return (
+                                <Badge
+                                  className="text-[10px] px-1.5 py-0 text-white border-transparent"
+                                  style={{ backgroundColor: getSubtemaColor(sub) }}
+                                  title="Subtema ODS 18 — Igualdade Étnico-Racial (ODSR/UFPB)"
+                                >
+                                  ODS {label}
+                                </Badge>
+                              );
+                            })()}
                             <span className="text-[10px] text-muted-foreground font-mono">
                               {yearRange} · {years.length} anos
                             </span>
