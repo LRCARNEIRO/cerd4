@@ -79,6 +79,7 @@ function SeriesTable({ indicator }: { indicator: OdsRacialIndicator }) {
 export function OdsRacialTab() {
   const [search, setSearch] = useState('');
   const [odsFilter, setOdsFilter] = useState<string>('todos');
+  const [subtema18Filter, setSubtema18Filter] = useState<Ods18Subtema | 'todos'>('todos');
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isRestoring, setIsRestoring] = useState(false);
   const { data: odsRacialIndicators = [], isLoading } = useOdsRacialData();
