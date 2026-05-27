@@ -62,6 +62,7 @@ const App = () => (
             <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
             <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
             <Route path="/artigos" element={<Artigos />} />
+            <Route path="/busca" element={<Busca />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
