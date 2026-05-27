@@ -19,6 +19,7 @@ const GuiaAuditoria = lazy(() => import("./pages/GuiaAuditoria"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Ecossistema = lazy(() => import("./pages/Ecossistema"));
 const Artigos = lazy(() => import("./pages/Artigos"));
+const Busca = lazy(() => import("./pages/Busca"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
