@@ -19,6 +19,7 @@ const GuiaAuditoria = lazy(() => import("./pages/GuiaAuditoria"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Ecossistema = lazy(() => import("./pages/Ecossistema"));
 const Artigos = lazy(() => import("./pages/Artigos"));
+const Busca = lazy(() => import("./pages/Busca"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
             <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
             <Route path="/artigos" element={<Artigos />} />
+            <Route path="/busca" element={<Busca />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, KeyboardEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Search, User, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,12 +11,23 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle, children }: HeaderProps) {
+  const navigate = useNavigate();
+  const [q, setQ] = useState('');
   const today = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
+
+  const submit = () => {
+    const term = q.trim();
+    navigate(term ? `/busca?q=${encodeURIComponent(term)}` : '/busca');
+  };
+
+  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') submit();
+  };
 
   return (
     <header className="bg-card border-b border-border px-4 md:px-6 py-4">
@@ -35,9 +47,32 @@ export function Header({ title, subtitle, children }: HeaderProps) {
           </div>
 
           <div className="relative hidden lg:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Buscar..." className="pl-9 w-64 bg-muted/50 border-0" />
+            <button
+              type="button"
+              onClick={submit}
+              aria-label="Buscar"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={onKey}
+              placeholder="Buscar em todo o sistema..."
+              className="pl-9 w-64 bg-muted/50 border-0 cursor-text"
+            />
           </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => navigate('/busca')}
+            aria-label="Buscar"
+          >
+            <Search className="w-5 h-5 text-muted-foreground" />
+          </Button>
 
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-5 h-5 text-muted-foreground" />
