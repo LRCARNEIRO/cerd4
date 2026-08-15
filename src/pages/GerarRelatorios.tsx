@@ -17,6 +17,8 @@ import { StatisticsInventoryReport } from '@/components/reports/StatisticsInvent
 import { EvidenceInventoryReport } from '@/components/reports/EvidenceInventoryReport';
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { FinalCerdIVReport } from '@/components/reports/FinalCerdIVReport';
+import { ProtocoloGovernancaReport } from '@/components/reports/ProtocoloGovernancaReport';
+
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthCheck';
