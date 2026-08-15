@@ -336,14 +336,23 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="health-check" className="gap-1">
             <Activity className="w-4 h-4" /> Health Check
           </TabsTrigger>
+          <TabsTrigger value="protocolo-governanca" className="gap-1 bg-accent/20">
+            <ClipboardList className="w-4 h-4" /> Protocolo Metodológico
+          </TabsTrigger>
           <TabsTrigger value="audit-inventory" className="gap-1 bg-destructive/10">
             <Shield className="w-4 h-4" /> Auditoria Triple-Check
           </TabsTrigger>
         </TabsList>
 
+        {/* ABA: PROTOCOLO METODOLÓGICO DE GOVERNANÇA (PRODUTO 2) */}
+        <TabsContent value="protocolo-governanca">
+          <ProtocoloGovernancaReport />
+        </TabsContent>
+
         {/* ABA: RELATÓRIO FINAL CERD IV */}
         <TabsContent value="final-cerd-iv">
           <FinalCerdIVReport />
+
         </TabsContent>
 
         {/* ABA: CONSOLIDADO - ESCOPO DO PROJETO */}
