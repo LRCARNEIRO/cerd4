@@ -1,25 +1,48 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ComponentType } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-const Index = lazy(() => import("./pages/Index"));
-const CommonCore = lazy(() => import("./pages/CommonCore"));
-const Estatisticas = lazy(() => import("./pages/Estatisticas"));
-const Orcamento = lazy(() => import("./pages/Orcamento"));
-const Recomendacoes = lazy(() => import("./pages/Recomendacoes"));
-const Fontes = lazy(() => import("./pages/Fontes"));
-const Conclusoes = lazy(() => import("./pages/Conclusoes"));
-const GerarRelatorios = lazy(() => import("./pages/GerarRelatorios"));
-const Normativa = lazy(() => import("./pages/Normativa"));
-const DocumentosBalizadores = lazy(() => import("./pages/DocumentosBalizadores"));
-const GuiaAuditoria = lazy(() => import("./pages/GuiaAuditoria"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Ecossistema = lazy(() => import("./pages/Ecossistema"));
-const Artigos = lazy(() => import("./pages/Artigos"));
-const Busca = lazy(() => import("./pages/Busca"));
+/**
+ * Após um novo deploy, o HTML em cache pode apontar para chunks que não existem mais.
+ * Nesse caso recarregamos a página uma única vez para buscar o manifesto atualizado.
+ */
+const RELOAD_KEY = "chunk-reload-attempt";
+
+function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<{ default: T }>) {
+  return lazy(async () => {
+    try {
+      const mod = await factory();
+      window.sessionStorage.removeItem(RELOAD_KEY);
+      return mod;
+    } catch (error) {
+      if (!window.sessionStorage.getItem(RELOAD_KEY)) {
+        window.sessionStorage.setItem(RELOAD_KEY, "1");
+        window.location.reload();
+        return new Promise<{ default: T }>(() => {});
+      }
+      throw error;
+    }
+  });
+}
+
+const Index = lazyWithRetry(() => import("./pages/Index"));
+const CommonCore = lazyWithRetry(() => import("./pages/CommonCore"));
+const Estatisticas = lazyWithRetry(() => import("./pages/Estatisticas"));
+const Orcamento = lazyWithRetry(() => import("./pages/Orcamento"));
+const Recomendacoes = lazyWithRetry(() => import("./pages/Recomendacoes"));
+const Fontes = lazyWithRetry(() => import("./pages/Fontes"));
+const Conclusoes = lazyWithRetry(() => import("./pages/Conclusoes"));
+const GerarRelatorios = lazyWithRetry(() => import("./pages/GerarRelatorios"));
+const Normativa = lazyWithRetry(() => import("./pages/Normativa"));
+const DocumentosBalizadores = lazyWithRetry(() => import("./pages/DocumentosBalizadores"));
+const GuiaAuditoria = lazyWithRetry(() => import("./pages/GuiaAuditoria"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
+const Ecossistema = lazyWithRetry(() => import("./pages/Ecossistema"));
+const Artigos = lazyWithRetry(() => import("./pages/Artigos"));
+const Busca = lazyWithRetry(() => import("./pages/Busca"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
