@@ -829,11 +829,19 @@ export default function Orcamento() {
 
         {/* ===== UNIVERSO DA BASE ===== */}
         <TabsContent value="universo">
-          <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3" data-export-ignore="true">
+            <div className="flex items-center gap-2">
+              <Switch id="somente-canonico" checked={somenteCanonico} onCheckedChange={setSomenteCanonico} />
+              <Label htmlFor="somente-canonico" className="text-xs">
+                Somente base canônica ({currentRecords.length} de {currentRecordsBrutos.length} registros · {duplicadosSuprimidos} duplicados suprimidos no total)
+              </Label>
+            </div>
+            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(somenteCanonico ? currentRecords : currentRecordsBrutos)} fileName="Orcamento-Universo-Base" compact />
           </div>
           <div id="export-orcamento-universo">
-            <UniversoBaseTab records={currentRecords} />
+            <DedupAuditPanel bruto={dadosBrutos?.length || 0} canonico={dadosOrcamentarios.length} valorSuprimido={stats?.valorSuprimido || 0} formatCurrencyFull={formatCurrencyFull} />
+            <UniversoBaseTab records={somenteCanonico ? currentRecords : currentRecordsBrutos} />
+
           </div>
         </TabsContent>
 
