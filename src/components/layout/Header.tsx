@@ -1,8 +1,10 @@
 import { ReactNode, useState, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, User, Calendar } from 'lucide-react';
+import { Bell, Search, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/useAuth';
+
 
 interface HeaderProps {
   title: string;
@@ -12,7 +14,9 @@ interface HeaderProps {
 
 export function Header({ title, subtitle, children }: HeaderProps) {
   const navigate = useNavigate();
+  const { session, signOut } = useAuth();
   const [q, setQ] = useState('');
+
   const today = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     year: 'numeric',
@@ -79,9 +83,30 @@ export function Header({ title, subtitle, children }: HeaderProps) {
             <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
           </Button>
 
-          <Button variant="ghost" size="icon" className="rounded-full bg-muted hidden md:inline-flex">
-            <User className="w-5 h-5 text-muted-foreground" />
-          </Button>
+          {session ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-muted hidden md:inline-flex"
+              onClick={() => signOut()}
+              title={`Sair (${session.user.email ?? ''})`}
+              aria-label="Sair"
+            >
+              <LogOut className="w-5 h-5 text-muted-foreground" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-muted hidden md:inline-flex"
+              onClick={() => navigate('/auth')}
+              title="Entrar"
+              aria-label="Entrar"
+            >
+              <User className="w-5 h-5 text-muted-foreground" />
+            </Button>
+          )}
+
         </div>
       </div>
     </header>
