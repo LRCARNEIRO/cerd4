@@ -303,7 +303,11 @@ export interface DadoOrcamentario {
   subtipo_extraorcamentario: string | null;
   created_at: string;
   updated_at: string;
+  /** Camada de deduplicação lógica (leitura) — ver utils/orcamentoCanonico.ts */
+  is_canonico?: boolean;
+  duplicado_de?: string | null;
 }
+
 
 // Hook para buscar dados orçamentários
 export function useDadosOrcamentarios(filters?: {
