@@ -1,8 +1,10 @@
 import { ReactNode, useState, KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, User, Calendar } from 'lucide-react';
+import { Bell, Search, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/hooks/useAuth';
+
 
 interface HeaderProps {
   title: string;
