@@ -345,10 +345,34 @@ export function useDadosOrcamentarios(filters?: {
         page++;
       }
 
-      return allData as DadoOrcamentario[];
+      // Anota cada registro com is_canonico / duplicado_de (base bruta preservada)
+      return dedupOrcamento(allData as DadoOrcamentario[]).anotados as DadoOrcamentario[];
     },
   });
 }
+
+/**
+ * Conjunto CANÔNICO da base orçamentária: um registro por
+ * programa/ação + ano + esfera. Use em somatórios, cards,
+ * vinculação de evidências e relatórios.
+ */
+export function useOrcamentoCanonico(filters?: {
+  programa?: string;
+  grupo_focal?: string;
+  eixo_tematico?: string;
+  ano?: number;
+}) {
+  const q = useDadosOrcamentarios(filters);
+  const todos = q.data || [];
+  const canonico = todos.filter(r => r.is_canonico !== false);
+  return {
+    ...q,
+    data: canonico,
+    todos,
+    suprimidos: todos.length - canonico.length,
+  };
+}
+
 
 /** Check if a record is SESAI (Saúde Indígena) — used for informational stats only (SESAI IS INCLUDED in totals) */
 function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: string | null }): boolean {
