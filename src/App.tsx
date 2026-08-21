@@ -45,6 +45,8 @@ const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
 const Ecossistema = lazyWithRetry(() => import("./pages/Ecossistema"));
 const Artigos = lazyWithRetry(() => import("./pages/Artigos"));
 const Busca = lazyWithRetry(() => import("./pages/Busca"));
+const AuthPage = lazyWithRetry(() => import("./pages/Auth"));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,30 +72,34 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/ecossistema" element={<Ecossistema />} />
-            <Route path="/plano-trabalho" element={<Navigate to="/" replace />} />
-            <Route path="/common-core" element={<CommonCore />} />
-            <Route path="/estatisticas" element={<Estatisticas />} />
-            <Route path="/orcamento" element={<Orcamento />} />
-            <Route path="/recomendacoes" element={<Recomendacoes />} />
-            <Route path="/fontes" element={<Fontes />} />
-            <Route path="/grupos-focais" element={<Navigate to="/estatisticas" replace />} />
-            <Route path="/conclusoes" element={<Conclusoes />} />
-            <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
-            <Route path="/normativa" element={<Normativa />} />
-            <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
-            <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
-            <Route path="/artigos" element={<Artigos />} />
-            <Route path="/busca" element={<Busca />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <AuthProvider>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/ecossistema" element={<Ecossistema />} />
+              <Route path="/plano-trabalho" element={<Navigate to="/" replace />} />
+              <Route path="/common-core" element={<CommonCore />} />
+              <Route path="/estatisticas" element={<Estatisticas />} />
+              <Route path="/orcamento" element={<Orcamento />} />
+              <Route path="/recomendacoes" element={<Recomendacoes />} />
+              <Route path="/fontes" element={<Fontes />} />
+              <Route path="/grupos-focais" element={<Navigate to="/estatisticas" replace />} />
+              <Route path="/conclusoes" element={<Conclusoes />} />
+              <Route path="/gerar-relatorios" element={<GerarRelatorios />} />
+              <Route path="/normativa" element={<Normativa />} />
+              <Route path="/documentos-balizadores" element={<DocumentosBalizadores />} />
+              <Route path="/guia-auditoria" element={<GuiaAuditoria />} />
+              <Route path="/artigos" element={<Artigos />} />
+              <Route path="/busca" element={<Busca />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 
 export default App;
