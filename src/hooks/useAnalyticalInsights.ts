@@ -5,7 +5,7 @@ import {
   useRespostasLacunasCerdIII, 
   useOrcamentoStats, 
   useIndicadoresAnaliticos,
-  useDadosOrcamentarios,
+  useOrcamentoCanonico,
   type LacunaIdentificada,
   type RespostaLacunaCerdIII,
   type IndicadorInterseccional,
@@ -125,7 +125,7 @@ export function useAnalyticalInsights() {
   const { data: respostas, isLoading: l3, isFetching: f3 } = useRespostasLacunasCerdIII();
   const { data: orcStats, isLoading: l4, isFetching: f4 } = useOrcamentoStats();
   const { data: indicadores, isLoading: l5, isFetching: f5 } = useIndicadoresAnaliticos();
-  const { data: orcDados, isLoading: l6, isFetching: f6 } = useDadosOrcamentarios();
+  const { data: orcDados, isLoading: l6, isFetching: f6 } = useOrcamentoCanonico();
 
   // Sensor for reclassified status — agora reativo a edições manuais de evidência
   const evidenceOverrides = useEvidenceOverridesReadOnly();

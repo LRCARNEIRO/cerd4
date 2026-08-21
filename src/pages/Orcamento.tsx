@@ -29,6 +29,7 @@ import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/M
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { UniversoBaseTab } from '@/components/estatisticas/orcamento/UniversoBaseTab';
+import { DedupAuditPanel } from '@/components/estatisticas/orcamento/DedupAuditPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -293,7 +294,15 @@ function EsferaSummaryCards({
 type Esfera = 'federal';
 
 export default function Orcamento() {
-  const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
+  const { data: dadosBrutos, isLoading: orcLoading } = useDadosOrcamentarios();
+  // Somatórios, cards e cruzamentos usam SOMENTE a base canônica (deduplicação lógica)
+  const dadosOrcamentarios = useMemo(
+    () => (dadosBrutos || []).filter(r => r.is_canonico !== false),
+    [dadosBrutos],
+  );
+  const duplicadosSuprimidos = (dadosBrutos?.length || 0) - dadosOrcamentarios.length;
+  const [somenteCanonico, setSomenteCanonico] = useState(true);
+
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
   const queryClient = useQueryClient();
 
@@ -374,6 +383,18 @@ export default function Orcamento() {
     }
     return result;
   }, [classified, federalFilters]);
+
+  /** Listagem completa (inclui duplicados suprimidos) — só para transparência */
+  const currentRecordsBrutos = useMemo(() => {
+    const ativos = THEMATIC_FILTERS.map(f => f.key).filter(k => federalFilters[k]);
+    return (dadosBrutos || []).filter(r => {
+      if (r.esfera === 'estadual' || r.esfera === 'municipal') return false;
+      const theme = classifyThematic(r);
+      return theme === 'sesai' ? ativos.includes('indigena') : ativos.includes(theme as ThematicFilter);
+    });
+  }, [dadosBrutos, federalFilters]);
+
+
 
 
   /** Compute per-esfera summary stats — single source of truth for all tabs */
@@ -809,11 +830,19 @@ export default function Orcamento() {
 
         {/* ===== UNIVERSO DA BASE ===== */}
         <TabsContent value="universo">
-          <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(currentRecords)} fileName="Orcamento-Universo-Base" compact />
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3" data-export-ignore="true">
+            <div className="flex items-center gap-2">
+              <Switch id="somente-canonico" checked={somenteCanonico} onCheckedChange={setSomenteCanonico} />
+              <Label htmlFor="somente-canonico" className="text-xs">
+                Somente base canônica ({currentRecords.length} de {currentRecordsBrutos.length} registros · {duplicadosSuprimidos} duplicados suprimidos no total)
+              </Label>
+            </div>
+            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(somenteCanonico ? currentRecords : currentRecordsBrutos)} fileName="Orcamento-Universo-Base" compact />
           </div>
           <div id="export-orcamento-universo">
-            <UniversoBaseTab records={currentRecords} />
+            <DedupAuditPanel bruto={dadosBrutos?.length || 0} canonico={dadosOrcamentarios.length} valorSuprimido={stats?.valorSuprimido || 0} formatCurrencyFull={formatCurrencyFull} />
+            <UniversoBaseTab records={somenteCanonico ? currentRecords : currentRecordsBrutos} />
+
           </div>
         </TabsContent>
 

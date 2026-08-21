@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass, DollarSign } from 'lucide-react';
 import { useState } from 'react';
-import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useDadosOrcamentarios } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useOrcamentoCanonico } from '@/hooks/useLacunasData';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVFullHTML } from './generateCerdIVHTML';
@@ -20,7 +20,7 @@ export function DocumentReportCards() {
   const { data: stats } = useLacunasStats();
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcStats } = useOrcamentoStats();
-  const { data: orcDados } = useDadosOrcamentarios();
+  const { data: orcDados } = useOrcamentoCanonico();
   const mirror = useMirrorData();
 
   // Fetch normativos for CERD IV report

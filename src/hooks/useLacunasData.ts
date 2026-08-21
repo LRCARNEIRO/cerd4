@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { dedupOrcamento } from '@/utils/orcamentoCanonico';
+
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';
 export type PriorityLevel = 'critica' | 'alta' | 'media' | 'baixa';
@@ -301,7 +303,11 @@ export interface DadoOrcamentario {
   subtipo_extraorcamentario: string | null;
   created_at: string;
   updated_at: string;
+  /** Camada de deduplicação lógica (leitura) — ver utils/orcamentoCanonico.ts */
+  is_canonico?: boolean;
+  duplicado_de?: string | null;
 }
+
 
 // Hook para buscar dados orçamentários
 export function useDadosOrcamentarios(filters?: {
@@ -339,10 +345,34 @@ export function useDadosOrcamentarios(filters?: {
         page++;
       }
 
-      return allData as DadoOrcamentario[];
+      // Anota cada registro com is_canonico / duplicado_de (base bruta preservada)
+      return dedupOrcamento(allData as DadoOrcamentario[]).anotados as DadoOrcamentario[];
     },
   });
 }
+
+/**
+ * Conjunto CANÔNICO da base orçamentária: um registro por
+ * programa/ação + ano + esfera. Use em somatórios, cards,
+ * vinculação de evidências e relatórios.
+ */
+export function useOrcamentoCanonico(filters?: {
+  programa?: string;
+  grupo_focal?: string;
+  eixo_tematico?: string;
+  ano?: number;
+}) {
+  const q = useDadosOrcamentarios(filters);
+  const todos = q.data || [];
+  const canonico = todos.filter(r => r.is_canonico !== false);
+  return {
+    ...q,
+    data: canonico,
+    todos,
+    suprimidos: todos.length - canonico.length,
+  };
+}
+
 
 /** Check if a record is SESAI (Saúde Indígena) — used for informational stats only (SESAI IS INCLUDED in totals) */
 function isSesaiRecord(r: { orgao: string; programa: string; observacoes?: string | null }): boolean {
@@ -388,7 +418,7 @@ export function useOrcamentoStats() {
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('ano, pago, empenhado, liquidado, dotacao_autorizada, dotacao_inicial, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo, tipo_dotacao, subtipo_extraorcamentario')
+          .select('id, ano, pago, empenhado, liquidado, dotacao_autorizada, dotacao_inicial, grupo_focal, programa, esfera, orgao, observacoes, descritivo, publico_alvo, tipo_dotacao, subtipo_extraorcamentario, fonte_dados, url_fonte')
           .range(page * pageSize, (page + 1) * pageSize - 1);
 
         if (error) throw error;
@@ -398,7 +428,14 @@ export function useOrcamentoStats() {
         page++;
       }
 
-      const registros = allRegistros;
+      // === Deduplicação lógica: somatórios usam somente o conjunto canônico ===
+      const dedup = dedupOrcamento(allRegistros as any[]);
+      const registros = dedup.canonico as any[];
+      const totalBruto = allRegistros.length;
+      const registrosSuprimidos = dedup.suprimidos;
+      const valorSuprimido = dedup.valorSuprimido;
+      
+
       
       const registrosLimpos = registros.filter(r => !is5034Distortion(r));
       
@@ -522,6 +559,16 @@ export function useOrcamentoStats() {
         porPrograma,
         porEsfera,
         totalRegistros: registrosLimpos.length,
+        // Auditoria da deduplicação lógica
+        totalRegistrosBruto: totalBruto,
+        registrosSuprimidos,
+        valorSuprimido,
+        execucaoCanonica: (() => {
+          const dot = registrosLimpos.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
+          const pg = registrosLimpos.reduce((a, r) => a + (Number(r.pago) || 0), 0);
+          return dot > 0 ? (pg / dot) * 100 : 0;
+        })(),
+
         sesaiTotal,
         sesaiRegistros: sesaiRegistros.length,
         sesaiPagoP1,

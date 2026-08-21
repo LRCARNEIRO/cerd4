@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ClipboardList, Loader2, Printer, FileDown } from 'lucide-react';
-import { useIndicadoresInterseccionais, useDadosOrcamentarios } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/useLacunasData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
@@ -244,7 +244,7 @@ Dados extraídos em tempo real do banco de dados. A coluna "Recomendações Vinc
 
 export function EvidenceInventoryReport() {
   const { data: indicadores } = useIndicadoresInterseccionais();
-  const { data: orcamento } = useDadosOrcamentarios();
+  const { data: orcamento } = useOrcamentoCanonico();
   const { data: normativos } = useQuery({
     queryKey: ['documentos_normativos_inventory'],
     queryFn: async () => {

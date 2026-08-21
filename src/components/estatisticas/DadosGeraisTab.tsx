@@ -12,7 +12,7 @@ import { Users, TrendingUp, TrendingDown, FileText, ExternalLink, DollarSign, Bu
 import { 
   fonteDados 
 } from './StatisticsData';
-import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useOrcamentoCanonico, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 import { useSidraRenda } from '@/hooks/useSidraRenda';
 import { useDadosGeraisBD } from '@/hooks/useDadosGeraisBD';
@@ -566,7 +566,7 @@ export function DadosGeraisTab() {
 
 // Seção de Orçamento extraída do banco de dados
 function OrcamentoResumoSection() {
-  const { data: orcDados, isLoading: loadingDados } = useDadosOrcamentarios();
+  const { data: orcDados, isLoading: loadingDados } = useOrcamentoCanonico();
   const { data: stats, isLoading: loadingStats } = useOrcamentoStats();
   const [esferaFiltro, setEsferaFiltro] = useState<string | null>(null);
 
