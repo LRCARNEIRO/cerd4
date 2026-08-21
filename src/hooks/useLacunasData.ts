@@ -559,6 +559,16 @@ export function useOrcamentoStats() {
         porPrograma,
         porEsfera,
         totalRegistros: registrosLimpos.length,
+        // Auditoria da deduplicação lógica
+        totalRegistrosBruto: totalBruto,
+        registrosSuprimidos,
+        valorSuprimido,
+        execucaoCanonica: (() => {
+          const dot = registrosLimpos.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
+          const pg = registrosLimpos.reduce((a, r) => a + (Number(r.pago) || 0), 0);
+          return dot > 0 ? (pg / dot) * 100 : 0;
+        })(),
+
         sesaiTotal,
         sesaiRegistros: sesaiRegistros.length,
         sesaiPagoP1,
