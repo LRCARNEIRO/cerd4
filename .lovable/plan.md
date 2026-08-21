@@ -1,89 +1,45 @@
-## Objetivo
+# Base orçamentária: órgão canônico + deduplicação lógica
 
-Garantir que **toda evidência numérica visível em qualquer aba** seja também um registro discreto em `indicadores_interseccionais` — com ID, código IND-NNN, indexada na busca global, e selecionável como evidência em recomendações/artigos.
+Duas frentes complementares, executadas nesta ordem. A base bruta continua completa (cada camada mantém sua motivação de captura); o que muda é que **somatórios, cards e a listagem de evidências passam a usar somente o conjunto deduplicado**.
 
----
+## Passo 1 — Normalizar `orgao` para sigla canônica em toda a base
 
-## Etapa 1 — Inventário (apresentar antes de mexer)
+- Criar um dicionário canônico único (`src/utils/orgaoCanonico.ts`): "Ministério dos Direitos Humanos e da Cidadania" → MDHC, "Ministério da Igualdade Racial" → MIR, "Federal" (genérico) → resolvido pelo código do órgão/ação quando existir, senão mantido como `NAO_IDENTIFICADO`.
+- Migração one-shot de `UPDATE` em `dados_orcamentarios` aplicando o dicionário, para que exportações brutas e planilhas de auditoria saiam limpas.
+- Guardar o rótulo original em `observacoes` (prefixo `orgao_origem:`) para não perder rastro de auditoria.
+- Aplicar o mesmo dicionário na escrita das funções de ingestão, para que novas cargas já entrem normalizadas.
 
-Gerar e exibir uma lista comparativa:
+## Passo 2 — Camada de deduplicação lógica (leitura)
 
-| Local na UI | Métrica | Grupo | Valor visível | Existe no BD? |
-|---|---|---|---|---|
-| GruposFocaisTab §quilombolas.infraestrutura | água | quilombolas | 73,4% | ✅ campo no agregado, ❌ sem registro próprio |
-| GruposFocaisTab §quilombolas.infraestrutura | esgoto | quilombolas | 29,47% | ❌ sem registro próprio |
-| GruposFocaisTab §quilombolas.infraestrutura | lixo | quilombolas | 51,28% | ❌ |
-| GruposFocaisTab §quilombolas.infraestrutura | sem banheiro | quilombolas | 70,53% | ✅ no novo registro 33b91171, mas mistura com TIs |
-| GruposFocaisTab §indigenas (urbanos) | água/esgoto/lixo | Indígenas urbanos | 89,92% / 59,24% / 5,83% | ❌ |
-| GruposFocaisTab — pretos isolado | esgoto | Pretos | 7,61% | ❌ (só agregado "Pop. Negra") |
-| GruposFocaisTab — pardos isolado | esgoto | Pardos | 31,23% | ❌ |
-| GruposFocaisTab — pretos | coleta lixo | Pretos | 9,24% | ❌ |
-| ... | ... | ... | ... | ... |
+- Novo hook `useOrcamentoCanonico()` que carrega todos os registros e devolve dois conjuntos: `todos` (bruto, para a listagem completa) e `canonico` (um registro por grupo).
+- **Chave de agrupamento:** `programa/ação normalizados + ano + esfera`. O `orgao` já normalizado entra como critério de desempate, não como parte da chave — assim variações residuais não voltam a quebrar a colisão.
+- **Ranking de fonte** para eleger o vencedor de cada grupo:
+  1. API Portal da Transparência (ação específica)
+  2. Programa PPA (Camada 1)
+  3. Órgãos MIR/MPI (Camada 3) e SESAI/FUNAI/INCRA (Camada 4)
+  4. Subfunção 422 (Camada 2 — genérica)
+  5. Carga Agenda Transversal (usada só quando é a única cobertura do grupo)
+- Empate no ranking: vence o registro com `pago` preenchido e `url_fonte` presente.
+- Cada registro recebe `is_canonico: boolean` e `duplicado_de: id`, para exibição transparente.
 
-Escopo do varrimento: `GruposFocaisTab.tsx`, `VulnerabilidadesTab.tsx`, `DadosNovosTab.tsx`, `SegurancaSaudeEducacaoTab.tsx`, `ComplementoCerd3Tab.tsx`, `OdsRacialTab.tsx`. Foco em valores numéricos/% que já apareçam como dados oficiais (não em texto descritivo).
+## Passo 3 — Ligar os consumidores ao conjunto canônico
 
-Entrego em `/mnt/documents/inventario-evidencias-faltantes.csv` para você revisar.
+- Cards e totalizadores da página Orçamento: total de registros, ações orçamentárias e extraorçamentárias, programas distintos, Σ dotação, Σ pago, Σ execução, e os recortes por período (P1 2018-2022 / P2 2023-2025) passam a somar apenas `canonico`.
+- Execução recalculada como `Σ pago / Σ dotação` do conjunto canônico, eliminando o sentinela de 99.999,99% que vinha de divisão por dotação zero.
+- Seletor de evidências e o sensor de diagnóstico (`useDiagnosticSensor`) passam a enxergar apenas `canonico`, para que uma mesma ação não seja vinculada duas vezes à mesma recomendação.
+- Geradores de relatório (CERD IV, Orçamentário, Protocolo de Governança) usam a mesma fonte, mantendo a paridade UI × relatório.
 
----
+## Passo 4 — Transparência e legenda
 
-## Etapa 2 — Expansão do transformador (após sua aprovação do CSV)
+- Listagem completa continua exibindo todos os registros, com selo "duplicado — não somado" e tooltip apontando o registro canônico e a camada de origem.
+- Filtro rápido "Somente base canônica" na listagem.
+- Legenda metodológica fixa explicando a chave de deduplicação e o ranking de fontes, replicada nas exportações.
 
-No `src/utils/staticToDbTransformer.ts`, substituir o bloco único `'População negra — infraestrutura domiciliar'` por **8-12 registros granulares**, padrão:
+## Passo 5 — Verificação
 
-- `IND — Esgoto adequado — Pretos` (subcategoria `saneamento`)
-- `IND — Esgoto adequado — Pardos`
-- `IND — Coleta de lixo — Pretos`
-- `IND — Coleta de lixo — Pardos`
-- `IND — Acesso à rede de água — Pretos`
-- `IND — Acesso à rede de água — Pardos`
-- `IND — Sem banheiro — Pretos`
-- `IND — Sem banheiro — Pardos`
+- Painel de auditoria mostra: nº bruto vs canônico, valor bruto vs canônico e a diferença suprimida (hoje ~R$ 664 mi de dupla contagem).
+- Conferência dos totais na página Orçamento, na Home e no relatório orçamentário para garantir que os três batem.
 
-E para territórios:
+## Nota técnica
 
-- `IND — Acesso à água — Quilombolas` (separar do agregado atual)
-- `IND — Coleta de lixo — Quilombolas`
-- `IND — Sem banheiro — Quilombolas`
-- `IND — Acesso à água — Indígenas urbanos`
-- `IND — Esgoto adequado — Indígenas urbanos`
-
-Cada registro com `dados` mínimo (`{ano, valor, grupo, comparador_nacional}`), `categoria='habitacao'`, `subcategoria='saneamento'`, `artigos_convencao=['Art. 5']`, fonte SIDRA correta.
-
-Re-executar o **MirrorIngestionPanel** automaticamente puxa os novos registros.
-
----
-
-## Etapa 3 — Sweep mirror↔BD (o "sim" anterior)
-
-Script de auditoria que:
-
-1. Lê todos os indicadores do BD que tenham `dados.valor` ou `dados.{ano}.{grupo}`.
-2. Compara contra o valor correspondente nos arquivos mirror TS.
-3. Reporta divergências em `/mnt/documents/sweep-mirror-vs-bd.csv` com colunas: `IND-código | nome | campo | valor_mirror | valor_BD | divergente?`.
-
-Sem corrigir nada automaticamente — só listo, você decide quais corrigir.
-
----
-
-## Etapa 4 — Prevenção contínua
-
-Adicionar no `MirrorIngestionPanel` (ou novo `ConsistencyAuditPanel`):
-
-- Botão "Verificar consistência mirror↔BD" que roda a comparação on-demand.
-- Badge vermelho se houver divergência > 0,1pp em qualquer campo.
-
----
-
-## Detalhes técnicos
-
-- Arquivos editados: `src/utils/staticToDbTransformer.ts` (expansão), novo `src/utils/mirrorBdConsistency.ts` (sweep), opcionalmente novo `src/components/estatisticas/ConsistencyAuditPanel.tsx`.
-- Arquivos NÃO editados: `StatisticsData.ts` (continua sendo SSoT do mirror), `GruposFocaisTab.tsx` (UI permanece igual — só passa a refletir mais registros indexados).
-- Migrações DB: nenhuma — só novos INSERTs via re-ingestão do espelho.
-- Risco: a re-ingestão pode duplicar registros se as `clearCategories` não cobrirem `'habitacao'`. Vou verificar antes da Etapa 2.
-
----
-
-## Decisões que preciso de você
-
-1. **Granularidade:** quebrar por (métrica × grupo) como acima [12 registros], ou por (métrica × grupo × ano) [muito maior]? **Sugestão: só por grupo, ano fica dentro de `dados.series`.**
-2. **Escopo do inventário Etapa 1:** todas as 6 abas listadas, ou começar só por Grupos Focais para validar o método?
+A deduplicação permanece em camada de leitura, não em constraint de banco: nenhum dado é apagado, e a regra pode ser recalibrada sem nova migração. Se mais adiante quiser transformar a regra em garantia do banco, um índice único sobre a chave canônica pode ser adicionado sem conflitar com esta implementação.
