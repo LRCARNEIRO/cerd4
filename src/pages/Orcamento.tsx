@@ -29,6 +29,7 @@ import { MetodologiaFederalSection } from '@/components/estatisticas/orcamento/M
 import { FederalRelatorioTab } from '@/components/estatisticas/orcamento/FederalRelatorioTab';
 import { ArtigoCruzamentoTab } from '@/components/estatisticas/orcamento/ArtigoCruzamentoTab';
 import { UniversoBaseTab } from '@/components/estatisticas/orcamento/UniversoBaseTab';
+import { DedupAuditPanel } from '@/components/estatisticas/orcamento/DedupAuditPanel';
 import { ArtigoFilter } from '@/components/dashboard/ArtigoFilter';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
