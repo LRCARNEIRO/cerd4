@@ -383,6 +383,18 @@ export default function Orcamento() {
     return result;
   }, [classified, federalFilters]);
 
+  /** Listagem completa (inclui duplicados suprimidos) — só para transparência */
+  const currentRecordsBrutos = useMemo(() => {
+    const ativos = THEMATIC_FILTERS.map(f => f.key).filter(k => federalFilters[k]);
+    return (dadosBrutos || []).filter(r => {
+      if (r.esfera === 'estadual' || r.esfera === 'municipal') return false;
+      const theme = classifyThematic(r);
+      return theme === 'sesai' ? ativos.includes('indigena') : ativos.includes(theme as ThematicFilter);
+    });
+  }, [dadosBrutos, federalFilters]);
+
+
+
 
   /** Compute per-esfera summary stats — single source of truth for all tabs */
   const esferaStats = useMemo(() => {
