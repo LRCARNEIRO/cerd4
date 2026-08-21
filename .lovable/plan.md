@@ -2,12 +2,22 @@
 
 Duas frentes complementares, executadas nesta ordem. A base bruta continua completa (cada camada mantém sua motivação de captura); o que muda é que **somatórios, cards e a listagem de evidências passam a usar somente o conjunto deduplicado**.
 
-## Passo 1 — Normalizar `orgao` para sigla canônica em toda a base
+## Passo 1 — Eliminar o rótulo "Federal" e normalizar `orgao` para sigla canônica
 
-- Criar um dicionário canônico único (`src/utils/orgaoCanonico.ts`): "Ministério dos Direitos Humanos e da Cidadania" → MDHC, "Ministério da Igualdade Racial" → MIR, "Federal" (genérico) → resolvido pelo código do órgão/ação quando existir, senão mantido como `NAO_IDENTIFICADO`.
-- Migração one-shot de `UPDATE` em `dados_orcamentarios` aplicando o dicionário, para que exportações brutas e planilhas de auditoria saiam limpas.
+O rótulo genérico "Federal" deixa de existir na base. Ele não é um órgão — é uma esfera, e já está registrado na coluna `esfera`. Todo registro passa a ter um órgão identificado sempre que a informação existir.
+
+- Criar um dicionário canônico único (`src/utils/orgaoCanonico.ts`) mapeando nomes por extenso e variações para a sigla oficial: "Ministério dos Direitos Humanos e da Cidadania" → MDHC, "Ministério da Igualdade Racial" → MIR, "Ministério dos Povos Indígenas" → MPI, SESAI, FUNAI, INCRA, etc.
+- **Resolução dos registros "Federal"**, nesta ordem de tentativa:
+  1. Código do órgão/unidade orçamentária do próprio registro (quando presente na carga do Portal da Transparência).
+  2. Código da ação/programa — cada ação pertence a um órgão executor conhecido (ex.: 20YP → SESAI; 5136 e 1617 → FUNAI/MPI; ações de titulação quilombola → INCRA).
+  3. Órgão já atribuído a esse mesmo programa/ano por outra camada de captura da base.
+  4. Só quando nenhuma pista resolve, o registro fica como `NAO_IDENTIFICADO` — explicitamente marcado como pendência de auditoria, nunca como "Federal".
+- Levantamento prévio: quantos dos registros hoje rotulados "Federal" cada regra resolve, apresentado antes de gravar, para você aprovar o resultado.
+- Migração one-shot de `UPDATE` em `dados_orcamentarios` aplicando o dicionário e a resolução, para que exportações brutas e planilhas de auditoria saiam limpas.
 - Guardar o rótulo original em `observacoes` (prefixo `orgao_origem:`) para não perder rastro de auditoria.
-- Aplicar o mesmo dicionário na escrita das funções de ingestão, para que novas cargas já entrem normalizadas.
+- Aplicar o mesmo dicionário e a mesma resolução na escrita das funções de ingestão, para que nenhuma carga futura volte a gravar "Federal".
+- Os residuais `NAO_IDENTIFICADO` entram na aba "Pendências" da planilha de auditoria de pares.
+
 
 ## Passo 2 — Camada de deduplicação lógica (leitura)
 
