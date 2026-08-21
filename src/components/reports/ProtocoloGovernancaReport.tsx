@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { BookOpen, FileDown, Download, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useLacunasIdentificadas, useIndicadoresInterseccionais, useDadosOrcamentarios } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { generateProtocoloGovernancaHTML } from './generateProtocoloGovernancaHTML';
@@ -17,7 +17,7 @@ export function ProtocoloGovernancaReport() {
 
   const { data: recomendacoes, isLoading: loadingRec } = useLacunasIdentificadas();
   const { data: indicadores, isLoading: loadingInd } = useIndicadoresInterseccionais();
-  const { data: orcDados, isLoading: loadingOrc } = useDadosOrcamentarios();
+  const { data: orcDados, isLoading: loadingOrc } = useOrcamentoCanonico();
   const { data: normativos, isLoading: loadingNorm } = useQuery({
     queryKey: ['documentos_normativos_protocolo_governanca'],
     queryFn: async () => {

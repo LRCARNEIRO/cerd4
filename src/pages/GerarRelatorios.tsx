@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { FileText, AlertTriangle, BookOpen, FileCheck, Loader2, PieChart, DollarSign, Sparkles, Database, TrendingUp, TrendingDown, Scale, Landmark, HeartPulse, PlusCircle, FileDown, Download, GitCompare, Activity, Shield, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useConclusoesAnaliticas, useIndicadoresInterseccionais, useOrcamentoCanonico, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { generateSuggestedResponse } from '@/utils/generateSuggestedResponse';
 import { ThematicReportGenerator } from '@/components/reports/ThematicReportGenerator';

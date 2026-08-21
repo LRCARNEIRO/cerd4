@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, Download, Database, DollarSign, Scale, BarChart3, Users, Shield, HeartPulse, BookOpen, Landmark, AlertTriangle, Lightbulb } from 'lucide-react';
-import { useIndicadoresInterseccionais, useLacunasIdentificadas, useDadosOrcamentarios, useLacunasStats, useOrcamentoStats, useRespostasLacunasCerdIII } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais, useLacunasIdentificadas, useOrcamentoCanonico, useLacunasStats, useOrcamentoStats, useRespostasLacunasCerdIII } from '@/hooks/useLacunasData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
@@ -696,7 +696,7 @@ export function ConsolidatedScopeReport() {
   const { data: lacunas } = useLacunasIdentificadas();
   const { data: lacunasStats } = useLacunasStats();
   const { data: orcStats } = useOrcamentoStats();
-  const { data: orcamentarios } = useDadosOrcamentarios();
+  const { data: orcamentarios } = useOrcamentoCanonico();
   const { data: respostas } = useRespostasLacunasCerdIII();
   const mirrorData = useMirrorData();
 

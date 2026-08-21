@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Building, Building2, MapPin, Users, TreePine, Tent, AlertTriangle, Info } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AuditFooter } from '@/components/ui/audit-footer';
-import { useDadosOrcamentarios, useOrcamentoStats } from '@/hooks/useLacunasData';
+import { useOrcamentoCanonico, useOrcamentoStats } from '@/hooks/useLacunasData';
 import { OrgaoSection } from './orcamento/OrgaoSection';
 import { ProgramCard } from './orcamento/ProgramCard';
 import { EmptyEsferaCard } from './orcamento/EmptyEsferaCard';
@@ -105,7 +105,7 @@ const TABS: TabConfig[] = [
 ];
 
 export function OrcamentoTab() {
-  const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
+  const { data: dadosOrcamentarios, isLoading: orcLoading } = useOrcamentoCanonico();
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
 
   const categorized = useMemo(() => {
