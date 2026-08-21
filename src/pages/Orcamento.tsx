@@ -293,7 +293,15 @@ function EsferaSummaryCards({
 type Esfera = 'federal';
 
 export default function Orcamento() {
-  const { data: dadosOrcamentarios, isLoading: orcLoading } = useDadosOrcamentarios();
+  const { data: dadosBrutos, isLoading: orcLoading } = useDadosOrcamentarios();
+  // Somatórios, cards e cruzamentos usam SOMENTE a base canônica (deduplicação lógica)
+  const dadosOrcamentarios = useMemo(
+    () => (dadosBrutos || []).filter(r => r.is_canonico !== false),
+    [dadosBrutos],
+  );
+  const duplicadosSuprimidos = (dadosBrutos?.length || 0) - dadosOrcamentarios.length;
+  const [somenteCanonico, setSomenteCanonico] = useState(true);
+
   const { data: stats, isLoading: statsLoading } = useOrcamentoStats();
   const queryClient = useQueryClient();
 
