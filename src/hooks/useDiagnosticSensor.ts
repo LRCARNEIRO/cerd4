@@ -7,6 +7,7 @@ import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -167,7 +168,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('dados_orcamentarios')
-          .select('programa, orgao, ano, dotacao_autorizada, liquidado, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo, observacoes, razao_selecao')
+          .select('id, programa, orgao, ano, esfera, fonte_dados, url_fonte, dotacao_autorizada, liquidado, pago, artigos_convencao, descritivo, eixo_tematico, publico_alvo, observacoes, razao_selecao')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -175,7 +176,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         if (data.length < 1000) break;
         page++;
       }
-      return all;
+      // Somente o conjunto canônico pode ser vinculado como evidência
+      return dedupOrcamento(all as any[]).canonico as any[];
     },
   });
 
