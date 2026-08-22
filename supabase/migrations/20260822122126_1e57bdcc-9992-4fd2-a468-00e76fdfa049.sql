@@ -1,0 +1,1 @@
+ALTER TABLE public.orcamento_api_raw ADD COLUMN IF NOT EXISTS fonte_dotacao text;
