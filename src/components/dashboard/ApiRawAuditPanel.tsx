@@ -198,8 +198,9 @@ export function ApiRawAuditPanel() {
             Coletar / atualizar ({anos.length} anos)
           </Button>
           <Button variant="outline" onClick={exportar} disabled={!total} className="gap-2">
-            <FileDown className="w-4 h-4" /> Exportar CSV
+            <FileDown className="w-4 h-4" /> Exportar CSV ({anos.length ? `${anos.length} anos` : 'tudo'})
           </Button>
+
         </div>
 
         <div className="flex items-center gap-2 text-sm">
