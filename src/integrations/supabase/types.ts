@@ -328,9 +328,9 @@ export type Database = {
       }
       evidence_overrides: {
         Row: {
-          added_indicadores: string[]
-          added_normativos: string[]
-          added_orcamento: string[]
+          added_indicadores: Json
+          added_normativos: Json
+          added_orcamento: Json
           created_at: string
           id: string
           recomendacao_key: string
@@ -341,9 +341,9 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
-          added_indicadores?: string[]
-          added_normativos?: string[]
-          added_orcamento?: string[]
+          added_indicadores?: Json
+          added_normativos?: Json
+          added_orcamento?: Json
           created_at?: string
           id?: string
           recomendacao_key: string
@@ -354,9 +354,9 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
-          added_indicadores?: string[]
-          added_normativos?: string[]
-          added_orcamento?: string[]
+          added_indicadores?: Json
+          added_normativos?: Json
+          added_orcamento?: Json
           created_at?: string
           id?: string
           recomendacao_key?: string
