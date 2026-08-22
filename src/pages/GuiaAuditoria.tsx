@@ -57,7 +57,7 @@ export default function GuiaAuditoria() {
               Diagrama de Sobreposição e Deduplicação
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Cada camada captura ações por critérios diferentes. A interseção é deduplicada automaticamente pela chave <code>órgão|programa|ano</code>.
+              Cada camada captura ações por critérios diferentes. A interseção é deduplicada <strong>fisicamente na base</strong> pela chave <code>ano | esfera | programa | ação</code>, garantida por índice único.
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -116,7 +116,7 @@ export default function GuiaAuditoria() {
               </svg>
               <div className="text-center mt-2">
                 <Badge variant="destructive" className="text-xs">
-                  Deduplicacao: chave orgao|programa|ano - registro unico
+                  Deduplicacao fisica: chave ano | esfera | programa | acao - indice unico
                 </Badge>
               </div>
             </div>
@@ -161,9 +161,12 @@ export default function GuiaAuditoria() {
               <ol className="list-decimal list-inside space-y-1 text-muted-foreground text-xs">
                 <li>Cada camada gera uma lista independente de registros orcamentarios.</li>
                 <li>Os resultados sao unidos (UNION) em uma lista combinada.</li>
-                <li>A chave composta <code className="text-primary">orgao | programa | ano</code> identifica cada registro unico.</li>
-                <li>Se o mesmo registro aparece em mais de uma camada, apenas <strong>uma copia</strong> e mantida.</li>
+                <li>A chave composta <code className="text-primary">ano | esfera | programa | acao</code> identifica cada registro unico (indice unico na base analitica).</li>
+                <li>Se o mesmo registro aparece em mais de uma camada, apenas <strong>uma copia</strong> e mantida — a de fonte mais confiavel (API do Portal &gt; PPA &gt; captura por orgao/keyword &gt; subfuncao 422 &gt; Agenda Transversal).</li>
+                <li>A dotacao mantida e sempre a <strong>integral da LOA</strong>. E vedado ratear (dividir) a dotacao entre copias — pratica corrigida em agosto/2026, quando 57 linhas redundantes foram excluidas fisicamente e R$ 146 milhoes de dotacao rateada foram restaurados.</li>
+                <li><strong>Regra de Ouro:</strong> quando nao ha correspondencia exata (programa + acao + ano) na fonte, o campo fica <strong>vazio</strong> — nunca se usa valor de nivel superior, estimativa ou rateio.</li>
                 <li>O campo <code className="text-primary">razao_selecao</code> registra <strong>qual camada</strong> capturou o registro primeiro.</li>
+                <li>Registros que sao apenas um <strong>Plano Orcamentario (PO)</strong> dentro da acao trazem o codigo no campo <code className="text-primary">plano_orcamentario</code> e valores parciais — nao comparaveis ao total da acao.</li>
               </ol>
             </div>
 
@@ -209,7 +212,7 @@ export default function GuiaAuditoria() {
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-muted-foreground">
                 <strong className="text-foreground">Resumindo:</strong> Camada 1 pergunta <em>"quem executa este programa racial?"</em> (qualquer orgao).
                 Camada 3 pergunta <em>"o que este orgao racial faz?"</em> (qualquer programa).
-                A intersecao e deduplicada automaticamente pela chave <code className="text-primary">orgao|programa|ano</code>.
+                A intersecao e deduplicada fisicamente pela chave <code className="text-primary">ano | esfera | programa | acao</code>.
               </div>
             </div>
           </CardContent>
@@ -406,7 +409,7 @@ export default function GuiaAuditoria() {
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-muted-foreground">
                     <strong className="text-foreground">💡 Resumindo:</strong> Camada 1 pergunta <em>"quem executa este programa racial?"</em> (qualquer órgão).
                     Camada 3 pergunta <em>"o que este órgão racial faz?"</em> (qualquer programa).
-                    A interseção é deduplicada automaticamente pela chave <code className="text-primary">órgão|programa|ano</code>.
+                    A interseção é deduplicada fisicamente pela chave <code className="text-primary">ano | esfera | programa | ação</code>.
                   </div>
                 </AccordionContent>
               </AccordionItem>
