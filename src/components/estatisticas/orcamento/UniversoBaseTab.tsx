@@ -359,6 +359,13 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                   return (
                     <TableRow key={r.id || i}>
                       <TableCell className="text-xs whitespace-normal break-words">{r.programa}</TableCell>
+                      <TableCell className="text-xs whitespace-normal break-words">
+                        {(r as any).plano_orcamentario ? (
+                          <span className="text-primary font-medium">PO {(r as any).plano_orcamentario}</span>
+                        ) : (
+                          <span className="text-muted-foreground">Ação inteira</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-xs">{r.orgao}</TableCell>
                       <TableCell className="text-xs text-center font-mono">{r.ano}</TableCell>
                       <TableCell className="text-xs text-center">
