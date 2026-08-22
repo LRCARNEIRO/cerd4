@@ -271,17 +271,12 @@ Deno.serve(async (req) => {
       }
     }
 
-      } catch (e) {
-        erros.push(`LOA: ${e}`);
-      }
-    }
-
-
     return new Response(JSON.stringify({
       success: true, ano, programas_consultados: programas.length,
       registros_coletados: all.length, registros_gravados: gravados,
-      dotacoes_atualizadas, detalhes, erros,
+      dotacoes_atualizadas, dotacoes_limpas, detalhes, erros,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
 
   } catch (error) {
     return new Response(
