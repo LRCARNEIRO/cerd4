@@ -461,6 +461,7 @@ export type Database = {
           dotacao_atualizada: number | null
           dotacao_inicial: number | null
           empenhado: number | null
+          fonte_dotacao: string | null
           id: string
           liquidado: number | null
           nome_acao: string | null
@@ -486,6 +487,7 @@ export type Database = {
           dotacao_atualizada?: number | null
           dotacao_inicial?: number | null
           empenhado?: number | null
+          fonte_dotacao?: string | null
           id?: string
           liquidado?: number | null
           nome_acao?: string | null
@@ -511,6 +513,7 @@ export type Database = {
           dotacao_atualizada?: number | null
           dotacao_inicial?: number | null
           empenhado?: number | null
+          fonte_dotacao?: string | null
           id?: string
           liquidado?: number | null
           nome_acao?: string | null
