@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
+import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
+
 
 interface SearchResult {
   id?: string;
