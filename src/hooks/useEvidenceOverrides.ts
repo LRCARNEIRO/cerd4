@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
+import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { isEvidenceEligibleIndicator, isInvalidEvidenceIndicator } from '@/utils/indicatorEvidenceGuards';
 
 export const OVERRIDES_STORAGE_KEY = 'cerd-evidence-overrides-v1';
@@ -86,26 +87,41 @@ function writeCache(ov: EvidenceOverrides) {
 
 type DbRow = {
   recomendacao_key: string;
-  added_indicadores: string[] | null;
+  added_indicadores: unknown;
   removed_indicadores: string[] | null;
-  added_orcamento: string[] | null;
+  added_orcamento: unknown;
   removed_orcamento: string[] | null;
-  added_normativos: string[] | null;
+  added_normativos: unknown;
   removed_normativos: string[] | null;
 };
 
-function rowToOverride(r: DbRow): EvidenceOverride {
-  return sanitizeOverride({
-    addedIndicadores: r.added_indicadores ?? [],
-    removedIndicadores: r.removed_indicadores ?? [],
-    addedOrcamento: r.added_orcamento ?? [],
-    removedOrcamento: r.removed_orcamento ?? [],
-    addedNormativos: r.added_normativos ?? [],
-    removedNormativos: r.removed_normativos ?? [],
-  } as EvidenceOverride);
+function asArray<T>(v: unknown): T[] {
+  return Array.isArray(v) ? (v as T[]) : [];
 }
 
-function overrideToRow(key: string, v: EvidenceOverride, userId: string | null): Record<string, unknown> {
+function rowToOverride(r: DbRow): EvidenceOverride {
+  return sanitizeOverride({
+    addedIndicadores: asArray<LinkedIndicador>(r.added_indicadores),
+    removedIndicadores: r.removed_indicadores ?? [],
+    addedOrcamento: asArray<LinkedOrcamento>(r.added_orcamento),
+    removedOrcamento: r.removed_orcamento ?? [],
+    addedNormativos: asArray<LinkedNormativo>(r.added_normativos),
+    removedNormativos: r.removed_normativos ?? [],
+  });
+}
+
+type OverrideRow = {
+  recomendacao_key: string;
+  added_indicadores: unknown;
+  removed_indicadores: string[];
+  added_orcamento: unknown;
+  removed_orcamento: string[];
+  added_normativos: unknown;
+  removed_normativos: string[];
+  updated_by: string | null;
+};
+
+function overrideToRow(key: string, v: EvidenceOverride, userId: string | null): OverrideRow {
   return {
     recomendacao_key: key,
     added_indicadores: v.addedIndicadores,
@@ -137,7 +153,7 @@ async function migrateLocalOnce(local: EvidenceOverrides, remote: EvidenceOverri
     if (localStorage.getItem(MIGRATION_FLAG_KEY)) return;
     const pending = Object.entries(local).filter(([k]) => !remote[k]);
     if (pending.length > 0) {
-      const rows = pending.map(([k, v]) => overrideToRow(k, v, userId));
+      const rows: OverrideRow[] = pending.map(([k, v]) => overrideToRow(k, v, userId));
       const { error } = await supabase.from('evidence_overrides').upsert(rows, { onConflict: 'recomendacao_key' });
       if (error) throw error;
       for (const [k, v] of pending) {
@@ -149,7 +165,25 @@ async function migrateLocalOnce(local: EvidenceOverrides, remote: EvidenceOverri
   } catch { /* sem permissão de escrita: mantém local como cache */ }
 }
 
-const LOG_FIELDS: Array<{ added: keyof EvidenceOverride; removed: keyof EvidenceOverride; tipo: string }> = [
+type LogRow = {
+  recomendacao_key: string;
+  acao: 'incluir' | 'remover' | 'reverter';
+  tipo_evidencia: 'indicador' | 'orcamento' | 'normativo';
+  item: string;
+  justificativa: string | null;
+  autor: string | null;
+  autor_email: string | null;
+};
+
+/** Rótulo textual estável de um item incluído, por tipo de base. */
+function labelOf(tipo: string, item: unknown): string {
+  const o = item as Record<string, unknown>;
+  if (tipo === 'indicador') return String(o?.nome ?? '');
+  if (tipo === 'normativo') return String(o?.titulo ?? '');
+  return `${o?.programa ?? ''}|${o?.orgao ?? ''}|${o?.ano ?? ''}`;
+}
+
+const LOG_FIELDS: Array<{ added: keyof EvidenceOverride; removed: keyof EvidenceOverride; tipo: 'indicador' | 'orcamento' | 'normativo' }> = [
   { added: 'addedIndicadores', removed: 'removedIndicadores', tipo: 'indicador' },
   { added: 'addedOrcamento', removed: 'removedOrcamento', tipo: 'orcamento' },
   { added: 'addedNormativos', removed: 'removedNormativos', tipo: 'normativo' },
@@ -164,16 +198,19 @@ async function logDiff(
   justificativa?: string,
   autorEmail?: string | null,
 ) {
-  const entries: Array<Record<string, unknown>> = [];
+  const entries: LogRow[] = [];
   for (const { added, removed, tipo } of LOG_FIELDS) {
-    const push = (item: string, acao: 'incluir' | 'remover' | 'reverter') => entries.push({
-      recomendacao_key: key, acao, tipo_evidencia: tipo, item,
-      justificativa: justificativa ?? null, autor: userId, autor_email: autorEmail ?? null,
-    });
-    const prevAdded = (prev[added] as string[]) ?? [];
-    const nextAdded = (next[added] as string[]) ?? [];
-    const prevRemoved = (prev[removed] as string[]) ?? [];
-    const nextRemoved = (next[removed] as string[]) ?? [];
+    const push = (item: string, acao: 'incluir' | 'remover' | 'reverter') => {
+      if (!item) return;
+      entries.push({
+        recomendacao_key: key, acao, tipo_evidencia: tipo, item,
+        justificativa: justificativa ?? null, autor: userId, autor_email: autorEmail ?? null,
+      });
+    };
+    const prevAdded = asArray<unknown>(prev[added]).map((i) => labelOf(tipo, i));
+    const nextAdded = asArray<unknown>(next[added]).map((i) => labelOf(tipo, i));
+    const prevRemoved = asArray<string>(prev[removed]);
+    const nextRemoved = asArray<string>(next[removed]);
     for (const it of nextAdded.filter((i) => !prevAdded.includes(i))) push(it, 'incluir');
     for (const it of nextRemoved.filter((i) => !prevRemoved.includes(i))) push(it, 'remover');
     for (const it of prevAdded.filter((i) => !nextAdded.includes(i))) push(it, 'reverter');
@@ -190,7 +227,7 @@ async function persistToDb(prev: EvidenceOverrides, next: EvidenceOverrides) {
   const email = userData?.user?.email ?? null;
 
   const keys = new Set([...Object.keys(prev), ...Object.keys(next)]);
-  const upserts: Array<Record<string, unknown>> = [];
+  const upserts: OverrideRow[] = [];
   const deletes: string[] = [];
 
   for (const key of keys) {
