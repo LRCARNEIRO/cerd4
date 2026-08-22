@@ -446,6 +446,84 @@ export type Database = {
         }
         Relationships: []
       }
+      orcamento_api_raw: {
+        Row: {
+          ano: number
+          codigo_acao: string
+          codigo_funcao: string | null
+          codigo_orgao: string
+          codigo_programa: string
+          codigo_subfuncao: string | null
+          codigo_unidade_orcamentaria: string
+          coletado_em: string
+          consulta_parametro: string | null
+          created_at: string
+          dotacao_atualizada: number | null
+          dotacao_inicial: number | null
+          empenhado: number | null
+          id: string
+          liquidado: number | null
+          nome_acao: string | null
+          nome_funcao: string | null
+          nome_orgao: string | null
+          nome_programa: string | null
+          nome_subfuncao: string | null
+          nome_unidade_orcamentaria: string | null
+          pago: number | null
+          payload: Json
+        }
+        Insert: {
+          ano: number
+          codigo_acao?: string
+          codigo_funcao?: string | null
+          codigo_orgao?: string
+          codigo_programa?: string
+          codigo_subfuncao?: string | null
+          codigo_unidade_orcamentaria?: string
+          coletado_em?: string
+          consulta_parametro?: string | null
+          created_at?: string
+          dotacao_atualizada?: number | null
+          dotacao_inicial?: number | null
+          empenhado?: number | null
+          id?: string
+          liquidado?: number | null
+          nome_acao?: string | null
+          nome_funcao?: string | null
+          nome_orgao?: string | null
+          nome_programa?: string | null
+          nome_subfuncao?: string | null
+          nome_unidade_orcamentaria?: string | null
+          pago?: number | null
+          payload?: Json
+        }
+        Update: {
+          ano?: number
+          codigo_acao?: string
+          codigo_funcao?: string | null
+          codigo_orgao?: string
+          codigo_programa?: string
+          codigo_subfuncao?: string | null
+          codigo_unidade_orcamentaria?: string
+          coletado_em?: string
+          consulta_parametro?: string | null
+          created_at?: string
+          dotacao_atualizada?: number | null
+          dotacao_inicial?: number | null
+          empenhado?: number | null
+          id?: string
+          liquidado?: number | null
+          nome_acao?: string | null
+          nome_funcao?: string | null
+          nome_orgao?: string | null
+          nome_programa?: string | null
+          nome_subfuncao?: string | null
+          nome_unidade_orcamentaria?: string | null
+          pago?: number | null
+          payload?: Json
+        }
+        Relationships: []
+      }
       respostas_lacunas_cerd_iii: {
         Row: {
           created_at: string
