@@ -23,6 +23,7 @@ import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { fmt } from '@/utils/narrativeHelpers';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useNarrativeData } from '@/hooks/useNarrativeData';
+import { IndCodeBadge } from './IndCodeBadge';
 
 export function RacaGeneroTab() {
   const {
@@ -1168,7 +1169,9 @@ export function ClasseSocialTab() {
             <CardTitle className="text-base flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-primary" />
               Distribuição por Faixa de Renda × Raça (%)
+              <IndCodeBadge nome="Pobreza por raça — SIS/IBGE (2022-2024)" />
             </CardTitle>
+
             <CardDescription>SIS/IBGE 2023-2025 | Linhas de pobreza: Banco Mundial (US$6,85/dia) | Dados 2022-2024</CardDescription>
           </CardHeader>
           <CardContent>
@@ -1246,6 +1249,37 @@ export function ClasseSocialTab() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Rendimentos por raça — Censo 2022 (SSoT: mesmo registro do Espelho Seguro) */}
+      {rendimentosCenso2022?.rendimentoPorRaca?.length ? (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-primary" />
+              Rendimento Médio Mensal por Raça — Censo 2022
+              <IndCodeBadge nome="Rendimentos por raça — Censo 2022" />
+            </CardTitle>
+            <CardDescription>
+              {rendimentosCenso2022.fonte} · Ref. {rendimentosCenso2022.dataReferencia} · Média Brasil:{' '}
+              {formatCurrency(rendimentosCenso2022.rendimentoMedioBrasil)} · Gini {String(rendimentosCenso2022.indiceGini).replace('.', ',')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {rendimentosCenso2022.rendimentoPorRaca.map((r: any) => (
+                <div key={r.raca} className="p-3 bg-muted rounded-lg text-center">
+                  <p className="text-xs text-muted-foreground mb-1">{r.raca}</p>
+                  <p className="text-xl font-bold text-foreground">{formatCurrency(r.rendimento)}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {String(r.razaoMedia).replace('.', ',')}× a média nacional
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
 
       {/* Mobilidade Social — OCDE 2018 (dado geral, sem desagregação racial auditável) */}
       <Card>
