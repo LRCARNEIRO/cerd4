@@ -72,22 +72,44 @@ export function ApiRawAuditPanel() {
   const total = rows?.length || 0;
   const comDotacao = rows?.filter(r => r.dotacao_inicial || r.dotacao_atualizada).length || 0;
 
+  const CHUNKS = 4;
+
   const coletar = async () => {
     setLoading(true);
     setLog([]);
     for (const ano of anos) {
-      try {
-        const { data, error } = await supabase.functions.invoke('ingest-api-orcamento-raw', { body: { ano } });
-        if (error) throw error;
-        setLog(prev => [...prev, `${ano}: ${data?.registros_gravados ?? 0} registros · ${data?.dotacoes_atualizadas ?? 0} com dotação LOA`]);
-      } catch (e: any) {
-        setLog(prev => [...prev, `${ano}: falha — ${e.message || e}`]);
+      let gravados = 0;
+      let falhou = false;
+      for (let c = 0; c < CHUNKS; c++) {
+        try {
+          const { data, error } = await supabase.functions.invoke('ingest-api-orcamento-raw', {
+            body: { ano, chunk: c, chunks: CHUNKS, modo: 'execucao' },
+          });
+          if (error) throw error;
+          gravados += data?.registros_gravados ?? 0;
+        } catch (e: any) {
+          falhou = true;
+          setLog(prev => [...prev, `${ano} (lote ${c + 1}/${CHUNKS}): falha — ${e.message || e}`]);
+        }
       }
+      let dot = 0;
+      try {
+        const { data } = await supabase.functions.invoke('ingest-api-orcamento-raw', {
+          body: { ano, modo: 'dotacao' },
+        });
+        dot = data?.dotacoes_atualizadas ?? 0;
+      } catch (e: any) {
+        setLog(prev => [...prev, `${ano} (dotação LOA): falha — ${e.message || e}`]);
+      }
+      if (!falhou || gravados > 0) {
+        setLog(prev => [...prev, `${ano}: ${gravados} registros · ${dot} com dotação LOA`]);
+      }
+      queryClient.invalidateQueries({ queryKey: ['orcamento-api-raw'] });
     }
     setLoading(false);
-    queryClient.invalidateQueries({ queryKey: ['orcamento-api-raw'] });
     toast({ title: 'Coleta concluída' });
   };
+
 
   const exportar = () => {
     if (!rows?.length) return;
