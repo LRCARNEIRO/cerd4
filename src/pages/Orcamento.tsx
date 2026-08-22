@@ -37,6 +37,8 @@ import { Filter } from 'lucide-react';
 
 
 import { KeywordIngestionPanel } from '@/components/dashboard/KeywordIngestionPanel';
+import { ApiRawAuditPanel } from '@/components/dashboard/ApiRawAuditPanel';
+
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
