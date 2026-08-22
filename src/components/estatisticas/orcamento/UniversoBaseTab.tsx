@@ -340,6 +340,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-xs">Programa / Ação</TableHead>
+                  <TableHead className="text-xs">PO (Plano Orçamentário)</TableHead>
                   <TableHead className="text-xs">Órgão</TableHead>
                   <TableHead className="text-xs text-center">Ano</TableHead>
                   <TableHead className="text-xs text-center">Tipo</TableHead>
