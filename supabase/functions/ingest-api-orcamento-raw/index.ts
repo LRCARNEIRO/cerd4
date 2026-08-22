@@ -131,13 +131,16 @@ async function baixarDotacoesLOA(ano: number) {
     const prog = c[cProg]?.replace(/"/g, "").trim();
     if (!prog) continue;
     const acao = cAcao >= 0 ? (c[cAcao]?.replace(/"/g, "").trim() ?? "") : "";
+    if (!acao) continue; // sem ação identificada não há chave exata — não indexa
     const ini = cIni >= 0 ? (num(c[cIni]) ?? 0) : 0;
     const atu = cAtu >= 0 ? (num(c[cAtu]) ?? 0) : 0;
-    for (const key of [`${prog}|${acao}`, `${prog}|`]) {
-      const e = index.get(key);
-      if (e) { e.inicial += ini; e.atualizada += atu; }
-      else index.set(key, { inicial: ini, atualizada: atu });
-    }
+    // REGRA DE OURO: só a chave exata programa|ação. Nunca cair para o total do
+    // programa — isso inventaria dotação para ações sem correspondência na LOA.
+    const key = `${prog}|${acao}`;
+    const e = index.get(key);
+    if (e) { e.inicial += ini; e.atualizada += atu; }
+    else index.set(key, { inicial: ini, atualizada: atu });
+
   }
   return index;
 }
