@@ -217,29 +217,19 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
     }).slice(0, 20);
   }, [query, catalog]);
 
-  const handleSelect = useCallback((result: SearchResult) => {
-    if (onNavigateTab) {
-      onNavigateTab(result.abaValue);
+  const handleSelect = useCallback((result: SearchResult, aba?: AbaLocalizacao) => {
+    const alvo: AbaLocalizacao = aba || { label: result.aba, tabValue: result.abaValue };
+    if (alvo.href) {
+      const anchor = result.codigo ? `#ind-${result.codigo}` : '';
+      window.open(`${alvo.href}${anchor}`, '_blank', 'noopener');
+      return;
     }
-    if (result.abaValue === 'indicadores-db' && (result.codigo || result.id)) {
-      [250, 800].forEach((delay) => window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { id: result.id, codigo: result.codigo } }));
-      }, delay));
-    }
+    onNavigateTab?.(alvo.tabValue);
+    focusIndicadorNaAba({ codigo: result.codigo, id: result.id, nome: result.nome, tabValue: alvo.tabValue });
     setQuery('');
     setIsOpen(false);
   }, [onNavigateTab]);
 
-  // Group results by tab
-  const grouped = useMemo(() => {
-    const map = new Map<string, SearchResult[]>();
-    results.forEach(r => {
-      const arr = map.get(r.aba) || [];
-      arr.push(r);
-      map.set(r.aba, arr);
-    });
-    return map;
-  }, [results]);
 
   return (
     <div className="relative">
