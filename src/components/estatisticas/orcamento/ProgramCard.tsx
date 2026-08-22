@@ -85,6 +85,15 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
                 {code}
               </Badge>
             )}
+            {poCodigo && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 border-primary text-primary"
+                title={`Subitem da ação — Plano Orçamentário ${po}`}
+              >
+                Subitem · PO {poCodigo}
+              </Badge>
+            )}
             {excluded && (
               <Badge variant="outline" className="text-xs border-warning text-warning">
                 Excluído do cálculo
