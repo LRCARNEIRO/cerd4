@@ -141,9 +141,33 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
 
       {expanded && (
         <CardContent className="pt-0 border-t">
+          {po && (
+            <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs space-y-1">
+              <p className="font-semibold text-foreground">
+                Recorte: subitem da ação — Plano Orçamentário (PO) {po}
+              </p>
+              <p className="text-muted-foreground">
+                Este registro <strong>não corresponde à ação inteira</strong>. O PO é o nível abaixo da ação
+                orçamentária; os valores aqui são apenas a fatia desse PO, com recorte racial/étnico, dentro do
+                total executado pela ação.
+              </p>
+            </div>
+          )}
+          {comoConferir && (
+            <div className="mt-3 rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1">
+              <p className="font-semibold text-foreground">Como conferir na fonte oficial (SIOP)</p>
+              <p className="text-muted-foreground">{comoConferir}</p>
+              {urlFonte && (
+                <a href={urlFonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                  Abrir painel SIOP — Execução Orçamentária <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          )}
           {/* Metadados descritivos */}
           {(descritivo || razaoSelecao) && (
             <div className="mt-3 mb-4 space-y-2 bg-muted/40 rounded-md p-3 text-xs">
+
               {descritivo && (
                 <div className="flex items-start gap-2">
                   <Info className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
