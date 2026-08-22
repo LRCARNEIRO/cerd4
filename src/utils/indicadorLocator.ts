@@ -16,6 +16,8 @@ export interface AbaLocalizacao {
   tabValue: string;
   /** true = fonte canônica com âncora garantida */
   canonica?: boolean;
+  /** quando a exibição não é uma aba de /estatisticas, e sim outra página */
+  href?: string;
 }
 
 export const ABA_ESPELHO: AbaLocalizacao = {
@@ -27,7 +29,8 @@ export const ABA_ESPELHO: AbaLocalizacao = {
 /** categoria (BD) → abas temáticas onde o indicador também é exibido */
 const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   ods_racial: [{ label: 'ODS Racial', tabValue: 'ods-racial' }],
-  common_core: [{ label: 'Common Core', tabValue: 'common-core' }],
+  common_core: [{ label: 'Common Core', tabValue: 'common-core', href: '/common-core' }],
+
   habitacao: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
   seguranca_publica: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
   saude: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
