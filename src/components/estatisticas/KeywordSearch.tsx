@@ -12,12 +12,14 @@ import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 interface SearchResult {
   id?: string;
   codigo?: string;
+  nome?: string;
   titulo: string;
   valor?: string;
   fonte?: string;
   aba: string;
   abaValue: string;
   categoria?: string;
+  abas?: AbaLocalizacao[];
 }
 
 // Static data catalog — searches across all sub-tabs
@@ -28,13 +30,16 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     results.push({
       id: ind.id,
       codigo: ind.codigo,
+      nome: ind.nome,
       titulo: `${ind.codigo ? `${ind.codigo} — ` : ''}${ind.nome}`,
       fonte: ind.fonte,
       aba: 'Espelho Seguro (BD)',
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
+      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome),
     });
   });
+
 
   // Segurança Pública
   (mirror.segurancaPublica || []).forEach((s: any) => {
