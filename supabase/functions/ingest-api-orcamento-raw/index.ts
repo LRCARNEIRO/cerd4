@@ -150,10 +150,39 @@ Deno.serve(async (req) => {
       else gravados += chunk.length;
     }
 
+    // ETAPA 2 — Dotações (LOA / Dados Abertos)
+    let dotacoes_atualizadas = 0;
+    if (body.dotacao !== false) {
+      try {
+        const dotIndex = await baixarDotacoesLOA(ano);
+        if (dotIndex.size === 0) erros.push("LOA: nenhuma dotação indexada");
+        for (const row of all) {
+          const dot = dotIndex.get(`${row.codigo_programa}|${row.codigo_acao}`)
+            ?? dotIndex.get(`${row.codigo_programa}|`);
+          if (!dot || (!dot.inicial && !dot.atualizada)) continue;
+          const { error } = await supabase
+            .from("orcamento_api_raw")
+            .update({
+              dotacao_inicial: dot.inicial || null,
+              dotacao_atualizada: dot.atualizada || null,
+              fonte_dotacao: `LOA/Dados Abertos ${ano}`,
+            })
+            .eq("ano", row.ano)
+            .eq("codigo_programa", row.codigo_programa)
+            .eq("codigo_acao", row.codigo_acao);
+          if (!error) dotacoes_atualizadas++;
+        }
+      } catch (e) {
+        erros.push(`LOA: ${e}`);
+      }
+    }
+
     return new Response(JSON.stringify({
       success: true, ano, programas_consultados: programas.length,
-      registros_coletados: all.length, registros_gravados: gravados, detalhes, erros,
+      registros_coletados: all.length, registros_gravados: gravados,
+      dotacoes_atualizadas, detalhes, erros,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
   } catch (error) {
     return new Response(
       JSON.stringify({ success: false, error: error instanceof Error ? error.message : "erro" }),
