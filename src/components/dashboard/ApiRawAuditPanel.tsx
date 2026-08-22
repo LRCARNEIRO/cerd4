@@ -122,13 +122,23 @@ export function ApiRawAuditPanel() {
 
   const exportar = () => {
     if (!rows?.length) return;
-    const blob = new Blob(['\uFEFF' + toCSV(rows)], { type: 'text/csv;charset=utf-8' });
+    // Exporta apenas os anos marcados acima (sem seleção, exporta a base inteira).
+    const selecionados = anos.length ? rows.filter(r => anos.includes(r.ano)) : rows;
+    if (!selecionados.length) {
+      toast({ title: 'Nada a exportar', description: 'Não há registros coletados para os anos selecionados.' });
+      return;
+    }
+    const ordenados = [...anos].sort((a, b) => a - b);
+    const sufixo = anos.length ? `-${ordenados[0]}-${ordenados[ordenados.length - 1]}` : '-completa';
+    const blob = new Blob(['\uFEFF' + toCSV(selecionados)], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `Base-Auditagem-API-Portal-Transparencia.csv`;
+    a.download = `Base-Auditagem-API-Portal-Transparencia${sufixo}.csv`;
     a.click();
     URL.revokeObjectURL(a.href);
+    toast({ title: `CSV exportado`, description: `${selecionados.length} linhas · anos ${ordenados.join(', ')}` });
   };
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
