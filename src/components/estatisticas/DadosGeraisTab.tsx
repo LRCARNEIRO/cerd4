@@ -300,8 +300,10 @@ export function DadosGeraisTab() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Renda */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <h4 className="text-sm font-medium">Renda Média Mensal (R$)</h4>
+                <IndCodeBadge nome="Indicadores socioeconômicos por raça (2018-2024)" sub="renda média mensal" />
+
                 {rendaLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
                 ) : hasRendaData ? (
