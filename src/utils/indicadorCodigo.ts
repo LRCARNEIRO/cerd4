@@ -39,8 +39,12 @@ export function buildIndicadorCodigoMap<T extends IndicadorCodigoSource>(
     const ta = a.created_at ? Date.parse(a.created_at) : 0;
     const tb = b.created_at ? Date.parse(b.created_at) : 0;
     if (ta !== tb) return ta - tb;
-    return a.id.localeCompare(b.id);
+    // Desempate idêntico ao Postgres (ordem de bytes do uuid = ordem lexicográfica
+    // do hex). NÃO usar localeCompare: ele ignora hífens e diverge do banco,
+    // fazendo o IND-NNN da tela não bater com o das exportações/SQL.
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   });
+
   const total = sorted.length;
   const padLen = Math.max(3, String(total).length);
   const map = new Map<string, string>();
