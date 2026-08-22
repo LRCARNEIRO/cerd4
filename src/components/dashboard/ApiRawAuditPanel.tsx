@@ -58,14 +58,23 @@ export function ApiRawAuditPanel() {
   const { data: rows } = useQuery({
     queryKey: ['orcamento-api-raw'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('orcamento_api_raw')
-        .select('ano, codigo_programa, nome_programa, codigo_acao, nome_acao, nome_funcao, nome_subfuncao, dotacao_inicial, dotacao_atualizada, empenhado, liquidado, pago, fonte_dotacao, coletado_em')
-        .order('ano', { ascending: false })
-        .order('codigo_programa')
-        .limit(5000);
-      if (error) throw error;
-      return (data || []) as RawRow[];
+      // PostgREST limita cada requisição a 1000 linhas — pagina até esgotar a base.
+      const PAGE = 1000;
+      const acc: RawRow[] = [];
+      for (let from = 0; from < 50000; from += PAGE) {
+        const { data, error } = await supabase
+          .from('orcamento_api_raw')
+          .select('ano, codigo_programa, nome_programa, codigo_acao, nome_acao, nome_funcao, nome_subfuncao, dotacao_inicial, dotacao_atualizada, empenhado, liquidado, pago, fonte_dotacao, coletado_em')
+          .order('ano', { ascending: false })
+          .order('codigo_programa')
+          .order('codigo_acao')
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        const batch = (data || []) as RawRow[];
+        acc.push(...batch);
+        if (batch.length < PAGE) break;
+      }
+      return acc;
     },
   });
 
