@@ -14,21 +14,32 @@ interface IndCodeBadgeProps {
   /** nome exato do registro no banco */
   nome: string;
   className?: string;
+  /**
+   * Quando preenchido, sinaliza que este bloco é UMA das séries gravadas
+   * dentro do registro canônico (não possui código próprio no banco).
+   * Ex.: sub="renda" → "IND-135 · sub: renda".
+   */
+  sub?: string;
 }
 
-export function IndCodeBadge({ nome, className }: IndCodeBadgeProps) {
+export function IndCodeBadge({ nome, className, sub }: IndCodeBadgeProps) {
   const codigos = useStaticIndicadorCodigos();
   const codigo = lookupCodigo(codigos, nome);
   if (!codigo) return null;
   return (
     <Badge
-      id={`ind-${codigo}`}
-      data-codigo={codigo}
+      id={sub ? undefined : `ind-${codigo}`}
+      data-codigo={sub ? undefined : codigo}
       variant="outline"
-      title={`Código canônico do indicador na Base Estatística (${nome})`}
+      title={
+        sub
+          ? `Série "${sub}" gravada dentro do registro canônico ${codigo} (${nome}). Não possui código próprio na Base Estatística.`
+          : `Código canônico do indicador na Base Estatística (${nome})`
+      }
       className={`font-mono text-[10px] ${className || ''}`}
     >
-      {codigo}
+      {sub ? `${codigo} · sub: ${sub}` : codigo}
     </Badge>
   );
 }
+
