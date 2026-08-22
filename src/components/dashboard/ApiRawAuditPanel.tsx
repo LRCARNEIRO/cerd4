@@ -157,11 +157,13 @@ export function ApiRawAuditPanel() {
             <div><strong>Execução</strong> (empenhado, liquidado, pago): API do Portal da Transparência,
               endpoint <code>/despesas/por-funcional-programatica</code> por ano e programa.</div>
             <div><strong>Dotação</strong> (inicial e atualizada): a API não fornece dotação. Os valores vêm da
-              planilha oficial de Orçamento-Despesa (Dados Abertos) do mesmo ano, agregada por programa+ação.</div>
+              planilha oficial de Orçamento-Despesa (Dados Abertos) do mesmo ano, por correspondência
+              exata de programa + ação.</div>
             <div className="text-muted-foreground italic">
-              Nada aqui é calculado a partir do empenhado. Registros sem correspondência na planilha ficam
-              com dotação vazia — a ausência é preservada, não estimada.
+              Regra de ouro: nada é calculado, estimado ou herdado. Sem correspondência exata na planilha,
+              a dotação fica vazia — a ausência é preservada, nunca substituída pelo total do programa.
             </div>
+
           </CardContent>
         </Card>
 

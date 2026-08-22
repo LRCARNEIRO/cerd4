@@ -131,13 +131,16 @@ async function baixarDotacoesLOA(ano: number) {
     const prog = c[cProg]?.replace(/"/g, "").trim();
     if (!prog) continue;
     const acao = cAcao >= 0 ? (c[cAcao]?.replace(/"/g, "").trim() ?? "") : "";
+    if (!acao) continue; // sem ação identificada não há chave exata — não indexa
     const ini = cIni >= 0 ? (num(c[cIni]) ?? 0) : 0;
     const atu = cAtu >= 0 ? (num(c[cAtu]) ?? 0) : 0;
-    for (const key of [`${prog}|${acao}`, `${prog}|`]) {
-      const e = index.get(key);
-      if (e) { e.inicial += ini; e.atualizada += atu; }
-      else index.set(key, { inicial: ini, atualizada: atu });
-    }
+    // REGRA DE OURO: só a chave exata programa|ação. Nunca cair para o total do
+    // programa — isso inventaria dotação para ações sem correspondência na LOA.
+    const key = `${prog}|${acao}`;
+    const e = index.get(key);
+    if (e) { e.inicial += ini; e.atualizada += atu; }
+    else index.set(key, { inicial: ini, atualizada: atu });
+
   }
   return index;
 }
@@ -223,6 +226,7 @@ Deno.serve(async (req) => {
 
     // ETAPA 2 — Dotações (LOA / Dados Abertos)
     let dotacoes_atualizadas = 0;
+    let dotacoes_limpas = 0;
     if (modo === "dotacao") {
       try {
         const { data: existentes } = await supabase
@@ -232,14 +236,23 @@ Deno.serve(async (req) => {
 
         const alvo = existentes || [];
         const dotIndex = await baixarDotacoesLOA(ano);
-        if (dotIndex.size === 0) erros.push("LOA: nenhuma dotação indexada");
+        if (dotIndex.size === 0) throw new Error("nenhuma dotação indexada — nada será gravado");
+
+        // Zera as dotações do ano antes de reaplicar: ausência preservada,
+        // nunca herdada de coleta anterior nem estimada.
+        const { error: errLimpa } = await supabase
+          .from("orcamento_api_raw")
+          .update({ dotacao_inicial: null, dotacao_atualizada: null, fonte_dotacao: null })
+          .eq("ano", ano);
+        if (errLimpa) throw new Error(`limpeza: ${errLimpa.message}`);
+        dotacoes_limpas = alvo.length;
 
         const vistos = new Set<string>();
         for (const row of alvo) {
           const k = `${row.codigo_programa}|${row.codigo_acao}`;
           if (vistos.has(k)) continue;
           vistos.add(k);
-          const dot = dotIndex.get(k) ?? dotIndex.get(`${row.codigo_programa}|`);
+          const dot = dotIndex.get(k); // apenas correspondência exata programa|ação
           if (!dot || (!dot.inicial && !dot.atualizada)) continue;
           const { error } = await supabase
             .from("orcamento_api_raw")
@@ -258,12 +271,12 @@ Deno.serve(async (req) => {
       }
     }
 
-
     return new Response(JSON.stringify({
       success: true, ano, programas_consultados: programas.length,
       registros_coletados: all.length, registros_gravados: gravados,
-      dotacoes_atualizadas, detalhes, erros,
+      dotacoes_atualizadas, dotacoes_limpas, detalhes, erros,
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
 
   } catch (error) {
     return new Response(
