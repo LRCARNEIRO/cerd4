@@ -837,7 +837,11 @@ export default function Orcamento() {
                 Somente base canônica ({currentRecords.length} de {currentRecordsBrutos.length} registros · {duplicadosSuprimidos} duplicados suprimidos no total)
               </Label>
             </div>
-            <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(somenteCanonico ? currentRecords : currentRecordsBrutos)} fileName="Orcamento-Universo-Base" compact />
+            <div className="flex items-center gap-2">
+              <ApiRawAuditPanel />
+              <ExportTabButtons targetSelector="#export-orcamento-universo" generateHTML={() => generateUniversoBaseHTML(somenteCanonico ? currentRecords : currentRecordsBrutos)} fileName="Orcamento-Universo-Base" compact />
+            </div>
+
           </div>
           <div id="export-orcamento-universo">
             <DedupAuditPanel bruto={dadosBrutos?.length || 0} canonico={dadosOrcamentarios.length} valorSuprimido={stats?.valorSuprimido || 0} formatCurrencyFull={formatCurrencyFull} />
