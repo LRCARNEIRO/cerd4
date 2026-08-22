@@ -226,6 +226,7 @@ Deno.serve(async (req) => {
 
     // ETAPA 2 — Dotações (LOA / Dados Abertos)
     let dotacoes_atualizadas = 0;
+    let dotacoes_limpas = 0;
     if (modo === "dotacao") {
       try {
         const { data: existentes } = await supabase
@@ -235,14 +236,23 @@ Deno.serve(async (req) => {
 
         const alvo = existentes || [];
         const dotIndex = await baixarDotacoesLOA(ano);
-        if (dotIndex.size === 0) erros.push("LOA: nenhuma dotação indexada");
+        if (dotIndex.size === 0) throw new Error("nenhuma dotação indexada — nada será gravado");
+
+        // Zera as dotações do ano antes de reaplicar: ausência preservada,
+        // nunca herdada de coleta anterior nem estimada.
+        const { error: errLimpa } = await supabase
+          .from("orcamento_api_raw")
+          .update({ dotacao_inicial: null, dotacao_atualizada: null, fonte_dotacao: null })
+          .eq("ano", ano);
+        if (errLimpa) throw new Error(`limpeza: ${errLimpa.message}`);
+        dotacoes_limpas = alvo.length;
 
         const vistos = new Set<string>();
         for (const row of alvo) {
           const k = `${row.codigo_programa}|${row.codigo_acao}`;
           if (vistos.has(k)) continue;
           vistos.add(k);
-          const dot = dotIndex.get(k) ?? dotIndex.get(`${row.codigo_programa}|`);
+          const dot = dotIndex.get(k); // apenas correspondência exata programa|ação
           if (!dot || (!dot.inicial && !dot.atualizada)) continue;
           const { error } = await supabase
             .from("orcamento_api_raw")
@@ -256,6 +266,11 @@ Deno.serve(async (req) => {
             .eq("codigo_acao", row.codigo_acao);
           if (!error) dotacoes_atualizadas++;
         }
+      } catch (e) {
+        erros.push(`LOA: ${e}`);
+      }
+    }
+
       } catch (e) {
         erros.push(`LOA: ${e}`);
       }
