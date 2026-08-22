@@ -149,9 +149,16 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const ano: number = Number(body.ano) || new Date().getFullYear();
-    const programas: string[] = Array.isArray(body.programas) && body.programas.length
+    let programas: string[] = Array.isArray(body.programas) && body.programas.length
       ? body.programas.map(String)
       : PROGRAMAS_PADRAO;
+    // Fatiamento opcional para evitar timeout: { chunk: 0, chunks: 4 }
+    if (Number.isInteger(body.chunks) && body.chunks > 1) {
+      const size = Math.ceil(programas.length / body.chunks);
+      const i = Number(body.chunk) || 0;
+      programas = programas.slice(i * size, (i + 1) * size);
+    }
+
 
     const apiKey = Deno.env.get("PORTAL_TRANSPARENCIA_API_KEY");
     if (!apiKey) {
