@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { unzipSync } from "https://esm.sh/fflate@0.8.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,10 +11,13 @@ const API_BASE = "https://api.portaldatransparencia.gov.br/api-de-dados";
 
 /**
  * BASE BRUTA DE AUDITAGEM — Ações, Programas e Dotações
- * Coleta direta de /despesas/por-funcional-programatica (ano + programa),
- * gravando o retorno original em public.orcamento_api_raw.
- * Um ano por chamada para evitar timeout.
+ * Etapa 1: /despesas/por-funcional-programatica (ano + programa) → execução
+ *          (empenhado / liquidado / pago). A API NÃO devolve dotação.
+ * Etapa 2: ZIP oficial "orcamento-despesa/<ano>" (Dados Abertos) → dotação
+ *          inicial e atualizada, agregada por programa+ação.
+ * Grava o retorno original em public.orcamento_api_raw. Um ano por chamada.
  */
+
 
 const PROGRAMAS_PADRAO = [
   "0032", "0151", "0617", "0910", "1041", "1189", "1617", "2034", "2065",
