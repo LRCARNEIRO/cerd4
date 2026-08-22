@@ -38,6 +38,10 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const name = extractName(programa);
   const orgao = registros[0]?.orgao;
   const descritivo = registros[0]?.descritivo;
+  const po = registros.find(r => r.plano_orcamentario)?.plano_orcamentario || null;
+  const poCodigo = po ? po.split(' - ')[0] : null;
+  const comoConferir = registros.find(r => r.observacoes?.includes('Como reproduzir no SIOP'))?.observacoes
+    ?.split('Como reproduzir no SIOP')[1]?.replace(/^[^:]*:\s*/, '') || null;
 
   // Infer ICERD articles from first record
   const artigosBadges = useMemo(() => {
