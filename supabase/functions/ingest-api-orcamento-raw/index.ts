@@ -165,39 +165,42 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    const modo: string = body.modo === "dotacao" ? "dotacao" : "execucao";
     const rows = new Map<string, any>();
     const erros: string[] = [];
     const detalhes: Record<string, number> = {};
 
-    for (const prog of programas) {
-      let page = 1;
-      let count = 0;
-      while (page <= 30) {
-        const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&programa=${prog}&pagina=${page}`;
-        try {
-          const res = await fetch(url, { headers: { "chave-api-dados": apiKey, Accept: "application/json" } });
-          if (res.status === 429) { await new Promise(r => setTimeout(r, 20000)); continue; }
-          if (!res.ok) { if (page === 1) erros.push(`HTTP ${res.status} programa ${prog}`); break; }
-          const data = await res.json();
-          if (!Array.isArray(data) || data.length === 0) break;
+    if (modo === "execucao") {
+      for (const prog of programas) {
+        let page = 1;
+        let count = 0;
+        while (page <= 30) {
+          const url = `${API_BASE}/despesas/por-funcional-programatica?ano=${ano}&programa=${prog}&pagina=${page}`;
+          try {
+            const res = await fetch(url, { headers: { "chave-api-dados": apiKey, Accept: "application/json" } });
+            if (res.status === 429) { await new Promise(r => setTimeout(r, 20000)); continue; }
+            if (!res.ok) { if (page === 1) erros.push(`HTTP ${res.status} programa ${prog}`); break; }
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length === 0) break;
 
-          for (const item of data) {
-            const row = mapRow(ano, item, `programa=${prog}`);
-            if (!row.codigo_programa) row.codigo_programa = prog;
-            const key = [row.ano, row.codigo_programa, row.codigo_acao, row.codigo_orgao, row.codigo_unidade_orcamentaria].join("|");
-            rows.set(key, row);
-            count++;
+            for (const item of data) {
+              const row = mapRow(ano, item, `programa=${prog}`);
+              if (!row.codigo_programa) row.codigo_programa = prog;
+              const key = [row.ano, row.codigo_programa, row.codigo_acao, row.codigo_orgao, row.codigo_unidade_orcamentaria].join("|");
+              rows.set(key, row);
+              count++;
+            }
+            if (data.length < 15) break;
+            page++;
+            await new Promise(r => setTimeout(r, 300));
+          } catch (e) {
+            erros.push(`programa ${prog} p${page}: ${e}`);
+            break;
           }
-          if (data.length < 15) break;
-          page++;
-          await new Promise(r => setTimeout(r, 300));
-        } catch (e) {
-          erros.push(`programa ${prog} p${page}: ${e}`);
-          break;
         }
+        detalhes[prog] = count;
+        await new Promise(r => setTimeout(r, 300));
       }
-      detalhes[prog] = count;
-      await new Promise(r => setTimeout(r, 300));
     }
 
     const all = Array.from(rows.values());
@@ -213,13 +216,23 @@ Deno.serve(async (req) => {
 
     // ETAPA 2 — Dotações (LOA / Dados Abertos)
     let dotacoes_atualizadas = 0;
-    if (body.dotacao !== false) {
+    if (modo === "dotacao") {
       try {
+        const { data: existentes } = await supabase
+          .from("orcamento_api_raw")
+          .select("ano, codigo_programa, codigo_acao")
+          .eq("ano", ano);
+
+        const alvo = existentes || [];
         const dotIndex = await baixarDotacoesLOA(ano);
         if (dotIndex.size === 0) erros.push("LOA: nenhuma dotação indexada");
-        for (const row of all) {
-          const dot = dotIndex.get(`${row.codigo_programa}|${row.codigo_acao}`)
-            ?? dotIndex.get(`${row.codigo_programa}|`);
+
+        const vistos = new Set<string>();
+        for (const row of alvo) {
+          const k = `${row.codigo_programa}|${row.codigo_acao}`;
+          if (vistos.has(k)) continue;
+          vistos.add(k);
+          const dot = dotIndex.get(k) ?? dotIndex.get(`${row.codigo_programa}|`);
           if (!dot || (!dot.inicial && !dot.atualizada)) continue;
           const { error } = await supabase
             .from("orcamento_api_raw")
@@ -228,7 +241,7 @@ Deno.serve(async (req) => {
               dotacao_atualizada: dot.atualizada || null,
               fonte_dotacao: `LOA/Dados Abertos ${ano}`,
             })
-            .eq("ano", row.ano)
+            .eq("ano", ano)
             .eq("codigo_programa", row.codigo_programa)
             .eq("codigo_acao", row.codigo_acao);
           if (!error) dotacoes_atualizadas++;
@@ -237,6 +250,7 @@ Deno.serve(async (req) => {
         erros.push(`LOA: ${e}`);
       }
     }
+
 
     return new Response(JSON.stringify({
       success: true, ano, programas_consultados: programas.length,
