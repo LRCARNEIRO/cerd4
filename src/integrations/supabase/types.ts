@@ -290,6 +290,84 @@ export type Database = {
           },
         ]
       }
+      evidence_override_log: {
+        Row: {
+          acao: string
+          autor: string | null
+          autor_email: string | null
+          created_at: string
+          id: string
+          item: string
+          justificativa: string | null
+          recomendacao_key: string
+          tipo_evidencia: string
+        }
+        Insert: {
+          acao: string
+          autor?: string | null
+          autor_email?: string | null
+          created_at?: string
+          id?: string
+          item: string
+          justificativa?: string | null
+          recomendacao_key: string
+          tipo_evidencia: string
+        }
+        Update: {
+          acao?: string
+          autor?: string | null
+          autor_email?: string | null
+          created_at?: string
+          id?: string
+          item?: string
+          justificativa?: string | null
+          recomendacao_key?: string
+          tipo_evidencia?: string
+        }
+        Relationships: []
+      }
+      evidence_overrides: {
+        Row: {
+          added_indicadores: Json
+          added_normativos: Json
+          added_orcamento: Json
+          created_at: string
+          id: string
+          recomendacao_key: string
+          removed_indicadores: string[]
+          removed_normativos: string[]
+          removed_orcamento: string[]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          added_indicadores?: Json
+          added_normativos?: Json
+          added_orcamento?: Json
+          created_at?: string
+          id?: string
+          recomendacao_key: string
+          removed_indicadores?: string[]
+          removed_normativos?: string[]
+          removed_orcamento?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          added_indicadores?: Json
+          added_normativos?: Json
+          added_orcamento?: Json
+          created_at?: string
+          id?: string
+          recomendacao_key?: string
+          removed_indicadores?: string[]
+          removed_normativos?: string[]
+          removed_orcamento?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       indicadores_interseccionais: {
         Row: {
           analise_interseccional: string | null
