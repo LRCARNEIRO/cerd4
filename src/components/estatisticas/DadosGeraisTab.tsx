@@ -16,6 +16,7 @@ import { useOrcamentoCanonico, useOrcamentoStats } from '@/hooks/useLacunasData'
 import { useSidraDesemprego } from '@/hooks/useSidraDesemprego';
 import { useSidraRenda } from '@/hooks/useSidraRenda';
 import { useDadosGeraisBD } from '@/hooks/useDadosGeraisBD';
+import { IndCodeBadge } from './IndCodeBadge';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
@@ -231,7 +232,9 @@ export function DadosGeraisTab() {
             <CardTitle className="text-base flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
               Evolução da Autodeclaração Racial (2018-2025)
+              <IndCodeBadge nome="Evolução composição racial (2018-2024)" />
             </CardTitle>
+
             <CardDescription>
               % da população branca vs negra (pretos + pardos) | PNAD Contínua Anual - SIDRA Tabela 6403
             </CardDescription>
@@ -284,7 +287,11 @@ export function DadosGeraisTab() {
       {/* Indicadores socioeconômicos - série histórica */}
       <Card id="serie-socioeconomicos">
         <CardHeader>
-          <CardTitle className="text-base">Indicadores Socioeconômicos por Raça (2018-2025)</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            Indicadores Socioeconômicos por Raça (2018-2025)
+            <IndCodeBadge nome="Indicadores socioeconômicos por raça (2018-2024)" />
+          </CardTitle>
+
           <CardDescription>
             Evolução anual de renda, desemprego e pobreza | PNAD Contínua (SIDRA Tabelas 6405, 6402, 6403)
           </CardDescription>
