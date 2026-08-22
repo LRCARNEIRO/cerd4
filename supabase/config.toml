@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.audit-cross-verify]
 verify_jwt = false
+
+[functions.ingest-api-orcamento-raw]
+verify_jwt = false
