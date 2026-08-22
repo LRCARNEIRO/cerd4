@@ -82,7 +82,68 @@ function mapRow(ano: number, item: any, consulta: string) {
   };
 }
 
+function parseCSVLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = "", q = false;
+  for (const c of line) {
+    if (c === '"') q = !q;
+    else if (c === ";" && !q) { out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** Baixa o ZIP oficial da despesa orçamentária e indexa dotações por programa|ação. */
+async function baixarDotacoesLOA(ano: number) {
+  const index = new Map<string, { inicial: number; atualizada: number }>();
+  const url = `https://portaldatransparencia.gov.br/download-de-dados/orcamento-despesa/${ano}`;
+  const res = await fetch(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; CERD-IV/1.0)", Accept: "*/*" },
+    redirect: "follow",
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  const unzipped = unzipSync(new Uint8Array(await res.arrayBuffer()));
+  const csvFile = Object.keys(unzipped).find(f => f.toLowerCase().endsWith(".csv"));
+  if (!csvFile) throw new Error("ZIP sem CSV");
+
+  const bytes = unzipped[csvFile];
+  let text = new TextDecoder("utf-8").decode(bytes);
+  if (text.includes("\uFFFD")) text = new TextDecoder("latin1").decode(bytes);
+
+  const lines = text.split("\n");
+  if (lines.length < 2) throw new Error("CSV vazio");
+
+  const cols = parseCSVLine(lines[0]).map(c => c.replace(/"/g, "").trim().toUpperCase());
+  const h: Record<string, number> = {};
+  cols.forEach((c, i) => { h[c] = i; });
+
+  const cIni = h["ORÇAMENTO INICIAL (R$)"] ?? h["ORCAMENTO INICIAL (R$)"] ?? h["DOTAÇÃO INICIAL (R$)"] ?? -1;
+  const cAtu = h["ORÇAMENTO ATUALIZADO (R$)"] ?? h["ORCAMENTO ATUALIZADO (R$)"] ?? h["DOTAÇÃO ATUALIZADA (R$)"] ?? -1;
+  const cProg = h["CÓDIGO PROGRAMA ORÇAMENTÁRIO"] ?? h["CODIGO PROGRAMA ORCAMENTARIO"] ?? h["CÓDIGO PROGRAMA"] ?? -1;
+  const cAcao = h["CÓDIGO AÇÃO"] ?? h["CODIGO ACAO"] ?? -1;
+  if (cProg === -1 || (cIni === -1 && cAtu === -1)) throw new Error("colunas não encontradas");
+
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const c = parseCSVLine(lines[i]);
+    const prog = c[cProg]?.replace(/"/g, "").trim();
+    if (!prog) continue;
+    const acao = cAcao >= 0 ? (c[cAcao]?.replace(/"/g, "").trim() ?? "") : "";
+    const ini = cIni >= 0 ? (num(c[cIni]) ?? 0) : 0;
+    const atu = cAtu >= 0 ? (num(c[cAtu]) ?? 0) : 0;
+    for (const key of [`${prog}|${acao}`, `${prog}|`]) {
+      const e = index.get(key);
+      if (e) { e.inicial += ini; e.atualizada += atu; }
+      else index.set(key, { inicial: ini, atualizada: atu });
+    }
+  }
+  return index;
+}
+
 Deno.serve(async (req) => {
+
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
