@@ -8,16 +8,20 @@ import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
+import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
+
 
 interface SearchResult {
   id?: string;
   codigo?: string;
+  nome?: string;
   titulo: string;
   valor?: string;
   fonte?: string;
   aba: string;
   abaValue: string;
   categoria?: string;
+  abas?: AbaLocalizacao[];
 }
 
 // Static data catalog — searches across all sub-tabs
@@ -28,13 +32,16 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     results.push({
       id: ind.id,
       codigo: ind.codigo,
+      nome: ind.nome,
       titulo: `${ind.codigo ? `${ind.codigo} — ` : ''}${ind.nome}`,
       fonte: ind.fonte,
       aba: 'Espelho Seguro (BD)',
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
+      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome),
     });
   });
+
 
   // Segurança Pública
   (mirror.segurancaPublica || []).forEach((s: any) => {
@@ -210,29 +217,19 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
     }).slice(0, 20);
   }, [query, catalog]);
 
-  const handleSelect = useCallback((result: SearchResult) => {
-    if (onNavigateTab) {
-      onNavigateTab(result.abaValue);
+  const handleSelect = useCallback((result: SearchResult, aba?: AbaLocalizacao) => {
+    const alvo: AbaLocalizacao = aba || { label: result.aba, tabValue: result.abaValue };
+    if (alvo.href) {
+      const anchor = result.codigo ? `#ind-${result.codigo}` : '';
+      window.open(`${alvo.href}${anchor}`, '_blank', 'noopener');
+      return;
     }
-    if (result.abaValue === 'indicadores-db' && (result.codigo || result.id)) {
-      [250, 800].forEach((delay) => window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { id: result.id, codigo: result.codigo } }));
-      }, delay));
-    }
+    onNavigateTab?.(alvo.tabValue);
+    focusIndicadorNaAba({ codigo: result.codigo, id: result.id, nome: result.nome, tabValue: alvo.tabValue });
     setQuery('');
     setIsOpen(false);
   }, [onNavigateTab]);
 
-  // Group results by tab
-  const grouped = useMemo(() => {
-    const map = new Map<string, SearchResult[]>();
-    results.forEach(r => {
-      const arr = map.get(r.aba) || [];
-      arr.push(r);
-      map.set(r.aba, arr);
-    });
-    return map;
-  }, [results]);
 
   return (
     <div className="relative">
@@ -269,40 +266,62 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
                 Nenhum resultado para "{query}"
               </p>
             ) : (
-              <div className="space-y-4">
-                <p className="text-xs text-muted-foreground">{results.length} resultado(s) encontrado(s)</p>
-                {Array.from(grouped.entries()).map(([aba, items]) => (
-                  <div key={aba}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className="text-xs bg-primary/10 text-primary">{aba}</Badge>
-                      <span className="text-xs text-muted-foreground">({items.length})</span>
-                    </div>
-                    <div className="space-y-1">
-                      {items.map((item, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => handleSelect(item)}
-                          className={cn(
-                            "w-full text-left p-2 rounded hover:bg-muted/80 transition-colors",
-                            "border border-transparent hover:border-primary/20"
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {results.length} resultado(s) — clique na aba desejada para abrir no ponto exato do indicador
+                </p>
+                {results.map((item, idx) => {
+                  const abas = item.abas && item.abas.length
+                    ? item.abas
+                    : [{ label: item.aba, tabValue: item.abaValue } as AbaLocalizacao];
+                  return (
+                    <div
+                      key={idx}
+                      className={cn(
+                        'p-2 rounded border border-transparent hover:border-primary/20 hover:bg-muted/60 transition-colors',
+                      )}
+                    >
+                      <div className="flex items-start gap-2">
+                        {item.codigo ? (
+                          <Badge variant="default" className="text-[10px] px-1.5 py-0 font-mono shrink-0">{item.codigo}</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 shrink-0 text-muted-foreground" title="Bloco agregado — ainda sem ID no espelho do banco">
+                            sem ID
+                          </Badge>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium leading-tight">
+                            {item.nome || item.titulo}
+                          </p>
+                          {item.fonte && (
+                            <p className="text-xs text-muted-foreground truncate">{item.fonte}</p>
                           )}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{item.titulo}</p>
-                              {item.fonte && (
-                                <p className="text-xs text-muted-foreground truncate">{item.fonte}</p>
-                              )}
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                            <span className="text-[10px] text-muted-foreground">Aparece em:</span>
+                            {abas.map(aba => (
+                              <button
+                                key={aba.tabValue}
+                                onClick={() => handleSelect(item, aba)}
+                                className={cn(
+                                  'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] transition-colors',
+                                  aba.canonica
+                                    ? 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/20'
+                                    : 'border-border hover:bg-muted',
+                                )}
+                              >
+                                {aba.label}
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            ))}
                           </div>
-                        </button>
-                      ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
+
           </CardContent>
         </Card>
       )}
