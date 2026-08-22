@@ -110,13 +110,15 @@ function rowToOverride(r: DbRow): EvidenceOverride {
   });
 }
 
+type Json = ReturnType<typeof JSON.parse>;
+
 type OverrideRow = {
   recomendacao_key: string;
-  added_indicadores: unknown;
+  added_indicadores: Json;
   removed_indicadores: string[];
-  added_orcamento: unknown;
+  added_orcamento: Json;
   removed_orcamento: string[];
-  added_normativos: unknown;
+  added_normativos: Json;
   removed_normativos: string[];
   updated_by: string | null;
 };
@@ -124,11 +126,11 @@ type OverrideRow = {
 function overrideToRow(key: string, v: EvidenceOverride, userId: string | null): OverrideRow {
   return {
     recomendacao_key: key,
-    added_indicadores: v.addedIndicadores,
+    added_indicadores: v.addedIndicadores as unknown as Json,
     removed_indicadores: v.removedIndicadores,
-    added_orcamento: v.addedOrcamento,
+    added_orcamento: v.addedOrcamento as unknown as Json,
     removed_orcamento: v.removedOrcamento,
-    added_normativos: v.addedNormativos,
+    added_normativos: v.addedNormativos as unknown as Json,
     removed_normativos: v.removedNormativos,
     updated_by: userId,
   };
