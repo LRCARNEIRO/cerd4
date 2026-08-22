@@ -300,8 +300,10 @@ export function DadosGeraisTab() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Renda */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <h4 className="text-sm font-medium">Renda Média Mensal (R$)</h4>
+                <IndCodeBadge nome="Indicadores socioeconômicos por raça (2018-2024)" sub="renda média mensal" />
+
                 {rendaLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
                 ) : hasRendaData ? (
@@ -360,8 +362,10 @@ export function DadosGeraisTab() {
 
             {/* Desemprego — DADOS EM TEMPO REAL via API SIDRA */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <h4 className="text-sm font-medium">Taxa de Desemprego (%)</h4>
+                <IndCodeBadge nome="Indicadores socioeconômicos por raça (2018-2024)" sub="taxa de desocupação" />
+
                 {sidraLoading ? (
                   <Badge variant="outline" className="text-[10px] gap-1"><RefreshCw className="w-3 h-3 animate-spin" /> Buscando SIDRA...</Badge>
                 ) : hasDesempregoData ? (
@@ -411,8 +415,10 @@ export function DadosGeraisTab() {
 
             {/* Pobreza */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <h4 className="text-sm font-medium">Taxa de Pobreza: Negros × Brancos (%) — Linha US$6,85/dia</h4>
+                <IndCodeBadge nome="Indicadores socioeconômicos por raça (2018-2024)" sub="taxa de pobreza" />
+
                 <Badge variant="outline" className="text-[10px] gap-1 border-emerald-300 text-emerald-700">
                   SIS/IBGE — Dados verificados (2018-2024)
                 </Badge>
