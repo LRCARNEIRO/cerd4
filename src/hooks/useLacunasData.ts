@@ -298,6 +298,8 @@ export interface DadoOrcamentario {
   descritivo: string | null;
   publico_alvo: string | null;
   razao_selecao: string | null;
+  /** Plano Orçamentário (PO) — subitem abaixo da ação. Vazio = ação inteira. */
+  plano_orcamentario?: string | null;
   artigos_convencao: string[] | null;
   tipo_dotacao: 'orcamentario' | 'extraorcamentario';
   subtipo_extraorcamentario: string | null;

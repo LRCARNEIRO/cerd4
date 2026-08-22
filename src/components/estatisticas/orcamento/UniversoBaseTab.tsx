@@ -340,6 +340,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-xs">Programa / Ação</TableHead>
+                  <TableHead className="text-xs">PO (Plano Orçamentário)</TableHead>
                   <TableHead className="text-xs">Órgão</TableHead>
                   <TableHead className="text-xs text-center">Ano</TableHead>
                   <TableHead className="text-xs text-center">Tipo</TableHead>
@@ -358,6 +359,13 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                   return (
                     <TableRow key={r.id || i}>
                       <TableCell className="text-xs whitespace-normal break-words">{r.programa}</TableCell>
+                      <TableCell className="text-xs whitespace-normal break-words">
+                        {(r as any).plano_orcamentario ? (
+                          <span className="text-primary font-medium">PO {(r as any).plano_orcamentario}</span>
+                        ) : (
+                          <span className="text-muted-foreground">Ação inteira</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-xs">{r.orgao}</TableCell>
                       <TableCell className="text-xs text-center font-mono">{r.ano}</TableCell>
                       <TableCell className="text-xs text-center">

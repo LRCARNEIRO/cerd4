@@ -38,6 +38,10 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const name = extractName(programa);
   const orgao = registros[0]?.orgao;
   const descritivo = registros[0]?.descritivo;
+  const po = registros.find(r => r.plano_orcamentario)?.plano_orcamentario || null;
+  const poCodigo = po ? po.split(' - ')[0] : null;
+  const comoConferir = registros.find(r => r.observacoes?.includes('Como reproduzir no SIOP'))?.observacoes
+    ?.split('Como reproduzir no SIOP')[1]?.replace(/^[^:]*:\s*/, '') || null;
 
   // Infer ICERD articles from first record
   const artigosBadges = useMemo(() => {
@@ -79,6 +83,15 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
             {code && (
               <Badge variant="secondary" className="text-xs font-mono">
                 {code}
+              </Badge>
+            )}
+            {poCodigo && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 border-primary text-primary"
+                title={`Subitem da ação — Plano Orçamentário ${po}`}
+              >
+                Subitem · PO {poCodigo}
               </Badge>
             )}
             {excluded && (
@@ -128,9 +141,33 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
 
       {expanded && (
         <CardContent className="pt-0 border-t">
+          {po && (
+            <div className="mt-3 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs space-y-1">
+              <p className="font-semibold text-foreground">
+                Recorte: subitem da ação — Plano Orçamentário (PO) {po}
+              </p>
+              <p className="text-muted-foreground">
+                Este registro <strong>não corresponde à ação inteira</strong>. O PO é o nível abaixo da ação
+                orçamentária; os valores aqui são apenas a fatia desse PO, com recorte racial/étnico, dentro do
+                total executado pela ação.
+              </p>
+            </div>
+          )}
+          {comoConferir && (
+            <div className="mt-3 rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1">
+              <p className="font-semibold text-foreground">Como conferir na fonte oficial (SIOP)</p>
+              <p className="text-muted-foreground">{comoConferir}</p>
+              {urlFonte && (
+                <a href={urlFonte} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                  Abrir painel SIOP — Execução Orçamentária <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+          )}
           {/* Metadados descritivos */}
           {(descritivo || razaoSelecao) && (
             <div className="mt-3 mb-4 space-y-2 bg-muted/40 rounded-md p-3 text-xs">
+
               {descritivo && (
                 <div className="flex items-start gap-2">
                   <Info className="w-3.5 h-3.5 mt-0.5 text-primary flex-shrink-0" />
