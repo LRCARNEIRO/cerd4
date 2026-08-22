@@ -100,6 +100,7 @@ export type Database = {
           orgao: string
           pago: number | null
           percentual_execucao: number | null
+          plano_orcamentario: string | null
           programa: string
           publico_alvo: string | null
           razao_selecao: string | null
@@ -126,6 +127,7 @@ export type Database = {
           orgao: string
           pago?: number | null
           percentual_execucao?: number | null
+          plano_orcamentario?: string | null
           programa: string
           publico_alvo?: string | null
           razao_selecao?: string | null
@@ -152,6 +154,7 @@ export type Database = {
           orgao?: string
           pago?: number | null
           percentual_execucao?: number | null
+          plano_orcamentario?: string | null
           programa?: string
           publico_alvo?: string | null
           razao_selecao?: string | null

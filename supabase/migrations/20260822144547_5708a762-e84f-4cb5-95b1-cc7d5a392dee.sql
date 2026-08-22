@@ -1,0 +1,2 @@
+ALTER TABLE public.dados_orcamentarios ADD COLUMN IF NOT EXISTS plano_orcamentario text;
+COMMENT ON COLUMN public.dados_orcamentarios.plano_orcamentario IS 'Código e nome do Plano Orçamentário (PO), subitem da ação. Ex: "000D - Cumprimento da ADPF 709". Vazio quando o registro corresponde à ação inteira.';
