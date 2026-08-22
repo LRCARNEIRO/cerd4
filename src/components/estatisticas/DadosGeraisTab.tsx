@@ -165,7 +165,9 @@ export function DadosGeraisTab() {
             <CardTitle className="text-base flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
               Composição Racial do Brasil
+              <IndCodeBadge nome="Composição racial — Censo 2022" />
             </CardTitle>
+
             <CardDescription>Censo Demográfico 2022 - IBGE</CardDescription>
           </CardHeader>
           <CardContent>
