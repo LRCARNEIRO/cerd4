@@ -29,7 +29,7 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     .filter(el => !el.closest('[data-deeplink-banner]'));
   const usados = new Set<string>();
 
-  const stamp = (el: HTMLElement, codigo: string) => {
+  const stamp = (el: HTMLElement, codigo: string, aproximado = false) => {
     usados.add(codigo);
     el.dataset.codigo = codigo;
     el.dataset.autoCodigo = '1';
@@ -38,8 +38,10 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     badge.className =
       `${BADGE_CLASS} ml-2 align-middle inline-flex items-center rounded border border-border ` +
       'px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground';
-    badge.textContent = codigo;
-    badge.title = 'Código canônico do indicador na Base Estatística (Espelho Seguro — BD)';
+    badge.textContent = aproximado ? `${codigo}~` : codigo;
+    badge.title = aproximado
+      ? 'Correspondência por título (aproximada) com o registro do Espelho Seguro (BD). Confirme no Espelho antes de citar.'
+      : 'Código canônico do indicador na Base Estatística (Espelho Seguro — BD)';
     el.appendChild(badge);
     tagged++;
   };
@@ -66,8 +68,24 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     if (alvo) stamp(alvo, codigo);
   }
 
+  // Passe 3 — correspondência por tokens fortes (>=3 palavras com 4+ letras,
+  // TODAS presentes no mesmo título curto). Marcado com "~" para deixar
+  // explícito que é aproximado — mesmo critério do localizador de deep-link.
+  for (const [nomeNorm, codigo] of byNorm) {
+    if (usados.has(codigo)) continue;
+    const tokens = nomeNorm.split(/[^a-z0-9]+/).filter(t => t.length >= 4).slice(0, 6);
+    if (tokens.length < 3) continue;
+    const alvo = nodes.find(el => {
+      if (el.dataset.codigo) return false;
+      const t = norm(el.textContent || '');
+      return t.length > 0 && t.length < 140 && tokens.every(tk => t.includes(tk));
+    });
+    if (alvo) stamp(alvo, codigo, true);
+  }
+
   return tagged;
 }
+
 
 
 /** Remove selos injetados (usado antes de re-carimbar em troca de aba). */
