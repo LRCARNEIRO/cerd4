@@ -47,6 +47,8 @@ export default function Estatisticas() {
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
+  const [deepLink, setDeepLink] = useState<{ codigo: string; tabValue: string } | null>(null);
+  const [deepLinkStatus, setDeepLinkStatus] = useState<'buscando' | 'ok' | 'nao-encontrado'>('buscando');
   const initialIndicatorQuery = useMemo(() => {
     if (typeof window === 'undefined') return '';
     const params = new URLSearchParams(window.location.search);
@@ -54,7 +56,8 @@ export default function Estatisticas() {
   }, []);
 
   // Deep-link p/ indicador específico: /estatisticas?ind=IND-018#ind-IND-018
-  // Só troca a aba aqui; a rolagem exata é resolvida pela própria IndicadoresDbTab.
+  // Só troca a aba aqui; a rolagem exata é resolvida no efeito abaixo, quando
+  // o nome canônico do indicador (Espelho BD) já estiver carregado.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
@@ -75,10 +78,8 @@ export default function Estatisticas() {
       // que é a fonte canônica com âncora garantida para todo IND-NNN.
       const alvo = tabParam && VALID_TABS.has(tabParam) ? tabParam : 'indicadores-db';
       setActiveTab(alvo);
-      const timer = window.setTimeout(() => {
-        focusIndicadorNaAba({ codigo: indId, id: indId, tabValue: alvo });
-      }, 250);
-      return () => window.clearTimeout(timer);
+      setDeepLink({ codigo: indId.toUpperCase(), tabValue: alvo });
+      return;
     }
     if (tabParam && VALID_TABS.has(tabParam)) {
       setActiveTab(tabParam);
@@ -91,6 +92,30 @@ export default function Estatisticas() {
     }
 
   }, []);
+
+  // Indicador-alvo do deep-link, resolvido no Espelho Seguro (BD) — mesmo ID e
+  // mesmo nome canônico exibidos na aba temática.
+  const deepLinkIndicador = useMemo(() => {
+    if (!deepLink) return null;
+    return (indicadores || []).find(i => (i.codigo || '').toUpperCase() === deepLink.codigo) || null;
+  }, [deepLink, indicadores]);
+
+  useEffect(() => {
+    if (!deepLink) return;
+    if (deepLink.tabValue !== 'indicadores-db' && !deepLinkIndicador) return; // aguarda o BD
+    setDeepLinkStatus('buscando');
+    const timer = window.setTimeout(() => {
+      focusIndicadorNaAba({
+        codigo: deepLink.codigo,
+        id: deepLinkIndicador?.id,
+        nome: deepLinkIndicador?.indicador,
+        tabValue: deepLink.tabValue,
+        onResult: (found) => setDeepLinkStatus(found ? 'ok' : 'nao-encontrado'),
+      });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [deepLink, deepLinkIndicador]);
+
 
   
   const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
