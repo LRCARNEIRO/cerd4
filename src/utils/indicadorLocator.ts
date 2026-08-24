@@ -88,35 +88,42 @@ const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
 function findEl(codigo?: string | null, nome?: string | null): HTMLElement | null {
+  // A própria faixa de deep-link exibe o nome do indicador — se ela entrasse na
+  // varredura, todo link daria "✓ Realçado" mesmo sem bloco real na aba.
+  const foraDaFaixa = (el: HTMLElement) => !el.closest('[data-deeplink-banner]');
+
   if (codigo) {
     const esc = codigo.replace(/"/g, '\\"');
     const byId = document.getElementById(`ind-${codigo}`);
-    if (byId) return byId;
-    const byAttr = document.querySelector<HTMLElement>(`[data-codigo="${esc}"]`);
+    if (byId && foraDaFaixa(byId)) return byId;
+    const byAttr = Array.from(document.querySelectorAll<HTMLElement>(`[data-codigo="${esc}"]`)).find(foraDaFaixa);
     if (byAttr) return byAttr;
   }
   if (nome) {
     const alvo = norm(nome);
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>('h2,h3,h4,h5,p,td,th,span,div[data-indicador-id]'));
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('h2,h3,h4,h5,p,td,th,span,div[data-indicador-id]'))
+      .filter(foraDaFaixa);
     // 1) correspondência direta pelo nome completo
     const hit = nodes.find(n => {
       const t = norm(n.textContent || '');
       return t.includes(alvo) && t.length < alvo.length + 160;
     });
     if (hit) return hit;
-    // 2) correspondência por tokens significativos (>=4 letras), sem inventar dado:
-    //    exige que TODOS os tokens fortes apareçam no mesmo bloco curto de texto.
-    const tokens = alvo.split(/[^a-z0-9]+/).filter(t => t.length >= 4).slice(0, 5);
-    if (tokens.length >= 2) {
+    // 2) correspondência por tokens fortes (>=4 letras): exige ao menos 3
+    //    tokens e que TODOS apareçam no mesmo bloco curto — evita falso
+    //    positivo em cards que só compartilham palavras genéricas.
+    const tokens = alvo.split(/[^a-z0-9]+/).filter(t => t.length >= 4).slice(0, 6);
+    if (tokens.length >= 3) {
       const hit2 = nodes.find(n => {
         const t = norm(n.textContent || '');
-        return t.length < 400 && tokens.every(tk => t.includes(tk));
+        return t.length < 300 && tokens.every(tk => t.includes(tk));
       });
       if (hit2) return hit2;
     }
   }
   return null;
 }
+
 
 /**
  * Rola até o indicador na aba já ativa. Faz polling (a aba pode montar
