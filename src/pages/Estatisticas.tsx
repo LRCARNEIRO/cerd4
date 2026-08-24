@@ -37,6 +37,8 @@ import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionP
 import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
 import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
+import { focusIndicadorNaAba } from '@/utils/indicadorLocator';
+
 
 // TOTAL_ODS_RACIAL is now dynamic from DB
 export default function Estatisticas() {
@@ -69,9 +71,12 @@ export default function Estatisticas() {
       'vulnerabilidades','raca-genero','lgbtqia','deficiencia','juventude','classe',
     ]);
     if (indId) {
-      setActiveTab('indicadores-db');
+      // Respeita a aba pedida no link (?tab=). Sem ?tab=, cai no Espelho Seguro (BD),
+      // que é a fonte canônica com âncora garantida para todo IND-NNN.
+      const alvo = tabParam && VALID_TABS.has(tabParam) ? tabParam : 'indicadores-db';
+      setActiveTab(alvo);
       const timer = window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { codigo: indId, id: indId } }));
+        focusIndicadorNaAba({ codigo: indId, id: indId, tabValue: alvo });
       }, 250);
       return () => window.clearTimeout(timer);
     }
@@ -84,6 +89,7 @@ export default function Estatisticas() {
         return () => window.clearTimeout(timer);
       }
     }
+
   }, []);
 
   
