@@ -25,14 +25,11 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
   codigos.forEach((codigo, nome) => byNorm.set(norm(nome), codigo));
 
   let tagged = 0;
-  const nodes = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR));
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR))
+    .filter(el => !el.closest('[data-deeplink-banner]'));
   const usados = new Set<string>();
-  for (const el of nodes) {
-    if (el.dataset.codigo) { usados.add(el.dataset.codigo); continue; }
-    const explicito = el.getAttribute('data-ind-nome');
-    const texto = explicito ?? el.textContent ?? '';
-    const codigo = byNorm.get(norm(texto));
-    if (!codigo || usados.has(codigo)) continue;
+
+  const stamp = (el: HTMLElement, codigo: string) => {
     usados.add(codigo);
     el.dataset.codigo = codigo;
     el.dataset.autoCodigo = '1';
@@ -45,9 +42,33 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     badge.title = 'Código canônico do indicador na Base Estatística (Espelho Seguro — BD)';
     el.appendChild(badge);
     tagged++;
+  };
+
+  // Passe 1 — título IDÊNTICO ao nome canônico gravado no banco.
+  for (const el of nodes) {
+    if (el.dataset.codigo) { usados.add(el.dataset.codigo); continue; }
+    const explicito = el.getAttribute('data-ind-nome');
+    const codigo = byNorm.get(norm(explicito ?? el.textContent ?? ''));
+    if (!codigo || usados.has(codigo)) continue;
+    stamp(el, codigo);
   }
+
+  // Passe 2 — título que CONTÉM integralmente o nome canônico (mesma regra
+  // usada pelo localizador de deep-link). Continua sendo correspondência
+  // textual literal: sem nome do banco no título, nenhum selo é criado.
+  for (const [nomeNorm, codigo] of byNorm) {
+    if (usados.has(codigo) || nomeNorm.length < 12) continue;
+    const alvo = nodes.find(el => {
+      if (el.dataset.codigo) return false;
+      const t = norm(el.textContent || '');
+      return t.includes(nomeNorm) && t.length < nomeNorm.length + 80;
+    });
+    if (alvo) stamp(alvo, codigo);
+  }
+
   return tagged;
 }
+
 
 /** Remove selos injetados (usado antes de re-carimbar em troca de aba). */
 export function clearAutoTags(root: ParentNode = document) {
