@@ -35,6 +35,7 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     if (!codigo || usados.has(codigo)) continue;
     usados.add(codigo);
     el.dataset.codigo = codigo;
+    el.dataset.autoCodigo = '1';
     if (!document.getElementById(`ind-${codigo}`)) el.id = `ind-${codigo}`;
     const badge = document.createElement('span');
     badge.className =
@@ -51,4 +52,8 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
 /** Remove selos injetados (usado antes de re-carimbar em troca de aba). */
 export function clearAutoTags(root: ParentNode = document) {
   root.querySelectorAll(`.${BADGE_CLASS}`).forEach(n => n.remove());
+  root.querySelectorAll<HTMLElement>('[data-auto-codigo="1"]').forEach(el => {
+    delete el.dataset.codigo;
+    delete el.dataset.autoCodigo;
+  });
 }
