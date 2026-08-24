@@ -38,6 +38,8 @@ import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3T
 import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
 import { focusIndicadorNaAba } from '@/utils/indicadorLocator';
+import { useStaticIndicadorCodigos } from '@/hooks/useStaticIndicadorCodigos';
+import { autoTagIndCodes, clearAutoTags } from '@/utils/indCodeAutoTag';
 
 
 // TOTAL_ODS_RACIAL is now dynamic from DB
@@ -49,6 +51,18 @@ export default function Estatisticas() {
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
   const [deepLink, setDeepLink] = useState<{ codigo: string; tabValue: string } | null>(null);
   const [deepLinkStatus, setDeepLinkStatus] = useState<'buscando' | 'ok' | 'nao-encontrado'>('buscando');
+  const codigosPorNome = useStaticIndicadorCodigos();
+
+  // Carimba IND-NNN nos títulos das abas temáticas (só com correspondência
+  // exata de nome no Espelho Seguro (BD) — nunca inventa código).
+  useEffect(() => {
+    if (!codigosPorNome.size) return;
+    clearAutoTags();
+    const timers = [150, 600, 1500, 3000, 5000].map(d => window.setTimeout(() => {
+      autoTagIndCodes(codigosPorNome);
+    }, d));
+    return () => timers.forEach(window.clearTimeout);
+  }, [activeTab, codigosPorNome]);
   const initialIndicatorQuery = useMemo(() => {
     if (typeof window === 'undefined') return '';
     const params = new URLSearchParams(window.location.search);
@@ -283,7 +297,7 @@ export default function Estatisticas() {
 
       {/* Deep-link vindo da planilha/busca: mostra o MESMO ID do Espelho (BD) na aba temática */}
       {deepLink && deepLink.tabValue !== 'indicadores-db' && (
-        <Card className="mb-4 border-l-4 border-l-primary">
+        <Card className="mb-4 border-l-4 border-l-primary" data-deeplink-banner>
           <CardContent className="py-3 flex flex-wrap items-center gap-3">
             <Badge className="bg-primary text-primary-foreground font-mono">{deepLink.codigo}</Badge>
             <span className="text-sm font-medium">
