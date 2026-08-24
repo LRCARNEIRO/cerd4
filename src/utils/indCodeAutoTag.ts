@@ -15,7 +15,7 @@
 const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
-const SELECTOR = 'h2,h3,h4,h5,[data-ind-nome]';
+const SELECTOR = 'h2,h3,h4,h5,p,span,div,td,th,[data-ind-nome]';
 const BADGE_CLASS = 'ind-auto-code-badge';
 
 export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode = document): number {
@@ -25,8 +25,14 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
   codigos.forEach((codigo, nome) => byNorm.set(norm(nome), codigo));
 
   let tagged = 0;
-  const nodes = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR))
-    .filter(el => !el.closest('[data-deeplink-banner]'));
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR)).filter(el => {
+    if (el.closest('[data-deeplink-banner]')) return false;
+    const heading = /^H[2-5]$/.test(el.tagName) || el.hasAttribute('data-ind-nome');
+    // Fora dos títulos, só folhas de texto (o nome do indicador costuma ser
+    // renderizado em <span>/<div> dentro de cards temáticos).
+    if (!heading && el.children.length > 0) return false;
+    return (el.textContent || '').trim().length > 8;
+  });
   const usados = new Set<string>();
 
   const stamp = (el: HTMLElement, codigo: string, aproximado = false) => {
