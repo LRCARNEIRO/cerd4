@@ -108,7 +108,7 @@ export default function Estatisticas() {
       focusIndicadorNaAba({
         codigo: deepLink.codigo,
         id: deepLinkIndicador?.id,
-        nome: deepLinkIndicador?.indicador,
+        nome: deepLinkIndicador?.nome,
         tabValue: deepLink.tabValue,
         onResult: (found) => setDeepLinkStatus(found ? 'ok' : 'nao-encontrado'),
       });
