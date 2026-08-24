@@ -9,6 +9,7 @@
  * Usa a MESMA lógica multicamada do Sensor Diagnóstico (useDiagnosticSensor):
  * vinculação por Artigos ICERD + Eixo Temático + Grupo Focal + Keywords.
  */
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 
 interface IndicadorRow {
   nome: string;

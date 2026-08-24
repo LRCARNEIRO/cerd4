@@ -8,6 +8,7 @@ import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatc
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 
 // ── Types ──────────────────────────────────────────────────────────

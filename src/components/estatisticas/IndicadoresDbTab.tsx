@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
@@ -355,26 +356,7 @@ function formatNum(val: number | null, large = false): string {
 
 // Detect if an indicator is "lower is better" (mortality, violence, poverty, deficit, etc.)
 function isLowerBetter(nome: string, categoria: string): boolean {
-  const lowerNome = nome.toLowerCase();
-  const lowerCat = categoria.toLowerCase();
-  const negativeTerms = [
-    'mortalidade', 'homicídio', 'feminicídio', 'violência', 'assassinato',
-    'óbito', 'morte', 'letalidade', 'desemprego', 'desocupa', 'analfabet', 'evasão',
-    'abandono', 'déficit', 'pobreza', 'miséria', 'trabalho infantil',
-    'trabalho escravo', 'encarceramento', 'aglomerado', 'favela',
-    'insegurança', 'intolerância', 'distorção', 'subnotificação',
-    // Bloco D — termos onde "maior é pior" que faltavam
-    'socioeducativ', 'medida socioeducativa', 'carcerári', 'prisional', 'preso',
-    'privação de liberdade', 'apreens', 'estupro', 'suicíd', 'autoextermínio',
-    'tortura', 'lesão corporal', 'agressão', 'racismo', 'injúria racial',
-    'discriminação', 'vitimiz', 'auto de resistência', 'intervenção policial',
-    'sem banheiro', 'sem esgoto', 'sem água', 'sem coleta', 'sem saneamento',
-    'inadequa', 'precari', 'informalidade', 'trabalho informal', 'subutiliza',
-    'fome', 'desnutrição', 'gravidez na adolescência', 'reprova', 'defasagem',
-    'sem instrução', 'nem-nem', 'despejo', 'remoção forçada', 'conflito',
-  ];
-
-  return negativeTerms.some(t => lowerNome.includes(t) || lowerCat.includes(t));
+  return isLowerBetterNome(nome, categoria);
 }
 
 // Extract multiple racial comparisons from nested structures (e.g. Censo 2022 with multiple metrics)
