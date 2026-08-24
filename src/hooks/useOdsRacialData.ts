@@ -51,7 +51,7 @@ export function useJuventudeAuditados() {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
         .select('*')
-        .eq('subcategoria', 'juventude')
+        .like('subcategoria', 'juventude%')
         .eq('auditado_manualmente', true)
         .order('nome', { ascending: true });
 
