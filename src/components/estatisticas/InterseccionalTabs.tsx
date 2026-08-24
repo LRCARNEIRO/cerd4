@@ -1050,13 +1050,24 @@ export function JuventudeTab() {
               <p className="text-sm text-muted-foreground py-4">Nenhum indicador de Juventude auditado encontrado no banco.</p>
             ) : (
             <div className="space-y-4">
-              {juventudeNegra.map(item => (
-                <div key={item.indicador} className="p-4 bg-muted rounded-lg">
+              {juventudeNegra.map(item => {
+                const piorSeMaior = isLowerBetterNome(item.indicador, 'seguranca_publica');
+                const razao = item.referencia > 0 ? item.valor / item.referencia : null;
+                return (
+                <div key={`${item.indicador}-${item.valor}`} className="p-4 bg-muted rounded-lg" data-indicador-nome={item.indicador}>
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-sm font-medium">{item.indicador}</p>
-                    {(item as any).cruzamento && (
-                      <EstimativaBadge tipo="cruzamento" metodologia={(item as any).metodologiaCruzamento || 'ERRO: metodologia de cruzamento não documentada — verificar fonte'} />
+                    {razao !== null && (
+                      <span className={cn(
+                        'text-[10px] font-semibold px-1.5 py-0.5 rounded border',
+                        piorSeMaior && razao > 1.05
+                          ? 'text-destructive border-destructive/40 bg-destructive/10'
+                          : 'text-muted-foreground border-border',
+                      )}>
+                        {razao.toFixed(2)}× {piorSeMaior ? (razao > 1.05 ? 'mais expostos (pior)' : 'exposição') : 'de acesso'}
+                      </span>
                     )}
+
                     {/* REMOVIDO: EstimativaBadge tipo="simples" — estimativas/proxies PROIBIDOS pela Regra de Ouro */}
                   </div>
                   <p className="text-[10px] text-muted-foreground mb-2">
