@@ -38,7 +38,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       aba: 'Espelho Seguro (BD)',
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
-      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome),
+      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem),
     });
   });
 
