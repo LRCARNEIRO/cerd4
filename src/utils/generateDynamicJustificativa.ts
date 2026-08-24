@@ -118,15 +118,10 @@ function pct(n: number | null | undefined): string {
   return `${Number(n).toFixed(1)}%`;
 }
 
-const NEGATIVE_INDICATORS = [
-  'mortalidade', 'homicídio', 'violência', 'desemprego', 'analfabet',
-  'evasão', 'abandono', 'pobreza', 'deficit', 'déficit', 'trabalho infantil',
-  'desigualdade', 'letalidade', 'encarceramento', 'insegurança',
-];
-
 function isLowerBetter(nome: string): boolean {
-  return NEGATIVE_INDICATORS.some(kw => nome.toLowerCase().includes(kw));
+  return isLowerBetterNome(nome);
 }
+
 
 function inferTendencia(ind: IndicadorRow): string {
   if (!ind.tendencia) return 'desconhecida';
