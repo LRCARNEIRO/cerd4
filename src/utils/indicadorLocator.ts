@@ -50,6 +50,12 @@ const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   lgbtqia: [{ label: 'LGBTQIA+', tabValue: 'lgbtqia' }],
   deficiencia: [{ label: 'Deficiência', tabValue: 'deficiencia' }],
   legislacao_justica: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
+  cultura: [{ label: 'Dados Gerais', tabValue: 'dados-gerais' }],
+  cultura_patrimonio: [{ label: 'Dados Gerais', tabValue: 'dados-gerais' }],
+  vulnerabilidade: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
+  vulnerabilidades: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
+  juventude: [{ label: 'Juventude', tabValue: 'juventude' }],
+  classe_social: [{ label: 'Classe Social', tabValue: 'classe' }],
 };
 
 const SUBCATEGORIA_ABAS: Array<{ match: RegExp; aba: AbaLocalizacao }> = [
