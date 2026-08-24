@@ -108,16 +108,10 @@ function getRecomendacaoArtigos(rec: LacunaIdentificada): ArtigoConvencao[] {
   return EIXO_PARA_ARTIGOS[rec.eixo_tematico as ThematicAxis] || [];
 }
 
-const NEGATIVE_INDICATORS = [
-  'mortalidade', 'homicídio', 'violência', 'desemprego', 'analfabet',
-  'evasão', 'abandono', 'pobreza', 'deficit', 'déficit', 'trabalho infantil',
-  'desigualdade', 'letalidade', 'encarceramento', 'insegurança',
-];
-
 function isLowerBetter(nome: string): boolean {
-  const lower = nome.toLowerCase();
-  return NEGATIVE_INDICATORS.some(kw => lower.includes(kw));
+  return isLowerBetterNome(nome);
 }
+
 
 function inferTendencia(indicador: { nome: string; tendencia: string | null; dados: any }): 'melhora' | 'piora' | 'estavel' | 'desconhecida' {
   if (indicador.tendencia) {
