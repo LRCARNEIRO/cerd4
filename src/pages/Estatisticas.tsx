@@ -57,8 +57,8 @@ export default function Estatisticas() {
   // exata de nome no Espelho Seguro (BD) — nunca inventa código).
   useEffect(() => {
     if (!codigosPorNome.size) return;
+    clearAutoTags();
     const timers = [150, 600, 1500, 3000, 5000].map(d => window.setTimeout(() => {
-      clearAutoTags();
       autoTagIndCodes(codigosPorNome);
     }, d));
     return () => timers.forEach(window.clearTimeout);
