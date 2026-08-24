@@ -56,11 +56,10 @@ export default function Estatisticas() {
   // Carimba IND-NNN nos títulos das abas temáticas (só com correspondência
   // exata de nome no Espelho Seguro (BD) — nunca inventa código).
   useEffect(() => {
-    console.log('AUTOTAG map size', codigosPorNome.size);
     if (!codigosPorNome.size) return;
-    const timers = [150, 600, 1500].map(d => window.setTimeout(() => {
+    const timers = [150, 600, 1500, 3000, 5000].map(d => window.setTimeout(() => {
       clearAutoTags();
-      console.log('AUTOTAG tagged', autoTagIndCodes(codigosPorNome));
+      autoTagIndCodes(codigosPorNome);
     }, d));
     return () => timers.forEach(window.clearTimeout);
   }, [activeTab, codigosPorNome]);
