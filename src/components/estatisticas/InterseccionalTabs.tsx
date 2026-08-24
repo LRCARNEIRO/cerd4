@@ -24,6 +24,8 @@ import { fmt } from '@/utils/narrativeHelpers';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useNarrativeData } from '@/hooks/useNarrativeData';
 import { IndCodeBadge } from './IndCodeBadge';
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+
 
 export function RacaGeneroTab() {
   const {
@@ -1110,7 +1112,9 @@ export function JuventudeTab() {
                     <p className="text-[10px] text-warning mt-2 italic">⚠ {(item as any).nota}</p>
                   )}
                 </div>
-              ))}
+                );
+              })}
+
             </div>
             )}
             <AuditFooter
