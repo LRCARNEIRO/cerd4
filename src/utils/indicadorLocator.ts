@@ -64,17 +64,55 @@ const SUBCATEGORIA_ABAS: Array<{ match: RegExp; aba: AbaLocalizacao }> = [
   { match: /cerd\s*iii|complemento/i, aba: { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' } },
 ];
 
+/**
+ * PROCEDÊNCIA (sinal primário e auditável): `documento_origem[1]` grava o
+ * arquivo estático de onde o registro foi espelhado na ingestão. Se existe
+ * arquivo de aba, o indicador COMPROVADAMENTE já é exibido naquela aba —
+ * independentemente de o título renderizado bater com o `nome` do banco.
+ * Nunca inferir ausência por não achar selo IND-NNN no DOM.
+ */
+const ARQUIVO_ABAS: Record<string, AbaLocalizacao> = {
+  'commoncoretab.tsx': { label: 'Common Core', tabValue: 'common-core', href: '/common-core' },
+  'statisticsdata.ts': { label: 'Dados Gerais', tabValue: 'dados-gerais' },
+  'complementocerd3data.ts': { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' },
+  'covidracialsection.tsx': { label: 'COVID', tabValue: 'covid-racial' },
+  'gruposfocaistab.tsx': { label: 'Grupos Focais', tabValue: 'grupos-focais' },
+  'dadosnovostab.tsx': { label: 'Dados Novos', tabValue: 'dados-novos' },
+  'admpublicasection.tsx': { label: 'Adm Pública', tabValue: 'adm-publica' },
+};
+
+/** Procedência gravada na ingestão → aba comprovada (ou null). */
+export function abaPorProcedencia(documentoOrigem?: string[] | null): AbaLocalizacao | null {
+  const arq = (documentoOrigem || []).map(s => String(s || '').toLowerCase()).find(s => ARQUIVO_ABAS[s]);
+  return arq ? ARQUIVO_ABAS[arq] : null;
+}
+
+/** true = registro cuja exibição em aba é comprovada pela procedência de ingestão. */
+export function temCoberturaComprovada(categoria?: string | null, documentoOrigem?: string[] | null): boolean {
+  if (abaPorProcedencia(documentoOrigem)) return true;
+  // ODS Racial é ingerido sem documento_origem, mas 100% dos 93 têm selo na aba.
+  return String(categoria || '').toLowerCase() === 'ods_racial';
+}
+
 /** Abas onde o indicador aparece — Espelho sempre primeiro. */
-export function abasDoIndicador(categoria?: string | null, subcategoria?: string | null, nome?: string | null): AbaLocalizacao[] {
+export function abasDoIndicador(
+  categoria?: string | null,
+  subcategoria?: string | null,
+  nome?: string | null,
+  documentoOrigem?: string[] | null,
+): AbaLocalizacao[] {
   const out: AbaLocalizacao[] = [ABA_ESPELHO];
   const push = (a: AbaLocalizacao) => {
     if (!out.some(x => x.tabValue === a.tabValue)) out.push(a);
   };
+  const proc = abaPorProcedencia(documentoOrigem);
+  if (proc) push(proc);
   (CATEGORIA_ABAS[String(categoria || '').toLowerCase()] || []).forEach(push);
   const hay = `${subcategoria || ''} ${nome || ''}`;
   SUBCATEGORIA_ABAS.forEach(({ match, aba }) => { if (match.test(hay)) push(aba); });
   return out;
 }
+
 
 function highlight(el: HTMLElement) {
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
