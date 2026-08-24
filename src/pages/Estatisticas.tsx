@@ -47,6 +47,8 @@ export default function Estatisticas() {
   const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
+  const [deepLink, setDeepLink] = useState<{ codigo: string; tabValue: string } | null>(null);
+  const [deepLinkStatus, setDeepLinkStatus] = useState<'buscando' | 'ok' | 'nao-encontrado'>('buscando');
   const initialIndicatorQuery = useMemo(() => {
     if (typeof window === 'undefined') return '';
     const params = new URLSearchParams(window.location.search);
@@ -54,7 +56,8 @@ export default function Estatisticas() {
   }, []);
 
   // Deep-link p/ indicador específico: /estatisticas?ind=IND-018#ind-IND-018
-  // Só troca a aba aqui; a rolagem exata é resolvida pela própria IndicadoresDbTab.
+  // Só troca a aba aqui; a rolagem exata é resolvida no efeito abaixo, quando
+  // o nome canônico do indicador (Espelho BD) já estiver carregado.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
@@ -75,10 +78,8 @@ export default function Estatisticas() {
       // que é a fonte canônica com âncora garantida para todo IND-NNN.
       const alvo = tabParam && VALID_TABS.has(tabParam) ? tabParam : 'indicadores-db';
       setActiveTab(alvo);
-      const timer = window.setTimeout(() => {
-        focusIndicadorNaAba({ codigo: indId, id: indId, tabValue: alvo });
-      }, 250);
-      return () => window.clearTimeout(timer);
+      setDeepLink({ codigo: indId.toUpperCase(), tabValue: alvo });
+      return;
     }
     if (tabParam && VALID_TABS.has(tabParam)) {
       setActiveTab(tabParam);
@@ -91,6 +92,30 @@ export default function Estatisticas() {
     }
 
   }, []);
+
+  // Indicador-alvo do deep-link, resolvido no Espelho Seguro (BD) — mesmo ID e
+  // mesmo nome canônico exibidos na aba temática.
+  const deepLinkIndicador = useMemo(() => {
+    if (!deepLink) return null;
+    return (indicadores || []).find(i => (i.codigo || '').toUpperCase() === deepLink.codigo) || null;
+  }, [deepLink, indicadores]);
+
+  useEffect(() => {
+    if (!deepLink) return;
+    if (deepLink.tabValue !== 'indicadores-db' && !deepLinkIndicador) return; // aguarda o BD
+    setDeepLinkStatus('buscando');
+    const timer = window.setTimeout(() => {
+      focusIndicadorNaAba({
+        codigo: deepLink.codigo,
+        id: deepLinkIndicador?.id,
+        nome: deepLinkIndicador?.nome,
+        tabValue: deepLink.tabValue,
+        onResult: (found) => setDeepLinkStatus(found ? 'ok' : 'nao-encontrado'),
+      });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [deepLink, deepLinkIndicador]);
+
 
   
   const TOTAL_ODS_RACIAL = odsRacialFromDb.length;
@@ -256,8 +281,33 @@ export default function Estatisticas() {
         </CardContent>
       </Card>
 
+      {/* Deep-link vindo da planilha/busca: mostra o MESMO ID do Espelho (BD) na aba temática */}
+      {deepLink && deepLink.tabValue !== 'indicadores-db' && (
+        <Card className="mb-4 border-l-4 border-l-primary">
+          <CardContent className="py-3 flex flex-wrap items-center gap-3">
+            <Badge className="bg-primary text-primary-foreground font-mono">{deepLink.codigo}</Badge>
+            <span className="text-sm font-medium">
+              {deepLinkIndicador?.nome || 'Carregando indicador do Espelho Seguro (BD)…'}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {deepLinkStatus === 'buscando' && 'Localizando nesta aba…'}
+              {deepLinkStatus === 'ok' && '✓ Realçado nesta aba'}
+              {deepLinkStatus === 'nao-encontrado' && 'Não há bloco visual correspondente nesta aba — abra no Espelho Seguro (BD)'}
+            </span>
+            <button
+              type="button"
+              className="text-xs underline text-primary ml-auto"
+              onClick={() => { setActiveTab('indicadores-db'); setDeepLink({ ...deepLink, tabValue: 'indicadores-db' }); }}
+            >
+              Abrir no Espelho Seguro (BD)
+            </button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Espelho Seguro — Painel de Migração */}
       <MirrorIngestionPanel />
+
 
       {/* Busca por Palavra-Chave */}
       <div className="mt-6 mb-4">

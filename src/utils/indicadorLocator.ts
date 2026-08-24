@@ -84,6 +84,9 @@ function highlight(el: HTMLElement) {
   }, 6000);
 }
 
+const norm = (s: string) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
 function findEl(codigo?: string | null, nome?: string | null): HTMLElement | null {
   if (codigo) {
     const esc = codigo.replace(/"/g, '\\"');
@@ -93,26 +96,47 @@ function findEl(codigo?: string | null, nome?: string | null): HTMLElement | nul
     if (byAttr) return byAttr;
   }
   if (nome) {
-    const alvo = nome.trim().toLowerCase();
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>('h2,h3,h4,p,td,div[data-indicador-id]'));
-    const hit = nodes.find(n => (n.textContent || '').trim().toLowerCase().includes(alvo) && (n.textContent || '').length < alvo.length + 160);
+    const alvo = norm(nome);
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('h2,h3,h4,h5,p,td,th,span,div[data-indicador-id]'));
+    // 1) correspondência direta pelo nome completo
+    const hit = nodes.find(n => {
+      const t = norm(n.textContent || '');
+      return t.includes(alvo) && t.length < alvo.length + 160;
+    });
     if (hit) return hit;
+    // 2) correspondência por tokens significativos (>=4 letras), sem inventar dado:
+    //    exige que TODOS os tokens fortes apareçam no mesmo bloco curto de texto.
+    const tokens = alvo.split(/[^a-z0-9]+/).filter(t => t.length >= 4).slice(0, 5);
+    if (tokens.length >= 2) {
+      const hit2 = nodes.find(n => {
+        const t = norm(n.textContent || '');
+        return t.length < 400 && tokens.every(tk => t.includes(tk));
+      });
+      if (hit2) return hit2;
+    }
   }
   return null;
 }
 
 /**
  * Rola até o indicador na aba já ativa. Faz polling (a aba pode montar
- * depois da troca) e realça o elemento. Retorna uma função de cancelamento.
+ * depois da troca) e realça o elemento. `onResult` informa se encontrou.
  */
-export function focusIndicadorNaAba(opts: { codigo?: string | null; id?: string | null; nome?: string | null; tabValue: string }) {
-  const { codigo, id, nome, tabValue } = opts;
+export function focusIndicadorNaAba(opts: {
+  codigo?: string | null;
+  id?: string | null;
+  nome?: string | null;
+  tabValue: string;
+  onResult?: (found: boolean) => void;
+}) {
+  const { codigo, id, nome, tabValue, onResult } = opts;
   if (typeof window === 'undefined') return;
 
   if (tabValue === 'indicadores-db') {
     [250, 800].forEach(delay => window.setTimeout(() => {
       window.dispatchEvent(new CustomEvent('indicador-focus', { detail: { id, codigo } }));
     }, delay));
+    onResult?.(true);
     return;
   }
 
@@ -123,8 +147,11 @@ export function focusIndicadorNaAba(opts: { codigo?: string | null; id?: string 
     if (el) {
       highlight(el);
       window.clearInterval(timer);
+      onResult?.(true);
     } else if (tries > 40) {
       window.clearInterval(timer);
+      onResult?.(false);
     }
   }, 200);
 }
+
