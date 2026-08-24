@@ -1,3 +1,4 @@
+import { RazaoRacialBadge } from '@/components/shared/RazaoRacialBadge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
@@ -108,7 +109,7 @@ export function SegurancaSaudeEducacaoTab() {
                 <TableHead>Ano</TableHead>
                 <TableHead className="text-right">Homic. Negros</TableHead>
                 <TableHead className="text-right">Homic. Não Negros</TableHead>
-                <TableHead className="text-right">Razão</TableHead>
+                <TableHead className="text-right">Razão N/NN</TableHead>
                 <TableHead className="text-right">Letalidade Policial (%)</TableHead>
               </TableRow>
             </TableHeader>
@@ -118,9 +119,15 @@ export function SegurancaSaudeEducacaoTab() {
                   <TableCell className="font-medium">{item.ano}</TableCell>
                   <TableCell className="text-right text-destructive">{item.homicidioNegro}</TableCell>
                   <TableCell className="text-right">{item.homicidioBranco}</TableCell>
-                  <TableCell className="text-right font-medium text-destructive">
-                    {(item.homicidioNegro / item.homicidioBranco).toFixed(2)}x
+                  <TableCell className="text-right font-medium">
+                    <RazaoRacialBadge
+                      nome="Taxa de homicídio por raça"
+                      valor={item.homicidioNegro}
+                      referencia={item.homicidioBranco}
+                      compact
+                    />
                   </TableCell>
+
                   <TableCell className="text-right">{item.letalidadePolicial}%</TableCell>
                 </TableRow>
               ))}
@@ -528,8 +535,14 @@ export function SegurancaSaudeEducacaoTab() {
                   <TableCell className="text-right">{(item as any).mortalidadeMaternaPardas ?? '—'}</TableCell>
                   <TableCell className="text-right">{item.mortalidadeMaternaBranca}</TableCell>
                   <TableCell className="text-right font-medium">
-                    {(item.mortalidadeMaternaNegra / item.mortalidadeMaternaBranca).toFixed(2)}x
+                    <RazaoRacialBadge
+                      nome="Razão de mortalidade materna por raça"
+                      valor={item.mortalidadeMaternaNegra}
+                      referencia={item.mortalidadeMaternaBranca}
+                      compact
+                    />
                   </TableCell>
+
                   <TableCell className="text-right">{item.mortalidadeInfantilNegra}</TableCell>
                   <TableCell className="text-right">{item.mortalidadeInfantilBranca}</TableCell>
                 </TableRow>

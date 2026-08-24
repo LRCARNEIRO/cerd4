@@ -1,3 +1,4 @@
+import { RazaoRacialBadge } from '@/components/shared/RazaoRacialBadge';
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -474,7 +475,7 @@ export function DadosGeraisTab() {
                 <TableHead>Ano</TableHead>
                 <TableHead className="text-right">Renda Negra</TableHead>
                 <TableHead className="text-right">Renda Branca</TableHead>
-                <TableHead className="text-right">Razão</TableHead>
+                <TableHead className="text-right">Razão N/B</TableHead>
                 <TableHead className="text-right">Desemp. Negro</TableHead>
                 <TableHead className="text-right">Desemp. Branco</TableHead>
               </TableRow>
@@ -496,7 +497,6 @@ export function DadosGeraisTab() {
                   const desN = sidraRow?.desempregoNegro ?? null;
                   const desB = sidraRow?.desempregoBranco ?? null;
 
-                  const razao = rendaN && rendaB ? (rendaB / rendaN).toFixed(2) : '—';
 
                   return (
                     <TableRow key={ano}>
@@ -507,9 +507,14 @@ export function DadosGeraisTab() {
                       <TableCell className="text-right">
                         {rendaB != null ? formatCurrency(rendaB) : '—'}
                       </TableCell>
-                      <TableCell className="text-right text-destructive font-medium">
-                        {razao !== '—' ? `${razao}x` : '—'}
+                      <TableCell className="text-right font-medium">
+                        <RazaoRacialBadge
+                          nome="Rendimento médio por raça"
+                          valor={rendaN}
+                          referencia={rendaB}
+                        />
                       </TableCell>
+
                       <TableCell className="text-right">
                         {desN != null ? `${desN}%` : '—'}
                       </TableCell>

@@ -1,3 +1,4 @@
+import { RazaoRacialBadge } from '@/components/shared/RazaoRacialBadge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { 
@@ -140,11 +141,16 @@ export function VulnerabilidadesTab() {
                       {item.referencia !== null && (
                         <p className="text-xs text-muted-foreground">
                           vs. {item.referencia}% (brancas)
-                          <span className="ml-1 text-destructive font-medium">
-                            ({(item.valor / item.referencia).toFixed(1)}×)
-                          </span>
+                          <RazaoRacialBadge
+                            className="ml-1 font-medium"
+                            nome={item.dimensao}
+                            valor={item.valor}
+                            referencia={item.referencia}
+                            decimals={1}
+                          />
                         </p>
                       )}
+
                       {(item as any).observacao && (
                         <p className="text-[10px] text-warning mt-1 italic">
                           ℹ️ {(item as any).observacao}
@@ -273,7 +279,7 @@ export function VulnerabilidadesTab() {
                     <TableHead>Indicador</TableHead>
                     <TableHead className="text-right">Negras</TableHead>
                     <TableHead className="text-right">Brancas</TableHead>
-                    <TableHead className="text-right">Razão</TableHead>
+                    <TableHead className="text-right">Razão N/B</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -281,16 +287,31 @@ export function VulnerabilidadesTab() {
                     <TableCell className="text-sm">CadÚnico (mulheres)</TableCell>
                     <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}%</TableCell>
                     <TableCell className="text-right">{chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}%</TableCell>
-                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.cadUnicoMulheresNegras / chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas).toFixed(1)}×</TableCell>
+                    <TableCell className="text-right font-semibold">
+                      <RazaoRacialBadge
+                        nome="CadÚnico mulheres — pobreza"
+                        valor={chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}
+                        referencia={chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}
+                        decimals={1}
+                      />
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="text-sm">Chefia monoparental</TableCell>
                     <TableCell className="text-right font-semibold text-destructive">{chefiaFamiliarRacaGenero.percentualNegras}%</TableCell>
                     <TableCell className="text-right">{chefiaFamiliarRacaGenero.percentualBrancas}%</TableCell>
-                    <TableCell className="text-right font-semibold">{(chefiaFamiliarRacaGenero.percentualNegras / chefiaFamiliarRacaGenero.percentualBrancas).toFixed(1)}×</TableCell>
+                    <TableCell className="text-right font-semibold">
+                      <RazaoRacialBadge
+                        nome="Chefia monoparental — vulnerabilidade"
+                        valor={chefiaFamiliarRacaGenero.percentualNegras}
+                        referencia={chefiaFamiliarRacaGenero.percentualBrancas}
+                        decimals={1}
+                      />
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
+
 
               <div className="mt-2 flex items-center gap-2">
                 <EstimativaBadge
