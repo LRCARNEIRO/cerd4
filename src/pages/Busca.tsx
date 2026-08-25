@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { deepLinksRegistry } from '@/data/deepLinksRegistry';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { searchableMatches } from '@/utils/searchText';
 
 interface Hit {
   titulo: string;
@@ -87,8 +88,7 @@ export default function Busca() {
 
   const hits = useMemo<Hit[]>(() => {
     if (!debounced || !data) return [];
-    const qn = norm(debounced);
-    const match = (...fields: unknown[]) => fields.some((f) => norm(f).includes(qn));
+    const match = (...fields: unknown[]) => searchableMatches(debounced, ...fields);
     const out: Hit[] = [];
 
     const codigoMap = buildIndicadorCodigoMap(data.ind as any);
