@@ -10,6 +10,7 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
 import { SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
 
 interface SearchResult {
@@ -225,16 +226,11 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
   const catalog = useMemo(() => buildSearchCatalog(mirror, indicadoresDb), [mirror, indicadoresDb]);
 
   const results = useMemo(() => {
-    if (query.length < 2) return [];
-    const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (normalizeSearchText(query).length < 2) return [];
     const codigoNorm = normalizeCodigoInput(query);
     return catalog.filter(item => {
-      const text = `${item.titulo} ${item.categoria || ''} ${item.fonte || ''}`
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
       if (codigoNorm && item.codigo === codigoNorm) return true;
-      return text.includes(q);
+      return searchableMatches(query, item.titulo, item.nome, item.categoria, item.fonte, item.valor);
     }).slice(0, 20);
   }, [query, catalog]);
 
@@ -287,7 +283,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
         </Badge>
       </div>
 
-      {isOpen && query.length >= 2 && (
+      {isOpen && normalizeSearchText(query).length >= 2 && (
         <Card className="absolute z-50 w-full mt-1 max-h-[60vh] overflow-y-auto shadow-xl border-2 border-primary/20">
           <CardContent className="p-3">
             {results.length === 0 ? (
