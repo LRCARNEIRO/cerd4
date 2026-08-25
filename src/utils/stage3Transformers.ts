@@ -471,7 +471,10 @@ export function buildStage4Indicators(): DbRecord[] {
 /** Build all Stage 3 indicators */
 export function buildAllStage3Indicators(): DbRecord[] {
   return [
-    ...buildCommonCoreIndicators(),
+    // Common Core NÃO é mais espelhado: são dados universais sem recorte
+    // racial, fora da base analítica (Regra de Ouro). A categoria
+    // 'common_core' permanece em getStage3Categories() para que cada
+    // espelhamento LIMPE registros CC remanescentes em vez de recriá-los.
     ...buildAdmPublicaIndicators(),
     ...buildCovidRacialIndicators(),
     ...buildGruposFocaisIndicators(),
