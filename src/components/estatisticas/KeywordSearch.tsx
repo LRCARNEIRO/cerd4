@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
-import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
+import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
+import { SUB_INDICADORES } from '@/utils/indicadorSubs';
 
 
 interface SearchResult {
@@ -22,6 +23,8 @@ interface SearchResult {
   abaValue: string;
   categoria?: string;
   abas?: AbaLocalizacao[];
+  /** quando é sub-indicador de guarda-chuva: título do bloco a localizar na aba */
+  subTitulo?: string;
 }
 
 // Static data catalog — searches across all sub-tabs
@@ -39,6 +42,30 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
       abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem),
+    });
+  });
+
+  // Sub-indicadores de guarda-chuvas (ex.: "Renda Média Mensal" dentro de
+  // "Indicadores socioeconômicos por raça") — localizáveis pelo próprio
+  // título, sempre citando o código canônico do guarda-chuva (sem inventar
+  // código novo — Regra de Ouro).
+  SUB_INDICADORES.forEach((sub) => {
+    const umbrella = (indicadoresDb || []).find((i: any) => i.nome === sub.guardaChuva);
+    if (!umbrella?.codigo) return;
+    results.push({
+      id: umbrella.id,
+      codigo: umbrella.codigo,
+      nome: `${sub.titulo} — dentro de "${sub.guardaChuva}"`,
+      titulo: `${umbrella.codigo} · sub: ${sub.sub} — ${sub.titulo}`,
+      fonte: umbrella.fonte,
+      aba: sub.abaLabel,
+      abaValue: sub.tabValue,
+      categoria: 'Sub-indicador',
+      subTitulo: sub.titulo,
+      abas: [
+        { label: sub.abaLabel, tabValue: sub.tabValue },
+        { ...ABA_ESPELHO },
+      ],
     });
   });
 
@@ -225,7 +252,15 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
       return;
     }
     onNavigateTab?.(alvo.tabValue);
-    focusIndicadorNaAba({ codigo: result.codigo, id: result.id, nome: result.nome, tabValue: alvo.tabValue });
+    // Sub-indicador em aba temática: localiza pelo TÍTULO do bloco (o código
+    // do guarda-chuva apontaria para o título-mãe, não para o gráfico).
+    const irPorSub = !!result.subTitulo && alvo.tabValue !== 'indicadores-db';
+    focusIndicadorNaAba({
+      codigo: irPorSub ? undefined : result.codigo,
+      id: result.id,
+      nome: irPorSub ? result.subTitulo : result.nome,
+      tabValue: alvo.tabValue,
+    });
     setQuery('');
     setIsOpen(false);
   }, [onNavigateTab]);
