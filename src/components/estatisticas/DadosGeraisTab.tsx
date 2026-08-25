@@ -115,7 +115,10 @@ export function DadosGeraisTab() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-primary">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">População Total (Censo 2022)</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-xs text-muted-foreground">População Total (Censo 2022)</p>
+              <IndCodeBadge nome="Composição racial — Censo 2022" sub="população total" />
+            </div>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoTotal)}</p>
             <p className="text-xs text-muted-foreground mt-1">
               <a href="https://sidra.ibge.gov.br/Tabela/9514" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
@@ -126,7 +129,10 @@ export function DadosGeraisTab() {
         </Card>
         <Card className="border-l-4 border-l-chart-2">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">População Negra (Pretos + Pardos)</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-xs text-muted-foreground">População Negra (Pretos + Pardos)</p>
+              <IndCodeBadge nome="Composição racial — Censo 2022" sub="população negra" />
+            </div>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.populacaoNegra)}</p>
             <p className="text-xs font-medium text-chart-2">{dadosDemograficos.percentualNegro}% da população</p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -138,7 +144,10 @@ export function DadosGeraisTab() {
         </Card>
         <Card className="border-l-4 border-l-accent">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Povos Indígenas (Censo 2022)</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-xs text-muted-foreground">Povos Indígenas (Censo 2022)</p>
+              <IndCodeBadge nome="Indígenas — dados demográficos Censo 2022" sub="população" />
+            </div>
             <p className="text-2xl font-bold">{formatNumber(1227642)}</p>
             <p className="text-xs text-muted-foreground mt-1">
               <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
@@ -149,7 +158,10 @@ export function DadosGeraisTab() {
         </Card>
         <Card className="border-l-4 border-l-warning">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Quilombolas</p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-xs text-muted-foreground">Quilombolas</p>
+              <IndCodeBadge nome="Quilombolas — dados demográficos Censo 2022" sub="população" />
+            </div>
             <p className="text-2xl font-bold">{formatNumber(dadosDemograficos.quilombolas)}</p>
             <p className="text-xs text-muted-foreground mt-1">
               <a href="https://sidra.ibge.gov.br/Tabela/9578" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
