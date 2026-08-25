@@ -93,16 +93,10 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     });
   });
 
-  // Socioeconômicos
-  (mirror.indicadoresSocioeconomicos || []).forEach((s: any) => {
-    results.push({
-      titulo: `Socioeconômico ${s.ano} — Desemprego Negro: ${s.desempregoNegro}%, Renda Média Negra: R$${s.rendaMediaNegra}`,
-      fonte: 'PNAD Contínua',
-      aba: 'Dados Gerais',
-      abaValue: 'dados-gerais',
-      categoria: 'Trabalho e Renda',
-    });
-  });
+  // Socioeconômicos (série ano a ano) — REMOVIDO do índice: o mesmo conteúdo
+  // já é coberto pelo registro canônico IND-119 + seus 3 sub-indicadores
+  // (renda média, desocupação, pobreza), agora localizáveis pelo título.
+  // Manter as entradas estáticas "sem ID" duplicava resultados na busca.
 
   // Feminicídio
   (mirror.feminicidioSerie || []).forEach((s: any) => {

@@ -28,6 +28,10 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
   const nodes = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR)).filter(el => {
     if (el.closest('[data-deeplink-banner]')) return false;
     if (el.dataset.codigo) return true; // já carimbado — só para registrar em `usados`
+    // Bloco já possui selo explícito <IndCodeBadge> (inclusive sub) — não
+    // carimbar de novo para não gerar selo duplo/aproximado ao lado do real.
+    if (el.parentElement?.querySelector('[data-ind-badge="1"]')) return false;
+    if (el.querySelector('[data-ind-badge="1"]')) return false;
     const heading = /^H[2-5]$/.test(el.tagName) || el.hasAttribute('data-ind-nome');
     // Fora dos títulos, só folhas de texto (o nome do indicador costuma ser
     // renderizado em <span>/<div> dentro de cards temáticos).

@@ -30,6 +30,7 @@ export function IndCodeBadge({ nome, className, sub }: IndCodeBadgeProps) {
     <Badge
       id={sub ? undefined : `ind-${codigo}`}
       data-codigo={sub ? undefined : codigo}
+      data-ind-badge="1"
       variant="outline"
       title={
         sub
