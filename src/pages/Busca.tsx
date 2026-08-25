@@ -9,6 +9,8 @@ import { Search, ExternalLink, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { deepLinksRegistry } from '@/data/deepLinksRegistry';
+import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { SUB_INDICADORES } from '@/utils/indicadorSubs';
 
 interface Hit {
   titulo: string;
@@ -43,7 +45,7 @@ function useGlobalData() {
     queryKey: ['global-search-corpus'],
     queryFn: async () => {
       const [ind, lac, norma, orc, conc] = await Promise.all([
-        supabase.from('indicadores_interseccionais').select('id,nome,fonte,url_fonte,categoria,subcategoria,analise_interseccional,dados,artigos_convencao'),
+        supabase.from('indicadores_interseccionais').select('id,nome,fonte,url_fonte,categoria,subcategoria,analise_interseccional,dados,artigos_convencao,created_at,codigo_curto'),
         supabase.from('lacunas_identificadas').select('id,tema,descricao_lacuna,texto_original_onu,paragrafo,grupo_focal,eixo_tematico,artigos_convencao,documento_onu'),
         supabase.from('documentos_normativos').select('id,titulo,categoria,url_origem,artigos_convencao,status'),
         supabase.from('dados_orcamentarios').select('id,programa,orgao,esfera,ano,fonte_dados,url_fonte,descritivo,eixo_tematico,grupo_focal,artigos_convencao'),
@@ -89,6 +91,7 @@ export default function Busca() {
     const match = (...fields: unknown[]) => fields.some((f) => norm(f).includes(qn));
     const out: Hit[] = [];
 
+    const codigoMap = buildIndicadorCodigoMap(data.ind as any);
     for (const i of data.ind) {
       const dados = (i as any).dados;
       const dadosStr = typeof dados === 'string' ? dados : JSON.stringify(dados ?? {});
@@ -100,6 +103,24 @@ export default function Busca() {
           base: 'indicadores_interseccionais',
           fonte: i.fonte,
           link: i.categoria === 'ods_racial' ? `/estatisticas?tab=ods-racial` : `/estatisticas?ind=${encodeURIComponent(i.id)}#ind-${i.id}`,
+        });
+      }
+    }
+    // Sub-indicadores de guarda-chuvas (ex.: "Renda Média Mensal") —
+    // encontráveis pelo próprio título, citando o código do guarda-chuva.
+    for (const sub of SUB_INDICADORES) {
+      const umbrella = data.ind.find((i) => i.nome === sub.guardaChuva);
+      if (!umbrella) continue;
+      const codigo = codigoMap.get(umbrella.id);
+      if (!codigo) continue;
+      if (match(sub.titulo, sub.sub, sub.guardaChuva, codigo)) {
+        out.push({
+          titulo: `${codigo} · sub: ${sub.sub} — ${sub.titulo}`,
+          trecho: `Sub-indicador do registro guarda-chuva "${sub.guardaChuva}"`,
+          secao: `Estatísticas › ${sub.abaLabel}`,
+          base: 'indicadores_interseccionais',
+          fonte: umbrella.fonte,
+          link: `/estatisticas?tab=${sub.tabValue}&ind=${codigo}`,
         });
       }
     }
