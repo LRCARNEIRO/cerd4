@@ -374,6 +374,7 @@ export type Database = {
           artigos_convencao: string[] | null
           auditado_manualmente: boolean | null
           categoria: string
+          codigo_curto: string | null
           created_at: string
           dados: Json
           data_auditoria: string | null
@@ -399,6 +400,7 @@ export type Database = {
           artigos_convencao?: string[] | null
           auditado_manualmente?: boolean | null
           categoria: string
+          codigo_curto?: string | null
           created_at?: string
           dados: Json
           data_auditoria?: string | null
@@ -424,6 +426,7 @@ export type Database = {
           artigos_convencao?: string[] | null
           auditado_manualmente?: boolean | null
           categoria?: string
+          codigo_curto?: string | null
           created_at?: string
           dados?: Json
           data_auditoria?: string | null
