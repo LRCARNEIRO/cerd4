@@ -14,7 +14,6 @@ import {
   Globe,
   Lightbulb,
   FileOutput,
-  BookOpen,
   Scale,
   FolderOpen,
   Settings,
