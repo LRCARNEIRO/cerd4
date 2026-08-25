@@ -31,7 +31,6 @@ function lazyWithRetry<T extends ComponentType<unknown>>(factory: () => Promise<
 }
 
 const Index = lazyWithRetry(() => import("./pages/Index"));
-const CommonCore = lazyWithRetry(() => import("./pages/CommonCore"));
 const Estatisticas = lazyWithRetry(() => import("./pages/Estatisticas"));
 const Orcamento = lazyWithRetry(() => import("./pages/Orcamento"));
 const Recomendacoes = lazyWithRetry(() => import("./pages/Recomendacoes"));
@@ -79,7 +78,7 @@ const App = () => (
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/ecossistema" element={<Ecossistema />} />
               <Route path="/plano-trabalho" element={<Navigate to="/" replace />} />
-              <Route path="/common-core" element={<CommonCore />} />
+              <Route path="/common-core" element={<Navigate to="/" replace />} />
               <Route path="/estatisticas" element={<Estatisticas />} />
               <Route path="/orcamento" element={<Orcamento />} />
               <Route path="/recomendacoes" element={<Recomendacoes />} />

@@ -29,7 +29,7 @@ export const ABA_ESPELHO: AbaLocalizacao = {
 /** categoria (BD) → abas temáticas onde o indicador também é exibido */
 const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   ods_racial: [{ label: 'ODS Racial', tabValue: 'ods-racial' }],
-  common_core: [{ label: 'Common Core', tabValue: 'common-core', href: '/common-core' }],
+
 
   habitacao: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
   seguranca_publica: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
@@ -72,7 +72,6 @@ const SUBCATEGORIA_ABAS: Array<{ match: RegExp; aba: AbaLocalizacao }> = [
  * Nunca inferir ausência por não achar selo IND-NNN no DOM.
  */
 const ARQUIVO_ABAS: Record<string, AbaLocalizacao> = {
-  'commoncoretab.tsx': { label: 'Common Core', tabValue: 'common-core', href: '/common-core' },
   'statisticsdata.ts': { label: 'Dados Gerais', tabValue: 'dados-gerais' },
   'complementocerd3data.ts': { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' },
   'covidracialsection.tsx': { label: 'COVID', tabValue: 'covid-racial' },
