@@ -25,7 +25,7 @@ export function useStaticIndicadorCodigos() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('indicadores_interseccionais')
-        .select('id, nome, created_at')
+        .select('id, nome, created_at, codigo_curto')
         .order('created_at', { ascending: true })
         .order('id', { ascending: true });
       if (error) throw error;

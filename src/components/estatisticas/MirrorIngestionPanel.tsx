@@ -63,7 +63,7 @@ export function MirrorIngestionPanel() {
             <div>
               <p className="text-sm font-semibold">Espelho Seguro — Migração Estático → BD (Etapas 1-5)</p>
               <p className="text-xs text-muted-foreground">
-                {totalIndicators} indicadores · StatisticsData + CommonCore + AdmPública + COVID + GruposFocais + Complemento CERD 3 + DadosNovos (Disque 100 / CNJ)
+                {totalIndicators} indicadores · StatisticsData + AdmPública + COVID + GruposFocais + Complemento CERD 3 + DadosNovos (Disque 100 / CNJ) · Common Core excluído da base analítica (limpeza automática a cada espelhamento)
               </p>
             </div>
           </div>

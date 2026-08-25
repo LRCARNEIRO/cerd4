@@ -24,6 +24,12 @@
 export interface IndicadorCodigoSource {
   id: string;
   created_at?: string | null;
+  /**
+   * Código congelado gravado no BD (coluna `codigo_curto`). Quando presente,
+   * tem precedência absoluta sobre a numeração posicional — é o que garante
+   * que códigos antigos NUNCA renumerem, mesmo após exclusões/ingestões.
+   */
+  codigo_curto?: string | null;
 }
 
 /**
@@ -49,6 +55,13 @@ export function buildIndicadorCodigoMap<T extends IndicadorCodigoSource>(
   const padLen = Math.max(3, String(total).length);
   const map = new Map<string, string>();
   sorted.forEach((ind, idx) => {
+    const stored = typeof ind.codigo_curto === 'string' && ind.codigo_curto.trim()
+      ? ind.codigo_curto.trim()
+      : null;
+    if (stored) {
+      map.set(ind.id, stored);
+      return;
+    }
     const n = (idx + 1).toString().padStart(padLen, '0');
     map.set(ind.id, `IND-${n}`);
   });
