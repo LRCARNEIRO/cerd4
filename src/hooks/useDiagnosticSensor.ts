@@ -28,6 +28,10 @@ export interface LinkedIndicador {
   categoria: string;
   tendencia: string | null;
   dados: any;
+  /** quando é um subindicador visual: rótulo do sub (ex.: "letalidade policial") */
+  sub?: string;
+  /** nome do registro guarda-chuva de origem (apenas quando `sub` existir) */
+  guardaChuva?: string;
 }
 
 export interface LinkedOrcamento {
