@@ -280,10 +280,22 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         // ⚠️ REGRA DE OURO: bloquear injeção manual de Common Core e de
         // indicadores já descartados por falta de fonte racial auditável.
         // Mesmo overrides antigos (localStorage) são descartados aqui.
+        const removedSet = new Set(recOverride.removedIndicadores);
+        // Remoção de subindicadores: o guarda-chuva só sai do cálculo quando
+        // TODOS os seus subs forem removidos (evita duplo peso e perda indevida).
+        const isRemovedInd = (nome: string) => {
+          if (removedSet.has(nome)) return true;
+          const subs = getSubsForGuardaChuva(nome);
+          return subs.length > 0 && subs.every(s => removedSet.has(s.titulo));
+        };
         finalIndicadores = [
-          ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
+          ...finalIndicadores.filter(i => !isRemovedInd(i.nome)),
           ...recOverride.addedIndicadores
+            // Subindicadores adicionados manualmente pontuam no nível do
+            // registro canônico (guarda-chuva) — sem duplicidade.
+            .map(a => (a.guardaChuva ? { ...a, nome: a.guardaChuva, sub: undefined, guardaChuva: undefined } : a))
             .filter(isEvidenceEligibleIndicator)
+            .filter((a, idx, arr) => arr.findIndex(x => x.nome === a.nome) === idx)
             .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
             .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
         ];
