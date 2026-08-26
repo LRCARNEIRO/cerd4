@@ -58,6 +58,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       codigo: umbrella.codigo,
       nome: `${sub.titulo} — dentro de "${sub.guardaChuva}"`,
       titulo: `${umbrella.codigo} · sub: ${sub.sub} — ${sub.titulo}`,
+      valor: sub.aliases?.join(' • '),
       fonte: umbrella.fonte,
       aba: sub.abaLabel,
       abaValue: sub.tabValue,

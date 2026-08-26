@@ -113,7 +113,7 @@ export default function Busca() {
       if (!umbrella) continue;
       const codigo = codigoMap.get(umbrella.id);
       if (!codigo) continue;
-      if (match(sub.titulo, sub.sub, sub.guardaChuva, codigo)) {
+      if (match(sub.titulo, sub.sub, sub.guardaChuva, codigo, ...(sub.aliases || []))) {
         out.push({
           titulo: `${codigo} · sub: ${sub.sub} — ${sub.titulo}`,
           trecho: `Sub-indicador do registro guarda-chuva "${sub.guardaChuva}"`,

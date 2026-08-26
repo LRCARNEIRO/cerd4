@@ -28,6 +28,12 @@ export interface SubIndicadorEntry {
   /** aba onde o bloco é exibido */
   tabValue: string;
   abaLabel: string;
+  /**
+   * Sinônimos/descrições que aparecem no corpo do bloco (ex.: "chance de
+   * assassinato para negros vs não negros") — só ampliam a BUSCA; nunca
+   * são usados para localizar o bloco (isso é papel do `titulo`).
+   */
+  aliases?: string[];
 }
 
 export const SUB_INDICADORES: SubIndicadorEntry[] = [
@@ -96,6 +102,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     titulo: 'Letalidade Policial - % de Negros entre Vítimas',
     tabValue: 'seguranca-saude-educacao',
     abaLabel: 'Segurança/Saúde/Educação',
+    aliases: ['vítimas de intervenção policial', 'mortes por ação policial', '% negros entre vítimas'],
   },
   // ── Guarda-chuva: Atlas da Violência 2025 — dados-chave (Segurança/Saúde/Educação) ──
   {
@@ -104,6 +111,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     titulo: 'Vulnerabilidade Letal (Risco Relativo)',
     tabValue: 'seguranca-saude-educacao',
     abaLabel: 'Segurança/Saúde/Educação',
+    aliases: ['chance de assassinato para negros vs não negros', 'risco de homicídio relativo', 'razão de vitimização'],
   },
   {
     guardaChuva: 'Atlas da Violência 2025 — dados-chave',
