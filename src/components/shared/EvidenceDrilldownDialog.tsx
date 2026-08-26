@@ -93,14 +93,15 @@ export function EvidenceDrilldownDialog({
     const term = searchInd.toLowerCase();
     // ⚠️ REGRA DE OURO: indicadores excluídos ou Common Core JAMAIS aparecem
     // como opção de inserção manual.
+    // ⚠️ Guarda-chuva COM subindicadores não é ofertado: apenas seus subs,
+    // que carregam o título temático e os valores.
     return (allIndicadores || [])
       .filter(isEvidenceEligibleIndicator)
-      .filter((i: any) => {
-        const text = `${i.nome} ${i.categoria} ${i.subcategoria || ''}`.toLowerCase();
-        return text.includes(term) && !effectiveIndicadores.some(e => e.nome === i.nome);
-      })
+      .flatMap((i: any) => expandIndicadorEvidencia({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados, id: i.id, codigo: i.codigo })
+        .map(e => ({ ...e, _busca: `${i.nome} ${i.categoria} ${i.subcategoria || ''} ${e.sub || ''}` })))
+      .filter((e: any) => e._busca.toLowerCase().includes(term) && !effectiveIndicadores.some(x => x.nome === e.nome))
       .slice(0, 15)
-      .map((i: any) => ({ nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados }));
+      .map(({ _busca, ...e }: any) => e);
   }, [searchInd, allIndicadores, effectiveIndicadores]);
 
   const searchOrcResults = useMemo(() => {
