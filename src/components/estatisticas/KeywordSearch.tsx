@@ -174,16 +174,8 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     });
   });
 
-  // Evasão escolar
-  (mirror.evasaoEscolarSerie || []).forEach((s: any) => {
-    results.push({
-      titulo: `Evasão Escolar ${s.ano} — Negros: ${s.negros}%, Brancos: ${s.brancos}%`,
-      fonte: 'INEP',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Educação',
-    });
-  });
+  // Evasão escolar (série ano a ano) — REMOVIDA do índice: coberta pelo
+  // registro canônico IND-131 (badge no título do card na aba).
 
   return results;
 }
