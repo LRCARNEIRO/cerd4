@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { deepLinksRegistry } from '@/data/deepLinksRegistry';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { getSubIndicadorAnchor, SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
 import { searchableMatches } from '@/utils/searchText';
 
 interface Hit {
@@ -93,6 +93,9 @@ export default function Busca() {
 
     const codigoMap = buildIndicadorCodigoMap(data.ind as any);
     for (const i of data.ind) {
+      // Guarda-chuva COM subindicadores não é localizável nem vinculável:
+      // quem representa o assunto (título + valores) é o subindicador.
+      if (hasSubIndicadores(i.nome)) continue;
       const dados = (i as any).dados;
       const dadosStr = typeof dados === 'string' ? dados : JSON.stringify(dados ?? {});
       if (match(i.nome, i.fonte, i.categoria, i.subcategoria, (i as any).analise_interseccional, dadosStr, (i as any).artigos_convencao?.join(' '))) {

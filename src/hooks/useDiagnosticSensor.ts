@@ -10,6 +10,25 @@ import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
+import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+
+/**
+ * Guarda-chuva com subindicadores NÃO é evidência vinculável: ele é
+ * substituído pelos seus blocos visuais (subindicadores), que carregam o
+ * título temático, os valores e o código congelado do pai. Guarda-chuvas
+ * sem subs permanecem como estão.
+ */
+export function expandIndicadorEvidencia(i: LinkedIndicador): LinkedIndicador[] {
+  const subs = getSubsForGuardaChuva(i.nome);
+  if (subs.length === 0) return [i];
+  return subs.map((s) => ({
+    ...i,
+    codigo: i.codigo || s.codigo,
+    nome: s.titulo,
+    sub: s.sub,
+    guardaChuva: i.nome,
+  }));
+}
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
@@ -28,6 +47,10 @@ export interface LinkedIndicador {
   categoria: string;
   tendencia: string | null;
   dados: any;
+  /** quando é um subindicador visual: rótulo do sub (ex.: "letalidade policial") */
+  sub?: string;
+  /** nome do registro guarda-chuva de origem (apenas quando `sub` existir) */
+  guardaChuva?: string;
 }
 
 export interface LinkedOrcamento {
@@ -257,10 +280,22 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         // ⚠️ REGRA DE OURO: bloquear injeção manual de Common Core e de
         // indicadores já descartados por falta de fonte racial auditável.
         // Mesmo overrides antigos (localStorage) são descartados aqui.
+        const removedSet = new Set(recOverride.removedIndicadores);
+        // Remoção de subindicadores: o guarda-chuva só sai do cálculo quando
+        // TODOS os seus subs forem removidos (evita duplo peso e perda indevida).
+        const isRemovedInd = (nome: string) => {
+          if (removedSet.has(nome)) return true;
+          const subs = getSubsForGuardaChuva(nome);
+          return subs.length > 0 && subs.every(s => removedSet.has(s.titulo));
+        };
         finalIndicadores = [
-          ...finalIndicadores.filter(i => !recOverride.removedIndicadores.includes(i.nome)),
+          ...finalIndicadores.filter(i => !isRemovedInd(i.nome)),
           ...recOverride.addedIndicadores
+            // Subindicadores adicionados manualmente pontuam no nível do
+            // registro canônico (guarda-chuva) — sem duplicidade.
+            .map(a => (a.guardaChuva ? { ...a, nome: a.guardaChuva, sub: undefined, guardaChuva: undefined } : a))
             .filter(isEvidenceEligibleIndicator)
+            .filter((a, idx, arr) => arr.findIndex(x => x.nome === a.nome) === idx)
             .filter(a => !finalIndicadores.some(f => f.nome === a.nome))
             .map(a => ({ ...a, subcategoria: null, analise_interseccional: null, documento_origem: null, artigos_convencao: null } as any)),
         ];
@@ -403,7 +438,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: finalIndicadores.map(i => ({ id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedIndicadores: finalIndicadores.flatMap(i => expandIndicadorEvidencia({ id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
         linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago })),
         linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
