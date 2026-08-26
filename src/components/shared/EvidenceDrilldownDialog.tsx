@@ -9,6 +9,7 @@ import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { expandIndicadorEvidencia } from '@/hooks/useDiagnosticSensor';
 
 // ── Override types ─────────────────────────────────────────────
 export interface EvidenceOverride {
@@ -262,6 +263,11 @@ export function EvidenceDrilldownDialog({
                           <TableRow key={i} className={isManual ? 'bg-accent/10' : ''}>
                             <TableCell className="text-xs">
                               {ind.nome}
+                              {ind.sub && (
+                                <Badge variant="outline" className="ml-1 font-mono text-[8px] px-1 py-0">
+                                  {ind.codigo ? `${ind.codigo} · sub: ${ind.sub}` : `sub: ${ind.sub}`}
+                                </Badge>
+                              )}
                               {isManual && <Badge variant="outline" className="ml-1 text-[8px] px-1 py-0 text-accent">manual</Badge>}
                             </TableCell>
                             <TableCell className="text-[10px] text-muted-foreground">{ind.categoria}</TableCell>
@@ -309,7 +315,14 @@ export function EvidenceDrilldownDialog({
                           <TableBody>
                             {searchIndResults.map((ind: any, i: number) => (
                               <TableRow key={i}>
-                                <TableCell className="text-[10px] py-1">{ind.nome}</TableCell>
+                                <TableCell className="text-[10px] py-1">
+                                  {ind.nome}
+                                  {ind.sub && (
+                                    <Badge variant="outline" className="ml-1 font-mono text-[8px] px-1 py-0">
+                                      {ind.codigo ? `${ind.codigo} · sub: ${ind.sub}` : `sub: ${ind.sub}`}
+                                    </Badge>
+                                  )}
+                                </TableCell>
                                 <TableCell className="text-[10px] text-muted-foreground w-16 py-1">{ind.categoria}</TableCell>
                                 <TableCell className="w-8 py-1">
                                   <Button variant="ghost" size="icon" className="h-5 w-5 text-accent" onClick={() => { addIndicador(ind); setSearchInd(''); }}>
