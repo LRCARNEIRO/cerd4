@@ -28,6 +28,12 @@ export interface SubIndicadorEntry {
   /** aba onde o bloco é exibido */
   tabValue: string;
   abaLabel: string;
+  /**
+   * Sinônimos/descrições que aparecem no corpo do bloco (ex.: "chance de
+   * assassinato para negros vs não negros") — só ampliam a BUSCA; nunca
+   * são usados para localizar o bloco (isso é papel do `titulo`).
+   */
+  aliases?: string[];
 }
 
 export const SUB_INDICADORES: SubIndicadorEntry[] = [
@@ -81,5 +87,67 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     titulo: 'Quilombolas',
     tabValue: 'dados-gerais',
     abaLabel: 'Dados Gerais',
+  },
+  // ── Guarda-chuva: Segurança pública — homicídio por raça (Segurança/Saúde/Educação) ──
+  {
+    guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
+    sub: 'taxa de homicídio',
+    titulo: 'Taxa de Homicídio (por 100 mil)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+  },
+  {
+    guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
+    sub: 'letalidade policial',
+    titulo: 'Letalidade Policial - % de Negros entre Vítimas',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+    aliases: ['vítimas de intervenção policial', 'mortes por ação policial', '% negros entre vítimas'],
+  },
+  // ── Guarda-chuva: Atlas da Violência 2025 — dados-chave (Segurança/Saúde/Educação) ──
+  {
+    guardaChuva: 'Atlas da Violência 2025 — dados-chave',
+    sub: 'risco relativo',
+    titulo: 'Vulnerabilidade Letal (Risco Relativo)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+    aliases: ['chance de assassinato para negros vs não negros', 'risco de homicídio relativo', 'razão de vitimização'],
+  },
+  {
+    guardaChuva: 'Atlas da Violência 2025 — dados-chave',
+    sub: 'queda de homicídios',
+    titulo: 'Queda de Homicídios (2018→2023)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+  },
+  // ── Guarda-chuva: Educação — série histórica por raça (Segurança/Saúde/Educação) ──
+  {
+    guardaChuva: 'Educação — série histórica por raça (2018-2024)',
+    sub: 'ensino superior completo',
+    titulo: 'Ensino Superior Completo (%)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+  },
+  {
+    guardaChuva: 'Educação — série histórica por raça (2018-2024)',
+    sub: 'taxa de analfabetismo',
+    titulo: 'Taxa de Analfabetismo (%)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+  },
+  // ── Guarda-chuva: Saúde — mortalidade materna e infantil por raça (Segurança/Saúde/Educação) ──
+  {
+    guardaChuva: 'Saúde — mortalidade materna e infantil por raça (2018-2024)',
+    sub: 'mortalidade materna',
+    titulo: 'Mortalidade Materna (por 100 mil NV)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
+  },
+  {
+    guardaChuva: 'Saúde — mortalidade materna e infantil por raça (2018-2024)',
+    sub: 'mortalidade infantil',
+    titulo: 'Mortalidade Infantil (por mil nascidos vivos)',
+    tabValue: 'seguranca-saude-educacao',
+    abaLabel: 'Segurança/Saúde/Educação',
   },
 ];

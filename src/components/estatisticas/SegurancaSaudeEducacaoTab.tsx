@@ -12,6 +12,7 @@ import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, TrendingDown, Info, Minus } from 'lucide-react';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { IndCodeBadge } from './IndCodeBadge';
 
 export function SegurancaSaudeEducacaoTab() {
   const {
@@ -28,16 +29,20 @@ export function SegurancaSaudeEducacaoTab() {
       {/* Segurança Pública */}
       <Card id="serie-seguranca-publica">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <Shield className="w-5 h-5 text-destructive" />
             Segurança Pública - Violência Letal por Raça (2018-2024)
+            <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" />
           </CardTitle>
           <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium mb-3">Taxa de Homicídio (por 100 mil)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
+                Taxa de Homicídio (por 100 mil)
+                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" sub="taxa de homicídio" />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={segurancaPublica}>
@@ -63,7 +68,10 @@ export function SegurancaSaudeEducacaoTab() {
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3">Letalidade Policial - % de Negros entre Vítimas</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
+                Letalidade Policial - % de Negros entre Vítimas
+                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" sub="letalidade policial" />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={segurancaPublica}>
@@ -142,13 +150,17 @@ export function SegurancaSaudeEducacaoTab() {
             <div className="flex items-center gap-2 mb-4">
               <Info className="w-5 h-5 text-destructive" />
               <h4 className="text-sm font-semibold">Atlas da Violência 2025 (IPEA/FBSP) — Indicadores de Desigualdade Racial</h4>
+              <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" />
               <Badge variant="outline" className="text-xs">§23 §32-36</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* 1. Evolução do Risco Relativo */}
               <Card className="border-l-4 border-l-destructive">
                 <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Vulnerabilidade Letal (Risco Relativo)</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2 flex-wrap">
+                    Vulnerabilidade Letal (Risco Relativo)
+                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" sub="risco relativo" />
+                  </p>
                   <p className="text-3xl font-bold text-destructive">{atlasViolencia2025.riscoRelativo}x</p>
                   <p className="text-xs text-muted-foreground mb-3">chance de assassinato para negros vs não negros</p>
                   <div className="flex items-center gap-1 text-xs text-warning">
@@ -162,7 +174,10 @@ export function SegurancaSaudeEducacaoTab() {
               {/* 2. Queda Diferencial */}
               <Card className="border-l-4 border-l-warning">
                 <CardContent className="pt-4 pb-4">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Queda de Homicídios (2018→2023)</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2 flex-wrap">
+                    Queda de Homicídios (2018→2023)
+                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" sub="queda de homicídios" />
+                  </p>
                   <div className="flex gap-3 items-end mb-3">
                     <div>
                       <p className="text-2xl font-bold text-warning">-{atlasViolencia2025.quedaNegros2018_2023}%</p>
@@ -193,16 +208,20 @@ export function SegurancaSaudeEducacaoTab() {
       {/* Educação */}
       <Card id="serie-educacao">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <GraduationCap className="w-5 h-5 text-primary" />
             Educação - Indicadores por Raça (2018-2024)
+            <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" />
           </CardTitle>
           <CardDescription>Ensino superior completo e analfabetismo por raça</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium mb-3">Ensino Superior Completo (%)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
+                Ensino Superior Completo (%)
+                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" sub="ensino superior completo" />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={educacaoSerieHistorica}>
@@ -228,7 +247,10 @@ export function SegurancaSaudeEducacaoTab() {
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3">Taxa de Analfabetismo (%)</h4>
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
+                Taxa de Analfabetismo (%)
+                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" sub="taxa de analfabetismo" />
+              </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={educacaoSerieHistorica}>
@@ -311,9 +333,10 @@ export function SegurancaSaudeEducacaoTab() {
       {/* Evasão Escolar */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <GraduationCap className="w-5 h-5 text-amber-600" />
             Evasão Escolar — Jovens 15-29 anos sem Ensino Médio (2018-2024)
+            <IndCodeBadge nome="Evasão escolar por raça (2018-2024)" />
           </CardTitle>
           <CardDescription>
             Jovens de 15 a 29 anos que não estudam e não concluíram o ensino médio (%), por raça/cor.
@@ -385,17 +408,19 @@ export function SegurancaSaudeEducacaoTab() {
       {/* Saúde */}
       <Card id="serie-saude">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <Heart className="w-5 h-5 text-destructive" />
             Saúde - Indicadores por Raça (2018-2023)
+            <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" />
           </CardTitle>
           <CardDescription>Mortalidade materna e infantil por raça</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Mortalidade Materna (por 100 mil NV)
+                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" sub="mortalidade materna" />
                 <EstimativaBadge 
                   tipo="cruzamento" 
                   metodologia={`${mortalidadeMaternaMetodologia.formula}. ${mortalidadeMaternaMetodologia.nota}`}
@@ -435,8 +460,9 @@ export function SegurancaSaudeEducacaoTab() {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Mortalidade Infantil (por mil nascidos vivos)
+                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" sub="mortalidade infantil" />
                 <EstimativaBadge 
                   tipo="cruzamento" 
                   metodologia={`${mortalidadeInfantilMetodologia.formula}. ${mortalidadeInfantilMetodologia.viesConhecido}`}

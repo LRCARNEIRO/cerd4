@@ -58,6 +58,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       codigo: umbrella.codigo,
       nome: `${sub.titulo} — dentro de "${sub.guardaChuva}"`,
       titulo: `${umbrella.codigo} · sub: ${sub.sub} — ${sub.titulo}`,
+      valor: sub.aliases?.join(' • '),
       fonte: umbrella.fonte,
       aba: sub.abaLabel,
       abaValue: sub.tabValue,
@@ -71,28 +72,11 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   });
 
 
-  // Segurança Pública
-  (mirror.segurancaPublica || []).forEach((s: any) => {
-    results.push({
-      titulo: `Segurança Pública ${s.ano} — Homicídio Negro: ${s.homicidioNegro}/100mil, Vítimas Negras: ${s.percentualVitimasNegras}%`,
-      valor: `Letalidade Policial: ${s.letalidadePolicial}%`,
-      fonte: 'FBSP / Atlas da Violência',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Segurança Pública',
-    });
-  });
-
-  // Educação
-  (mirror.educacaoSerieHistorica || []).forEach((s: any) => {
-    results.push({
-      titulo: `Educação ${s.ano} — Superior Negro: ${s.superiorNegroPercent}%, Analfabetismo Negro: ${s.analfabetismoNegro}%`,
-      fonte: 'PNAD Contínua / INEP',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Educação',
-    });
-  });
+  // Segurança Pública e Educação (séries ano a ano) — REMOVIDAS do índice:
+  // cobertas pelos registros canônicos IND-117 (homicídio + letalidade),
+  // IND-110 (Atlas 2025), IND-129 (educação série histórica) e seus
+  // sub-indicadores, agora localizáveis pelo título. Manter entradas
+  // estáticas "sem ID" duplicava resultados na busca.
 
   // Socioeconômicos (série ano a ano) — REMOVIDO do índice: o mesmo conteúdo
   // já é coberto pelo registro canônico IND-119 + seus 3 sub-indicadores
@@ -110,16 +94,8 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     });
   });
 
-  // Saúde
-  (mirror.saudeSerieHistorica || []).forEach((s: any) => {
-    results.push({
-      titulo: `Saúde ${s.ano} — Mortalidade Materna Negra: ${s.mortalidadeMaternaNegra}/100mil NV`,
-      fonte: 'DataSUS',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Saúde',
-    });
-  });
+  // Saúde (série ano a ano) — REMOVIDA do índice: coberta pelo registro
+  // canônico IND-122 + sub-indicadores (mortalidade materna / infantil).
 
   // Déficit Habitacional
   (mirror.deficitHabitacionalSerie || []).forEach((s: any) => {
@@ -199,16 +175,8 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
     });
   });
 
-  // Evasão escolar
-  (mirror.evasaoEscolarSerie || []).forEach((s: any) => {
-    results.push({
-      titulo: `Evasão Escolar ${s.ano} — Negros: ${s.negros}%, Brancos: ${s.brancos}%`,
-      fonte: 'INEP',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Educação',
-    });
-  });
+  // Evasão escolar (série ano a ano) — REMOVIDA do índice: coberta pelo
+  // registro canônico IND-131 (badge no título do card na aba).
 
   return results;
 }
