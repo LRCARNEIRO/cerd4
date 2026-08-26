@@ -221,3 +221,29 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'situação territorial', titulo: 'Situação Territorial - Quilombolas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'situação territorial', titulo: 'Situação Territorial - Povos Indígenas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
 ];
+
+// ── Regra "guarda-chuva com subs não é evidência" ─────────────────────
+// Quando um registro canônico possui blocos visuais próprios (subindicadores),
+// é neles que estão o título temático e os valores. Nesses casos o
+// guarda-chuva deixa de ser exibido na busca, no inventário e no rol de
+// evidências — apenas os subindicadores aparecem. Nenhum código novo é
+// criado: cada sub carrega o código congelado do pai (IND-NNN · sub: …).
+
+const _norm = (s: string) => String(s || '').trim().toLowerCase();
+
+const GUARDA_CHUVAS_COM_SUBS = new Set(SUB_INDICADORES.map((s) => _norm(s.guardaChuva)));
+
+/** true quando o registro canônico possui subindicadores visuais próprios. */
+export function hasSubIndicadores(nome: string): boolean {
+  return GUARDA_CHUVAS_COM_SUBS.has(_norm(nome));
+}
+
+/** Subindicadores de um guarda-chuva (vazio quando não houver). */
+export function getSubsForGuardaChuva(nome: string): SubIndicadorEntry[] {
+  return SUB_INDICADORES.filter((s) => _norm(s.guardaChuva) === _norm(nome));
+}
+
+/** Chave única de evidência: guarda-chuva sem subs → nome; sub → "nome#sub". */
+export function evidenceKey(nome: string, sub?: string | null): string {
+  return sub ? `${nome}#${sub}` : nome;
+}
