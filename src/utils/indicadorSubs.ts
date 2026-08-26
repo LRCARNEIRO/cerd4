@@ -19,6 +19,8 @@
  */
 
 export interface SubIndicadorEntry {
+  /** código persistido e congelado do guarda-chuva */
+  codigo: string;
   /** nome EXATO do registro guarda-chuva no BD */
   guardaChuva: string;
   /** rótulo curto exibido no selo (mesmo valor do prop `sub`) */
@@ -36,9 +38,21 @@ export interface SubIndicadorEntry {
   aliases?: string[];
 }
 
+/** Âncora estável do bloco visual, usada pela busca e pelo inventário. */
+export function getSubIndicadorAnchor(codigo: string, sub: string): string {
+  const slug = sub
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `ind-${codigo}-sub-${slug}`;
+}
+
 export const SUB_INDICADORES: SubIndicadorEntry[] = [
   // ── Guarda-chuva: Indicadores socioeconômicos por raça (Dados Gerais) ──
   {
+    codigo: 'IND-119',
     guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
     sub: 'renda média mensal',
     titulo: 'Renda Média Mensal (R$)',
@@ -46,6 +60,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Dados Gerais',
   },
   {
+    codigo: 'IND-119',
     guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
     sub: 'taxa de desocupação',
     titulo: 'Taxa de Desemprego (%)',
@@ -53,6 +68,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Dados Gerais',
   },
   {
+    codigo: 'IND-119',
     guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
     sub: 'taxa de pobreza',
     titulo: 'Taxa de Pobreza: Negros × Brancos (%)',
@@ -61,6 +77,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   },
   // ── Cards de resumo demográfico (Dados Gerais) ──
   {
+    codigo: 'IND-130',
     guardaChuva: 'Composição racial — Censo 2022',
     sub: 'população total',
     titulo: 'População Total (Censo 2022)',
@@ -68,6 +85,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Dados Gerais',
   },
   {
+    codigo: 'IND-130',
     guardaChuva: 'Composição racial — Censo 2022',
     sub: 'população negra',
     titulo: 'População Negra (Pretos + Pardos)',
@@ -75,6 +93,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Dados Gerais',
   },
   {
+    codigo: 'IND-177',
     guardaChuva: 'Indígenas — dados demográficos Censo 2022',
     sub: 'população',
     titulo: 'Povos Indígenas (Censo 2022)',
@@ -82,6 +101,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Dados Gerais',
   },
   {
+    codigo: 'IND-169',
     guardaChuva: 'Quilombolas — dados demográficos Censo 2022',
     sub: 'população',
     titulo: 'Quilombolas',
@@ -90,6 +110,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   },
   // ── Guarda-chuva: Segurança pública — homicídio por raça (Segurança/Saúde/Educação) ──
   {
+    codigo: 'IND-117',
     guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
     sub: 'taxa de homicídio',
     titulo: 'Taxa de Homicídio (por 100 mil)',
@@ -97,6 +118,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Segurança/Saúde/Educação',
   },
   {
+    codigo: 'IND-117',
     guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
     sub: 'letalidade policial',
     titulo: 'Letalidade Policial - % de Negros entre Vítimas',
@@ -106,6 +128,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   },
   // ── Guarda-chuva: Atlas da Violência 2025 — dados-chave (Segurança/Saúde/Educação) ──
   {
+    codigo: 'IND-110',
     guardaChuva: 'Atlas da Violência 2025 — dados-chave',
     sub: 'risco relativo',
     titulo: 'Vulnerabilidade Letal (Risco Relativo)',
@@ -114,6 +137,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     aliases: ['chance de assassinato para negros vs não negros', 'risco de homicídio relativo', 'razão de vitimização'],
   },
   {
+    codigo: 'IND-110',
     guardaChuva: 'Atlas da Violência 2025 — dados-chave',
     sub: 'queda de homicídios',
     titulo: 'Queda de Homicídios (2018→2023)',
@@ -122,6 +146,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   },
   // ── Guarda-chuva: Educação — série histórica por raça (Segurança/Saúde/Educação) ──
   {
+    codigo: 'IND-129',
     guardaChuva: 'Educação — série histórica por raça (2018-2024)',
     sub: 'ensino superior completo',
     titulo: 'Ensino Superior Completo (%)',
@@ -129,6 +154,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Segurança/Saúde/Educação',
   },
   {
+    codigo: 'IND-129',
     guardaChuva: 'Educação — série histórica por raça (2018-2024)',
     sub: 'taxa de analfabetismo',
     titulo: 'Taxa de Analfabetismo (%)',
@@ -137,6 +163,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   },
   // ── Guarda-chuva: Saúde — mortalidade materna e infantil por raça (Segurança/Saúde/Educação) ──
   {
+    codigo: 'IND-122',
     guardaChuva: 'Saúde — mortalidade materna e infantil por raça (2018-2024)',
     sub: 'mortalidade materna',
     titulo: 'Mortalidade Materna (por 100 mil NV)',
@@ -144,6 +171,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Segurança/Saúde/Educação',
   },
   {
+    codigo: 'IND-122',
     guardaChuva: 'Saúde — mortalidade materna e infantil por raça (2018-2024)',
     sub: 'mortalidade infantil',
     titulo: 'Mortalidade Infantil (por mil nascidos vivos)',

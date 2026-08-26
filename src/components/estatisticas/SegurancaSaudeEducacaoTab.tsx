@@ -32,7 +32,7 @@ export function SegurancaSaudeEducacaoTab() {
           <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <Shield className="w-5 h-5 text-destructive" />
             Segurança Pública - Violência Letal por Raça (2018-2024)
-            <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" />
+            <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" codigo="IND-117" />
           </CardTitle>
           <CardDescription>Taxa de homicídio por 100 mil habitantes e letalidade policial</CardDescription>
         </CardHeader>
@@ -41,7 +41,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Taxa de Homicídio (por 100 mil)
-                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" sub="taxa de homicídio" />
+                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" codigo="IND-117" sub="taxa de homicídio" />
               </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -70,7 +70,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Letalidade Policial - % de Negros entre Vítimas
-                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" sub="letalidade policial" />
+                <IndCodeBadge nome="Segurança pública — homicídio por raça (2018-2024)" codigo="IND-117" sub="letalidade policial" />
               </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -150,7 +150,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div className="flex items-center gap-2 mb-4">
               <Info className="w-5 h-5 text-destructive" />
               <h4 className="text-sm font-semibold">Atlas da Violência 2025 (IPEA/FBSP) — Indicadores de Desigualdade Racial</h4>
-              <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" />
+              <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" codigo="IND-110" />
               <Badge variant="outline" className="text-xs">§23 §32-36</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -159,7 +159,7 @@ export function SegurancaSaudeEducacaoTab() {
                 <CardContent className="pt-4 pb-4">
                   <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2 flex-wrap">
                     Vulnerabilidade Letal (Risco Relativo)
-                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" sub="risco relativo" />
+                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" codigo="IND-110" sub="risco relativo" />
                   </p>
                   <p className="text-3xl font-bold text-destructive">{atlasViolencia2025.riscoRelativo}x</p>
                   <p className="text-xs text-muted-foreground mb-3">chance de assassinato para negros vs não negros</p>
@@ -176,7 +176,7 @@ export function SegurancaSaudeEducacaoTab() {
                 <CardContent className="pt-4 pb-4">
                   <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2 flex-wrap">
                     Queda de Homicídios (2018→2023)
-                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" sub="queda de homicídios" />
+                    <IndCodeBadge nome="Atlas da Violência 2025 — dados-chave" codigo="IND-110" sub="queda de homicídios" />
                   </p>
                   <div className="flex gap-3 items-end mb-3">
                     <div>
@@ -211,7 +211,7 @@ export function SegurancaSaudeEducacaoTab() {
           <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <GraduationCap className="w-5 h-5 text-primary" />
             Educação - Indicadores por Raça (2018-2024)
-            <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" />
+            <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" codigo="IND-129" />
           </CardTitle>
           <CardDescription>Ensino superior completo e analfabetismo por raça</CardDescription>
         </CardHeader>
@@ -220,7 +220,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Ensino Superior Completo (%)
-                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" sub="ensino superior completo" />
+                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" codigo="IND-129" sub="ensino superior completo" />
               </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -249,7 +249,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Taxa de Analfabetismo (%)
-                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" sub="taxa de analfabetismo" />
+                <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" codigo="IND-129" sub="taxa de analfabetismo" />
               </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -336,7 +336,7 @@ export function SegurancaSaudeEducacaoTab() {
           <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <GraduationCap className="w-5 h-5 text-amber-600" />
             Evasão Escolar — Jovens 15-29 anos sem Ensino Médio (2018-2024)
-            <IndCodeBadge nome="Evasão escolar por raça (2018-2024)" />
+            <IndCodeBadge nome="Evasão escolar por raça (2018-2024)" codigo="IND-131" />
           </CardTitle>
           <CardDescription>
             Jovens de 15 a 29 anos que não estudam e não concluíram o ensino médio (%), por raça/cor.
@@ -411,7 +411,7 @@ export function SegurancaSaudeEducacaoTab() {
           <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             <Heart className="w-5 h-5 text-destructive" />
             Saúde - Indicadores por Raça (2018-2023)
-            <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" />
+            <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" codigo="IND-122" />
           </CardTitle>
           <CardDescription>Mortalidade materna e infantil por raça</CardDescription>
         </CardHeader>
@@ -420,7 +420,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Mortalidade Materna (por 100 mil NV)
-                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" sub="mortalidade materna" />
+                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" codigo="IND-122" sub="mortalidade materna" />
                 <EstimativaBadge 
                   tipo="cruzamento" 
                   metodologia={`${mortalidadeMaternaMetodologia.formula}. ${mortalidadeMaternaMetodologia.nota}`}
@@ -462,7 +462,7 @@ export function SegurancaSaudeEducacaoTab() {
             <div>
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Mortalidade Infantil (por mil nascidos vivos)
-                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" sub="mortalidade infantil" />
+                <IndCodeBadge nome="Saúde — mortalidade materna e infantil por raça (2018-2024)" codigo="IND-122" sub="mortalidade infantil" />
                 <EstimativaBadge 
                   tipo="cruzamento" 
                   metodologia={`${mortalidadeInfantilMetodologia.formula}. ${mortalidadeInfantilMetodologia.viesConhecido}`}

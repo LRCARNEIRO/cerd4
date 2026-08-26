@@ -9,6 +9,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
+import { getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 
 interface IndCodeBadgeProps {
   /** nome exato do registro no banco */
@@ -20,16 +21,19 @@ interface IndCodeBadgeProps {
    * Ex.: sub="renda" → "IND-135 · sub: renda".
    */
   sub?: string;
+  /** código persistido do guarda-chuva, para exibição estável durante o carregamento */
+  codigo?: string;
 }
 
-export function IndCodeBadge({ nome, className, sub }: IndCodeBadgeProps) {
+export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }: IndCodeBadgeProps) {
   const codigos = useStaticIndicadorCodigos();
-  const codigo = lookupCodigo(codigos, nome);
+  const codigo = lookupCodigo(codigos, nome) || codigoPersistido || null;
   if (!codigo) return null;
   return (
     <Badge
-      id={sub ? undefined : `ind-${codigo}`}
-      data-codigo={sub ? undefined : codigo}
+      id={sub ? getSubIndicadorAnchor(codigo, sub) : `ind-${codigo}`}
+      data-codigo={codigo}
+      data-sub-indicador={sub || undefined}
       data-ind-badge="1"
       variant="outline"
       title={

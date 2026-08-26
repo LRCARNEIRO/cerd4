@@ -52,14 +52,13 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // código novo — Regra de Ouro).
   SUB_INDICADORES.forEach((sub) => {
     const umbrella = (indicadoresDb || []).find((i: any) => i.nome === sub.guardaChuva);
-    if (!umbrella?.codigo) return;
     results.push({
-      id: umbrella.id,
-      codigo: umbrella.codigo,
+      id: umbrella?.id,
+      codigo: umbrella?.codigo || sub.codigo,
       nome: `${sub.titulo} — dentro de "${sub.guardaChuva}"`,
-      titulo: `${umbrella.codigo} · sub: ${sub.sub} — ${sub.titulo}`,
+      titulo: `${umbrella?.codigo || sub.codigo} · sub: ${sub.sub} — ${sub.titulo}`,
       valor: sub.aliases?.join(' • '),
-      fonte: umbrella.fonte,
+      fonte: umbrella?.fonte,
       aba: sub.abaLabel,
       abaValue: sub.tabValue,
       categoria: 'Sub-indicador',
