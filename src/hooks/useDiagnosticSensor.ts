@@ -10,6 +10,25 @@ import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
+import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+
+/**
+ * Guarda-chuva com subindicadores NÃO é evidência vinculável: ele é
+ * substituído pelos seus blocos visuais (subindicadores), que carregam o
+ * título temático, os valores e o código congelado do pai. Guarda-chuvas
+ * sem subs permanecem como estão.
+ */
+export function expandIndicadorEvidencia(i: LinkedIndicador): LinkedIndicador[] {
+  const subs = getSubsForGuardaChuva(i.nome);
+  if (subs.length === 0) return [i];
+  return subs.map((s) => ({
+    ...i,
+    codigo: i.codigo || s.codigo,
+    nome: s.titulo,
+    sub: s.sub,
+    guardaChuva: i.nome,
+  }));
+}
 
 // ── Types ──────────────────────────────────────────────────────────
 export type DiagnosticSignalType = 'tendencia' | 'orcamento_simbolico' | 'cobertura_normativa';
