@@ -12,6 +12,8 @@
  * (`?tab=<aba>&ind=IND-NNN`).
  */
 
+import { getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
+
 const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
@@ -39,6 +41,32 @@ export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode =
     return (el.textContent || '').trim().length > 8;
   });
   const usados = new Set<string>();
+
+  // Blocos visuais cadastrados como sub-indicadores usam os códigos
+  // congelados do registro SSoT. Eles são carimbados antes dos guarda-chuvas
+  // e não entram em `usados`, pois um mesmo IND pode possuir vários blocos.
+  for (const sub of SUB_INDICADORES) {
+    const alvo = nodes.find(el => {
+      if (el.dataset.subIndicador || el.querySelector('[data-ind-badge="1"]')) return false;
+      return norm(el.textContent || '') === norm(sub.titulo);
+    });
+    if (!alvo) continue;
+    const codigoBanco = codigos.get(sub.guardaChuva.toLowerCase().trim());
+    if (codigoBanco && codigoBanco !== sub.codigo) continue;
+    alvo.dataset.codigo = sub.codigo;
+    alvo.dataset.subIndicador = sub.sub;
+    alvo.dataset.autoCodigo = '1';
+    alvo.id = getSubIndicadorAnchor(sub.codigo, sub.sub);
+    const badge = document.createElement('span');
+    badge.dataset.indBadge = '1';
+    badge.className =
+      `${BADGE_CLASS} ml-2 align-middle inline-flex items-center rounded border border-border ` +
+      'px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground';
+    badge.textContent = `${sub.codigo} · sub: ${sub.sub}`;
+    badge.title = `Bloco visual vinculado ao indicador canônico ${sub.codigo} (${sub.guardaChuva})`;
+    alvo.appendChild(badge);
+    tagged++;
+  }
 
   const stamp = (el: HTMLElement, codigo: string, aproximado = false) => {
     usados.add(codigo);
@@ -104,6 +132,8 @@ export function clearAutoTags(root: ParentNode = document) {
   root.querySelectorAll(`.${BADGE_CLASS}`).forEach(n => n.remove());
   root.querySelectorAll<HTMLElement>('[data-auto-codigo="1"]').forEach(el => {
     delete el.dataset.codigo;
+    delete el.dataset.subIndicador;
     delete el.dataset.autoCodigo;
+    if (el.id.startsWith('ind-IND-') && el.id.includes('-sub-')) el.removeAttribute('id');
   });
 }
