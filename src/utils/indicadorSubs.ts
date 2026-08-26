@@ -207,12 +207,12 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'capitais aderidas', titulo: 'Capitais que Aderiram em 2024', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
   { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'estados com mais adesões', titulo: 'Estados com Mais Adesões Municipais (2024)', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
   // ── COVID ──
-  { codigo: 'IND-178', guardaChuva: 'Excesso de mortalidade por raça — COVID-19 (2020)', sub: 'excesso de mortalidade', titulo: 'Excesso de Mortalidade por Raça/Cor — COVID-19', tabValue: 'covid-racial', abaLabel: 'COVID' },
+  { codigo: 'IND-178', guardaChuva: 'Excesso de mortalidade por raça — COVID-19 (2020)', sub: 'excesso de mortalidade', titulo: 'Excesso de Mortalidade Negra (2020)', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-175', guardaChuva: 'Letalidade hospitalar COVID por raça — Moreira et al. (2023)', sub: 'letalidade hospitalar', titulo: 'Letalidade Hospitalar por COVID-19 e Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-173', guardaChuva: 'Mortalidade materna COVID por raça (2019-2022)', sub: 'mortalidade materna', titulo: 'Mortalidade Materna na Pandemia por Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-172', guardaChuva: 'Impacto socioeconômico COVID por raça — PNAD COVID 2020', sub: 'mercado de trabalho', titulo: 'Impacto da Pandemia no Mercado de Trabalho por Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-171', guardaChuva: 'Vacinação COVID por raça — SI-PNI/DataSUS', sub: 'cobertura vacinal', titulo: 'Cobertura Vacinal por Raça/Cor', tabValue: 'covid-racial', abaLabel: 'COVID' },
-  { codigo: 'IND-168', guardaChuva: 'Interseccionalidade COVID — impacto por grupo', sub: 'impacto interseccional', titulo: 'Impactos Interseccionais da Pandemia', tabValue: 'covid-racial', abaLabel: 'COVID' },
+  { codigo: 'IND-168', guardaChuva: 'Interseccionalidade COVID — impacto por grupo', sub: 'impacto interseccional', titulo: 'Análise Interseccional: COVID-19 e Grupos Vulnerabilizados', tabValue: 'covid-racial', abaLabel: 'COVID' },
   // ── Grupos Focais ──
   { codigo: 'IND-169', guardaChuva: 'Quilombolas — dados demográficos Censo 2022', sub: 'população focal', titulo: 'Quilombolas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   { codigo: 'IND-177', guardaChuva: 'Indígenas — dados demográficos Censo 2022', sub: 'população focal', titulo: 'Indígenas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
