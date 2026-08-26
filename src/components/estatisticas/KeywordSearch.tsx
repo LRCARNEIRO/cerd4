@@ -9,7 +9,7 @@ import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
-import { SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
 
@@ -33,6 +33,8 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   const results: SearchResult[] = [];
 
   (indicadoresDb || []).forEach((ind: any) => {
+    // Guarda-chuva COM subindicadores é substituído por eles na busca.
+    if (hasSubIndicadores(ind.nome)) return;
     results.push({
       id: ind.id,
       codigo: ind.codigo,
