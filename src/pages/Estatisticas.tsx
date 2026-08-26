@@ -210,7 +210,7 @@ export default function Estatisticas() {
   return (
     <DashboardLayout
       title="Estatísticas e Indicadores"
-      subtitle="Dados gerais, interseccionais e orçamentários para os relatórios Common Core e CERD IV (2018-2025)"
+      subtitle="Dados gerais, interseccionais e orçamentários para o Relatório CERD IV (2018-2025)"
     >
       <div className="flex justify-end mb-3">
         <ExportTabButtons targetSelector="#export-estatisticas" fileName="Estatisticas-Indicadores" compact />
@@ -223,13 +223,12 @@ export default function Estatisticas() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Base de Dados Consolidada</h3>
               <p className="text-sm text-muted-foreground">
-                Esta seção consolida <strong>todos os dados</strong> necessários para os relatórios Common Core e CERD IV. 
+                 Esta seção consolida <strong>todos os dados</strong> necessários para o Relatório CERD IV. 
                 Inclui dados demográficos gerais, indicadores socioeconômicos com evolução temporal, 
                 análises interseccionais (raça × gênero × idade × classe × orientação sexual × deficiência) e 
                 execução orçamentária de políticas públicas.
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
-                <Badge className="bg-primary/10 text-primary">Common Core</Badge>
                 <Badge className="bg-primary/10 text-primary">CERD IV</Badge>
                 <Badge className="bg-primary/10 text-primary">2018-2025</Badge>
                 <Badge className="bg-accent text-accent-foreground">Interseccional</Badge>

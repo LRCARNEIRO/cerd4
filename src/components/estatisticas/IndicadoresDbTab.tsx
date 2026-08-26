@@ -1238,14 +1238,13 @@ function IndicadorDetail({ indicador, highlighted }: { indicador: IndicadorData;
 }
 
 function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
-  // ── Regra de Ouro: separar indicadores APTOS (evidência) vs Common Core (contextual)
-  // Common Core não pode ser usado como evidência por falta de desagregação racial comparável.
+  // Defesa adicional: registros sem recorte racial nunca entram como evidência.
   const isCommonCore = (i: any) =>
     i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
   const indicadoresAptos = indicadores.filter((i) => !isCommonCore(i));
   const indicadoresCC = indicadores.filter((i) => isCommonCore(i));
 
-  // Calculate summary stats — sempre sobre os APTOS (Common Core é mostrado em badge separado)
+  // Calculate summary stats — sempre sobre os registros aptos.
   const porCategoria = indicadoresAptos.reduce((acc, ind) => {
     acc[ind.categoria] = (acc[ind.categoria] || 0) + 1;
     return acc;
@@ -1268,14 +1267,10 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
           </div>
           <div className="flex items-baseline gap-2">
             <p className="text-2xl font-bold">{indicadoresAptos.length}</p>
-            {indicadoresCC.length > 0 && (
-              <Badge variant="outline" className="text-[10px] font-normal text-muted-foreground border-muted-foreground/30">
-                + {indicadoresCC.length} Common Core (contextual)
-              </Badge>
-            )}
+             {indicadoresCC.length > 0 && null}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            evidências c/ recorte racial · CC excluído pela Regra de Ouro
+             evidências com recorte racial
           </p>
         </CardContent>
       </Card>
