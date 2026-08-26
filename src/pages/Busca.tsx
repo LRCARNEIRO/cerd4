@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { deepLinksRegistry } from '@/data/deepLinksRegistry';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
 import { searchableMatches } from '@/utils/searchText';
 
 interface Hit {
@@ -120,7 +120,7 @@ export default function Busca() {
           secao: `Estatísticas › ${sub.abaLabel}`,
           base: 'indicadores_interseccionais',
           fonte: umbrella.fonte,
-          link: `/estatisticas?tab=${sub.tabValue}&ind=${codigo}`,
+          link: `/estatisticas?tab=${sub.tabValue}&serie=${encodeURIComponent(getSubIndicadorAnchor(codigo, sub.sub))}#${getSubIndicadorAnchor(codigo, sub.sub)}`,
         });
       }
     }

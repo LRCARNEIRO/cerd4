@@ -9,6 +9,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
+import { getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 
 interface IndCodeBadgeProps {
   /** nome exato do registro no banco */
@@ -28,8 +29,9 @@ export function IndCodeBadge({ nome, className, sub }: IndCodeBadgeProps) {
   if (!codigo) return null;
   return (
     <Badge
-      id={sub ? undefined : `ind-${codigo}`}
-      data-codigo={sub ? undefined : codigo}
+      id={sub ? getSubIndicadorAnchor(codigo, sub) : `ind-${codigo}`}
+      data-codigo={codigo}
+      data-sub-indicador={sub || undefined}
       data-ind-badge="1"
       variant="outline"
       title={

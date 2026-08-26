@@ -36,6 +36,17 @@ export interface SubIndicadorEntry {
   aliases?: string[];
 }
 
+/** Âncora estável do bloco visual, usada pela busca e pelo inventário. */
+export function getSubIndicadorAnchor(codigo: string, sub: string): string {
+  const slug = sub
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `ind-${codigo}-sub-${slug}`;
+}
+
 export const SUB_INDICADORES: SubIndicadorEntry[] = [
   // ── Guarda-chuva: Indicadores socioeconômicos por raça (Dados Gerais) ──
   {
