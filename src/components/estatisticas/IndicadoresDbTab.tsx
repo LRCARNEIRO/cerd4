@@ -1242,7 +1242,6 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
   const isCommonCore = (i: any) =>
     i?.categoria === 'common_core' || /^\[CC-/i.test(String(i?.nome || ''));
   const indicadoresAptos = indicadores.filter((i) => !isCommonCore(i));
-  const indicadoresCC = indicadores.filter((i) => isCommonCore(i));
 
   // Calculate summary stats — sempre sobre os registros aptos.
   const porCategoria = indicadoresAptos.reduce((acc, ind) => {
@@ -1267,7 +1266,6 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
           </div>
           <div className="flex items-baseline gap-2">
             <p className="text-2xl font-bold">{indicadoresAptos.length}</p>
-             {indicadoresCC.length > 0 && null}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
              evidências com recorte racial
