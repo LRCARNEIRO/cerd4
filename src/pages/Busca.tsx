@@ -110,16 +110,14 @@ export default function Busca() {
     // encontráveis pelo próprio título, citando o código do guarda-chuva.
     for (const sub of SUB_INDICADORES) {
       const umbrella = data.ind.find((i) => i.nome === sub.guardaChuva);
-      if (!umbrella) continue;
-      const codigo = codigoMap.get(umbrella.id);
-      if (!codigo) continue;
+      const codigo = umbrella ? (codigoMap.get(umbrella.id) || sub.codigo) : sub.codigo;
       if (match(sub.titulo, sub.sub, sub.guardaChuva, codigo, ...(sub.aliases || []))) {
         out.push({
           titulo: `${codigo} · sub: ${sub.sub} — ${sub.titulo}`,
           trecho: `Sub-indicador do registro guarda-chuva "${sub.guardaChuva}"`,
           secao: `Estatísticas › ${sub.abaLabel}`,
           base: 'indicadores_interseccionais',
-          fonte: umbrella.fonte,
+          fonte: umbrella?.fonte,
           link: `/estatisticas?tab=${sub.tabValue}&serie=${encodeURIComponent(getSubIndicadorAnchor(codigo, sub.sub))}#${getSubIndicadorAnchor(codigo, sub.sub)}`,
         });
       }

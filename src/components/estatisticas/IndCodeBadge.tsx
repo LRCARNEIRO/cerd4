@@ -21,11 +21,13 @@ interface IndCodeBadgeProps {
    * Ex.: sub="renda" → "IND-135 · sub: renda".
    */
   sub?: string;
+  /** código persistido do guarda-chuva, para exibição estável durante o carregamento */
+  codigo?: string;
 }
 
-export function IndCodeBadge({ nome, className, sub }: IndCodeBadgeProps) {
+export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }: IndCodeBadgeProps) {
   const codigos = useStaticIndicadorCodigos();
-  const codigo = lookupCodigo(codigos, nome);
+  const codigo = lookupCodigo(codigos, nome) || codigoPersistido || null;
   if (!codigo) return null;
   return (
     <Badge
