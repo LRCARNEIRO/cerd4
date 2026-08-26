@@ -1,55 +1,36 @@
-# Base orçamentária: órgão canônico + deduplicação lógica
+# IDs visíveis e subindicadores em todas as abas estatísticas
 
-Duas frentes complementares, executadas nesta ordem. A base bruta continua completa (cada camada mantém sua motivação de captura); o que muda é que **somatórios, cards e a listagem de evidências passam a usar somente o conjunto deduplicado**.
+## Objetivo
+Garantir que todo gráfico, card ou tabela com conteúdo estatístico próprio tenha um identificador visível e possa ser encontrado e selecionado como evidência, não apenas em Dados Gerais e Segurança/Saúde/Educação.
 
-## Passo 1 — Eliminar o rótulo "Federal" e normalizar `orgao` para sigla canônica
+## Implementação
+1. **Corrigir a visibilidade já implementada**
+   - Manter o código congelado do indicador guarda-chuva como fonte canônica.
+   - Exibir o selo no título do bloco mesmo durante o carregamento da base, usando somente o código persistido já conhecido — sem gerar códigos novos.
+   - Usar âncoras estáveis por subindicador para que a busca leve ao gráfico/card exato.
 
-O rótulo genérico "Federal" deixa de existir na base. Ele não é um órgão — é uma esfera, e já está registrado na coluna `esfera`. Todo registro passa a ter um órgão identificado sempre que a informação existir.
+2. **Inventariar e identificar todas as abas**
+   - Cobrir: Vulnerabilidades, Raça × Gênero, LGBTQIA+, Deficiência, Juventude, Classe Social, Administração Pública, COVID, Grupos Focais, ODS Racial e Complemento CERD III.
+   - Para cada bloco visual independente, vincular o nome exato do guarda-chuva auditado e adicionar `IND-NNN · sub: título curto` quando houver mais de um bloco sob o mesmo indicador.
+   - Indicadores que já são registros individuais recebem apenas o seu `IND-NNN`, sem criar subindicador artificial.
+   - Se não houver correspondência canônica exata, o bloco permanece explicitamente pendente; nenhum ID será estimado ou herdado.
 
-- Criar um dicionário canônico único (`src/utils/orgaoCanonico.ts`) mapeando nomes por extenso e variações para a sigla oficial: "Ministério dos Direitos Humanos e da Cidadania" → MDHC, "Ministério da Igualdade Racial" → MIR, "Ministério dos Povos Indígenas" → MPI, SESAI, FUNAI, INCRA, etc.
-- **Resolução dos registros "Federal"**, nesta ordem de tentativa:
-  1. Código do órgão/unidade orçamentária do próprio registro (quando presente na carga do Portal da Transparência).
-  2. Código da ação/programa — cada ação pertence a um órgão executor conhecido (ex.: 20YP → SESAI; 5136 e 1617 → FUNAI/MPI; ações de titulação quilombola → INCRA).
-  3. Órgão já atribuído a esse mesmo programa/ano por outra camada de captura da base.
-  4. Só quando nenhuma pista resolve, o registro fica como `NAO_IDENTIFICADO` — explicitamente marcado como pendência de auditoria, nunca como "Federal".
-- Levantamento prévio: quantos dos registros hoje rotulados "Federal" cada regra resolve, apresentado antes de gravar, para você aprovar o resultado.
-- Migração one-shot de `UPDATE` em `dados_orcamentarios` aplicando o dicionário e a resolução, para que exportações brutas e planilhas de auditoria saiam limpas.
-- Guardar o rótulo original em `observacoes` (prefixo `orgao_origem:`) para não perder rastro de auditoria.
-- Aplicar o mesmo dicionário e a mesma resolução na escrita das funções de ingestão, para que nenhuma carga futura volte a gravar "Federal".
-- Os residuais `NAO_IDENTIFICADO` entram na aba "Pendências" da planilha de auditoria de pares.
+3. **Busca e seleção de evidências**
+   - Centralizar todos os novos subindicadores no registro único de busca.
+   - Indexar título visível e sinônimos relevantes.
+   - Remover resultados estáticos duplicados “sem ID” quando o mesmo conteúdo já estiver coberto por indicador/subindicador canônico.
+   - Validar que o clique destaca e posiciona no bloco exato.
 
+4. **Inventário v16 atualizado**
+   - Regenerar a planilha com todos os subindicadores visuais efetivamente implantados em todas as abas.
+   - Preservar integralmente os 210 registros auditados, 382 chaves internas, códigos congelados e valores estatísticos.
+   - Separar claramente: indicadores canônicos, chaves internas e referências visuais localizáveis.
 
-## Passo 2 — Camada de deduplicação lógica (leitura)
-
-- Novo hook `useOrcamentoCanonico()` que carrega todos os registros e devolve dois conjuntos: `todos` (bruto, para a listagem completa) e `canonico` (um registro por grupo).
-- **Chave de agrupamento:** `programa/ação normalizados + ano + esfera`. O `orgao` já normalizado entra como critério de desempate, não como parte da chave — assim variações residuais não voltam a quebrar a colisão.
-- **Ranking de fonte** para eleger o vencedor de cada grupo:
-  1. API Portal da Transparência (ação específica)
-  2. Programa PPA (Camada 1)
-  3. Órgãos MIR/MPI (Camada 3) e SESAI/FUNAI/INCRA (Camada 4)
-  4. Subfunção 422 (Camada 2 — genérica)
-  5. Carga Agenda Transversal (usada só quando é a única cobertura do grupo)
-- Empate no ranking: vence o registro com `pago` preenchido e `url_fonte` presente.
-- Cada registro recebe `is_canonico: boolean` e `duplicado_de: id`, para exibição transparente.
-
-## Passo 3 — Ligar os consumidores ao conjunto canônico
-
-- Cards e totalizadores da página Orçamento: total de registros, ações orçamentárias e extraorçamentárias, programas distintos, Σ dotação, Σ pago, Σ execução, e os recortes por período (P1 2018-2022 / P2 2023-2025) passam a somar apenas `canonico`.
-- Execução recalculada como `Σ pago / Σ dotação` do conjunto canônico, eliminando o sentinela de 99.999,99% que vinha de divisão por dotação zero.
-- Seletor de evidências e o sensor de diagnóstico (`useDiagnosticSensor`) passam a enxergar apenas `canonico`, para que uma mesma ação não seja vinculada duas vezes à mesma recomendação.
-- Geradores de relatório (CERD IV, Orçamentário, Protocolo de Governança) usam a mesma fonte, mantendo a paridade UI × relatório.
-
-## Passo 4 — Transparência e legenda
-
-- Listagem completa continua exibindo todos os registros, com selo "duplicado — não somado" e tooltip apontando o registro canônico e a camada de origem.
-- Filtro rápido "Somente base canônica" na listagem.
-- Legenda metodológica fixa explicando a chave de deduplicação e o ranking de fontes, replicada nas exportações.
-
-## Passo 5 — Verificação
-
-- Painel de auditoria mostra: nº bruto vs canônico, valor bruto vs canônico e a diferença suprimida (hoje ~R$ 664 mi de dupla contagem).
-- Conferência dos totais na página Orçamento, na Home e no relatório orçamentário para garantir que os três batem.
+5. **Validação**
+   - Testar uma amostra de cada aba no desktop: selo visível, busca, navegação e realce.
+   - Conferir ausência de Common Core e ausência de alterações nos dados auditados.
+   - Verificar build e erros de execução/rede.
+   - Atualizar a versão pública para que `cerd4.lovable.app` reflita os IDs validados.
 
 ## Nota técnica
-
-A deduplicação permanece em camada de leitura, não em constraint de banco: nenhum dado é apagado, e a regra pode ser recalibrada sem nova migração. Se mais adiante quiser transformar a regra em garantia do banco, um índice único sobre a chave canônica pode ser adicionado sem conflitar com esta implementação.
+A quantidade final de subindicadores será derivada do inventário real dos blocos visuais e informada após a implementação; não será fixada previamente nem confundida com as 382 chaves internas.
