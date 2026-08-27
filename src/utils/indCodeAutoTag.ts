@@ -50,6 +50,11 @@ export function autoTagIndCodes(
   // congelados do registro SSoT. Eles são carimbados antes dos guarda-chuvas
   // e não entram em `usados`, pois um mesmo IND pode possuir vários blocos.
   for (const sub of SUB_INDICADORES) {
+    // Só carimba o sub na aba onde ele realmente existe. Sem esse filtro,
+    // títulos curtos ("Indígenas", "Quilombolas") recebiam selo em abas
+    // alheias (ex.: COVID), sugerindo evidência inexistente.
+    if (activeTab && sub.tabValue !== activeTab) continue;
+    if (norm(sub.titulo).length < 9) continue;
     const alvo = nodes.find(el => {
       if (el.dataset.subIndicador || el.querySelector('[data-ind-badge="1"]')) return false;
       return norm(el.textContent || '') === norm(sub.titulo);
