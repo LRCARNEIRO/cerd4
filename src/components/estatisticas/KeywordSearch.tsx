@@ -98,16 +98,10 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // Saúde (série ano a ano) — REMOVIDA do índice: coberta pelo registro
   // canônico IND-122 + sub-indicadores (mortalidade materna / infantil).
 
-  // Déficit Habitacional
-  (mirror.deficitHabitacionalSerie || []).forEach((s: any) => {
-    results.push({
-      titulo: `Déficit Habitacional ${s.ano} — Negros: ${s.negros}%, Brancos: ${s.brancos}%`,
-      fonte: 'FJP/IBGE',
-      aba: 'Vulnerabilidades',
-      abaValue: 'vulnerabilidades',
-      categoria: 'Habitação',
-    });
-  });
+  // Déficit Habitacional (série ano a ano) — REMOVIDO do índice: são chaves
+  // internas do registro canônico IND-127 (FJP, 2018-2022). As entradas
+  // "sem ID" duplicavam o mesmo dado e ainda exibiam valores absolutos com
+  // símbolo de percentual.
 
   // Povos Tradicionais
   const pt = mirror.povosTradicionais;

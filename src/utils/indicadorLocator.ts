@@ -31,7 +31,11 @@ const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   ods_racial: [{ label: 'ODS Racial', tabValue: 'ods-racial' }],
 
 
-  habitacao: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
+  // habitação: não há bloco visual em Vulnerabilidades — os registros de
+  // déficit habitacional só são exibidos no Espelho Seguro (BD) e, quando
+  // for o caso, no Complemento CERD III (via subcategoria). Apontar para
+  // Vulnerabilidades levava o usuário a uma aba sem o indicador.
+  habitacao: [],
   seguranca_publica: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
   saude: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
   educacao: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
