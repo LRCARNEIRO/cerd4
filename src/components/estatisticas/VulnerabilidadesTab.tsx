@@ -13,6 +13,9 @@ import {
   interseccionalidadeTrabalhoFontes,
 } from './StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { IndCodeBadge } from './IndCodeBadge';
+
+const GC_CHEFIA = 'Chefia familiar monoparental — raça × gênero';
 
 const vulnerabilidadeFontes = [
   { nome: 'Censo 2022/SIDRA 10179 — Chefia familiar monoparental (Raça)', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
@@ -27,6 +30,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
   const multidimensional = [
     {
       dimensao: 'Chefia monoparental feminina negra',
+      sub: 'chefia monoparental feminina negra',
       indicador: `${chefiaFamiliarRacaGenero.percentualNegras}% das famílias monoparentais femininas são chefiadas por mulheres negras`,
       valor: chefiaFamiliarRacaGenero.percentualNegras,
       referencia: chefiaFamiliarRacaGenero.percentualBrancas,
@@ -37,6 +41,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'Fome — domicílios chefiados por mulheres negras',
+      sub: 'fome em lares de mulheres negras',
       indicador: `${chefiaFamiliarRacaGenero.fomeMulheresNegras}% dos lares chefiados por mulheres negras sofrem com fome (vs ${chefiaFamiliarRacaGenero.fomeMulheresBrancas}% mulheres brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.fomeMulheresBrancas,
@@ -47,6 +52,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'Segurança alimentar — domicílios chefiados por mulheres negras',
+      sub: 'segurança alimentar em lares de mulheres negras',
       indicador: `${chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras}% em segurança alimentar (negras) vs ${chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresBrancas}% (brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeCriancasMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.segAlimentarCriancasMulheresBrancas,
@@ -58,6 +64,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'Taxa de Vulnerabilidade — famílias chefiadas por mulheres negras',
+      sub: 'taxa de vulnerabilidade de famílias chefiadas por mulheres negras',
       indicador: `${chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras}% (negras) vs ${chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros}% (brancas)`,
       valor: chefiaFamiliarRacaGenero.fomeDesempregoMulheresNegras,
       referencia: chefiaFamiliarRacaGenero.fomeDesempregoHomensNegros,
@@ -69,6 +76,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'Escolaridade não protege (mulheres negras)',
+      sub: 'escolaridade não protege mulheres negras',
       indicador: `${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas}% de IA mod.+grave mesmo c/ 8+ anos estudo (vs ${chefiaFamiliarRacaGenero.iaModeradaGraveMulheresBrancasEscolarizadas}% brancas)`,
       valor: chefiaFamiliarRacaGenero.iaModeradaGraveMulheresNegrasEscolarizadas,
       referencia: chefiaFamiliarRacaGenero.iaModeradaGraveMulheresBrancasEscolarizadas,
@@ -79,6 +87,7 @@ function buildVulnerabilidadeData(chefiaFamiliarRacaGenero: any) {
     },
     {
       dimensao: 'CadÚnico — mulheres negras',
+      sub: 'cadúnico mulheres negras',
       indicador: chefiaFamiliarRacaGenero.cadUnicoMulheresNegras != null 
         ? `${chefiaFamiliarRacaGenero.cadUnicoMulheresNegras}% das mulheres negras estão no CadÚnico vs ${chefiaFamiliarRacaGenero.cadUnicoMulheresBrancas}% das brancas`
         : '⏳ Dados CadÚnico pendentes de verificação',
@@ -132,11 +141,17 @@ export function VulnerabilidadesTab() {
             {vulnerabilidadeMultidimensional.map((item, i) => {
               const Icon = item.icone;
               return (
-                <div key={i} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
+                <div
+                  key={i}
+                  className="p-3 rounded-lg border border-border bg-muted/30 space-y-2 scroll-mt-24"
+                >
                   <div className="flex items-start gap-2">
                     <Icon className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold text-foreground">{item.dimensao}</p>
+                      <div className="flex items-start gap-2 flex-wrap">
+                        <p className="text-xs font-semibold text-foreground">{item.dimensao}</p>
+                        <IndCodeBadge nome={GC_CHEFIA} codigo="IND-128" sub={(item as any).sub} />
+                      </div>
                       <p className="text-2xl font-bold text-destructive">{item.valor}{item.unidade}</p>
                       {item.referencia !== null && (
                         <p className="text-xs text-muted-foreground">
