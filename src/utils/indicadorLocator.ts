@@ -53,9 +53,12 @@ const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   grupos_focais: [{ label: 'Grupos Focais', tabValue: 'grupos-focais' }],
   lgbtqia: [{ label: 'LGBTQIA+', tabValue: 'lgbtqia' }],
   deficiencia: [{ label: 'Deficiência', tabValue: 'deficiencia' }],
-  legislacao_justica: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
-  cultura: [{ label: 'Dados Gerais', tabValue: 'dados-gerais' }],
-  cultura_patrimonio: [{ label: 'Dados Gerais', tabValue: 'dados-gerais' }],
+  // legislação/justiça e cultura/patrimônio só têm bloco visual no
+  // Complemento CERD III — apontar para Vulnerabilidades/Dados Gerais levava
+  // o usuário a abas sem o indicador.
+  legislacao_justica: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+  cultura: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+  cultura_patrimonio: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
   vulnerabilidade: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
   vulnerabilidades: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
   juventude: [{ label: 'Juventude', tabValue: 'juventude' }],

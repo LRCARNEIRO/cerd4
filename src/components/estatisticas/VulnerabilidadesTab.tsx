@@ -208,7 +208,7 @@ export function VulnerabilidadesTab() {
 
           <AuditFooter
             fontes={vulnerabilidadeFontes}
-            documentos={['CERD 2022 §20', 'Common Core', 'Durban §15']}
+            documentos={['CERD 2022 §20', 'Durban §15']}
           />
         </CardContent>
       </Card>
@@ -398,7 +398,7 @@ export function VulnerabilidadesTab() {
           </div>
           <AuditFooter
             fontes={interseccionalidadeTrabalhoFontes}
-            documentos={['CERD 2022', 'Common Core']}
+            documentos={['CERD 2022']}
           />
         </CardContent>
       </Card>
