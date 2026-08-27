@@ -59,7 +59,7 @@ export default function Estatisticas() {
     if (!codigosPorNome.size) return;
     clearAutoTags();
     const timers = [150, 600, 1500, 3000, 5000].map(d => window.setTimeout(() => {
-      autoTagIndCodes(codigosPorNome);
+      autoTagIndCodes(codigosPorNome, document, activeTab);
     }, d));
     return () => timers.forEach(window.clearTimeout);
   }, [activeTab, codigosPorNome]);
