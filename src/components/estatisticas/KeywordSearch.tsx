@@ -119,9 +119,18 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // internas do registro canônico IND-197 (FBSP/DEPEN, população prisional
   // por cor/raça).
 
-  // Classe por raça (faixa a faixa) — REMOVIDA do índice: são chaves internas
-  // do registro canônico de classe social por raça, exibido com selo na aba
-  // Classe Social.
+  // Classe por raça — MANTIDA no índice: não existe registro canônico
+  // (guarda-chuva) para classe social por raça na Base Estatística, logo
+  // estas linhas são a única forma de localizar o dado.
+  (mirror.classePorRaca || []).forEach((s: any) => {
+    results.push({
+      titulo: `Classe Social — ${s.faixa}: Negros ${s.negros}%, Brancos ${s.brancos}%`,
+      fonte: 'IBGE/PNAD',
+      aba: 'Classe Social',
+      abaValue: 'classe',
+      categoria: 'Classe Social',
+    });
+  });
 
 
   // Evasão escolar (série ano a ano) — REMOVIDA do índice: coberta pelo
