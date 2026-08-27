@@ -179,7 +179,15 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
     abaLabel: 'Segurança/Saúde/Educação',
   },
   // ── Vulnerabilidades ──
-  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'vulnerabilidade multidimensional', titulo: 'Vulnerabilidade Multidimensional — Raça × Gênero × Renda', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
+  // Cada card do bloco "Vulnerabilidade Multidimensional" é um dado próprio
+  // (fonte e recorte distintos) — por isso cada um é um subindicador
+  // localizável/vinculável, e não um único sub agregador.
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'chefia monoparental feminina negra', titulo: 'Chefia monoparental feminina negra', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['famílias monoparentais chefiadas por mulheres negras', 'Censo 2022 SIDRA 10179'] },
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'fome em lares de mulheres negras', titulo: 'Fome — domicílios chefiados por mulheres negras', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['insegurança alimentar grave', 'Fiocruz DSBR 2023'] },
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'segurança alimentar em lares de mulheres negras', titulo: 'Segurança alimentar — domicílios chefiados por mulheres negras', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['segurança alimentar por raça e gênero'] },
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'taxa de vulnerabilidade de famílias chefiadas por mulheres negras', titulo: 'Taxa de Vulnerabilidade — famílias chefiadas por mulheres negras', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['rendimento per capita até 1/2 salário mínimo'] },
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'escolaridade não protege mulheres negras', titulo: 'Escolaridade não protege (mulheres negras)', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['insegurança alimentar moderada e grave com 8+ anos de estudo'] },
+  { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'cadúnico mulheres negras', titulo: 'CadÚnico — mulheres negras', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades', aliases: ['beneficiárias do Cadastro Único por raça'] },
   { codigo: 'IND-161', guardaChuva: 'Evolução das desigualdades raciais (2018-2024)', sub: 'razões de desigualdade racial', titulo: 'Evolução das Razões de Desigualdade Racial (2018-2024)', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
   { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'chefia e proteção social', titulo: 'Chefia Familiar e Proteção Social', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
   { codigo: 'IND-113', guardaChuva: 'Interseccionalidade trabalho — raça × gênero (Q2 2024)', sub: 'cruzamento trabalho', titulo: 'Cruzamento: Raça × Gênero (Trabalho)', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
