@@ -20,7 +20,11 @@ const norm = (s: string) =>
 const SELECTOR = 'h2,h3,h4,h5,p,span,div,td,th,[data-ind-nome]';
 const BADGE_CLASS = 'ind-auto-code-badge';
 
-export function autoTagIndCodes(codigos: Map<string, string>, root: ParentNode = document): number {
+export function autoTagIndCodes(
+  codigos: Map<string, string>,
+  root: ParentNode = document,
+  activeTab?: string,
+): number {
   if (!codigos.size) return 0;
   // Map normalizado nome → codigo (a chave do hook já vem lowercase/trim).
   const byNorm = new Map<string, string>();
