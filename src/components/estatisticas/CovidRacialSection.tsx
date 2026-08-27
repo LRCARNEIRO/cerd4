@@ -6,6 +6,7 @@ import {
   LineChart, Line, Legend 
 } from 'recharts';
 import { Heart, ExternalLink, FileText, AlertTriangle, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { IndCodeBadge } from '@/components/estatisticas/IndCodeBadge';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 // povosTradicionais agora consumido via useMirrorData (SSoT)
@@ -278,7 +279,10 @@ export function CovidRacialSection() {
         </Card>
         <Card className="border-l-4 border-l-chart-2">
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Óbitos em Excesso (Negros, 2020)</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-xs text-muted-foreground">Óbitos em Excesso (Negros, 2020)</p>
+              <IndCodeBadge nome="Excesso de mortalidade por raça — COVID-19 (2020)" codigo="IND-178" sub="óbitos em excesso" />
+            </div>
             <p className="text-2xl font-bold">~36 mil</p>
             <p className="text-xs text-muted-foreground">a mais que o esperado</p>
             <AuditFooter fontes={FONTE_RACA_SAUDE} compact />

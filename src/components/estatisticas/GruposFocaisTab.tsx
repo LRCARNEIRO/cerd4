@@ -9,6 +9,15 @@ import { useLacunasIdentificadas, useLacunasStats } from '@/hooks/useLacunasData
 import { SerieTemporalGrupos } from '@/components/grupos-focais/SerieTemporalGrupos';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGruposFocaisData } from '@/hooks/useGruposFocaisData';
+import { IndCodeBadge } from '@/components/estatisticas/IndCodeBadge';
+
+// Guarda-chuvas canônicos cujos blocos também são exibidos nesta aba.
+// Nenhum código novo é criado: o card reaproveita o código congelado do pai
+// e o mesmo `sub` já registrado em src/utils/indicadorSubs.ts.
+const GC_ATLAS = 'Atlas da Violência 2025 — dados-chave';
+const GC_HOMICIDIO = 'Segurança pública — homicídio por raça (2018-2024)';
+const GC_JUVENTUDE = 'Jovens negros — violência e encarceramento';
+const GC_SAUDE = 'Saúde — mortalidade materna e infantil por raça (2018-2024)';
 
 
 
@@ -770,7 +779,7 @@ export function GruposFocaisTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.taxaHomicidio100mil.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.taxaHomicidio100mil.nome}<IndCodeBadge nome={GC_ATLAS} codigo="IND-110" sub="risco relativo" /></CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.taxaHomicidio100mil.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -810,7 +819,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.homicidiosPorRaca.nome}<IndCodeBadge nome={GC_HOMICIDIO} codigo="IND-117" sub="taxa de homicídio" /></CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.homicidiosPorRaca.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -837,7 +846,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-destructive">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.letalidadePolicial.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.letalidadePolicial.nome}<IndCodeBadge nome={GC_HOMICIDIO} codigo="IND-117" sub="letalidade policial" /></CardTitle>
                   <CardDescription>19º Anuário FBSP 2025 | {indicadoresVulnerabilidade.letalidadePolicial.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -856,7 +865,7 @@ export function GruposFocaisTab() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.violenciaJuventude.nome}<IndCodeBadge nome={GC_JUVENTUDE} codigo="IND-121" sub="violência letal juventude" /></CardTitle>
                   <CardDescription>Atlas da Violência 2025 | {indicadoresVulnerabilidade.violenciaJuventude.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -876,7 +885,7 @@ export function GruposFocaisTab() {
 
               <Card className="border-l-4 border-l-warning">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome}</CardTitle>
+                  <CardTitle className="text-base flex items-center gap-2">{indicadoresVulnerabilidade.ivjn.nome}<IndCodeBadge nome={GC_JUVENTUDE} codigo="IND-121" sub="ivj-n" /></CardTitle>
                   <CardDescription>Atlas da Violência 2025, p. 74 | {indicadoresVulnerabilidade.ivjn.ano}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -907,6 +916,7 @@ export function GruposFocaisTab() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
                     {indicadoresVulnerabilidade.mortalidadeMaterna.nome}
+                    <IndCodeBadge nome={GC_SAUDE} codigo="IND-122" sub="mortalidade materna" />
                     <EstimativaBadge tipo="cruzamento" metodologia="Cálculo: (Óbitos maternos por raça ÷ Nascidos vivos por raça) × 100.000. Fontes: SIM/DataSUS + SINASC/DataSUS. Resultado 2022: negras 57,3/100mil NV vs brancas 46,6/100mil NV = razão 1,2×." />
                     
                   </CardTitle>
