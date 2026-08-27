@@ -13,6 +13,10 @@ import {
   interseccionalidadeTrabalhoFontes,
 } from './StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { IndCodeBadge } from './IndCodeBadge';
+import { getSubIndicadorAnchor } from '@/utils/indicadorSubs';
+
+const GC_CHEFIA = 'Chefia familiar monoparental — raça × gênero';
 
 const vulnerabilidadeFontes = [
   { nome: 'Censo 2022/SIDRA 10179 — Chefia familiar monoparental (Raça)', url: 'https://sidra.ibge.gov.br/Tabela/10179' },
@@ -138,11 +142,18 @@ export function VulnerabilidadesTab() {
             {vulnerabilidadeMultidimensional.map((item, i) => {
               const Icon = item.icone;
               return (
-                <div key={i} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
+                <div
+                  key={i}
+                  id={getSubIndicadorAnchor('IND-128', (item as any).sub)}
+                  className="p-3 rounded-lg border border-border bg-muted/30 space-y-2 scroll-mt-24"
+                >
                   <div className="flex items-start gap-2">
                     <Icon className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold text-foreground">{item.dimensao}</p>
+                      <div className="flex items-start gap-2 flex-wrap">
+                        <p className="text-xs font-semibold text-foreground">{item.dimensao}</p>
+                        <IndCodeBadge nome={GC_CHEFIA} codigo="IND-128" sub={(item as any).sub} />
+                      </div>
                       <p className="text-2xl font-bold text-destructive">{item.valor}{item.unidade}</p>
                       {item.referencia !== null && (
                         <p className="text-xs text-muted-foreground">
