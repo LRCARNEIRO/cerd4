@@ -103,72 +103,26 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // "sem ID" duplicavam o mesmo dado e ainda exibiam valores absolutos com
   // símbolo de percentual.
 
-  // Povos Tradicionais
-  const pt = mirror.povosTradicionais;
-  if (pt?.indigenas) {
-    results.push({
-      titulo: `Povos Indígenas — População: ${pt.indigenas.populacaoPessoasIndigenas?.toLocaleString('pt-BR')}, TIs: ${pt.indigenas.terrasTotal}, Homologadas: ${pt.indigenas.terrasHomologadas}`,
-      fonte: 'FUNAI / IBGE Censo 2022',
-      aba: 'Grupos Focais',
-      abaValue: 'grupos-focais',
-      categoria: 'Povos Tradicionais',
-    });
-  }
-  if (pt?.quilombolas) {
-    results.push({
-      titulo: `Quilombolas — População: ${pt.quilombolas.populacao?.toLocaleString('pt-BR')}, Territórios Titulados: ${pt.quilombolas.territoriosTitulados}`,
-      fonte: 'INCRA / IBGE Censo 2022',
-      aba: 'Grupos Focais',
-      abaValue: 'grupos-focais',
-      categoria: 'Povos Tradicionais',
-    });
-  }
+  // Povos Tradicionais (indígenas/quilombolas) — REMOVIDOS do índice: são
+  // chaves internas dos registros canônicos IND-177 e IND-169, já indexados
+  // pelos seus sub-indicadores ("Indígenas" / "Quilombolas" em Grupos Focais).
 
-  // Atlas Violência
-  const atlas = mirror.atlasViolencia2025;
-  if (atlas) {
-    results.push({
-      titulo: `Atlas da Violência 2025 — Taxa Homicídio Negros: ${atlas.taxaHomicidioNegros}/100mil, Risco: ${atlas.riscoRelativo}x`,
-      fonte: 'IPEA/FBSP',
-      aba: 'Grupos Focais',
-      abaValue: 'grupos-focais',
-      categoria: 'Vulnerabilidade',
-    });
-  }
+  // Atlas da Violência 2025 — REMOVIDO do índice: chave interna do registro
+  // canônico IND-110, já indexado pelos subs "risco relativo" e
+  // "queda de homicídios" (Segurança/Saúde/Educação).
 
-  // Juventude Negra
-  const jov = mirror.jovensNegrosViolencia;
-  if (jov) {
-    results.push({
-      titulo: `Juventude Negra — Encarceramento: ${jov.encarceramento}%, Medidas Socioeducativas: ${jov.medidasSocioeducativas}%`,
-      fonte: 'FBSP / Atlas da Violência 2025',
-      aba: 'Juventude',
-      abaValue: 'juventude',
-      categoria: 'Juventude Negra',
-    });
-  }
+  // Juventude Negra (encarceramento/medidas socioeducativas) — REMOVIDO do
+  // índice: chave interna do registro canônico IND-121, já indexado pelos
+  // subs "violência letal juventude" e "ivj-n" (aba Juventude).
 
-  // População carcerária
-  (mirror.populacaoCarcerariaData || []).forEach((s: any) => {
-    results.push({
-      titulo: `População Carcerária ${s.ano} — Total: ${s.total?.toLocaleString('pt-BR')}, Negros: ${s.negros?.toLocaleString('pt-BR')} (${s.percentualNegros}%)`,
-      fonte: 'FBSP / DEPEN',
-      aba: 'Vulnerabilidades',
-      abaValue: 'vulnerabilidades',
-      categoria: 'Sistema Prisional',
-    });
-  });
+  // População carcerária (série ano a ano) — REMOVIDA do índice: são chaves
+  // internas do registro canônico IND-197 (FBSP/DEPEN, população prisional
+  // por cor/raça).
 
-  // Classe por raça
-  (mirror.classePorRaca || []).forEach((s: any) => {
-    results.push({
-      titulo: `Classe Social — ${s.faixa}: Negros ${s.negros}%, Brancos ${s.brancos}%`,
-      fonte: 'IBGE/PNAD',
-      aba: 'Classe Social',
-      abaValue: 'classe',
-      categoria: 'Classe Social',
-    });
-  });
+  // Classe por raça (faixa a faixa) — REMOVIDA do índice: são chaves internas
+  // do registro canônico de classe social por raça, exibido com selo na aba
+  // Classe Social.
+
 
   // Evasão escolar (série ano a ano) — REMOVIDA do índice: coberta pelo
   // registro canônico IND-131 (badge no título do card na aba).
