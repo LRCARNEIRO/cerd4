@@ -184,7 +184,7 @@ export function RacaGeneroTab() {
                 ))}
               </TableBody>
             </Table>
-            <AuditFooter fontes={trabalhoRacaGeneroFontes} documentos={['CERD 2022 §21', 'Common Core']} />
+            <AuditFooter fontes={trabalhoRacaGeneroFontes} documentos={['CERD 2022 §21']} />
           </CardContent>
         </Card>
       </div>
@@ -278,7 +278,7 @@ export function RacaGeneroTab() {
                 <span className="text-sm font-bold">{chefiaFamiliarRacaGenero.totalFomeBrasil2022Milhoes} mi</span>
               </div>
             </div>
-            <AuditFooter fontes={chefiaFamiliarRacaGenero.fontes} documentos={['CERD 2022 §21', 'Common Core']} />
+            <AuditFooter fontes={chefiaFamiliarRacaGenero.fontes} documentos={['CERD 2022 §21']} />
           </CardContent>
         </Card>
 
@@ -326,7 +326,7 @@ export function RacaGeneroTab() {
                 <strong>Grupo de risco ampliado:</strong> {saudeMaternaRaca.violenciaObstetricaGrupoRisco}
               </p>
             </div>
-            <AuditFooter fontes={saudeMaternaRaca.fontes} documentos={['CERD 2022 §27-28', 'Common Core']} />
+            <AuditFooter fontes={saudeMaternaRaca.fontes} documentos={['CERD 2022 §27-28']} />
           </CardContent>
         </Card>
       </div>
@@ -387,7 +387,7 @@ export function RacaGeneroTab() {
               <strong>Leitura:</strong> a população negra é maioria entre os beneficiários do CadÚnico em toda a série (razão ~2,3× brancos), evidenciando a concentração racial da pobreza administrada pelo Estado. Fonte primária: <a href={cadUnicoFonte.url} target="_blank" rel="noopener noreferrer" className="text-primary underline">SAGICAD/MDS</a>.
             </p>
           </div>
-          <AuditFooter fontes={[{ nome: cadUnicoFonte.nome, url: cadUnicoFonte.url }]} documentos={['CERD 2022 §31-32', 'Common Core']} />
+          <AuditFooter fontes={[{ nome: cadUnicoFonte.nome, url: cadUnicoFonte.url }]} documentos={['CERD 2022 §31-32']} />
         </CardContent>
       </Card>
 
@@ -460,7 +460,7 @@ export function RacaGeneroTab() {
               ))}
             </TableBody>
           </Table>
-          <AuditFooter fontes={educacaoRacaGeneroFontes} documentos={['CERD 2022 §25-26', 'Common Core']} />
+          <AuditFooter fontes={educacaoRacaGeneroFontes} documentos={['CERD 2022 §25-26']} />
         </CardContent>
       </Card>
 
@@ -878,7 +878,7 @@ export function DeficienciaTab() {
                 { nome: 'SIDRA 4178 — Nível de Ocupação PcD por cor/raça (PNADC 2022)', url: 'https://sidra.ibge.gov.br/tabela/4178' },
                 { nome: 'SIDRA 9384 — Renda Média PcD por cor/raça (PNADC 2022)', url: 'https://sidra.ibge.gov.br/tabela/9384' },
               ]}
-              documentos={['CERD 2022', 'Common Core']}
+              documentos={['CERD 2022']}
             />
           </CardContent>
         </Card>
@@ -1219,7 +1219,7 @@ export function ClasseSocialTab() {
                 { nome: 'SIS/IBGE 2024 — Síntese de Indicadores Sociais', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/9221-sintese-de-indicadores-sociais.html' },
                 { nome: 'SIDRA 6405 — Rendimento por cor/raça', url: 'https://sidra.ibge.gov.br/tabela/6405' },
               ]}
-              documentos={['CERD 2022', 'Common Core']}
+              documentos={['CERD 2022']}
             />
           </CardContent>
         </Card>
@@ -1341,7 +1341,7 @@ export function ClasseSocialTab() {
               { nome: 'Min. Fazenda — Distribuição da Renda e Riqueza (Dez/2024)', url: 'https://www.gov.br/fazenda/pt-br/centrais-de-conteudo/publicacoes/relatorio-da-distribuicao-pessoal-da-renda-e-da-riqueza' },
               { nome: 'Agência Brasil — OCDE mobilidade social', url: 'https://agenciabrasil.ebc.com.br/geral/noticia/2018-06/pobres-do-pais-levam-nove-geracoes-para-alcancar-renda-media-diz-ocde' },
             ]}
-            documentos={['CERD 2022', 'Common Core']}
+            documentos={['CERD 2022']}
           />
         </CardContent>
       </Card>

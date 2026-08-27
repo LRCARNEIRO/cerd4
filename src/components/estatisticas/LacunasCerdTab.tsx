@@ -384,7 +384,7 @@ export function LacunasCerdTab() {
                   { nome: 'SIDRA 7129 — Ensino superior por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7129' },
                   { nome: 'SIDRA 7125 — Analfabetismo por cor/raça', url: 'https://sidra.ibge.gov.br/Tabela/7125' },
                 ]}
-                documentos={['CERD 2022 §19', 'Common Core']}
+                documentos={['CERD 2022 §19']}
                 compact
               />
             </CardContent>
