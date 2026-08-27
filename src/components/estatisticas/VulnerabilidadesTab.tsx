@@ -14,7 +14,6 @@ import {
 } from './StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { IndCodeBadge } from './IndCodeBadge';
-import { getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 
 const GC_CHEFIA = 'Chefia familiar monoparental — raça × gênero';
 
@@ -144,7 +143,6 @@ export function VulnerabilidadesTab() {
               return (
                 <div
                   key={i}
-                  id={getSubIndicadorAnchor('IND-128', (item as any).sub)}
                   className="p-3 rounded-lg border border-border bg-muted/30 space-y-2 scroll-mt-24"
                 >
                   <div className="flex items-start gap-2">
