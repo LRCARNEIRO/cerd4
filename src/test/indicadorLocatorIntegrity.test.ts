@@ -144,7 +144,8 @@ describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade'
     for (const s of SUB_INDICADORES) {
       const chave = norm(s.guardaChuva);
       if (!porGuardaChuva.has(chave)) porGuardaChuva.set(chave, new Set());
-      porGuardaChuva.get(chave)!.add(s.codigo);
+      const codigos = porGuardaChuva.get(chave);
+      codigos?.add(s.codigo);
     }
     const divergentes = [...porGuardaChuva.entries()].filter(([, codigos]) => codigos.size > 1);
     expect(divergentes, `guarda-chuva com códigos divergentes: ${JSON.stringify(divergentes)}`).toEqual([]);
@@ -153,7 +154,9 @@ describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade'
   it('SUB_INDICADORES: toda localização é sustentada pelo título ou alias no componente real da aba', () => {
     const ausentes: string[] = [];
     for (const sub of SUB_INDICADORES) {
-      const rotulos = [sub.titulo, ...(sub.aliases || [])].map(norm);
+      // O próprio `sub="..."` de IndCodeBadge é marcador explícito mesmo
+      // quando o texto visual usa uma forma curta (ex.: "Em Processo").
+      const rotulos = [sub.titulo, sub.sub, ...(sub.aliases || [])].map(norm);
       for (const aba of abasDoSub(sub)) {
         const fonte = fonteDaAba(aba.tabValue);
         if (!fonte || !rotulos.some(rotulo => fonte.includes(rotulo))) {
