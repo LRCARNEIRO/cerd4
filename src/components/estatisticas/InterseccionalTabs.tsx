@@ -1231,6 +1231,7 @@ export function ClasseSocialTab() {
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warning" />
               Saúde × Raça × Classe
+              <IndCodeBadge nome="Saúde materna — raça e gênero" codigo="IND-118" sub="saúde materna" />
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
