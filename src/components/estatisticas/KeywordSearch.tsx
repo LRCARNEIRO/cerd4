@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
-import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
+import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
 import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
@@ -42,7 +42,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       nome: ind.nome,
       titulo: `${ind.codigo ? `${ind.codigo} — ` : ''}${ind.nome}`,
       fonte: ind.fonte,
-      aba: 'Espelho Seguro (BD)',
+      aba: 'Somente na base (sem bloco visual)',
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
       abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem, ind.codigo),
@@ -67,10 +67,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       categoria: 'Sub-indicador',
       subTitulo: sub.titulo,
       subAnchor: getSubIndicadorAnchor(umbrella?.codigo || sub.codigo, sub.sub),
-      abas: [
-        ...abasDoSub(sub).map((a) => ({ label: a.abaLabel, tabValue: a.tabValue })),
-        { ...ABA_ESPELHO },
-      ],
+      abas: abasDoSub(sub).map((a) => ({ label: a.abaLabel, tabValue: a.tabValue })),
     });
   });
 
@@ -225,9 +222,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
                   {results.length} resultado(s) — clique na aba desejada para abrir no ponto exato do indicador
                 </p>
                 {results.map((item, idx) => {
-                  const abas = item.abas && item.abas.length
-                    ? item.abas
-                    : [{ label: item.aba, tabValue: item.abaValue } as AbaLocalizacao];
+                  const abas = item.abas || [];
                   return (
                     <div
                       key={idx}
@@ -251,7 +246,9 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
                             <p className="text-xs text-muted-foreground truncate">{item.fonte}</p>
                           )}
                           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                            <span className="text-[10px] text-muted-foreground">Aparece em:</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {abas.length ? 'Aparece em:' : 'Sem bloco visual — disponível apenas como registro da base'}
+                            </span>
                             {abas.map(aba => (
                               <button
                                 key={aba.tabValue}

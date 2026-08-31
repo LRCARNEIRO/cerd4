@@ -3,13 +3,15 @@
  * Estatística um indicador (IND-NNN) é exibido e faz o scroll/realce até ele.
  *
  * Regras:
- *  - Todo indicador do banco aparece SEMPRE na aba "Espelho Seguro (BD)"
- *    (fonte canônica, com âncora `#ind-IND-NNN` / `[data-codigo]`).
+ *  - A aba "Espelho Seguro (BD)" é painel interno de ingestão/conferência e
+ *    NÃO é anunciada como localização de evidência (não está na navegação).
  *  - Uma aba temática só é anunciada quando existe declaração explícita de
  *    um bloco real. Categoria, subcategoria e arquivo de ingestão NÃO são
  *    prova de que o indicador está renderizado na interface.
- *  - Sem declaração explícita, só o Espelho é listado.
+ *  - Sem declaração explícita, a lista volta vazia (indicador existe apenas
+ *    na base, sem bloco visual).
  */
+
 
 import { abasDoSub, getSubsForGuardaChuva } from '@/utils/indicadorSubs';
 import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
@@ -77,7 +79,7 @@ export function indicadorDiretoExisteNaAba(nome: string, codigo: string | null |
   return [...(porCodigo || []), ...(porNome || [])].some(aba => aba.tabValue === tabValue);
 }
 
-/** Abas onde o indicador aparece — Espelho sempre primeiro. */
+/** Abas temáticas onde o indicador tem bloco visual real (pode ser vazio). */
 export function abasDoIndicador(
   categoria?: string | null,
   subcategoria?: string | null,
@@ -85,7 +87,7 @@ export function abasDoIndicador(
   documentoOrigem?: string[] | null,
   codigo?: string | null,
 ): AbaLocalizacao[] {
-  const out: AbaLocalizacao[] = [ABA_ESPELHO];
+  const out: AbaLocalizacao[] = [];
   const push = (a: AbaLocalizacao) => {
     if (!out.some(x => x.tabValue === a.tabValue)) out.push(a);
   };

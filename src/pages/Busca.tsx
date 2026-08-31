@@ -103,12 +103,12 @@ export default function Busca() {
         out.push({
           titulo: i.nome,
           trecho: (i as any).analise_interseccional || i.subcategoria || i.categoria || '',
-          secao: `Estatísticas › ${abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigoMap.get(i.id))[1]?.label || 'Espelho Seguro (BD)'}`,
+          secao: `Estatísticas › ${abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigoMap.get(i.id))[0]?.label || 'Somente na base (sem bloco visual)'}`,
           base: 'indicadores_interseccionais',
           fonte: i.fonte,
           link: (() => {
             const codigo = codigoMap.get(i.id);
-            const aba = abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigo)[1];
+            const aba = abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigo)[0];
             return aba && codigo
               ? `/estatisticas?tab=${aba.tabValue}&ind=${encodeURIComponent(codigo)}#ind-${codigo}`
               : `/estatisticas?tab=indicadores-db&ind=${encodeURIComponent(codigo || i.id)}`;
