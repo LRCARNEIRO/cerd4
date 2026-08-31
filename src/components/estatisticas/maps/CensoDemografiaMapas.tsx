@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ExternalLink, Users } from 'lucide-react';
 import { BrazilChoroplethMap, type StateDataEntry } from './BrazilChoroplethMap';
 import { cn } from '@/lib/utils';
+import { IndCodeBadge } from '@/components/estatisticas/IndCodeBadge';
 
 /* ================================================================
    1. QUILOMBOLA POR UF — Censo 2022 / SIDRA 9943
@@ -71,6 +72,7 @@ export function CensoDemografiaMapas() {
           <div className="flex items-center gap-2 flex-wrap">
             <Users className="w-5 h-5 text-chart-2" />
             <CardTitle className="text-base">População Quilombola por UF — Censo 2022</CardTitle>
+            <IndCodeBadge nome="População quilombola por região — Censo 2022" codigo="IND-014" sub="quilombolas por uf" />
              <Badge variant="outline" className="text-[10px]">1,33 milhão</Badge>
           </div>
           <CardDescription className="text-xs">
@@ -122,6 +124,7 @@ export function CensoDemografiaMapas() {
           <div className="flex items-center gap-2 flex-wrap">
             <Users className="w-5 h-5 text-chart-1" />
             <CardTitle className="text-base">Indígenas em TIs vs. Fora — Censo 2022</CardTitle>
+            <IndCodeBadge nome="Indígenas em TIs vs. fora — Censo 2022" codigo="IND-012" />
              <Badge variant="outline" className="text-[10px]">1,69 milhão</Badge>
             <Badge variant="outline" className="text-[10px] bg-chart-1/10 text-chart-1 border-chart-1/30">
               63,4% fora de TIs

@@ -5,13 +5,14 @@
  * Regras:
  *  - Todo indicador do banco aparece SEMPRE na aba "Espelho Seguro (BD)"
  *    (fonte canônica, com âncora `#ind-IND-NNN` / `[data-codigo]`).
- *  - As demais abas são exibições temáticas do MESMO registro; a
- *    correspondência é derivada da `categoria`/`subcategoria` gravada na
- *    ingestão (staticToDbTransformer), nunca inventada.
- *  - Se a categoria não tiver aba temática mapeada, só o Espelho é listado.
+ *  - Uma aba temática só é anunciada quando existe declaração explícita de
+ *    um bloco real. Categoria, subcategoria e arquivo de ingestão NÃO são
+ *    prova de que o indicador está renderizado na interface.
+ *  - Sem declaração explícita, só o Espelho é listado.
  */
 
 import { abasDoSub, getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
 
 
 
@@ -30,98 +31,47 @@ export const ABA_ESPELHO: AbaLocalizacao = {
   canonica: true,
 };
 
-/** categoria (BD) → abas temáticas onde o indicador também é exibido */
-const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
-  ods_racial: [{ label: 'ODS Racial', tabValue: 'ods-racial' }],
-
-
-  // habitação: não há bloco visual em Vulnerabilidades — os registros de
-  // déficit habitacional só são exibidos no Espelho Seguro (BD) e, quando
-  // for o caso, no Complemento CERD III (via subcategoria). Apontar para
-  // Vulnerabilidades levava o usuário a uma aba sem o indicador.
-  habitacao: [],
-  seguranca_publica: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
-  saude: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
-  educacao: [{ label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' }],
-  trabalho_renda: [
-    { label: 'Dados Gerais', tabValue: 'dados-gerais' },
-    { label: 'Classe Social', tabValue: 'classe' },
-  ],
-  genero_raca: [{ label: 'Raça × Gênero', tabValue: 'raca-genero' }],
-  demografia: [{ label: 'Dados Gerais', tabValue: 'dados-gerais' }],
-  covid_racial: [{ label: 'COVID', tabValue: 'covid-racial' }],
-  adm_publica: [{ label: 'Adm Pública', tabValue: 'adm-publica' }],
-  participacao_social: [{ label: 'Adm Pública', tabValue: 'adm-publica' }],
-  povos_tradicionais: [{ label: 'Grupos Focais', tabValue: 'grupos-focais' }],
-  terra_territorio: [{ label: 'Grupos Focais', tabValue: 'grupos-focais' }],
-  grupos_focais: [{ label: 'Grupos Focais', tabValue: 'grupos-focais' }],
-  lgbtqia: [{ label: 'LGBTQIA+', tabValue: 'lgbtqia' }],
-  deficiencia: [{ label: 'Deficiência', tabValue: 'deficiencia' }],
-  // legislação/justiça e cultura/patrimônio só têm bloco visual no
-  // Complemento CERD III — apontar para Vulnerabilidades/Dados Gerais levava
-  // o usuário a abas sem o indicador.
-  legislacao_justica: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
-  cultura: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
-  cultura_patrimonio: [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
-  vulnerabilidade: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
-  vulnerabilidades: [{ label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' }],
-  juventude: [{ label: 'Juventude', tabValue: 'juventude' }],
-  classe_social: [{ label: 'Classe Social', tabValue: 'classe' }],
-};
-
-// Só a SUBCATEGORIA gravada na ingestão pode sugerir aba temática. Antes o
-// próprio NOME entrava na varredura, o que gerava chips falsos (ex.: IND-012
-// "Indígenas em TIs vs. fora" aparecia em Grupos Focais sem ter bloco lá).
-const SUBCATEGORIA_ABAS: Array<{ match: RegExp; aba: AbaLocalizacao }> = [
-  { match: /juvent/i, aba: { label: 'Juventude', tabValue: 'juventude' } },
-  { match: /quilombola|indigena|indígena|territor/i, aba: { label: 'Grupos Focais', tabValue: 'grupos-focais' } },
-  { match: /cerd\s*iii|complemento/i, aba: { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' } },
-];
-
 /**
  * Exibição CONFIRMADA por código (auditada no componente que renderiza o
  * bloco). Quando presente, substitui qualquer heurística de categoria.
  */
-const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
+export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas
   'IND-012': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
   'IND-014': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
 };
 
+const DADOS_GERAIS: AbaLocalizacao = { label: 'Dados Gerais', tabValue: 'dados-gerais' };
+const SEGURANCA_SAUDE_EDUCACAO: AbaLocalizacao = { label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' };
+const CLASSE_SOCIAL: AbaLocalizacao = { label: 'Classe Social', tabValue: 'classe' };
+const COMPLEMENTO_CERD3: AbaLocalizacao = { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' };
+const ODS_RACIAL: AbaLocalizacao = { label: 'ODS Racial', tabValue: 'ods-racial' };
 
 /**
- * PROCEDÊNCIA (sinal primário e auditável): `documento_origem[1]` grava o
- * arquivo estático de onde o registro foi espelhado na ingestão. Se existe
- * arquivo de aba, o indicador COMPROVADAMENTE já é exibido naquela aba —
- * independentemente de o título renderizado bater com o `nome` do banco.
- * Nunca inferir ausência por não achar selo IND-NNN no DOM.
+ * Blocos diretos comprovados no JSX. O nome é o mesmo usado pelo componente
+ * para resolver o código persistido; portanto não há inferência temática.
  */
-const ARQUIVO_ABAS: Record<string, AbaLocalizacao> = {
-  'statisticsdata.ts': { label: 'Dados Gerais', tabValue: 'dados-gerais' },
-  'complementocerd3data.ts': { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' },
-  'covidracialsection.tsx': { label: 'COVID', tabValue: 'covid-racial' },
-  'gruposfocaistab.tsx': { label: 'Grupos Focais', tabValue: 'grupos-focais' },
-  'dadosnovostab.tsx': { label: 'Dados Novos', tabValue: 'dados-novos' },
-  'admpublicasection.tsx': { label: 'Adm Pública', tabValue: 'adm-publica' },
+export const ABAS_POR_NOME: Record<string, AbaLocalizacao[]> = {
+  'Composição racial — Censo 2022': [DADOS_GERAIS],
+  'Evolução composição racial (2018-2024)': [DADOS_GERAIS],
+  'Evasão escolar por raça (2018-2024)': [SEGURANCA_SAUDE_EDUCACAO],
+  'Rendimentos por raça — Censo 2022': [CLASSE_SOCIAL],
+  'Pobreza por raça — SIS/IBGE (2022-2024)': [CLASSE_SOCIAL],
+  ...Object.fromEntries(complementoCerd3Indicators.map(ind => [ind.nome, [COMPLEMENTO_CERD3]])),
 };
 
-/** Procedência gravada na ingestão → aba comprovada (ou null). */
-export function abaPorProcedencia(documentoOrigem?: string[] | null): AbaLocalizacao | null {
-  // Os valores gravados podem vir prefixados ("espelho_estatico StatisticsData.ts"),
-  // por isso a correspondência é por conteúdo, não por igualdade exata.
-  const entradas = (documentoOrigem || []).map(s => String(s || '').toLowerCase());
-  for (const entrada of entradas) {
-    const chave = Object.keys(ARQUIVO_ABAS).find(k => entrada.includes(k));
-    if (chave) return ARQUIVO_ABAS[chave];
-  }
-  return null;
-}
+const normKey = (value?: string | null) => String(value || '').normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 
-/** true = registro cuja exibição em aba é comprovada pela procedência de ingestão. */
-export function temCoberturaComprovada(categoria?: string | null, documentoOrigem?: string[] | null): boolean {
-  if (abaPorProcedencia(documentoOrigem)) return true;
-  // ODS Racial é ingerido sem documento_origem, mas 100% dos 93 têm selo na aba.
-  return String(categoria || '').toLowerCase() === 'ods_racial';
+const ABAS_POR_NOME_NORMALIZADO = new Map(
+  Object.entries(ABAS_POR_NOME).map(([nome, abas]) => [normKey(nome), abas]),
+);
+
+/** Confirma se um bloco direto está explicitamente registrado naquela aba. */
+export function indicadorDiretoExisteNaAba(nome: string, codigo: string | null | undefined, tabValue: string): boolean {
+  const porCodigo = codigo ? ABAS_POR_CODIGO[codigo] : undefined;
+  const porNome = ABAS_POR_NOME_NORMALIZADO.get(normKey(nome));
+  return [...(porCodigo || []), ...(porNome || [])].some(aba => aba.tabValue === tabValue);
 }
 
 /** Abas onde o indicador aparece — Espelho sempre primeiro. */
@@ -151,11 +101,11 @@ export function abasDoIndicador(
     return out;
   }
 
-  // 3) Procedência de ingestão (auditável) e, por fim, categoria/subcategoria.
-  const proc = abaPorProcedencia(documentoOrigem);
-  if (proc) push(proc);
-  (CATEGORIA_ABAS[String(categoria || '').toLowerCase()] || []).forEach(push);
-  SUBCATEGORIA_ABAS.forEach(({ match, aba }) => { if (match.test(String(subcategoria || ''))) push(aba); });
+  // 3) Bloco direto explicitamente comprovado. ODS é uma coleção dinâmica:
+  // cada registro da categoria é renderizado com seu próprio código na aba.
+  if (String(categoria || '').toLowerCase() === 'ods_racial') push(ODS_RACIAL);
+  const diretas = ABAS_POR_NOME_NORMALIZADO.get(normKey(nome));
+  diretas?.forEach(push);
   return out;
 }
 
@@ -219,9 +169,10 @@ export function focusIndicadorNaAba(opts: {
   id?: string | null;
   nome?: string | null;
   tabValue: string;
+  anchor?: string | null;
   onResult?: (found: boolean) => void;
 }) {
-  const { codigo, id, nome, tabValue, onResult } = opts;
+  const { codigo, id, nome, tabValue, anchor, onResult } = opts;
   if (typeof window === 'undefined') return;
 
   if (tabValue === 'indicadores-db') {
@@ -235,7 +186,7 @@ export function focusIndicadorNaAba(opts: {
   let tries = 0;
   const timer = window.setInterval(() => {
     tries++;
-    const el = findEl(codigo, nome);
+    const el = (anchor ? document.getElementById(anchor) : null) || findEl(codigo, nome);
     if (el) {
       highlight(el);
       window.clearInterval(timer);

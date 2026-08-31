@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { deepLinksRegistry } from '@/data/deepLinksRegistry';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { getSubIndicadorAnchor, SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
+import { abasDoIndicador } from '@/utils/indicadorLocator';
 import { searchableMatches } from '@/utils/searchText';
 
 interface Hit {
@@ -102,10 +103,16 @@ export default function Busca() {
         out.push({
           titulo: i.nome,
           trecho: (i as any).analise_interseccional || i.subcategoria || i.categoria || '',
-          secao: i.categoria === 'ods_racial' ? 'Estatísticas › ODS Racial' : 'Estatísticas › Espelho Seguro (BD)',
+          secao: `Estatísticas › ${abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigoMap.get(i.id))[1]?.label || 'Espelho Seguro (BD)'}`,
           base: 'indicadores_interseccionais',
           fonte: i.fonte,
-          link: i.categoria === 'ods_racial' ? `/estatisticas?tab=ods-racial` : `/estatisticas?ind=${encodeURIComponent(i.id)}#ind-${i.id}`,
+          link: (() => {
+            const codigo = codigoMap.get(i.id);
+            const aba = abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigo)[1];
+            return aba && codigo
+              ? `/estatisticas?tab=${aba.tabValue}&ind=${encodeURIComponent(codigo)}#ind-${codigo}`
+              : `/estatisticas?tab=indicadores-db&ind=${encodeURIComponent(codigo || i.id)}`;
+          })(),
         });
       }
     }
