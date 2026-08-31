@@ -79,7 +79,7 @@ export function indicadorDiretoExisteNaAba(nome: string, codigo: string | null |
   return [...(porCodigo || []), ...(porNome || [])].some(aba => aba.tabValue === tabValue);
 }
 
-/** Abas onde o indicador aparece — Espelho sempre primeiro. */
+/** Abas temáticas onde o indicador tem bloco visual real (pode ser vazio). */
 export function abasDoIndicador(
   categoria?: string | null,
   subcategoria?: string | null,
@@ -87,7 +87,7 @@ export function abasDoIndicador(
   documentoOrigem?: string[] | null,
   codigo?: string | null,
 ): AbaLocalizacao[] {
-  const out: AbaLocalizacao[] = [ABA_ESPELHO];
+  const out: AbaLocalizacao[] = [];
   const push = (a: AbaLocalizacao) => {
     if (!out.some(x => x.tabValue === a.tabValue)) out.push(a);
   };
