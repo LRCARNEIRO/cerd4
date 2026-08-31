@@ -55,6 +55,20 @@ export const LEGADOS_SEGURANCA_SAUDE = ['IND-001', 'IND-002', 'IND-003', 'IND-00
 export const LEGADOS_RACA_GENERO = ['IND-007', 'IND-008', 'IND-009', 'IND-010'];
 export const LEGADOS_GRUPOS_FOCAIS = ['IND-005', 'IND-013'];
 
+const VULNERABILIDADES: AbaLocalizacao = { label: 'Vulnerabilidades', tabValue: 'vulnerabilidades' };
+const DEFICIENCIA: AbaLocalizacao = { label: 'Deficiência', tabValue: 'deficiencia' };
+
+/** Saneamento/infraestrutura domiciliar — células da tabela do Censo 2022 (Grupos Focais). */
+export const SANEAMENTO_GRUPOS_FOCAIS = [
+  'IND-133', 'IND-134', 'IND-135', 'IND-136', 'IND-137', 'IND-138', 'IND-139', 'IND-140',
+  'IND-141', 'IND-142', 'IND-143', 'IND-144', 'IND-145', 'IND-147', 'IND-148', 'IND-149',
+  'IND-150', 'IND-151', 'IND-153', 'IND-154', 'IND-155', 'IND-156', 'IND-157', 'IND-158',
+  'IND-163', 'IND-164', 'IND-165', 'IND-166',
+];
+
+/** Cards de população dos grupos focais. */
+export const POPULACAO_GRUPOS_FOCAIS = ['IND-146', 'IND-152', 'IND-167', 'IND-174', 'IND-183'];
+
 export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas
   'IND-012': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
@@ -63,7 +77,14 @@ export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   ...Object.fromEntries(LEGADOS_SEGURANCA_SAUDE.map(c => [c, [SEGURANCA_SAUDE_EDUCACAO]])),
   ...Object.fromEntries(LEGADOS_RACA_GENERO.map(c => [c, [RACA_GENERO]])),
   ...Object.fromEntries(LEGADOS_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
+  // Blocos que passaram a exibir selo próprio
+  ...Object.fromEntries(SANEAMENTO_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
+  ...Object.fromEntries(POPULACAO_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
+  'IND-111': [DEFICIENCIA],
+  'IND-124': [SEGURANCA_SAUDE_EDUCACAO],
+  'IND-127': [VULNERABILIDADES],
 };
+
 
 
 

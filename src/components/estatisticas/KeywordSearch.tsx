@@ -9,6 +9,7 @@ import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
+import { isDuplicata } from '@/utils/indicadorAliases';
 import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
@@ -36,6 +37,8 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   (indicadoresDb || []).forEach((ind: any) => {
     // Guarda-chuva COM subindicadores é substituído por eles na busca.
     if (hasSubIndicadores(ind.nome)) return;
+    // Registro duplicado de outro que já tem card próprio — fora do rol.
+    if (isDuplicata(ind.codigo)) return;
     results.push({
       id: ind.id,
       codigo: ind.codigo,

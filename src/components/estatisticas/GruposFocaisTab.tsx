@@ -94,7 +94,7 @@ export function GruposFocaisTab() {
       </Card>
 
       {/* Cards de População */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {/* Quilombolas */}
         <Card className="border-t-4 border-t-primary">
           <CardContent className="pt-6">
@@ -103,6 +103,7 @@ export function GruposFocaisTab() {
                 <Users className="w-8 h-8 mb-2 text-primary" />
                 <p className="text-sm font-medium">{gruposFocaisData.quilombolas.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.quilombolas.populacao?.toLocaleString('pt-BR')}</p>
+                <IndCodeBadge nome="Comunidades quilombolas — Censo 2022" codigo="IND-152" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Tooltip>
@@ -136,6 +137,7 @@ export function GruposFocaisTab() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Cor/Raça: {gruposFocaisData.indigenas.populacaoCorRaca?.toLocaleString('pt-BR')}
                 </p>
+                <IndCodeBadge nome="Povos indígenas — Censo 2022" codigo="IND-146" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Tooltip>
@@ -167,6 +169,7 @@ export function GruposFocaisTab() {
                 <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.ciganos.populacao?.toLocaleString('pt-BR')}</p>
                 <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
+                <IndCodeBadge nome="Ciganos/Roma — lacuna de dados" codigo="IND-174" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 
@@ -212,6 +215,62 @@ export function GruposFocaisTab() {
               </div>
               <p className="text-[9px] text-muted-foreground italic">Atualizado: {gruposFocaisData.juventude_negra.ultimaAtualizacao}</p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* População Negra */}
+        <Card className="border-t-4 border-t-chart-2">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-chart-2" />
+                <p className="text-sm font-medium">{gruposFocaisData.populacao_negra.nome}</p>
+                <p className="text-2xl font-bold">{gruposFocaisData.populacao_negra.populacao?.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pretos: {gruposFocaisData.populacao_negra.detalhamento?.preta?.toLocaleString('pt-BR')} · Pardos: {gruposFocaisData.populacao_negra.detalhamento?.parda?.toLocaleString('pt-BR')}
+                </p>
+                <IndCodeBadge nome="População Negra (Preta + Parda) — Censo 2022" codigo="IND-167" className="mt-1" />
+              </div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="text-xs">Censo 2022</Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{gruposFocaisData.populacao_negra.notas}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <FonteInfo
+              fonte={gruposFocaisData.populacao_negra.fonte}
+              tabela={gruposFocaisData.populacao_negra.tabela}
+              link={gruposFocaisData.populacao_negra.link}
+              atualizacao={gruposFocaisData.populacao_negra.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Mulheres Negras */}
+        <Card className="border-t-4 border-t-chart-4">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-chart-4" />
+                <p className="text-sm font-medium">{gruposFocaisData.mulheres_negras.nome}</p>
+                <p className="text-2xl font-bold">~{(gruposFocaisData.mulheres_negras.populacao! / 1000000).toFixed(0)} mi</p>
+                <p className="text-xs text-muted-foreground mt-1">Estimativa — Tab. 9605 × Tab. 9514</p>
+                <IndCodeBadge nome="Mulheres Negras — dados estimados" codigo="IND-183" className="mt-1" />
+              </div>
+              <EstimativaBadge
+                tipo="cruzamento"
+                metodologia={gruposFocaisData.mulheres_negras.notas}
+              />
+            </div>
+            <FonteInfo
+              fonte={gruposFocaisData.mulheres_negras.fonte}
+              tabela={gruposFocaisData.mulheres_negras.tabela}
+              link={gruposFocaisData.mulheres_negras.link}
+              atualizacao={gruposFocaisData.mulheres_negras.ultimaAtualizacao}
+            />
           </CardContent>
         </Card>
       </div>
@@ -561,47 +620,44 @@ export function GruposFocaisTab() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Rede geral de água</td>
-                        <td className="text-center py-2 px-3">82,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">37,67%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">8,54%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">35,98%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">58,14%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">13,86%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">69,63%*</td>
-                      </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Esgoto adequado</td>
-                        <td className="text-center py-2 px-3">75,74%</td>
-                        <td className="text-center py-2 px-3 text-primary">36,33%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">7,61%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">31,23%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">35,47%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">4,01%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">29,47%</td>
-                      </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Coleta de lixo</td>
-                        <td className="text-center py-2 px-3">90,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">41,19%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">9,24%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">39,79%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">55,27%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">5,09%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">51,28%</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-3 font-medium">Sem banheiro</td>
-                        <td className="text-center py-2 px-3">0,59%</td>
-                        <td className="text-center py-2 px-3 text-primary">0,08%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,06%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,36%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">10,93%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">9,37%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">70,53%</td>
-                      </tr>
+                      {[
+                        {
+                          rotulo: 'Rede geral de água',
+                          base: 'Rede geral de água',
+                          valores: ['82,9%', '37,67%', '8,54%', '35,98%', '58,14%', '13,86%', '69,63%*'],
+                        },
+                        {
+                          rotulo: 'Esgoto adequado',
+                          base: 'Esgoto adequado',
+                          valores: ['75,74%', '36,33%', '7,61%', '31,23%', '35,47%', '4,01%', '29,47%'],
+                        },
+                        {
+                          rotulo: 'Coleta de lixo',
+                          base: 'Coleta de lixo',
+                          valores: ['90,9%', '41,19%', '9,24%', '39,79%', '55,27%', '5,09%', '51,28%'],
+                        },
+                        {
+                          rotulo: 'Sem banheiro',
+                          base: 'Sem banheiro',
+                          valores: ['0,59%', '0,08%', '0,06%', '0,36%', '10,93%', '9,37%', '70,53%'],
+                        },
+                      ].map((linha, li, arr) => {
+                        const grupos = ['Nacional', 'Brancos', 'Pretos', 'Pardos', 'Indígenas (total)', 'Indígenas (TIs)', 'Quilombolas'];
+                        const cor = ['', 'text-primary', 'text-warning font-medium', 'text-warning font-medium', 'text-accent font-medium', 'text-destructive font-bold', 'text-destructive font-bold'];
+                        return (
+                          <tr key={linha.base} className={li < arr.length - 1 ? 'border-b border-border/50' : undefined}>
+                            <td className="py-2 px-3 font-medium align-top">{linha.rotulo}</td>
+                            {grupos.map((grupo, gi) => (
+                              <td key={grupo} className={`text-center py-2 px-3 align-top ${cor[gi]}`}>
+                                <span className="block">{linha.valores[gi]}</span>
+                                <IndCodeBadge nome={`${linha.base} — ${grupo}`} className="mt-1" />
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
                     </tbody>
+
                   </table>
                   <p className="text-[11px] text-muted-foreground mt-2">
                     * Quilombolas: o valor de rede geral de água também contabiliza a existência de poço, fonte, nascente ou mina encanada até dentro de casa (SIDRA tab. 10099).

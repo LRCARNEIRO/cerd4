@@ -17,6 +17,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { nomeCanonico } from '@/utils/indicadorAliases';
 
 export function useStaticIndicadorCodigos() {
   const { data } = useQuery({
@@ -46,5 +47,8 @@ export function useStaticIndicadorCodigos() {
 
 /** Resolve um único nome para código IND-NNN (helper). */
 export function lookupCodigo(map: Map<string, string>, nome: string): string | null {
-  return map.get(String(nome || '').trim().toLowerCase()) || null;
+  const direto = map.get(String(nome || '').trim().toLowerCase());
+  if (direto) return direto;
+  const alias = nomeCanonico(String(nome || ''));
+  return map.get(alias.trim().toLowerCase()) || null;
 }

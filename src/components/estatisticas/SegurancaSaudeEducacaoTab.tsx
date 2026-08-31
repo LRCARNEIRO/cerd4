@@ -250,6 +250,7 @@ export function SegurancaSaudeEducacaoTab() {
               <h4 className="text-sm font-medium mb-3 flex items-center gap-2 flex-wrap">
                 Taxa de Analfabetismo (%)
                 <IndCodeBadge nome="Educação — série histórica por raça (2018-2024)" codigo="IND-129" sub="taxa de analfabetismo" />
+                <IndCodeBadge nome="Analfabetismo geral — 2024" codigo="IND-124" />
               </h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">

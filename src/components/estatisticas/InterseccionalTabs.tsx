@@ -887,7 +887,10 @@ export function DeficienciaTab() {
         {/* Tabela/Gráfico 2: Disparidades Interseccionais PcD — SIDRA 9354 */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Disparidades Interseccionais PcD (14-59 anos)</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2 flex-wrap">
+              Disparidades Interseccionais PcD (14-59 anos)
+              <IndCodeBadge nome="Disparidades PcD 14-59 anos por raça" codigo="IND-111" />
+            </CardTitle>
             <CardDescription>
               Ocupação e prevalência por cor/raça — SIDRA 9354, PNAD Contínua 2022 |{' '}
               <a href="https://sidra.ibge.gov.br/tabela/9354" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
