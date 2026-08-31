@@ -54,6 +54,9 @@ function abasReaisDeEstatisticas(): { triggers: Set<string>; contents: Set<strin
 
 const { triggers: ABAS_REAIS, contents: CONTEUDOS_REAIS } = abasReaisDeEstatisticas();
 
+// Abas com conteúdo mas SEM gatilho na navegação (painéis internos, rota direta).
+const ABAS_OCULTAS = ['indicadores-db'];
+
 const FONTES_POR_ABA: Record<string, string[]> = {
   'dados-gerais': ['../components/estatisticas/DadosGeraisTab.tsx'],
   'seguranca-saude-educacao': ['../components/estatisticas/SegurancaSaudeEducacaoTab.tsx'],
@@ -79,15 +82,17 @@ function fonteDaAba(tabValue: string): string {
 describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade', () => {
   it('Estatisticas.tsx tem ao menos uma aba real (sanity do oráculo)', () => {
     expect(ABAS_REAIS.size).toBeGreaterThan(5);
-    expect(CONTEUDOS_REAIS.size).toBe(ABAS_REAIS.size);
+    expect(CONTEUDOS_REAIS.size).toBe(ABAS_REAIS.size + ABAS_OCULTAS.length);
   });
 
-  it('toda TabsTrigger tem TabsContent correspondente (e vice-versa)', () => {
-    expect([...ABAS_REAIS].sort()).toEqual([...CONTEUDOS_REAIS].sort());
+  it('toda TabsTrigger tem TabsContent correspondente (fora as abas ocultas)', () => {
+    const conteudosVisiveis = [...CONTEUDOS_REAIS].filter(v => !ABAS_OCULTAS.includes(v));
+    expect([...ABAS_REAIS].sort()).toEqual(conteudosVisiveis.sort());
   });
 
-  it('ABA_ESPELHO aponta para uma aba real', () => {
-    expect(ABAS_REAIS.has(ABA_ESPELHO.tabValue)).toBe(true);
+  it('ABA_ESPELHO não é navegável (painel interno, só rota direta)', () => {
+    expect(ABAS_REAIS.has(ABA_ESPELHO.tabValue)).toBe(false);
+    expect(CONTEUDOS_REAIS.has(ABA_ESPELHO.tabValue)).toBe(true);
   });
 
   it('ABAS_POR_NOME: todo bloco direto aponta para aba real', () => {
