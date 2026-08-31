@@ -11,6 +11,8 @@ import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { 
   interseccionalidadeTrabalhoFontes,
+  deficitHabitacionalSerie,
+  deficitHabitacionalFonte,
 } from './StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { IndCodeBadge } from './IndCodeBadge';
@@ -399,6 +401,49 @@ export function VulnerabilidadesTab() {
           <AuditFooter
             fontes={interseccionalidadeTrabalhoFontes}
             documentos={['CERD 2022']}
+          />
+        </CardContent>
+      </Card>
+      {/* Déficit Habitacional por raça — IND-127 */}
+      <Card id="ind-IND-127" className="scroll-mt-24">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
+            Déficit Habitacional por Raça (2018-2022)
+            <IndCodeBadge nome="Déficit habitacional por raça (2018-2022)" codigo="IND-127" />
+          </CardTitle>
+          <CardDescription>
+            Domicílios em déficit habitacional por cor/raça do responsável — {deficitHabitacionalFonte.nome}.
+            Anos 2020-2021 sem dados (PNAD suspensa).
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={deficitHabitacionalSerie}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v: number) => `${(v / 1000000).toFixed(1)} mi`} />
+                <Tooltip
+                  formatter={(value: number) => [`${value.toLocaleString('pt-BR')} domicílios`, '']}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="negros" name="Negros" fill="hsl(var(--chart-2))" />
+                <Bar dataKey="brancos" name="Brancos" fill="hsl(var(--chart-1))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Em 2022, o déficit entre domicílios chefiados por pessoas negras (4.122.625) era
+            <strong> 2,1×</strong> o de brancos (1.973.211), com tendência de alta desde 2018.
+          </p>
+          <AuditFooter
+            fontes={[{ nome: deficitHabitacionalFonte.nome, url: deficitHabitacionalFonte.url }]}
+            documentos={['CERD 2022', 'ICERD Art. V(e)(iii)']}
           />
         </CardContent>
       </Card>
