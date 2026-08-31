@@ -1,8 +1,7 @@
 /**
  * indicadorLocatorIntegrity — validação EXAUSTIVA e estrutural das três
  * fontes que prometem "isto está localizável na aba X":
- *   - indicadorLocator.ts   (ABA_ESPELHO, CATEGORIA_ABAS, SUBCATEGORIA_ABAS,
- *                            ABAS_POR_CODIGO, ARQUIVO_ABAS)
+ *   - indicadorLocator.ts   (ABA_ESPELHO, ABAS_POR_CODIGO, ABAS_POR_NOME)
  *   - indicadorSubs.ts      (SUB_INDICADORES + tambemEm)
  *   - indCodeAutoTag.ts     (usa os títulos/aliases de indicadorSubs para
  *                            carimbar o DOM real)
@@ -26,12 +25,10 @@ import path from 'node:path';
 
 import {
   ABA_ESPELHO,
-  CATEGORIA_ABAS,
-  SUBCATEGORIA_ABAS,
   ABAS_POR_CODIGO,
-  ARQUIVO_ABAS,
+  ABAS_POR_NOME,
 } from '@/utils/indicadorLocator';
-import { SUB_INDICADORES, abasDoSub } from '@/utils/indicadorSubs';
+import { SUB_INDICADORES, abasDoSub, getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 
 const CODIGO_RE = /^IND-\d{3}$/;
 const norm = (s: string) =>
@@ -57,6 +54,28 @@ function abasReaisDeEstatisticas(): { triggers: Set<string>; contents: Set<strin
 
 const { triggers: ABAS_REAIS, contents: CONTEUDOS_REAIS } = abasReaisDeEstatisticas();
 
+const FONTES_POR_ABA: Record<string, string[]> = {
+  'dados-gerais': ['../components/estatisticas/DadosGeraisTab.tsx'],
+  'seguranca-saude-educacao': ['../components/estatisticas/SegurancaSaudeEducacaoTab.tsx'],
+  vulnerabilidades: ['../components/estatisticas/VulnerabilidadesTab.tsx'],
+  'raca-genero': ['../components/estatisticas/InterseccionalTabs.tsx'],
+  lgbtqia: ['../components/estatisticas/InterseccionalTabs.tsx'],
+  deficiencia: ['../components/estatisticas/InterseccionalTabs.tsx'],
+  juventude: ['../components/estatisticas/InterseccionalTabs.tsx'],
+  classe: ['../components/estatisticas/InterseccionalTabs.tsx'],
+  'adm-publica': ['../components/estatisticas/AdmPublicaSection.tsx'],
+  'covid-racial': ['../components/estatisticas/CovidRacialSection.tsx'],
+  'grupos-focais': ['../components/estatisticas/GruposFocaisTab.tsx', '../components/grupos-focais/SerieTemporalGrupos.tsx'],
+  'complemento-cerd3': ['../components/estatisticas/ComplementoCerd3Tab.tsx', '../components/estatisticas/ComplementoCerd3Data.ts', '../components/estatisticas/maps/CensoDemografiaMapas.tsx'],
+};
+
+function fonteDaAba(tabValue: string): string {
+  return (FONTES_POR_ABA[tabValue] || [])
+    .map(file => fs.readFileSync(path.resolve(__dirname, file), 'utf8'))
+    .map(norm)
+    .join('\n');
+}
+
 describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade', () => {
   it('Estatisticas.tsx tem ao menos uma aba real (sanity do oráculo)', () => {
     expect(ABAS_REAIS.size).toBeGreaterThan(5);
@@ -71,23 +90,16 @@ describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade'
     expect(ABAS_REAIS.has(ABA_ESPELHO.tabValue)).toBe(true);
   });
 
-  it('CATEGORIA_ABAS: nenhuma categoria aponta para aba inexistente', () => {
+  it('ABAS_POR_NOME: todo bloco direto aponta para aba real', () => {
     const fantasmas: string[] = [];
-    for (const [categoria, abas] of Object.entries(CATEGORIA_ABAS)) {
+    for (const [nome, abas] of Object.entries(ABAS_POR_NOME)) {
       for (const aba of abas) {
         if (!aba.href && !ABAS_REAIS.has(aba.tabValue)) {
-          fantasmas.push(`${categoria} → ${aba.tabValue}`);
+          fantasmas.push(`${nome} → ${aba.tabValue}`);
         }
       }
     }
     expect(fantasmas, `mapeamentos fantasma: ${fantasmas.join(', ')}`).toEqual([]);
-  });
-
-  it('SUBCATEGORIA_ABAS: nenhuma regra aponta para aba inexistente', () => {
-    const fantasmas = SUBCATEGORIA_ABAS
-      .filter(({ aba }) => !aba.href && !ABAS_REAIS.has(aba.tabValue))
-      .map(({ aba }) => aba.tabValue);
-    expect(fantasmas).toEqual([]);
   });
 
   it('ABAS_POR_CODIGO: código e aba são válidos', () => {
@@ -101,18 +113,6 @@ describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade'
       }
     }
     expect(fantasmas).toEqual([]);
-  });
-
-  // Regressão do bug encontrado nesta auditoria: 'dadosnovostab.tsx' ainda
-  // aponta para a aba 'dados-novos', removida (mergeada em
-  // complemento-cerd3). Ver Estatisticas.tsx:31 ("DadosNovosTab removed —
-  // merged into ComplementoCerd3Tab").
-  it('ARQUIVO_ABAS: toda procedência de ingestão aponta para aba que existe HOJE', () => {
-    const fantasmas: string[] = [];
-    for (const [arquivo, aba] of Object.entries(ARQUIVO_ABAS)) {
-      if (!ABAS_REAIS.has(aba.tabValue)) fantasmas.push(`${arquivo} → ${aba.tabValue}`);
-    }
-    expect(fantasmas, `procedência aponta para aba removida/inexistente: ${fantasmas.join(', ')}`).toEqual([]);
   });
 
   it('SUB_INDICADORES: tabValue principal e todo tambemEm apontam para aba real', () => {
@@ -148,6 +148,35 @@ describe('indicadorLocator/indicadorSubs — abas prometidas existem de verdade'
     }
     const divergentes = [...porGuardaChuva.entries()].filter(([, codigos]) => codigos.size > 1);
     expect(divergentes, `guarda-chuva com códigos divergentes: ${JSON.stringify(divergentes)}`).toEqual([]);
+  });
+
+  it('SUB_INDICADORES: toda localização é sustentada pelo título ou alias no componente real da aba', () => {
+    const ausentes: string[] = [];
+    for (const sub of SUB_INDICADORES) {
+      const rotulos = [sub.titulo, ...(sub.aliases || [])].map(norm);
+      for (const aba of abasDoSub(sub)) {
+        const fonte = fonteDaAba(aba.tabValue);
+        if (!fonte || !rotulos.some(rotulo => fonte.includes(rotulo))) {
+          ausentes.push(`${sub.codigo}#${sub.sub} → ${aba.tabValue}`);
+        }
+      }
+    }
+    expect(ausentes, `localizações sem marcador textual real: ${ausentes.join(', ')}`).toEqual([]);
+  });
+
+  it('ABAS_POR_NOME: todo bloco direto declarado existe no componente real da aba', () => {
+    const ausentes: string[] = [];
+    for (const [nome, abas] of Object.entries(ABAS_POR_NOME)) {
+      for (const aba of abas) {
+        if (!fonteDaAba(aba.tabValue).includes(norm(nome))) ausentes.push(`${nome} → ${aba.tabValue}`);
+      }
+    }
+    expect(ausentes, `blocos diretos sem título real: ${ausentes.join(', ')}`).toEqual([]);
+  });
+
+  it('todas as âncoras de evidência são únicas', () => {
+    const anchors = SUB_INDICADORES.map(s => getSubIndicadorAnchor(s.codigo, s.sub));
+    expect(new Set(anchors).size).toBe(anchors.length);
   });
 });
 
