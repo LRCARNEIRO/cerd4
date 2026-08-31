@@ -337,6 +337,7 @@ export function RacaGeneroTab() {
           <CardTitle className="text-base flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
             Perfil Racial dos Beneficiários do CadÚnico — Negros × Brancos (2018–2025)
+            <IndCodeBadge nome="CadÚnico — perfil racial beneficiários (2018-2025)" codigo="IND-125" sub="perfil racial" />
           </CardTitle>
           <CardDescription>
             {cadUnicoFonte.nome} · {cadUnicoFonte.unidade} · {cadUnicoFonte.nota}
