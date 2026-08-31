@@ -628,9 +628,15 @@ export function AdmPublicaSection() {
             <CardTitle className="text-base flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-chart-5" />
               Cotas Raciais no Serviço Público Federal
+              <IndCodeBadge
+                nome="Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior"
+                codigo="IND-211"
+                sub="cotas no serviço público federal"
+              />
             </CardTitle>
             <CardDescription>Lei 12.990/2014 → Lei 15.142/2025</CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="space-y-4">
               <div className="p-3 rounded-lg border border-border">
