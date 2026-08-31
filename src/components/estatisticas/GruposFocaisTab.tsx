@@ -561,47 +561,44 @@ export function GruposFocaisTab() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Rede geral de água</td>
-                        <td className="text-center py-2 px-3">82,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">37,67%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">8,54%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">35,98%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">58,14%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">13,86%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">69,63%*</td>
-                      </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Esgoto adequado</td>
-                        <td className="text-center py-2 px-3">75,74%</td>
-                        <td className="text-center py-2 px-3 text-primary">36,33%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">7,61%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">31,23%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">35,47%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">4,01%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">29,47%</td>
-                      </tr>
-                      <tr className="border-b border-border/50">
-                        <td className="py-2 px-3 font-medium">Coleta de lixo</td>
-                        <td className="text-center py-2 px-3">90,9%</td>
-                        <td className="text-center py-2 px-3 text-primary">41,19%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">9,24%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">39,79%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">55,27%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">5,09%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">51,28%</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 px-3 font-medium">Sem banheiro</td>
-                        <td className="text-center py-2 px-3">0,59%</td>
-                        <td className="text-center py-2 px-3 text-primary">0,08%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,06%</td>
-                        <td className="text-center py-2 px-3 text-warning font-medium">0,36%</td>
-                        <td className="text-center py-2 px-3 text-accent font-medium">10,93%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">9,37%</td>
-                        <td className="text-center py-2 px-3 text-destructive font-bold">70,53%</td>
-                      </tr>
+                      {[
+                        {
+                          rotulo: 'Rede geral de água',
+                          base: 'Rede geral de água',
+                          valores: ['82,9%', '37,67%', '8,54%', '35,98%', '58,14%', '13,86%', '69,63%*'],
+                        },
+                        {
+                          rotulo: 'Esgoto adequado',
+                          base: 'Esgoto adequado',
+                          valores: ['75,74%', '36,33%', '7,61%', '31,23%', '35,47%', '4,01%', '29,47%'],
+                        },
+                        {
+                          rotulo: 'Coleta de lixo',
+                          base: 'Coleta de lixo',
+                          valores: ['90,9%', '41,19%', '9,24%', '39,79%', '55,27%', '5,09%', '51,28%'],
+                        },
+                        {
+                          rotulo: 'Sem banheiro',
+                          base: 'Sem banheiro',
+                          valores: ['0,59%', '0,08%', '0,06%', '0,36%', '10,93%', '9,37%', '70,53%'],
+                        },
+                      ].map((linha, li, arr) => {
+                        const grupos = ['Nacional', 'Brancos', 'Pretos', 'Pardos', 'Indígenas (total)', 'Indígenas (TIs)', 'Quilombolas'];
+                        const cor = ['', 'text-primary', 'text-warning font-medium', 'text-warning font-medium', 'text-accent font-medium', 'text-destructive font-bold', 'text-destructive font-bold'];
+                        return (
+                          <tr key={linha.base} className={li < arr.length - 1 ? 'border-b border-border/50' : undefined}>
+                            <td className="py-2 px-3 font-medium align-top">{linha.rotulo}</td>
+                            {grupos.map((grupo, gi) => (
+                              <td key={grupo} className={`text-center py-2 px-3 align-top ${cor[gi]}`}>
+                                <span className="block">{linha.valores[gi]}</span>
+                                <IndCodeBadge nome={`${linha.base} — ${grupo}`} className="mt-1" />
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
                     </tbody>
+
                   </table>
                   <p className="text-[11px] text-muted-foreground mt-2">
                     * Quilombolas: o valor de rede geral de água também contabiliza a existência de poço, fonte, nascente ou mina encanada até dentro de casa (SIDRA tab. 10099).
