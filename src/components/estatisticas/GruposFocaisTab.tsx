@@ -94,7 +94,7 @@ export function GruposFocaisTab() {
       </Card>
 
       {/* Cards de População */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {/* Quilombolas */}
         <Card className="border-t-4 border-t-primary">
           <CardContent className="pt-6">
@@ -103,6 +103,7 @@ export function GruposFocaisTab() {
                 <Users className="w-8 h-8 mb-2 text-primary" />
                 <p className="text-sm font-medium">{gruposFocaisData.quilombolas.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.quilombolas.populacao?.toLocaleString('pt-BR')}</p>
+                <IndCodeBadge nome="Comunidades quilombolas — Censo 2022" codigo="IND-152" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Tooltip>
@@ -136,6 +137,7 @@ export function GruposFocaisTab() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Cor/Raça: {gruposFocaisData.indigenas.populacaoCorRaca?.toLocaleString('pt-BR')}
                 </p>
+                <IndCodeBadge nome="Povos indígenas — Censo 2022" codigo="IND-146" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 <Tooltip>
@@ -167,6 +169,7 @@ export function GruposFocaisTab() {
                 <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.ciganos.populacao?.toLocaleString('pt-BR')}</p>
                 <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
+                <IndCodeBadge nome="Ciganos/Roma — lacuna de dados" codigo="IND-174" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 
@@ -212,6 +215,62 @@ export function GruposFocaisTab() {
               </div>
               <p className="text-[9px] text-muted-foreground italic">Atualizado: {gruposFocaisData.juventude_negra.ultimaAtualizacao}</p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* População Negra */}
+        <Card className="border-t-4 border-t-chart-2">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-chart-2" />
+                <p className="text-sm font-medium">{gruposFocaisData.populacao_negra.nome}</p>
+                <p className="text-2xl font-bold">{gruposFocaisData.populacao_negra.populacao?.toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pretos: {gruposFocaisData.populacao_negra.detalhamento?.preta?.toLocaleString('pt-BR')} · Pardos: {gruposFocaisData.populacao_negra.detalhamento?.parda?.toLocaleString('pt-BR')}
+                </p>
+                <IndCodeBadge nome="População Negra (Preta + Parda) — Censo 2022" codigo="IND-167" className="mt-1" />
+              </div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Badge variant="outline" className="text-xs">Censo 2022</Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-xs">{gruposFocaisData.populacao_negra.notas}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <FonteInfo
+              fonte={gruposFocaisData.populacao_negra.fonte}
+              tabela={gruposFocaisData.populacao_negra.tabela}
+              link={gruposFocaisData.populacao_negra.link}
+              atualizacao={gruposFocaisData.populacao_negra.ultimaAtualizacao}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Mulheres Negras */}
+        <Card className="border-t-4 border-t-chart-4">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <Users className="w-8 h-8 mb-2 text-chart-4" />
+                <p className="text-sm font-medium">{gruposFocaisData.mulheres_negras.nome}</p>
+                <p className="text-2xl font-bold">~{(gruposFocaisData.mulheres_negras.populacao! / 1000000).toFixed(0)} mi</p>
+                <p className="text-xs text-muted-foreground mt-1">Estimativa — Tab. 9605 × Tab. 9514</p>
+                <IndCodeBadge nome="Mulheres Negras — dados estimados" codigo="IND-183" className="mt-1" />
+              </div>
+              <EstimativaBadge
+                tipo="cruzamento"
+                metodologia={gruposFocaisData.mulheres_negras.notas}
+              />
+            </div>
+            <FonteInfo
+              fonte={gruposFocaisData.mulheres_negras.fonte}
+              tabela={gruposFocaisData.mulheres_negras.tabela}
+              link={gruposFocaisData.mulheres_negras.link}
+              atualizacao={gruposFocaisData.mulheres_negras.ultimaAtualizacao}
+            />
           </CardContent>
         </Card>
       </div>
