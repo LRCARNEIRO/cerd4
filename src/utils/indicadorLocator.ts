@@ -3,13 +3,15 @@
  * Estatística um indicador (IND-NNN) é exibido e faz o scroll/realce até ele.
  *
  * Regras:
- *  - Todo indicador do banco aparece SEMPRE na aba "Espelho Seguro (BD)"
- *    (fonte canônica, com âncora `#ind-IND-NNN` / `[data-codigo]`).
+ *  - A aba "Espelho Seguro (BD)" é painel interno de ingestão/conferência e
+ *    NÃO é anunciada como localização de evidência (não está na navegação).
  *  - Uma aba temática só é anunciada quando existe declaração explícita de
  *    um bloco real. Categoria, subcategoria e arquivo de ingestão NÃO são
  *    prova de que o indicador está renderizado na interface.
- *  - Sem declaração explícita, só o Espelho é listado.
+ *  - Sem declaração explícita, a lista volta vazia (indicador existe apenas
+ *    na base, sem bloco visual).
  */
+
 
 import { abasDoSub, getSubsForGuardaChuva } from '@/utils/indicadorSubs';
 import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
