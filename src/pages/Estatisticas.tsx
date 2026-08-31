@@ -374,16 +374,26 @@ export default function Estatisticas() {
         
         <TabsContent value="complemento-cerd3"><ComplementoCerd3Tab /></TabsContent>
         <TabsContent value="dados-gerais"><DadosGeraisTab /></TabsContent>
-        <TabsContent value="seguranca-saude-educacao"><SegurancaSaudeEducacaoTab /></TabsContent>
+        <TabsContent value="seguranca-saude-educacao">
+          <SegurancaSaudeEducacaoTab />
+          <LegadosBloco codigos={LEGADOS_SEGURANCA_SAUDE} />
+        </TabsContent>
         
         <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} initialSearchTerm={initialIndicatorQuery} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
-        <TabsContent value="grupos-focais"><GruposFocaisTab /></TabsContent>
+        <TabsContent value="grupos-focais">
+          <GruposFocaisTab />
+          <LegadosBloco codigos={LEGADOS_GRUPOS_FOCAIS} />
+        </TabsContent>
         <TabsContent value="ods-racial"><OdsRacialTab /></TabsContent>
         
         <TabsContent value="vulnerabilidades"><VulnerabilidadesTab /></TabsContent>
-        <TabsContent value="raca-genero"><RacaGeneroTab /></TabsContent>
+        <TabsContent value="raca-genero">
+          <RacaGeneroTab />
+          <LegadosBloco codigos={LEGADOS_RACA_GENERO} />
+        </TabsContent>
+
         <TabsContent value="lgbtqia"><LgbtqiaTab /></TabsContent>
         <TabsContent value="deficiencia"><DeficienciaTab /></TabsContent>
         <TabsContent value="juventude"><JuventudeTab /></TabsContent>
