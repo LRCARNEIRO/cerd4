@@ -1303,6 +1303,7 @@ export function ClasseSocialTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             Mobilidade Social Intergeracional
+            <IndCodeBadge nome="Mobilidade social intergeracional e concentração de renda por raça" codigo="IND-213" />
           </CardTitle>
           <CardDescription>
             OCDE — "A Broken Social Elevator?" (2018) + SIS/IBGE 2024 + Min. Fazenda (Dez/2024)
