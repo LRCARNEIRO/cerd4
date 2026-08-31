@@ -12,16 +12,25 @@ const norm = (s: string) =>
     .toLowerCase().replace(/\s+/g, ' ').trim();
 
 /** título exibido → nome canônico no banco */
-const ALIASES: Record<string, string> = {
-  'Denúncias de intolerância religiosa (Disque 100)':
-    'Denúncias de intolerância religiosa — Disque 100',
-  'Denúncias por discriminação, injúria racial e étnica e racismo':
-    'Denúncias de discriminação racial — Disque 100 (racismo e injúria racial)',
-  'Processos judiciais — racismo e injúria racial (CNJ)':
-    'Casos novos de racismo e injúria racial no Judiciário — CNJ Painel Justiça Racial',
-  'Composição racial do Judiciário — magistrados e servidores':
-    'Composição racial do Judiciário — magistrados e servidores negros',
+const ALIASES: Record<string, string> = {};
+
+/**
+ * Registros DUPLICADOS na base: descrevem exatamente o mesmo dado de um
+ * registro que já possui card próprio nas abas. Ficam fora do rol de
+ * evidências (busca e inventário) para impedir dupla vinculação.
+ * duplicado → código canônico que permanece válido.
+ */
+export const DUPLICATAS: Record<string, string> = {
+  'IND-206': 'IND-192', // Denúncias de intolerância religiosa (Disque 100)
+  'IND-207': 'IND-181', // Processos judiciais — racismo e injúria racial (CNJ)
+  'IND-208': 'IND-203', // Denúncias por discriminação, injúria racial e étnica e racismo
+  'IND-210': 'IND-205', // Composição racial do Judiciário — magistrados e servidores
 };
+
+/** true quando o código é duplicata de outro registro já visível em aba. */
+export function isDuplicata(codigo?: string | null): boolean {
+  return !!codigo && codigo in DUPLICATAS;
+}
 
 const ALIASES_NORM = new Map(Object.entries(ALIASES).map(([k, v]) => [norm(k), v]));
 

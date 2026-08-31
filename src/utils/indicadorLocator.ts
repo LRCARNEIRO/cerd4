@@ -83,11 +83,6 @@ export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   'IND-111': [DEFICIENCIA],
   'IND-124': [SEGURANCA_SAUDE_EDUCACAO],
   'IND-127': [VULNERABILIDADES],
-  // Cards do Complemento CERD III cujo título difere do nome canônico (ver indicadorAliases)
-  'IND-206': [COMPLEMENTO_CERD3],
-  'IND-207': [COMPLEMENTO_CERD3],
-  'IND-208': [COMPLEMENTO_CERD3],
-  'IND-210': [COMPLEMENTO_CERD3],
 };
 
 
