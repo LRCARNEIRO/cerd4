@@ -36,6 +36,10 @@ const norm = (s: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
+    // entidades HTML do JSX (ex.: "crianças &lt;10") viram o texto renderizado
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -61,10 +65,10 @@ const FONTES_POR_ABA: Record<string, string[]> = {
   'dados-gerais': ['../components/estatisticas/DadosGeraisTab.tsx'],
   'seguranca-saude-educacao': ['../components/estatisticas/SegurancaSaudeEducacaoTab.tsx'],
   vulnerabilidades: ['../components/estatisticas/VulnerabilidadesTab.tsx'],
-  'raca-genero': ['../components/estatisticas/InterseccionalTabs.tsx'],
+  'raca-genero': ['../components/estatisticas/InterseccionalTabs.tsx', '../components/estatisticas/StatisticsData.ts'],
   lgbtqia: ['../components/estatisticas/InterseccionalTabs.tsx'],
   deficiencia: ['../components/estatisticas/InterseccionalTabs.tsx'],
-  juventude: ['../components/estatisticas/InterseccionalTabs.tsx'],
+  juventude: ['../components/estatisticas/InterseccionalTabs.tsx', '../components/estatisticas/StatisticsData.ts'],
   classe: ['../components/estatisticas/InterseccionalTabs.tsx'],
   'adm-publica': ['../components/estatisticas/AdmPublicaSection.tsx'],
   'covid-racial': ['../components/estatisticas/CovidRacialSection.tsx'],
