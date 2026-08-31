@@ -40,6 +40,13 @@ import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
 import { focusIndicadorNaAba } from '@/utils/indicadorLocator';
 import { useStaticIndicadorCodigos } from '@/hooks/useStaticIndicadorCodigos';
 import { autoTagIndCodes, clearAutoTags } from '@/utils/indCodeAutoTag';
+import { LegadosBloco } from '@/components/estatisticas/LegadosCards';
+import {
+  LEGADOS_SEGURANCA_SAUDE,
+  LEGADOS_RACA_GENERO,
+  LEGADOS_GRUPOS_FOCAIS,
+} from '@/utils/indicadorLocator';
+
 
 
 // TOTAL_ODS_RACIAL is now dynamic from DB
