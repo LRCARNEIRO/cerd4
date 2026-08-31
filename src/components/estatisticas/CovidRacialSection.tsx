@@ -340,6 +340,7 @@ export function CovidRacialSection() {
           <CardTitle className="text-base flex items-center gap-2">
             <FileText className="w-4 h-4 text-chart-3" />
             Estudo Peres et al. (2021) — Fatores Sociodemográficos e Mortalidade Hospitalar
+            <IndCodeBadge nome="Acesso a UTI e mortalidade hospitalar COVID por raça — Peres et al. (2021)" codigo="IND-212" />
           </CardTitle>
           <CardDescription>
             SIVEP-Gripe: 228.196 pacientes adultos hospitalizados com COVID-19, RT-qPCR confirmados (fev-ago 2020).
