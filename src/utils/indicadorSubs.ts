@@ -301,7 +301,8 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'encarceramento juvenil', titulo: 'Encarceramento (% do total)', tabValue: 'juventude', abaLabel: 'Juventude' },
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'analfabetismo 15-29', titulo: 'Analfabetismo jovens negros 15-29 (%)', tabValue: 'juventude', abaLabel: 'Juventude' },
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'desemprego 18-24', titulo: 'Desemprego jovens negros 18-24 (%)', tabValue: 'juventude', abaLabel: 'Juventude' },
-  { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'medidas socioeducativas', titulo: 'Jovens em medidas socioeducativas (%)', tabValue: 'juventude', abaLabel: 'Juventude', aliases: ['Jovens em medidas socioeducativas'] },
+  { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'medidas socioeducativas (%)', titulo: 'Jovens em medidas socioeducativas (%)', tabValue: 'juventude', abaLabel: 'Juventude' },
+  { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'adolescentes em medidas socioeducativas', titulo: 'Jovens em medidas socioeducativas', tabValue: 'juventude', abaLabel: 'Juventude', aliases: ['Alma Preta — Adolescentes em unidades socioeducativas'] },
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'vítimas de homicídio', titulo: 'Vítimas de homicídio jovens negros (%)', tabValue: 'juventude', abaLabel: 'Juventude' },
   // Classe Social › Mobilidade Social Intergeracional — IND-213
   { codigo: 'IND-213', guardaChuva: 'Mobilidade social intergeracional e concentração de renda por raça', sub: 'gerações para alcançar renda média', titulo: 'Gerações para família pobre alcançar renda média', tabValue: 'classe', abaLabel: 'Classe Social' },
