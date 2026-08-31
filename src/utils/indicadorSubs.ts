@@ -36,6 +36,13 @@ export interface SubIndicadorEntry {
    * são usados para localizar o bloco (isso é papel do `titulo`).
    */
   aliases?: string[];
+  /**
+   * Outras abas onde o MESMO bloco visual é reexibido (ex.: a série de
+   * homicídios aparece em Segurança/Saúde/Educação e em Grupos Focais).
+   * Evita duplicar a entrada no registro (e no inventário).
+   */
+  tambemEm?: Array<{ tabValue: string; abaLabel: string }>;
+
 }
 
 /** Âncora estável do bloco visual, usada pela busca e pelo inventário. */
@@ -227,9 +234,53 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-177', guardaChuva: 'Indígenas — dados demográficos Censo 2022', sub: 'população focal', titulo: 'Indígenas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   { codigo: 'IND-159', guardaChuva: 'Povos ciganos/Romani — dados disponíveis', sub: 'população focal', titulo: 'Ciganos/Roma', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   { codigo: 'IND-170', guardaChuva: 'Juventude Negra (15-29) — dados demográficos', sub: 'população focal', titulo: 'Juventude Negra (15-29 anos)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
-  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'situação territorial', titulo: 'Situação Territorial - Quilombolas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
-  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'situação territorial', titulo: 'Situação Territorial - Povos Indígenas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  // ── Grupos Focais › Série Temporal (cada linha é um dado próprio) ──
+  { codigo: 'IND-117', guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)', sub: 'vítimas negras de homicídio', titulo: 'Vítimas negras de homicídio (%)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['% de negros entre vítimas de homicídio', 'FBSP'] },
+  { codigo: 'IND-197', guardaChuva: 'População carcerária por raça/cor', sub: 'encarceramento juvenil negro', titulo: 'Encarceramento juvenil negro (%)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['jovens negros na população carcerária', '19º Anuário FBSP 2025'] },
+  { codigo: 'IND-112', guardaChuva: 'Feminicídio — série histórica (2018-2024)', sub: 'feminicídio mulheres negras', titulo: 'Feminicídio mulheres negras (%)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['% de mulheres negras entre vítimas de feminicídio'] },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'tis homologadas e reservadas', titulo: 'TIs homologadas + reservadas (acumulado)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['ISA terrasindigenas.org.br', 'homologações FUNAI'] },
+  // ── Grupos Focais › Direitos Territoriais (Quilombolas — IND-162) ──
+  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'territórios titulados', titulo: 'Territórios Titulados', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['títulos expedidos INCRA'] },
+  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'territórios em processo', titulo: 'Territórios em Processo (INCRA)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['processos abertos INCRA'] },
+  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'certidões fcp', titulo: 'Certidões FCP (Palmares)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['comunidades certificadas Fundação Palmares'] },
+  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'área titulada', titulo: 'Área Titulada (hectares)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  { codigo: 'IND-162', guardaChuva: 'Terras quilombolas — série histórica (2018-2025)', sub: 'evolução territorial quilombola', titulo: 'Evolução Territorial Quilombola 2018→2025', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['titulados 155 → 245', 'certidões 2.523 → 3.158'] },
+  // ── Grupos Focais › Direitos Territoriais (Indígenas — IND-182) ──
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'total de tis registradas', titulo: 'Total de TIs Registradas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['FUNAI Geoprocessamento'] },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'tis homologadas ou regularizadas', titulo: 'TIs Homologadas/Regularizadas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'etnias reconhecidas', titulo: 'Etnias (Censo 2022)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'línguas vivas', titulo: 'Línguas (Censo 2022)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'fases do processo demarcatório', titulo: 'Avanços por Fase do Processo Demarcatório (FUNAI)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['em estudo, delimitada, declarada, homologada'] },
+  { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'evolução territorial indígena', titulo: 'Evolução Territorial Indígena 2018→2025', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['homologadas 487 → 496', 'total TIs 626 → 646'] },
 ];
+
+// Blocos já cadastrados em outra aba que TAMBÉM são exibidos em Grupos Focais
+// (Série Temporal). Reexibição não cria código nem entrada nova — só amplia a
+// localização do mesmo bloco.
+const GF_ABA = { tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' };
+const REEXIBIDOS_EM_GRUPOS_FOCAIS = new Set([
+  'IND-117#taxa de homicídio',
+  'IND-117#letalidade policial',
+  'IND-119#renda média mensal',
+  'IND-119#taxa de desocupação',
+  'IND-119#taxa de pobreza',
+  'IND-129#ensino superior completo',
+  'IND-129#taxa de analfabetismo',
+  'IND-122#mortalidade materna',
+  'IND-121#violência letal juventude',
+  'IND-121#ivj-n',
+]);
+SUB_INDICADORES.forEach((s) => {
+  if (REEXIBIDOS_EM_GRUPOS_FOCAIS.has(`${s.codigo}#${s.sub}`)) {
+    s.tambemEm = [...(s.tambemEm || []), GF_ABA];
+  }
+});
+
+/** Todas as abas onde o bloco visual do sub-indicador é exibido. */
+export function abasDoSub(sub: SubIndicadorEntry) {
+  return [{ tabValue: sub.tabValue, abaLabel: sub.abaLabel }, ...(sub.tambemEm || [])];
+}
+
 
 // ── Regra "guarda-chuva com subs não é evidência" ─────────────────────
 // Quando um registro canônico possui blocos visuais próprios (subindicadores),

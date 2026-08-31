@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Minus, AlertTriangle, Info } from 'lucide-rea
 import { cn } from '@/lib/utils';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useNarrativeData } from '@/hooks/useNarrativeData';
+import { IndCodeBadge } from '@/components/estatisticas/IndCodeBadge';
 
 interface IndicadorTemporal {
   nome: string;
@@ -14,6 +15,12 @@ interface IndicadorTemporal {
   interpretacao: 'menor_melhor' | 'maior_melhor';
   estimativa?: boolean;
   metodologia?: string;
+  /** código canônico congelado do guarda-chuva (nunca inventado) */
+  codigo?: string;
+  /** nome EXATO do guarda-chuva no BD */
+  guardaChuva?: string;
+  /** rótulo do sub-indicador (registro em indicadorSubs) */
+  sub?: string;
 }
 
 function calcTendencia(dados: { ano: number; valor: number }[], interpretacao: 'menor_melhor' | 'maior_melhor'): 'melhoria' | 'piora' | 'estavel' {
@@ -63,6 +70,9 @@ function buildIndicadores(
   const populacaoNegra: IndicadorTemporal[] = [
     {
       nome: 'Taxa de homicídio (por 100 mil)',
+      codigo: 'IND-117',
+      guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
+      sub: 'taxa de homicídio',
       grupo: 'populacao_negra',
       dados: segurancaPublica.filter(s => s.homicidioNegro != null).map(s => ({ ano: s.ano, valor: s.homicidioNegro! })),
       unidade: 'por 100 mil',
@@ -71,6 +81,9 @@ function buildIndicadores(
     },
     {
       nome: 'Vítimas negras de homicídio (%)',
+      codigo: 'IND-117',
+      guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
+      sub: 'vítimas negras de homicídio',
       grupo: 'populacao_negra',
       dados: segurancaPublica.filter(s => s.percentualVitimasNegras != null).map(s => ({ ano: s.ano, valor: s.percentualVitimasNegras! })),
       unidade: '%',
@@ -79,6 +92,9 @@ function buildIndicadores(
     },
     {
       nome: 'Letalidade policial negra (%)',
+      codigo: 'IND-117',
+      guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)',
+      sub: 'letalidade policial',
       grupo: 'populacao_negra',
       dados: segurancaPublica.filter(s => s.letalidadePolicial != null).map(s => ({ ano: s.ano, valor: s.letalidadePolicial! })),
       unidade: '%',
@@ -87,6 +103,9 @@ function buildIndicadores(
     },
     {
       nome: 'Desemprego negro (%)',
+      codigo: 'IND-119',
+      guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
+      sub: 'taxa de desocupação',
       grupo: 'populacao_negra',
       dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.desempregoNegro })),
       unidade: '%',
@@ -95,6 +114,9 @@ function buildIndicadores(
     },
     {
       nome: 'Renda média negra (R$)',
+      codigo: 'IND-119',
+      guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
+      sub: 'renda média mensal',
       grupo: 'populacao_negra',
       dados: indicadoresSocioeconomicos.map(s => ({ ano: s.ano, valor: s.rendaMediaNegra })),
       unidade: 'R$',
@@ -103,6 +125,9 @@ function buildIndicadores(
     },
     {
       nome: 'Ensino superior negro (%)',
+      codigo: 'IND-129',
+      guardaChuva: 'Educação — série histórica por raça (2018-2024)',
+      sub: 'ensino superior completo',
       grupo: 'populacao_negra',
       dados: educacaoSerieHistorica.map(s => ({ ano: s.ano, valor: s.superiorNegroPercent })),
       unidade: '%',
@@ -111,6 +136,9 @@ function buildIndicadores(
     },
     {
       nome: 'Analfabetismo negro (%)',
+      codigo: 'IND-129',
+      guardaChuva: 'Educação — série histórica por raça (2018-2024)',
+      sub: 'taxa de analfabetismo',
       grupo: 'populacao_negra',
       dados: educacaoSerieHistorica.map(s => ({ ano: s.ano, valor: s.analfabetismoNegro })),
       unidade: '%',
@@ -119,6 +147,9 @@ function buildIndicadores(
     },
     {
       nome: 'Pobreza negra (%)',
+      codigo: 'IND-119',
+      guardaChuva: 'Indicadores socioeconômicos por raça (2018-2024)',
+      sub: 'taxa de pobreza',
       grupo: 'populacao_negra',
       dados: indicadoresSocioeconomicos
         .filter(s => s.pobreza_negra != null)
@@ -134,6 +165,9 @@ function buildIndicadores(
   const juventudeNegra: IndicadorTemporal[] = [
     {
       nome: 'Violência Letal — Juventude 15-29 (% das vítimas)',
+      codigo: 'IND-121',
+      guardaChuva: 'Jovens negros — violência e encarceramento',
+      sub: 'violência letal juventude',
       grupo: 'juventude_negra',
       dados: [
         { ano: 2018, valor: 53.3 },
@@ -146,6 +180,9 @@ function buildIndicadores(
     },
     {
       nome: 'IVJ-N — Risco relativo jovens negros vs não negros',
+      codigo: 'IND-121',
+      guardaChuva: 'Jovens negros — violência e encarceramento',
+      sub: 'ivj-n',
       grupo: 'juventude_negra',
       dados: [
         { ano: 2017, valor: 1.9 },
@@ -158,6 +195,9 @@ function buildIndicadores(
     },
     {
       nome: 'Encarceramento juvenil negro (%)',
+      codigo: 'IND-197',
+      guardaChuva: 'População carcerária por raça/cor',
+      sub: 'encarceramento juvenil negro',
       grupo: 'juventude_negra',
       dados: [
         { ano: 2018, valor: 64.0 },
@@ -173,6 +213,9 @@ function buildIndicadores(
   const mulheresNegras: IndicadorTemporal[] = [
     {
       nome: 'Feminicídio mulheres negras (%)',
+      codigo: 'IND-112',
+      guardaChuva: 'Feminicídio — série histórica (2018-2024)',
+      sub: 'feminicídio mulheres negras',
       grupo: 'mulheres_negras',
       dados: feminicidioSerie.filter(s => s.percentualNegras != null).map(s => ({ ano: s.ano, valor: s.percentualNegras! })),
       unidade: '%',
@@ -181,6 +224,9 @@ function buildIndicadores(
     },
     {
       nome: 'Mortalidade materna negra (por 100 mil NV)',
+      codigo: 'IND-122',
+      guardaChuva: 'Saúde — mortalidade materna e infantil por raça (2018-2024)',
+      sub: 'mortalidade materna',
       grupo: 'mulheres_negras',
       dados: saudeSerieHistorica.filter(s => s.mortalidadeMaternaNegra != null).map(s => ({ ano: s.ano, valor: s.mortalidadeMaternaNegra! })),
       unidade: 'por 100 mil NV',
@@ -198,6 +244,9 @@ function buildIndicadores(
   const indigenas: IndicadorTemporal[] = [
     {
       nome: 'TIs homologadas + reservadas (acumulado)',
+      codigo: 'IND-182',
+      guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária',
+      sub: 'tis homologadas e reservadas',
       grupo: 'indigenas',
       dados: [
         // ISA/terrasindigenas.org.br — total acumulado derivado de StatisticsData
@@ -259,7 +308,12 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
                 ind.estimativa && "bg-warning/5 px-2 py-1 rounded"
               )}>
                 <div className="flex-1">
-                  <p className="font-medium">{ind.nome}</p>
+                  <p className="font-medium flex items-center gap-2 flex-wrap">
+                    {ind.nome}
+                    {ind.codigo && ind.sub && (
+                      <IndCodeBadge nome={ind.guardaChuva || ''} sub={ind.sub} codigo={ind.codigo} />
+                    )}
+                  </p>
                   <p className="text-xs text-muted-foreground">{ind.fonte}</p>
                   {ind.estimativa && ind.metodologia && (
                     <p className="text-[10px] text-warning mt-0.5 leading-tight">⚠ {ind.metodologia}</p>

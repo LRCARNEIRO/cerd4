@@ -261,6 +261,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-success/10 rounded-lg">
                       <p className="text-3xl font-bold text-success">{dadosTerritoriais.quilombolas.territoriosTitulados}</p>
                       <p className="text-sm text-muted-foreground">Territórios Titulados</p>
+                      <IndCodeBadge nome="Terras quilombolas — série histórica (2018-2025)" codigo="IND-162" sub="territórios titulados" className="mt-1" />
                       <a href={dadosTerritoriais.quilombolas.linkTerritoriosTitulados} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> PDF INCRA
                       </a>
@@ -268,6 +269,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-warning/10 rounded-lg">
                       <p className="text-3xl font-bold text-warning">{dadosTerritoriais.quilombolas.territoriosEmProcesso.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">Em Processo</p>
+                      <IndCodeBadge nome="Terras quilombolas — série histórica (2018-2025)" codigo="IND-162" sub="territórios em processo" className="mt-1" />
                       <a href={dadosTerritoriais.quilombolas.linkProcessos} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> INCRA
                       </a>
@@ -275,6 +277,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.quilombolas.comunidadesCertificadasFCP.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">Certidões FCP</p>
+                      <IndCodeBadge nome="Terras quilombolas — série histórica (2018-2025)" codigo="IND-162" sub="certidões fcp" className="mt-1" />
                       <a href={dadosTerritoriais.quilombolas.linkFCP} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> Palmares
                       </a>
@@ -282,6 +285,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{(dadosTerritoriais.quilombolas.areaTotal / 1000000).toFixed(1)} mi</p>
                       <p className="text-sm text-muted-foreground">Hectares</p>
+                      <IndCodeBadge nome="Terras quilombolas — série histórica (2018-2025)" codigo="IND-162" sub="área titulada" className="mt-1" />
                       <a href={dadosTerritoriais.quilombolas.linkArea} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> PDF INCRA
                       </a>
@@ -293,6 +297,7 @@ export function GruposFocaisTab() {
                   <div className="mt-4 p-3 border border-border rounded-lg">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-success" /> Evolução 2018→2025
+                      <IndCodeBadge nome="Terras quilombolas — série histórica (2018-2025)" codigo="IND-162" sub="evolução territorial quilombola" />
                     </p>
                     <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="text-center">
@@ -398,6 +403,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-primary/10 rounded-lg">
                       <p className="text-3xl font-bold text-primary">{dadosTerritoriais.indigenas.terrasTotal}</p>
                       <p className="text-sm text-muted-foreground">Total TIs Registradas</p>
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="total de tis registradas" className="mt-1" />
                       <a href={dadosTerritoriais.indigenas.linkTerrasTotal} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> FUNAI Geo
                       </a>
@@ -405,6 +411,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-success/10 rounded-lg">
                       <p className="text-3xl font-bold text-success">{dadosTerritoriais.indigenas.terrasHomologadas}</p>
                       <p className="text-sm text-muted-foreground">Homologadas/Regularizadas</p>
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="tis homologadas ou regularizadas" className="mt-1" />
                       <a href={dadosTerritoriais.indigenas.linkTerrasHomologadas} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> FUNAI Geo
                       </a>
@@ -412,6 +419,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.etniasIdentificadas}</p>
                       <p className="text-sm text-muted-foreground">Etnias (Censo 2022)</p>
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="etnias reconhecidas" className="mt-1" />
                       <a href={dadosTerritoriais.indigenas.linkEtnias} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> Brasil Indígena
                       </a>
@@ -419,6 +427,7 @@ export function GruposFocaisTab() {
                     <div className="text-center p-4 bg-muted rounded-lg">
                       <p className="text-3xl font-bold">{dadosTerritoriais.indigenas.linguasVivas}</p>
                       <p className="text-sm text-muted-foreground">Línguas (Censo 2022)</p>
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="línguas vivas" className="mt-1" />
                       <a href={dadosTerritoriais.indigenas.linkLinguas} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-1">
                         <ExternalLink className="w-3 h-3" /> Brasil Indígena
                       </a>
@@ -430,6 +439,7 @@ export function GruposFocaisTab() {
                   <div className="mt-4 p-3 border border-border rounded-lg">
                     <p className="text-sm font-semibold mb-2 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-success" /> Evolução 2018→2025
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="evolução territorial indígena" />
                     </p>
                     <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="text-center">
