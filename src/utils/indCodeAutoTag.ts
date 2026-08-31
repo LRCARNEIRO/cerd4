@@ -13,6 +13,7 @@
  */
 
 import { abasDoSub, getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { indicadorDiretoExisteNaAba } from '@/utils/indicadorLocator';
 
 const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -83,7 +84,7 @@ export function autoTagIndCodes(
     tagged++;
   }
 
-  const stamp = (el: HTMLElement, codigo: string, aproximado = false) => {
+  const stamp = (el: HTMLElement, codigo: string) => {
     usados.add(codigo);
     el.dataset.codigo = codigo;
     el.dataset.autoCodigo = '1';
@@ -92,10 +93,8 @@ export function autoTagIndCodes(
     badge.className =
       `${BADGE_CLASS} ml-2 align-middle inline-flex items-center rounded border border-border ` +
       'px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground';
-    badge.textContent = aproximado ? `${codigo}~` : codigo;
-    badge.title = aproximado
-      ? 'Correspondência por título (aproximada) com o registro do Espelho Seguro (BD). Confirme no Espelho antes de citar.'
-      : 'Código canônico do indicador na Base Estatística (Espelho Seguro — BD)';
+    badge.textContent = codigo;
+    badge.title = 'Código canônico do indicador na Base Estatística (Espelho Seguro — BD)';
     el.appendChild(badge);
     tagged++;
   };
@@ -104,37 +103,11 @@ export function autoTagIndCodes(
   for (const el of nodes) {
     if (el.dataset.codigo) { usados.add(el.dataset.codigo); continue; }
     const explicito = el.getAttribute('data-ind-nome');
-    const codigo = byNorm.get(norm(explicito ?? el.textContent ?? ''));
+    const nome = explicito ?? el.textContent ?? '';
+    const codigo = byNorm.get(norm(nome));
     if (!codigo || usados.has(codigo)) continue;
+    if (activeTab && !indicadorDiretoExisteNaAba(nome, codigo, activeTab)) continue;
     stamp(el, codigo);
-  }
-
-  // Passe 2 — título que CONTÉM integralmente o nome canônico (mesma regra
-  // usada pelo localizador de deep-link). Continua sendo correspondência
-  // textual literal: sem nome do banco no título, nenhum selo é criado.
-  for (const [nomeNorm, codigo] of byNorm) {
-    if (usados.has(codigo) || nomeNorm.length < 12) continue;
-    const alvo = nodes.find(el => {
-      if (el.dataset.codigo) return false;
-      const t = norm(el.textContent || '');
-      return t.includes(nomeNorm) && t.length < nomeNorm.length + 80;
-    });
-    if (alvo) stamp(alvo, codigo);
-  }
-
-  // Passe 3 — correspondência por tokens fortes (>=3 palavras com 4+ letras,
-  // TODAS presentes no mesmo título curto). Marcado com "~" para deixar
-  // explícito que é aproximado — mesmo critério do localizador de deep-link.
-  for (const [nomeNorm, codigo] of byNorm) {
-    if (usados.has(codigo)) continue;
-    const tokens = nomeNorm.split(/[^a-z0-9]+/).filter(t => t.length >= 4).slice(0, 6);
-    if (tokens.length < 3) continue;
-    const alvo = nodes.find(el => {
-      if (el.dataset.codigo) return false;
-      const t = norm(el.textContent || '');
-      return t.length > 0 && t.length < 140 && tokens.every(tk => t.includes(tk));
-    });
-    if (alvo) stamp(alvo, codigo, true);
   }
 
   return tagged;

@@ -9,7 +9,7 @@ import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
-import { SUB_INDICADORES, hasSubIndicadores, abasDoSub } from '@/utils/indicadorSubs';
+import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
 
@@ -26,6 +26,7 @@ interface SearchResult {
   abas?: AbaLocalizacao[];
   /** quando é sub-indicador de guarda-chuva: título do bloco a localizar na aba */
   subTitulo?: string;
+  subAnchor?: string;
 }
 
 // Static data catalog — searches across all sub-tabs
@@ -65,6 +66,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       abaValue: sub.tabValue,
       categoria: 'Sub-indicador',
       subTitulo: sub.titulo,
+      subAnchor: getSubIndicadorAnchor(umbrella?.codigo || sub.codigo, sub.sub),
       abas: [
         ...abasDoSub(sub).map((a) => ({ label: a.abaLabel, tabValue: a.tabValue })),
         { ...ABA_ESPELHO },
@@ -176,6 +178,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
       id: result.id,
       nome: irPorSub ? result.subTitulo : result.nome,
       tabValue: alvo.tabValue,
+      anchor: irPorSub ? result.subAnchor : undefined,
     });
     setQuery('');
     setIsOpen(false);

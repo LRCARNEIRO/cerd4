@@ -471,6 +471,9 @@ export function GruposFocaisTab() {
 
                   {/* Detalhamento por período */}
                   <div className="mt-4 grid grid-cols-2 gap-3">
+                    <div className="col-span-2 flex justify-center">
+                      <IndCodeBadge nome="Demarcação de Terras Indígenas — situação fundiária" codigo="IND-182" sub="fases do processo demarcatório" />
+                    </div>
                     <div className="p-3 border border-destructive/30 bg-destructive/5 rounded-lg">
                       <p className="text-xs font-semibold mb-2 text-destructive">2018-2022 (Paralisia)</p>
                       <div className="space-y-1 text-xs text-muted-foreground">
