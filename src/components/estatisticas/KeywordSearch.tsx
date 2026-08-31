@@ -9,7 +9,7 @@ import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, ABA_ESPELHO, type AbaLocalizacao } from '@/utils/indicadorLocator';
-import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
+import { SUB_INDICADORES, hasSubIndicadores, abasDoSub } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
 
@@ -44,7 +44,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       aba: 'Espelho Seguro (BD)',
       abaValue: 'indicadores-db',
       categoria: ind.subcategoria || ind.categoria,
-      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem),
+      abas: abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem, ind.codigo),
     });
   });
 
@@ -66,7 +66,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       categoria: 'Sub-indicador',
       subTitulo: sub.titulo,
       abas: [
-        { label: sub.abaLabel, tabValue: sub.tabValue },
+        ...abasDoSub(sub).map((a) => ({ label: a.abaLabel, tabValue: a.tabValue })),
         { ...ABA_ESPELHO },
       ],
     });

@@ -12,7 +12,7 @@
  * (`?tab=<aba>&ind=IND-NNN`).
  */
 
-import { getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { abasDoSub, getSubIndicadorAnchor, SUB_INDICADORES } from '@/utils/indicadorSubs';
 
 const norm = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -53,7 +53,7 @@ export function autoTagIndCodes(
     // Só carimba o sub na aba onde ele realmente existe. Sem esse filtro,
     // títulos curtos ("Indígenas", "Quilombolas") recebiam selo em abas
     // alheias (ex.: COVID), sugerindo evidência inexistente.
-    if (activeTab && sub.tabValue !== activeTab) continue;
+    if (activeTab && !abasDoSub(sub).some(a => a.tabValue === activeTab)) continue;
     if (norm(sub.titulo).length < 9) continue;
     const alvo = nodes.find(el => {
       if (el.dataset.subIndicador || el.querySelector('[data-ind-badge="1"]')) return false;

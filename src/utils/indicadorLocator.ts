@@ -11,6 +11,10 @@
  *  - Se a categoria não tiver aba temática mapeada, só o Espelho é listado.
  */
 
+import { abasDoSub, getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+
+
+
 export interface AbaLocalizacao {
   label: string;
   tabValue: string;
@@ -65,11 +69,25 @@ const CATEGORIA_ABAS: Record<string, AbaLocalizacao[]> = {
   classe_social: [{ label: 'Classe Social', tabValue: 'classe' }],
 };
 
+// Só a SUBCATEGORIA gravada na ingestão pode sugerir aba temática. Antes o
+// próprio NOME entrava na varredura, o que gerava chips falsos (ex.: IND-012
+// "Indígenas em TIs vs. fora" aparecia em Grupos Focais sem ter bloco lá).
 const SUBCATEGORIA_ABAS: Array<{ match: RegExp; aba: AbaLocalizacao }> = [
   { match: /juvent/i, aba: { label: 'Juventude', tabValue: 'juventude' } },
   { match: /quilombola|indigena|indígena|territor/i, aba: { label: 'Grupos Focais', tabValue: 'grupos-focais' } },
   { match: /cerd\s*iii|complemento/i, aba: { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' } },
 ];
+
+/**
+ * Exibição CONFIRMADA por código (auditada no componente que renderiza o
+ * bloco). Quando presente, substitui qualquer heurística de categoria.
+ */
+const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
+  // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas
+  'IND-012': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+  'IND-014': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+};
+
 
 /**
  * PROCEDÊNCIA (sinal primário e auditável): `documento_origem[1]` grava o
@@ -89,8 +107,14 @@ const ARQUIVO_ABAS: Record<string, AbaLocalizacao> = {
 
 /** Procedência gravada na ingestão → aba comprovada (ou null). */
 export function abaPorProcedencia(documentoOrigem?: string[] | null): AbaLocalizacao | null {
-  const arq = (documentoOrigem || []).map(s => String(s || '').toLowerCase()).find(s => ARQUIVO_ABAS[s]);
-  return arq ? ARQUIVO_ABAS[arq] : null;
+  // Os valores gravados podem vir prefixados ("espelho_estatico StatisticsData.ts"),
+  // por isso a correspondência é por conteúdo, não por igualdade exata.
+  const entradas = (documentoOrigem || []).map(s => String(s || '').toLowerCase());
+  for (const entrada of entradas) {
+    const chave = Object.keys(ARQUIVO_ABAS).find(k => entrada.includes(k));
+    if (chave) return ARQUIVO_ABAS[chave];
+  }
+  return null;
 }
 
 /** true = registro cuja exibição em aba é comprovada pela procedência de ingestão. */
@@ -106,18 +130,35 @@ export function abasDoIndicador(
   subcategoria?: string | null,
   nome?: string | null,
   documentoOrigem?: string[] | null,
+  codigo?: string | null,
 ): AbaLocalizacao[] {
   const out: AbaLocalizacao[] = [ABA_ESPELHO];
   const push = (a: AbaLocalizacao) => {
     if (!out.some(x => x.tabValue === a.tabValue)) out.push(a);
   };
+
+  // 1) Exibição confirmada por código — encerra aqui (sem heurística).
+  const confirmadas = codigo ? ABAS_POR_CODIGO[codigo] : undefined;
+  if (confirmadas) {
+    confirmadas.forEach(push);
+    return out;
+  }
+
+  // 2) Blocos visuais cadastrados (sub-indicadores) do próprio registro.
+  const subs = nome ? getSubsForGuardaChuva(nome) : [];
+  if (subs.length) {
+    subs.forEach(s => abasDoSub(s).forEach(a => push({ label: a.abaLabel, tabValue: a.tabValue })));
+    return out;
+  }
+
+  // 3) Procedência de ingestão (auditável) e, por fim, categoria/subcategoria.
   const proc = abaPorProcedencia(documentoOrigem);
   if (proc) push(proc);
   (CATEGORIA_ABAS[String(categoria || '').toLowerCase()] || []).forEach(push);
-  const hay = `${subcategoria || ''} ${nome || ''}`;
-  SUBCATEGORIA_ABAS.forEach(({ match, aba }) => { if (match.test(hay)) push(aba); });
+  SUBCATEGORIA_ABAS.forEach(({ match, aba }) => { if (match.test(String(subcategoria || ''))) push(aba); });
   return out;
 }
+
 
 
 function highlight(el: HTMLElement) {
