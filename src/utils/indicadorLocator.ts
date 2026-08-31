@@ -37,18 +37,35 @@ export const ABA_ESPELHO: AbaLocalizacao = {
  * Exibição CONFIRMADA por código (auditada no componente que renderiza o
  * bloco). Quando presente, substitui qualquer heurística de categoria.
  */
-export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
-  // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas
-  'IND-012': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
-  'IND-014': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
-};
-
 const DADOS_GERAIS: AbaLocalizacao = { label: 'Dados Gerais', tabValue: 'dados-gerais' };
 const SEGURANCA_SAUDE_EDUCACAO: AbaLocalizacao = { label: 'Segurança/Saúde/Educação', tabValue: 'seguranca-saude-educacao' };
 const CLASSE_SOCIAL: AbaLocalizacao = { label: 'Classe Social', tabValue: 'classe' };
 const COMPLEMENTO_CERD3: AbaLocalizacao = { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' };
 const ODS_RACIAL: AbaLocalizacao = { label: 'ODS Racial', tabValue: 'ods-racial' };
 const COVID_RACIAL: AbaLocalizacao = { label: 'COVID Racial', tabValue: 'covid-racial' };
+const GRUPOS_FOCAIS: AbaLocalizacao = { label: 'Grupos Focais', tabValue: 'grupos-focais' };
+const RACA_GENERO: AbaLocalizacao = { label: 'Raça × Gênero', tabValue: 'raca-genero' };
+
+/**
+ * Registros canônicos que passaram a ter card próprio via <LegadosBloco/>.
+ * A lista é a mesma consumida pela página — o card só existe se o código
+ * estiver aqui, garantindo que a busca nunca anuncie aba sem bloco real.
+ */
+export const LEGADOS_SEGURANCA_SAUDE = ['IND-001', 'IND-002', 'IND-003', 'IND-004', 'IND-006', 'IND-011'];
+export const LEGADOS_RACA_GENERO = ['IND-007', 'IND-008', 'IND-009', 'IND-010'];
+export const LEGADOS_GRUPOS_FOCAIS = ['IND-005', 'IND-013'];
+
+export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
+  // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas
+  'IND-012': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+  'IND-014': [{ label: 'Complemento CERD III', tabValue: 'complemento-cerd3' }],
+  // Cards criados em <LegadosBloco/> (Estatisticas.tsx)
+  ...Object.fromEntries(LEGADOS_SEGURANCA_SAUDE.map(c => [c, [SEGURANCA_SAUDE_EDUCACAO]])),
+  ...Object.fromEntries(LEGADOS_RACA_GENERO.map(c => [c, [RACA_GENERO]])),
+  ...Object.fromEntries(LEGADOS_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
+};
+
+
 
 /**
  * Blocos diretos comprovados no JSX. O nome é o mesmo usado pelo componente
