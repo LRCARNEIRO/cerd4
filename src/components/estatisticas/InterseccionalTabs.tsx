@@ -337,6 +337,7 @@ export function RacaGeneroTab() {
           <CardTitle className="text-base flex items-center gap-2">
             <Users className="w-5 h-5 text-primary" />
             Perfil Racial dos Beneficiários do CadÚnico — Negros × Brancos (2018–2025)
+            <IndCodeBadge nome="CadÚnico — perfil racial beneficiários (2018-2025)" codigo="IND-125" sub="perfil racial" />
           </CardTitle>
           <CardDescription>
             {cadUnicoFonte.nome} · {cadUnicoFonte.unidade} · {cadUnicoFonte.nota}
@@ -1230,6 +1231,7 @@ export function ClasseSocialTab() {
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-warning" />
               Saúde × Raça × Classe
+              <IndCodeBadge nome="Saúde materna — raça e gênero" codigo="IND-118" sub="saúde materna" />
             </CardTitle>
             <CardDescription className="flex items-center gap-2">
               IEPS Boletim Jul/2025 + RASEAM 2025 + Nascer no Brasil II (Fiocruz)
@@ -1301,6 +1303,7 @@ export function ClasseSocialTab() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             Mobilidade Social Intergeracional
+            <IndCodeBadge nome="Mobilidade social intergeracional e concentração de renda por raça" codigo="IND-213" />
           </CardTitle>
           <CardDescription>
             OCDE — "A Broken Social Elevator?" (2018) + SIS/IBGE 2024 + Min. Fazenda (Dez/2024)

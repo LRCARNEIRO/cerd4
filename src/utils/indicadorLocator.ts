@@ -46,6 +46,7 @@ const SEGURANCA_SAUDE_EDUCACAO: AbaLocalizacao = { label: 'Segurança/Saúde/Edu
 const CLASSE_SOCIAL: AbaLocalizacao = { label: 'Classe Social', tabValue: 'classe' };
 const COMPLEMENTO_CERD3: AbaLocalizacao = { label: 'Complemento CERD III', tabValue: 'complemento-cerd3' };
 const ODS_RACIAL: AbaLocalizacao = { label: 'ODS Racial', tabValue: 'ods-racial' };
+const COVID_RACIAL: AbaLocalizacao = { label: 'COVID Racial', tabValue: 'covid-racial' };
 
 /**
  * Blocos diretos comprovados no JSX. O nome é o mesmo usado pelo componente
@@ -57,6 +58,8 @@ export const ABAS_POR_NOME: Record<string, AbaLocalizacao[]> = {
   'Evasão escolar por raça (2018-2024)': [SEGURANCA_SAUDE_EDUCACAO],
   'Rendimentos por raça — Censo 2022': [CLASSE_SOCIAL],
   'Pobreza por raça — SIS/IBGE (2022-2024)': [CLASSE_SOCIAL],
+  'Mobilidade social intergeracional e concentração de renda por raça': [CLASSE_SOCIAL],
+  'Acesso a UTI e mortalidade hospitalar COVID por raça — Peres et al. (2021)': [COVID_RACIAL],
   ...Object.fromEntries(complementoCerd3Indicators.map(ind => [ind.nome, [COMPLEMENTO_CERD3]])),
 };
 

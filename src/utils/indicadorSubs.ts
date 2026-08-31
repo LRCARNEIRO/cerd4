@@ -202,8 +202,8 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-126', guardaChuva: 'Violência interseccional — gênero e raça (2024)', sub: 'violência contra mulheres', titulo: 'Violência contra Mulheres por Raça', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
   { codigo: 'IND-123', guardaChuva: 'Trabalho — indicadores raça × gênero (DIEESE 2025)', sub: 'mercado de trabalho', titulo: 'Mercado de Trabalho por Raça × Gênero', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
   { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'chefia e vulnerabilidade', titulo: 'Chefia Familiar e Vulnerabilidade por Raça × Gênero', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
-  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'saúde materna', titulo: 'Saúde Materna por Raça', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
-  { codigo: 'IND-125', guardaChuva: 'CadÚnico — perfil racial beneficiários (2018-2025)', sub: 'perfil racial', titulo: 'Perfil Racial dos Beneficiários do CadÚnico', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
+  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'saúde materna', titulo: 'Saúde Materna por Raça', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero', aliases: ['Saúde × Raça × Classe'], tambemEm: [{ tabValue: 'classe', abaLabel: 'Classe Social' }] },
+  { codigo: 'IND-125', guardaChuva: 'CadÚnico — perfil racial beneficiários (2018-2025)', sub: 'perfil racial', titulo: 'Perfil Racial dos Beneficiários do CadÚnico', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero', aliases: ['Perfil Racial dos Beneficiários do CadÚnico — Negros × Brancos (2018–2025)'] },
   { codigo: 'IND-116', guardaChuva: 'Educação — raça × gênero (Censo 2022)', sub: 'educação raça e gênero', titulo: 'Educação por Raça × Gênero', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
   // ── LGBTQIA+, Deficiência, Juventude e Classe ──
   { codigo: 'IND-120', guardaChuva: 'Violência contra pessoas trans — série ANTRA (2017-2025)', sub: 'assassinatos trans e travestis', titulo: 'Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+' },
@@ -271,7 +271,11 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-120', guardaChuva: 'Violência contra pessoas trans — série ANTRA (2017-2025)', sub: 'tendência da série antra', titulo: 'Tendência da série ANTRA 2017→2025', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Tendência 2017→2025'] },
   { codigo: 'IND-110', guardaChuva: 'Atlas da Violência 2025 — dados-chave', sub: 'juventude negra atlas', titulo: 'Atlas da Violência 2025 (IPEA/FBSP) — Juventude Negra (15-29 anos)', tabValue: 'juventude', abaLabel: 'Juventude' },
   { codigo: 'IND-014', guardaChuva: 'População quilombola por região — Censo 2022', sub: 'quilombolas por uf', titulo: 'População Quilombola por UF — Censo 2022', tabValue: 'complemento-cerd3', abaLabel: 'Complemento CERD III' },
+  // ── Cotas Raciais (Adm Pública) — registro canônico IND-211 ──
+  { codigo: 'IND-211', guardaChuva: 'Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior', sub: 'cotas no serviço público federal', titulo: 'Cotas Raciais no Serviço Público Federal', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Lei 12.990/2014 → Lei 15.142/2025'] },
+  { codigo: 'IND-211', guardaChuva: 'Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior', sub: 'ingresso por cotas nas universidades federais', titulo: 'Ingresso por Cotas Raciais em Universidades Federais', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Crescimento de 493% no critério étnico-racial (2012→2022)'] },
 ];
+
 
 // Blocos já cadastrados em outra aba que TAMBÉM são exibidos em Grupos Focais
 // (Série Temporal). Reexibição não cria código nem entrada nova — só amplia a

@@ -9,6 +9,8 @@ import { Building2, ExternalLink, FileText, AlertTriangle, CheckCircle2, XCircle
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { IndCodeBadge } from '@/components/estatisticas/IndCodeBadge';
+
 
 // =============================================
 // DADOS MUNIC/ESTADIC 2024 - IBGE
@@ -628,9 +630,15 @@ export function AdmPublicaSection() {
             <CardTitle className="text-base flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-chart-5" />
               Cotas Raciais no Serviço Público Federal
+              <IndCodeBadge
+                nome="Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior"
+                codigo="IND-211"
+                sub="cotas no serviço público federal"
+              />
             </CardTitle>
             <CardDescription>Lei 12.990/2014 → Lei 15.142/2025</CardDescription>
           </CardHeader>
+
           <CardContent>
             <div className="space-y-4">
               <div className="p-3 rounded-lg border border-border">
@@ -679,6 +687,11 @@ export function AdmPublicaSection() {
             <CardTitle className="text-base flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-chart-5" />
               Ingresso por Cotas Raciais em Universidades Federais
+              <IndCodeBadge
+                nome="Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior"
+                codigo="IND-211"
+                sub="ingresso por cotas nas universidades federais"
+              />
             </CardTitle>
             <CardDescription>Crescimento de 493% no critério étnico-racial (2012→2022)</CardDescription>
           </CardHeader>
