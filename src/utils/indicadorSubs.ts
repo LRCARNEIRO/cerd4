@@ -206,26 +206,26 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-125', guardaChuva: 'CadÚnico — perfil racial beneficiários (2018-2025)', sub: 'perfil racial', titulo: 'Perfil Racial dos Beneficiários do CadÚnico', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
   { codigo: 'IND-116', guardaChuva: 'Educação — raça × gênero (Censo 2022)', sub: 'educação raça e gênero', titulo: 'Educação por Raça × Gênero', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
   // ── LGBTQIA+, Deficiência, Juventude e Classe ──
-  { codigo: 'IND-120', guardaChuva: 'Violência contra pessoas trans — série ANTRA (2017-2025)', sub: 'assassinatos trans e travestis', titulo: 'Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+' },
+  { codigo: 'IND-120', guardaChuva: 'Violência contra pessoas trans — série ANTRA (2017-2025)', sub: 'assassinatos trans e travestis', titulo: 'Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Dados Anuais — Assassinatos de Pessoas Trans e Travestis'] },
   { codigo: 'IND-132', guardaChuva: 'Deficiência por raça — Censo 2022 / PNADC', sub: 'pessoas com deficiência', titulo: 'Pessoas com Deficiência por Raça', tabValue: 'deficiencia', abaLabel: 'Deficiência' },
-  { codigo: 'IND-132', guardaChuva: 'Deficiência por raça — Censo 2022 / PNADC', sub: 'disparidades pcd', titulo: 'Disparidades Interseccionais PcD', tabValue: 'deficiencia', abaLabel: 'Deficiência' },
+  { codigo: 'IND-132', guardaChuva: 'Deficiência por raça — Censo 2022 / PNADC', sub: 'disparidades pcd', titulo: 'Disparidades Interseccionais PcD', tabValue: 'deficiencia', abaLabel: 'Deficiência', aliases: ['Disparidades Interseccionais PcD (14-59 anos)'] },
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'comparativo juventude negra', titulo: 'Indicadores da Juventude Negra — Comparativo', tabValue: 'juventude', abaLabel: 'Juventude' },
-  { codigo: 'IND-121', guardaChuva: 'Jovens negros — violência e encarceramento', sub: 'violência letal juventude', titulo: 'Violência Letal — Juventude', tabValue: 'juventude', abaLabel: 'Juventude' },
+  { codigo: 'IND-121', guardaChuva: 'Jovens negros — violência e encarceramento', sub: 'violência letal juventude', titulo: 'Violência Letal — Juventude', tabValue: 'juventude', abaLabel: 'Juventude', aliases: ['Violência Letal — Juventude (15-29 anos)'] },
   { codigo: 'IND-121', guardaChuva: 'Jovens negros — violência e encarceramento', sub: 'ivj-n', titulo: 'IVJ-N — Vulnerabilidade da Juventude Negra', tabValue: 'juventude', abaLabel: 'Juventude' },
   // ── Administração Pública ──
   { codigo: 'IND-180', guardaChuva: 'ESTADIC 2024 — Gestores de Igualdade Racial por Raça/Gênero', sub: 'perfil dos gestores', titulo: 'Cor/Raça dos Gestores de Igualdade Racial (ESTADIC 2024)', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
-  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'legislação estadual', titulo: 'Legislação Estadual sobre Igualdade Racial', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
+  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'legislação estadual', titulo: 'Legislação Estadual sobre Igualdade Racial', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['UFs com Legislação Específica'] },
   { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'grupos não contemplados', titulo: 'Lacunas: Grupos Não Contemplados por Programas Estaduais', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
-  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'estrutura institucional', titulo: 'Estrutura Institucional Estadual', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
-  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'evolução das adesões', titulo: 'Evolução das Adesões ao SINAPIR', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
-  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'modalidades de gestão', titulo: 'Modalidades de Gestão do SINAPIR', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
+  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'estrutura institucional', titulo: 'Estrutura Institucional Estadual', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['UFs com Estrutura de Igualdade Racial'] },
+  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'evolução das adesões', titulo: 'Evolução das Adesões ao SINAPIR', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Total de Adesões', 'Novas Adesões em 2024'] },
+  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'modalidades de gestão', titulo: 'Modalidades de Gestão do SINAPIR', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Cobertura Municipal'] },
   { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'capitais aderidas', titulo: 'Capitais que Aderiram em 2024', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
-  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'estados com mais adesões', titulo: 'Estados com Mais Adesões Municipais (2024)', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
+  { codigo: 'IND-176', guardaChuva: 'SINAPIR — Adesões ao Sistema Nacional (2014-2024)', sub: 'estados com mais adesões', titulo: 'Estados com Mais Adesões Municipais (2024)', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Estados Aderidos'] },
   // ── COVID ──
   { codigo: 'IND-178', guardaChuva: 'Excesso de mortalidade por raça — COVID-19 (2020)', sub: 'excesso de mortalidade', titulo: 'Excesso de Mortalidade Negra (2020)', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-178', guardaChuva: 'Excesso de mortalidade por raça — COVID-19 (2020)', sub: 'óbitos em excesso', titulo: 'Óbitos em Excesso (Negros, 2020)', tabValue: 'covid-racial', abaLabel: 'COVID', aliases: ['mortes acima do esperado entre negros na pandemia'] },
-  { codigo: 'IND-175', guardaChuva: 'Letalidade hospitalar COVID por raça — Moreira et al. (2023)', sub: 'letalidade hospitalar', titulo: 'Letalidade Hospitalar por COVID-19 e Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
-  { codigo: 'IND-173', guardaChuva: 'Mortalidade materna COVID por raça (2019-2022)', sub: 'mortalidade materna', titulo: 'Mortalidade Materna na Pandemia por Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
+  { codigo: 'IND-175', guardaChuva: 'Letalidade hospitalar COVID por raça — Moreira et al. (2023)', sub: 'letalidade hospitalar', titulo: 'Letalidade Hospitalar por COVID-19 e Raça', tabValue: 'covid-racial', abaLabel: 'COVID', aliases: ['Letalidade Hospitalar (Indígenas)'] },
+  { codigo: 'IND-173', guardaChuva: 'Mortalidade materna COVID por raça (2019-2022)', sub: 'mortalidade materna', titulo: 'Mortalidade Materna na Pandemia por Raça', tabValue: 'covid-racial', abaLabel: 'COVID', aliases: ['RMM Mães Pretas (pico 2021)'] },
   { codigo: 'IND-172', guardaChuva: 'Impacto socioeconômico COVID por raça — PNAD COVID 2020', sub: 'mercado de trabalho', titulo: 'Impacto da Pandemia no Mercado de Trabalho por Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-171', guardaChuva: 'Vacinação COVID por raça — SI-PNI/DataSUS', sub: 'cobertura vacinal', titulo: 'Cobertura Vacinal por Raça/Cor', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-168', guardaChuva: 'Interseccionalidade COVID — impacto por grupo', sub: 'impacto interseccional', titulo: 'Análise Interseccional: COVID-19 e Grupos Vulnerabilizados', tabValue: 'covid-racial', abaLabel: 'COVID' },
@@ -252,6 +252,15 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'línguas vivas', titulo: 'Línguas (Censo 2022)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'fases do processo demarcatório', titulo: 'Avanços por Fase do Processo Demarcatório (FUNAI)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['em estudo, delimitada, declarada, homologada'] },
   { codigo: 'IND-182', guardaChuva: 'Demarcação de Terras Indígenas — situação fundiária', sub: 'evolução territorial indígena', titulo: 'Evolução Territorial Indígena 2018→2025', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', aliases: ['homologadas 487 → 496', 'total TIs 626 → 646'] },
+  // ── Blocos com dado próprio identificados na varredura de abas (v22) ──
+  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'canal de denúncia racial', titulo: 'UFs com Canal de Denúncia Racial', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
+  { codigo: 'IND-179', guardaChuva: 'ESTADIC 2024 — Estrutura de Igualdade Racial nos Estados', sub: 'fundo de igualdade racial', titulo: 'UFs com Fundo de Igualdade Racial', tabValue: 'adm-publica', abaLabel: 'Adm Pública' },
+  { codigo: 'IND-109', guardaChuva: 'LGBTQIA+ — vítimas por raça (2025)', sub: 'assassinatos 2025', titulo: 'Assassinatos de pessoas trans e travestis (2025)', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Assassinatos (2025)'] },
+  { codigo: 'IND-109', guardaChuva: 'LGBTQIA+ — vítimas por raça (2025)', sub: 'vítimas negras', titulo: 'Vítimas negras entre pessoas trans assassinadas (%)', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Vítimas negras'] },
+  { codigo: 'IND-109', guardaChuva: 'LGBTQIA+ — vítimas por raça (2025)', sub: 'vítimas indígenas', titulo: 'Vítimas indígenas entre pessoas trans assassinadas', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Vítimas indígenas'] },
+  { codigo: 'IND-120', guardaChuva: 'Violência contra pessoas trans — série ANTRA (2017-2025)', sub: 'tendência da série antra', titulo: 'Tendência da série ANTRA 2017→2025', tabValue: 'lgbtqia', abaLabel: 'LGBTQIA+', aliases: ['Tendência 2017→2025'] },
+  { codigo: 'IND-110', guardaChuva: 'Atlas da Violência 2025 — dados-chave', sub: 'juventude negra atlas', titulo: 'Atlas da Violência 2025 (IPEA/FBSP) — Juventude Negra (15-29 anos)', tabValue: 'juventude', abaLabel: 'Juventude' },
+  { codigo: 'IND-014', guardaChuva: 'População quilombola por região — Censo 2022', sub: 'quilombolas por uf', titulo: 'População Quilombola por UF — Censo 2022', tabValue: 'complemento-cerd3', abaLabel: 'Complemento CERD III' },
 ];
 
 // Blocos já cadastrados em outra aba que TAMBÉM são exibidos em Grupos Focais
@@ -270,6 +279,15 @@ const REEXIBIDOS_EM_GRUPOS_FOCAIS = new Set([
   'IND-121#violência letal juventude',
   'IND-121#ivj-n',
 ]);
+
+// Blocos reexibidos em Classe Social (mesmo card, outra aba).
+const CLASSE_ABA = { tabValue: 'classe', abaLabel: 'Classe Social' };
+SUB_INDICADORES.forEach((s) => {
+  if (s.codigo === 'IND-122' && s.sub === 'mortalidade materna') {
+    s.aliases = [...(s.aliases || []), 'Mortalidade Materna por Raça'];
+    s.tambemEm = [...(s.tambemEm || []), CLASSE_ABA];
+  }
+});
 SUB_INDICADORES.forEach((s) => {
   if (REEXIBIDOS_EM_GRUPOS_FOCAIS.has(`${s.codigo}#${s.sub}`)) {
     s.tambemEm = [...(s.tambemEm || []), GF_ABA];

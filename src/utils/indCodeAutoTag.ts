@@ -54,10 +54,16 @@ export function autoTagIndCodes(
     // títulos curtos ("Indígenas", "Quilombolas") recebiam selo em abas
     // alheias (ex.: COVID), sugerindo evidência inexistente.
     if (activeTab && !abasDoSub(sub).some(a => a.tabValue === activeTab)) continue;
-    if (norm(sub.titulo).length < 9) continue;
+    // O mesmo bloco pode ser rotulado de formas diferentes na aba (ex.: card
+    // "UFs com Legislação Específica" para o sub "legislação estadual"). Os
+    // `aliases` são rótulos EXATOS já auditados — nunca correspondência solta.
+    const rotulos = [sub.titulo, ...(sub.aliases || [])]
+      .map(norm)
+      .filter(t => t.length >= 9);
+    if (!rotulos.length) continue;
     const alvo = nodes.find(el => {
       if (el.dataset.subIndicador || el.querySelector('[data-ind-badge="1"]')) return false;
-      return norm(el.textContent || '') === norm(sub.titulo);
+      return rotulos.includes(norm(el.textContent || ''));
     });
     if (!alvo) continue;
     const codigoBanco = codigos.get(sub.guardaChuva.toLowerCase().trim());
