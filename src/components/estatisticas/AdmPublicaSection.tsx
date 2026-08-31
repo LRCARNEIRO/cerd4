@@ -685,6 +685,11 @@ export function AdmPublicaSection() {
             <CardTitle className="text-base flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-chart-5" />
               Ingresso por Cotas Raciais em Universidades Federais
+              <IndCodeBadge
+                nome="Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior"
+                codigo="IND-211"
+                sub="ingresso por cotas nas universidades federais"
+              />
             </CardTitle>
             <CardDescription>Crescimento de 493% no critério étnico-racial (2012→2022)</CardDescription>
           </CardHeader>
