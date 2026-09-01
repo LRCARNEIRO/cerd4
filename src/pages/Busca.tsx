@@ -127,10 +127,10 @@ export default function Busca() {
         out.push({
           titulo: `${codigo} · sub: ${sub.sub} — ${sub.titulo}`,
           trecho: `Sub-indicador do registro guarda-chuva "${sub.guardaChuva}"`,
-          secao: `Estatísticas › ${sub.abaLabel}`,
+          secao: `Estatísticas › ${sub.subTabLabel ? `${sub.abaLabel} › ${sub.subTabLabel}` : sub.abaLabel}`,
           base: 'indicadores_interseccionais',
           fonte: umbrella?.fonte,
-          link: `/estatisticas?tab=${sub.tabValue}&serie=${encodeURIComponent(getSubIndicadorAnchor(codigo, sub.sub))}#${getSubIndicadorAnchor(codigo, sub.sub)}`,
+          link: `/estatisticas?tab=${sub.tabValue}${sub.subTab ? `&sub=${sub.subTab}` : ''}&serie=${encodeURIComponent(getSubIndicadorAnchor(codigo, sub.sub))}#${getSubIndicadorAnchor(codigo, sub.sub)}`,
         });
       }
     }

@@ -10,7 +10,7 @@ import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/utils/indicadorLocator';
 import { isDuplicata } from '@/utils/indicadorAliases';
-import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor } from '@/utils/indicadorSubs';
+import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor, abaLabelCompleto } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
 
 
@@ -70,7 +70,7 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
       categoria: 'Sub-indicador',
       subTitulo: sub.titulo,
       subAnchor: getSubIndicadorAnchor(umbrella?.codigo || sub.codigo, sub.sub),
-      abas: abasDoSub(sub).map((a) => ({ label: a.abaLabel, tabValue: a.tabValue })),
+      abas: abasDoSub(sub).map((a) => ({ label: abaLabelCompleto(a), tabValue: a.tabValue, subTab: (a as any).subTab })),
     });
   });
 
@@ -170,6 +170,12 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
       return;
     }
     onNavigateTab?.(alvo.tabValue);
+    // Sub-aba (ex.: Grupos Focais › Direitos Territoriais): avisa a aba filha.
+    if ((alvo as any).subTab) {
+      [0, 250].forEach((d) => window.setTimeout(() => window.dispatchEvent(
+        new CustomEvent('estatisticas-subtab', { detail: { tabValue: alvo.tabValue, subTab: (alvo as any).subTab } })
+      ), d));
+    }
     // Sub-indicador em aba temática: localiza pelo TÍTULO do bloco (o código
     // do guarda-chuva apontaria para o título-mãe, não para o gráfico).
     const irPorSub = !!result.subTitulo && alvo.tabValue !== 'indicadores-db';
