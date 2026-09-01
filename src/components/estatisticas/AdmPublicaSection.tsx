@@ -693,7 +693,7 @@ export function AdmPublicaSection() {
                 sub="ingresso por cotas nas universidades federais"
               />
             </CardTitle>
-            <CardDescription>Crescimento de 493% no critério étnico-racial (2012→2022)</CardDescription>
+            <CardDescription>Crescimento de 284% no critério étnico-racial (2012→2022)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
