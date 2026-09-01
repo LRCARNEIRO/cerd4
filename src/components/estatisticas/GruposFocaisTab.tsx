@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { EstimativaBadge } from '@/components/ui/estimativa-badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +54,20 @@ function FonteInfo({ fonte, tabela, link, atualizacao }: { fonte: string; tabela
 // Auditado manualmente em 17/03/2026
 
 export function GruposFocaisTab() {
+  // Sub-aba controlada por deep-link (?sub=territoriais) e pela busca.
+  const [subTab, setSubTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'serie-temporal';
+    const v = new URLSearchParams(window.location.search).get('sub');
+    return v && ['serie-temporal', 'territoriais', 'vulnerabilidade', 'lacunas'].includes(v) ? v : 'serie-temporal';
+  });
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const d = (e as CustomEvent).detail;
+      if (d?.tabValue === 'grupos-focais' && d?.subTab) setSubTab(d.subTab);
+    };
+    window.addEventListener('estatisticas-subtab', handler);
+    return () => window.removeEventListener('estatisticas-subtab', handler);
+  }, []);
   const { data: lacunas } = useLacunasIdentificadas();
   const { data: stats } = useLacunasStats();
   const { gruposFocaisData, dadosTerritoriais, indicadoresVulnerabilidade, gfSource, gfCount, bdOverlayCount, totalOverlaySources } = useGruposFocaisData();
@@ -275,7 +290,7 @@ export function GruposFocaisTab() {
         </Card>
       </div>
 
-      <Tabs defaultValue="serie-temporal" className="w-full">
+      <Tabs value={subTab} onValueChange={setSubTab} className="w-full">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
           <TabsTrigger value="serie-temporal" className="gap-1">📈 Série Temporal</TabsTrigger>
           <TabsTrigger value="territoriais" className="gap-1">Direitos Territoriais</TabsTrigger>
