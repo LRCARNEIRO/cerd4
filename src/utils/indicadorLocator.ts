@@ -25,6 +25,8 @@ export interface AbaLocalizacao {
   canonica?: boolean;
   /** quando a exibição não é uma aba de /estatisticas, e sim outra página */
   href?: string;
+  /** sub-aba interna da aba principal (ex.: 'territoriais' em Grupos Focais) */
+  subTab?: string;
 }
 
 export const ABA_ESPELHO: AbaLocalizacao = {
