@@ -13,7 +13,7 @@
  */
 
 
-import { abasDoSub, getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+import { abasDoSub, getSubsForGuardaChuva, abaLabelCompleto } from '@/utils/indicadorSubs';
 import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
 
 
@@ -142,7 +142,7 @@ export function abasDoIndicador(
   // 2) Blocos visuais cadastrados (sub-indicadores) do próprio registro.
   const subs = nome ? getSubsForGuardaChuva(nome) : [];
   if (subs.length) {
-    subs.forEach(s => abasDoSub(s).forEach(a => push({ label: a.abaLabel, tabValue: a.tabValue })));
+    subs.forEach(s => abasDoSub(s).forEach(a => push({ label: abaLabelCompleto(a), tabValue: a.tabValue, subTab: (a as any).subTab })));
     return out;
   }
 
