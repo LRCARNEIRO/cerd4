@@ -17,6 +17,7 @@ export const NEGATIVE_INDICATOR_TERMS: string[] = [
   'auto de resistência', 'intervenção policial',
   'sem banheiro', 'sem esgoto', 'sem água', 'sem coleta', 'sem saneamento',
   'inadequa', 'precari', 'informalidade', 'trabalho informal', 'subutiliza',
+  'internaç', 'hospitaliza', 'adoecimento',
   'fome', 'desnutrição', 'gravidez na adolescência', 'reprova', 'defasagem',
   'sem instrução', 'nem-nem', 'despejo', 'remoção forçada', 'conflito',
 ];
