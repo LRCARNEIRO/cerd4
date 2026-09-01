@@ -268,7 +268,7 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-014', guardaChuva: 'População quilombola por região — Censo 2022', sub: 'quilombolas por uf', titulo: 'População Quilombola por UF — Censo 2022', tabValue: 'complemento-cerd3', abaLabel: 'Complemento CERD III' },
   // ── Cotas Raciais (Adm Pública) — registro canônico IND-211 ──
   { codigo: 'IND-211', guardaChuva: 'Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior', sub: 'cotas no serviço público federal', titulo: 'Cotas Raciais no Serviço Público Federal', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Lei 12.990/2014 → Lei 15.142/2025'] },
-  { codigo: 'IND-211', guardaChuva: 'Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior', sub: 'ingresso por cotas nas universidades federais', titulo: 'Ingresso por Cotas Raciais em Universidades Federais', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Crescimento de 493% no critério étnico-racial (2012→2022)'] },
+  { codigo: 'IND-211', guardaChuva: 'Cotas Raciais — Ações Afirmativas no Serviço Público e Educação Superior', sub: 'ingresso por cotas nas universidades federais', titulo: 'Ingresso por Cotas Raciais em Universidades Federais', tabValue: 'adm-publica', abaLabel: 'Adm Pública', aliases: ['Crescimento de 284% no critério étnico-racial (2012→2022)'] },
   // ── v24: granularidade por DADO (cada número/gráfico ganha seu próprio selo) ──
   // COVID › Estudo Peres et al. (2021) — IND-212
   { codigo: 'IND-212', guardaChuva: 'Acesso a UTI e mortalidade hospitalar COVID por raça — Peres et al. (2021)', sub: 'acesso a uti e ventilação invasiva', titulo: 'Acesso a UTI e Ventilação Invasiva por Raça', tabValue: 'covid-racial', abaLabel: 'COVID' },

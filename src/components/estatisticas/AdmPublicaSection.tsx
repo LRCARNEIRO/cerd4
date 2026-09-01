@@ -693,15 +693,15 @@ export function AdmPublicaSection() {
                 sub="ingresso por cotas nas universidades federais"
               />
             </CardTitle>
-            <CardDescription>Crescimento de 493% no critério étnico-racial (2012→2022)</CardDescription>
+            <CardDescription>Crescimento de 284% no critério étnico-racial (2012→2022)</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={[
-                    { ano: '2012', total: 40661, racial: 12425 },
-                    { ano: '2022', total: 108616, racial: 73679 },
+                    { ano: '2012', total: 40661, racial: 14422 },
+                    { ano: '2022', total: 108616, racial: 55371 },
                   ]} 
                   margin={{ left: 10, right: 20 }}
                 >
@@ -732,12 +732,13 @@ export function AdmPublicaSection() {
               </p>
               <p className="text-xs flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-chart-1" />
-                <strong>Étnico-racial:</strong> 12.425 → 73.679 (+493%)
+                <strong>Étnico-racial:</strong> 14.422 → 55.371 (+284%)
               </p>
             </div>
             <AuditFooter 
               fontes={[
-                { nome: 'INEP — Censo Educação Superior', url: 'https://www.gov.br/inep/pt-br/assuntos/noticias/censo-da-educacao-superior/ingresso-por-cotas-aumentou-167-nas-universidades' },
+                { nome: 'Microdados do Censo da Educação Superior 2012 — Inep', url: 'https://download.inep.gov.br/microdados/microdados_censo_da_educacao_superior_2012.zip' },
+                { nome: 'Apresentação oficial dos resultados do Censo da Educação Superior 2022 — Inep', url: 'https://download.inep.gov.br/educacao_superior/censo_superior/documentos/2022/apresentacao_censo_da_educacao_superior_2022.pdf' },
               ]} 
               documentos={['CERD Observações Finais 2022', 'Recomendações Gerais (RGs)']} 
               compact 
