@@ -27,10 +27,32 @@ export const DUPLICATAS: Record<string, string> = {
   'IND-210': 'IND-205', // Composição racial do Judiciário — magistrados e servidores
 };
 
-/** true quando o código é duplicata de outro registro já visível em aba. */
+/**
+ * Registros CONSOLIDADOS: recortes de raça/território que deixaram de ser
+ * indicadores independentes e passaram a ser subindicadores do guarda-chuva
+ * temático (Censo 2022 — infraestrutura domiciliar). Ficam fora da busca e
+ * do inventário; o dado continua visível na tabela, sob o código do pai.
+ */
+export const CONSOLIDADOS: Record<string, string> = {
+  // Rede geral de água → IND-137
+  'IND-155': 'IND-137', 'IND-143': 'IND-137', 'IND-148': 'IND-137',
+  'IND-140': 'IND-137', 'IND-133': 'IND-137', 'IND-136': 'IND-137',
+  // Esgotamento sanitário adequado → IND-150
+  'IND-149': 'IND-150', 'IND-157': 'IND-150', 'IND-147': 'IND-150',
+  'IND-156': 'IND-150', 'IND-138': 'IND-150', 'IND-141': 'IND-150',
+  // Coleta de lixo → IND-145
+  'IND-144': 'IND-145', 'IND-151': 'IND-145', 'IND-142': 'IND-145',
+  'IND-134': 'IND-145', 'IND-139': 'IND-145', 'IND-135': 'IND-145',
+  // Sem banheiro de uso exclusivo → IND-153
+  'IND-154': 'IND-153', 'IND-164': 'IND-153', 'IND-165': 'IND-153',
+  'IND-158': 'IND-153', 'IND-163': 'IND-153', 'IND-166': 'IND-153',
+};
+
+/** true quando o código é duplicata/consolidado de outro registro visível. */
 export function isDuplicata(codigo?: string | null): boolean {
-  return !!codigo && codigo in DUPLICATAS;
+  return !!codigo && (codigo in DUPLICATAS || codigo in CONSOLIDADOS);
 }
+
 
 const ALIASES_NORM = new Map(Object.entries(ALIASES).map(([k, v]) => [norm(k), v]));
 
