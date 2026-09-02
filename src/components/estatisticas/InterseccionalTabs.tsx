@@ -921,7 +921,7 @@ export function DeficienciaTab() {
             </div>
             <div className="mt-3 p-3 bg-muted rounded-lg">
               <p className="text-xs">
-                <strong>Disparidade ocupacional (14-59 anos):</strong> PcD pardas têm a maior taxa de ocupação (61,7%) vs PcD pretas (49,6%) e brancas (44,7%).
+                <strong>Disparidade ocupacional (14-59 anos):</strong> PcD pretas têm a maior taxa de ocupação (49,6%) vs PcD brancas (44,7%) e pardas (41,0%).
                 Prevalência de deficiência: Preta 6,8%, Parda 6,7%, Branca 5,5%. Fonte: SIDRA 9354, PNAD Contínua 2022.
               </p>
             </div>
