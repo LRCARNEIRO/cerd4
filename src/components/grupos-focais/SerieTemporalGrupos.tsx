@@ -194,19 +194,19 @@ function buildIndicadores(
       metodologia: 'Índice de Vulnerabilidade Juvenil à Violência — razão entre taxas de homicídio de jovens negros e não negros (ensino fundamental incompleto). Jovens negros c/ ensino superior: até 3x maior risco (2021).',
     },
     {
-      nome: 'Encarceramento juvenil negro (%)',
+      nome: 'População carcerária negra (%)',
       codigo: 'IND-197',
       guardaChuva: 'População carcerária por raça/cor',
-      sub: 'encarceramento juvenil negro',
+      sub: 'população carcerária negra',
       grupo: 'juventude_negra',
       dados: [
-        { ano: 2018, valor: 64.0 },
+        { ano: 2018, valor: 66.0 },
         { ano: 2024, valor: 68.7 },
       ],
       unidade: '%',
-      fonte: '19º Anuário FBSP 2025',
+      fonte: '19º Anuário FBSP 2025, Tabela 128, p. 379-380',
       interpretacao: 'menor_melhor',
-      metodologia: 'Percentual de jovens negros na população carcerária. Brancos: 29,9% (2024). Medidas socioeducativas: 74,2% negros vs 25,1% brancos.',
+      metodologia: 'Percentual de negros na população carcerária. Brancos: 29,9% (2024). Medidas socioeducativas: 74,2% negros vs 25,1% brancos.',
     },
   ];
 
