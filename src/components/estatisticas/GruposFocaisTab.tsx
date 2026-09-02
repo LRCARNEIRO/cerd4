@@ -637,23 +637,27 @@ export function GruposFocaisTab() {
                     <tbody>
                       {[
                         {
-                          rotulo: 'Rede geral de água',
-                          base: 'Rede geral de água',
+                          rotulo: 'Domicílios com rede geral de água (%)',
+                          base: 'Domicílios com rede geral de água (%) — Censo 2022',
+                          codigo: 'IND-137',
                           valores: ['82,9%', '37,67%', '8,54%', '35,98%', '58,14%', '13,86%', '69,63%*'],
                         },
                         {
-                          rotulo: 'Esgoto adequado',
-                          base: 'Esgoto adequado',
+                          rotulo: 'Domicílios com esgotamento sanitário adequado (%)',
+                          base: 'Domicílios com esgotamento sanitário adequado (%) — Censo 2022',
+                          codigo: 'IND-150',
                           valores: ['75,74%', '36,33%', '7,61%', '31,23%', '35,47%', '4,01%', '29,47%'],
                         },
                         {
-                          rotulo: 'Coleta de lixo',
-                          base: 'Coleta de lixo',
+                          rotulo: 'Domicílios com coleta de lixo (%)',
+                          base: 'Domicílios com coleta de lixo (%) — Censo 2022',
+                          codigo: 'IND-145',
                           valores: ['90,9%', '41,19%', '9,24%', '39,79%', '55,27%', '5,09%', '51,28%'],
                         },
                         {
-                          rotulo: 'Sem banheiro',
-                          base: 'Sem banheiro',
+                          rotulo: 'Domicílios sem banheiro de uso exclusivo (%)',
+                          base: 'Domicílios sem banheiro de uso exclusivo (%) — Censo 2022',
+                          codigo: 'IND-153',
                           valores: ['0,59%', '0,08%', '0,06%', '0,36%', '10,93%', '9,37%', '70,53%'],
                         },
                       ].map((linha, li, arr) => {
@@ -665,12 +669,13 @@ export function GruposFocaisTab() {
                             {grupos.map((grupo, gi) => (
                               <td key={grupo} className={`text-center py-2 px-3 align-top ${cor[gi]}`}>
                                 <span className="block">{linha.valores[gi]}</span>
-                                <IndCodeBadge nome={`${linha.base} — ${grupo}`} className="mt-1" />
+                                <IndCodeBadge nome={linha.base} codigo={linha.codigo} sub={grupo.toLowerCase()} className="mt-1" />
                               </td>
                             ))}
                           </tr>
                         );
                       })}
+
                     </tbody>
 
                   </table>
