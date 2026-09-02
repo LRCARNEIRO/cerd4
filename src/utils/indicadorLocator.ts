@@ -81,8 +81,8 @@ export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   ...Object.fromEntries(LEGADOS_RACA_GENERO.map(c => [c, [RACA_GENERO]])),
   ...Object.fromEntries(LEGADOS_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
   // Blocos que passaram a exibir selo próprio
-  // Tabela "Infraestrutura Domiciliar por Grupo Racial" vive na sub-aba Direitos Territoriais
-  ...Object.fromEntries(SANEAMENTO_GRUPOS_FOCAIS.map(c => [c, [{ ...GRUPOS_FOCAIS, label: 'Grupos Focais › Direitos Territoriais', subTab: 'territoriais' }]])),
+  // (saneamento: resolvido por subindicadores em Grupos Focais › Direitos Territoriais)
+
   ...Object.fromEntries(POPULACAO_GRUPOS_FOCAIS.map(c => [c, [GRUPOS_FOCAIS]])),
   'IND-111': [DEFICIENCIA],
   'IND-124': [SEGURANCA_SAUDE_EDUCACAO],
