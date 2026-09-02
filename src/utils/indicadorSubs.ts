@@ -313,6 +313,88 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-213', guardaChuva: 'Mobilidade social intergeracional e concentração de renda por raça', sub: 'concentração de riqueza no 1% mais rico', titulo: '1% mais rico detém', tabValue: 'classe', abaLabel: 'Classe Social' },
 ];
 
+// ── Grupos Focais › Direitos Territoriais ─────────────────────────────
+// Tabela "Infraestrutura Domiciliar por Grupo Racial — Censo 2022".
+// Consolidação metodológica: raça/território são RECORTES, não indicadores
+// novos. Cada família de saneamento passa a ter UM guarda-chuva congelado e
+// os 7 grupos viram subindicadores dele (o código antigo de cada recorte
+// permanece registrado como consolidado, fora do rol de evidências).
+const SANEAMENTO_FAMILIAS: Array<{ codigo: string; guardaChuva: string; rotulo: string; antigos: Record<string, string> }> = [
+  {
+    codigo: 'IND-137',
+    guardaChuva: 'Domicílios com rede geral de água (%) — Censo 2022',
+    rotulo: 'Domicílios com rede geral de água (%)',
+    antigos: {
+      nacional: 'Rede geral de água — Nacional',
+      brancos: 'Rede geral de água — Brancos',
+      pretos: 'Rede geral de água — Pretos',
+      pardos: 'Rede geral de água — Pardos',
+      'indígenas (total)': 'Rede geral de água — Indígenas (total)',
+      'indígenas (tis)': 'Rede geral de água — Indígenas (TIs)',
+      quilombolas: 'Rede geral de água — Quilombolas',
+    },
+  },
+  {
+    codigo: 'IND-150',
+    guardaChuva: 'Domicílios com esgotamento sanitário adequado (%) — Censo 2022',
+    rotulo: 'Domicílios com esgotamento sanitário adequado (%)',
+    antigos: {
+      nacional: 'Esgoto adequado — Nacional',
+      brancos: 'Esgoto adequado — Brancos',
+      pretos: 'Esgoto adequado — Pretos',
+      pardos: 'Esgoto adequado — Pardos',
+      'indígenas (total)': 'Esgoto adequado — Indígenas (total)',
+      'indígenas (tis)': 'Esgoto adequado — Indígenas (TIs)',
+      quilombolas: 'Esgoto adequado — Quilombolas',
+    },
+  },
+  {
+    codigo: 'IND-145',
+    guardaChuva: 'Domicílios com coleta de lixo (%) — Censo 2022',
+    rotulo: 'Domicílios com coleta de lixo (%)',
+    antigos: {
+      nacional: 'Coleta de lixo — Nacional',
+      brancos: 'Coleta de lixo — Brancos',
+      pretos: 'Coleta de lixo — Pretos',
+      pardos: 'Coleta de lixo — Pardos',
+      'indígenas (total)': 'Coleta de lixo — Indígenas (total)',
+      'indígenas (tis)': 'Coleta de lixo — Indígenas (TIs)',
+      quilombolas: 'Coleta de lixo — Quilombolas',
+    },
+  },
+  {
+    codigo: 'IND-153',
+    guardaChuva: 'Domicílios sem banheiro de uso exclusivo (%) — Censo 2022',
+    rotulo: 'Domicílios sem banheiro de uso exclusivo (%)',
+    antigos: {
+      nacional: 'Sem banheiro — Nacional',
+      brancos: 'Sem banheiro — Brancos',
+      pretos: 'Sem banheiro — Pretos',
+      pardos: 'Sem banheiro — Pardos',
+      'indígenas (total)': 'Sem banheiro — Indígenas (total)',
+      'indígenas (tis)': 'Sem banheiro — Indígenas (TIs)',
+      quilombolas: 'Sem banheiro — Quilombolas',
+    },
+  },
+];
+
+for (const familia of SANEAMENTO_FAMILIAS) {
+  for (const [grupo, nomeAntigo] of Object.entries(familia.antigos)) {
+    SUB_INDICADORES.push({
+      codigo: familia.codigo,
+      guardaChuva: familia.guardaChuva,
+      sub: grupo,
+      titulo: `${familia.rotulo} — ${grupo.replace(/^./, (c) => c.toUpperCase())}`,
+      tabValue: 'grupos-focais',
+      abaLabel: 'Grupos Focais',
+      subTab: 'territoriais',
+      subTabLabel: 'Direitos Territoriais',
+      aliases: [nomeAntigo],
+    });
+  }
+}
+
+
 
 // Blocos já cadastrados em outra aba que TAMBÉM são exibidos em Grupos Focais
 // (Série Temporal). Reexibição não cria código nem entrada nova — só amplia a
