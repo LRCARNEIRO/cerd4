@@ -274,11 +274,45 @@ export function EvidenceInventoryReport() {
 
   const [generating, setGenerating] = useState<string | null>(null);
 
+  // Rol canônico de evidências estatísticas (mesma regra da Busca e da planilha v27):
+  // guarda-chuvas SEM subindicadores e sem duplicatas/consolidados + todos os subindicadores.
+  const evidEstatistica = useMemo<EvidEstatistica[]>(() => {
+    const all = indicadores || [];
+    const umbrellas = all
+      .filter(i => !hasSubIndicadores(i.nome) && !isDuplicata(i.codigo))
+      .map(i => ({
+        key: i.id,
+        codigo: i.codigo || '',
+        titulo: i.nome,
+        detalhe: i.subcategoria || '—',
+        fonte: i.fonte || '',
+        tendencia: i.tendencia || '—',
+        artigos: (i.artigos_convencao || []).join(', ') || '—',
+        categoria: i.categoria || 'outros',
+        searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
+      }));
+    const subs = SUB_INDICADORES.map(s => {
+      const umbrella = all.find(i => i.nome === s.guardaChuva);
+      return {
+        key: `sub-${s.codigo}-${s.sub}`,
+        codigo: `${s.codigo} · sub`,
+        titulo: s.titulo,
+        detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
+        fonte: umbrella?.fonte || '',
+        tendencia: '—',
+        artigos: (umbrella?.artigos_convencao || []).join(', ') || '—',
+        categoria: s.abaLabel || 'outros',
+        searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),
+      };
+    });
+    return [...umbrellas, ...subs];
+  }, [indicadores]);
+
   const handleExport = async (format: 'html' | 'docx') => {
     setGenerating(format);
     const previewWindow = format === 'html' ? prepareHtmlPreview('Inventario-3-Bases-Evidencias') : null;
     try {
-      const html = generateEvidenceInventoryHTML(indicadores || [], normativos || [], orcamento || [], recomendacoes || []);
+      const html = generateEvidenceInventoryHTML(evidEstatistica, normativos || [], orcamento || [], recomendacoes || []);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Inventario-3-Bases-Evidencias-CERD-IV');
       } else {
@@ -308,8 +342,8 @@ export function EvidenceInventoryReport() {
         </p>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{indicadores?.length || 0}</p>
-            <p className="text-xs text-muted-foreground">Indicadores</p>
+            <p className="text-lg font-bold text-foreground">{evidEstatistica.length}</p>
+            <p className="text-xs text-muted-foreground">Estatísticas (guarda-chuvas + subs)</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
             <p className="text-lg font-bold text-foreground">{normativos?.length || 0}</p>
