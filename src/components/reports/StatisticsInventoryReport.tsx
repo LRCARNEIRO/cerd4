@@ -509,10 +509,10 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 <h2>Resumo Executivo</h2>
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">Tabelas CC</div></div>
   <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">Indicadores BD</div></div>
   <div class="stat-card"><div class="value">${Object.keys(bdCategorias).length}</div><div class="label">Categorias</div></div>
 </div>
+
 
 <div class="footer">
   <p>📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}</p>
