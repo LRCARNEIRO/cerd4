@@ -84,9 +84,9 @@ function generateEvidenceInventoryHTML(
   }));
   const orcRecMap = computeReverseMap(recomendacoes, orcItems);
 
-  // ── Indicadores por categoria
-  const indPorCat: Record<string, any[]> = {};
-  indicadores.forEach(i => {
+  // ── Evidências estatísticas (guarda-chuvas vinculáveis + subindicadores)
+  const indPorCat: Record<string, EvidEstatistica[]> = {};
+  evidEstatistica.forEach(i => {
     const cat = i.categoria || 'outros';
     if (!indPorCat[cat]) indPorCat[cat] = [];
     indPorCat[cat].push(i);
@@ -97,19 +97,19 @@ function generateEvidenceInventoryHTML(
     .sort((a, b) => b[1].length - a[1].length)
     .map(([cat, items]) => {
       const rows = items.map(i => {
-        const artigos = (i.artigos_convencao || []).join(', ') || '—';
-        const recs = (indRecMap.get(i.id) || []).join(', ') || '—';
+        const recs = (indRecMap.get(i.key) || []).join(', ') || '—';
         return `<tr>
-          <td>${i.nome}</td>
-          <td>${i.subcategoria || '—'}</td>
-          <td>${i.fonte}</td>
-          <td>${i.tendencia || '—'}</td>
-          <td style="font-family:monospace;font-size:9px">${artigos}</td>
+          <td style="font-family:monospace;font-size:9px;white-space:nowrap">${i.codigo || '—'}</td>
+          <td>${i.titulo}</td>
+          <td>${i.detalhe}</td>
+          <td>${i.fonte || '—'}</td>
+          <td>${i.tendencia}</td>
+          <td style="font-family:monospace;font-size:9px">${i.artigos}</td>
           <td style="font-size:9px">${recs}</td>
         </tr>`;
       }).join('');
       return `<h3>${catLabel(cat)} (${items.length})</h3>
-      <table><tr><th>Indicador</th><th>Subcategoria</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
+      <table><tr><th>Código</th><th>Evidência</th><th>Detalhe</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
       ${rows}</table>`;
     }).join('');
 
