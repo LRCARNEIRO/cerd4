@@ -200,22 +200,10 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
     cultura_patrimonio: 'Cultura e Patrimônio', habitacao: 'Habitação',
   };
 
-  // Common Core categories
-  const ccCategorias = [
-    { nome: 'Demográficas', tabelas: tabelasDemograficas },
-    { nome: 'Econômicas', tabelas: tabelasEconomicas },
-    { nome: 'Educação', tabelas: tabelasEducacao },
-    { nome: 'Saúde', tabelas: tabelasSaude },
-    { nome: 'Trabalho', tabelas: tabelasTrabalho },
-    { nome: 'Pobreza', tabelas: tabelasPobreza },
-    { nome: 'Segurança', tabelas: tabelasSeguranca },
-    { nome: 'Habitação', tabelas: tabelasHabitacao },
-    { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
-  ];
-
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Relatório Completo — Base Estatística CERD IV</title>
