@@ -257,10 +257,10 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
   <div class="stat-card"><div class="value">${indicadoresBDUnicos.length}</div><div class="label">INDICADORES BD (exclusivos)</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
 </div>
+
 
 <!-- ═══════════════════════════════════════ -->
 <h2>1. DADOS GERAIS — Demografia e Indicadores Socioeconômicos</h2>
