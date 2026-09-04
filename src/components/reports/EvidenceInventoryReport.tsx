@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ClipboardList, Loader2, Printer, FileDown } from 'lucide-react';
@@ -9,7 +9,22 @@ import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolba
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
 import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
 import { inferArtigosOrcamento } from '@/utils/artigosConvencao';
+import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
+import { isDuplicata } from '@/utils/indicadorAliases';
 import { toast } from 'sonner';
+
+/** Entrada unificada da Base Estatística no inventário: guarda-chuva ou subindicador. */
+type EvidEstatistica = {
+  key: string;
+  codigo: string;
+  titulo: string;
+  detalhe: string;
+  fonte: string;
+  tendencia: string;
+  artigos: string;
+  categoria: string;
+  searchText: string;
+};
 
 type Rec = {
   paragrafo: string;
@@ -46,7 +61,7 @@ function computeReverseMap(
 }
 
 function generateEvidenceInventoryHTML(
-  indicadores: any[],
+  evidEstatistica: EvidEstatistica[],
   normativos: any[],
   orcamento: any[],
   recomendacoes: Rec[],
@@ -54,10 +69,7 @@ function generateEvidenceInventoryHTML(
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Pre-compute reverse recommendation mappings
-  const indItems = indicadores.map(i => ({
-    id: i.id,
-    text: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' ')
-  }));
+  const indItems = evidEstatistica.map(i => ({ id: i.key, text: i.searchText }));
   const indRecMap = computeReverseMap(recomendacoes, indItems);
 
   const normItems = normativos.map(n => ({
@@ -72,9 +84,9 @@ function generateEvidenceInventoryHTML(
   }));
   const orcRecMap = computeReverseMap(recomendacoes, orcItems);
 
-  // ── Indicadores por categoria
-  const indPorCat: Record<string, any[]> = {};
-  indicadores.forEach(i => {
+  // ── Evidências estatísticas (guarda-chuvas vinculáveis + subindicadores)
+  const indPorCat: Record<string, EvidEstatistica[]> = {};
+  evidEstatistica.forEach(i => {
     const cat = i.categoria || 'outros';
     if (!indPorCat[cat]) indPorCat[cat] = [];
     indPorCat[cat].push(i);
@@ -85,19 +97,19 @@ function generateEvidenceInventoryHTML(
     .sort((a, b) => b[1].length - a[1].length)
     .map(([cat, items]) => {
       const rows = items.map(i => {
-        const artigos = (i.artigos_convencao || []).join(', ') || '—';
-        const recs = (indRecMap.get(i.id) || []).join(', ') || '—';
+        const recs = (indRecMap.get(i.key) || []).join(', ') || '—';
         return `<tr>
-          <td>${i.nome}</td>
-          <td>${i.subcategoria || '—'}</td>
-          <td>${i.fonte}</td>
-          <td>${i.tendencia || '—'}</td>
-          <td style="font-family:monospace;font-size:9px">${artigos}</td>
+          <td style="font-family:monospace;font-size:9px;white-space:nowrap">${i.codigo || '—'}</td>
+          <td>${i.titulo}</td>
+          <td>${i.detalhe}</td>
+          <td>${i.fonte || '—'}</td>
+          <td>${i.tendencia}</td>
+          <td style="font-family:monospace;font-size:9px">${i.artigos}</td>
           <td style="font-size:9px">${recs}</td>
         </tr>`;
       }).join('');
       return `<h3>${catLabel(cat)} (${items.length})</h3>
-      <table><tr><th>Indicador</th><th>Subcategoria</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
+      <table><tr><th>Código</th><th>Evidência</th><th>Detalhe</th><th>Fonte</th><th>Tendência</th><th>Artigos ICERD</th><th>Recomendações Vinculadas</th></tr>
       ${rows}</table>`;
     }).join('');
 
@@ -212,7 +224,7 @@ ${getExportToolbarHTML('Inventario-3-Bases-Evidencias-CERD-IV')}
 </div>
 
 <div class="stats-grid">
-<div class="stat-card"><div class="value">${indicadores.length}</div><div class="label">INDICADORES (Base Estatística)</div></div>
+<div class="stat-card"><div class="value">${evidEstatistica.length}</div><div class="label">EVIDÊNCIAS ESTATÍSTICAS (guarda-chuvas + subindicadores)</div></div>
 <div class="stat-card"><div class="value">${normativos.length}</div><div class="label">NORMATIVOS (Base Normativa)</div></div>
 <div class="stat-card"><div class="value">${orcamento.length}</div><div class="label">REGISTROS ORÇAMENTÁRIOS (Base Orçamentária)</div></div>
 </div>
@@ -224,7 +236,7 @@ Para Normativos, são exibidas tanto as recomendações cadastradas manualmente 
 </div>
 
 <!-- ═══════════ BASE ESTATÍSTICA ═══════════ -->
-<h2>1. BASE ESTATÍSTICA — Indicadores Interseccionais (${indicadores.length})</h2>
+<h2>1. BASE ESTATÍSTICA — Guarda-chuvas vinculáveis + Subindicadores (${evidEstatistica.length})</h2>
 ${indRows}
 
 <!-- ═══════════ BASE NORMATIVA ═══════════ -->
@@ -262,11 +274,45 @@ export function EvidenceInventoryReport() {
 
   const [generating, setGenerating] = useState<string | null>(null);
 
+  // Rol canônico de evidências estatísticas (mesma regra da Busca e da planilha v27):
+  // guarda-chuvas SEM subindicadores e sem duplicatas/consolidados + todos os subindicadores.
+  const evidEstatistica = useMemo<EvidEstatistica[]>(() => {
+    const all = indicadores || [];
+    const umbrellas = all
+      .filter(i => !hasSubIndicadores(i.nome) && !isDuplicata(i.codigo))
+      .map(i => ({
+        key: i.id,
+        codigo: i.codigo || '',
+        titulo: i.nome,
+        detalhe: i.subcategoria || '—',
+        fonte: i.fonte || '',
+        tendencia: i.tendencia || '—',
+        artigos: ((i as any).artigos_convencao || []).join(', ') || '—',
+        categoria: i.categoria || 'outros',
+        searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
+      }));
+    const subs = SUB_INDICADORES.map(s => {
+      const umbrella = all.find(i => i.nome === s.guardaChuva);
+      return {
+        key: `sub-${s.codigo}-${s.sub}`,
+        codigo: `${s.codigo} · sub`,
+        titulo: s.titulo,
+        detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
+        fonte: umbrella?.fonte || '',
+        tendencia: '—',
+        artigos: ((umbrella as any)?.artigos_convencao || []).join(', ') || '—',
+        categoria: s.abaLabel || 'outros',
+        searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),
+      };
+    });
+    return [...umbrellas, ...subs];
+  }, [indicadores]);
+
   const handleExport = async (format: 'html' | 'docx') => {
     setGenerating(format);
     const previewWindow = format === 'html' ? prepareHtmlPreview('Inventario-3-Bases-Evidencias') : null;
     try {
-      const html = generateEvidenceInventoryHTML(indicadores || [], normativos || [], orcamento || [], recomendacoes || []);
+      const html = generateEvidenceInventoryHTML(evidEstatistica, normativos || [], orcamento || [], recomendacoes || []);
       if (format === 'docx') {
         await downloadAsDocx(html, 'Inventario-3-Bases-Evidencias-CERD-IV');
       } else {
@@ -296,8 +342,8 @@ export function EvidenceInventoryReport() {
         </p>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{indicadores?.length || 0}</p>
-            <p className="text-xs text-muted-foreground">Indicadores</p>
+            <p className="text-lg font-bold text-foreground">{evidEstatistica.length}</p>
+            <p className="text-xs text-muted-foreground">Estatísticas (guarda-chuvas + subs)</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
             <p className="text-lg font-bold text-foreground">{normativos?.length || 0}</p>
