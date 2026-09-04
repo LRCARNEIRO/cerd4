@@ -485,20 +485,8 @@ ${arrayToHTMLTable(violenciaInterseccional, '')}
 <div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Adm. Pública</a> | Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
 
 <!-- ═══════════════════════════════════════ -->
-<h2>8. COMMON CORE — ${TOTAL_TABELAS_COMMON_CORE} Tabelas (HRI/CORE/BRA)</h2>
+<h2>8. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
 
-${ccCategorias.map(cat => `
-<h3>${cat.nome} (${cat.tabelas.length} tabelas)</h3>
-${cat.tabelas.map(t => `
-<div class="card">
-<h4>${t.numero}. ${t.titulo}</h4>
-<p class="meta">${t.fonte} | ${t.periodoAtualizado} | <span class="badge ${t.statusAtualizacao === 'atualizado' ? 'badge-green' : t.statusAtualizacao === 'parcial' ? 'badge-amber' : 'badge-red'}">${t.statusAtualizacao}</span></p>
-<table><thead><tr>${t.dados.headers.map((h: string) => `<th>${h}</th>`).join('')}</tr></thead>
-<tbody>${t.dados.rows.map((row: string[]) => `<tr>${row.map((c: string) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
-</div>`).join('')}`).join('')}
-
-<!-- ═══════════════════════════════════════ -->
-<h2>9. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
 
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
