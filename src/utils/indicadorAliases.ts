@@ -46,6 +46,9 @@ export const CONSOLIDADOS: Record<string, string> = {
   // Sem banheiro de uso exclusivo → IND-153
   'IND-154': 'IND-153', 'IND-164': 'IND-153', 'IND-165': 'IND-153',
   'IND-158': 'IND-153', 'IND-163': 'IND-153', 'IND-166': 'IND-153',
+  // Recortes "— Nacional": o dado nacional já é coluna da tabela canônica
+  // do guarda-chuva na aba Grupos Focais › Direitos Territoriais.
+  'IND-214': 'IND-137', 'IND-215': 'IND-150', 'IND-216': 'IND-145', 'IND-217': 'IND-153',
 };
 
 /** true quando o código é duplicata/consolidado de outro registro visível. */
