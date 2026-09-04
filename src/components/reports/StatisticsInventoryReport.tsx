@@ -978,7 +978,7 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
-  <p>Common Core (HRI/CORE/BRA) excluído por não ser apto como evidência de cumprimento (sem recorte racial).</p>
+  <p>Base composta apenas por indicadores aptos como evidência (com recorte racial e fonte oficial auditável).</p>
 </div>
 
 </body>
