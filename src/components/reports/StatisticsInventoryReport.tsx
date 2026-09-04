@@ -1084,9 +1084,10 @@ export function StatisticsInventoryReport() {
             <p className="text-xs text-muted-foreground">Registros totais</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{TOTAL_TABELAS_COMMON_CORE + 19 + 9}</p>
-            <p className="text-xs text-muted-foreground">Tabelas + Séries + Abas</p>
+            <p className="text-lg font-bold text-foreground">{19 + 9}</p>
+            <p className="text-xs text-muted-foreground">Séries + Abas</p>
           </div>
+
         </div>
 
         {/* Full report */}
