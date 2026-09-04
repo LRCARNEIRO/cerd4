@@ -578,18 +578,8 @@ function generateInventoryHTML(
 
   const totalSeriesRegistros = series.reduce((s, a) => s + a.registros, 0);
 
-  // Common Core tables by category
-  const ccCategorias = [
-    { nome: 'Demográficas', tabelas: tabelasDemograficas },
-    { nome: 'Econômicas', tabelas: tabelasEconomicas },
-    { nome: 'Educação', tabelas: tabelasEducacao },
-    { nome: 'Saúde', tabelas: tabelasSaude },
-    { nome: 'Trabalho', tabelas: tabelasTrabalho },
-    { nome: 'Pobreza', tabelas: tabelasPobreza },
-    { nome: 'Segurança', tabelas: tabelasSeguranca },
-    { nome: 'Habitação', tabelas: tabelasHabitacao },
-    { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
-  ];
+
+
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
