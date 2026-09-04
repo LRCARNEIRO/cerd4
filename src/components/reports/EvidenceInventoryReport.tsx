@@ -61,7 +61,7 @@ function computeReverseMap(
 }
 
 function generateEvidenceInventoryHTML(
-  indicadores: any[],
+  evidEstatistica: EvidEstatistica[],
   normativos: any[],
   orcamento: any[],
   recomendacoes: Rec[],
@@ -69,10 +69,7 @@ function generateEvidenceInventoryHTML(
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Pre-compute reverse recommendation mappings
-  const indItems = indicadores.map(i => ({
-    id: i.id,
-    text: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' ')
-  }));
+  const indItems = evidEstatistica.map(i => ({ id: i.key, text: i.searchText }));
   const indRecMap = computeReverseMap(recomendacoes, indItems);
 
   const normItems = normativos.map(n => ({
