@@ -287,7 +287,7 @@ export function EvidenceInventoryReport() {
         detalhe: i.subcategoria || '—',
         fonte: i.fonte || '',
         tendencia: i.tendencia || '—',
-        artigos: (i.artigos_convencao || []).join(', ') || '—',
+        artigos: ((i as any).artigos_convencao || []).join(', ') || '—',
         categoria: i.categoria || 'outros',
         searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
       }));
@@ -300,7 +300,7 @@ export function EvidenceInventoryReport() {
         detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
         fonte: umbrella?.fonte || '',
         tendencia: '—',
-        artigos: (umbrella?.artigos_convencao || []).join(', ') || '—',
+        artigos: ((umbrella as any)?.artigos_convencao || []).join(', ') || '—',
         categoria: s.abaLabel || 'outros',
         searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),
       };
