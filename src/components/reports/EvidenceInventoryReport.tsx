@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ClipboardList, Loader2, Printer, FileDown } from 'lucide-react';
@@ -9,7 +9,22 @@ import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolba
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
 import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
 import { inferArtigosOrcamento } from '@/utils/artigosConvencao';
+import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
+import { isDuplicata } from '@/utils/indicadorAliases';
 import { toast } from 'sonner';
+
+/** Entrada unificada da Base Estatística no inventário: guarda-chuva ou subindicador. */
+type EvidEstatistica = {
+  key: string;
+  codigo: string;
+  titulo: string;
+  detalhe: string;
+  fonte: string;
+  tendencia: string;
+  artigos: string;
+  categoria: string;
+  searchText: string;
+};
 
 type Rec = {
   paragrafo: string;
