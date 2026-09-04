@@ -224,7 +224,7 @@ ${getExportToolbarHTML('Inventario-3-Bases-Evidencias-CERD-IV')}
 </div>
 
 <div class="stats-grid">
-<div class="stat-card"><div class="value">${indicadores.length}</div><div class="label">INDICADORES (Base Estatística)</div></div>
+<div class="stat-card"><div class="value">${evidEstatistica.length}</div><div class="label">EVIDÊNCIAS ESTATÍSTICAS (guarda-chuvas + subindicadores)</div></div>
 <div class="stat-card"><div class="value">${normativos.length}</div><div class="label">NORMATIVOS (Base Normativa)</div></div>
 <div class="stat-card"><div class="value">${orcamento.length}</div><div class="label">REGISTROS ORÇAMENTÁRIOS (Base Orçamentária)</div></div>
 </div>
@@ -236,7 +236,7 @@ Para Normativos, são exibidas tanto as recomendações cadastradas manualmente 
 </div>
 
 <!-- ═══════════ BASE ESTATÍSTICA ═══════════ -->
-<h2>1. BASE ESTATÍSTICA — Indicadores Interseccionais (${indicadores.length})</h2>
+<h2>1. BASE ESTATÍSTICA — Guarda-chuvas vinculáveis + Subindicadores (${evidEstatistica.length})</h2>
 ${indRows}
 
 <!-- ═══════════ BASE NORMATIVA ═══════════ -->
