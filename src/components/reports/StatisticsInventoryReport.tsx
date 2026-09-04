@@ -38,19 +38,9 @@ import {
   evolucaoDesigualdade as hcEvolucaoDesigualdade,
   povosTradicionais as hcPovosTradicionais,
 } from '@/components/estatisticas/StatisticsData';
-import {
-  tabelasDemograficas,
-  tabelasEconomicas,
-  tabelasEducacao,
-  tabelasSaude,
-  tabelasTrabalho,
-  tabelasPobreza,
-  tabelasSeguranca,
-  tabelasHabitacao,
-  tabelasSistemaPolitico,
-} from '@/components/estatisticas/CommonCoreTab';
 import { TOTAL_DADOS_NOVOS, categoriasDadosNovos } from '@/components/estatisticas/DadosNovosTab';
-import { TOTAL_DADOS_ESTATISTICAS, TOTAL_TABELAS_COMMON_CORE, TOTAL_DADOS_COMMON_CORE } from '@/utils/countStatisticsIndicators';
+import { TOTAL_DADOS_ESTATISTICAS } from '@/utils/countStatisticsIndicators';
+
 import { prepareHtmlPreview } from '@/utils/reportPreview';
 import { toast } from 'sonner';
 
@@ -200,22 +190,10 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
     cultura_patrimonio: 'Cultura e Patrimônio', habitacao: 'Habitação',
   };
 
-  // Common Core categories
-  const ccCategorias = [
-    { nome: 'Demográficas', tabelas: tabelasDemograficas },
-    { nome: 'Econômicas', tabelas: tabelasEconomicas },
-    { nome: 'Educação', tabelas: tabelasEducacao },
-    { nome: 'Saúde', tabelas: tabelasSaude },
-    { nome: 'Trabalho', tabelas: tabelasTrabalho },
-    { nome: 'Pobreza', tabelas: tabelasPobreza },
-    { nome: 'Segurança', tabelas: tabelasSeguranca },
-    { nome: 'Habitação', tabelas: tabelasHabitacao },
-    { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
-  ];
-
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_COMMON_CORE + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Relatório Completo — Base Estatística CERD IV</title>
@@ -257,10 +235,10 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">TABELAS COMMON CORE</div></div>
   <div class="stat-card"><div class="value">${indicadoresBDUnicos.length}</div><div class="label">INDICADORES BD (exclusivos)</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
 </div>
+
 
 <!-- ═══════════════════════════════════════ -->
 <h2>1. DADOS GERAIS — Demografia e Indicadores Socioeconômicos</h2>
@@ -485,20 +463,8 @@ ${arrayToHTMLTable(violenciaInterseccional, '')}
 <div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Adm. Pública</a> | Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
 
 <!-- ═══════════════════════════════════════ -->
-<h2>8. COMMON CORE — ${TOTAL_TABELAS_COMMON_CORE} Tabelas (HRI/CORE/BRA)</h2>
+<h2>8. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
 
-${ccCategorias.map(cat => `
-<h3>${cat.nome} (${cat.tabelas.length} tabelas)</h3>
-${cat.tabelas.map(t => `
-<div class="card">
-<h4>${t.numero}. ${t.titulo}</h4>
-<p class="meta">${t.fonte} | ${t.periodoAtualizado} | <span class="badge ${t.statusAtualizacao === 'atualizado' ? 'badge-green' : t.statusAtualizacao === 'parcial' ? 'badge-amber' : 'badge-red'}">${t.statusAtualizacao}</span></p>
-<table><thead><tr>${t.dados.headers.map((h: string) => `<th>${h}</th>`).join('')}</tr></thead>
-<tbody>${t.dados.rows.map((row: string[]) => `<tr>${row.map((c: string) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
-</div>`).join('')}`).join('')}
-
-<!-- ═══════════════════════════════════════ -->
-<h2>9. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
 
 ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
 <h3>${catLabels[cat] || cat} (${inds.length})</h3>
@@ -509,10 +475,10 @@ ${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
 <h2>Resumo Executivo</h2>
 <div class="stats-grid">
   <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${TOTAL_TABELAS_COMMON_CORE}</div><div class="label">Tabelas CC</div></div>
   <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">Indicadores BD</div></div>
   <div class="stat-card"><div class="value">${Object.keys(bdCategorias).length}</div><div class="label">Categorias</div></div>
 </div>
+
 
 <div class="footer">
   <p>📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}</p>
@@ -578,18 +544,8 @@ function generateInventoryHTML(
 
   const totalSeriesRegistros = series.reduce((s, a) => s + a.registros, 0);
 
-  // Common Core tables by category
-  const ccCategorias = [
-    { nome: 'Demográficas', tabelas: tabelasDemograficas },
-    { nome: 'Econômicas', tabelas: tabelasEconomicas },
-    { nome: 'Educação', tabelas: tabelasEducacao },
-    { nome: 'Saúde', tabelas: tabelasSaude },
-    { nome: 'Trabalho', tabelas: tabelasTrabalho },
-    { nome: 'Pobreza', tabelas: tabelasPobreza },
-    { nome: 'Segurança', tabelas: tabelasSeguranca },
-    { nome: 'Habitação', tabelas: tabelasHabitacao },
-    { nome: 'Sistema Político', tabelas: tabelasSistemaPolitico },
-  ];
+
+
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
@@ -824,16 +780,12 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
   Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
   <br><br>
-  <strong>⚠️ Nota metodológica — Common Core:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
-  e <strong>não constam</strong> deste inventário, pois não são utilizáveis como evidência de cumprimento
-  de recomendações da ONU (não possuem desagregação racial comparável).
-  <br><br>
   <strong>🔢 Reconciliação de contagens:</strong> O painel <em>"Espelho Seguro"</em> da página <em>Estatísticas e Indicadores</em>
-  exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
-  (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
-  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
-  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
-  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
+  é apenas painel administrativo de curadoria e pode exibir um número maior de registros candidatos.
+  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui registros do tipo
+  "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
+  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Total apto: <strong>${totalGeral}</strong>.
+
 </div>
 
 <div class="stats-grid">
@@ -978,7 +930,7 @@ ${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([c
 
 <div class="footer">
   <p>📋 Inventário gerado pelo Sistema CERD IV — ${now}</p>
-  <p>Common Core (HRI/CORE/BRA) excluído por não ser apto como evidência de cumprimento (sem recorte racial).</p>
+  <p>Base composta apenas por indicadores aptos como evidência (com recorte racial e fonte oficial auditável).</p>
 </div>
 
 </body>
@@ -1075,8 +1027,9 @@ export function StatisticsInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
-          (séries, {TOTAL_TABELAS_COMMON_CORE} tabelas CC, {indicadoresBDUnicos.length} indicadores BD exclusivos, 
+          (séries, {indicadoresBDUnicos.length} indicadores BD exclusivos, 
           interseccionalidades, vulnerabilidades) ou o inventário resumido.
+
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
           <div className="p-2 bg-muted/50 rounded-lg">
@@ -1084,9 +1037,10 @@ export function StatisticsInventoryReport() {
             <p className="text-xs text-muted-foreground">Registros totais</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{TOTAL_TABELAS_COMMON_CORE + 19 + 9}</p>
-            <p className="text-xs text-muted-foreground">Tabelas + Séries + Abas</p>
+            <p className="text-lg font-bold text-foreground">{19 + 9}</p>
+            <p className="text-xs text-muted-foreground">Séries + Abas</p>
           </div>
+
         </div>
 
         {/* Full report */}
