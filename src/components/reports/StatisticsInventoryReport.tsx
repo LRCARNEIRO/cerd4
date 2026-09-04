@@ -824,16 +824,12 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   na Base Estatística do sistema (séries temporais, indicadores do banco de dados e dados novos auditáveis).
   Todos os dados seguem a <em>Regra de Ouro</em>: apenas fontes oficiais auditáveis e com recorte racial.
   <br><br>
-  <strong>⚠️ Nota metodológica — Common Core:</strong> as tabelas do <em>Common Core</em> (HRI/CORE/BRA) são contextuais
-  e <strong>não constam</strong> deste inventário, pois não são utilizáveis como evidência de cumprimento
-  de recomendações da ONU (não possuem desagregação racial comparável).
-  <br><br>
   <strong>🔢 Reconciliação de contagens:</strong> O painel <em>"Espelho Seguro"</em> da página <em>Estatísticas e Indicadores</em>
-  exibe um número maior (ex.: <strong>244 indicadores</strong>) — esse é o total de <em>candidatos à migração estático→BD</em>
-  (StatisticsData + Common Core + Adm Pública + COVID + Grupos Focais + Complemento CERD III).
-  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui Common Core,
-  exclui registros do tipo "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
-  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Por isso o <strong>${totalGeral}</strong> abaixo é menor que o número do painel de espelho.
+  é apenas painel administrativo de curadoria e pode exibir um número maior de registros candidatos.
+  Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui registros do tipo
+  "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
+  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Total apto: <strong>${totalGeral}</strong>.
+
 </div>
 
 <div class="stats-grid">
