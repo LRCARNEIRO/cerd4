@@ -553,8 +553,10 @@ function gerarFiosCondutores(
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
       relevancia: 'alta',
-      comparativo2018: `Orçamento para igualdade racial sofreu queda de até 90% entre 2016-2022, com recuperação parcial a partir de 2023. Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`
+      comparativo2018: `O orçamento do órgão de igualdade racial caiu 99,6% entre 2018 e 2020 (R$ 32,3 mi → R$ 0,115 mi), sem registros orçamentários próprios em 2021-2022; a recuperação vem com a recriação do MIR (R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025). Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`,
+      orcamentoLastro: ['MIR', 'SEPPIR'],
     });
+
   }
 
   // FIO 6: Dados e invisibilidade
