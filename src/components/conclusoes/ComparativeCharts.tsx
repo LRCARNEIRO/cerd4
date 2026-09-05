@@ -6,6 +6,8 @@ import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell
 } from 'recharts';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { LastroEvidencias } from '@/components/shared/LastroEvidencias';
 
 const COLORS = {
   destructive: 'hsl(var(--destructive))',
@@ -425,6 +427,7 @@ export function ViolenciaInterseccionalChart() {
 
 // ============== TABELA COMPARATIVA SÍNTESE ==============
 export function TabelaSinteseComparativa() {
+  const { data: indicadoresBase } = useIndicadoresInterseccionais();
   const { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, feminicidioSerie } = useMirrorData();
   const dado2018Seg = segurancaPublica[0];
   const dado2024Seg = segurancaPublica[segurancaPublica.length - 1];
@@ -446,17 +449,17 @@ export function TabelaSinteseComparativa() {
   };
 
   const dados = [
-    { indicador: 'Vítimas de homicídio negras', v2018: `${dado2018Seg.percentualVitimasNegras}%`, v2024: `${dado2024Seg.percentualVitimasNegras}%`, variacao: `+${(dado2024Seg.percentualVitimasNegras - dado2018Seg.percentualVitimasNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
-    { indicador: 'Letalidade policial negra', v2018: `${dado2018Seg.letalidadePolicial}%`, v2024: `${dado2024Seg.letalidadePolicial}%`, variacao: `+${(dado2024Seg.letalidadePolicial - dado2018Seg.letalidadePolicial).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
-    { indicador: 'Feminicídio mulheres negras', v2018: `${dado2018Fem.percentualNegras}%`, v2024: `${dado2024Fem.percentualNegras}%`, variacao: `+${(dado2024Fem.percentualNegras - dado2018Fem.percentualNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
-    { indicador: 'Risco homicídio negro', v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${dado2024Seg.razaoRisco}x`, variacao: `+${(dado2024Seg.razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: 'piora', fonte: 'Atlas 2025' },
-    { indicador: 'Renda média negra', v2018: `R$ ${dado2018Eco.rendaMediaNegra}`, v2024: `R$ ${dado2024Eco.rendaMediaNegra}`, variacao: `+${((dado2024Eco.rendaMediaNegra/dado2018Eco.rendaMediaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'PNAD 2024' },
-    { indicador: 'Razão renda branca/negra', v2018: `${(dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra).toFixed(2)}x`, v2024: `${(dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra).toFixed(2)}x`, variacao: `${((dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra)) ? '↓' : '↑'}`, tendencia: (dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra) ? 'melhora' : 'piora', fonte: 'PNAD 2024' },
-    { indicador: 'Desemprego negro', v2018: `${dado2018Eco.desempregoNegro}%`, v2024: `${dado2024Eco.desempregoNegro}%`, variacao: `${(dado2024Eco.desempregoNegro - dado2018Eco.desempregoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD 2024' },
-    { indicador: 'Superior completo negro', v2018: `${dado2018Edu.superiorNegroPercent}%`, v2024: `${dado2024Edu.superiorNegroPercent}%`, variacao: `+${(dado2024Edu.superiorNegroPercent - dado2018Edu.superiorNegroPercent).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
-    { indicador: 'Analfabetismo negro', v2018: `${dado2018Edu.analfabetismoNegro}%`, v2024: `${dado2024Edu.analfabetismoNegro}%`, variacao: `${(dado2024Edu.analfabetismoNegro - dado2018Edu.analfabetismoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
-    { indicador: 'Mortalidade materna negra', v2018: `${dado2018Sau.mortalidadeMaternaNegra}`, v2024: `${dado2024Sau.mortalidadeMaternaNegra}`, variacao: `${((dado2024Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'DataSUS' },
-    { indicador: 'Razão mort. materna negra/branca', v2018: `${(dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca).toFixed(1)}x`, v2024: `${(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x`, variacao: 'Persistente', tendencia: 'piora', fonte: 'DataSUS' },
+    { indicador: 'Vítimas de homicídio negras', codigos: ['IND-117'], v2018: `${dado2018Seg.percentualVitimasNegras}%`, v2024: `${dado2024Seg.percentualVitimasNegras}%`, variacao: `+${(dado2024Seg.percentualVitimasNegras - dado2018Seg.percentualVitimasNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
+    { indicador: 'Letalidade policial negra', codigos: ['IND-117'], v2018: `${dado2018Seg.letalidadePolicial}%`, v2024: `${dado2024Seg.letalidadePolicial}%`, variacao: `+${(dado2024Seg.letalidadePolicial - dado2018Seg.letalidadePolicial).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
+    { indicador: 'Feminicídio mulheres negras', codigos: ['IND-112'], v2018: `${dado2018Fem.percentualNegras}%`, v2024: `${dado2024Fem.percentualNegras}%`, variacao: `+${(dado2024Fem.percentualNegras - dado2018Fem.percentualNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
+    { indicador: 'Risco homicídio negro', codigos: ['IND-117'], v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${dado2024Seg.razaoRisco}x`, variacao: `+${(dado2024Seg.razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: 'piora', fonte: 'Atlas 2025' },
+    { indicador: 'Renda média negra', codigos: ['IND-119'], v2018: `R$ ${dado2018Eco.rendaMediaNegra}`, v2024: `R$ ${dado2024Eco.rendaMediaNegra}`, variacao: `+${((dado2024Eco.rendaMediaNegra/dado2018Eco.rendaMediaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'PNAD 2024' },
+    { indicador: 'Razão renda branca/negra', codigos: ['IND-119'], v2018: `${(dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra).toFixed(2)}x`, v2024: `${(dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra).toFixed(2)}x`, variacao: `${((dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra)) ? '↓' : '↑'}`, tendencia: (dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra) ? 'melhora' : 'piora', fonte: 'PNAD 2024' },
+    { indicador: 'Desemprego negro', codigos: ['IND-119'], v2018: `${dado2018Eco.desempregoNegro}%`, v2024: `${dado2024Eco.desempregoNegro}%`, variacao: `${(dado2024Eco.desempregoNegro - dado2018Eco.desempregoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD 2024' },
+    { indicador: 'Superior completo negro', codigos: ['IND-129'], v2018: `${dado2018Edu.superiorNegroPercent}%`, v2024: `${dado2024Edu.superiorNegroPercent}%`, variacao: `+${(dado2024Edu.superiorNegroPercent - dado2018Edu.superiorNegroPercent).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
+    { indicador: 'Analfabetismo negro', codigos: ['IND-129'], v2018: `${dado2018Edu.analfabetismoNegro}%`, v2024: `${dado2024Edu.analfabetismoNegro}%`, variacao: `${(dado2024Edu.analfabetismoNegro - dado2018Edu.analfabetismoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
+    { indicador: 'Mortalidade materna negra', codigos: ['IND-122'], v2018: `${dado2018Sau.mortalidadeMaternaNegra}`, v2024: `${dado2024Sau.mortalidadeMaternaNegra}`, variacao: `${((dado2024Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'DataSUS' },
+    { indicador: 'Razão mort. materna negra/branca', codigos: ['IND-122'], v2018: `${(dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca).toFixed(1)}x`, v2024: `${(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x`, variacao: 'Persistente', tendencia: 'piora', fonte: 'DataSUS' },
   ];
 
   return (
@@ -476,6 +479,7 @@ export function TabelaSinteseComparativa() {
                 <th className="text-center p-2 font-medium">Variação</th>
                 <th className="text-center p-2 font-medium">Tendência</th>
                 <th className="text-center p-2 font-medium">Fonte</th>
+                <th className="text-center p-2 font-medium">Lastro</th>
               </tr>
             </thead>
             <tbody>
@@ -498,6 +502,9 @@ export function TabelaSinteseComparativa() {
                     ) : (
                       <span className="text-muted-foreground">{d.fonte}</span>
                     )}
+                  </td>
+                  <td className="text-center p-2">
+                    <LastroEvidencias indicadores={indicadoresBase} codigos={d.codigos} prefixo="" className="justify-center" />
                   </td>
                 </tr>
               ))}

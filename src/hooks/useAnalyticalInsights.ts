@@ -60,6 +60,10 @@ export interface InsightCruzamento {
   descricao: string;
   dados: string[];
   tipo: 'alerta' | 'progresso' | 'contradição' | 'correlação';
+  /** Lastro clicável nas 3 bases */
+  codigosLastro?: string[];
+  orcamentoLastro?: string[];
+  normativoLastro?: string[];
 }
 
 export interface ConclusaoDinamica {
@@ -1202,7 +1206,8 @@ function gerarInsightsCruzamento(
         `Orçamento 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
         `Lacunas críticas não resolvidas: ${criticasNaoCumpridas.length}`
       ],
-      tipo: 'contradição'
+      tipo: 'contradição',
+      orcamentoLastro: ['MIR', 'SEPPIR']
     });
   }
 
