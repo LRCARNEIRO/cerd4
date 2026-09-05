@@ -30,7 +30,7 @@ export default function EcossistemaHero() {
 
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
             <MiniStat value="500+" label="Indicadores Monitorados" />
-            <MiniStat value="87" label="Recomendações ONU Rastreadas" />
+            <MiniStat value={stats?.total ? String(stats.total) : "—"} label="Recomendações ONU Rastreadas" />
             <MiniStat value="R$ 16,6B" label="Orçamento Analisado (2018-25)" />
             <MiniStat value="15+" label="Fontes Oficiais Integradas" />
           </div>
