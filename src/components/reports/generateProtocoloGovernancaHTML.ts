@@ -268,11 +268,11 @@ ${block(
  FONTES PRIMÁRIAS            INGESTÃO                 PERSISTÊNCIA            MOTORES              SAÍDA
  ------------------          ------------------       ----------------        ---------------      ----------------
  SIOP / SIAFI / LOA   --->   ingest-federal-*    --->  dados_orcamentarios --+
- SICONFI (estad/mun)  --->   ingest-*-siconfi          (261+ registros)      |
+ SICONFI (estad/mun)  --->   ingest-*-siconfi          (${fmtInt(totalOrc)} canônicos)${' '.repeat(Math.max(1, 8 - fmtInt(totalOrc).length))}|
                                                                              |
  IBGE / SIDRA (API)   --->   fetch-sidra-*       --->  indicadores_          +-->  [1] Motor de Status
  FBSP / Atlas / SUS   --->   espelho estático          interseccionais       |     [2] Motor de Aderência
- CadÚnico / SAGI      --->   ingest-static-mirror      (302 registros)       |     [3] Motor de Evolução
+ CadÚnico / SAGI      --->   ingest-static-mirror      (${fmtInt(rol.total)} vinculáveis)${' '.repeat(Math.max(1, 6 - fmtInt(rol.total).length))}|     [3] Motor de Evolução
                                                                              |     [4] IEAT
  DOU / Planalto / STF --->   upload + parsing    --->  documentos_normativos-+
                                                                              |
