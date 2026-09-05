@@ -346,10 +346,12 @@ ${(respostasCerd || []).map(r => {
           </TabsTrigger>
         </TabsList>
 
-        {/* ABA: PROTOCOLO METODOLÓGICO DE GOVERNANÇA (PRODUTO 2) */}
-        <TabsContent value="protocolo-governanca">
+        {/* ABA: PROTOCOLOS METODOLÓGICOS (PRODUTOS 2 E 3) */}
+        <TabsContent value="protocolo-governanca" className="space-y-4">
           <ProtocoloGovernancaReport />
+          <ProtocoloOrcamentarioReport />
         </TabsContent>
+
 
         {/* ABA: RELATÓRIO FINAL CERD IV */}
         <TabsContent value="final-cerd-iv">
