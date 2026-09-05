@@ -31,6 +31,12 @@ export interface FioCondutor {
   comparativo2018?: string;
   /** Artigos da Convenção ICERD endereçados por este fio (auto-derived from eixos) */
   artigosConvencao?: ArtigoConvencao[];
+  /** Códigos IND-NNN da Base Estatística que dão lastro ao argumento */
+  codigosLastro?: string[];
+  /** Termos de lastro na Base Orçamentária */
+  orcamentoLastro?: string[];
+  /** Termos de lastro na Base Normativa */
+  normativoLastro?: string[];
 }
 
 export interface EvidenciaDinamica {
@@ -40,7 +46,13 @@ export interface EvidenciaDinamica {
   valorAtual?: string;
   valor2018?: string;
   variacao?: string;
+  /** Códigos IND-NNN que sustentam esta evidência (link clicável) */
+  codigosLastro?: string[];
+  /** Termos de lastro nas bases Orçamentária/Normativa */
+  orcamentoLastro?: string[];
+  normativoLastro?: string[];
 }
+
 
 export interface InsightCruzamento {
   id: string;
