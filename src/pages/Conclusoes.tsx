@@ -358,24 +358,25 @@ export default function Conclusoes() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-lg">
                   <p className="text-xs font-semibold text-destructive mb-2">⚠️ PIORA RELATIVA (2018→2024)</p>
-                  <ul className="space-y-1 text-xs text-muted-foreground">
-                    <li>• Homicídio: vítimas negras {seg2018.percentualVitimasNegras}% → {seg2024.percentualVitimasNegras}% (+{(seg2024.percentualVitimasNegras-seg2018.percentualVitimasNegras).toFixed(1)}pp)</li>
-                    <li>• Letalidade policial negra: {seg2018.letalidadePolicial}% → {seg2024.letalidadePolicial}% (+{(seg2024.letalidadePolicial-seg2018.letalidadePolicial).toFixed(1)}pp)</li>
-                    <li>• Feminicídio mulheres negras: {fem2018.percentualNegras}% → {fem2024.percentualNegras}% (+{(fem2024.percentualNegras-fem2018.percentualNegras).toFixed(1)}pp)</li>
-                    <li>• Risco homicídio negro: persistente em {seg2024.razaoRisco}x maior</li>
-                    <li>• Gap absoluto renda: R$ {eco2018.rendaMediaBranca-eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca-eco2024.rendaMediaNegra} (aumentou!)</li>
+                  <ul className="space-y-1.5 text-xs text-muted-foreground">
+                    <li>• Homicídio: vítimas negras {seg2018.percentualVitimasNegras}% → {seg2024.percentualVitimasNegras}% (+{(seg2024.percentualVitimasNegras-seg2018.percentualVitimasNegras).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Letalidade policial negra: {seg2018.letalidadePolicial}% → {seg2024.letalidadePolicial}% (+{(seg2024.letalidadePolicial-seg2018.letalidadePolicial).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Feminicídio mulheres negras: {fem2018.percentualNegras}% → {fem2024.percentualNegras}% (+{(fem2024.percentualNegras-fem2018.percentualNegras).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-112']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Risco homicídio negro: persistente em {seg2024.razaoRisco}x maior <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Gap absoluto renda: R$ {eco2018.rendaMediaBranca-eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca-eco2024.rendaMediaNegra} (aumentou!) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
                   </ul>
                 </div>
                 <div className="p-4 bg-success/5 border border-success/20 rounded-lg">
                   <p className="text-xs font-semibold text-success mb-2">✓ AVANÇOS (2018→2024)</p>
-                  <ul className="space-y-1 text-xs text-muted-foreground">
-                    <li>• Superior completo negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}% (+{(edu2024.superiorNegroPercent-edu2018.superiorNegroPercent).toFixed(1)}pp)</li>
-                    <li>• Analfabetismo negro: {edu2018.analfabetismoNegro}% → {edu2024.analfabetismoNegro}% ({(edu2024.analfabetismoNegro-edu2018.analfabetismoNegro).toFixed(1)}pp)</li>
-                    <li>• Desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}% ({(eco2024.desempregoNegro-eco2018.desempregoNegro).toFixed(1)}pp)</li>
-                    <li>• Renda média negra: R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra} (+{((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}%)</li>
-                    <li>• Censo 2022: primeira contagem de quilombolas ({povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')})</li>
-                    <li>• Recriação do MIR e Lei 14.532/2023 (racismo = crime inafiançável)</li>
+                  <ul className="space-y-1.5 text-xs text-muted-foreground">
+                    <li>• Superior completo negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}% (+{(edu2024.superiorNegroPercent-edu2018.superiorNegroPercent).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-129']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Analfabetismo negro: {edu2018.analfabetismoNegro}% → {edu2024.analfabetismoNegro}% ({(edu2024.analfabetismoNegro-edu2018.analfabetismoNegro).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-129']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}% ({(eco2024.desempregoNegro-eco2018.desempregoNegro).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Renda média negra: R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra} (+{((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}%) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Censo 2022: primeira contagem de quilombolas ({povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')}) <LastroEvidencias indicadores={indicadores} codigos={['IND-209']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Recriação do MIR e Lei 14.532/2023 (racismo = crime inafiançável) <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} normativos={['Lei 14.532']} prefixo="" className="inline-flex ml-1" /></li>
                   </ul>
+
                 </div>
               </div>
               
