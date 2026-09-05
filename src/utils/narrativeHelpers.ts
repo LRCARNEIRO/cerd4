@@ -280,8 +280,8 @@ export const NARRATIVE_DATA_MAP = [
   { label: 'Feminicídio negras 2018', narrativeValue: narrativaViolencia.feminicidio2018Pct, sourceValue: hcFeminicidio.find(f => f.ano === 2018)!.percentualNegras, source: 'feminicidioSerie[2018].percentualNegras' },
   // Interseccional — Trabalho
   { label: 'Razão renda MN/HB', narrativeValue: narrativaTrabalho.razaoRendaPct, sourceValue: (hcTrabalhoRG.find(i => i.indicador.toLowerCase().includes('rendimento médio'))?.razaoMulherNegraHomemBranco ?? 0) * 100, source: 'trabalhoRacaGenero[Renda].razaoMulherNegraHomemBranco × 100' },
-  { label: 'Desemprego MN', narrativeValue: narrativaTrabalho.desempregoMulherNegra, sourceValue: hcTrabalhoRG.find(i => i.indicador.toLowerCase().includes('desocupação'))?.mulherNegra ?? 0, source: 'trabalhoRacaGenero[Desocupação].mulherNegra' },
-  { label: 'Desemprego HB', narrativeValue: narrativaTrabalho.desempregoHomemBranco, sourceValue: hcTrabalhoRG.find(i => i.indicador.toLowerCase().includes('desocupação'))?.homemBranco ?? 0, source: 'trabalhoRacaGenero[Desocupação].homemBranco' },
+  { label: 'Desemprego MN', narrativeValue: narrativaTrabalho.desempregoMulherNegra, sourceValue: hcTrabalhoRG.find(i => /desocupa|desemprego/.test(i.indicador.toLowerCase()))?.mulherNegra ?? 0, source: 'trabalhoRacaGenero[Desocupação].mulherNegra' },
+  { label: 'Desemprego HB', narrativeValue: narrativaTrabalho.desempregoHomemBranco, sourceValue: hcTrabalhoRG.find(i => /desocupa|desemprego/.test(i.indicador.toLowerCase()))?.homemBranco ?? 0, source: 'trabalhoRacaGenero[Desocupação].homemBranco' },
   { label: 'Informalidade MN', narrativeValue: narrativaTrabalho.informalidadeMulherNegra, sourceValue: hcTrabalhoRG.find(i => i.indicador.toLowerCase().includes('informalidade'))?.mulherNegra ?? 0, source: 'trabalhoRacaGenero[Informalidade].mulherNegra' },
   // Interseccional — Chefia Familiar
   { label: 'Chefia negras %', narrativeValue: narrativaChefia.percentualNegras, sourceValue: hcChefia.percentualNegras, source: 'chefiaFamiliarRacaGenero.percentualNegras' },

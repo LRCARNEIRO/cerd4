@@ -1,4 +1,6 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS, IMPORTANT_SHORT_KEYWORDS } from '@/utils/recommendationKeywordConcepts';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 
 /**
  * PRODUTO 2 — PROTOCOLO METODOLÓGICO DE GOVERNANÇA (LEGADO E MÉTODO)
@@ -19,6 +21,7 @@ export interface ProtocoloGovernancaData {
   recomendacoes: any[];
   diagnosticMap: Map<string, any>;
 }
+
 
 const esc = (s: any) =>
   String(s ?? '')
@@ -66,6 +69,7 @@ export function generateProtocoloGovernancaHTML(data: ProtocoloGovernancaData): 
   const { indicadores = [], orcDados = [], normativos = [], recomendacoes = [], diagnosticMap } = data;
 
   /* ─────────── BASE ESTATÍSTICA ─────────── */
+  const rol = buildRolEstatistico(indicadores);
   const totalInd = indicadores.length;
   const porFonte = tally(indicadores, (i) => i.fonte);
   const porCategoria = tally(indicadores, (i) => i.categoria);
@@ -190,7 +194,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 </div>
 
 <div class="kpis">
-<div class="kpi"><div class="v">${fmtInt(totalInd)}</div><div class="l">Indicadores estatísticos</div></div>
+<div class="kpi"><div class="v">${fmtInt(rol.total)}</div><div class="l">Evidências estatísticas</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalOrc)}</div><div class="l">Registros orçamentários</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalNorm)}</div><div class="l">Documentos normativos</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalRec)}</div><div class="l">Recomendações monitoradas</div></div>
@@ -204,7 +208,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <li>3. Arquitetura de dados e fluxogramas de ingestão</li>
 <li>4. Inventário das fontes de dados (SIAFI/SIOP, IBGE/SIDRA, CadÚnico e demais)</li>
 <li>5. Fórmulas de cálculo de cada índice</li>
-<li>6. Metodologia de vinculação Recomendação ONU × dados</li>
+<li>6. Metodologia de vinculação Recomendação ONU × dados (inclui o dicionário completo de palavras-chave)</li>
 <li>7. Critérios de classificação e escalas</li>
 <li>8. Governança da qualidade, auditoria e limitações</li>
 <li>9. Anexos quantitativos (retrato das bases na data de emissão)</li>
@@ -215,12 +219,14 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <p>Este protocolo documenta <strong>como o sistema pensa</strong>: quais entidades existem, de onde vem cada dado, que fórmula produz cada índice e sob que critério um resultado é classificado. O objetivo é permitir que o MIR opere, audite e evolua a plataforma sem dependência da equipe que a construiu — isto é, que a "fórmula de cálculo" por trás de cada número seja pública, reproduzível e contestável.</p>
 <p>O sistema opera sobre <strong>três bases de evidência</strong> e um <strong>corpus de obrigações internacionais</strong>:</p>
 <table>
-<tr><th>Camada</th><th>Entidade técnica</th><th>Função no método</th><th>Volume atual</th></tr>
-<tr><td>Base Estatística</td><td><code>indicadores_interseccionais</code></td><td>Mede a realidade (desigualdade observada e sua tendência)</td><td class="num">${fmtInt(totalInd)}</td></tr>
-<tr><td>Base Orçamentária</td><td><code>dados_orcamentarios</code></td><td>Mede o financiamento da política (esforço fiscal e execução)</td><td class="num">${fmtInt(totalOrc)}</td></tr>
+<tr><th>Camada</th><th>Entidade técnica</th><th>Função no método</th><th>Volume vinculável</th></tr>
+<tr><td>Base Estatística</td><td><code>indicadores_interseccionais</code> + registro de subindicadores</td><td>Mede a realidade (desigualdade observada e sua tendência)</td><td class="num">${fmtInt(rol.total)}</td></tr>
+<tr><td>Base Orçamentária</td><td><code>dados_orcamentarios</code> (visão canônica deduplicada)</td><td>Mede o financiamento da política (esforço fiscal e execução)</td><td class="num">${fmtInt(totalOrc)}</td></tr>
 <tr><td>Base Normativa</td><td><code>documentos_normativos</code></td><td>Mede a moldura jurídica e institucional</td><td class="num">${fmtInt(totalNorm)}</td></tr>
 <tr><td>Corpus de obrigações</td><td><code>lacunas_identificadas</code></td><td>Recomendações da ONU monitoradas, ancoradas nos Artigos I–VII da ICERD</td><td class="num">${fmtInt(totalRec)}</td></tr>
+<tr><td><strong>Total consolidado de evidências</strong></td><td colspan="2">Estatística + Orçamentária + Normativa</td><td class="num"><strong>${fmtInt(rol.total + totalOrc + totalNorm)}</strong></td></tr>
 </table>
+
 
 <div class="legend"><strong>Princípio da Fonte Única de Verdade (SSoT):</strong> nenhum painel recalcula por conta própria. Toda tela, relatório e exportação espelha os mesmos motores de cálculo descritos na Seção 5. Editar uma evidência em Recomendações propaga instantaneamente para status, aderência por artigo, evolução, diagnóstico e Painel Geral.</div>
 
@@ -262,11 +268,11 @@ ${block(
  FONTES PRIMÁRIAS            INGESTÃO                 PERSISTÊNCIA            MOTORES              SAÍDA
  ------------------          ------------------       ----------------        ---------------      ----------------
  SIOP / SIAFI / LOA   --->   ingest-federal-*    --->  dados_orcamentarios --+
- SICONFI (estad/mun)  --->   ingest-*-siconfi          (261+ registros)      |
+ SICONFI (estad/mun)  --->   ingest-*-siconfi          (${fmtInt(totalOrc)} canônicos)${' '.repeat(Math.max(1, 8 - fmtInt(totalOrc).length))}|
                                                                              |
  IBGE / SIDRA (API)   --->   fetch-sidra-*       --->  indicadores_          +-->  [1] Motor de Status
  FBSP / Atlas / SUS   --->   espelho estático          interseccionais       |     [2] Motor de Aderência
- CadÚnico / SAGI      --->   ingest-static-mirror      (302 registros)       |     [3] Motor de Evolução
+ CadÚnico / SAGI      --->   ingest-static-mirror      (${fmtInt(rol.total)} vinculáveis)${' '.repeat(Math.max(1, 6 - fmtInt(rol.total).length))}|     [3] Motor de Evolução
                                                                              |     [4] IEAT
  DOU / Planalto / STF --->   upload + parsing    --->  documentos_normativos-+
                                                                              |
@@ -292,8 +298,10 @@ ${block(
             +--> abaixo do corte  ---> descartado (não vira evidência)
             |
             v
-   [Filtro de elegibilidade] - Common Core bloqueado; indicador precisa ser
-            |                  auditado/espelho; regex de artigo restritiva
+   [Filtro de elegibilidade] - guarda-chuva com subindicador é suprimido;
+            |                  duplicata declarada é descartada; indicador
+            |                  precisa ter bloco visual auditado em aba;
+            |                  regex de artigo restritiva
             v
    [Override humano] -------- inclusão/exclusão manual no pop-up de auditagem
             |                  (human-in-the-loop, prevalece sobre o motor)
@@ -304,6 +312,20 @@ ${block(
 
 <h2>4. Inventário das fontes de dados</h2>
 
+<h3>4.0 O que entra e o que não entra na Base Estatística</h3>
+<p>A Base Estatística tem duas leituras diferentes, e confundi-las é a principal fonte de divergência numérica entre painéis:</p>
+<table>
+<tr><th>Leitura</th><th>O que é</th><th>Valor atual</th></tr>
+<tr><td>Registros brutos no banco</td><td>Linhas de <code>indicadores_interseccionais</code>, incluindo guarda-chuvas que hoje só existem como agregadores</td><td class="num">${fmtInt(rol.registrosBrutos)}</td></tr>
+<tr><td>Guarda-chuvas vinculáveis</td><td>Indicador com bloco visual próprio e sem subindicadores</td><td class="num">${fmtInt(rol.totalGuardaChuvas)}</td></tr>
+<tr><td>Subindicadores vinculáveis</td><td>Recortes com ID, selo e âncora próprios dentro de um bloco maior</td><td class="num">${fmtInt(rol.totalSubindicadores)}</td></tr>
+<tr><td>Guarda-chuvas consolidados (suprimidos)</td><td>Já representados pelos seus subindicadores — não entram para não haver dupla contagem</td><td class="num">${fmtInt(rol.consolidados)}</td></tr>
+<tr><td>Duplicatas declaradas</td><td>Mesmo dado cadastrado sob dois códigos; permanece só o canônico</td><td class="num">${fmtInt(rol.duplicatas)}</td></tr>
+<tr><td><strong>Rol vinculável (base estatística de evidências)</strong></td><td>Soma de guarda-chuvas vinculáveis + subindicadores</td><td class="num"><strong>${fmtInt(rol.total)}</strong></td></tr>
+</table>
+<div class="note"><strong>Regra de não duplicidade:</strong> quando um bloco recebe subindicadores, o guarda-chuva deixa de ser oferecido como evidência — o dado dele já está contido nos filhos. Vincular os dois contaria o mesmo fato duas vezes no Motor de Status.</div>
+<div class="legend"><strong>Fora do rol por definição:</strong> chaves internas (recortes por ano, sexo ou UF dentro de uma mesma série), séries auxiliares de contexto e registros existentes apenas no espelho administrativo do banco, sem card auditado em aba. A fonte canônica de evidência é sempre o card auditado e visível nas abas temáticas. O acervo Common Core (HRI/CORE/BRA) foi <strong>excluído fisicamente</strong> da base e não é mais pesquisável, vinculável nem exportável.</div>
+
 ${block(
   '4.1 Base Estatística — fontes efetivamente em uso',
   porFonte.length
@@ -311,6 +333,7 @@ ${block(
        <p>Indicadores com URL de auditoria: <strong>${fmtInt(comUrl)}</strong> de ${fmtInt(totalInd)} (${pct((comUrl / Math.max(totalInd, 1)) * 100)}). Auditados manualmente: <strong>${fmtInt(auditados)}</strong>.</p>`
     : '',
 )}
+
 
 ${block(
   '4.2 Cobertura de desagregação (exigência CERD/C/2007/1)',
@@ -447,9 +470,12 @@ com baixo gasto → alta eficácia (ou efeito de política não orçamentária).
 <h3>6.3 Critérios de elegibilidade de evidência</h3>
 <table>
 <tr><th>Regra</th><th>Efeito</th></tr>
-<tr><td>Indicador Common Core (prefixo <code>[CC-</code>)</td><td>Pesquisável, porém <strong>bloqueado</strong> como evidência — defesa em 3 camadas (motor, merge de override e geradores de relatório)</td></tr>
+<tr><td>Guarda-chuva que possui subindicadores</td><td>Suprimido do rol: quem vira evidência são os subindicadores, para não contar o mesmo dado duas vezes</td></tr>
+<tr><td>Registro sem bloco visual auditado em aba</td><td>Não é oferecido como evidência — a fonte canônica é o card auditado, não o espelho administrativo do banco</td></tr>
 <tr><td>Indicador sem recorte racial</td><td>Excluído dos cruzamentos analíticos (Regra de Ouro)</td></tr>
 <tr><td>Registro sem fonte auditável</td><td>Não sustenta afirmação; normativo passa a status <code>pendente</code></td></tr>
+<tr><td>Acervo Common Core (HRI/CORE/BRA)</td><td>Excluído fisicamente da base — não é pesquisável, vinculável nem exportável</td></tr>
+<tr><td>Registro orçamentário não canônico</td><td>Descartado pela deduplicação lógica (um registro por programa/ação + ano + esfera)</td></tr>
 <tr><td>Override manual</td><td>Prevalece sobre a sugestão do motor, com recálculo imediato</td></tr>
 </table>
 
@@ -465,6 +491,28 @@ ${block(
 </table>`
     : '',
 )}
+
+<h3>6.5 Dicionário de palavras-chave (vocabulário do motor de vinculação)</h3>
+<p>O motor não usa inteligência artificial nem similaridade estatística: ele usa um <strong>dicionário explícito e auditável</strong> de famílias de conceitos. Cada família tem <em>tokens de disparo</em> (que precisam aparecer no texto da recomendação, na quantidade mínima indicada) e <em>expansões</em> (os termos procurados nos registros das três bases). A tabela abaixo é gerada a partir do próprio código em produção — é a lista real, não uma transcrição.</p>
+<table>
+<tr><th>Família de conceito</th><th>Mín.</th><th>Tokens de disparo (na recomendação)</th><th>Expansões buscadas nas bases</th></tr>
+${RECOMMENDATION_CONCEPT_BUNDLES.map(
+  (b) =>
+    `<tr><td><code>${esc(b.id)}</code></td><td class="num">${b.minTriggerMatches}</td><td>${b.triggerTokens.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>${b.expansions.map((t) => esc(t)).join(' · ')}</td></tr>`,
+).join('')}
+</table>
+<p>Total: <strong>${RECOMMENDATION_CONCEPT_BUNDLES.length}</strong> famílias de conceito, <strong>${RECOMMENDATION_CONCEPT_BUNDLES.reduce((s, b) => s + b.triggerTokens.length, 0)}</strong> tokens de disparo e <strong>${RECOMMENDATION_CONCEPT_BUNDLES.reduce((s, b) => s + b.expansions.length, 0)}</strong> expansões.</p>
+
+<h4>6.5.1 Travas do vocabulário</h4>
+<table>
+<tr><th>Trava</th><th>Termos</th><th>Efeito</th></tr>
+<tr><td>Tokens ubíquos de grupo</td><td>${[...UBIQUITOUS_GROUP_TOKENS].map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>Sozinhos não vinculam: casariam com quase toda a base. Exigem companhia de termo temático.</td></tr>
+<tr><td>Termos curtos protegidos</td><td>${[...IMPORTANT_SHORT_KEYWORDS].map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>Palavras de 3–4 letras que normalmente seriam descartadas por ruído, mas carregam sentido técnico e permanecem válidas.</td></tr>
+<tr><td>Exigência de sinal focal</td><td>marca racial, étnica ou de grupo focal</td><td>Registro sem recorte racial/étnico não vira evidência de política racial, ainda que case tematicamente.</td></tr>
+<tr><td>Trava anti-coringa</td><td>termos genéricos de eixo</td><td>Peso reduzido, para que um registro amplo não se vincule a dezenas de recomendações.</td></tr>
+</table>
+<div class="legend"><strong>Como manter:</strong> ampliar cobertura significa acrescentar expansões a uma família existente ou criar uma nova família — nunca baixar o corte de score. O dicionário é a alavanca de curadoria; o corte é constante do sistema.</div>
+
 
 <h2>7. Critérios de classificação</h2>
 
