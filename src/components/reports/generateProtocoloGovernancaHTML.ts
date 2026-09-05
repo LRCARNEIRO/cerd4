@@ -298,8 +298,10 @@ ${block(
             +--> abaixo do corte  ---> descartado (não vira evidência)
             |
             v
-   [Filtro de elegibilidade] - Common Core bloqueado; indicador precisa ser
-            |                  auditado/espelho; regex de artigo restritiva
+   [Filtro de elegibilidade] - guarda-chuva com subindicador é suprimido;
+            |                  duplicata declarada é descartada; indicador
+            |                  precisa ter bloco visual auditado em aba;
+            |                  regex de artigo restritiva
             v
    [Override humano] -------- inclusão/exclusão manual no pop-up de auditagem
             |                  (human-in-the-loop, prevalece sobre o motor)
@@ -310,6 +312,20 @@ ${block(
 
 <h2>4. Inventário das fontes de dados</h2>
 
+<h3>4.0 O que entra e o que não entra na Base Estatística</h3>
+<p>A Base Estatística tem duas leituras diferentes, e confundi-las é a principal fonte de divergência numérica entre painéis:</p>
+<table>
+<tr><th>Leitura</th><th>O que é</th><th>Valor atual</th></tr>
+<tr><td>Registros brutos no banco</td><td>Linhas de <code>indicadores_interseccionais</code>, incluindo guarda-chuvas que hoje só existem como agregadores</td><td class="num">${fmtInt(rol.registrosBrutos)}</td></tr>
+<tr><td>Guarda-chuvas vinculáveis</td><td>Indicador com bloco visual próprio e sem subindicadores</td><td class="num">${fmtInt(rol.totalGuardaChuvas)}</td></tr>
+<tr><td>Subindicadores vinculáveis</td><td>Recortes com ID, selo e âncora próprios dentro de um bloco maior</td><td class="num">${fmtInt(rol.totalSubindicadores)}</td></tr>
+<tr><td>Guarda-chuvas consolidados (suprimidos)</td><td>Já representados pelos seus subindicadores — não entram para não haver dupla contagem</td><td class="num">${fmtInt(rol.consolidados)}</td></tr>
+<tr><td>Duplicatas declaradas</td><td>Mesmo dado cadastrado sob dois códigos; permanece só o canônico</td><td class="num">${fmtInt(rol.duplicatas)}</td></tr>
+<tr><td><strong>Rol vinculável (base estatística de evidências)</strong></td><td>Soma de guarda-chuvas vinculáveis + subindicadores</td><td class="num"><strong>${fmtInt(rol.total)}</strong></td></tr>
+</table>
+<div class="note"><strong>Regra de não duplicidade:</strong> quando um bloco recebe subindicadores, o guarda-chuva deixa de ser oferecido como evidência — o dado dele já está contido nos filhos. Vincular os dois contaria o mesmo fato duas vezes no Motor de Status.</div>
+<div class="legend"><strong>Fora do rol por definição:</strong> chaves internas (recortes por ano, sexo ou UF dentro de uma mesma série), séries auxiliares de contexto e registros existentes apenas no espelho administrativo do banco, sem card auditado em aba. A fonte canônica de evidência é sempre o card auditado e visível nas abas temáticas. O acervo Common Core (HRI/CORE/BRA) foi <strong>excluído fisicamente</strong> da base e não é mais pesquisável, vinculável nem exportável.</div>
+
 ${block(
   '4.1 Base Estatística — fontes efetivamente em uso',
   porFonte.length
@@ -317,6 +333,7 @@ ${block(
        <p>Indicadores com URL de auditoria: <strong>${fmtInt(comUrl)}</strong> de ${fmtInt(totalInd)} (${pct((comUrl / Math.max(totalInd, 1)) * 100)}). Auditados manualmente: <strong>${fmtInt(auditados)}</strong>.</p>`
     : '',
 )}
+
 
 ${block(
   '4.2 Cobertura de desagregação (exigência CERD/C/2007/1)',
