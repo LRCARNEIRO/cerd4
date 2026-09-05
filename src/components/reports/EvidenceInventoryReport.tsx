@@ -254,6 +254,7 @@ Dados extraídos em tempo real do banco de dados. A coluna "Recomendações Vinc
 </body></html>`;
 }
 
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 export function EvidenceInventoryReport() {
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcamento } = useOrcamentoCanonico();
@@ -276,37 +277,8 @@ export function EvidenceInventoryReport() {
 
   // Rol canônico de evidências estatísticas (mesma regra da Busca e da planilha v27):
   // guarda-chuvas SEM subindicadores e sem duplicatas/consolidados + todos os subindicadores.
-  const evidEstatistica = useMemo<EvidEstatistica[]>(() => {
-    const all = indicadores || [];
-    const umbrellas = all
-      .filter(i => !hasSubIndicadores(i.nome) && !isDuplicata(i.codigo))
-      .map(i => ({
-        key: i.id,
-        codigo: i.codigo || '',
-        titulo: i.nome,
-        detalhe: i.subcategoria || '—',
-        fonte: i.fonte || '',
-        tendencia: i.tendencia || '—',
-        artigos: ((i as any).artigos_convencao || []).join(', ') || '—',
-        categoria: i.categoria || 'outros',
-        searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
-      }));
-    const subs = SUB_INDICADORES.map(s => {
-      const umbrella = all.find(i => i.nome === s.guardaChuva);
-      return {
-        key: `sub-${s.codigo}-${s.sub}`,
-        codigo: `${s.codigo} · sub`,
-        titulo: s.titulo,
-        detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
-        fonte: umbrella?.fonte || '',
-        tendencia: '—',
-        artigos: ((umbrella as any)?.artigos_convencao || []).join(', ') || '—',
-        categoria: s.abaLabel || 'outros',
-        searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),
-      };
-    });
-    return [...umbrellas, ...subs];
-  }, [indicadores]);
+  const rol = useMemo(() => buildRolEstatistico(indicadores || []), [indicadores]);
+  const evidEstatistica = rol.itens;
 
   const handleExport = async (format: 'html' | 'docx') => {
     setGenerating(format);
