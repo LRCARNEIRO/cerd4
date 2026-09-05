@@ -49,7 +49,7 @@ export default function FarolRecomendacoesSection() {
         <SectionHeader
           number="03"
           title="Farol de Monitoramento de Recomendações"
-          subtitle="Classificação e acompanhamento das 87 recomendações do Comitê CERD com vínculos a indicadores de progresso"
+          subtitle={`Classificação e acompanhamento das ${total || '—'} recomendações do Comitê CERD com vínculos a indicadores de progresso`}
         />
 
         {/* Progress bar */}
