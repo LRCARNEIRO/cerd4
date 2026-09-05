@@ -22,7 +22,7 @@ export default function FarolRecomendacoesSection() {
 
   const isLoading = loadingLacunas || !sensorReady;
 
-  const total = stats?.total || 43;
+  const total = stats?.total ?? 0;
   const sr = sensorSummary.statusReclassificado;
 
   const cumpridas = sensorReady ? sr.cumprido : 0;
