@@ -472,18 +472,18 @@ function gerarFiosCondutores(
       id: 'interseccionalidade-genero',
       titulo: 'Discriminação Interseccional: Mulheres Negras',
       tipo: 'correlacao',
-      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (${femPctAtual}% das vítimas são mulheres negras — ${femFonte}), mortalidade materna (${mmPctNegra}% dos óbitos são de mulheres negras — ${mmFonte}; razão negra/branca: ${mmRazao}×) e violência doméstica (${violDomPct}% das vítimas são negras) atingem desproporcionalmente mulheres negras.`,
+      argumento: `${lacunasMulheres.length} lacuna(s) diretamente sobre mulheres negras e ${intersecGenero.length} lacunas com dimensão de gênero. A intersecção raça-gênero amplifica todas as formas de vulnerabilidade: feminicídio (${femPctAtual}% das vítimas são mulheres negras — ${femFonte}), mortalidade materna (razão de ${mmRmmNegra} óbitos maternos por 100 mil nascidos vivos entre mulheres negras contra ${mmRmmBranca} entre brancas em ${mmAno} — ${mmFonte}; razão negra/branca: ${mmRazao}×) e violência doméstica (${violDomPct}% das vítimas são negras) atingem desproporcionalmente mulheres negras.`,
       evidencias: [
         { texto: `Feminicídio: ${femPctAtual}% das vítimas são mulheres negras`, fonte: femFonte, tipo: 'quantitativa' as const },
         { texto: `Violência doméstica: ${violDomPct}% vítimas negras`, fonte: violDomInd?.fonte || 'FBSP 2025', tipo: 'quantitativa' as const },
-        { texto: `Mortalidade materna: ${mmPctNegra}% dos óbitos são de mulheres negras; razão negra/branca: ${mmRazao}×`, fonte: mmFonte, tipo: 'quantitativa' as const },
+        { texto: `Mortalidade materna (${mmAno}): ${mmRmmNegra} óbitos por 100 mil NV entre negras vs ${mmRmmBranca} entre brancas; razão negra/branca: ${mmRazao}×`, fonte: mmFonte, tipo: 'quantitativa' as const },
         { texto: `Estupro: ${estupPct}% das vítimas são mulheres negras`, fonte: estupInd?.fonte || 'FBSP 2025', tipo: 'quantitativa' as const },
         ...evidMulheres.slice(0, 4),
       ],
       eixos: [...new Set([...lacunasMulheres.map(l => l.eixo_tematico), ...intersecGenero.map(l => l.eixo_tematico)])],
       grupos: ['mulheres_negras'],
       relevancia: 'alta',
-      comparativo2018: `Feminicídio de mulheres negras: ${femPct2018}% → ${femPctAtual}% (${femFonte}). Mortalidade materna: ${mmPctNegra}% dos óbitos são de negras (${mmFonte}); razão negra/branca: ${mmRazao}×. Estupro: ${estupPct}% das vítimas são mulheres negras.`
+      comparativo2018: `Feminicídio de mulheres negras: ${femPct2018}% → ${femPctAtual}% (${femFonte}). Mortalidade materna em ${mmAno}: ${mmRmmNegra} óbitos por 100 mil NV entre negras contra ${mmRmmBranca} entre brancas (${mmFonte}); razão negra/branca: ${mmRazao}×. Estupro: ${estupPct}% das vítimas são mulheres negras.`
     });
   }
 
