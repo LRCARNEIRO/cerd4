@@ -12,7 +12,7 @@ export function generateMethodologyHTML(): string {
           icone: '📊',
           origem: 'Censo 2022 (IBGE) + Diretrizes CERD/C/2007/1',
           motivacao: `Apresenta os <strong>indicadores demográficos e socioeconômicos fundamentais</strong> exigidos pelo CERD: população total, composição por raça/cor, distribuição regional, PIB per capita, IDH, expectativa de vida e indicadores de pobreza. Todos desagregados por raça conforme exigência das <strong>Diretrizes do CERD (CERD/C/2007/1)</strong>, que determinam que os Estados-partes apresentem dados desagregados por raça, etnia e gênero.`,
-          documentosFonte: ['CCD-Brasil-2020.pdf', 'CERD-Guidelines-2007.pdf'],
+          documentosFonte: ['CERD-Guidelines-2007.pdf', 'Censo-2022-IBGE.pdf'],
           promptOrigem: 'Estruturar os dados demográficos gerais do Brasil com dados do Censo 2022 e desagregação racial.',
           artigos: ['Art. I (Definição de discriminação racial)', 'Art. V.e (Direitos econômicos e sociais)'],
         },
@@ -264,7 +264,6 @@ ${getExportToolbarHTML('Metodologia-Escopo-Projeto')}
   <h4>📋 Legenda de Origens</h4>
   <ul>
     <li><strong>Recomendações CERD</strong> — Aba criada para responder a recomendações específicas das Observações Finais (CERD/C/BRA/CO/18-20, 2022)</li>
-    <li><strong>Common Core Document</strong> — Aba criada para atender obrigações do Documento Básico Comum (HRI/CORE/BRA)</li>
     <li><strong>Recomendações ONU</strong> — Aba criada a partir da leitura das lacunas identificadas nos documentos ONU</li>
     <li><strong>Relatório CERD III</strong> — Aba criada em resposta a críticas ou omissões do III Relatório Periódico (2018)</li>
     <li><strong>Diretrizes CERD</strong> — Aba criada para cumprir orientações das Diretrizes de Elaboração de Relatórios (CERD/C/2007/1)</li>
