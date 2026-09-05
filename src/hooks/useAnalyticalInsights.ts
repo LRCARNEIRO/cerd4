@@ -392,8 +392,10 @@ function gerarFiosCondutores(
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada com 245 territórios quilombolas titulados (Palmares/INCRA 2025) de ~2.600 certificados (~9,4%). Dados orçamentários detalhados disponíveis no módulo Orçamento.`
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada, com 384 títulos expedidos frente a 2.019 processos de titulação abertos no INCRA — menos de um quinto dos processos concluídos (IND-209). Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
+      codigosLastro: ['IND-209'],
     });
+
   }
 
   // FIO 4: Interseccionalidade - mulheres negras
