@@ -463,7 +463,7 @@ function generateConsolidatedHTML(data: {
   <!-- ========================================== -->
   <hr class="divider">
   <h2 id="concl">PARTE IV — CONCLUSÕES ANALÍTICAS</h2>
-  <p class="source">Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × MUNIC/ESTADIC × COVID-19 (2018→2024)</p>
+  <p class="source">Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × ESTADIC × COVID-19 (2018→2024)</p>
 
   <!-- 4.1 SÍNTESE EXECUTIVA -->
   <h3 id="concl-sintese">4.1 — Síntese Executiva</h3>
@@ -613,7 +613,9 @@ function generateConsolidatedHTML(data: {
     <p style="font-size:10px;color:#78350f;">
       O cruzamento exaustivo dos ${fiosCondutores.length} fios condutores revela um quadro de avanço parcial e assimétrico.
       O Estado brasileiro avançou no plano normativo e institucional — recriação do MIR (2023), Lei 14.532/2023 (racismo crime inafiançável),
-      Censo 2022 com contagem inédita de quilombolas, execução orçamentária recorde.
+      Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial
+      (dotação R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025, execução em recuperação de 21,2% → 75,6%) e ingresso por cotas raciais
+      em universidades federais (14.422 em 2012 → 55.371 em 2022, +284% — IND-211).
       Houve ganhos em educação (superior negro: ${edu2018.superiorNegroPercent}% → ${edu2024.superiorNegroPercent}%),
       emprego (desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}%) e renda nominal.
     </p>
@@ -622,14 +624,15 @@ function generateConsolidatedHTML(data: {
       vítimas negras de homicídio: ${seg2018.percentualVitimasNegras}% → ${seg2024.percentualVitimasNegras}%,
       feminicídio: ${fem2018.percentualNegras}% → ${fem2024.percentualNegras}%,
       letalidade policial: ${seg2018.letalidadePolicial}% → ${seg2024.letalidadePolicial}%,
-      gap absoluto de renda ampliou. A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica.
+      gap absoluto de renda ampliou. A ESTADIC 2024 revela que 25 das 27 UFs têm legislação racial específica, mas apenas 2 mantêm
+      Fundo de Igualdade Racial ativo (IND-179); na titulação quilombola são 384 títulos expedidos frente a 2.019 processos abertos (IND-209).
     </p>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">
     <div style="padding:8px;background:#dcfce7;border-radius:6px;">
       <p style="font-size:10px;font-weight:700;color:#166534;">✓ ONDE AVANÇOU</p>
       <ul style="font-size:9px;color:#14532d;margin:0;padding-left:12px;">
-        <li>Marco legal antirracista</li><li>Recriação do MIR</li><li>Educação superior negra</li><li>Execução orçamentária 2023-25</li><li>Censo quilombola inédito</li>
+        <li>Marco legal antirracista</li><li>Recriação e expansão orçamentária do MIR</li><li>Educação superior negra</li><li>Ingresso por cotas raciais (+284%, IND-211)</li><li>Censo quilombola inédito</li>
       </ul>
     </div>
     <div style="padding:8px;background:#fee2e2;border-radius:6px;">
@@ -641,7 +644,7 @@ function generateConsolidatedHTML(data: {
     <div style="padding:8px;background:#fef3c7;border-radius:6px;">
       <p style="font-size:10px;font-weight:700;color:#92400e;">⚠ PARADOXO CENTRAL</p>
       <ul style="font-size:9px;color:#78350f;margin:0;padding-left:12px;">
-        <li>Leis avançam, implementação não</li><li>Orçamento cresce, resultados limitados</li><li>Federal avança, municipal estagna</li><li>Renda sobe, desigualdade persiste</li>
+        <li>Leis avançam, implementação não</li><li>Orçamento cresce, execução do órgão ainda em recuperação (75,6%)</li><li>Legislação estadual quase universal (25/27 UFs), fundo próprio em 2 UFs</li><li>Renda sobe, desigualdade persiste</li>
       </ul>
     </div>
   </div>
@@ -677,7 +680,7 @@ function generateConsolidatedHTML(data: {
   <p class="source" style="margin-top:16px;">
     <strong>Fontes integradas:</strong> ${fiosCondutores.length} fios condutores analíticos, ${lacunasStats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20),
     ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores interseccionais,
-    ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
+    ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, ESTADIC 2024.
   </p>
 
   <div style="margin-top:40px;padding:16px;background:#f8fafc;border-radius:8px;text-align:center;">

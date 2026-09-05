@@ -43,6 +43,8 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { LastroEvidencias } from '@/components/shared/LastroEvidencias';
+
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
@@ -227,7 +229,7 @@ export default function Conclusoes() {
   return (
     <DashboardLayout
       title="Conclusões Analíticas — Política Racial no Brasil"
-      subtitle="Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × MUNIC/ESTADIC × COVID-19 (2018→2024)"
+      subtitle="Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × ESTADIC × COVID-19 (2018→2024)"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -235,7 +237,7 @@ export default function Conclusoes() {
           <Badge variant="outline" className="gap-1"><BarChart3 className="w-3 h-3" />Estatísticas</Badge>
           <Badge variant="outline" className="gap-1"><DollarSign className="w-3 h-3" />Orçamento</Badge>
           <Badge variant="outline" className="gap-1"><Scale className="w-3 h-3" />Normativa</Badge>
-          <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />MUNIC/ESTADIC</Badge>
+          <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />ESTADIC 2024</Badge>
           <Badge variant="outline" className="gap-1 bg-destructive/10"><Heart className="w-3 h-3" />COVID-19</Badge>
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} recomendações ONU</Badge>
           <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{rolEstatistico.total} evidências estatísticas</Badge>
@@ -492,7 +494,7 @@ export default function Conclusoes() {
                   </Button>
                 </div>
                 {fiosFiltrados.map((fio) => (
-                  <FioCondutorCard key={fio.id} fio={fio} />
+                  <FioCondutorCard key={fio.id} fio={fio} indicadores={indicadores} />
                 ))}
               </div>
             </TabsContent>
@@ -532,17 +534,25 @@ export default function Conclusoes() {
                   </CardHeader>
                   <CardContent className="pt-6 space-y-4">
                     <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
-                      <p className="text-sm font-semibold text-warning mb-2">⚖️ Veredicto: Avanço normativo-institucional real, porém insuficiente para reverter desigualdades estruturais</p>
+                      <p className="text-sm font-semibold text-warning mb-2">⚖️ Veredicto: Avanço normativo-institucional e orçamentário real, ainda sem tradução nos indicadores estruturais</p>
+                      <LastroEvidencias
+                        indicadores={indicadores}
+                        codigos={['IND-211', 'IND-112', 'IND-179']}
+                        orcamento={['MIR']}
+                      />
                     </div>
 
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       O cruzamento exaustivo dos fios condutores revela um quadro de <strong>avanço parcial e assimétrico</strong>. 
-                      O Estado brasileiro avançou no plano <strong>normativo e institucional</strong> — recriação do MIR (2023), Lei 14.532/2023 
-                      (racismo crime inafiançável), Censo 2022 com contagem inédita de quilombolas, execução orçamentária recorde do MIR (~99% em 2024-2025) 
+                      O Estado brasileiro avançou no plano <strong>normativo, institucional e orçamentário</strong> — recriação do MIR (2023), Lei 14.532/2023 
+                      (racismo crime inafiançável), Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial 
+                      (dotação de R$ 38,1 mi em 2023 para R$ 135,9 mi em 2025, com execução em recuperação de 21,2% para 75,6%) 
                       e variação de {orcStats?.variacao >= 0 ? `+${orcStats?.variacao?.toFixed(0)}` : orcStats?.variacao?.toFixed(0)}% no orçamento entre períodos. 
                       Houve também ganhos em <strong>educação</strong> (superior negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}%), 
+                      no <strong>ingresso por cotas raciais em universidades federais</strong> (14.422 em 2012 → 55.371 em 2022, +284%), 
                       <strong>emprego</strong> (desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}%) e <strong>renda nominal</strong> (R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra}).
                     </p>
+                    <LastroEvidencias indicadores={indicadores} codigos={['IND-211']} orcamento={['MIR']} className="-mt-2" />
 
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       Porém, os indicadores estruturais de <strong>violência e desigualdade pioraram ou estagnaram</strong>: 
@@ -550,49 +560,56 @@ export default function Conclusoes() {
                       feminicídio de mulheres negras de {fem2018.percentualNegras}% para {fem2024.percentualNegras}%, 
                       letalidade policial negra de {seg2018.letalidadePolicial}% para {seg2024.letalidadePolicial}%, 
                       e o gap absoluto de renda branca-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
-                      A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica e apenas 2 UFs mantêm Fundos de Igualdade Racial ativos, 
-                      evidenciando que os avanços federais não capilarizaram para governos subnacionais. 
-                      A COVID-19 (2020-2022) aprofundou todas as disparidades, e a recuperação pós-pandemia atinge desigualmente a população negra.
+                      A ESTADIC 2024 mostra que 25 das 27 UFs têm legislação racial específica, mas apenas 2 mantêm Fundos de Igualdade Racial ativos — 
+                      institucionalização formal sem sustentação financeira. Na titulação quilombola, são 384 títulos expedidos frente a 2.019 processos abertos no INCRA. 
+                      A COVID-19 (2020-2022) aprofundou as disparidades: excesso de mortalidade de +57% entre pretos e pardos em 2020 e alta de 66% na mortalidade materna de mulheres pretas.
                     </p>
+                    <LastroEvidencias
+                      indicadores={indicadores}
+                      codigos={['IND-112', 'IND-179', 'IND-209', 'IND-178', 'IND-173']}
+                      className="-mt-2"
+                    />
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
                         <p className="text-xs font-bold text-success mb-1">✓ ONDE AVANÇOU</p>
-                        <ul className="text-xs text-muted-foreground space-y-0.5">
-                          <li>• Marco legal antirracista</li>
-                          <li>• Recriação do MIR</li>
+                        <ul className="text-xs text-muted-foreground space-y-1">
+                          <li>• Marco legal antirracista <LastroEvidencias indicadores={indicadores} normativos={['Lei 14.532']} prefixo="" className="inline-flex ml-1" /></li>
+                          <li>• Recriação e expansão orçamentária do MIR <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Educação superior negra</li>
-                          <li>• Execução orçamentária 2023-25</li>
+                          <li>• Ingresso por cotas raciais (+284%) <LastroEvidencias indicadores={indicadores} codigos={['IND-211']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Censo quilombola inédito</li>
                         </ul>
                       </div>
                       <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
                         <p className="text-xs font-bold text-destructive mb-1">✗ ONDE NÃO AVANÇOU</p>
-                        <ul className="text-xs text-muted-foreground space-y-0.5">
+                        <ul className="text-xs text-muted-foreground space-y-1">
                           <li>• Violência letal racial</li>
-                          <li>• Feminicídio negro</li>
+                          <li>• Feminicídio negro <LastroEvidencias indicadores={indicadores} codigos={['IND-112']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Letalidade policial</li>
                           <li>• Gap absoluto de renda</li>
-                          <li>• Demarcação territorial</li>
+                          <li>• Titulação quilombola <LastroEvidencias indicadores={indicadores} codigos={['IND-209']} prefixo="" className="inline-flex ml-1" /></li>
+                          <li>• Saneamento em TIs e quilombos <LastroEvidencias indicadores={indicadores} codigos={['IND-137', 'IND-153']} prefixo="" className="inline-flex ml-1" /></li>
                         </ul>
                       </div>
                       <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
                         <p className="text-xs font-bold text-warning mb-1">⚠ PARADOXO CENTRAL</p>
-                        <ul className="text-xs text-muted-foreground space-y-0.5">
+                        <ul className="text-xs text-muted-foreground space-y-1">
                           <li>• Leis avançam, implementação não</li>
-                          <li>• Orçamento cresce, resultados limitados</li>
-                          <li>• Federal avança, municipal estagna</li>
+                          <li>• Orçamento cresce, execução ainda em recuperação (75,6%) <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} prefixo="" className="inline-flex ml-1" /></li>
+                          <li>• Legislação estadual quase universal, fundo próprio em 2 UFs <LastroEvidencias indicadores={indicadores} codigos={['IND-179']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Renda sobe, desigualdade persiste</li>
                           <li>• Dados melhoram, lacunas permanecem</li>
                         </ul>
                       </div>
                     </div>
 
+
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="text-xs text-muted-foreground italic mb-2">
                         <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20), 
                         {respostas?.length || 0} respostas CERD III, {rolEstatistico.total} evidências estatísticas (rol canônico), 
-                        {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
+                        {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, ESTADIC 2024.
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
                         <a href="https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">FBSP 2025 <ExternalLink className="w-2.5 h-2.5" /></a>
@@ -602,7 +619,7 @@ export default function Conclusoes() {
                         <a href="http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sim/cnv/mat10uf.def" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">DataSUS/SIM <ExternalLink className="w-2.5 h-2.5" /></a>
                         <a href="https://sidra.ibge.gov.br/Tabela/9605" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Censo 2022 <ExternalLink className="w-2.5 h-2.5" /></a>
                         <a href="https://portaldatransparencia.gov.br/despesas" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">Portal Transparência <ExternalLink className="w-2.5 h-2.5" /></a>
-                        <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">MUNIC/ESTADIC 2024 <ExternalLink className="w-2.5 h-2.5" /></a>
+                        <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:underline flex items-center gap-0.5">ESTADIC 2024 <ExternalLink className="w-2.5 h-2.5" /></a>
                       </div>
                     </div>
                   </CardContent>
@@ -647,7 +664,7 @@ export default function Conclusoes() {
 // COMPONENTES AUXILIARES
 // =============================================
 
-function FioCondutorCard({ fio }: { fio: FioCondutor }) {
+function FioCondutorCard({ fio, indicadores }: { fio: FioCondutor; indicadores?: any[] | null }) {
   const tipoConfig = {
     paradoxo: { icon: Scale, color: 'border-l-primary', bg: 'bg-primary/5', label: 'Paradoxo' },
     correlacao: { icon: Link2, color: 'border-l-accent', bg: 'bg-accent/5', label: 'Correlação' },
@@ -681,6 +698,13 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
           <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg mb-4">
             <p className="text-xs font-semibold text-primary mb-1">📊 Comparativo 2018 → 2024:</p>
             <p className="text-xs text-muted-foreground">{fio.comparativo2018}</p>
+            <LastroEvidencias
+              className="mt-1.5"
+              indicadores={indicadores}
+              codigos={fio.codigosLastro}
+              orcamento={fio.orcamentoLastro}
+              normativos={fio.normativoLastro}
+            />
           </div>
         )}
         {fio.evidencias.length > 0 && (
@@ -690,7 +714,17 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
               {fio.evidencias.slice(0, 8).map((ev, i) => (
                 <li key={i} className="text-xs flex items-start gap-2">
                   <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                  <span><strong>{ev.texto}</strong> <span className="text-muted-foreground">({ev.fonte})</span></span>
+                  <span>
+                    <strong>{ev.texto}</strong> <span className="text-muted-foreground">({ev.fonte})</span>
+                    <LastroEvidencias
+                      className="inline-flex ml-1 align-middle"
+                      prefixo=""
+                      indicadores={indicadores}
+                      codigos={ev.codigosLastro}
+                      orcamento={ev.orcamentoLastro}
+                      normativos={ev.normativoLastro}
+                    />
+                  </span>
                 </li>
               ))}
             </ul>

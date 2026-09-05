@@ -31,6 +31,12 @@ export interface FioCondutor {
   comparativo2018?: string;
   /** Artigos da Convenção ICERD endereçados por este fio (auto-derived from eixos) */
   artigosConvencao?: ArtigoConvencao[];
+  /** Códigos IND-NNN da Base Estatística que dão lastro ao argumento */
+  codigosLastro?: string[];
+  /** Termos de lastro na Base Orçamentária */
+  orcamentoLastro?: string[];
+  /** Termos de lastro na Base Normativa */
+  normativoLastro?: string[];
 }
 
 export interface EvidenciaDinamica {
@@ -40,7 +46,13 @@ export interface EvidenciaDinamica {
   valorAtual?: string;
   valor2018?: string;
   variacao?: string;
+  /** Códigos IND-NNN que sustentam esta evidência (link clicável) */
+  codigosLastro?: string[];
+  /** Termos de lastro nas bases Orçamentária/Normativa */
+  orcamentoLastro?: string[];
+  normativoLastro?: string[];
 }
+
 
 export interface InsightCruzamento {
   id: string;
@@ -380,8 +392,10 @@ function gerarFiosCondutores(
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada com 245 territórios quilombolas titulados (Palmares/INCRA 2025) de ~2.600 certificados (~9,4%). Dados orçamentários detalhados disponíveis no módulo Orçamento.`
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada, com 384 títulos expedidos frente a 2.019 processos de titulação abertos no INCRA — menos de um quinto dos processos concluídos (IND-209). Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
+      codigosLastro: ['IND-209'],
     });
+
   }
 
   // FIO 4: Interseccionalidade - mulheres negras
@@ -539,8 +553,10 @@ function gerarFiosCondutores(
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
       relevancia: 'alta',
-      comparativo2018: `Orçamento para igualdade racial sofreu queda de até 90% entre 2016-2022, com recuperação parcial a partir de 2023. Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`
+      comparativo2018: `O orçamento do órgão de igualdade racial caiu 99,6% entre 2018 e 2020 (R$ 32,3 mi → R$ 0,115 mi), sem registros orçamentários próprios em 2021-2022; a recuperação vem com a recriação do MIR (R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025). Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`,
+      orcamentoLastro: ['MIR', 'SEPPIR'],
     });
+
   }
 
   // FIO 6: Dados e invisibilidade
@@ -596,21 +612,23 @@ function gerarFiosCondutores(
     });
   }
 
-  // FIO 8: Administração Pública — MUNIC/ESTADIC 2024
+  // FIO 8: Administração Pública — ESTADIC 2024 (dados estaduais auditados)
   fios.push({
     id: 'adm-publica-munic-estadic',
     titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
     tipo: 'lacuna_critica',
-    argumento: `A MUNIC/ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, e a maioria dos municípios carece de órgão dedicado ou conselho municipal de igualdade racial. A pesquisa mostra lacunas graves na institucionalização de políticas raciais em nível subnacional — especialmente para povos ciganos e indígenas, que praticamente não possuem estrutura específica em nenhuma esfera.`,
+    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
     evidencias: [
-      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Perfil de gestores municipais: maioria mulheres brancas', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'MUNIC/ESTADIC 2024', tipo: 'qualitativa' },
+      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: '25 das 27 UFs com legislação específica de igualdade racial', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: 'Gestão estadual de igualdade racial: 24 dos 27 gestores são mulheres e 14 dos 27 são pessoas negras', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-180'] },
+      { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'ESTADIC 2024 / IBGE', tipo: 'qualitativa', codigosLastro: ['IND-180'] },
     ],
     eixos: ['politicas_institucionais', 'dados_estatisticas'],
     grupos: ['geral', 'ciganos', 'indigenas'],
     relevancia: 'alta',
-    comparativo2018: `Em 2018 a pesquisa anterior (MUNIC 2019) já indicava fragilidade. Em 2024, apesar da recriação do MIR a nível federal, a capilarização para estados e municípios segue extremamente deficiente.`
+    comparativo2018: `Em 2018 a pesquisa anterior já indicava fragilidade. Em 2024, apesar da recriação do MIR a nível federal, a capilarização para estados segue deficiente: legislação existe quase em toda parte, fundo próprio quase em lugar nenhum.`,
+    codigosLastro: ['IND-179', 'IND-180'],
   });
 
   // FIO 9: COVID-19 e Desigualdade Racial
@@ -618,19 +636,19 @@ function gerarFiosCondutores(
     id: 'covid-desigualdade-racial',
     titulo: 'COVID-19: Pandemia Expôs e Aprofundou a Desigualdade Racial',
     tipo: 'retrocesso',
-    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: negros representaram 57% dos óbitos por COVID apesar de serem 56% da população (DataSUS/SIM); mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
+    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: o excesso de mortalidade entre pretos e pardos foi de +57% em 2020 (~36 mil óbitos acima do esperado), a mortalidade materna de mulheres pretas subiu 66% no pico e o acesso a leito crítico foi desigual — pretos e pardos receberam ventilação invasiva fora de UTI com mais frequência que brancos. O impacto pandêmico expõe a fragilidade do acesso à saúde e da proteção social para populações racializadas.`,
     evidencias: [
-      { texto: 'Negros: 57% dos óbitos COVID (sobre-representação em relação à proporção populacional de 56%)', fonte: 'DataSUS/SIM — Painel COVID-19', tipo: 'quantitativa' },
-      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico (2020-2021)', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
-      { texto: 'Insegurança alimentar grave: 20,6% lares negros vs 10,6% brancos', fonte: 'Fiocruz/DSBR 2023', tipo: 'quantitativa' },
-      { texto: 'Mulheres negras: últimas a recuperar emprego pós-pandemia', fonte: 'PNAD Contínua 2023', tipo: 'quantitativa' },
-      { texto: 'Negros com +16% de chance de óbito em UTI por COVID', fonte: 'Fiocruz / Observatório COVID-19', tipo: 'quantitativa' },
+      { texto: 'Excesso de mortalidade de +57% entre pretos e pardos em 2020 (~36 mil óbitos acima do esperado); homens negros +55% e idosos negros 80+ quase 2× mais afetados', fonte: 'IND-178 — excesso de mortalidade 2020', tipo: 'quantitativa', codigosLastro: ['IND-178'] },
+      { texto: 'Mortalidade materna de mulheres pretas subiu 66% no pico da pandemia (107,8 → 179,4 por 100 mil NV, 2019-2021); pardas +71% (55,2 → 94,4)', fonte: 'IND-173 — RMM por raça', tipo: 'quantitativa', codigosLastro: ['IND-173'] },
+      { texto: 'Pretos e pardos internados por SRAG/COVID receberam ventilação invasiva fora de UTI com mais frequência (17% vs 11% de brancos) — barreira de acesso a leitos críticos', fonte: 'Peres et al. (2021), SIVEP-Gripe, n=228.196', tipo: 'quantitativa', codigosLastro: ['IND-212'] },
     ],
     eixos: ['saude', 'trabalho_renda', 'dados_estatisticas'],
     grupos: ['negros', 'indigenas', 'mulheres_negras', 'idosos_negros'],
     relevancia: 'alta',
-    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros.`
+    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou as disparidades de mortalidade geral, materna e de acesso a leito crítico, todas registradas na Base Estatística (IND-178, IND-173, IND-212).`,
+    codigosLastro: ['IND-178', 'IND-173', 'IND-212'],
   });
+
 
   // FIO 10: Assimetria ICERD × Orçamento — cruzamento aderência × investimento por artigo
   if (orcDados.length > 0) {
@@ -888,9 +906,10 @@ function gerarFiosEmergentes(
       const programas = [...new Set(altaExecucao.map(d => d.programa))];
       novos.push({
         id: 'emergente-execucao-recorde',
-        titulo: 'Execução Orçamentária Recorde: Evidência de Fortalecimento',
+        titulo: 'Expansão Orçamentária sem Precedentes (valores)',
         tipo: 'avanco',
-        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). O salto do período é de VALORES — a dotação do órgão de igualdade racial vai de R$ 38,1 mi (2023) a R$ 135,9 mi (2025) —, enquanto a taxa de execução do próprio órgão ainda está em recuperação (21,2% em 2023 → 75,6% em 2025). O ganho é de escala orçamentária, não de desempenho de execução.`,
+
         evidencias: altaExecucao.slice(0, 6).map(d => ({
           texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
           fonte: d.fonte_dados,
@@ -899,7 +918,9 @@ function gerarFiosEmergentes(
         eixos: [...new Set(altaExecucao.map(d => d.eixo_tematico).filter(Boolean) as string[])],
         grupos: [...new Set(altaExecucao.map(d => d.grupo_focal).filter(Boolean) as string[])],
         relevancia: 'alta',
-        comparativo2018: `Período 2019-2022 registrou execução abaixo de 50% em múltiplos programas, com desfinanciamento generalizado.`,
+        comparativo2018: `A execução média do conjunto da base foi de 87-91% em 2019-2022 e de 65,8-84,7% em 2023-2025: a execução baixa (<50%) é específica do órgão de igualdade racial (MIR/SEPPIR), não do conjunto dos programas.`,
+        orcamentoLastro: ['MIR', 'SEPPIR'],
+
       });
     }
   }
