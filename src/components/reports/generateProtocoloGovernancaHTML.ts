@@ -69,6 +69,7 @@ export function generateProtocoloGovernancaHTML(data: ProtocoloGovernancaData): 
   const { indicadores = [], orcDados = [], normativos = [], recomendacoes = [], diagnosticMap } = data;
 
   /* ─────────── BASE ESTATÍSTICA ─────────── */
+  const rol = buildRolEstatistico(indicadores);
   const totalInd = indicadores.length;
   const porFonte = tally(indicadores, (i) => i.fonte);
   const porCategoria = tally(indicadores, (i) => i.categoria);
