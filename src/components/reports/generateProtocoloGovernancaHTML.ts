@@ -1,4 +1,6 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
+import { RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS, IMPORTANT_SHORT_KEYWORDS } from '@/utils/recommendationKeywordConcepts';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 
 /**
  * PRODUTO 2 — PROTOCOLO METODOLÓGICO DE GOVERNANÇA (LEGADO E MÉTODO)
@@ -19,6 +21,7 @@ export interface ProtocoloGovernancaData {
   recomendacoes: any[];
   diagnosticMap: Map<string, any>;
 }
+
 
 const esc = (s: any) =>
   String(s ?? '')
