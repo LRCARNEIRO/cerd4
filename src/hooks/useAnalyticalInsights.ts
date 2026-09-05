@@ -612,21 +612,23 @@ function gerarFiosCondutores(
     });
   }
 
-  // FIO 8: Administração Pública — MUNIC/ESTADIC 2024
+  // FIO 8: Administração Pública — ESTADIC 2024 (dados estaduais auditados)
   fios.push({
     id: 'adm-publica-munic-estadic',
     titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
     tipo: 'lacuna_critica',
-    argumento: `A MUNIC/ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, e a maioria dos municípios carece de órgão dedicado ou conselho municipal de igualdade racial. A pesquisa mostra lacunas graves na institucionalização de políticas raciais em nível subnacional — especialmente para povos ciganos e indígenas, que praticamente não possuem estrutura específica em nenhuma esfera.`,
+    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
     evidencias: [
-      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Perfil de gestores municipais: maioria mulheres brancas', fonte: 'MUNIC 2024 / IBGE', tipo: 'quantitativa' },
-      { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'MUNIC/ESTADIC 2024', tipo: 'qualitativa' },
+      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: '25 das 27 UFs com legislação específica de igualdade racial', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: 'Gestão estadual de igualdade racial: 24 dos 27 gestores são mulheres e 14 dos 27 são pessoas negras', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-180'] },
+      { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'ESTADIC 2024 / IBGE', tipo: 'qualitativa', codigosLastro: ['IND-180'] },
     ],
     eixos: ['politicas_institucionais', 'dados_estatisticas'],
     grupos: ['geral', 'ciganos', 'indigenas'],
     relevancia: 'alta',
-    comparativo2018: `Em 2018 a pesquisa anterior (MUNIC 2019) já indicava fragilidade. Em 2024, apesar da recriação do MIR a nível federal, a capilarização para estados e municípios segue extremamente deficiente.`
+    comparativo2018: `Em 2018 a pesquisa anterior já indicava fragilidade. Em 2024, apesar da recriação do MIR a nível federal, a capilarização para estados segue deficiente: legislação existe quase em toda parte, fundo próprio quase em lugar nenhum.`,
+    codigosLastro: ['IND-179', 'IND-180'],
   });
 
   // FIO 9: COVID-19 e Desigualdade Racial
@@ -634,19 +636,19 @@ function gerarFiosCondutores(
     id: 'covid-desigualdade-racial',
     titulo: 'COVID-19: Pandemia Expôs e Aprofundou a Desigualdade Racial',
     tipo: 'retrocesso',
-    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: negros representaram 57% dos óbitos por COVID apesar de serem 56% da população (DataSUS/SIM); mortalidade materna negra quase triplicou durante o pico. A recuperação pós-pandemia (2023-2024) também é desigual: mulheres negras foram as últimas a recuperar emprego e renda. O impacto pandêmico expõe a fragilidade do acesso à saúde e proteção social para populações racializadas.`,
+    argumento: `A pandemia de COVID-19 (2020-2022) atingiu desproporcionalmente a população negra e indígena: o excesso de mortalidade entre pretos e pardos foi de +57% em 2020 (~36 mil óbitos acima do esperado), a mortalidade materna de mulheres pretas subiu 66% no pico e o acesso a leito crítico foi desigual — pretos e pardos receberam ventilação invasiva fora de UTI com mais frequência que brancos. O impacto pandêmico expõe a fragilidade do acesso à saúde e da proteção social para populações racializadas.`,
     evidencias: [
-      { texto: 'Negros: 57% dos óbitos COVID (sobre-representação em relação à proporção populacional de 56%)', fonte: 'DataSUS/SIM — Painel COVID-19', tipo: 'quantitativa' },
-      { texto: 'Mortalidade materna negra COVID: quase triplicou no pico (2020-2021)', fonte: 'DataSUS/SIM 2020-2021', tipo: 'quantitativa' },
-      { texto: 'Insegurança alimentar grave: 20,6% lares negros vs 10,6% brancos', fonte: 'Fiocruz/DSBR 2023', tipo: 'quantitativa' },
-      { texto: 'Mulheres negras: últimas a recuperar emprego pós-pandemia', fonte: 'PNAD Contínua 2023', tipo: 'quantitativa' },
-      { texto: 'Negros com +16% de chance de óbito em UTI por COVID', fonte: 'Fiocruz / Observatório COVID-19', tipo: 'quantitativa' },
+      { texto: 'Excesso de mortalidade de +57% entre pretos e pardos em 2020 (~36 mil óbitos acima do esperado); homens negros +55% e idosos negros 80+ quase 2× mais afetados', fonte: 'IND-178 — excesso de mortalidade 2020', tipo: 'quantitativa', codigosLastro: ['IND-178'] },
+      { texto: 'Mortalidade materna de mulheres pretas subiu 66% no pico da pandemia (107,8 → 179,4 por 100 mil NV, 2019-2021); pardas +71% (55,2 → 94,4)', fonte: 'IND-173 — RMM por raça', tipo: 'quantitativa', codigosLastro: ['IND-173'] },
+      { texto: 'Pretos e pardos internados por SRAG/COVID receberam ventilação invasiva fora de UTI com mais frequência (17% vs 11% de brancos) — barreira de acesso a leitos críticos', fonte: 'Peres et al. (2021), SIVEP-Gripe, n=228.196', tipo: 'quantitativa', codigosLastro: ['IND-212'] },
     ],
     eixos: ['saude', 'trabalho_renda', 'dados_estatisticas'],
     grupos: ['negros', 'indigenas', 'mulheres_negras', 'idosos_negros'],
     relevancia: 'alta',
-    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou todas as disparidades: mortalidade, emprego, renda, educação remota. Em 2024, a recuperação econômica atinge menos os negros.`
+    comparativo2018: `Antes da pandemia (2018-2019), as desigualdades já eram graves. A COVID amplificou as disparidades de mortalidade geral, materna e de acesso a leito crítico, todas registradas na Base Estatística (IND-178, IND-173, IND-212).`,
+    codigosLastro: ['IND-178', 'IND-173', 'IND-212'],
   });
+
 
   // FIO 10: Assimetria ICERD × Orçamento — cruzamento aderência × investimento por artigo
   if (orcDados.length > 0) {
