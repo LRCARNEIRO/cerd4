@@ -18,6 +18,8 @@ import { EvidenceInventoryReport } from '@/components/reports/EvidenceInventoryR
 import { ConclusoesReportGenerator } from '@/components/reports/ConclusoesReportGenerator';
 import { FinalCerdIVReport } from '@/components/reports/FinalCerdIVReport';
 import { ProtocoloGovernancaReport } from '@/components/reports/ProtocoloGovernancaReport';
+import { ProtocoloOrcamentarioReport } from '@/components/reports/ProtocoloOrcamentarioReport';
+
 
 import { TOTAL_DADOS_NOVOS } from '@/utils/countStatisticsIndicators';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
