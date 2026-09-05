@@ -494,7 +494,7 @@ export default function Conclusoes() {
                   </Button>
                 </div>
                 {fiosFiltrados.map((fio) => (
-                  <FioCondutorCard key={fio.id} fio={fio} />
+                  <FioCondutorCard key={fio.id} fio={fio} indicadores={indicadores} />
                 ))}
               </div>
             </TabsContent>
@@ -664,7 +664,7 @@ export default function Conclusoes() {
 // COMPONENTES AUXILIARES
 // =============================================
 
-function FioCondutorCard({ fio }: { fio: FioCondutor }) {
+function FioCondutorCard({ fio, indicadores }: { fio: FioCondutor; indicadores?: any[] | null }) {
   const tipoConfig = {
     paradoxo: { icon: Scale, color: 'border-l-primary', bg: 'bg-primary/5', label: 'Paradoxo' },
     correlacao: { icon: Link2, color: 'border-l-accent', bg: 'bg-accent/5', label: 'Correlação' },
@@ -698,6 +698,13 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
           <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg mb-4">
             <p className="text-xs font-semibold text-primary mb-1">📊 Comparativo 2018 → 2024:</p>
             <p className="text-xs text-muted-foreground">{fio.comparativo2018}</p>
+            <LastroEvidencias
+              className="mt-1.5"
+              indicadores={indicadores}
+              codigos={fio.codigosLastro}
+              orcamento={fio.orcamentoLastro}
+              normativos={fio.normativoLastro}
+            />
           </div>
         )}
         {fio.evidencias.length > 0 && (
@@ -707,7 +714,17 @@ function FioCondutorCard({ fio }: { fio: FioCondutor }) {
               {fio.evidencias.slice(0, 8).map((ev, i) => (
                 <li key={i} className="text-xs flex items-start gap-2">
                   <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-muted-foreground" />
-                  <span><strong>{ev.texto}</strong> <span className="text-muted-foreground">({ev.fonte})</span></span>
+                  <span>
+                    <strong>{ev.texto}</strong> <span className="text-muted-foreground">({ev.fonte})</span>
+                    <LastroEvidencias
+                      className="inline-flex ml-1 align-middle"
+                      prefixo=""
+                      indicadores={indicadores}
+                      codigos={ev.codigosLastro}
+                      orcamento={ev.orcamentoLastro}
+                      normativos={ev.normativoLastro}
+                    />
+                  </span>
                 </li>
               ))}
             </ul>
