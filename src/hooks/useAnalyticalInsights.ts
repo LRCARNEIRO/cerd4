@@ -906,9 +906,10 @@ function gerarFiosEmergentes(
       const programas = [...new Set(altaExecucao.map(d => d.programa))];
       novos.push({
         id: 'emergente-execucao-recorde',
-        titulo: 'Execução Orçamentária Recorde: Evidência de Fortalecimento',
+        titulo: 'Expansão Orçamentária sem Precedentes (valores)',
         tipo: 'avanco',
-        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). Esse desempenho contrasta com o período 2019-2022 e constitui evidência de fortalecimento institucional das políticas raciais, podendo ser utilizado como argumento de avanço no IV Relatório.`,
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). O salto do período é de VALORES — a dotação do órgão de igualdade racial vai de R$ 38,1 mi (2023) a R$ 135,9 mi (2025) —, enquanto a taxa de execução do próprio órgão ainda está em recuperação (21,2% em 2023 → 75,6% em 2025). O ganho é de escala orçamentária, não de desempenho de execução.`,
+
         evidencias: altaExecucao.slice(0, 6).map(d => ({
           texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
           fonte: d.fonte_dados,
