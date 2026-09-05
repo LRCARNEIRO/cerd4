@@ -194,7 +194,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 </div>
 
 <div class="kpis">
-<div class="kpi"><div class="v">${fmtInt(totalInd)}</div><div class="l">Indicadores estatísticos</div></div>
+<div class="kpi"><div class="v">${fmtInt(rol.total)}</div><div class="l">Evidências estatísticas</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalOrc)}</div><div class="l">Registros orçamentários</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalNorm)}</div><div class="l">Documentos normativos</div></div>
 <div class="kpi"><div class="v">${fmtInt(totalRec)}</div><div class="l">Recomendações monitoradas</div></div>
@@ -208,7 +208,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <li>3. Arquitetura de dados e fluxogramas de ingestão</li>
 <li>4. Inventário das fontes de dados (SIAFI/SIOP, IBGE/SIDRA, CadÚnico e demais)</li>
 <li>5. Fórmulas de cálculo de cada índice</li>
-<li>6. Metodologia de vinculação Recomendação ONU × dados</li>
+<li>6. Metodologia de vinculação Recomendação ONU × dados (inclui o dicionário completo de palavras-chave)</li>
 <li>7. Critérios de classificação e escalas</li>
 <li>8. Governança da qualidade, auditoria e limitações</li>
 <li>9. Anexos quantitativos (retrato das bases na data de emissão)</li>
@@ -219,12 +219,14 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <p>Este protocolo documenta <strong>como o sistema pensa</strong>: quais entidades existem, de onde vem cada dado, que fórmula produz cada índice e sob que critério um resultado é classificado. O objetivo é permitir que o MIR opere, audite e evolua a plataforma sem dependência da equipe que a construiu — isto é, que a "fórmula de cálculo" por trás de cada número seja pública, reproduzível e contestável.</p>
 <p>O sistema opera sobre <strong>três bases de evidência</strong> e um <strong>corpus de obrigações internacionais</strong>:</p>
 <table>
-<tr><th>Camada</th><th>Entidade técnica</th><th>Função no método</th><th>Volume atual</th></tr>
-<tr><td>Base Estatística</td><td><code>indicadores_interseccionais</code></td><td>Mede a realidade (desigualdade observada e sua tendência)</td><td class="num">${fmtInt(totalInd)}</td></tr>
-<tr><td>Base Orçamentária</td><td><code>dados_orcamentarios</code></td><td>Mede o financiamento da política (esforço fiscal e execução)</td><td class="num">${fmtInt(totalOrc)}</td></tr>
+<tr><th>Camada</th><th>Entidade técnica</th><th>Função no método</th><th>Volume vinculável</th></tr>
+<tr><td>Base Estatística</td><td><code>indicadores_interseccionais</code> + registro de subindicadores</td><td>Mede a realidade (desigualdade observada e sua tendência)</td><td class="num">${fmtInt(rol.total)}</td></tr>
+<tr><td>Base Orçamentária</td><td><code>dados_orcamentarios</code> (visão canônica deduplicada)</td><td>Mede o financiamento da política (esforço fiscal e execução)</td><td class="num">${fmtInt(totalOrc)}</td></tr>
 <tr><td>Base Normativa</td><td><code>documentos_normativos</code></td><td>Mede a moldura jurídica e institucional</td><td class="num">${fmtInt(totalNorm)}</td></tr>
 <tr><td>Corpus de obrigações</td><td><code>lacunas_identificadas</code></td><td>Recomendações da ONU monitoradas, ancoradas nos Artigos I–VII da ICERD</td><td class="num">${fmtInt(totalRec)}</td></tr>
+<tr><td><strong>Total consolidado de evidências</strong></td><td colspan="2">Estatística + Orçamentária + Normativa</td><td class="num"><strong>${fmtInt(rol.total + totalOrc + totalNorm)}</strong></td></tr>
 </table>
+
 
 <div class="legend"><strong>Princípio da Fonte Única de Verdade (SSoT):</strong> nenhum painel recalcula por conta própria. Toda tela, relatório e exportação espelha os mesmos motores de cálculo descritos na Seção 5. Editar uma evidência em Recomendações propaga instantaneamente para status, aderência por artigo, evolução, diagnóstico e Painel Geral.</div>
 
