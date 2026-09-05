@@ -613,7 +613,9 @@ function generateConsolidatedHTML(data: {
     <p style="font-size:10px;color:#78350f;">
       O cruzamento exaustivo dos ${fiosCondutores.length} fios condutores revela um quadro de avanço parcial e assimétrico.
       O Estado brasileiro avançou no plano normativo e institucional — recriação do MIR (2023), Lei 14.532/2023 (racismo crime inafiançável),
-      Censo 2022 com contagem inédita de quilombolas, execução orçamentária recorde.
+      Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial
+      (dotação R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025, execução em recuperação de 21,2% → 75,6%) e ingresso por cotas raciais
+      em universidades federais (14.422 em 2012 → 55.371 em 2022, +284% — IND-211).
       Houve ganhos em educação (superior negro: ${edu2018.superiorNegroPercent}% → ${edu2024.superiorNegroPercent}%),
       emprego (desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}%) e renda nominal.
     </p>
@@ -622,14 +624,15 @@ function generateConsolidatedHTML(data: {
       vítimas negras de homicídio: ${seg2018.percentualVitimasNegras}% → ${seg2024.percentualVitimasNegras}%,
       feminicídio: ${fem2018.percentualNegras}% → ${fem2024.percentualNegras}%,
       letalidade policial: ${seg2018.letalidadePolicial}% → ${seg2024.letalidadePolicial}%,
-      gap absoluto de renda ampliou. A MUNIC/ESTADIC 2024 revela que menos de 5% dos municípios possuem legislação racial específica.
+      gap absoluto de renda ampliou. A ESTADIC 2024 revela que 25 das 27 UFs têm legislação racial específica, mas apenas 2 mantêm
+      Fundo de Igualdade Racial ativo (IND-179); na titulação quilombola são 384 títulos expedidos frente a 2.019 processos abertos (IND-209).
     </p>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">
     <div style="padding:8px;background:#dcfce7;border-radius:6px;">
       <p style="font-size:10px;font-weight:700;color:#166534;">✓ ONDE AVANÇOU</p>
       <ul style="font-size:9px;color:#14532d;margin:0;padding-left:12px;">
-        <li>Marco legal antirracista</li><li>Recriação do MIR</li><li>Educação superior negra</li><li>Execução orçamentária 2023-25</li><li>Censo quilombola inédito</li>
+        <li>Marco legal antirracista</li><li>Recriação e expansão orçamentária do MIR</li><li>Educação superior negra</li><li>Ingresso por cotas raciais (+284%, IND-211)</li><li>Censo quilombola inédito</li>
       </ul>
     </div>
     <div style="padding:8px;background:#fee2e2;border-radius:6px;">
