@@ -340,7 +340,7 @@ function GrupoCard({ nome, indicadores }: { nome: string; indicadores: Indicador
                     tendencia === 'melhoria' && 'text-success border-success/30',
                     tendencia === 'piora' && 'text-destructive border-destructive/30',
                   )}>
-                    {variacao(ind.dados)}
+                    {variacao(ind.dados, ind.unidade)}
                   </Badge>
                   <TendenciaLabel tendencia={tendencia} />
                 </div>
