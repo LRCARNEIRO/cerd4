@@ -433,9 +433,12 @@ function gerarFiosCondutores(
       if (d?.mulher_negra_pct != null) estupPct = String(d.mulher_negra_pct);
     }
 
-    // Mortalidade materna
-    let mmPctNegra = '67,1';
-    let mmRazao = '2,3';
+    // Mortalidade materna — razão de mortalidade materna (RMM) por 100 mil NV.
+    // Valores reserva = últimos dados da base (IND-122, série DataSUS/SIM + SINASC, 2024).
+    let mmRmmNegra = '55,5';
+    let mmRmmBranca = '54,2';
+    let mmAno = '2024';
+    let mmRazao = '1,0';
     let mmFonte = 'DataSUS/SIM';
     if (saudeInd) {
       const d = saudeInd.dados as any;
@@ -445,13 +448,15 @@ function gerarFiosCondutores(
       if (anoMax && series[anoMax]) {
         const s = series[anoMax];
         if (s.mortalidadeMaternaNegra != null && s.mortalidadeMaternaBranca != null) {
-          const total = (s.mortalidadeMaternaNegra + s.mortalidadeMaternaBranca);
-          if (total > 0) mmPctNegra = ((s.mortalidadeMaternaNegra / total) * 100).toFixed(1);
-          if (s.mortalidadeMaternaBranca > 0) mmRazao = (s.mortalidadeMaternaNegra / s.mortalidadeMaternaBranca).toFixed(1);
+          mmAno = String(anoMax);
+          mmRmmNegra = String(s.mortalidadeMaternaNegra).replace('.', ',');
+          mmRmmBranca = String(s.mortalidadeMaternaBranca).replace('.', ',');
+          if (s.mortalidadeMaternaBranca > 0) mmRazao = (s.mortalidadeMaternaNegra / s.mortalidadeMaternaBranca).toFixed(1).replace('.', ',');
         }
       }
       if (saudeInd.fonte) mmFonte = saudeInd.fonte;
     }
+
 
     // Violência doméstica
     let violDomPct = '59,8';
