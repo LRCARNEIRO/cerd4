@@ -8,30 +8,12 @@ export function generateMethodologyHTML(): string {
       secao: 'BASE ESTATÍSTICA — ESTATÍSTICAS E INDICADORES',
       abas: [
         {
-          nome: 'Common Core (77 Tabelas)',
-          icone: '📖',
-          origem: 'Common Core Document (CCD Brasil 2020)',
-          motivacao: `Criada para atender à obrigação de atualização do <strong>Common Core Document (HRI/CORE/BRA)</strong>, que é o documento básico comum a todos os tratados de direitos humanos da ONU. O CCD Brasil 2020 continha 77 tabelas estatísticas cobrindo dados demográficos, econômicos e sociais. Esta aba replica a estrutura integral dessas 77 tabelas, monitorando quais possuem dados atualizados (Censo 2022, PNAD 2024, SIS 2024) e quais permanecem com dados de 2018 ou anteriores.`,
-          documentosFonte: ['CCD-Brasil-2020.pdf', 'CCD-Brasil-2020-Dados-Atualizacao.docx'],
-          promptOrigem: 'Integrar as 77 tabelas estatísticas do Common Core Document 2020, criando uma interface de gestão que monitore o status de atualização de cada tabela com dados de fontes oficiais (SIDRA/IBGE).',
-          artigos: ['Art. I (Definição)', 'Art. V (Direitos Econômicos/Sociais)'],
-        },
-        {
-          nome: 'Dados Novos (Auditáveis)',
-          icone: '➕',
-          origem: 'Auditoria do sistema — dados coletados além do CCD original',
-          motivacao: `Inventário de todos os indicadores estatísticos que foram <strong>adicionados ao sistema além das 77 tabelas originais</strong> do Common Core. Inclui séries temporais (FBSP, Atlas da Violência, DataSUS), dados interseccionais e indicadores de vulnerabilidade. Cada registro possui badge de origem (série temporal, banco de dados, cruzamento) e deep link para a fonte primária. Criada para dar transparência ao "delta" entre o CCD 2020 e a base expandida do sistema.`,
-          documentosFonte: ['Quadro-Monitoramento-CERD-Brasil.xlsx', 'CERD-Observacoes-Brasil-2022.pdf'],
-          promptOrigem: 'Criar um inventário de todos os dados que foram adicionados ao sistema além das 77 tabelas do Common Core original, classificando cada um por tipo de fonte e auditabilidade.',
-          artigos: ['Transversal — todos os artigos'],
-        },
-        {
           nome: 'Dados Gerais',
           icone: '📊',
-          origem: 'Common Core Document + Censo 2022',
-          motivacao: `Apresenta os <strong>indicadores demográficos e socioeconômicos fundamentais</strong> exigidos pelo Common Core: população total, composição por raça/cor, distribuição regional, PIB per capita, IDH, expectativa de vida e indicadores de pobreza. Todos desagregados por raça conforme exigência das <strong>Diretrizes do CERD (CERD/C/2007/1)</strong>, que determinam que os Estados-partes apresentem dados desagregados por raça, etnia e gênero.`,
+          origem: 'Censo 2022 (IBGE) + Diretrizes CERD/C/2007/1',
+          motivacao: `Apresenta os <strong>indicadores demográficos e socioeconômicos fundamentais</strong> exigidos pelo CERD: população total, composição por raça/cor, distribuição regional, PIB per capita, IDH, expectativa de vida e indicadores de pobreza. Todos desagregados por raça conforme exigência das <strong>Diretrizes do CERD (CERD/C/2007/1)</strong>, que determinam que os Estados-partes apresentem dados desagregados por raça, etnia e gênero.`,
           documentosFonte: ['CCD-Brasil-2020.pdf', 'CERD-Guidelines-2007.pdf'],
-          promptOrigem: 'Estruturar os dados demográficos gerais do Brasil conforme as seções I-III do Common Core Document, com dados do Censo 2022 e desagregação racial.',
+          promptOrigem: 'Estruturar os dados demográficos gerais do Brasil com dados do Censo 2022 e desagregação racial.',
           artigos: ['Art. I (Definição de discriminação racial)', 'Art. V.e (Direitos econômicos e sociais)'],
         },
         {
