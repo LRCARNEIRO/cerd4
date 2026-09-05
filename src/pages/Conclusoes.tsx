@@ -43,6 +43,8 @@ import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { LastroEvidencias } from '@/components/shared/LastroEvidencias';
+
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
