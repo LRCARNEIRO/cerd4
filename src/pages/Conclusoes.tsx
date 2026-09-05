@@ -423,7 +423,7 @@ export default function Conclusoes() {
                   <CardContent className="pt-6">
                     <p className="text-sm text-muted-foreground">
                       <strong>Dados do Escopo do Projeto</strong> — Gráficos comparativos 2018→2024 extraídos da Base Estatística (FBSP, PNAD, DataSUS, SIDRA/IBGE). 
-                      Cada gráfico fundamenta um argumento para o CERD IV / Common Core.
+                      Cada gráfico fundamenta um argumento para o relatório CERD IV.
                     </p>
                   </CardContent>
                 </Card>

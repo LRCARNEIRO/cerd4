@@ -261,6 +261,9 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     return getSafeIndicadores(indicadores);
   }, [indicadores]);
 
+  // Rol canônico da Base Estatística (guarda-chuvas sem duplicidade + subindicadores)
+  const rolEstatistico = useMemo(() => buildRolEstatistico(safeIndicadores), [safeIndicadores]);
+
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
@@ -558,7 +561,7 @@ ${analysis.map(a => {
           <CardContent className="pt-2 pb-2 text-center">
             <Users className="w-4 h-4 mx-auto text-chart-5 mb-1" />
             <p className="text-lg font-bold">{rolEstatistico.total}</p>
-            <p className="text-[10px] text-muted-foreground">Indicadores</p>
+            <p className="text-[10px] text-muted-foreground">Evidências Estatísticas</p>
           </CardContent>
         </Card>
         <Card className="border-primary/30">
