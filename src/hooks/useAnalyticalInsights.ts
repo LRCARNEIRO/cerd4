@@ -918,7 +918,9 @@ function gerarFiosEmergentes(
         eixos: [...new Set(altaExecucao.map(d => d.eixo_tematico).filter(Boolean) as string[])],
         grupos: [...new Set(altaExecucao.map(d => d.grupo_focal).filter(Boolean) as string[])],
         relevancia: 'alta',
-        comparativo2018: `Período 2019-2022 registrou execução abaixo de 50% em múltiplos programas, com desfinanciamento generalizado.`,
+        comparativo2018: `A execução média do conjunto da base foi de 87-91% em 2019-2022 e de 65,8-84,7% em 2023-2025: a execução baixa (<50%) é específica do órgão de igualdade racial (MIR/SEPPIR), não do conjunto dos programas.`,
+        orcamentoLastro: ['MIR', 'SEPPIR'],
+
       });
     }
   }
