@@ -644,7 +644,7 @@ function generateConsolidatedHTML(data: {
     <div style="padding:8px;background:#fef3c7;border-radius:6px;">
       <p style="font-size:10px;font-weight:700;color:#92400e;">⚠ PARADOXO CENTRAL</p>
       <ul style="font-size:9px;color:#78350f;margin:0;padding-left:12px;">
-        <li>Leis avançam, implementação não</li><li>Orçamento cresce, resultados limitados</li><li>Federal avança, municipal estagna</li><li>Renda sobe, desigualdade persiste</li>
+        <li>Leis avançam, implementação não</li><li>Orçamento cresce, execução do órgão ainda em recuperação (75,6%)</li><li>Legislação estadual quase universal (25/27 UFs), fundo próprio em 2 UFs</li><li>Renda sobe, desigualdade persiste</li>
       </ul>
     </div>
   </div>
