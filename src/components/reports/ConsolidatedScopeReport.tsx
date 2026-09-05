@@ -463,7 +463,7 @@ function generateConsolidatedHTML(data: {
   <!-- ========================================== -->
   <hr class="divider">
   <h2 id="concl">PARTE IV — CONCLUSÕES ANALÍTICAS</h2>
-  <p class="source">Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × MUNIC/ESTADIC × COVID-19 (2018→2024)</p>
+  <p class="source">Cruzamento exaustivo: Base Estatística × Orçamentária × Normativa × ESTADIC × COVID-19 (2018→2024)</p>
 
   <!-- 4.1 SÍNTESE EXECUTIVA -->
   <h3 id="concl-sintese">4.1 — Síntese Executiva</h3>
@@ -680,7 +680,7 @@ function generateConsolidatedHTML(data: {
   <p class="source" style="margin-top:16px;">
     <strong>Fontes integradas:</strong> ${fiosCondutores.length} fios condutores analíticos, ${lacunasStats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20),
     ${respostas?.length || 0} respostas CERD III, ${indicadores?.length || 0} indicadores interseccionais,
-    ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
+    ${orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, ESTADIC 2024.
   </p>
 
   <div style="margin-top:40px;padding:16px;background:#f8fafc;border-radius:8px;text-align:center;">
