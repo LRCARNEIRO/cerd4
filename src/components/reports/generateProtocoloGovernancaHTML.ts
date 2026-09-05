@@ -470,9 +470,12 @@ com baixo gasto → alta eficácia (ou efeito de política não orçamentária).
 <h3>6.3 Critérios de elegibilidade de evidência</h3>
 <table>
 <tr><th>Regra</th><th>Efeito</th></tr>
-<tr><td>Indicador Common Core (prefixo <code>[CC-</code>)</td><td>Pesquisável, porém <strong>bloqueado</strong> como evidência — defesa em 3 camadas (motor, merge de override e geradores de relatório)</td></tr>
+<tr><td>Guarda-chuva que possui subindicadores</td><td>Suprimido do rol: quem vira evidência são os subindicadores, para não contar o mesmo dado duas vezes</td></tr>
+<tr><td>Registro sem bloco visual auditado em aba</td><td>Não é oferecido como evidência — a fonte canônica é o card auditado, não o espelho administrativo do banco</td></tr>
 <tr><td>Indicador sem recorte racial</td><td>Excluído dos cruzamentos analíticos (Regra de Ouro)</td></tr>
 <tr><td>Registro sem fonte auditável</td><td>Não sustenta afirmação; normativo passa a status <code>pendente</code></td></tr>
+<tr><td>Acervo Common Core (HRI/CORE/BRA)</td><td>Excluído fisicamente da base — não é pesquisável, vinculável nem exportável</td></tr>
+<tr><td>Registro orçamentário não canônico</td><td>Descartado pela deduplicação lógica (um registro por programa/ação + ano + esfera)</td></tr>
 <tr><td>Override manual</td><td>Prevalece sobre a sugestão do motor, com recálculo imediato</td></tr>
 </table>
 
@@ -488,6 +491,28 @@ ${block(
 </table>`
     : '',
 )}
+
+<h3>6.5 Dicionário de palavras-chave (vocabulário do motor de vinculação)</h3>
+<p>O motor não usa inteligência artificial nem similaridade estatística: ele usa um <strong>dicionário explícito e auditável</strong> de famílias de conceitos. Cada família tem <em>tokens de disparo</em> (que precisam aparecer no texto da recomendação, na quantidade mínima indicada) e <em>expansões</em> (os termos procurados nos registros das três bases). A tabela abaixo é gerada a partir do próprio código em produção — é a lista real, não uma transcrição.</p>
+<table>
+<tr><th>Família de conceito</th><th>Mín.</th><th>Tokens de disparo (na recomendação)</th><th>Expansões buscadas nas bases</th></tr>
+${RECOMMENDATION_CONCEPT_BUNDLES.map(
+  (b) =>
+    `<tr><td><code>${esc(b.id)}</code></td><td class="num">${b.minTriggerMatches}</td><td>${b.triggerTokens.map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>${b.expansions.map((t) => esc(t)).join(' · ')}</td></tr>`,
+).join('')}
+</table>
+<p>Total: <strong>${RECOMMENDATION_CONCEPT_BUNDLES.length}</strong> famílias de conceito, <strong>${RECOMMENDATION_CONCEPT_BUNDLES.reduce((s, b) => s + b.triggerTokens.length, 0)}</strong> tokens de disparo e <strong>${RECOMMENDATION_CONCEPT_BUNDLES.reduce((s, b) => s + b.expansions.length, 0)}</strong> expansões.</p>
+
+<h4>6.5.1 Travas do vocabulário</h4>
+<table>
+<tr><th>Trava</th><th>Termos</th><th>Efeito</th></tr>
+<tr><td>Tokens ubíquos de grupo</td><td>${[...UBIQUITOUS_GROUP_TOKENS].map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>Sozinhos não vinculam: casariam com quase toda a base. Exigem companhia de termo temático.</td></tr>
+<tr><td>Termos curtos protegidos</td><td>${[...IMPORTANT_SHORT_KEYWORDS].map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</td><td>Palavras de 3–4 letras que normalmente seriam descartadas por ruído, mas carregam sentido técnico e permanecem válidas.</td></tr>
+<tr><td>Exigência de sinal focal</td><td>marca racial, étnica ou de grupo focal</td><td>Registro sem recorte racial/étnico não vira evidência de política racial, ainda que case tematicamente.</td></tr>
+<tr><td>Trava anti-coringa</td><td>termos genéricos de eixo</td><td>Peso reduzido, para que um registro amplo não se vincule a dezenas de recomendações.</td></tr>
+</table>
+<div class="legend"><strong>Como manter:</strong> ampliar cobertura significa acrescentar expansões a uma família existente ou criar uma nova família — nunca baixar o corte de score. O dicionário é a alavanca de curadoria; o corte é constante do sistema.</div>
+
 
 <h2>7. Critérios de classificação</h2>
 
