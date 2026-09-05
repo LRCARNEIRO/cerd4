@@ -16,6 +16,7 @@ import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
@@ -260,6 +261,9 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     return getSafeIndicadores(indicadores);
   }, [indicadores]);
 
+  // Rol canônico da Base Estatística (guarda-chuvas sem duplicidade + subindicadores)
+  const rolEstatistico = useMemo(() => buildRolEstatistico(safeIndicadores), [safeIndicadores]);
+
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
       // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
@@ -437,7 +441,7 @@ th{background:#f1f5f9}
 <h1>⚖️ Anexo Analítico — Aderência ICERD por Artigo</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
-<p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${indicadores.length} indicadores, ${totalStatSeries} séries estatísticas.</p>
+<p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas, ${totalStatSeries} séries estatísticas.</p>
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
@@ -488,7 +492,7 @@ ${analysis.map(a => {
     a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, indicadores.length]);
+  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total]);
 
   return (
     <div className="space-y-6">
@@ -503,7 +507,7 @@ ${analysis.map(a => {
                 Avalia se o sistema possui <strong>dados externos suficientes</strong> para fundamentar cada artigo:
                 {' '}{stats?.total || 0} recomendações ONU, {totalNormativos} instrumentos normativos,
                 {' '}{orcamentoRecords.length} registros orçamentários,
-                {' '}{indicadores.length} indicadores e {totalStatSeries} séries estatísticas oficiais.
+                {' '}{rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas oficiais.
               </p>
               <p className="text-[10px] text-muted-foreground mt-1 italic">
                 Nota: Respostas CERD III e Conclusões Analíticas são exibidas como informação contextual, mas <strong>não</strong> compõem o score — são outputs do próprio sistema, não evidências externas.
@@ -515,7 +519,7 @@ ${analysis.map(a => {
                 </Button>
               </div>
               <p className="text-[10px] text-muted-foreground mt-2">
-                <strong>Indicadores</strong> = registros individuais do BD com título, valores e fonte. 
+                <strong>Evidências estatísticas</strong> = rol canônico vinculável (guarda-chuvas sem duplicidade + subindicadores auditados nas abas temáticas). 
                 <strong>Séries Estatísticas</strong> = conjuntos temporais temáticos (segurança, saúde, educação etc.) do espelho de dados.
               </p>
             </div>
@@ -556,8 +560,8 @@ ${analysis.map(a => {
         <Card className="border-chart-5/30">
           <CardContent className="pt-2 pb-2 text-center">
             <Users className="w-4 h-4 mx-auto text-chart-5 mb-1" />
-            <p className="text-lg font-bold">{indicadores.length}</p>
-            <p className="text-[10px] text-muted-foreground">Indicadores</p>
+            <p className="text-lg font-bold">{rolEstatistico.total}</p>
+            <p className="text-[10px] text-muted-foreground">Evidências Estatísticas</p>
           </CardContent>
         </Card>
         <Card className="border-primary/30">
@@ -748,7 +752,7 @@ ${analysis.map(a => {
             Síntese: Priorização Histórica dos Artigos pelo Estado Brasileiro
           </CardTitle>
           <CardDescription className="text-xs">
-            Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {indicadores.length} indicadores e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
+            Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
