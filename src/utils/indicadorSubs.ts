@@ -297,8 +297,8 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'cadúnico mulheres negras vs brancas', titulo: 'CadÚnico (mulheres)', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
   { codigo: 'IND-128', guardaChuva: 'Chefia familiar monoparental — raça × gênero', sub: 'chefia monoparental negras vs brancas', titulo: 'Chefia monoparental', tabValue: 'vulnerabilidades', abaLabel: 'Vulnerabilidades' },
   // Raça × Gênero › Saúde Materna — IND-118
-  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'mortes maternas negras', titulo: 'Mortes maternas negras', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
-  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'mortes maternas brancas', titulo: 'Mortes maternas brancas', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero' },
+  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'mortes maternas negras', titulo: 'Mortes maternas negras', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero', aliases: ['mortalidade materna negra', 'mortalidade materna', 'saúde materna', 'razão de mortalidade materna pretas/brancas'] },
+  { codigo: 'IND-118', guardaChuva: 'Saúde materna — raça e gênero', sub: 'mortes maternas brancas', titulo: 'Mortes maternas brancas', tabValue: 'raca-genero', abaLabel: 'Raça × Gênero', aliases: ['mortalidade materna branca', 'mortalidade materna'] },
   // Juventude › Indicadores da Juventude Negra (cada linha é um dado próprio) — IND-114
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'homicídio juventude (geral)', titulo: 'Taxa de homicídio (por 100 mil) — GERAL', tabValue: 'juventude', abaLabel: 'Juventude' },
   { codigo: 'IND-114', guardaChuva: 'Juventude negra — indicadores comparativos', sub: 'encarceramento juvenil', titulo: 'Encarceramento (% do total)', tabValue: 'juventude', abaLabel: 'Juventude' },
