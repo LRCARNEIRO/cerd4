@@ -34,13 +34,19 @@ function calcTendencia(dados: { ano: number; valor: number }[], interpretacao: '
   return subiu ? 'melhoria' : 'piora';
 }
 
-function variacao(dados: { ano: number; valor: number }[]): string {
+function variacao(dados: { ano: number; valor: number }[], unidade?: string): string {
   if (dados.length < 2) return 'N/D';
   const primeiro = dados[0].valor;
   const ultimo = dados[dados.length - 1].valor;
+  // Para indicadores já expressos em %, a variação correta é em pontos percentuais (pp)
+  if (unidade === '%') {
+    const pp = ultimo - primeiro;
+    return `${pp >= 0 ? '+' : ''}${pp.toFixed(1)}pp`;
+  }
   const v = ((ultimo - primeiro) / primeiro) * 100;
   return `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`;
 }
+
 
 const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'estavel' }) => {
   if (tendencia === 'melhoria') return (
