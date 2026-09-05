@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Monitor, ArrowRight } from 'lucide-react';
+import { useLacunasStats } from '@/hooks/useLacunasData';
 
 export default function EcossistemaHero() {
+  const { data: stats } = useLacunasStats();
   return (
     <section className="relative overflow-hidden border-b border-border">
       <div className="absolute inset-0 bg-[hsl(210,45%,12%)]" />
