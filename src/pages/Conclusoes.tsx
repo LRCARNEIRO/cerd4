@@ -518,7 +518,7 @@ export default function Conclusoes() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {insightsCruzamento.map((insight) => (
-                    <InsightCard key={insight.id} insight={insight} />
+                    <InsightCard key={insight.id} insight={insight} indicadores={indicadores} />
                   ))}
                 </div>
 
@@ -746,7 +746,7 @@ function FioCondutorCard({ fio, indicadores }: { fio: FioCondutor; indicadores?:
   );
 }
 
-function InsightCard({ insight }: { insight: InsightCruzamento }) {
+function InsightCard({ insight, indicadores }: { insight: InsightCruzamento; indicadores?: any[] }) {
   const tipoConfig = {
     alerta: { color: 'border-l-destructive', icon: AlertTriangle, iconColor: 'text-destructive' },
     progresso: { color: 'border-l-success', icon: CheckCircle2, iconColor: 'text-success' },
@@ -774,6 +774,13 @@ function InsightCard({ insight }: { insight: InsightCruzamento }) {
             </li>
           ))}
         </ul>
+        <LastroEvidencias
+          indicadores={indicadores}
+          codigos={insight.codigosLastro}
+          orcamento={insight.orcamentoLastro}
+          normativos={insight.normativoLastro}
+          className="mt-3"
+        />
       </CardContent>
     </Card>
   );
