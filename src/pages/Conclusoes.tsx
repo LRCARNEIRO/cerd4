@@ -42,6 +42,7 @@ import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RespostaCerdCard } from '@/components/dashboard/RespostaCerdCard';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
@@ -70,6 +71,9 @@ export default function Conclusoes() {
 
   // Diagnostic Sensor for lacunas
   const { diagnosticMap } = useDiagnosticSensor(lacunas);
+
+  // Rol canônico da Base Estatística (guarda-chuvas + subindicadores, sem duplicidade)
+  const rolEstatistico = useMemo(() => buildRolEstatistico(indicadores as any[]), [indicadores]);
 
   // Dynamic justificativas for respostas CERD III
   const dynamicJustificativas = useMemo(() => {
@@ -234,7 +238,7 @@ export default function Conclusoes() {
           <Badge variant="outline" className="gap-1 bg-chart-3/10"><Landmark className="w-3 h-3" />MUNIC/ESTADIC</Badge>
           <Badge variant="outline" className="gap-1 bg-destructive/10"><Heart className="w-3 h-3" />COVID-19</Badge>
           <Badge variant="outline" className="gap-1"><Database className="w-3 h-3" />{stats?.total || 0} recomendações ONU</Badge>
-          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{indicadores?.length || 0} indicadores analíticos</Badge>
+          <Badge variant="outline" className="gap-1"><Users className="w-3 h-3" />{rolEstatistico.total} evidências estatísticas</Badge>
           {lastUpdated && (
             <Badge variant="secondary" className="gap-1 text-[10px]">
               <Zap className="w-3 h-3" />
@@ -587,7 +591,7 @@ export default function Conclusoes() {
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="text-xs text-muted-foreground italic mb-2">
                         <strong>Fontes integradas:</strong> {fiosCondutores.length} fios condutores analíticos, {stats?.total || 0} recomendações ONU (CERD/C/BRA/CO/18-20), 
-                        {respostas?.length || 0} respostas CERD III, {indicadores?.length || 0} indicadores interseccionais, 
+                        {respostas?.length || 0} respostas CERD III, {rolEstatistico.total} evidências estatísticas (rol canônico), 
                         {orcStats?.totalRegistros || 0} registros orçamentários (SIOP), dados FBSP 2025, PNAD 2024, DataSUS 2024, Censo 2022, MUNIC/ESTADIC 2024.
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-0.5">
