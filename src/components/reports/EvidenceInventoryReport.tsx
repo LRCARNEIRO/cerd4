@@ -9,22 +9,11 @@ import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolba
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
 import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
 import { inferArtigosOrcamento } from '@/utils/artigosConvencao';
-import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
-import { isDuplicata } from '@/utils/indicadorAliases';
+import { buildRolEstatistico, type EvidenciaEstatistica } from '@/utils/rolEstatisticoCanonico';
 import { toast } from 'sonner';
 
 /** Entrada unificada da Base Estatística no inventário: guarda-chuva ou subindicador. */
-type EvidEstatistica = {
-  key: string;
-  codigo: string;
-  titulo: string;
-  detalhe: string;
-  fonte: string;
-  tendencia: string;
-  artigos: string;
-  categoria: string;
-  searchText: string;
-};
+type EvidEstatistica = EvidenciaEstatistica;
 
 type Rec = {
   paragrafo: string;
@@ -254,7 +243,6 @@ Dados extraídos em tempo real do banco de dados. A coluna "Recomendações Vinc
 </body></html>`;
 }
 
-import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 export function EvidenceInventoryReport() {
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: orcamento } = useOrcamentoCanonico();
