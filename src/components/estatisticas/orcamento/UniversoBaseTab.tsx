@@ -308,7 +308,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               </TableHeader>
               <TableBody>
                 {programaRows.map((row, i) => (
-                  <TableRow key={i}>
+                  <TableRow key={i} id={`prog-${slugPrograma(row.programa)}`} className="scroll-mt-24">
                     <TableCell className="text-xs whitespace-normal break-words">{row.programa}</TableCell>
                     <TableCell className="text-xs">{row.orgao}</TableCell>
                     <TableCell className="text-xs text-center">
