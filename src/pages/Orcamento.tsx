@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -296,6 +297,8 @@ function EsferaSummaryCards({
 type Esfera = 'federal';
 
 export default function Orcamento() {
+  const [orcSearchParams] = useSearchParams();
+  const [activeOrcTab, setActiveOrcTab] = useState(orcSearchParams.get('tab') || 'visao-geral');
   const { data: dadosBrutos, isLoading: orcLoading } = useDadosOrcamentarios();
   // Somatórios, cards e cruzamentos usam SOMENTE a base canônica (deduplicação lógica)
   const dadosOrcamentarios = useMemo(
