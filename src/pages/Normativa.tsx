@@ -312,7 +312,9 @@ export default function Normativa() {
         <CardContent>
           <div className="space-y-3">
             {filteredDocs.map(doc => (
-              <NormativaDocCard key={doc.id} doc={doc} onDelete={setConfirmDelete} />
+              <div key={doc.id} id={`doc-${doc.id}`} className="scroll-mt-24 rounded-lg transition-shadow">
+                <NormativaDocCard doc={doc} onDelete={setConfirmDelete} />
+              </div>
             ))}
           </div>
 
