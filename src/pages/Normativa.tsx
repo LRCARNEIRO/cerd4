@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
@@ -34,14 +35,15 @@ const categoriasNormativas = [
 ];
 
 export default function Normativa() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(searchParams.get('cat'));
   const [selectedRecomendacao, setSelectedRecomendacao] = useState<string | null>(null);
   const [selectedArtigo, setSelectedArtigo] = useState<ArtigoConvencao | null>(null);
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState('acervo');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'acervo');
   const queryClient = useQueryClient();
 
   // Fetch documents from DB
