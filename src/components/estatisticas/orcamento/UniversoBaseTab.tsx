@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -18,6 +18,10 @@ const formatCompact = (value: number) =>
 const formatFull = (value: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 
+/** Âncora estável por programa, usada nos links de inventário (#prog-...). */
+export const slugPrograma = (p: string) =>
+  p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+
 function classifyThematic(r: DadoOrcamentario): string {
   const prog = r.programa.toLowerCase();
   const orgao = r.orgao.toUpperCase();
@@ -31,6 +35,14 @@ function classifyThematic(r: DadoOrcamentario): string {
 
 export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
   const [anoFilter, setAnoFilter] = useState<string>('todos');
+
+  // Deep link vindo do inventário: rola até o programa indicado no hash (#prog-...)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash.startsWith('prog-') || !records.length) return;
+    const el = document.getElementById(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [records.length]);
 
   const anos = useMemo(() => {
     const set = new Set(records.map(r => r.ano));
@@ -308,7 +320,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               </TableHeader>
               <TableBody>
                 {programaRows.map((row, i) => (
-                  <TableRow key={i}>
+                  <TableRow key={i} id={`prog-${slugPrograma(row.programa)}`} className="scroll-mt-24">
                     <TableCell className="text-xs whitespace-normal break-words">{row.programa}</TableCell>
                     <TableCell className="text-xs">{row.orgao}</TableCell>
                     <TableCell className="text-xs text-center">

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
@@ -34,14 +35,15 @@ const categoriasNormativas = [
 ];
 
 export default function Normativa() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(searchParams.get('cat'));
   const [selectedRecomendacao, setSelectedRecomendacao] = useState<string | null>(null);
   const [selectedArtigo, setSelectedArtigo] = useState<ArtigoConvencao | null>(null);
   const [showRestore, setShowRestore] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState('acervo');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'acervo');
   const queryClient = useQueryClient();
 
   // Fetch documents from DB
@@ -98,6 +100,15 @@ export default function Normativa() {
     (!selectedRecomendacao || doc.recomendacoes_impactadas?.includes(selectedRecomendacao)) &&
     (!selectedArtigo || getDocArtigos(doc).includes(selectedArtigo))
   );
+
+  // Deep link: rola até o documento indicado no hash da URL (#doc-<id>)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash || !filteredDocs.length) return;
+    const el = document.getElementById(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [filteredDocs.length]);
+
   const handleDeleteDoc = async (doc: any) => {
     setIsDeleting(true);
     try {
@@ -310,7 +321,9 @@ export default function Normativa() {
         <CardContent>
           <div className="space-y-3">
             {filteredDocs.map(doc => (
-              <NormativaDocCard key={doc.id} doc={doc} onDelete={setConfirmDelete} />
+              <div key={doc.id} id={`doc-${doc.id}`} className="scroll-mt-24 rounded-lg transition-shadow">
+                <NormativaDocCard doc={doc} onDelete={setConfirmDelete} />
+              </div>
             ))}
           </div>
 
