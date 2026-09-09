@@ -36,6 +36,14 @@ function classifyThematic(r: DadoOrcamentario): string {
 export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
   const [anoFilter, setAnoFilter] = useState<string>('todos');
 
+  // Deep link vindo do inventário: rola até o programa indicado no hash (#prog-...)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash.startsWith('prog-') || !records.length) return;
+    const el = document.getElementById(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [records.length]);
+
   const anos = useMemo(() => {
     const set = new Set(records.map(r => r.ano));
     return Array.from(set).sort((a, b) => a - b);
