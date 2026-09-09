@@ -100,6 +100,15 @@ export default function Normativa() {
     (!selectedRecomendacao || doc.recomendacoes_impactadas?.includes(selectedRecomendacao)) &&
     (!selectedArtigo || getDocArtigos(doc).includes(selectedArtigo))
   );
+
+  // Deep link: rola até o documento indicado no hash da URL (#doc-<id>)
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash || !filteredDocs.length) return;
+    const el = document.getElementById(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [filteredDocs.length]);
+
   const handleDeleteDoc = async (doc: any) => {
     setIsDeleting(true);
     try {
