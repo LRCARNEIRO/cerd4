@@ -18,6 +18,10 @@ const formatCompact = (value: number) =>
 const formatFull = (value: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 
+/** Âncora estável por programa, usada nos links de inventário (#prog-...). */
+export const slugPrograma = (p: string) =>
+  p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+
 function classifyThematic(r: DadoOrcamentario): string {
   const prog = r.programa.toLowerCase();
   const orgao = r.orgao.toUpperCase();
