@@ -557,7 +557,7 @@ export default function Orcamento() {
     >
 
       {/* ===== SUB-ABAS ===== */}
-      <Tabs defaultValue="visao-geral" className="w-full">
+      <Tabs value={activeOrcTab} onValueChange={setActiveOrcTab} className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
           <TabsTrigger value="visao-geral">
             <Building className="w-4 h-4 mr-1" />
