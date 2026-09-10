@@ -60,6 +60,12 @@ export default function Recomendacoes() {
     prioridade: filterPriority !== 'all' ? filterPriority : undefined,
   });
 
+  // Escopo do monitoramento: apenas CERD/C/BRA/CO/18-20 — Observações Finais
+  const lacunas = useMemo(
+    () => todasLacunas?.filter(l => classificarOrigemLacuna(l.paragrafo) === 'cerd'),
+    [todasLacunas]
+  );
+
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
