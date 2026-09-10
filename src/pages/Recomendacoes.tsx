@@ -53,7 +53,7 @@ export default function Recomendacoes() {
   const [activeTab, setActiveTab] = useState('relacao');
   
 
-  const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
+  const { data: todasLacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
     grupo: filterGrupo !== 'all' ? filterGrupo : undefined,
     status: filterStatus !== 'all' ? filterStatus : undefined,
