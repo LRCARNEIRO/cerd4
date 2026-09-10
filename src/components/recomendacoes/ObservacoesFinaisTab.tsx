@@ -24,7 +24,7 @@ const indiceRecomendacoes: RecomendacaoCEDR[] = [
   { tema: 'Medidas especiais e ações afirmativas', paragrafo: '29', artigos: 'II', prioritaria: false },
   { tema: 'Discurso de ódio racista e crimes de ódio', paragrafo: '31', artigos: 'IV', prioritaria: false },
   { tema: 'Homicídios motivados pela raça', paragrafo: '33', artigos: 'VI', prioritaria: true },
-  { tema: 'Uso excessivo da força pela polícia e militares', paragrafo: '36', artigos: 'VI', prioritaria: true, detalhePrioritaria: 'a-d' },
+  { tema: 'Uso excessivo da força pela polícia e militares', paragrafo: '34', artigos: 'VI', prioritaria: true, detalhePrioritaria: 'a-d' },
   { tema: 'Justiça criminal', paragrafo: '38', artigos: 'VI', prioritaria: false },
   { tema: 'Perfilamento racial', paragrafo: '40', artigos: 'VI', prioritaria: false },
   { tema: 'Direito à livre assembleia', paragrafo: '42', artigos: 'V', prioritaria: false },
@@ -88,7 +88,7 @@ export function ObservacoesFinaisTab() {
               </thead>
               <tbody>
                 {indiceRecomendacoes.map((rec) => {
-                  const isFollowUp = ['17', '19', '23', '36'].includes(rec.paragrafo);
+                  const isFollowUp = ['17', '19', '23', '34'].includes(rec.paragrafo);
                   return (
                     <tr
                       key={rec.paragrafo}
@@ -125,7 +125,7 @@ export function ObservacoesFinaisTab() {
             </h4>
             <p className="text-sm text-muted-foreground">
               O Brasil deveria ter respondido em 1 ano (até dez/2023) sobre: §17(a) saúde/COVID-19, 
-              §19(c) educação, §23(a) pobreza/trabalho e §36(a-d) uso de força policial.
+              §19(c) educação, §23(a) pobreza/trabalho e §34(a-d) uso de força policial.
               A resposta foi submetida em janeiro de 2026 (CERD/C/BRA/FCO/18-20).
             </p>
           </div>

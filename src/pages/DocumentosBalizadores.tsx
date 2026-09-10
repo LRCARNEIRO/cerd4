@@ -49,11 +49,11 @@ const documentos: DocumentoBalizador[] = [
     tipo: 'Follow-up',
     data: '14/01/2026',
     sigla: 'CERD/C/BRA/FCO/18-20',
-    descricao: 'Resposta do Brasil de janeiro de 2026 às recomendações prioritárias: §17(a) saúde e COVID-19, §19(c) educação, §23(a) pobreza e renda, §36(a-d) uso excessivo de força. Detalha ações do MIR, PRONASCI 2, Estratégia Antirracista de Saúde, PNEERQ, Bolsa Família e regulamentação do uso da força policial.',
+    descricao: 'Resposta do Brasil de janeiro de 2026 às recomendações prioritárias: §17(a) saúde e COVID-19, §19(c) educação, §23(a) pobreza e renda, §34(a-d) uso excessivo de força. Detalha ações do MIR, PRONASCI 2, Estratégia Antirracista de Saúde, PNEERQ, Bolsa Família e regulamentação do uso da força policial.',
     arquivo: '/documentos/CERD-Follow-up-Brasil-2026.pdf',
     icon: FileText,
     cor: 'text-primary',
-    paragrafosChave: ['§17(a) Saúde/COVID', '§19(c) Educação', '§23(a) Pobreza', '§36(a-d) Uso de Força']
+    paragrafosChave: ['§17(a) Saúde/COVID', '§19(c) Educação', '§23(a) Pobreza', '§34(a-d) Uso de Força']
   },
   {
     titulo: 'Declaração e Plano de Ação de Durban (2001)',

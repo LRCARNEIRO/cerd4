@@ -13,7 +13,7 @@ export function generateFollowUpHTML(): string {
         <tr><td style="font-family:monospace">§17(a)</td><td>Direito à saúde e efeitos da COVID-19</td></tr>
         <tr><td style="font-family:monospace">§19(c)</td><td>Disparidades no acesso à educação</td></tr>
         <tr><td style="font-family:monospace">§23(a)</td><td>Pobreza, trabalho e renda</td></tr>
-        <tr><td style="font-family:monospace">§36(a-d)</td><td>Uso excessivo de força por agentes da lei</td></tr>
+        <tr><td style="font-family:monospace">§34(a-d)</td><td>Uso excessivo de força por agentes da lei</td></tr>
       </table>
 
       <div class="highlight-box" style="margin-top:0.5cm">

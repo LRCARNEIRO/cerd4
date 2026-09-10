@@ -218,7 +218,7 @@ export default function Recomendacoes() {
                       <p className="text-sm">Pobreza, trabalho e renda</p>
                     </div>
                     <div className="p-3 bg-card rounded border">
-                      <Badge className="mb-2">§36(a-d)</Badge>
+                      <Badge className="mb-2">§34(a-d)</Badge>
                       <p className="text-sm">Uso excessivo de força por agentes da lei</p>
                     </div>
                   </div>
