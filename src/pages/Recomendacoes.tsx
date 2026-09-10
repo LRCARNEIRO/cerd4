@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
-import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
+import { classificarOrigemLacuna, ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
@@ -53,27 +53,37 @@ export default function Recomendacoes() {
   const [activeTab, setActiveTab] = useState('relacao');
   
 
-  const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
+  const { data: todasLacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
     grupo: filterGrupo !== 'all' ? filterGrupo : undefined,
     status: filterStatus !== 'all' ? filterStatus : undefined,
     prioridade: filterPriority !== 'all' ? filterPriority : undefined,
   });
 
+  // Escopo do monitoramento: apenas CERD/C/BRA/CO/18-20 — Observações Finais
+  const lacunas = useMemo(
+    () => todasLacunas?.filter(l => classificarOrigemLacuna(l.paragrafo) === 'cerd'),
+    [todasLacunas]
+  );
+
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
   const isLoading = loadingLacunas || loadingStats;
-  const statusStats = stats?.porStatus;
+  const statusStats = useMemo(() => {
+    const c: Record<string, number> = {};
+    (lacunas || []).forEach(l => { c[l.status_cumprimento] = (c[l.status_cumprimento] || 0) + 1; });
+    return c as Record<ComplianceStatus, number>;
+  }, [lacunas]);
+  const criticas = useMemo(() => (lacunas || []).filter(l => l.prioridade === 'critica').length, [lacunas]);
 
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2025"
+      subtitle="CERD/C/BRA/CO/18-20 — Observações Finais · Análise de Cumprimento 2018-2025"
     >
       {/* Stats */}
       {(() => {
-        const origemCounts = contarPorOrigem(lacunas || []);
         const totalGeral = (lacunas?.length) || 0;
         return (
           <>
@@ -129,22 +139,20 @@ export default function Recomendacoes() {
                    </div>
                    <div>
                      <p className="text-xs text-muted-foreground">Críticas</p>
-                     <p className="text-xl font-bold">{isLoading ? '...' : stats?.porPrioridade.critica || 0}</p>
+                     <p className="text-xl font-bold">{isLoading ? '...' : criticas}</p>
                    </div>
                  </CardContent>
                </Card>
              </div>
 
-            {/* Resumo por origem */}
+            {/* Escopo */}
             <div className="flex flex-wrap items-center gap-3 mb-6 p-3 bg-muted/30 rounded-lg border">
               <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Filter className="w-3.5 h-3.5" /> Composição:
+                <Filter className="w-3.5 h-3.5" /> Escopo:
               </span>
-              {(['cerd', 'rg', 'durban'] as OrigemLacuna[]).map(o => (
-                <Badge key={o} variant="outline" className={`text-xs border ${ORIGEM_CONFIG[o].cor}`}>
-                  {ORIGEM_CONFIG[o].labelCurto}: {origemCounts[o]}
-                </Badge>
-              ))}
+              <Badge variant="outline" className={`text-xs border ${ORIGEM_CONFIG.cerd.cor}`}>
+                {ORIGEM_CONFIG.cerd.label}
+              </Badge>
               <Badge variant="secondary" className="text-xs font-semibold">
                 Total: {totalGeral} recomendações com avaliação de status
               </Badge>
