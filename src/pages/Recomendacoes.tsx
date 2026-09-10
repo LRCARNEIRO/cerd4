@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
-import { contarPorOrigem, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
+import { classificarOrigemLacuna, ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
