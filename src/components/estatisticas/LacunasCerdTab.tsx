@@ -469,7 +469,7 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> Risco relativo estável em 2,7× (2018→2023). Taxa negros caiu de 37,6 para 28,9, 
+                  <strong>Análise §34:</strong> Risco relativo estável em 2,7× (2018→2023). Taxa negros caiu de 37,6 para 28,9, 
                   mas disparidade racial não reduziu. NOTA: comparação é Negros vs Não Negros (metodologia Atlas/IPEA).
                 </p>
               </div>
@@ -478,7 +478,7 @@ export function LacunasCerdTab() {
                   { nome: 'Atlas da Violência 2025 (IPEA) — p. 79', url: 'https://www.ipea.gov.br/atlasviolencia/arquivos/artigos/5999-atlasdaviolencia2025.pdf' },
                   { nome: '19º Anuário FBSP 2025', url: 'https://forumseguranca.org.br/wp-content/uploads/2025/09/anuario-2025.pdf' },
                 ]}
-                documentos={['CERD 2022 §36', 'Durban §32-36']}
+                documentos={['CERD 2022 §34', 'Durban §32-36']}
                 compact
               />
             </CardContent>
@@ -516,13 +516,13 @@ export function LacunasCerdTab() {
               </div>
               <div className="mt-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                 <p className="text-xs text-muted-foreground">
-                  <strong>Análise §36:</strong> Letalidade policial contra negros subiu de {narrativaSeguranca.letalidadePolicial2018}% (2018) para {narrativaSeguranca.letalidadePolicial2024}% (2024).
+                  <strong>Análise §34:</strong> Letalidade policial contra negros subiu de {narrativaSeguranca.letalidadePolicial2018}% (2018) para {narrativaSeguranca.letalidadePolicial2024}% (2024).
                   ADPF 635 (STF) busca restringir operações em favelas. Brasil lidera ranking mundial.
                 </p>
               </div>
               <AuditFooter 
                 fontes={[{ nome: '19º Anuário FBSP 2025', url: 'https://publicacoes.forumseguranca.org.br/items/c3605778-37b3-4ad6-8239-94e4cb236444' }]}
-                documentos={['CERD 2022 §36', 'ADPF 635']}
+                documentos={['CERD 2022 §34', 'ADPF 635']}
                 compact
               />
             </CardContent>

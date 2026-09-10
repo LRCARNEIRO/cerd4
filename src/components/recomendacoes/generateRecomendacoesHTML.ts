@@ -27,7 +27,7 @@ export function generateObservacoesFinaisHTML(): string {
     { tema: 'Medidas especiais', paragrafo: '29', numRec: '1', prio: false },
     { tema: 'Discurso de ódio racista', paragrafo: '31', numRec: '6 (a-f)', prio: false },
     { tema: 'Homicídios motivados pela raça', paragrafo: '33', numRec: '3 (a-c)', prio: true },
-    { tema: 'Uso excessivo de força policial', paragrafo: '36', numRec: '8 (a-h)', prio: true },
+    { tema: 'Uso excessivo de força policial', paragrafo: '34', numRec: '8 (a-h)', prio: true },
     { tema: 'Justiça criminal', paragrafo: '38', numRec: '1', prio: false },
     { tema: 'Perfilamento racial', paragrafo: '40', numRec: '4 (a-d)', prio: false },
     { tema: 'Reunião pacífica', paragrafo: '42', numRec: '1', prio: false },
@@ -62,7 +62,7 @@ export function generateObservacoesFinaisHTML(): string {
       </table>
       <div class="highlight-box" style="margin-top:1cm">
         <h4>⚠️ Follow-up obrigatório (§68)</h4>
-        <p>O Brasil deveria ter respondido em 1 ano (até dez/2023) sobre: §17(a) saúde/COVID-19, §19(c) educação, §23(a) pobreza/trabalho e §36(a-d) uso de força policial. A resposta foi submetida em janeiro de 2026 (CERD/C/BRA/FCO/18-20).</p>
+        <p>O Brasil deveria ter respondido em 1 ano (até dez/2023) sobre: §17(a) saúde/COVID-19, §19(c) educação, §23(a) pobreza/trabalho e §34(a-d) uso de força policial. A resposta foi submetida em janeiro de 2026 (CERD/C/BRA/FCO/18-20).</p>
       </div>
     `,
   });
@@ -137,7 +137,7 @@ export function generateDurbanExportHTML(): string {
   const cruzamento = [
     { eixo: 'Legislação e Justiça', temas: ['Criminalização de discriminação racial (Plano §90)', 'Implementação da Convenção (CERD §7-8)', 'Acesso à justiça (CERD §11-12)'] },
     { eixo: 'Políticas Institucionais', temas: ['Instituições independentes de DDHH (Plano §90)', 'Ações Afirmativas (Decreto 11.785/2023)', 'MIR como ator estratégico'] },
-    { eixo: 'Segurança Pública', temas: ['Desmilitarização policial (CERD §36a)', 'Câmeras corporais (CERD §34)', 'Perfilamento racial (RG 36 §35)'] },
+    { eixo: 'Segurança Pública', temas: ['Desmilitarização policial (CERD §34a)', 'Câmeras corporais (CERD §34)', 'Perfilamento racial (RG 36 §35)'] },
     { eixo: 'Saúde', temas: ['COVID-19 racial (CERD §15-17)', 'Saúde reprodutiva (RG 37 §44)', 'Saúde mental (CERD §16f)'] },
     { eixo: 'Educação', temas: ['Cotas (CERD §18-19)', 'Educação antirracista (Plano §117)', 'Materiais didáticos (RG 34 §61)'] },
     { eixo: 'Terra e Território', temas: ['Demarcação de terras (CERD §51-53)', 'Marco Temporal', 'Yanomami (CERD §49a)'] },
