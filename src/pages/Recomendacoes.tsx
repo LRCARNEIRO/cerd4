@@ -70,12 +70,17 @@ export default function Recomendacoes() {
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
   const isLoading = loadingLacunas || loadingStats;
-  const statusStats = stats?.porStatus;
+  const statusStats = useMemo(() => {
+    const c: Record<string, number> = {};
+    (lacunas || []).forEach(l => { c[l.status_cumprimento] = (c[l.status_cumprimento] || 0) + 1; });
+    return c as Record<ComplianceStatus, number>;
+  }, [lacunas]);
+  const criticas = useMemo(() => (lacunas || []).filter(l => l.prioridade === 'critica').length, [lacunas]);
 
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="Observações Finais, Recomendações Gerais, Durban e Follow-up — Análise de Cumprimento 2018-2025"
+      subtitle="CERD/C/BRA/CO/18-20 — Observações Finais · Análise de Cumprimento 2018-2025"
     >
       {/* Stats */}
       {(() => {
