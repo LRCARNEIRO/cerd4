@@ -84,7 +84,6 @@ export default function Recomendacoes() {
     >
       {/* Stats */}
       {(() => {
-        const origemCounts = contarPorOrigem(lacunas || []);
         const totalGeral = (lacunas?.length) || 0;
         return (
           <>
