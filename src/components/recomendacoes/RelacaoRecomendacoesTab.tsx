@@ -174,7 +174,7 @@ th{background:#f1f5f9;font-size:10px}
 </style></head><body>
 <h1>📋 Relação Completa — Recomendações, Vinculações, Status e Evidências</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-<p><strong>Total:</strong> ${recomendacoes.length} recomendações — CERD (${grouped.cerd.length}), RG (${grouped.rg.length}), Durban (${grouped.durban.length})</p>
+<p><strong>Total:</strong> ${recomendacoes.length} recomendações — CERD/C/BRA/CO/18-20 (Observações Finais)</p>
 
 <div class="summary">
 <span style="background:#dcfce7;color:#166534">✓ ${statusSummary.cumprido || 0} Cumprida(s)</span>
@@ -363,8 +363,6 @@ ${renderRows(allItems)}
       </div>
 
       {renderGroup('cerd', grouped.cerd)}
-      {renderGroup('rg', grouped.rg)}
-      {renderGroup('durban', grouped.durban)}
 
       {/* Evidence Drilldown Dialog */}
       {drilldownId && (
