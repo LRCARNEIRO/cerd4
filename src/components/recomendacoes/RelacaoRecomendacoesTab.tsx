@@ -75,7 +75,12 @@ function getPrioridadeLabel(prioridade: string): string {
 }
 
 export function RelacaoRecomendacoesTab() {
-  const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
+  const { data: todasRecomendacoes, isLoading } = useLacunasIdentificadas({});
+  // Escopo da listagem: apenas CERD/C/BRA/CO/18-20 — Observações Finais
+  const recomendacoes = useMemo(
+    () => todasRecomendacoes?.filter(l => classificarOrigemLacuna(l.paragrafo) === 'cerd'),
+    [todasRecomendacoes]
+  );
   const [evidenceOverrides, setEvidenceOverrides] = useEvidenceOverrides();
   const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
