@@ -75,7 +75,7 @@ export default function Recomendacoes() {
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="CERD/C/BRA/CO/18-20 — Observações Finais · Análise de Cumprimento 2018-2025"
+      subtitle="Observações Finais, Recomendações Gerais e Durban · Análise de Cumprimento 2018-2025"
     >
       {/* Stats */}
       {(() => {
@@ -145,9 +145,11 @@ export default function Recomendacoes() {
               <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Filter className="w-3.5 h-3.5" /> Escopo:
               </span>
-              <Badge variant="outline" className={`text-xs border ${ORIGEM_CONFIG.cerd.cor}`}>
-                {ORIGEM_CONFIG.cerd.label}
-              </Badge>
+              {(Object.keys(ORIGEM_CONFIG) as Array<keyof typeof ORIGEM_CONFIG>).map((k) => (
+                <Badge key={k} variant="outline" className={`text-xs border ${ORIGEM_CONFIG[k].cor}`}>
+                  {ORIGEM_CONFIG[k].label}
+                </Badge>
+              ))}
               <Badge variant="secondary" className="text-xs font-semibold">
                 Total: {totalGeral} recomendações com avaliação de status
               </Badge>
