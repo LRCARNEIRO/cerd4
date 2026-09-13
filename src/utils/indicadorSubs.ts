@@ -229,9 +229,10 @@ export const SUB_INDICADORES: SubIndicadorEntry[] = [
   { codigo: 'IND-171', guardaChuva: 'Vacinação COVID por raça — SI-PNI/DataSUS', sub: 'cobertura vacinal', titulo: 'Cobertura Vacinal por Raça/Cor', tabValue: 'covid-racial', abaLabel: 'COVID' },
   { codigo: 'IND-168', guardaChuva: 'Interseccionalidade COVID — impacto por grupo', sub: 'impacto interseccional', titulo: 'Análise Interseccional: COVID-19 e Grupos Vulnerabilizados', tabValue: 'covid-racial', abaLabel: 'COVID' },
   // ── Grupos Focais ──
-  { codigo: 'IND-169', guardaChuva: 'Quilombolas — dados demográficos Censo 2022', sub: 'população focal', titulo: 'Quilombolas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
-  { codigo: 'IND-177', guardaChuva: 'Indígenas — dados demográficos Censo 2022', sub: 'população focal', titulo: 'Indígenas', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
-  { codigo: 'IND-159', guardaChuva: 'Povos ciganos/Romani — dados disponíveis', sub: 'população focal', titulo: 'Ciganos/Roma', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
+  // Removidos: 'população focal' de IND-169 / IND-177 / IND-159 — os cards de
+  // população em Grupos Focais já têm código próprio (IND-152 Quilombolas,
+  // IND-146 Indígenas, IND-174 Ciganos/Roma). Declará-los aqui anunciava uma
+  // localização inexistente na aba.
   { codigo: 'IND-170', guardaChuva: 'Juventude Negra (15-29) — dados demográficos', sub: 'população focal', titulo: 'Juventude Negra (15-29 anos)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais' },
   // ── Grupos Focais › Série Temporal (cada linha é um dado próprio) ──
   { codigo: 'IND-117', guardaChuva: 'Segurança pública — homicídio por raça (2018-2024)', sub: 'vítimas negras de homicídio', titulo: 'Vítimas negras de homicídio (%)', tabValue: 'grupos-focais', abaLabel: 'Grupos Focais', subTab: 'serie-temporal', subTabLabel: 'Série Temporal', aliases: ['% de negros entre vítimas de homicídio', 'FBSP'] },
