@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
-import { classificarOrigemLacuna, ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
+import { ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
@@ -53,18 +53,13 @@ export default function Recomendacoes() {
   const [activeTab, setActiveTab] = useState('relacao');
   
 
-  const { data: todasLacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
+  const { data: lacunas, isLoading: loadingLacunas } = useLacunasIdentificadas({
     eixo: filterEixo !== 'all' ? filterEixo : undefined,
     grupo: filterGrupo !== 'all' ? filterGrupo : undefined,
     status: filterStatus !== 'all' ? filterStatus : undefined,
     prioridade: filterPriority !== 'all' ? filterPriority : undefined,
   });
 
-  // Escopo do monitoramento: apenas CERD/C/BRA/CO/18-20 — Observações Finais
-  const lacunas = useMemo(
-    () => todasLacunas?.filter(l => classificarOrigemLacuna(l.paragrafo) === 'cerd'),
-    [todasLacunas]
-  );
 
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
@@ -80,7 +75,7 @@ export default function Recomendacoes() {
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="CERD/C/BRA/CO/18-20 — Observações Finais · Análise de Cumprimento 2018-2025"
+      subtitle="Observações Finais, Recomendações Gerais e Durban · Análise de Cumprimento 2018-2025"
     >
       {/* Stats */}
       {(() => {
@@ -150,9 +145,11 @@ export default function Recomendacoes() {
               <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Filter className="w-3.5 h-3.5" /> Escopo:
               </span>
-              <Badge variant="outline" className={`text-xs border ${ORIGEM_CONFIG.cerd.cor}`}>
-                {ORIGEM_CONFIG.cerd.label}
-              </Badge>
+              {(Object.keys(ORIGEM_CONFIG) as Array<keyof typeof ORIGEM_CONFIG>).map((k) => (
+                <Badge key={k} variant="outline" className={`text-xs border ${ORIGEM_CONFIG[k].cor}`}>
+                  {ORIGEM_CONFIG[k].label}
+                </Badge>
+              ))}
               <Badge variant="secondary" className="text-xs font-semibold">
                 Total: {totalGeral} recomendações com avaliação de status
               </Badge>
