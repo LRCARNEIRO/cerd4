@@ -25,6 +25,7 @@ export const DUPLICATAS: Record<string, string> = {
   'IND-207': 'IND-181', // Processos judiciais — racismo e injúria racial (CNJ)
   'IND-208': 'IND-203', // Denúncias por discriminação, injúria racial e étnica e racismo
   'IND-210': 'IND-205', // Composição racial do Judiciário — magistrados e servidores
+  'IND-159': 'IND-005', // Povos ciganos/Romani — dados MUNIC já exibidos no card IND-005
 };
 
 /**
