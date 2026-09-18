@@ -204,11 +204,39 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status, categoria');
+        .select('id, titulo, artigos_convencao, status, categoria');
       if (error) throw error;
       return data || [];
     },
   });
+
+  /**
+   * VÍNCULOS CURADOS (SSoT auditado pela equipe) — planilha
+   * "CERD_42_BASE_2126_auditada". Quando a tabela tem qualquer linha, ela
+   * SUBSTITUI integralmente a sugestão automática por palavra-chave: só
+   * entram como evidência os vínculos auditados.
+   */
+  const { data: curados } = useQuery({
+    queryKey: ['sensor-vinculos-curados'],
+    ...SHARED_OPTS,
+    queryFn: async () => {
+      let all: any[] = [];
+      let page = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('vinculos_evidencia_curados')
+          .select('recomendacao_id, base, ref_id, sub, nome')
+          .range(page * 1000, (page + 1) * 1000 - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all = all.concat(data);
+        if (data.length < 1000) break;
+        page++;
+      }
+      return all;
+    },
+  });
+
 
   // ── Diagnose each recomendação ────────────────────────────────────
   // VINCULAÇÃO HÍBRIDA AUDITÁVEL:
@@ -216,13 +244,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   // tema/descrição/texto ONU da recomendação, sem usar eixo ou artigo genérico.
   // Combina frase/termo exato + expansão conceitual + campos textuais auxiliares.
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
-    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
+    if (!recomendacoes || !indicadores || !orcamento || !normativos || !curados) return [];
 
     const cacheKey = JSON.stringify({
       recs: arrayDataSignature(recomendacoes, ['id', 'tema', 'descricao_lacuna', 'grupo_focal', 'updated_at']),
       indicadores: arrayDataSignature(indicadores, ['nome', 'categoria', 'subcategoria', 'updated_at']),
       orcamento: arrayDataSignature(orcamento, ['programa', 'orgao', 'ano', 'dotacao_autorizada', 'pago']),
       normativos: arrayDataSignature(normativos, ['titulo', 'status', 'categoria']),
+      curados: arrayDataSignature(curados, ['recomendacao_id', 'base', 'ref_id', 'sub']),
       overrides,
     });
     const cachedDiagnostics = diagnosticsCache.get(cacheKey);
@@ -230,45 +259,86 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
     const orcKeyFn = (o: any) => `${o.programa}|${o.orgao}|${o.ano}`;
 
+    // Índices p/ resolver os vínculos curados (SSoT auditado)
+    const usarCurados = curados.length > 0;
+    const indById = new Map(indicadores.map((i: any) => [i.id, i]));
+    const orcById = new Map(orcamento.map((o: any) => [o.id, o]));
+    const normById = new Map(normativos.map((n: any) => [n.id, n]));
+    const curadosPorRec = new Map<string, any[]>();
+    for (const v of curados) {
+      const arr = curadosPorRec.get(v.recomendacao_id);
+      if (arr) arr.push(v); else curadosPorRec.set(v.recomendacao_id, [v]);
+    }
+
     const nextDiagnostics = recomendacoes.map(rec => {
       const recOverride = overrides?.[rec.id];
       const signals: DiagnosticSignal[] = [];
 
-      const indicadoresVinculados = indicadores
-        .map((ind) => ({
-          item: ind,
-          match: getRecommendationKeywordMatch(
-            rec,
-            `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''} ${ind.analise_interseccional || ''} ${Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ') : ''}`
-          ),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
-        .map(({ item }) => item)
-        .slice(0, 20);
+      let indicadoresVinculados: any[];
+      let orcamentosVinculados: any[];
+      let normativosVinculados: any[];
 
-      const orcamentosVinculados = orcamento
-        .map((item) => ({
-          item,
-          match: getRecommendationKeywordMatch(
-            rec,
-            `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''} ${item.observacoes || ''} ${item.razao_selecao || ''}`
-          ),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.programa.localeCompare(b.item.programa))
-        .map(({ item }) => item)
-        .slice(0, 20);
+      if (usarCurados) {
+        const doRec = curadosPorRec.get(rec.id) || [];
+        indicadoresVinculados = doRec
+          .filter(v => v.base === 'estatistica')
+          .map(v => {
+            const reg: any = indById.get(v.ref_id);
+            if (!reg) return null;
+            return v.sub
+              ? { ...reg, nome: v.nome || reg.nome, sub: v.sub, guardaChuva: reg.nome }
+              : reg;
+          })
+          .filter(Boolean)
+          .filter(isEvidenceEligibleIndicator);
 
-      const normativosVinculados = normativos
-        .map((doc) => ({
-          item: doc,
-          match: getRecommendationKeywordMatch(rec, `${doc.titulo} ${doc.categoria || ''}`),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))
-        .map(({ item }) => item)
-        .slice(0, 20);
+        orcamentosVinculados = doRec
+          .filter(v => v.base === 'orcamentaria')
+          .map(v => orcById.get(v.ref_id))
+          .filter(Boolean);
+
+        normativosVinculados = doRec
+          .filter(v => v.base === 'normativa')
+          .map(v => normById.get(v.ref_id))
+          .filter(Boolean);
+      } else {
+        indicadoresVinculados = indicadores
+          .map((ind) => ({
+            item: ind,
+            match: getRecommendationKeywordMatch(
+              rec,
+              `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''} ${ind.analise_interseccional || ''} ${Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ') : ''}`
+            ),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
+          .map(({ item }) => item)
+          .slice(0, 20);
+
+        orcamentosVinculados = orcamento
+          .map((item) => ({
+            item,
+            match: getRecommendationKeywordMatch(
+              rec,
+              `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''} ${item.observacoes || ''} ${item.razao_selecao || ''}`
+            ),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.programa.localeCompare(b.item.programa))
+          .map(({ item }) => item)
+          .slice(0, 20);
+
+        normativosVinculados = normativos
+          .map((doc) => ({
+            item: doc,
+            match: getRecommendationKeywordMatch(rec, `${doc.titulo} ${doc.categoria || ''}`),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))
+          .map(({ item }) => item)
+          .slice(0, 20);
+      }
+
 
       // ── Apply manual overrides ──
       let finalIndicadores = indicadoresVinculados;
@@ -437,14 +507,23 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: finalIndicadores.flatMap(i => expandIndicadorEvidencia({ id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedIndicadores: finalIndicadores.flatMap(i => {
+          const base: LinkedIndicador = {
+            id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria,
+            tendencia: i.tendencia, dados: i.dados,
+          };
+          // Vínculo curado já aponta para o subindicador (bloco visual): não reexpandir.
+          if ((i as any).sub) return [{ ...base, sub: (i as any).sub, guardaChuva: (i as any).guardaChuva }];
+          return expandIndicadorEvidencia(base);
+        }),
         linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago })),
         linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
 
     return setDiagnosticsCache(cacheKey, nextDiagnostics);
-  }, [recomendacoes, indicadores, orcamento, normativos, overrides]);
+  }, [recomendacoes, indicadores, orcamento, normativos, curados, overrides]);
+
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
@@ -496,7 +575,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     diagnostics,
     diagnosticMap,
     summary,
-    isReady: !!(recomendacoes && indicadores && orcamento && normativos),
+    isReady: !!(recomendacoes && indicadores && orcamento && normativos && curados),
     rawIndicadores: indicadores,
     rawOrcamento: orcamento,
     rawNormativos: normativos,
