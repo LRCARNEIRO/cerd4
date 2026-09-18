@@ -83,7 +83,10 @@ export interface ArtigoEvidenciaCurada {
   recomendacoes: Set<string>;
   /** nº de vínculos (combinações Artigo × Recomendação × Evidência) */
   vinculos: number;
+  /** nº de vínculos por base (bate com o resumo da planilha auditada) */
+  vinculosPorBase: { estatistica: number; normativa: number; orcamentaria: number };
 }
+
 
 export interface LinkedOrcamento {
 
