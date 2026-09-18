@@ -671,6 +671,44 @@ export type Database = {
         }
         Relationships: []
       }
+      vinculos_evidencia_curados: {
+        Row: {
+          base: string
+          created_at: string
+          id: string
+          nome: string
+          recomendacao_id: string
+          ref_id: string
+          sub: string | null
+        }
+        Insert: {
+          base: string
+          created_at?: string
+          id?: string
+          nome: string
+          recomendacao_id: string
+          ref_id: string
+          sub?: string | null
+        }
+        Update: {
+          base?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          recomendacao_id?: string
+          ref_id?: string
+          sub?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vinculos_evidencia_curados_recomendacao_id_fkey"
+            columns: ["recomendacao_id"]
+            isOneToOne: false
+            referencedRelation: "lacunas_identificadas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
