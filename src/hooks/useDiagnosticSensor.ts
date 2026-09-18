@@ -13,6 +13,28 @@ import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/Ev
 import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
 
 /**
+ * Evidência estatística auditada cujo registro não existe em
+ * `indicadores_interseccionais` (card estático das abas Estatística).
+ * A curadoria é a fonte da verdade, então o vínculo continua valendo:
+ * monta-se um registro sintético a partir da própria linha curada.
+ */
+function indicadorEstaticoCurado(v: any) {
+  return {
+    id: v.ref_id,
+    codigo: null,
+    nome: v.nome || v.sub || 'Indicador',
+    categoria: 'estatistica_estatica',
+    subcategoria: null,
+    fonte: null,
+    tendencia: null,
+    dados: null,
+    auditado_manualmente: true,
+    documento_origem: ['espelho_estatico'],
+  };
+}
+
+
+/**
  * Guarda-chuva com subindicadores NÃO é evidência vinculável: ele é
  * substituído pelos seus blocos visuais (subindicadores), que carregam o
  * título temático, os valores e o código congelado do pai. Guarda-chuvas
@@ -61,7 +83,10 @@ export interface ArtigoEvidenciaCurada {
   recomendacoes: Set<string>;
   /** nº de vínculos (combinações Artigo × Recomendação × Evidência) */
   vinculos: number;
+  /** nº de vínculos por base (bate com o resumo da planilha auditada) */
+  vinculosPorBase: { estatistica: number; normativa: number; orcamentaria: number };
 }
+
 
 export interface LinkedOrcamento {
 
@@ -302,14 +327,16 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         indicadoresVinculados = doRec
           .filter(v => v.base === 'estatistica')
           .map(v => {
-            const reg: any = indById.get(v.ref_id);
-            if (!reg) return null;
+            // Evidência estatística auditada que não tem espelho no BD
+            // (card estático das abas): usa o próprio registro curado.
+            const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
             return v.sub
               ? { ...reg, nome: v.nome || reg.nome, sub: v.sub, guardaChuva: reg.nome }
               : reg;
           })
           .filter(Boolean)
           .filter(isEvidenceEligibleIndicator);
+
 
         orcamentosVinculados = doRec
           .filter(v => v.base === 'orcamentaria')
@@ -613,25 +640,27 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       for (const art of artigos) {
         let entry = map.get(art);
         if (!entry) {
-          entry = { indicadores: [], orcamento: [], normativos: [], recomendacoes: new Set<string>(), vinculos: 0 };
+          entry = { indicadores: [], orcamento: [], normativos: [], recomendacoes: new Set<string>(), vinculos: 0, vinculosPorBase: { estatistica: 0, normativa: 0, orcamentaria: 0 } };
           map.set(art, entry);
           seen.set(art, new Set());
         }
         entry.vinculos++;
+        if (v.base === 'estatistica' || v.base === 'normativa' || v.base === 'orcamentaria') entry.vinculosPorBase[v.base]++;
         entry.recomendacoes.add(v.recomendacao_id);
+
         const dedupKey = `${v.base}|${v.ref_id}|${v.sub || ''}`;
         const s = seen.get(art)!;
         if (s.has(dedupKey)) continue;
         s.add(dedupKey);
         if (v.base === 'estatistica') {
-          const reg: any = indById.get(v.ref_id);
-          if (!reg) continue;
+          const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
           entry.indicadores.push({
             id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome,
             categoria: reg.categoria, tendencia: reg.tendencia, dados: reg.dados,
             ...(v.sub ? { sub: v.sub, guardaChuva: reg.nome } : {}),
           });
         } else if (v.base === 'orcamentaria') {
+
           const o: any = orcById.get(v.ref_id);
           if (!o) continue;
           entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
