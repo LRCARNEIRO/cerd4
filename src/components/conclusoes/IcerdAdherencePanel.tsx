@@ -254,7 +254,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const evidenceOverrides = useEvidenceOverridesReadOnly();
 
   // Use diagnostic sensor with manual evidence overrides for immediate parity with recommendation popups
-  const { diagnosticMap } = useDiagnosticSensor(lacunas, evidenceOverrides);
+  const { diagnosticMap, artigoEvidencia } = useDiagnosticSensor(lacunas, evidenceOverrides);
+
 
   // Filter out common_core and deduplicate indicators (safety net)
   const safeIndicadores = useMemo(() => {
