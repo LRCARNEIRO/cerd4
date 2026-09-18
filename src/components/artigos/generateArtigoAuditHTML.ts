@@ -232,6 +232,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
   <p><strong>Total de recomendações vinculadas a este Artigo:</strong> ${totalRecs}</p>
   <p>✅ Cumpridas: ${countCumprida} · 🟡 Parciais: ${countParcial} · 🔴 Não Cumpridas: ${countNaoCumprida}</p>
   <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${orcByKey.size} ação(ões) orçamentária(s) — agregados sem duplo conto.</p>
+  ${curado?.vinculosPorBase ? `<p style="font-size:10px;color:#475569">Matriz auditada: ${curado.vinculosPorBase.orcamentaria + curado.vinculosPorBase.estatistica + curado.vinculosPorBase.normativa} vínculos Artigo × Recomendação × Evidência (${curado.vinculosPorBase.orcamentaria} orçamentária · ${curado.vinculosPorBase.estatistica} estatística · ${curado.vinculosPorBase.normativa} normativa). Os números acima contam cada evidência uma única vez.</p>` : ''}
 </div>
 
 <h2>📜 Recomendações vinculadas ao Artigo ${artigo} (${totalRecs})</h2>
