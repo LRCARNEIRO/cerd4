@@ -54,20 +54,22 @@ export function ConclusoesReportGenerator() {
   const retrocessos = conclusoesDinamicas.filter(c => c.tipo === 'retrocesso');
   const lacunasPersist = conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente');
 
-  const totalLacunas = stats?.total || 0;
-  const cumpridas = stats?.porStatus?.cumprido || 0;
-  const parciais = stats?.porStatus?.parcialmente_cumprido || 0;
-  const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
-  const retrocessosLac = stats?.porStatus?.retrocesso || 0;
-
   // Aderência ICERD — SSoT compartilhada com o painel da aba Conclusões
   // (curadoria Artigo × Recomendação × Evidência + status computado pelo sensor).
-  const { analysis: icerdAnalysis, artigoEvidencia } = useIcerdArtigoAnalysis({
+  const { analysis: icerdAnalysis, artigoEvidencia, diagnosticMap } = useIcerdArtigoAnalysis({
     lacunas: lacunas || [],
     fiosCondutores,
     conclusoes: conclusoesDinamicas,
     respostas: respostas || [],
   });
+
+  // Status de cumprimento recomputado pelo sensor (vínculos auditados), não o status gravado
+  const statusOf = (l: any) => diagnosticMap.get(l.id)?.statusComputado || l._computedStatus || l.status_cumprimento;
+  const totalLacunas = (lacunas || []).length || stats?.total || 0;
+  const cumpridas = (lacunas || []).filter((l: any) => statusOf(l) === 'cumprido').length;
+  const parciais = (lacunas || []).filter((l: any) => ['parcialmente_cumprido', 'em_andamento'].includes(statusOf(l))).length;
+  const naoCumpridas = (lacunas || []).filter((l: any) => statusOf(l) === 'nao_cumprido').length;
+  const retrocessosLac = (lacunas || []).filter((l: any) => statusOf(l) === 'retrocesso').length;
 
   const computeIcerdData = () => icerdAnalysis.map(a => ({
     ...a,
