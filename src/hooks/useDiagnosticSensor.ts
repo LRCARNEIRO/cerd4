@@ -53,7 +53,18 @@ export interface LinkedIndicador {
   guardaChuva?: string;
 }
 
+export interface ArtigoEvidenciaCurada {
+  indicadores: LinkedIndicador[];
+  orcamento: LinkedOrcamento[];
+  normativos: LinkedNormativo[];
+  /** ids das recomendações curadas naquele artigo */
+  recomendacoes: Set<string>;
+  /** nº de vínculos (combinações Artigo × Recomendação × Evidência) */
+  vinculos: number;
+}
+
 export interface LinkedOrcamento {
+
   programa: string;
   orgao: string;
   ano: number;
@@ -279,7 +290,15 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let normativosVinculados: any[];
 
       if (usarCurados) {
-        const doRec = curadosPorRec.get(rec.id) || [];
+        // Uma mesma evidência pode aparecer em vários artigos; no nível da
+        // recomendação ela conta uma única vez.
+        const vistos = new Set<string>();
+        const doRec = (curadosPorRec.get(rec.id) || []).filter(v => {
+          const k = `${v.base}|${v.ref_id}|${v.sub || ''}`;
+          if (vistos.has(k)) return false;
+          vistos.add(k);
+          return true;
+        });
         indicadoresVinculados = doRec
           .filter(v => v.base === 'estatistica')
           .map(v => {
@@ -302,6 +321,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
           .map(v => normById.get(v.ref_id))
           .filter(Boolean);
       } else {
+
         indicadoresVinculados = indicadores
           .map((ind) => ({
             item: ind,
@@ -571,10 +591,65 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     return map;
   }, [diagnostics]);
 
+  /**
+   * EVIDÊNCIAS POR ARTIGO — leitura direta da curadoria (Artigo × Recomendação
+   * × Evidência). Cada linha curada carrega o artigo auditado; uma linha com
+   * "III, VI" alimenta os dois artigos. `vinculos` é a contagem de vínculos
+   * (combinações), enquanto as listas trazem as evidências distintas.
+   */
+  const artigoEvidencia = useMemo(() => {
+    const map = new Map<ArtigoConvencao, ArtigoEvidenciaCurada>();
+    if (!curados || curados.length === 0 || !indicadores || !orcamento || !normativos) return map;
+    const indById = new Map(indicadores.map((i: any) => [i.id, i]));
+    const orcById = new Map(orcamento.map((o: any) => [o.id, o]));
+    const normById = new Map(normativos.map((n: any) => [n.id, n]));
+    const seen = new Map<ArtigoConvencao, Set<string>>();
+
+    for (const v of curados) {
+      const artigos = String(v.artigo || '')
+        .split(',')
+        .map((a: string) => normalizeArticleTag(a.trim()))
+        .filter(Boolean) as ArtigoConvencao[];
+      for (const art of artigos) {
+        let entry = map.get(art);
+        if (!entry) {
+          entry = { indicadores: [], orcamento: [], normativos: [], recomendacoes: new Set<string>(), vinculos: 0 };
+          map.set(art, entry);
+          seen.set(art, new Set());
+        }
+        entry.vinculos++;
+        entry.recomendacoes.add(v.recomendacao_id);
+        const dedupKey = `${v.base}|${v.ref_id}|${v.sub || ''}`;
+        const s = seen.get(art)!;
+        if (s.has(dedupKey)) continue;
+        s.add(dedupKey);
+        if (v.base === 'estatistica') {
+          const reg: any = indById.get(v.ref_id);
+          if (!reg) continue;
+          entry.indicadores.push({
+            id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome,
+            categoria: reg.categoria, tendencia: reg.tendencia, dados: reg.dados,
+            ...(v.sub ? { sub: v.sub, guardaChuva: reg.nome } : {}),
+          });
+        } else if (v.base === 'orcamentaria') {
+          const o: any = orcById.get(v.ref_id);
+          if (!o) continue;
+          entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
+        } else {
+          const n: any = normById.get(v.ref_id);
+          if (!n) continue;
+          entry.normativos.push({ titulo: n.titulo, status: n.status });
+        }
+      }
+    }
+    return map;
+  }, [curados, indicadores, orcamento, normativos]);
+
   return {
     diagnostics,
     diagnosticMap,
     summary,
+    artigoEvidencia,
     isReady: !!(recomendacoes && indicadores && orcamento && normativos && curados),
     rawIndicadores: indicadores,
     rawOrcamento: orcamento,

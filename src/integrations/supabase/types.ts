@@ -673,6 +673,7 @@ export type Database = {
       }
       vinculos_evidencia_curados: {
         Row: {
+          artigo: string | null
           base: string
           created_at: string
           id: string
@@ -682,6 +683,7 @@ export type Database = {
           sub: string | null
         }
         Insert: {
+          artigo?: string | null
           base: string
           created_at?: string
           id?: string
@@ -691,6 +693,7 @@ export type Database = {
           sub?: string | null
         }
         Update: {
+          artigo?: string | null
           base?: string
           created_at?: string
           id?: string
