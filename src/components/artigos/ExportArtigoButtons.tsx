@@ -27,6 +27,7 @@ interface CommonProps {
   rawIndicadores: any[];
   rawOrcamento: any[];
   rawNormativos: any[];
+  artigoEvidencia?: Map<string, any>;
   disabled?: boolean;
 }
 
@@ -44,6 +45,7 @@ export function ExportSingleArtigoButton({
         recomendacoes: common.recomendacoes || [],
         diagnosticMap: common.diagnosticMap,
         lookups,
+        artigoEvidencia: common.artigoEvidencia,
       });
       triggerDownload(new Blob([html], { type: 'text/html;charset=utf-8' }), `artigo-${artigo}-icerd.html`);
       toast.success(`Relatório do Artigo ${artigo} gerado.`);
@@ -83,6 +85,7 @@ export function ExportAllArtigosButton(common: CommonProps) {
             recomendacoes: common.recomendacoes || [],
             diagnosticMap: common.diagnosticMap,
             lookups,
+            artigoEvidencia: common.artigoEvidencia,
           });
           const fileName = `artigo-${def.numero}-${safeFileName(def.titulo)}.html`;
           zip.file(fileName, html);
