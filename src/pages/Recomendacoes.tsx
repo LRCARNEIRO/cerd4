@@ -6,6 +6,8 @@ import { lazy, useState, useMemo } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
 
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
@@ -64,12 +66,19 @@ export default function Recomendacoes() {
   const { data: stats, isLoading: loadingStats } = useLacunasStats();
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
+  // Status efetivo vem do sensor (evidências auditadas), como na Relação Completa
+  const { data: evidenceOverrides } = useEvidenceOverrides();
+  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
+
   const isLoading = loadingLacunas || loadingStats;
   const statusStats = useMemo(() => {
     const c: Record<string, number> = {};
-    (lacunas || []).forEach(l => { c[l.status_cumprimento] = (c[l.status_cumprimento] || 0) + 1; });
+    (lacunas || []).forEach(l => {
+      const st = (sensorReady ? diagnosticMap.get(l.id)?.statusComputado : undefined) ?? l.status_cumprimento;
+      c[st] = (c[st] || 0) + 1;
+    });
     return c as Record<ComplianceStatus, number>;
-  }, [lacunas]);
+  }, [lacunas, diagnosticMap, sensorReady]);
   const criticas = useMemo(() => (lacunas || []).filter(l => l.prioridade === 'critica').length, [lacunas]);
 
   return (
