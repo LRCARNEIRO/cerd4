@@ -507,14 +507,23 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: finalIndicadores.flatMap(i => expandIndicadorEvidencia({ id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria, tendencia: i.tendencia, dados: i.dados })),
+        linkedIndicadores: finalIndicadores.flatMap(i => {
+          const base: LinkedIndicador = {
+            id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria,
+            tendencia: i.tendencia, dados: i.dados,
+          };
+          // Vínculo curado já aponta para o subindicador (bloco visual): não reexpandir.
+          if ((i as any).sub) return [{ ...base, sub: (i as any).sub, guardaChuva: (i as any).guardaChuva }];
+          return expandIndicadorEvidencia(base);
+        }),
         linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago })),
         linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
       };
     });
 
     return setDiagnosticsCache(cacheKey, nextDiagnostics);
-  }, [recomendacoes, indicadores, orcamento, normativos, overrides]);
+  }, [recomendacoes, indicadores, orcamento, normativos, curados, overrides]);
+
 
   // ── Summary ──────────────────────────────────────────────────────
   const summary = useMemo<DiagnosticSummary>(() => {
