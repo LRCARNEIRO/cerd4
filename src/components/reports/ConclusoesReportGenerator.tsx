@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { useIcerdArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
@@ -59,23 +60,25 @@ export function ConclusoesReportGenerator() {
   const naoCumpridas = stats?.porStatus?.nao_cumprido || 0;
   const retrocessosLac = stats?.porStatus?.retrocesso || 0;
 
-  // Compute ICERD adherence per article (simplified)
-  const computeIcerdData = () => {
-    return ARTIGOS_CONVENCAO.map(art => {
-      const artLacunas = (lacunas || []).filter((l: any) => {
-        const artsFromEixo = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
-        const artsFromField = l.artigos_convencao || [];
-        return [...artsFromEixo, ...artsFromField].includes(art.numero);
-      });
-      const cumpr = artLacunas.filter((l: any) => l.status_cumprimento === 'cumprido').length;
-      const parc = artLacunas.filter((l: any) => l.status_cumprimento === 'parcialmente_cumprido').length;
-      const nao = artLacunas.filter((l: any) => l.status_cumprimento === 'nao_cumprido').length;
-      const retro = artLacunas.filter((l: any) => l.status_cumprimento === 'retrocesso').length;
-      const total = artLacunas.length;
-      const score = total > 0 ? Math.round(((cumpr * 1 + parc * 0.5) / total) * 100) : 50;
-      return { ...art, total, cumpr, parc, nao, retro, score };
-    });
-  };
+  // Aderência ICERD — SSoT compartilhada com o painel da aba Conclusões
+  // (curadoria Artigo × Recomendação × Evidência + status computado pelo sensor).
+  const { analysis: icerdAnalysis, artigoEvidencia } = useIcerdArtigoAnalysis({
+    lacunas: lacunas || [],
+    fiosCondutores,
+    conclusoes: conclusoesDinamicas,
+    respostas: respostas || [],
+  });
+
+  const computeIcerdData = () => icerdAnalysis.map(a => ({
+    ...a,
+    total: a.lacunasTotal,
+    cumpr: a.lacunasCumpridas,
+    parc: a.lacunasParciais,
+    nao: a.lacunasNaoCumpridas,
+    retro: a.lacunasRetrocesso,
+    score: a.grauAderencia,
+    vinculos: artigoEvidencia.get(a.numero)?.vinculosPorBase || { estatistica: 0, normativa: 0, orcamentaria: 0 },
+  }));
 
   const generateFullHTML = () => {
     const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -385,7 +388,7 @@ ${retrocessos.map(c => `
   <a class="link" href="${systemUrl}/conclusoes">→ Ver painel interativo no sistema</a>
 </p>
 <table>
-  <thead><tr><th>Artigo</th><th>Título</th><th>Lacunas</th><th>Cumpr.</th><th>Parcial</th><th>Não Cumpr.</th><th>Retro.</th><th>Aderência</th></tr></thead>
+  <thead><tr><th>Artigo</th><th>Título</th><th>Lacunas</th><th>Cumpr.</th><th>Parcial</th><th>Não Cumpr.</th><th>Retro.</th><th>Vínculos auditados (orç./estat./norm.)</th><th>Aderência</th></tr></thead>
   <tbody>
   ${icerdData.map(a => {
     const color = a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626';
@@ -397,6 +400,7 @@ ${retrocessos.map(c => `
       <td style="color:#f59e0b">${a.parc}</td>
       <td style="color:#dc2626">${a.nao}</td>
       <td style="color:#7f1d1d">${a.retro}</td>
+      <td style="font-size:9px">${a.vinculos.orcamentaria + a.vinculos.estatistica + a.vinculos.normativa} <span style="color:#64748b">(${a.vinculos.orcamentaria} / ${a.vinculos.estatistica} / ${a.vinculos.normativa})</span></td>
       <td><div class="aderencia-bar"><div class="aderencia-fill" style="width:${a.score}%;background:${color}">${a.score}%</div></div></td>
     </tr>`;
   }).join('')}
@@ -406,8 +410,9 @@ ${retrocessos.map(c => `
 ${icerdData.map(a => `
 <div class="card" style="border-left:4px solid ${a.cor};">
   <h4>Art. ${a.numero} — ${a.tituloCompleto}</h4>
-  <p style="font-size:10px;color:#64748b;">${a.total} lacunas vinculadas | Aderência: <strong style="color:${a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626'}">${a.score}%</strong></p>
+  <p style="font-size:10px;color:#64748b;">${a.total} recomendações vinculadas | ${a.indicadoresCount} indicadores, ${a.orcamentoProgramas} ações orçamentárias, ${a.normativosCount} normativos (evidências distintas) | Matriz auditada: ${a.vinculos.orcamentaria + a.vinculos.estatistica + a.vinculos.normativa} vínculos | Aderência: <strong style="color:${a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626'}">${a.score}%</strong></p>
   <div class="aderencia-bar"><div class="aderencia-fill" style="width:${a.score}%;background:${a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626'}">${a.score}%</div></div>
+  <p style="font-size:9px;color:#475569;margin-top:6px;">${a.veredito}</p>
 </div>`).join('')}
 
 <!-- 10. VEREDITO -->
