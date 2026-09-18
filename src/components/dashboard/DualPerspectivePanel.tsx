@@ -33,6 +33,8 @@ interface DualPerspectivePanelProps {
     naoCumpridas: number;
     evolScore: number;
     aderenciaScore?: number;
+    vinculos?: number;
+    vinculosPorBase?: { estatistica: number; normativa: number; orcamentaria: number };
   }[];
   isLoading?: boolean;
 }
@@ -253,6 +255,11 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                       {art.cumpridas}/{art.totalRecs} cumpr.
                     </span>
                   </div>
+                  {art.vinculos ? (
+                    <p className="text-[9px] text-muted-foreground mt-1 leading-tight">
+                      Matriz auditada: {art.vinculos} vínculos ({art.vinculosPorBase?.orcamentaria || 0} orç. · {art.vinculosPorBase?.estatistica || 0} estat. · {art.vinculosPorBase?.normativa || 0} norm.)
+                    </p>
+                  ) : null}
                 </div>
               );
             })}
