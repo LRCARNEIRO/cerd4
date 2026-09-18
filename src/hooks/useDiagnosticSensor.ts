@@ -53,7 +53,18 @@ export interface LinkedIndicador {
   guardaChuva?: string;
 }
 
+export interface ArtigoEvidenciaCurada {
+  indicadores: LinkedIndicador[];
+  orcamento: LinkedOrcamento[];
+  normativos: LinkedNormativo[];
+  /** ids das recomendações curadas naquele artigo */
+  recomendacoes: Set<string>;
+  /** nº de vínculos (combinações Artigo × Recomendação × Evidência) */
+  vinculos: number;
+}
+
 export interface LinkedOrcamento {
+
   programa: string;
   orgao: string;
   ano: number;
