@@ -368,9 +368,9 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [fiosCondutores, conclusoes, lacunas, respostas, statSeriesPerArticle, diagnosticMap]);
+  }, [fiosCondutores, conclusoes, lacunas, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia]);
 
-  // Aggregated evidence per article for drilldown (from diagnosticMap)
+  // Evidências do artigo para o drilldown — mesma curadoria Artigo × Rec × Evidência
   const drilldownData = useMemo(() => {
     if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as LinkedNormativo[], orcamentos: [] as LinkedOrcamento[], indicadores: [] as LinkedIndicador[] };
     // SSoT: apenas vínculos confirmados em artigos_convencao — sem inferência por eixo temático
@@ -386,7 +386,12 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
       return { paragrafo: l.paragrafo, tema: l.tema, status: s };
     });
 
-    // Aggregate from diagnosticMap
+    const curado = artigoEvidencia.get(drilldownArtigo);
+    if (curado) {
+      return { recomendacoes, normativos: curado.normativos, orcamentos: curado.orcamento, indicadores: curado.indicadores };
+    }
+
+    // Fallback (sem curadoria): união das recomendações do artigo
     const indMap = new Map<string, LinkedIndicador>();
     const orcMap = new Map<string, LinkedOrcamento>();
     const normMap = new Map<string, LinkedNormativo>();
@@ -399,7 +404,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     }
 
     return { recomendacoes, normativos: Array.from(normMap.values()), orcamentos: Array.from(orcMap.values()), indicadores: Array.from(indMap.values()) };
-  }, [drilldownArtigo, lacunas, diagnosticMap]);
+  }, [drilldownArtigo, lacunas, diagnosticMap, artigoEvidencia]);
+
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
