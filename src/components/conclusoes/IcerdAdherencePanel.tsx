@@ -14,7 +14,7 @@ import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsigh
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
-import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useIcerdArtigoAnalysis, type ArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import {
@@ -33,118 +33,6 @@ interface IcerdAdherencePanelProps {
   documentosNormativosCount: number;
 }
 
-type ArtigoAnalysis = {
-  numero: ArtigoConvencao;
-  titulo: string;
-  tituloCompleto: string;
-  cor: string;
-  // Coverage dimensions
-  lacunasTotal: number;
-  lacunasCumpridas: number;
-  lacunasParciais: number;
-  lacunasNaoCumpridas: number;
-  lacunasRetrocesso: number;
-  fiosTotal: number;
-  fiosAvanco: number;
-  fiosRetrocesso: number;
-  conclusoesAvanco: number;
-  conclusoesRetrocesso: number;
-  conclusoesLacuna: number;
-  orcamentoLiquidado: number;
-  orcamentoProgramas: number;
-  indicadoresCount: number;
-  // NEW dimensions
-  respostasTotal: number;
-  respostasCumpridas: number;
-  respostasNaoCumpridas: number;
-  normativosCount: number;
-  seriesEstatisticas: number; // count of stat series covering this article
-  // Computed
-  grauAderencia: number; // 0-100
-  tendencia: 'melhora' | 'piora' | 'estagnacao';
-  veredito: string;
-};
-
-/**
- * Map statistical series to ICERD articles based on thematic coverage.
- * Returns a count of distinct statistical evidence series per article.
- */
-function useCountStatSeriesPerArticle() {
-  const m = useMirrorData();
-  const { data: allIndicadores } = useIndicadoresAnaliticos();
-  return useMemo(() => {
-    const c: Record<ArtigoConvencao, number> = { I: 0, II: 0, III: 0, IV: 0, V: 0, VI: 0, VII: 0 };
-
-    // Helper: add to articles if data exists
-    const add = (data: any, arts: ArtigoConvencao[], n = 1) => {
-      const has = Array.isArray(data) ? data.length > 0 : !!data;
-      if (has) arts.forEach(a => { c[a] += n; });
-    };
-
-    // ── DEMOGRAFIA (Art I, II — definição e obrigações) ──
-    add(m.dadosDemograficos, ['I', 'II'], 2);
-    add(m.evolucaoComposicaoRacial, ['I', 'II']);
-
-    // ── SEGURANÇA (Art V-b, VI) ──
-    add(m.segurancaPublica, ['V', 'VI'], 2);
-    add(m.feminicidioSerie, ['V', 'VI']);
-    add(m.atlasViolencia2025, ['V', 'VI']);
-    add(m.jovensNegrosViolencia, ['V', 'VI']);
-    add(m.violenciaInterseccional, ['V', 'VI']);
-
-    // ── EDUCAÇÃO (Art V-e-v, VII) ──
-    add(m.educacaoSerieHistorica, ['V', 'VII'], 2);
-    add(m.analfabetismoGeral2024, ['V', 'VII']);
-    add(m.evasaoEscolarSerie, ['V', 'VII']);
-
-    // ── SAÚDE (Art V-e-iv) ──
-    add(m.saudeSerieHistorica, ['V'], 2);
-    add(m.saudeMaternaRaca, ['V']);
-
-    // ── HABITAÇÃO / RENDA (Art V-e-iii, V-e-i) ──
-    add(m.deficitHabitacionalSerie, ['V']);
-    add(m.cadUnicoPerfilRacial, ['V']);
-    add(m.indicadoresSocioeconomicos, ['V'], 2);
-    add(m.rendimentosCenso2022, ['I', 'V']);
-    add(m.evolucaoDesigualdade, ['I', 'II', 'V']);
-
-    // ── RAÇA × GÊNERO (Art I interseccionalidade, V DESCA) ──
-    add(m.interseccionalidadeTrabalho, ['I', 'V']);
-    add(m.trabalhoRacaGenero, ['I', 'V']);
-    add(m.educacaoRacaGenero, ['I', 'V', 'VII']);
-    add(m.chefiaFamiliarRacaGenero, ['I', 'V']);
-
-    // ── DEFICIÊNCIA (Art I interseccionalidade, II medidas especiais) ──
-    add(m.deficienciaPorRaca, ['I', 'II', 'V']);
-    add(m.disparidadesPcd1459, ['I', 'V']);
-
-    // ── LGBTQIA+ (Art I, V) ──
-    add(m.serieAntraTrans, ['I', 'V', 'VI']);
-    add(m.lgbtqiaPorRaca, ['I', 'V']);
-
-    // ── JUVENTUDE (Art V, VI) ──
-    add(m.juventudeNegra, ['V', 'VI'], 2);
-
-    // ── CLASSE / POBREZA (Art V-e) ──
-    add(m.classePorRaca, ['I', 'V']);
-
-    // ── POVOS TRADICIONAIS (Art III segregação, V território) ──
-    add(m.povosTradicionais, ['III', 'V'], 2);
-
-    // ── ODS RACIAL (93 indicadores do BD) — distribuir por artigo via inferência ──
-    const odsIndicadores = (allIndicadores || []).filter(
-      (i: any) => i.categoria === 'ods_racial'
-    );
-    odsIndicadores.forEach((ind: any) => {
-      const arts = inferArtigosIndicador(ind);
-      arts.forEach(a => { c[a] += 1; });
-    });
-
-    // Art IV não tem séries estatísticas diretas no sistema, mas a cobertura normativa já preenche
-
-    return c;
-  }, [m, allIndicadores]);
-}
 
 /**
  * Infer which articles a normative document covers based on secoes_impactadas
@@ -159,102 +47,14 @@ const formatCompact = (value: number) => {
   return `R$ ${(value / 1_000).toFixed(0)} mil`;
 };
 
-/**
- * Mapeamento direto: parágrafo CERD III → artigos ICERD (por conteúdo temático)
- */
-const CERD_III_PARAGRAFO_ARTIGOS: Record<string, ArtigoConvencao[]> = {
-  '12': ['I', 'II', 'VI'],    // legislação/implementação
-  '14': ['IV', 'VII'],         // estereótipos/mídia
-  '16': ['V'],                 // saúde
-  '18': ['V', 'VII'],          // educação/Lei 10.639
-  '20': ['III', 'V'],          // povos indígenas
-  '22': ['III', 'V'],          // quilombolas/território
-  '24': ['V', 'VI'],           // violência policial/juventude
-  '26': ['V', 'VI'],           // encarceramento
-};
-
-function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: ArtigoConvencao): RespostaLacunaCerdIII[] {
-  return respostas.filter(r => {
-    const p = r.paragrafo_cerd_iii.replace(/[§ ]/g, '');
-    const mapped = CERD_III_PARAGRAFO_ARTIGOS[p];
-    return mapped ? mapped.includes(artigo) : false;
-  });
-}
-
-function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  // Aderência = visão GERENCIAL — "O Estado está respondendo às obrigações CERD?"
-  // O cumprimento das recomendações é o CERNE da aderência à Convenção.
-  //
-  // Pesos REBALANCEADOS: Recomendações ONU (50%), Normativos (15%), Orçamento (10%),
-  //         Indicadores (15%), Amplitude de Fontes (10%)
-  let score = 0;
-
-  // Recomendações ONU (0-50) — PESO DOMINANTE — taxa relativa cumpridas/total
-  if (a.lacunasTotal > 0) {
-    const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.1;
-    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 50;
-  } else {
-    score += 25;
-  }
-
-  // Cobertura Normativa (0-15) — esforço legislativo
-  if (a.normativosCount > 0) {
-    score += Math.min(15, a.normativosCount * 1.5);
-  }
-
-  // Cobertura Orçamentária (0-10) — quantidade de ações vinculadas
-  if (a.orcamentoProgramas > 0) {
-    score += Math.min(10, a.orcamentoProgramas * 1.0);
-  }
-
-  // Indicadores (0-15) — dados quantitativos disponíveis
-  if (a.indicadoresCount > 0) {
-    score += Math.min(15, a.indicadoresCount * 1.2);
-  }
-
-  // Amplitude de Fontes (0-10) — diversidade de tipos de evidência
-  const hasRecomendacoes = a.lacunasCumpridas > 0;
-  const hasOrc = a.orcamentoProgramas > 0;
-  const hasInd = a.indicadoresCount > 0;
-  const hasNorm = a.normativosCount > 0;
-  const breadth = [hasRecomendacoes, hasOrc, hasInd, hasNorm].filter(Boolean).length;
-  score += (breadth / 4) * 10;
-
-  return Math.round(Math.min(100, Math.max(0, score)));
-}
-
-function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
-  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
-  const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas + Math.floor(emAndamento * 0.3);
-  const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
-  if (avancos > retrocessos * 1.3) return 'melhora';
-  if (retrocessos > avancos * 1.3) return 'piora';
-  return 'estagnacao';
-}
-
-function generateVerdict(a: ArtigoAnalysis): string {
-  const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
-  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
-  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
-  const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
-  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
-  const orcText = ''; // mantido por compatibilidade
-
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} ação(ões) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${statsText}`;
-  return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
-}
 
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativosCount }: IcerdAdherencePanelProps) {
-  const statSeriesPerArticle = useCountStatSeriesPerArticle();
   const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
   const [drilldownFocus, setDrilldownFocus] = useState<'recomendacoes' | 'indicadores' | 'orcamento' | 'normativos' | null>(null);
-  const evidenceOverrides = useEvidenceOverridesReadOnly();
-
-  // Use diagnostic sensor with manual evidence overrides for immediate parity with recommendation popups
-  const { diagnosticMap, artigoEvidencia } = useDiagnosticSensor(lacunas, evidenceOverrides);
+  // SSoT compartilhada com os relatórios (aba Conclusões / Produtos)
+  const { analysis, diagnosticMap, artigoEvidencia } = useIcerdArtigoAnalysis({
+    lacunas, fiosCondutores, conclusoes, respostas,
+  });
 
 
   // Filter out common_core and deduplicate indicators (safety net)
@@ -265,110 +65,6 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   // Rol canônico da Base Estatística (guarda-chuvas sem duplicidade + subindicadores)
   const rolEstatistico = useMemo(() => buildRolEstatistico(safeIndicadores), [safeIndicadores]);
 
-  const analysis = useMemo<ArtigoAnalysis[]>(() => {
-    return ARTIGOS_CONVENCAO.map(art => {
-      // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
-      const artLacunas = lacunas.filter(l => {
-        const explicit = ((l.artigos_convencao || []) as string[])
-          .map(normalizeArticleTag)
-          .filter(Boolean) as ArtigoConvencao[];
-        return explicit.includes(art.numero);
-      });
-      const cumpridas = artLacunas.filter(l => {
-        const diag = diagnosticMap.get(l.id);
-        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'cumprido';
-      }).length;
-      const parciais = artLacunas.filter(l => {
-        const diag = diagnosticMap.get(l.id);
-        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'parcialmente_cumprido' || s === 'em_andamento';
-      }).length;
-      const naoCumpridas = artLacunas.filter(l => {
-        const diag = diagnosticMap.get(l.id);
-        const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-        return s === 'nao_cumprido' || s === 'retrocesso';
-      }).length;
-
-      // ── EVIDÊNCIAS DO ARTIGO ──
-      // Fonte única: curadoria Artigo × Recomendação × Evidência. O fallback
-      // (união das recomendações do artigo) só vale enquanto não houver curadoria.
-      const indSet = new Map<string, LinkedIndicador>();
-      const orcSet = new Map<string, LinkedOrcamento>();
-      const normSet = new Map<string, LinkedNormativo>();
-
-      const curado = artigoEvidencia.get(art.numero);
-      if (curado) {
-        for (const ind of curado.indicadores) indSet.set(`${ind.nome}|${ind.sub || ''}`, ind);
-        for (const orc of curado.orcamento) orcSet.set(`${orc.programa}|${orc.orgao}|${orc.ano}`, orc);
-        for (const norm of curado.normativos) normSet.set(norm.titulo, norm);
-      } else {
-        for (const l of artLacunas) {
-          const diag = diagnosticMap.get(l.id);
-          if (!diag) continue;
-          for (const ind of diag.linkedIndicadores) {
-            if (!indSet.has(ind.nome)) indSet.set(ind.nome, ind);
-          }
-          for (const orc of diag.linkedOrcamento) {
-            const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
-            if (!orcSet.has(key)) orcSet.set(key, orc);
-          }
-          for (const norm of diag.linkedNormativos) {
-            if (!normSet.has(norm.titulo)) normSet.set(norm.titulo, norm);
-          }
-        }
-      }
-
-
-      // Fios by article
-      const artFios = fiosCondutores.filter(f => f.artigosConvencao?.includes(art.numero));
-      const fiosAvanco = artFios.filter(f => f.tipo === 'avanco').length;
-      const fiosRetrocesso = artFios.filter(f => f.tipo === 'retrocesso' || f.tipo === 'lacuna_critica').length;
-
-      // Conclusões by article
-      const artConc = conclusoes.filter(c => c.artigosConvencao?.includes(art.numero));
-      const concAvanco = artConc.filter(c => c.tipo === 'avanco').length;
-      const concRetrocesso = artConc.filter(c => c.tipo === 'retrocesso').length;
-      const concLacuna = artConc.filter(c => c.tipo === 'lacuna_persistente').length;
-
-      // Respostas CERD III by article
-      const artRespostas = mapRespostasToArticle(respostas, art.numero);
-      const respCumpridas = artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length;
-      const respNaoCumpridas = artRespostas.filter(r => r.grau_atendimento === 'nao_cumprido' || r.grau_atendimento === 'retrocesso').length;
-
-      const base = {
-        numero: art.numero,
-        titulo: art.titulo,
-        tituloCompleto: art.tituloCompleto,
-        cor: art.cor,
-        lacunasTotal: artLacunas.length,
-        lacunasCumpridas: cumpridas,
-        lacunasParciais: parciais,
-        lacunasNaoCumpridas: naoCumpridas,
-        lacunasRetrocesso: 0,
-        fiosTotal: artFios.length,
-        fiosAvanco,
-        fiosRetrocesso,
-        conclusoesAvanco: concAvanco,
-        conclusoesRetrocesso: concRetrocesso,
-        conclusoesLacuna: concLacuna,
-        orcamentoLiquidado: 0,
-        orcamentoProgramas: orcSet.size,
-        indicadoresCount: indSet.size,
-        respostasTotal: artRespostas.length,
-        respostasCumpridas: respCumpridas,
-        respostasNaoCumpridas: respNaoCumpridas,
-        normativosCount: normSet.size,
-        seriesEstatisticas: statSeriesPerArticle[art.numero] || 0,
-      };
-
-      const grau = computeAdherenceScore(base);
-      const trend = determineTrend(base);
-      const result: ArtigoAnalysis = { ...base, grauAderencia: grau, tendencia: trend, veredito: '' };
-      result.veredito = generateVerdict(result);
-      return result;
-    });
-  }, [fiosCondutores, conclusoes, lacunas, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia]);
 
   // Evidências do artigo para o drilldown — mesma curadoria Artigo × Rec × Evidência
   const drilldownData = useMemo(() => {
