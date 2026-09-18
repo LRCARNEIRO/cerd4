@@ -302,14 +302,16 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         indicadoresVinculados = doRec
           .filter(v => v.base === 'estatistica')
           .map(v => {
-            const reg: any = indById.get(v.ref_id);
-            if (!reg) return null;
+            // Evidência estatística auditada que não tem espelho no BD
+            // (card estático das abas): usa o próprio registro curado.
+            const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
             return v.sub
               ? { ...reg, nome: v.nome || reg.nome, sub: v.sub, guardaChuva: reg.nome }
               : reg;
           })
           .filter(Boolean)
           .filter(isEvidenceEligibleIndicator);
+
 
         orcamentosVinculados = doRec
           .filter(v => v.base === 'orcamentaria')
