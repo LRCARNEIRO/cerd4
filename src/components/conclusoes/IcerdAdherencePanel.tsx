@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
