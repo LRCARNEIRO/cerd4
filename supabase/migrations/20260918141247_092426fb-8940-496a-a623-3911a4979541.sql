@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS public.vinculos_curados_unq;
