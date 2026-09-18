@@ -626,14 +626,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         if (s.has(dedupKey)) continue;
         s.add(dedupKey);
         if (v.base === 'estatistica') {
-          const reg: any = indById.get(v.ref_id);
-          if (!reg) continue;
+          const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
           entry.indicadores.push({
             id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome,
             categoria: reg.categoria, tendencia: reg.tendencia, dados: reg.dados,
             ...(v.sub ? { sub: v.sub, guardaChuva: reg.nome } : {}),
           });
         } else if (v.base === 'orcamentaria') {
+
           const o: any = orcById.get(v.ref_id);
           if (!o) continue;
           entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
