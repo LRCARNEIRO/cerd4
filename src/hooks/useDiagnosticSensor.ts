@@ -244,13 +244,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
   // tema/descrição/texto ONU da recomendação, sem usar eixo ou artigo genérico.
   // Combina frase/termo exato + expansão conceitual + campos textuais auxiliares.
   const diagnostics = useMemo<RecomendacaoDiagnostic[]>(() => {
-    if (!recomendacoes || !indicadores || !orcamento || !normativos) return [];
+    if (!recomendacoes || !indicadores || !orcamento || !normativos || !curados) return [];
 
     const cacheKey = JSON.stringify({
       recs: arrayDataSignature(recomendacoes, ['id', 'tema', 'descricao_lacuna', 'grupo_focal', 'updated_at']),
       indicadores: arrayDataSignature(indicadores, ['nome', 'categoria', 'subcategoria', 'updated_at']),
       orcamento: arrayDataSignature(orcamento, ['programa', 'orgao', 'ano', 'dotacao_autorizada', 'pago']),
       normativos: arrayDataSignature(normativos, ['titulo', 'status', 'categoria']),
+      curados: arrayDataSignature(curados, ['recomendacao_id', 'base', 'ref_id', 'sub']),
       overrides,
     });
     const cachedDiagnostics = diagnosticsCache.get(cacheKey);
@@ -258,45 +259,86 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
     const orcKeyFn = (o: any) => `${o.programa}|${o.orgao}|${o.ano}`;
 
+    // Índices p/ resolver os vínculos curados (SSoT auditado)
+    const usarCurados = curados.length > 0;
+    const indById = new Map(indicadores.map((i: any) => [i.id, i]));
+    const orcById = new Map(orcamento.map((o: any) => [o.id, o]));
+    const normById = new Map(normativos.map((n: any) => [n.id, n]));
+    const curadosPorRec = new Map<string, any[]>();
+    for (const v of curados) {
+      const arr = curadosPorRec.get(v.recomendacao_id);
+      if (arr) arr.push(v); else curadosPorRec.set(v.recomendacao_id, [v]);
+    }
+
     const nextDiagnostics = recomendacoes.map(rec => {
       const recOverride = overrides?.[rec.id];
       const signals: DiagnosticSignal[] = [];
 
-      const indicadoresVinculados = indicadores
-        .map((ind) => ({
-          item: ind,
-          match: getRecommendationKeywordMatch(
-            rec,
-            `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''} ${ind.analise_interseccional || ''} ${Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ') : ''}`
-          ),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
-        .map(({ item }) => item)
-        .slice(0, 20);
+      let indicadoresVinculados: any[];
+      let orcamentosVinculados: any[];
+      let normativosVinculados: any[];
 
-      const orcamentosVinculados = orcamento
-        .map((item) => ({
-          item,
-          match: getRecommendationKeywordMatch(
-            rec,
-            `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''} ${item.observacoes || ''} ${item.razao_selecao || ''}`
-          ),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.programa.localeCompare(b.item.programa))
-        .map(({ item }) => item)
-        .slice(0, 20);
+      if (usarCurados) {
+        const doRec = curadosPorRec.get(rec.id) || [];
+        indicadoresVinculados = doRec
+          .filter(v => v.base === 'estatistica')
+          .map(v => {
+            const reg: any = indById.get(v.ref_id);
+            if (!reg) return null;
+            return v.sub
+              ? { ...reg, nome: v.nome || reg.nome, sub: v.sub, guardaChuva: reg.nome }
+              : reg;
+          })
+          .filter(Boolean)
+          .filter(isEvidenceEligibleIndicator);
 
-      const normativosVinculados = normativos
-        .map((doc) => ({
-          item: doc,
-          match: getRecommendationKeywordMatch(rec, `${doc.titulo} ${doc.categoria || ''}`),
-        }))
-        .filter(({ match }) => match.isRelevant)
-        .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))
-        .map(({ item }) => item)
-        .slice(0, 20);
+        orcamentosVinculados = doRec
+          .filter(v => v.base === 'orcamentaria')
+          .map(v => orcById.get(v.ref_id))
+          .filter(Boolean);
+
+        normativosVinculados = doRec
+          .filter(v => v.base === 'normativa')
+          .map(v => normById.get(v.ref_id))
+          .filter(Boolean);
+      } else {
+        indicadoresVinculados = indicadores
+          .map((ind) => ({
+            item: ind,
+            match: getRecommendationKeywordMatch(
+              rec,
+              `${ind.nome} ${ind.categoria} ${ind.subcategoria || ''} ${ind.analise_interseccional || ''} ${Array.isArray(ind.documento_origem) ? ind.documento_origem.join(' ') : ''}`
+            ),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.nome.localeCompare(b.item.nome))
+          .map(({ item }) => item)
+          .slice(0, 20);
+
+        orcamentosVinculados = orcamento
+          .map((item) => ({
+            item,
+            match: getRecommendationKeywordMatch(
+              rec,
+              `${item.programa} ${item.orgao} ${item.descritivo || ''} ${item.eixo_tematico || ''} ${item.publico_alvo || ''} ${item.observacoes || ''} ${item.razao_selecao || ''}`
+            ),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.programa.localeCompare(b.item.programa))
+          .map(({ item }) => item)
+          .slice(0, 20);
+
+        normativosVinculados = normativos
+          .map((doc) => ({
+            item: doc,
+            match: getRecommendationKeywordMatch(rec, `${doc.titulo} ${doc.categoria || ''}`),
+          }))
+          .filter(({ match }) => match.isRelevant)
+          .sort((a, b) => b.match.score - a.match.score || a.item.titulo.localeCompare(b.item.titulo))
+          .map(({ item }) => item)
+          .slice(0, 20);
+      }
+
 
       // ── Apply manual overrides ──
       let finalIndicadores = indicadoresVinculados;
