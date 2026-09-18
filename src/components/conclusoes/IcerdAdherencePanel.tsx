@@ -748,6 +748,21 @@ ${analysis.map(a => {
                 </button>
               </div>
 
+              {(() => {
+                const cur = artigoEvidencia.get(a.numero);
+                if (!cur) return null;
+                const vb = cur.vinculosPorBase;
+                return (
+                  <p className="text-[10px] text-muted-foreground mb-3">
+                    Matriz auditada: <strong>{cur.vinculos}</strong> vínculos Artigo × Recomendação × Evidência
+                    {' '}({vb.orcamentaria} orçamentária · {vb.estatistica} estatística · {vb.normativa} normativa).
+                    Os números acima contam cada evidência uma única vez.
+                  </p>
+                );
+              })()}
+
+
+
 
               <div className="p-3 bg-muted/30 rounded-lg">
                 <p className="text-xs text-muted-foreground leading-relaxed">{a.veredito}</p>
