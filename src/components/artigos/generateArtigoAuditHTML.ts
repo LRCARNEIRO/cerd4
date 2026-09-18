@@ -13,7 +13,7 @@
  *    pertencentes ao Artigo, sem duplo conto (chave por id/título/triplo).
  */
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';

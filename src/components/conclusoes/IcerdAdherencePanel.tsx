@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Scale, CheckCircle2, AlertTriangle, XCircle, TrendingUp, TrendingDown, Minus, FileText, Database, BarChart3, BookOpen, Users, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { ARTIGOS_CONVENCAO, inferArtigosDocumentoNormativo, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { MethodologyPanel } from '@/components/shared/MethodologyPanel';
@@ -362,13 +362,13 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   // Aggregated evidence per article for drilldown (from diagnosticMap)
   const drilldownData = useMemo(() => {
     if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as LinkedNormativo[], orcamentos: [] as LinkedOrcamento[], indicadores: [] as LinkedIndicador[] };
-    const artLacunas = lacunas.filter(l => {
-      if (l.artigos_convencao && l.artigos_convencao.length > 0) {
-        return l.artigos_convencao.map(normalizeArticleTag).filter(Boolean).includes(drilldownArtigo);
-      }
-      const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
-      return mapped ? mapped.includes(drilldownArtigo) : false;
-    });
+    // SSoT: apenas vínculos confirmados em artigos_convencao — sem inferência por eixo temático
+    const artLacunas = lacunas.filter(l =>
+      ((l.artigos_convencao || []) as string[])
+        .map(normalizeArticleTag)
+        .filter(Boolean)
+        .includes(drilldownArtigo)
+    );
     const recomendacoes = artLacunas.map(l => {
       const diag = diagnosticMap.get(l.id);
       const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
