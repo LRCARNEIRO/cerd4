@@ -61,9 +61,11 @@ interface Args {
   recomendacoes: any[];
   diagnosticMap: Map<string, RecomendacaoDiagnostic>;
   lookups: ExportLookupMaps;
+  /** Curadoria Artigo × Recomendação × Evidência (vinculos_evidencia_curados) */
+  artigoEvidencia?: Map<string, { indicadores: any[]; orcamento: any[]; normativos: any[]; vinculosPorBase?: { estatistica: number; normativa: number; orcamentaria: number } }>;
 }
 
-export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, lookups }: Args): string {
+export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, lookups, artigoEvidencia }: Args): string {
   const { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
   const def = ARTIGOS_CONVENCAO.find(a => a.numero === artigo);
 
@@ -74,6 +76,13 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   const indByNome = new Map<string, { id?: string; codigo?: string; nome: string; categoria?: string; tendencia?: string; dados: any; recomendacoes: string[] }>();
   const normByTitulo = new Map<string, { titulo: string; recomendacoes: string[] }>();
   const orcByKey = new Map<string, { o: any; recomendacoes: string[] }>();
+
+  // Curadoria do artigo: quando existe, só entram as evidências efetivamente
+  // vinculadas a ESTE artigo na matriz auditada.
+  const curado = artigoEvidencia?.get(artigo);
+  const allowInd = curado ? new Set(curado.indicadores.map((i: any) => i.nome)) : null;
+  const allowNorm = curado ? new Set(curado.normativos.map((n: any) => n.titulo)) : null;
+  const allowOrc = curado ? new Set(curado.orcamento.map((o: any) => `${o.programa || ''}|${o.orgao || ''}|${o.ano ?? ''}`)) : null;
 
   let countCumprida = 0, countParcial = 0, countNaoCumprida = 0;
 
@@ -90,17 +99,20 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       // ⚠️ REGRA DE OURO: bloquear Common Core e indicadores descartados
       // por falta de fonte racial auditável.
       if (!isEvidenceEligibleIndicator(li)) continue;
+      if (allowInd && !allowInd.has(li.nome)) continue;
       const cur = indByNome.get(li.nome);
       if (cur) cur.recomendacoes.push(tag);
       else indByNome.set(li.nome, { ...li, recomendacoes: [tag] });
     }
     for (const ln of diag?.linkedNormativos || []) {
+      if (allowNorm && !allowNorm.has(ln.titulo)) continue;
       const cur = normByTitulo.get(ln.titulo);
       if (cur) cur.recomendacoes.push(tag);
       else normByTitulo.set(ln.titulo, { titulo: ln.titulo, recomendacoes: [tag] });
     }
     for (const lo of diag?.linkedOrcamento || []) {
       const k = `${lo.programa || ''}|${lo.orgao || ''}|${lo.ano ?? ''}`;
+      if (allowOrc && !allowOrc.has(k)) continue;
       const cur = orcByKey.get(k);
       if (cur) cur.recomendacoes.push(tag);
       else orcByKey.set(k, { o: lo, recomendacoes: [tag] });
