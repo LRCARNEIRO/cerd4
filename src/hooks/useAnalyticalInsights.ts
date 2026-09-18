@@ -670,7 +670,7 @@ function gerarFiosCondutores(
     const artigoLac = new Map<ArtigoConvencao, number>();
     ARTIGOS_CONVENCAO.forEach(a => artigoLac.set(a.numero, 0));
     for (const l of lacunas) {
-      const arts: ArtigoConvencao[] = ((l.artigos_convencao || []) as ArtigoConvencao[]).filter(a => ARTIGOS_CONVENCAO.some(x => x.numero === a));
+      const arts: ArtigoConvencao[] = (((l as any).artigos_convencao || []) as ArtigoConvencao[]).filter(a => ARTIGOS_CONVENCAO.some(x => x.numero === a));
       for (const a of arts) artigoLac.set(a, (artigoLac.get(a) || 0) + 1);
     }
 
@@ -1064,7 +1064,7 @@ function gerarConclusoesDinamicas(
     const artigoLacStatus = new Map<ArtigoConvencao, { nc: number; ret: number; cum: number; parc: number; total: number }>();
     ARTIGOS_CONVENCAO.forEach(a => artigoLacStatus.set(a.numero, { nc: 0, ret: 0, cum: 0, parc: 0, total: 0 }));
     for (const l of lacunas) {
-      const arts: ArtigoConvencao[] = ((l.artigos_convencao || []) as ArtigoConvencao[]).filter(a => ARTIGOS_CONVENCAO.some(x => x.numero === a));
+      const arts: ArtigoConvencao[] = (((l as any).artigos_convencao || []) as ArtigoConvencao[]).filter(a => ARTIGOS_CONVENCAO.some(x => x.numero === a));
       for (const a of arts) {
         const cur = artigoLacStatus.get(a)!;
         cur.total += 1;
