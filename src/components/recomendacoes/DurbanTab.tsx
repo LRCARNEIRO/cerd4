@@ -62,8 +62,8 @@ const cruzamentoDurbanEixos = [
   {
     eixo: 'Segurança Pública',
     temas: [
-      'Desmilitarização da atividade policial (CERD §34a)',
-      'Câmeras corporais em policiais (CERD §34)',
+      'Desmilitarização da atividade policial (CERD §36a)',
+      'Câmeras corporais em policiais (CERD §36)',
       'Combate ao perfilamento racial (RG 31 §20, RG 36 §35)',
     ]
   },
