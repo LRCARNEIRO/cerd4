@@ -268,14 +268,10 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     return ARTIGOS_CONVENCAO.map(art => {
       // Lacunas by article — use artigos_convencao if populated, otherwise infer from eixo_tematico
       const artLacunas = lacunas.filter(l => {
-        if (l.artigos_convencao && l.artigos_convencao.length > 0) {
-          const explicit = l.artigos_convencao
-            .map(normalizeArticleTag)
-            .filter(Boolean) as ArtigoConvencao[];
-          return explicit.includes(art.numero);
-        }
-        const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
-        return mapped ? mapped.includes(art.numero) : false;
+        const explicit = ((l.artigos_convencao || []) as string[])
+          .map(normalizeArticleTag)
+          .filter(Boolean) as ArtigoConvencao[];
+        return explicit.includes(art.numero);
       });
       const cumpridas = artLacunas.filter(l => {
         const diag = diagnosticMap.get(l.id);

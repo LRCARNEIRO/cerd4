@@ -51,17 +51,12 @@ const ARTIGO_DESCRICOES: Record<string, string> = {
 };
 
 function getArtigosFromRecomendacao(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): string[] {
-  if (l.artigos_convencao && l.artigos_convencao.length > 0) return l.artigos_convencao;
-  return EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
+  return l.artigos_convencao || [];
 }
 
 function getVinculacaoJustificativa(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): string {
   if (l.artigos_convencao && l.artigos_convencao.length > 0) {
     return 'Tag explícita (BD)';
-  }
-  const mapped = EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS];
-  if (mapped && mapped.length > 0) {
-    return `Eixo: ${eixoLabels[l.eixo_tematico] || l.eixo_tematico}`;
   }
   return 'Sem vinculação';
 }

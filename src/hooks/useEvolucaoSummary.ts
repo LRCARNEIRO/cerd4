@@ -9,8 +9,7 @@ import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndic
 function getArtigos(l: { artigos_convencao?: string[] | null; eixo_tematico: string }): ArtigoConvencao[] {
   const raw = (l as any).artigos_convencao;
   const explicit = Array.isArray(raw) ? raw.map(normalizeArticleTag).filter(Boolean) as ArtigoConvencao[] : [];
-  if (explicit.length > 0) return [...new Set(explicit)];
-  return EIXO_PARA_ARTIGOS[l.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
+  return [...new Set(explicit)];
 }
 
 /**

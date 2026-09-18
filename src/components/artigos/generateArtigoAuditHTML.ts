@@ -53,10 +53,7 @@ function buildIndicadorLink(id: string, codigo: string | undefined, origin: stri
 
 /** Lista de Artigos vinculados a uma recomendação (DB explícito ou eixo). */
 function getArtigosOf(rec: { artigos_convencao?: string[] | null; eixo_tematico?: string }): ArtigoConvencao[] {
-  if (rec.artigos_convencao && rec.artigos_convencao.length > 0) {
-    return rec.artigos_convencao.filter((a): a is ArtigoConvencao => /^(I{1,3}|IV|V|VI|VII)$/.test(a));
-  }
-  return EIXO_PARA_ARTIGOS[rec.eixo_tematico as keyof typeof EIXO_PARA_ARTIGOS] || [];
+  return (rec.artigos_convencao || []).filter((a): a is ArtigoConvencao => /^(I{1,3}|IV|V|VI|VII)$/.test(a));
 }
 
 interface Args {
