@@ -14,7 +14,7 @@ import type { FioCondutor, ConclusaoDinamica } from '@/hooks/useAnalyticalInsigh
 import type { DadoOrcamentario, RespostaLacunaCerdIII } from '@/hooks/useLacunasData';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
-import { useIcerdArtigoAnalysis, type ArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
+import { useIcerdArtigoAnalysis, useCountStatSeriesPerArticle, type ArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import {

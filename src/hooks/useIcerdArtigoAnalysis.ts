@@ -124,7 +124,6 @@ export function useCountStatSeriesPerArticle() {
 
     return c;
   }, [m, allIndicadores]);
-  }, [m, allIndicadores]);
 }
 
 const CERD_III_PARAGRAFO_ARTIGOS: Record<string, ArtigoConvencao[]> = {
