@@ -77,7 +77,7 @@ function computeAdherenceScoreSimple(
  */
 export function useEvolucaoSummary() {
   const { data: recomendacoes, isLoading: l1 } = useLacunasIdentificadas({});
-  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(recomendacoes);
+  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady, artigoEvidencia } = useDiagnosticSensor(recomendacoes);
 
   const isLoading = l1 || !sensorReady;
 
@@ -88,6 +88,8 @@ export function useEvolucaoSummary() {
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
           numero: a.numero, titulo: a.titulo, totalRecs: 0,
           cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0, aderenciaScore: 0,
+          vinculos: 0, vinculosPorBase: { estatistica: 0, normativa: 0, orcamentaria: 0 },
+          indicadoresCount: 0, orcamentoCount: 0, normativosCount: 0,
         })),
       };
     }
@@ -96,24 +98,38 @@ export function useEvolucaoSummary() {
     const artigosSummary = ARTIGOS_CONVENCAO.map(art => {
       const artNum = art.numero;
 
-      // Find recs linked to this article
-      const artRecs = recomendacoes.filter(r => getArtigos(r).includes(artNum));
+      const curado = artigoEvidencia.get(artNum);
 
-      // Aggregate deduplicated evidence from all linked recs
+      // Recomendações do artigo: marcação explícita + curadoria auditada
+      const artRecs = recomendacoes.filter(r =>
+        getArtigos(r).includes(artNum) || !!curado?.recomendacoes.has(r.id)
+      );
+
+      // Evidências do artigo: SEMPRE a matriz auditada (Artigo × Recomendação ×
+      // Evidência). Só cai para a união das recomendações se não houver curadoria.
       const indMap = new Map<string, LinkedIndicador>();
       const orcMap = new Map<string, LinkedOrcamento>();
       const normMap = new Map<string, LinkedNormativo>();
 
-      artRecs.forEach(r => {
-        const diag = diagnosticMap.get(r.id);
-        if (!diag) return;
-        diag.linkedIndicadores.forEach(ind => { if (!indMap.has(ind.nome)) indMap.set(ind.nome, ind); });
-        diag.linkedOrcamento.forEach(orc => {
+      if (curado) {
+        curado.indicadores.forEach(ind => { if (!indMap.has(ind.nome)) indMap.set(ind.nome, ind); });
+        curado.orcamento.forEach(orc => {
           const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
           if (!orcMap.has(key)) orcMap.set(key, orc);
         });
-        diag.linkedNormativos.forEach(norm => { if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, norm); });
-      });
+        curado.normativos.forEach(norm => { if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, norm); });
+      } else {
+        artRecs.forEach(r => {
+          const diag = diagnosticMap.get(r.id);
+          if (!diag) return;
+          diag.linkedIndicadores.forEach(ind => { if (!indMap.has(ind.nome)) indMap.set(ind.nome, ind); });
+          diag.linkedOrcamento.forEach(orc => {
+            const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
+            if (!orcMap.has(key)) orcMap.set(key, orc);
+          });
+          diag.linkedNormativos.forEach(norm => { if (!normMap.has(norm.titulo)) normMap.set(norm.titulo, norm); });
+        });
+      }
 
       const evolScore = computeArticleEvolScore(
         Array.from(indMap.values()),
@@ -122,23 +138,27 @@ export function useEvolucaoSummary() {
       );
 
       // Status counts from sensor
-      let cumpridas = 0, parciais = 0, naoCumpridas = 0;
+      let cumpridas = 0, parciais = 0, naoCumpridas = 0, retrocessos = 0;
       artRecs.forEach(r => {
         const d = diagnosticMap.get(r.id);
         const st = d?.statusComputado ?? r.status_cumprimento;
         if (st === 'cumprido') cumpridas++;
         else if (st === 'parcialmente_cumprido') parciais++;
         else naoCumpridas++;
+        if (st === 'retrocesso') retrocessos++;
       });
 
       // Aderência score (same formula as IcerdAdherencePanel)
       const aderenciaScore = computeAdherenceScoreSimple(
-        cumpridas, artRecs.length, 0, normMap.size, orcMap.size, indMap.size,
+        cumpridas, artRecs.length, retrocessos, normMap.size, orcMap.size, indMap.size,
       );
 
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
         cumpridas, parciais, naoCumpridas, evolScore, aderenciaScore,
+        vinculos: curado?.vinculos || 0,
+        vinculosPorBase: curado?.vinculosPorBase || { estatistica: 0, normativa: 0, orcamentaria: 0 },
+        indicadoresCount: indMap.size, orcamentoCount: orcMap.size, normativosCount: normMap.size,
       };
     });
 
@@ -183,7 +203,7 @@ export function useEvolucaoSummary() {
       summary: { evolucao: evolCount, estagnacao: estagCount, retrocesso: retroCount },
       artigosSummary,
     };
-  }, [recomendacoes, diagnosticMap, sensorReady]);
+  }, [recomendacoes, diagnosticMap, sensorReady, artigoEvidencia]);
 
   return { summary, artigosSummary, isLoading, sensorSummary, sensorReady };
 }
