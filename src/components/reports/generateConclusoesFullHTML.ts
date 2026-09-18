@@ -259,9 +259,8 @@ export function generateConclusoesFullHTML(params: GenerateParams): string {
 
   const icerdData = ARTIGOS_CONVENCAO.map(art => {
     const artLacunas = lacunas.filter((l: any) => {
-      const artsFromEixo = EIXO_PARA_ARTIGOS[l.eixo_tematico] || [];
       const artsFromField = l.artigos_convencao || [];
-      return [...artsFromEixo, ...artsFromField].includes(art.numero);
+      return artsFromField.includes(art.numero);
     });
     const cumpr = artLacunas.filter((l: any) => l.status_cumprimento === 'cumprido').length;
     const parc = artLacunas.filter((l: any) => l.status_cumprimento === 'parcialmente_cumprido').length;

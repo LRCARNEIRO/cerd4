@@ -128,8 +128,7 @@ function normalizeArticle(raw: string): ArtigoConvencao | null {
 function getRecomendacaoArtigos(rec: LacunaIdentificada): ArtigoConvencao[] {
   const raw = (rec as any).artigos_convencao;
   const explicit = Array.isArray(raw) ? raw.map(normalizeArticle).filter(Boolean) as ArtigoConvencao[] : [];
-  if (explicit.length > 0) return [...new Set(explicit)];
-  return EIXO_PARA_ARTIGOS[rec.eixo_tematico as ThematicAxis] || [];
+  return [...new Set(explicit)];
 }
 
 function isLowerBetter(nome: string): boolean {
