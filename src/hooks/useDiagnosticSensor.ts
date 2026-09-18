@@ -13,6 +13,28 @@ import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/Ev
 import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
 
 /**
+ * Evidência estatística auditada cujo registro não existe em
+ * `indicadores_interseccionais` (card estático das abas Estatística).
+ * A curadoria é a fonte da verdade, então o vínculo continua valendo:
+ * monta-se um registro sintético a partir da própria linha curada.
+ */
+function indicadorEstaticoCurado(v: any) {
+  return {
+    id: v.ref_id,
+    codigo: null,
+    nome: v.nome || v.sub || 'Indicador',
+    categoria: 'estatistica_estatica',
+    subcategoria: null,
+    fonte: null,
+    tendencia: null,
+    dados: null,
+    auditado_manualmente: true,
+    documento_origem: ['espelho_estatico'],
+  };
+}
+
+
+/**
  * Guarda-chuva com subindicadores NÃO é evidência vinculável: ele é
  * substituído pelos seus blocos visuais (subindicadores), que carregam o
  * título temático, os valores e o código congelado do pai. Guarda-chuvas
