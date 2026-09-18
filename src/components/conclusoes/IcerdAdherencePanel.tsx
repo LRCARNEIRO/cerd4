@@ -725,6 +725,11 @@ ${analysis.map(a => {
               <Progress value={a.grauAderencia} className="h-2 mb-3" />
 
               {/* Metrics grid - expanded with new dimensions */}
+              {(() => {
+                const cur = artigoEvidencia.get(a.numero);
+                const vb = cur?.vinculosPorBase;
+                return (
+                  <>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-3">
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('recomendacoes'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
@@ -735,31 +740,33 @@ ${analysis.map(a => {
                   <p className="text-[10px] text-muted-foreground">Cumpridas ({a.lacunasTotal > 0 ? Math.round((a.lacunasCumpridas / a.lacunasTotal) * 100) : 0}%) 🔍</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('orcamento'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
-                  <p className="text-lg font-bold">{a.orcamentoProgramas}</p>
-                  <p className="text-[10px] text-muted-foreground">Ações Orçam. 🔍</p>
+                  <p className="text-lg font-bold">{vb ? vb.orcamentaria : a.orcamentoProgramas}</p>
+                  <p className="text-[10px] text-muted-foreground">Vínc. Orçam. 🔍</p>
+                  <p className="text-[9px] text-muted-foreground/70">{a.orcamentoProgramas} ações distintas</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('normativos'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
-                  <p className="text-lg font-bold">{a.normativosCount}</p>
-                  <p className="text-[10px] text-muted-foreground">Normativos 🔍</p>
+                  <p className="text-lg font-bold">{vb ? vb.normativa : a.normativosCount}</p>
+                  <p className="text-[10px] text-muted-foreground">Vínc. Normat. 🔍</p>
+                  <p className="text-[9px] text-muted-foreground/70">{a.normativosCount} normativos distintos</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('indicadores'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
-                  <p className="text-lg font-bold">{a.indicadoresCount}</p>
-                  <p className="text-[10px] text-muted-foreground">Indicadores 🔍</p>
+                  <p className="text-lg font-bold">{vb ? vb.estatistica : a.indicadoresCount}</p>
+                  <p className="text-[10px] text-muted-foreground">Vínc. Estat. 🔍</p>
+                  <p className="text-[9px] text-muted-foreground/70">{a.indicadoresCount} indicadores distintos</p>
                 </button>
               </div>
 
-              {(() => {
-                const cur = artigoEvidencia.get(a.numero);
-                if (!cur) return null;
-                const vb = cur.vinculosPorBase;
-                return (
+              {cur && vb && (
                   <p className="text-[10px] text-muted-foreground mb-3">
                     Matriz auditada: <strong>{cur.vinculos}</strong> vínculos Artigo × Recomendação × Evidência
                     {' '}({vb.orcamentaria} orçamentária · {vb.estatistica} estatística · {vb.normativa} normativa).
-                    Os números acima contam cada evidência uma única vez.
+                    A segunda linha de cada bloco conta cada evidência uma única vez.
                   </p>
+              )}
+                  </>
                 );
               })()}
+
 
 
 
