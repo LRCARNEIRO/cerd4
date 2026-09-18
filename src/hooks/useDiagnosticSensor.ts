@@ -640,12 +640,14 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       for (const art of artigos) {
         let entry = map.get(art);
         if (!entry) {
-          entry = { indicadores: [], orcamento: [], normativos: [], recomendacoes: new Set<string>(), vinculos: 0 };
+          entry = { indicadores: [], orcamento: [], normativos: [], recomendacoes: new Set<string>(), vinculos: 0, vinculosPorBase: { estatistica: 0, normativa: 0, orcamentaria: 0 } };
           map.set(art, entry);
           seen.set(art, new Set());
         }
         entry.vinculos++;
+        if (v.base === 'estatistica' || v.base === 'normativa' || v.base === 'orcamentaria') entry.vinculosPorBase[v.base]++;
         entry.recomendacoes.add(v.recomendacao_id);
+
         const dedupKey = `${v.base}|${v.ref_id}|${v.sub || ''}`;
         const s = seen.get(art)!;
         if (s.has(dedupKey)) continue;
