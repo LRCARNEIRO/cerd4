@@ -1,0 +1,10 @@
+import { readFileSync, writeFileSync } from 'fs';
+import { SUB_INDICADORES } from '@/utils/indicadorSubs';
+import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+const ind: any[] = JSON.parse(readFileSync('/tmp/ind_db.json','utf8'));
+ind.sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))||String(a.id).localeCompare(String(b.id)));
+const codes = buildIndicadorCodigoMap(ind as any);
+const byCodigo: Record<string,any> = {};
+ind.forEach(i=>{ const c=codes.get(i.id); if(c) byCodigo[c]={id:i.id,nome:i.nome,categoria:i.categoria,tendencia:i.tendencia}; });
+writeFileSync('/tmp/codmap.json', JSON.stringify({byCodigo, subs: SUB_INDICADORES.map((s:any)=>({codigo:s.codigo,sub:s.sub,titulo:s.titulo,guardaChuva:s.guardaChuva}))},null,0));
+console.log(Object.keys(byCodigo).length, SUB_INDICADORES.length);
