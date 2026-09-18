@@ -67,7 +67,7 @@ export default function Recomendacoes() {
   const { data: respostasCerd, isLoading: loadingRespostas } = useRespostasLacunasCerdIII();
 
   // Status efetivo vem do sensor (evidências auditadas), como na Relação Completa
-  const { data: evidenceOverrides } = useEvidenceOverrides();
+  const [evidenceOverrides] = useEvidenceOverrides();
   const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
 
   const isLoading = loadingLacunas || loadingStats;
