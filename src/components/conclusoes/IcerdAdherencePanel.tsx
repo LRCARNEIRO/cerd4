@@ -51,6 +51,7 @@ const formatCompact = (value: number) => {
 export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcamentoRecords, indicadores, stats, respostas, documentosNormativosCount }: IcerdAdherencePanelProps) {
   const [drilldownArtigo, setDrilldownArtigo] = useState<ArtigoConvencao | null>(null);
   const [drilldownFocus, setDrilldownFocus] = useState<'recomendacoes' | 'indicadores' | 'orcamento' | 'normativos' | null>(null);
+  const statSeriesPerArticle = useCountStatSeriesPerArticle();
   // SSoT compartilhada com os relatórios (aba Conclusões / Produtos)
   const { analysis, diagnosticMap, artigoEvidencia } = useIcerdArtigoAnalysis({
     lacunas, fiosCondutores, conclusoes, respostas,
