@@ -353,6 +353,8 @@ ${renderRows(allItems)}
       </div>
 
       {renderGroup('cerd', grouped.cerd)}
+      {renderGroup('rg', grouped.rg)}
+      {renderGroup('durban', grouped.durban)}
 
       {/* Evidence Drilldown Dialog */}
       {drilldownId && (
