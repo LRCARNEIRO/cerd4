@@ -204,11 +204,39 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('titulo, artigos_convencao, status, categoria');
+        .select('id, titulo, artigos_convencao, status, categoria');
       if (error) throw error;
       return data || [];
     },
   });
+
+  /**
+   * VÍNCULOS CURADOS (SSoT auditado pela equipe) — planilha
+   * "CERD_42_BASE_2126_auditada". Quando a tabela tem qualquer linha, ela
+   * SUBSTITUI integralmente a sugestão automática por palavra-chave: só
+   * entram como evidência os vínculos auditados.
+   */
+  const { data: curados } = useQuery({
+    queryKey: ['sensor-vinculos-curados'],
+    ...SHARED_OPTS,
+    queryFn: async () => {
+      let all: any[] = [];
+      let page = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('vinculos_evidencia_curados')
+          .select('recomendacao_id, base, ref_id, sub, nome')
+          .range(page * 1000, (page + 1) * 1000 - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        all = all.concat(data);
+        if (data.length < 1000) break;
+        page++;
+      }
+      return all;
+    },
+  });
+
 
   // ── Diagnose each recomendação ────────────────────────────────────
   // VINCULAÇÃO HÍBRIDA AUDITÁVEL:
