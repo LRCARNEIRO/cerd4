@@ -290,25 +290,35 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
         return s === 'nao_cumprido' || s === 'retrocesso';
       }).length;
 
-      // ── AGGREGATE evidence from diagnosticMap (same source as Recomendações) ──
+      // ── EVIDÊNCIAS DO ARTIGO ──
+      // Fonte única: curadoria Artigo × Recomendação × Evidência. O fallback
+      // (união das recomendações do artigo) só vale enquanto não houver curadoria.
       const indSet = new Map<string, LinkedIndicador>();
       const orcSet = new Map<string, LinkedOrcamento>();
       const normSet = new Map<string, LinkedNormativo>();
 
-      for (const l of artLacunas) {
-        const diag = diagnosticMap.get(l.id);
-        if (!diag) continue;
-        for (const ind of diag.linkedIndicadores) {
-          if (!indSet.has(ind.nome)) indSet.set(ind.nome, ind);
-        }
-        for (const orc of diag.linkedOrcamento) {
-          const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
-          if (!orcSet.has(key)) orcSet.set(key, orc);
-        }
-        for (const norm of diag.linkedNormativos) {
-          if (!normSet.has(norm.titulo)) normSet.set(norm.titulo, norm);
+      const curado = artigoEvidencia.get(art.numero);
+      if (curado) {
+        for (const ind of curado.indicadores) indSet.set(`${ind.nome}|${ind.sub || ''}`, ind);
+        for (const orc of curado.orcamento) orcSet.set(`${orc.programa}|${orc.orgao}|${orc.ano}`, orc);
+        for (const norm of curado.normativos) normSet.set(norm.titulo, norm);
+      } else {
+        for (const l of artLacunas) {
+          const diag = diagnosticMap.get(l.id);
+          if (!diag) continue;
+          for (const ind of diag.linkedIndicadores) {
+            if (!indSet.has(ind.nome)) indSet.set(ind.nome, ind);
+          }
+          for (const orc of diag.linkedOrcamento) {
+            const key = `${orc.programa}|${orc.orgao}|${orc.ano}`;
+            if (!orcSet.has(key)) orcSet.set(key, orc);
+          }
+          for (const norm of diag.linkedNormativos) {
+            if (!normSet.has(norm.titulo)) normSet.set(norm.titulo, norm);
+          }
         }
       }
+
 
       // Fios by article
       const artFios = fiosCondutores.filter(f => f.artigosConvencao?.includes(art.numero));
