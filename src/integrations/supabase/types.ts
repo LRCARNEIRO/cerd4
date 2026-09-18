@@ -677,6 +677,7 @@ export type Database = {
           base: string
           created_at: string
           id: string
+          linha: number | null
           nome: string
           recomendacao_id: string
           ref_id: string
@@ -687,6 +688,7 @@ export type Database = {
           base: string
           created_at?: string
           id?: string
+          linha?: number | null
           nome: string
           recomendacao_id: string
           ref_id: string
@@ -697,6 +699,7 @@ export type Database = {
           base?: string
           created_at?: string
           id?: string
+          linha?: number | null
           nome?: string
           recomendacao_id?: string
           ref_id?: string
