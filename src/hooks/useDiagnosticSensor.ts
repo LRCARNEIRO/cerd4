@@ -279,7 +279,15 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       let normativosVinculados: any[];
 
       if (usarCurados) {
-        const doRec = curadosPorRec.get(rec.id) || [];
+        // Uma mesma evidência pode aparecer em vários artigos; no nível da
+        // recomendação ela conta uma única vez.
+        const vistos = new Set<string>();
+        const doRec = (curadosPorRec.get(rec.id) || []).filter(v => {
+          const k = `${v.base}|${v.ref_id}|${v.sub || ''}`;
+          if (vistos.has(k)) return false;
+          vistos.add(k);
+          return true;
+        });
         indicadoresVinculados = doRec
           .filter(v => v.base === 'estatistica')
           .map(v => {
@@ -302,6 +310,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
           .map(v => normById.get(v.ref_id))
           .filter(Boolean);
       } else {
+
         indicadoresVinculados = indicadores
           .map((ind) => ({
             item: ind,
