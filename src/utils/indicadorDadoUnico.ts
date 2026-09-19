@@ -190,6 +190,12 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   // ── Cotas raciais (Adm Pública) ──
   'cotas raciais no servico publico federal': { anoAntigo: 2014, valorAntigo: 20, anoRecente: 2025, valorRecente: 30, unidade: '%', rotulo: 'Reserva de vagas: Lei 12.990/2014 → Lei 15.142/2025' },
   'ingresso por cotas raciais em universidades federais': { anoAntigo: 2012, valorAntigo: 14422, anoRecente: 2022, valorRecente: 55371, unidade: 'ingressos', rotulo: 'Ingressos pelo critério étnico-racial (+284%) — Inep' },
+  // ── Mobilidade social / concentração de renda (Classe Social) ──
+  'geracoes para familia pobre alcancar renda media': { anoRecente: 2018, valorRecente: 9, unidade: 'gerações', rotulo: 'OCDE 2018 — Brasil (2º pior entre 30 países)' },
+  '1% mais rico detem': { anoRecente: 2024, valorRecente: 37, unidade: '% da riqueza', rotulo: 'Concentração de riqueza no 1% mais rico (Min. Fazenda, Dez/2024)' },
+  // ── Disparidades PcD × raça (PNAD Contínua 2022 — SIDRA 9354) ──
+  'disparidades interseccionais pcd': { anoRecente: 2022, valorRecente: 61.7, unidade: '%', rotulo: 'PcD ocupadas — pardas 61,7% vs brancas 44,7% (SIDRA 9354)' },
+  'disparidades pcd 14-59 anos por raca': { anoRecente: 2022, valorRecente: 61.7, unidade: '%', rotulo: 'PcD ocupadas — pardas 61,7% vs brancas 44,7% (SIDRA 9354)' },
 };
 
 /** Cartão fixo com número congelado na interface da aba de origem. */
