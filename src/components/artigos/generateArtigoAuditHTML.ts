@@ -164,7 +164,13 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
     const codigo = li.codigo || indicadorCodigoByNome.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
     const dados = li.dados ?? reg?.dados;
-    const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia ?? reg?.tendencia, dados });
+    const base = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia ?? reg?.tendencia, dados });
+    // Quando a linha é um SUB-indicador do guarda-chuva, a série do
+    // bloco específico prevalece sobre a série genérica do registro.
+    const serieSub = extractSerieSub(dados, li.sub, li.nome);
+    const detail = serieSub?.valorRecente !== undefined
+      ? { ...base, ...serieSub, result: base.result }
+      : base;
     const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
       ? extractDadoUnico(dados, li.sub, li.nome)
       : undefined;
@@ -175,22 +181,27 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const nomeCell = link
       ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${codigo ? `${codigo} — ` : ''}${li.nome}</a>`
       : `${codigoBadge}${li.nome}`;
-    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : unico ? '#0f766e' : '#6b7280';
-    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : unico ? '• Dado único' : '— Neutro';
+    const temUnico = !!(unico && (unico.valor !== undefined || unico.texto));
+    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : temUnico ? '#0f766e' : '#6b7280';
+    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : temUnico ? '• Dado único' : '— Neutro';
     const recsTag = li.recomendacoes.slice(0, 6).join(' ') + (li.recomendacoes.length > 6 ? ` +${li.recomendacoes.length - 6}` : '');
     const origem = li.guardaChuva ? `<div style="font-size:9px;color:#64748b;margin-top:2px">Card: ${li.guardaChuva}</div>` : '';
     const anoRecente = detail.anoRecente ?? unico?.ano;
     const valorRecente = detail.valorRecente !== undefined ? detail.valorRecente : unico?.valor;
     const unidade = unico?.unidade ? ` ${unico.unidade}` : '';
+    const celulaRecente = valorRecente !== undefined
+      ? `${fmtNum(valorRecente)}${unidade}`
+      : (unico?.texto || '—');
     return `<tr>
       <td>${nomeCell}${origem}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
       <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
       <td style="text-align:center">${anoRecente ?? '—'}</td>
-      <td style="text-align:right">${valorRecente !== undefined ? `${fmtNum(valorRecente)}${unidade}` : '—'}</td>
+      <td style="text-align:right">${celulaRecente}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores agregados.</td></tr>`;
+
 
   // ── Normativos ──
   const normRows = Array.from(normByTitulo.values()).map(({ titulo, recomendacoes }) => {
