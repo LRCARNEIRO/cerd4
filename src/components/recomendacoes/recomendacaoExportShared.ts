@@ -77,7 +77,7 @@ export function buildExportLookups(
 
   const origin = getReportLinkOrigin();
 
-  return { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
+  return { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
 }
 
 export function safeFileName(s: string): string {
