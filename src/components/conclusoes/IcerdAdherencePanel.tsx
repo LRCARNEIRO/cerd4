@@ -130,6 +130,17 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const totalRespostas = respostas.length;
   const totalStatSeries = Object.values(statSeriesPerArticle).reduce((s, v) => s + v, 0);
 
+  // Totais da matriz auditada (ocorrências Artigo × Recomendação × Evidência)
+  const matrizTotals = useMemo(() => {
+    let orc = 0, est = 0, norm = 0;
+    artigoEvidencia.forEach(v => {
+      orc += v.vinculosPorBase?.orcamentaria || 0;
+      est += v.vinculosPorBase?.estatistica || 0;
+      norm += v.vinculosPorBase?.normativa || 0;
+    });
+    return { orc, est, norm, all: orc + est + norm };
+  }, [artigoEvidencia]);
+
   // ── Annex download ──
   const downloadAnnex = useCallback(() => {
     const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
