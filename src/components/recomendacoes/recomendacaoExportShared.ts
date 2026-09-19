@@ -48,11 +48,17 @@ export function buildExportLookups(
   );
   const indicadorIdByNome = new Map<string, string>();
   const indicadorCodigoByNome = new Map<string, string>();
+  const indicadorRegByNome = new Map<string, any>();
+  const normKey = (s: unknown) =>
+    String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   for (const i of safeRawIndicadores) {
     if (i?.nome && i?.id) {
       indicadorIdByNome.set(i.nome, i.id);
       const c = i.codigo || codigosById.get(i.id);
       if (c) indicadorCodigoByNome.set(i.nome, c);
+      indicadorRegByNome.set(normKey(i.nome), {
+        id: i.id, codigo: c || null, nome: i.nome, dados: i.dados, tendencia: i.tendencia,
+      });
     }
   }
 
