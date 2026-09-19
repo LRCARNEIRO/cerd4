@@ -406,8 +406,29 @@ ${retrocessos.map(c => `
       <td><div class="aderencia-bar"><div class="aderencia-fill" style="width:${a.score}%;background:${color}">${a.score}%</div></div></td>
     </tr>`;
   }).join('')}
+  ${(() => {
+    const totOrc = icerdData.reduce((s, a) => s + a.vinculos.orcamentaria, 0);
+    const totEst = icerdData.reduce((s, a) => s + a.vinculos.estatistica, 0);
+    const totNorm = icerdData.reduce((s, a) => s + a.vinculos.normativa, 0);
+    const totAll = totOrc + totEst + totNorm;
+    const totRec = icerdData.reduce((s, a) => s + a.total, 0);
+    return `<tr style="background:#0f3460;color:#fff;font-weight:700">
+      <td colspan="2">TOTAL — matriz auditada (planilha CERD_42_BASE_2126)</td>
+      <td style="color:#fff">${totRec}</td>
+      <td style="color:#fff">${icerdData.reduce((s, a) => s + a.cumpr, 0)}</td>
+      <td style="color:#fff">${icerdData.reduce((s, a) => s + a.parc, 0)}</td>
+      <td style="color:#fff">${icerdData.reduce((s, a) => s + a.nao, 0)}</td>
+      <td style="color:#fff">${icerdData.reduce((s, a) => s + a.retro, 0)}</td>
+      <td style="font-size:9px;color:#fff">${totAll.toLocaleString('pt-BR')} <span style="color:#cbd5e1">(${totOrc.toLocaleString('pt-BR')} / ${totEst.toLocaleString('pt-BR')} / ${totNorm.toLocaleString('pt-BR')})</span></td>
+      <td></td>
+    </tr>`;
+  })()}
   </tbody>
 </table>
+<p style="font-size:9px;color:#64748b;margin-top:-6px;">
+  Totais de vínculos por artigo conforme a matriz auditada: I 53 · II 343 · III 393 · IV 16 · V 1.172 · VI 72 · VII 113 = <strong>2.162 ocorrências</strong> Artigo × Recomendação × Evidência
+  (1.145 orçamentárias, 922 estatísticas, 95 normativas). As 2.162 ocorrências correspondem a <strong>2.126 registros físicos</strong> na base curada — 36 linhas valem para dois artigos (23 em I/II e 13 em III/VI) e 18 repetições legítimas da planilha são preservadas.
+</p>
 
 ${icerdData.map(a => `
 <div class="card" style="border-left:4px solid ${a.cor};">
