@@ -8,7 +8,7 @@
  */
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
-import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
