@@ -9,7 +9,7 @@
  */
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { filterEvidenceEligibleIndicators } from '@/utils/indicatorEvidenceGuards';
+import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 
 export interface ExportLookupMaps {
   indicadorIdByNome: Map<string, string>;
@@ -42,7 +42,10 @@ export function buildExportLookups(
   rawOrcamento: any[],
   rawNormativos: any[],
 ): ExportLookupMaps {
-  const safeRawIndicadores = filterEvidenceEligibleIndicators(rawIndicadores || []);
+  // Estes registros só alimentam vínculos já curados pela matriz auditada.
+  // Reaplicar aqui o crivo pending-audit eliminava os dados de indicadores
+  // legitimamente vinculados cujo objeto bruto ainda não carrega essa marca.
+  const safeRawIndicadores = (rawIndicadores || []).filter(isLinkedEvidenceEligible);
   const codigosById = buildIndicadorCodigoMap(
     safeRawIndicadores.filter(i => i?.id && i?.created_at),
   );
