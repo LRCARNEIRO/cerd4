@@ -676,34 +676,40 @@ export type Database = {
           artigo: string | null
           base: string
           created_at: string
+          funcao_metodo: string | null
           id: string
           linha: number | null
           nome: string
           recomendacao_id: string
           ref_id: string
           sub: string | null
+          tipo_evidencia: string | null
         }
         Insert: {
           artigo?: string | null
           base: string
           created_at?: string
+          funcao_metodo?: string | null
           id?: string
           linha?: number | null
           nome: string
           recomendacao_id: string
           ref_id: string
           sub?: string | null
+          tipo_evidencia?: string | null
         }
         Update: {
           artigo?: string | null
           base?: string
           created_at?: string
+          funcao_metodo?: string | null
           id?: string
           linha?: number | null
           nome?: string
           recomendacao_id?: string
           ref_id?: string
           sub?: string | null
+          tipo_evidencia?: string | null
         }
         Relationships: [
           {
