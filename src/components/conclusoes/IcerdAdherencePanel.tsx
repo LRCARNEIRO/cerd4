@@ -485,6 +485,7 @@ ${analysis.map(a => {
           </CardTitle>
           <CardDescription className="text-xs">
             Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
+            {' '}Matriz auditada: <strong>{matrizTotals.all.toLocaleString('pt-BR')} vínculos</strong> Artigo × Recomendação × Evidência ({matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · {matrizTotals.est.toLocaleString('pt-BR')} estatística · {matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a 2.126 registros físicos da base curada.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
