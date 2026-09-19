@@ -150,9 +150,9 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
   'rendimento/hora negros vs brancos': { anoRecente: 2023, valorRecente: 40, unidade: '% menor', rotulo: 'Defasagem do rendimento/hora de negros frente a brancos' },
   // ── Cartões Raça × Gênero / Educação (StatisticsData — auditado 12/03/2026) ──
-  'taxa de desemprego graduado por raça e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 1.05, unidade: '%', rotulo: 'Mulheres negras graduadas desempregadas (Censo 2022 — SIDRA 9606×9517); homens brancos: 0,56%' },
-  'taxa de inatividade qualificada por raça e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 7.58, unidade: '%', rotulo: 'Mulheres negras com superior fora da PEA (Censo 2022 — SIDRA 9606×9517); homens brancos: 5,59%' },
-  'educacao por raça × genero': { anoRecente: 2022, valorRecente: 16.01, unidade: '%', rotulo: 'Superior completo — mulheres negras (Censo 2022 — SIDRA 9606×10061); mulheres brancas: 26,76%' },
+  'taxa de desemprego graduado por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 1.05, unidade: '%', rotulo: 'Mulheres negras graduadas desempregadas (Censo 2022 — SIDRA 9606×9517); homens brancos: 0,56%' },
+  'taxa de inatividade qualificada por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 7.58, unidade: '%', rotulo: 'Mulheres negras com superior fora da PEA (Censo 2022 — SIDRA 9606×9517); homens brancos: 5,59%' },
+  'educacao por raca × genero': { anoRecente: 2022, valorRecente: 16.01, unidade: '%', rotulo: 'Superior completo — mulheres negras (Censo 2022 — SIDRA 9606×10061); mulheres brancas: 26,76%' },
   'analfabetismo geral — 2024': { anoAntigo: 2018, valorAntigo: 8.4, anoRecente: 2024, valorRecente: 6.9, unidade: '%', rotulo: 'Analfabetismo — negros (PNAD Contínua/SIDRA 7125); brancos 2024: 3,1%' },
   // ── Juventude negra (juventudeNegra — auditado 24/03/2026) ──
   'taxa de homicidio (por 100 mil) — geral': { anoRecente: 2023, valorRecente: 28.9, rotulo: 'Jovens negros (Atlas da Violência 2025); jovens não negros: 10,6' },
@@ -182,9 +182,9 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   // ── Segurança / COVID / Educação complementar ──
   'vulnerabilidade letal (risco relativo)': { anoAntigo: 2018, valorAntigo: 2.7, anoRecente: 2023, valorRecente: 2.7, unidade: 'x', rotulo: 'Risco relativo de homicídio — negros vs não negros (Atlas 2025)' },
   'queda de homicidios (2018→2023)': { anoRecente: 2023, valorRecente: 23.1, unidade: '% de queda', rotulo: 'Queda de homicídios de negros 2018→2023 (Atlas 2025); não negros: -24,3%' },
-  'mortalidade hospitalar por escolaridade e raça (%)': { anoRecente: 2020, valorRecente: 58, unidade: '%', rotulo: 'Mortalidade hospitalar COVID — analfabetos pretos/pardos (Peres et al. 2021); brancos: 52%' },
+  'mortalidade hospitalar por escolaridade e raca (%)': { anoRecente: 2020, valorRecente: 58, unidade: '%', rotulo: 'Mortalidade hospitalar COVID — analfabetos pretos/pardos (Peres et al. 2021); brancos: 52%' },
   'odds ratios ajustados — mortalidade hospitalar': { anoRecente: 2020, valorRecente: 1.15, unidade: 'OR', rotulo: 'Chance de óbito hospitalar pretos/pardos vs brancos (Peres et al. 2021)' },
-  'distorcao idade-serie por raça (fundamental e medio)': { anoAntigo: 2018, valorAntigo: 14.8, anoRecente: 2025, valorRecente: 8.3, unidade: '%', rotulo: 'Distorção idade-série Fundamental — negros (INEP/InepData); médio 2025: 26,1%' },
+  'distorcao idade-serie por raca (fundamental e medio)': { anoAntigo: 2018, valorAntigo: 14.8, anoRecente: 2025, valorRecente: 8.3, unidade: '%', rotulo: 'Distorção idade-série Fundamental — negros (INEP/InepData)},
   'alfabetizacao e frequencia escolar indigena — censo 2022': { anoRecente: 2022, valorRecente: 85, unidade: '%', rotulo: 'Alfabetização indígena (SIDRA 8181); negros: 90,94% · brancos: 95,66%' },
   'marcos jurisprudenciais stf sobre questoes raciais': { anoRecente: 2025, valorRecente: 4, unidade: 'marcos', rotulo: 'ADPF 186 (2012) → CNJ amplia cotas no Judiciário p/ 30% (2025)' },
   // ── Cotas raciais (Adm Pública) ──
