@@ -96,7 +96,7 @@ export function generateRecomendacaoAuditHTML({
   // ⚠️ REGRA DE OURO: defesa redundante ao sensor — bloqueia Common Core e
   // indicadores descartados por falta de fonte racial auditável, inclusive
   // se vierem de override manual antigo (localStorage).
-  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(isEvidenceEligibleIndicator);
+  const linkedInd = (diagnostic?.linkedIndicadores || []).filter(isLinkedEvidenceEligible);
   const linkedOrc = diagnostic?.linkedOrcamento || [];
   const linkedNorm = diagnostic?.linkedNormativos || [];
 
