@@ -261,7 +261,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('vinculos_evidencia_curados')
-          .select('recomendacao_id, base, ref_id, sub, nome')
+          .select('artigo, recomendacao_id, base, ref_id, sub, nome')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
