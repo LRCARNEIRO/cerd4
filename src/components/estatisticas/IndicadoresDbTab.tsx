@@ -755,6 +755,10 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                         ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
                         : c.indicador.nome;
                       const codigo = (c.indicador as any).codigo as string | undefined;
+                      // Sem par Negro×Branco: em vez de deixar a linha vazia,
+                      // exibe os valores medidos que existem no registro.
+                      const semPar = c.negros === null && c.brancos === null && c.indigenas === null;
+                      const kvsFallback = semPar ? extractKeyValues((c.indicador.dados || {}) as Record<string, any>) : [];
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
