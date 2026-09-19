@@ -18,6 +18,7 @@ import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvenca
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { resolveRegistroEstatico, extractDadoUnico } from '@/utils/indicadorDadoUnico';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -68,7 +69,7 @@ interface Args {
 }
 
 export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, lookups, artigoEvidencia }: Args): string {
-  const { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
+  const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
   const def = ARTIGOS_CONVENCAO.find(a => a.numero === artigo);
 
   // Filtrar recomendações vinculadas ao Artigo
@@ -153,9 +154,20 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
   // ── Indicadores (união dedup) ──
   const indRows = Array.from(indByNome.values()).map(li => {
-    const id = li.id || indicadorIdByNome.get(li.nome) || '';
-    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome);
-    const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia, dados: li.dados });
+    // Cards fixos e subindicadores não trazem id/código/dados no vínculo
+    // curado: recuperamos o registro equivalente no BD (nome, alias ou
+    // guarda-chuva) para nunca exibir evidência anônima e sem valor.
+    const fallback = (!li.codigo || !li.dados)
+      ? resolveRegistroEstatico(li.nome, indicadorRegByNome as any)
+      : { registro: undefined, codigoCongelado: undefined };
+    const reg = fallback.registro;
+    const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
+    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
+    const dados = li.dados ?? reg?.dados;
+    const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia ?? reg?.tendencia, dados });
+    const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
+      ? extractDadoUnico(dados, li.sub, li.nome)
+      : undefined;
     const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin, li.sub) : '';
     const codigoBadge = codigo
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
@@ -163,16 +175,19 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const nomeCell = link
       ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${codigo ? `${codigo} — ` : ''}${li.nome}</a>`
       : `${codigoBadge}${li.nome}`;
-    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
-    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
+    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : unico ? '#0f766e' : '#6b7280';
+    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : unico ? '• Dado único' : '— Neutro';
     const recsTag = li.recomendacoes.slice(0, 6).join(' ') + (li.recomendacoes.length > 6 ? ` +${li.recomendacoes.length - 6}` : '');
     const origem = li.guardaChuva ? `<div style="font-size:9px;color:#64748b;margin-top:2px">Card: ${li.guardaChuva}</div>` : '';
+    const anoRecente = detail.anoRecente ?? unico?.ano;
+    const valorRecente = detail.valorRecente !== undefined ? detail.valorRecente : unico?.valor;
+    const unidade = unico?.unidade ? ` ${unico.unidade}` : '';
     return `<tr>
       <td>${nomeCell}${origem}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
       <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
-      <td style="text-align:center">${detail.anoRecente ?? '—'}</td>
-      <td style="text-align:right">${detail.valorRecente !== undefined ? fmtNum(detail.valorRecente) : '—'}</td>
+      <td style="text-align:center">${anoRecente ?? '—'}</td>
+      <td style="text-align:right">${valorRecente !== undefined ? `${fmtNum(valorRecente)}${unidade}` : '—'}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores agregados.</td></tr>`;

@@ -14,6 +14,8 @@ import { filterEvidenceEligibleIndicators } from '@/utils/indicatorEvidenceGuard
 export interface ExportLookupMaps {
   indicadorIdByNome: Map<string, string>;
   indicadorCodigoByNome: Map<string, string>;
+  /** registro completo (id, código, dados) indexado pelo nome normalizado */
+  indicadorRegByNome: Map<string, { id?: string; codigo?: string | null; nome?: string; dados?: any; tendencia?: string | null }>;
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   orcamentoMetaByKey: Map<string, any>;
   origin: string;
@@ -46,11 +48,17 @@ export function buildExportLookups(
   );
   const indicadorIdByNome = new Map<string, string>();
   const indicadorCodigoByNome = new Map<string, string>();
+  const indicadorRegByNome = new Map<string, any>();
+  const normKey = (s: unknown) =>
+    String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   for (const i of safeRawIndicadores) {
     if (i?.nome && i?.id) {
       indicadorIdByNome.set(i.nome, i.id);
       const c = i.codigo || codigosById.get(i.id);
       if (c) indicadorCodigoByNome.set(i.nome, c);
+      indicadorRegByNome.set(normKey(i.nome), {
+        id: i.id, codigo: c || null, nome: i.nome, dados: i.dados, tendencia: i.tendencia,
+      });
     }
   }
 
@@ -69,7 +77,7 @@ export function buildExportLookups(
 
   const origin = getReportLinkOrigin();
 
-  return { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
+  return { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
 }
 
 export function safeFileName(s: string): string {
