@@ -91,6 +91,8 @@ for (const rec of lac || []) {
   const melhora = impacto.filter(x => x.ev === 'favoravel').length;
   const piora = impacto.filter(x => x.ev === 'desfavoravel').length;
   const estavel = impacto.filter(x => x.ev === 'neutro' || x.ev === 'novo').length;
+  const estavelSerie = impacto.filter(x => x.ev === 'neutro').length;
+  const novosImp = impacto.filter(x => x.ev === 'novo').length;
   const nImp = impacto.length;
   // Cumprimento = saldo de impacto (melhora 100, estável 50, piora 0), modulado pela cobertura quando não há impacto medido
   const cumprimento = nImp > 0 ? Math.round(((melhora * 100 + estavel * 50) / nImp)) : null;
@@ -100,7 +102,7 @@ for (const rec of lac || []) {
   else if (cumprimento! >= 35) statusNovo = 'parcial';
   else statusNovo = 'nao_cumprido';
 
-  resultados.push({ par: rec.paragrafo, doc: rec.documento_onu, est: est.length, esf: esforcoEst.length, imp: nImp, orc: orc.length, nor: nor.length, melhora, piora, estavel, scoreAtual, statusAtual, cobertura, cumprimento, statusNovo });
+  resultados.push({ par: rec.paragrafo, doc: rec.documento_onu, est: est.length, esf: esforcoEst.length, imp: nImp, orc: orc.length, nor: nor.length, melhora, piora, estavel, estavelSerie, novosImp, scoreAtual, statusAtual, cobertura, cumprimento, statusNovo });
 }
 
 const cont = (k: string, campo: string) => resultados.filter(r => r[campo] === k).length;
@@ -117,3 +119,20 @@ console.log('\npar | doc | est(esf/imp) orc nor | melh/piora/est | atual -> cob/
 for (const r of resultados.sort((a, b) => a.doc.localeCompare(b.doc) || a.par.localeCompare(b.par))) {
   console.log(`${String(r.par).padEnd(8)} ${String(r.doc).slice(0, 16).padEnd(16)} ${String(r.est).padStart(3)}(${r.esf}/${r.imp}) ${String(r.orc).padStart(3)} ${String(r.nor).padStart(2)} | ${r.melhora}/${r.piora}/${r.estavel} | ${String(r.scoreAtual).padStart(3)} ${r.statusAtual.padEnd(12)} -> cob ${String(r.cobertura).padStart(3)} cump ${String(r.cumprimento ?? '--').padStart(3)} ${r.statusNovo}`);
 }
+
+// ===== VARIANTE B: só impacto com série comparável (novo/sem série fora do denominador) =====
+console.log('\n=== VARIANTE B (só impacto com série 2018→2025; melhora=100, estável=50, piora=0) ===');
+console.log('par | imp com serie | melh/est/piora | cob | cump | status');
+let b = { c: 0, p: 0, n: 0, s: 0 };
+for (const r of resultados) {
+  const comSerie = r.melhora + r.piora + r.estavelSerie;
+  const cump = comSerie > 0 ? Math.round(((r.melhora * 100 + r.estavelSerie * 50) / comSerie)) : null;
+  let st: string;
+  if (cump === null) st = 'sem_impacto_medido';
+  else if (cump >= 65 && r.cobertura >= 35) st = 'cumprido';
+  else if (cump >= 35) st = 'parcial';
+  else st = 'nao_cumprido';
+  b[st === 'cumprido' ? 'c' : st === 'parcial' ? 'p' : st === 'nao_cumprido' ? 'n' : 's']++;
+  console.log(`${String(r.par).padEnd(9)} ${String(comSerie).padStart(3)} | ${r.melhora}/${r.estavelSerie}/${r.piora} | ${String(r.cobertura).padStart(3)} | ${String(cump ?? '--').padStart(3)} | ${st}`);
+}
+console.log('TOTAL B: cumprido', b.c, '| parcial', b.p, '| nao cumprido', b.n, '| sem impacto medido', b.s);
