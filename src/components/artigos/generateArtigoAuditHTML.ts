@@ -69,7 +69,7 @@ interface Args {
 }
 
 export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, lookups, artigoEvidencia }: Args): string {
-  const { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
+  const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
   const def = ARTIGOS_CONVENCAO.find(a => a.numero === artigo);
 
   // Filtrar recomendações vinculadas ao Artigo
