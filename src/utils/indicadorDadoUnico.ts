@@ -148,6 +148,7 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   // Recorte do card IND-180. A matriz legada trouxe apenas "Indígenas",
   // embora a fonte ESTADIC 2024 registre um gestor indígena.
   'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
+  'rendimento/hora negros vs brancos': { anoRecente: 2023, valorRecente: 40, unidade: '% menor', rotulo: 'Defasagem do rendimento/hora de negros frente a brancos' },
 };
 
 /** Cartão fixo com número congelado na interface da aba de origem. */
