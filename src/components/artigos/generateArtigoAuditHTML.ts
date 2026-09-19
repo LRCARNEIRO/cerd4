@@ -18,7 +18,7 @@ import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvenca
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
-import { resolveRegistroEstatico, extractDadoUnico } from '@/utils/indicadorDadoUnico';
+import { resolveRegistroEstatico, extractDadoUnico, extractSerieSub } from '@/utils/indicadorDadoUnico';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
