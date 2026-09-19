@@ -9,7 +9,7 @@
  */
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { filterEvidenceEligibleIndicators } from '@/utils/indicatorEvidenceGuards';
+import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 
 export interface ExportLookupMaps {
   indicadorIdByNome: Map<string, string>;
@@ -42,7 +42,10 @@ export function buildExportLookups(
   rawOrcamento: any[],
   rawNormativos: any[],
 ): ExportLookupMaps {
-  const safeRawIndicadores = filterEvidenceEligibleIndicators(rawIndicadores || []);
+  // Estes registros só alimentam vínculos já curados pela matriz auditada.
+  // Reaplicar aqui o crivo pending-audit eliminava os dados de indicadores
+  // legitimamente vinculados cujo objeto bruto ainda não carrega essa marca.
+  const safeRawIndicadores = (rawIndicadores || []).filter(isLinkedEvidenceEligible);
   const codigosById = buildIndicadorCodigoMap(
     safeRawIndicadores.filter(i => i?.id && i?.created_at),
   );
@@ -59,6 +62,11 @@ export function buildExportLookups(
       indicadorRegByNome.set(normKey(i.nome), {
         id: i.id, codigo: c || null, nome: i.nome, dados: i.dados, tendencia: i.tendencia,
       });
+      const registro = indicadorRegByNome.get(normKey(i.nome));
+      // Subindicadores podem chegar da matriz com título próprio, mas conservam
+      // o código ou UUID do registro-pai. Indexá-los também evita perder dados.
+      if (c) indicadorRegByNome.set(normKey(c), registro);
+      indicadorRegByNome.set(normKey(i.id), registro);
     }
   }
 

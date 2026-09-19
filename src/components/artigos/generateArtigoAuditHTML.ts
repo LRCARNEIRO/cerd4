@@ -13,12 +13,11 @@
  *    por Artigo, preservando cards estáticos e subindicadores.
  *  - Sem curadoria, usa a união dos `linkedXxx` das recomendações do Artigo.
  */
-import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
-import { resolveRegistroEstatico, extractDadoUnico, extractSerieSub } from '@/utils/indicadorDadoUnico';
+import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -157,23 +156,11 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     // Cards fixos e subindicadores não trazem id/código/dados no vínculo
     // curado: recuperamos o registro equivalente no BD (nome, alias ou
     // guarda-chuva) para nunca exibir evidência anônima e sem valor.
-    const fallback = (!li.codigo || !li.dados)
-      ? resolveRegistroEstatico(li.nome, indicadorRegByNome as any)
-      : { registro: undefined, codigoCongelado: undefined };
-    const reg = fallback.registro;
-    const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
-    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
-    const dados = li.dados ?? reg?.dados;
-    const base = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia ?? reg?.tendencia, dados });
-    // Quando a linha é um SUB-indicador do guarda-chuva, a série do
-    // bloco específico prevalece sobre a série genérica do registro.
-    const serieSub = extractSerieSub(dados, li.sub, li.nome);
-    const detail = serieSub?.valorRecente !== undefined
-      ? { ...base, ...serieSub, result: base.result }
-      : base;
-    const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
-      ? extractDadoUnico(dados, li.sub, li.nome)
-      : undefined;
+    const { id, codigo, detail, unico } = resolveIndicadorReportData(li, {
+      indicadorIdByNome,
+      indicadorCodigoByNome,
+      indicadorRegByNome,
+    });
     const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin, li.sub) : '';
     const codigoBadge = codigo
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`

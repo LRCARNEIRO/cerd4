@@ -145,6 +145,10 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   'linguas (censo 2022)': { anoRecente: 2022, valorRecente: 295, rotulo: 'línguas vivas (IBGE)' },
   'avancos por fase do processo demarcatorio (funai)': { anoAntigo: 2022, valorAntigo: 1, anoRecente: 2025, valorRecente: 20, rotulo: 'homologações por período (FUNAI)' },
   'area titulada (hectares)': { anoRecente: 2025, valorRecente: 1015000, unidade: 'ha', rotulo: 'área titulada quilombola (INCRA)' },
+  // Recorte do card IND-180. A matriz legada trouxe apenas "Indígenas",
+  // embora a fonte ESTADIC 2024 registre um gestor indígena.
+  'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
+  'rendimento/hora negros vs brancos': { anoRecente: 2023, valorRecente: 40, unidade: '% menor', rotulo: 'Defasagem do rendimento/hora de negros frente a brancos' },
 };
 
 /** Cartão fixo com número congelado na interface da aba de origem. */
@@ -282,6 +286,37 @@ export function extractDadoUnico(dados: any, sub?: string | null, nome?: string)
     const valor = Number(dados[chave]);
     if (Number.isFinite(valor)) {
       return { ano: Number.isFinite(Number(dados.ano)) ? Number(dados.ano) : anoDoNome(), valor, rotulo: chave };
+    }
+  }
+
+  // 4b) Valores numéricos aninhados sem série temporal explícita
+  // (ex.: { pct_inadequacao_2022: { sem_banheiro: { negros: 6.8 } } }).
+  // A chave completa preserva o contexto necessário para escolher o recorte
+  // correspondente ao título/subindicador, em vez de deixar a linha vazia.
+  const folhas: Array<{ caminho: string; valor: number }> = [];
+  const visitar = (obj: any, prefixo: string[] = [], profundidade = 0) => {
+    if (!obj || typeof obj !== 'object' || profundidade > 5) return;
+    for (const [k, v] of Object.entries(obj)) {
+      if (META_KEYS.test(k) || k.startsWith('nota_') || k.startsWith('fonte_') || k.endsWith('_url')) continue;
+      const caminho = [...prefixo, k];
+      if (typeof v === 'number' && Number.isFinite(v)) folhas.push({ caminho: caminho.join(' '), valor: v });
+      else if (v && typeof v === 'object' && !Array.isArray(v)) visitar(v, caminho, profundidade + 1);
+    }
+  };
+  visitar(dados);
+  if (folhas.length) {
+    const chave = melhorChave(folhas.map((f) => f.caminho), tokens)
+      || folhas.find((f) => /negr|pret/.test(chaveNormalizada(f.caminho)))?.caminho
+      || folhas[0].caminho;
+    const folha = folhas.find((f) => f.caminho === chave);
+    if (folha) {
+      const anoCaminho = folha.caminho.match(/(19|20)\d{2}/)?.[0];
+      return {
+        ano: anoCaminho ? Number(anoCaminho) : (Number.isFinite(Number(dados.ano)) ? Number(dados.ano) : anoDoNome()),
+        valor: folha.valor,
+        unidade: dados.unidade,
+        rotulo: folha.caminho,
+      };
     }
   }
 
