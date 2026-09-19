@@ -242,11 +242,13 @@ export function extractDadoUnico(dados: any, sub?: string | null, nome?: string)
     return { ano: serie.anoRecente, valor: serie.valorRecente, rotulo: serie.rotulo };
   }
 
-  // 3) Lista de registros
+  // 3) Lista de registros — escolhe a linha cujo rótulo casa com o bloco
   const registros = Array.isArray(dados.registros) ? dados.registros : null;
   if (registros?.length) {
-    const alvo = registros[0];
-    const numericos = Object.entries(alvo).filter(([, v]) => Number.isFinite(Number(v)) && typeof v !== 'boolean') as Array<[string, any]>;
+    const alvo = (tokens.length
+      ? registros.find((r: any) => pontuar(String(r?.indicador || ''), tokens, false) > 0)
+      : undefined) || registros[0];
+    const numericos = Object.entries(alvo).filter(([, v]) => Number.isFinite(Number(v)) && typeof v !== 'boolean' && v !== null && v !== '') as Array<[string, any]>;
     const chave = melhorChave(numericos.map(([k]) => k), tokens);
     const escolhida = chave
       ? [chave, Number(alvo[chave])] as [string, number]
@@ -261,7 +263,14 @@ export function extractDadoUnico(dados: any, sub?: string | null, nome?: string)
         rotulo: alvo.indicador || escolhida[0],
       };
     }
+    // Valores qualitativos ("+57%", "~36 mil") — melhor mostrar o texto
+    // auditado do que deixar a evidência vazia no relatório.
+    const textual = alvo.negros ?? alvo.valorTexto ?? alvo.valor;
+    if (textual !== undefined && textual !== null && String(textual).trim() && String(textual) !== '—') {
+      return { ano: anoDoNome(), texto: String(textual), rotulo: alvo.indicador };
+    }
   }
+
 
   // 4) Chaves numéricas no topo do JSON (ex.: ufsComEstruturaIgualdadeRacial: 27)
   const topo = Object.entries(dados).filter(([k, v]) => !META_KEYS.test(k) && typeof v === 'number' && Number.isFinite(v)) as Array<[string, number]>;
