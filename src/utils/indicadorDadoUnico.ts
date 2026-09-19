@@ -149,6 +149,53 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   // embora a fonte ESTADIC 2024 registre um gestor indígena.
   'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
   'rendimento/hora negros vs brancos': { anoRecente: 2023, valorRecente: 40, unidade: '% menor', rotulo: 'Defasagem do rendimento/hora de negros frente a brancos' },
+  // ── Cartões Raça × Gênero / Educação (StatisticsData — auditado 12/03/2026) ──
+  'taxa de desemprego graduado por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 1.05, unidade: '%', rotulo: 'Mulheres negras graduadas desempregadas (Censo 2022 — SIDRA 9606×9517); homens brancos: 0,56%' },
+  'taxa de inatividade qualificada por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 7.58, unidade: '%', rotulo: 'Mulheres negras com superior fora da PEA (Censo 2022 — SIDRA 9606×9517); homens brancos: 5,59%' },
+  'educacao por raca × genero': { anoRecente: 2022, valorRecente: 16.01, unidade: '%', rotulo: 'Superior completo — mulheres negras (Censo 2022 — SIDRA 9606×10061); mulheres brancas: 26,76%' },
+  'analfabetismo geral — 2024': { anoAntigo: 2018, valorAntigo: 8.4, anoRecente: 2024, valorRecente: 6.9, unidade: '%', rotulo: 'Analfabetismo — negros (PNAD Contínua/SIDRA 7125); brancos 2024: 3,1%' },
+  // ── Juventude negra (juventudeNegra — auditado 24/03/2026) ──
+  'taxa de homicidio (por 100 mil) — geral': { anoRecente: 2023, valorRecente: 28.9, rotulo: 'Jovens negros (Atlas da Violência 2025); jovens não negros: 10,6' },
+  'encarceramento (% do total)': { anoRecente: 2025, valorRecente: 68.7, unidade: '%', rotulo: 'Jovens negros na população carcerária (19º Anuário FBSP 2025)' },
+  'analfabetismo jovens negros 15-29 (%)': { anoRecente: 2022, valorRecente: 1.85, unidade: '%', rotulo: 'Jovens negros 15-29 (SIDRA 9542); jovens brancos: 1,14%' },
+  'desemprego jovens negros 18-24 (%)': { valorRecente: 13, unidade: '%', rotulo: 'Jovens negros 18-24 (Fundação Itaú); jovens brancos: 10%' },
+  'jovens em medidas socioeducativas (%)': { valorRecente: 74.2, unidade: '%', rotulo: 'Adolescentes negros em socioeducativas (Alma Preta); brancos: 25,1%' },
+  'jovens em medidas socioeducativas': { valorRecente: 74.2, unidade: '%', rotulo: 'Adolescentes negros em socioeducativas (Alma Preta); brancos: 25,1%' },
+  'vitimas de homicidio jovens negros (%)': { valorRecente: 68.46, unidade: '%', rotulo: 'Vítimas de homicídio jovens negros (SIM/DataSUS)' },
+  // ── Chefia familiar monoparental — raça × gênero (auditado 15/03/2026) ──
+  'chefia monoparental feminina negra': { anoRecente: 2022, valorRecente: 4667133, unidade: 'domicílios', rotulo: 'Mulheres negras chefes monoparentais (Censo 2022/SIDRA 10180)' },
+  'familias monoparentais femininas': { anoRecente: 2022, valorRecente: 7810826, unidade: 'domicílios', rotulo: 'Famílias monoparentais chefiadas por mulheres (Censo 2022/SIDRA 10179)' },
+  'chefiadas por mulheres negras (sidra 10179)': { anoRecente: 2022, valorRecente: 59.76, unidade: '%', rotulo: 'Mulheres negras nas chefias monoparentais femininas (SIDRA 10179)' },
+  'chefia monoparental': { anoRecente: 2022, valorRecente: 59.76, unidade: '%', rotulo: 'Chefia monoparental feminina: negras 59,76% vs brancas 39,57% (Censo 2022)' },
+  'mulheres chefes monoparentais': { anoRecente: 2022, valorRecente: 7810826, unidade: 'domicílios', rotulo: 'Mulheres chefes monoparentais (Censo 2022/SIDRA 10179)' },
+  'homens chefes monoparentais': { anoRecente: 2022, valorRecente: 1184615, unidade: 'domicílios', rotulo: 'Homens chefes monoparentais (Censo 2022/SIDRA 10181)' },
+  'cadunico — mulheres negras': { anoRecente: 2023, valorRecente: 38.5, unidade: '%', rotulo: 'Mulheres negras no CadÚnico (FPA Brasil Jun/2023); brancas: 17,0%' },
+  'cadunico (mulheres)': { anoRecente: 2023, valorRecente: 38.5, unidade: '%', rotulo: 'Mulheres negras 38,5% vs brancas 17,0% no CadÚnico (FPA Jun/2023)' },
+  'mulheres brancas no cadunico': { anoRecente: 2023, valorRecente: 17, unidade: '%', rotulo: 'Mulheres brancas no CadÚnico (FPA Brasil Jun/2023)' },
+  'fome — domicilios chefiados por mulheres negras': { anoRecente: 2023, valorRecente: 22, unidade: '%', rotulo: 'IA grave em lares chefiados por mulheres negras (Fiocruz/DSBR 2023)' },
+  'seguranca alimentar — domicilios chefiados por mulheres negras': { anoRecente: 2023, valorRecente: 21.3, unidade: '%', rotulo: 'Segurança alimentar — mulheres negras (Fiocruz/DSBR 2023); brancas: 39,5%' },
+  'fome em lares c/ criancas <10 (mulheres negras)': { anoRecente: 2023, valorRecente: 21.3, unidade: '%', rotulo: 'Segurança alimentar em domicílios de mulheres negras (Fiocruz/DSBR 2023)' },
+  'taxa de vulnerabilidade — familias chefiadas por mulheres negras': { anoRecente: 2022, valorRecente: 38.3, unidade: '%', rotulo: 'Renda per capita ≤ ½ SM — mulheres negras (SIDRA 10179); referência: 19,6%' },
+  'fome + desemprego (mulheres negras)': { anoRecente: 2022, valorRecente: 38.3, unidade: '%', rotulo: 'Taxa de vulnerabilidade — mulheres negras (SIDRA 10179); referência: 19,6%' },
+  'escolaridade nao protege (mulheres negras)': { anoRecente: 2023, valorRecente: 33, unidade: '%', rotulo: 'IA mod.+grave com 8+ anos de estudo: mulheres negras 33,0% vs homens brancos 9,8% (Fiocruz/DSBR)' },
+  'contexto: total em fome no brasil (2022)': { anoRecente: 2022, valorRecente: 33.1, unidade: 'milhões', rotulo: 'Pessoas em fome no Brasil (2022)' },
+  // ── Segurança / COVID / Educação complementar ──
+  'vulnerabilidade letal (risco relativo)': { anoAntigo: 2018, valorAntigo: 2.7, anoRecente: 2023, valorRecente: 2.7, unidade: 'x', rotulo: 'Risco relativo de homicídio — negros vs não negros (Atlas 2025)' },
+  'queda de homicidios (2018→2023)': { anoRecente: 2023, valorRecente: 23.1, unidade: '% de queda', rotulo: 'Queda de homicídios de negros 2018→2023 (Atlas 2025); não negros: -24,3%' },
+  'mortalidade hospitalar por escolaridade e raca (%)': { anoRecente: 2020, valorRecente: 58, unidade: '%', rotulo: 'Mortalidade hospitalar COVID — analfabetos pretos/pardos (Peres et al. 2021); brancos: 52%' },
+  'odds ratios ajustados — mortalidade hospitalar': { anoRecente: 2020, valorRecente: 1.15, unidade: 'OR', rotulo: 'Chance de óbito hospitalar pretos/pardos vs brancos (Peres et al. 2021)' },
+  'distorcao idade-serie por raca (fundamental e medio)': { anoAntigo: 2018, valorAntigo: 14.8, anoRecente: 2025, valorRecente: 8.3, unidade: '%', rotulo: 'Distorção idade-série Fundamental — negros (INEP/InepData)' },
+  'alfabetizacao e frequencia escolar indigena — censo 2022': { anoRecente: 2022, valorRecente: 85, unidade: '%', rotulo: 'Alfabetização indígena (SIDRA 8181); negros: 90,94% · brancos: 95,66%' },
+  'marcos jurisprudenciais stf sobre questoes raciais': { anoRecente: 2025, valorRecente: 4, unidade: 'marcos', rotulo: 'ADPF 186 (2012) → CNJ amplia cotas no Judiciário p/ 30% (2025)' },
+  // ── Cotas raciais (Adm Pública) ──
+  'cotas raciais no servico publico federal': { anoAntigo: 2014, valorAntigo: 20, anoRecente: 2025, valorRecente: 30, unidade: '%', rotulo: 'Reserva de vagas: Lei 12.990/2014 → Lei 15.142/2025' },
+  'ingresso por cotas raciais em universidades federais': { anoAntigo: 2012, valorAntigo: 14422, anoRecente: 2022, valorRecente: 55371, unidade: 'ingressos', rotulo: 'Ingressos pelo critério étnico-racial (+284%) — Inep' },
+  // ── Mobilidade social / concentração de renda (Classe Social) ──
+  'geracoes para familia pobre alcancar renda media': { anoRecente: 2018, valorRecente: 9, unidade: 'gerações', rotulo: 'OCDE 2018 — Brasil (2º pior entre 30 países)' },
+  '1% mais rico detem': { anoRecente: 2024, valorRecente: 37, unidade: '% da riqueza', rotulo: 'Concentração de riqueza no 1% mais rico (Min. Fazenda, Dez/2024)' },
+  // ── Disparidades PcD × raça (PNAD Contínua 2022 — SIDRA 9354) ──
+  'disparidades interseccionais pcd': { anoRecente: 2022, valorRecente: 61.7, unidade: '%', rotulo: 'PcD ocupadas — pardas 61,7% vs brancas 44,7% (SIDRA 9354)' },
+  'disparidades pcd 14-59 anos por raca': { anoRecente: 2022, valorRecente: 61.7, unidade: '%', rotulo: 'PcD ocupadas — pardas 61,7% vs brancas 44,7% (SIDRA 9354)' },
 };
 
 /** Cartão fixo com número congelado na interface da aba de origem. */
