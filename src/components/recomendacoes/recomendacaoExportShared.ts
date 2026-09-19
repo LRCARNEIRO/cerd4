@@ -14,6 +14,8 @@ import { filterEvidenceEligibleIndicators } from '@/utils/indicatorEvidenceGuard
 export interface ExportLookupMaps {
   indicadorIdByNome: Map<string, string>;
   indicadorCodigoByNome: Map<string, string>;
+  /** registro completo (id, código, dados) indexado pelo nome normalizado */
+  indicadorRegByNome: Map<string, { id?: string; codigo?: string | null; nome?: string; dados?: any; tendencia?: string | null }>;
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   orcamentoMetaByKey: Map<string, any>;
   origin: string;
