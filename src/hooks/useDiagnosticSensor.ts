@@ -659,7 +659,10 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
           };
           const expandidos = v.sub ? [linked] : expandIndicadorEvidencia(linked);
           for (const indicador of expandidos) {
-            const dedupKey = `${v.base}|${indicador.id || v.ref_id}|${indicador.sub || ''}`;
+            // Mesma unidade visual adotada nos cards: um indicador distinto
+            // por título exibido. Assim, repetições do mesmo bloco em linhas
+            // ou recomendações diferentes não aumentam o total do Artigo.
+            const dedupKey = `${v.base}|${indicador.nome}`;
             if (s.has(dedupKey)) continue;
             s.add(dedupKey);
             entry.indicadores.push(indicador);
