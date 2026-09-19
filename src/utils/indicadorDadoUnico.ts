@@ -184,7 +184,7 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   'queda de homicidios (2018→2023)': { anoRecente: 2023, valorRecente: 23.1, unidade: '% de queda', rotulo: 'Queda de homicídios de negros 2018→2023 (Atlas 2025); não negros: -24,3%' },
   'mortalidade hospitalar por escolaridade e raca (%)': { anoRecente: 2020, valorRecente: 58, unidade: '%', rotulo: 'Mortalidade hospitalar COVID — analfabetos pretos/pardos (Peres et al. 2021); brancos: 52%' },
   'odds ratios ajustados — mortalidade hospitalar': { anoRecente: 2020, valorRecente: 1.15, unidade: 'OR', rotulo: 'Chance de óbito hospitalar pretos/pardos vs brancos (Peres et al. 2021)' },
-  'distorcao idade-serie por raca (fundamental e medio)': { anoAntigo: 2018, valorAntigo: 14.8, anoRecente: 2025, valorRecente: 8.3, unidade: '%', rotulo: 'Distorção idade-série Fundamental — negros (INEP/InepData)},
+  'distorcao idade-serie por raca (fundamental e medio)': { anoAntigo: 2018, valorAntigo: 14.8, anoRecente: 2025, valorRecente: 8.3, unidade: '%', rotulo: 'Distorção idade-série Fundamental — negros (INEP/InepData)' },
   'alfabetizacao e frequencia escolar indigena — censo 2022': { anoRecente: 2022, valorRecente: 85, unidade: '%', rotulo: 'Alfabetização indígena (SIDRA 8181); negros: 90,94% · brancos: 95,66%' },
   'marcos jurisprudenciais stf sobre questoes raciais': { anoRecente: 2025, valorRecente: 4, unidade: 'marcos', rotulo: 'ADPF 186 (2012) → CNJ amplia cotas no Judiciário p/ 30% (2025)' },
   // ── Cotas raciais (Adm Pública) ──
