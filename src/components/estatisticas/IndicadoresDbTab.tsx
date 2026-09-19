@@ -780,6 +780,15 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                               <div className="min-w-0">
                                 <p className="text-xs font-medium leading-tight">{shortName}</p>
                                 <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                                {kvsFallback.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {kvsFallback.map((kv, i) => (
+                                      <span key={i} className="inline-flex items-center gap-1 text-[10px] bg-secondary/60 text-secondary-foreground px-1.5 py-0.5 rounded">
+                                        <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span> {kv.value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </TableCell>
