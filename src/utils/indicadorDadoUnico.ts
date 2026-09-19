@@ -160,21 +160,44 @@ function pontosDaSerie(series: any, chave: string): Array<[number, number]> {
   return pts.sort((a, b) => a[0] - b[0]);
 }
 
+/** Normaliza `{ chave: { 2018: n, 2024: n } }` para o formato `series`. */
+function seriesDeMapasPorChave(dados: any): Record<string, any> | undefined {
+  const out: Record<string, any> = {};
+  for (const [k, v] of Object.entries(dados || {})) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) continue;
+    for (const [ano, val] of Object.entries(v as any)) {
+      const y = Number(ano);
+      if (!Number.isFinite(y) || y < 1990 || y > 2100 || !Number.isFinite(Number(val))) continue;
+      out[ano] = { ...(out[ano] || {}), [k]: Number(val) };
+    }
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 /**
  * Extrai a série do SUB-indicador dentro de um registro guarda-chuva
- * (`dados.series = { 2018: { homicidioNegro: ... } }`).
+ * (`dados.series = { 2018: { homicidioNegro: ... } }`) ou de mapas
+ * `chave → { ano: valor }` (ex.: `pct_negros`).
  */
 export function extractSerieSub(dados: any, sub?: string | null, nome?: string): SerieSub | undefined {
   const fixo = cardFixoSerie(nome);
   if (fixo) return fixo;
-  const series = dados?.series && !Array.isArray(dados.series) ? dados.series : undefined;
+  const series = (dados?.series && !Array.isArray(dados.series) ? dados.series : undefined)
+    || seriesDeMapasPorChave(dados);
   if (!series) return undefined;
   const anos = Object.values(series).filter((v) => v && typeof v === 'object') as any[];
   if (!anos.length) return undefined;
-  const chaves = Array.from(new Set(anos.flatMap((a) => Object.keys(a))));
+  const chaves = Array.from(new Set(anos.flatMap((a) => Object.keys(a)))).filter(
+    (k) => !META_KEYS.test(k) && anos.some((a) => Number.isFinite(Number(a[k]))),
+  );
+  if (!chaves.length) return undefined;
   const tokens = tokensDe(sub, nome);
-  const chave = melhorChave(chaves, tokens);
-  if (!chave) return undefined;
+  // Sem correspondência explícita, prioriza o recorte racial negro — é o
+  // objeto da Convenção — e só então a primeira métrica disponível.
+  const chave = melhorChave(chaves, tokens)
+    || chaves.find((k) => /negr|pret/.test(chaveNormalizada(k)))
+    || chaves.find((k) => /total/.test(chaveNormalizada(k)))
+    || chaves[0];
   const pts = pontosDaSerie(series, chave);
   if (!pts.length) return undefined;
   const first = pts[0];
@@ -187,6 +210,7 @@ export function extractSerieSub(dados: any, sub?: string | null, nome?: string):
     rotulo: chave,
   };
 }
+
 
 /** Extrai um ponto único (ano + valor) de um `dados` JSONB sem série. */
 export function extractDadoUnico(dados: any, sub?: string | null, nome?: string): DadoUnico | undefined {
