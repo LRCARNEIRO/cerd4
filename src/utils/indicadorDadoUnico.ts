@@ -299,6 +299,14 @@ export function extractDadoUnico(dados: any, sub?: string | null, nome?: string)
       };
     }
   }
+  // 6) Listas qualitativas (ex.: grupos vulnerabilizados) — informa a
+  // contagem auditada em vez de deixar a linha vazia.
+  for (const [k, v] of Object.entries(dados)) {
+    if (!Array.isArray(v) || !v.length || typeof v[0] !== 'string') continue;
+    if (META_KEYS.test(k)) continue;
+    return { ano: anoDoNome(), valor: v.length, rotulo: `${k} (itens)` };
+  }
+
 
   return undefined;
 }
