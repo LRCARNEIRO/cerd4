@@ -9,6 +9,7 @@
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
+import { resolveRegistroEstatico, extractDadoUnico, extractSerieSub } from '@/utils/indicadorDadoUnico';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -39,8 +40,9 @@ function extractOrgao(titulo: string): string {
  * é estável, audit-friendly e independente do UUID. O UUID entra como
  * fallback redundante (`?ind=`) p/ resolução determinística.
  */
-function buildIndicadorLink(id: string, codigo: string | undefined, origin: string): string {
-  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}#ind-${codigo}`;
+function buildIndicadorLink(id: string, codigo: string | undefined, origin: string, sub?: string): string {
+  const subParam = sub ? `&sub=${encodeURIComponent(sub)}` : '';
+  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}${subParam}#ind-${codigo}`;
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
@@ -73,6 +75,8 @@ interface Args {
    * citação em PDF/auditoria humana.
    */
   indicadorCodigoByNome?: Map<string, string>;
+  /** Registro completo para recuperar dados de cards fixos e subindicadores. */
+  indicadorRegByNome: Map<string, { id?: string; codigo?: string | null; nome?: string; dados?: any; tendencia?: string | null }>;
   /** Mapa título → metadata do normativo p/ resolver url_origem, categoria. */
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   /** Mapa composto orçamento → metadata p/ resolver dotação, execução. */
@@ -89,6 +93,7 @@ export function generateRecomendacaoAuditHTML({
   diagnostic,
   indicadorIdByNome,
   indicadorCodigoByNome,
+  indicadorRegByNome,
   normativoMetaByTitulo,
   orcamentoMetaByKey,
   origin,
@@ -106,33 +111,52 @@ export function generateRecomendacaoAuditHTML({
 
   // ── Indicadores ────────────────────────────────────────────────
   const indEvals = linkedInd.map(li => {
-    const id = li.id || indicadorIdByNome.get(li.nome) || '';
-    const codigo = li.codigo || indicadorCodigoByNome?.get(li.nome);
-    const detail = evaluateIndicadorDetailed({
+    const fallback = (!li.codigo || !li.dados)
+      ? resolveRegistroEstatico(li.nome, indicadorRegByNome)
+      : { registro: undefined, codigoCongelado: undefined };
+    const reg = fallback.registro;
+    const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
+    const codigo = li.codigo || indicadorCodigoByNome?.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
+    const dados = li.dados ?? reg?.dados;
+    const base = evaluateIndicadorDetailed({
       nome: li.nome,
       categoria: li.categoria,
-      tendencia: li.tendencia,
-      dados: li.dados,
+      tendencia: li.tendencia ?? reg?.tendencia,
+      dados,
     });
-    return { id, codigo, nome: li.nome, detail };
+    const serieSub = extractSerieSub(dados, li.sub, li.nome);
+    const detail = serieSub?.valorRecente !== undefined
+      ? { ...base, ...serieSub, result: base.result }
+      : base;
+    const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
+      ? extractDadoUnico(dados, li.sub, li.nome)
+      : undefined;
+    return { id, codigo, nome: li.nome, sub: li.sub, detail, unico };
   });
 
-  const indRows = indEvals.map(({ id, codigo, nome, detail }) => {
-    const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin) : '';
+  const indRows = indEvals.map(({ id, codigo, nome, sub, detail, unico }) => {
+    const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin, sub) : '';
     const codigoBadge = codigo
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
       : '';
     const nomeCell = link
       ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${codigo ? `${codigo} — ` : ''}${nome}</a>`
       : `${codigoBadge}${nome}`;
-    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
-    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
+    const temUnico = !!(unico && (unico.valor !== undefined || unico.texto));
+    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : temUnico ? '#0f766e' : '#6b7280';
+    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : temUnico ? '• Dado único' : '— Neutro';
+    const anoRecente = detail.anoRecente ?? unico?.ano;
+    const valorRecente = detail.valorRecente !== undefined ? detail.valorRecente : unico?.valor;
+    const unidade = unico?.unidade ? ` ${unico.unidade}` : '';
+    const celulaRecente = valorRecente !== undefined
+      ? `${fmtNum(valorRecente)}${unidade}`
+      : (unico?.texto || '—');
     return `<tr>
       <td>${nomeCell}</td>
       <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
-      <td style="text-align:center">${detail.anoRecente ?? '—'}</td>
-      <td style="text-align:right">${detail.valorRecente !== undefined ? fmtNum(detail.valorRecente) : '—'}</td>
+      <td style="text-align:center">${anoRecente ?? '—'}</td>
+      <td style="text-align:right">${celulaRecente}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores vinculados.</td></tr>`;

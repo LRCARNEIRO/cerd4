@@ -32,7 +32,7 @@ export function ExportAllRecomendacoesButton({
     if (!recomendacoes?.length) return;
     setBusy(true);
     try {
-      const { indicadorIdByNome, indicadorCodigoByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } =
+      const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } =
         buildExportLookups(rawIndicadores || [], rawOrcamento || [], rawNormativos || []);
 
       console.time('[ExportAll] total');
@@ -64,6 +64,7 @@ export function ExportAllRecomendacoesButton({
             diagnostic: diag,
             indicadorIdByNome,
             indicadorCodigoByNome,
+            indicadorRegByNome,
             normativoMetaByTitulo,
             orcamentoMetaByKey,
             origin,
