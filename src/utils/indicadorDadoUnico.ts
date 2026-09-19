@@ -145,6 +145,9 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   'linguas (censo 2022)': { anoRecente: 2022, valorRecente: 295, rotulo: 'línguas vivas (IBGE)' },
   'avancos por fase do processo demarcatorio (funai)': { anoAntigo: 2022, valorAntigo: 1, anoRecente: 2025, valorRecente: 20, rotulo: 'homologações por período (FUNAI)' },
   'area titulada (hectares)': { anoRecente: 2025, valorRecente: 1015000, unidade: 'ha', rotulo: 'área titulada quilombola (INCRA)' },
+  // Recorte do card IND-180. A matriz legada trouxe apenas "Indígenas",
+  // embora a fonte ESTADIC 2024 registre um gestor indígena.
+  'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
 };
 
 /** Cartão fixo com número congelado na interface da aba de origem. */

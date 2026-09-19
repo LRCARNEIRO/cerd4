@@ -26,7 +26,10 @@ export function resolveIndicadorReportData(li: LinkedIndicadorReport, lookups: I
   const fallback = (!li.codigo || !li.dados)
     ? resolveRegistroEstatico(li.nome, lookups.indicadorRegByNome)
     : { registro: undefined, codigoCongelado: undefined };
-  const reg = fallback.registro;
+  const normalize = (s: unknown) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const reg = fallback.registro
+    || (li.codigo ? lookups.indicadorRegByNome.get(normalize(li.codigo)) : undefined)
+    || (li.id ? lookups.indicadorRegByNome.get(normalize(li.id)) : undefined);
   const id = li.id || lookups.indicadorIdByNome.get(li.nome) || reg?.id || '';
   const codigo = li.codigo || lookups.indicadorCodigoByNome.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
   const dados = li.dados ?? reg?.dados;

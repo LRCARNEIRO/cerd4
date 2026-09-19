@@ -59,6 +59,11 @@ export function buildExportLookups(
       indicadorRegByNome.set(normKey(i.nome), {
         id: i.id, codigo: c || null, nome: i.nome, dados: i.dados, tendencia: i.tendencia,
       });
+      const registro = indicadorRegByNome.get(normKey(i.nome));
+      // Subindicadores podem chegar da matriz com título próprio, mas conservam
+      // o código ou UUID do registro-pai. Indexá-los também evita perder dados.
+      if (c) indicadorRegByNome.set(normKey(c), registro);
+      indicadorRegByNome.set(normKey(i.id), registro);
     }
   }
 
