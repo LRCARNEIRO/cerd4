@@ -154,9 +154,20 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
   // ── Indicadores (união dedup) ──
   const indRows = Array.from(indByNome.values()).map(li => {
-    const id = li.id || indicadorIdByNome.get(li.nome) || '';
-    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome);
-    const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia, dados: li.dados });
+    // Cards fixos e subindicadores não trazem id/código/dados no vínculo
+    // curado: recuperamos o registro equivalente no BD (nome, alias ou
+    // guarda-chuva) para nunca exibir evidência anônima e sem valor.
+    const fallback = (!li.codigo || !li.dados)
+      ? resolveRegistroEstatico(li.nome, indicadorRegByNome as any)
+      : { registro: undefined, codigoCongelado: undefined };
+    const reg = fallback.registro;
+    const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
+    const codigo = li.codigo || indicadorCodigoByNome.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
+    const dados = li.dados ?? reg?.dados;
+    const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia ?? reg?.tendencia, dados });
+    const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
+      ? extractDadoUnico(dados, li.sub, li.nome)
+      : undefined;
     const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin, li.sub) : '';
     const codigoBadge = codigo
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
