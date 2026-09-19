@@ -648,23 +648,33 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         if (v.base === 'estatistica' || v.base === 'normativa' || v.base === 'orcamentaria') entry.vinculosPorBase[v.base]++;
         entry.recomendacoes.add(v.recomendacao_id);
 
-        const dedupKey = `${v.base}|${v.ref_id}|${v.sub || ''}`;
-        const s = seen.get(art)!;
-        if (s.has(dedupKey)) continue;
-        s.add(dedupKey);
+        const s = seen.get(art);
+        if (!s) continue;
         if (v.base === 'estatistica') {
           const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
-          entry.indicadores.push({
+          const linked: LinkedIndicador = {
             id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome,
             categoria: reg.categoria, tendencia: reg.tendencia, dados: reg.dados,
             ...(v.sub ? { sub: v.sub, guardaChuva: reg.nome } : {}),
-          });
+          };
+          const expandidos = v.sub ? [linked] : expandIndicadorEvidencia(linked);
+          for (const indicador of expandidos) {
+            const dedupKey = `${v.base}|${indicador.id || v.ref_id}|${indicador.sub || ''}`;
+            if (s.has(dedupKey)) continue;
+            s.add(dedupKey);
+            entry.indicadores.push(indicador);
+          }
         } else if (v.base === 'orcamentaria') {
-
+          const dedupKey = `${v.base}|${v.ref_id}`;
+          if (s.has(dedupKey)) continue;
+          s.add(dedupKey);
           const o: any = orcById.get(v.ref_id);
           if (!o) continue;
           entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
         } else {
+          const dedupKey = `${v.base}|${v.ref_id}`;
+          if (s.has(dedupKey)) continue;
+          s.add(dedupKey);
           const n: any = normById.get(v.ref_id);
           if (!n) continue;
           entry.normativos.push({ titulo: n.titulo, status: n.status });

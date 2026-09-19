@@ -85,7 +85,9 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   const curado = artigoEvidencia?.get(artigo);
   if (curado) {
     for (const li of curado.indicadores || []) {
-      if (!isEvidenceEligibleIndicator(li)) continue;
+      // A lista curada já passou pelo crivo de elegibilidade no sensor.
+      // Não reaplicar o guard aqui: os registros sintéticos dos cards fixos
+      // não carregam todos os metadados administrativos do registro original.
       const key = `${li.id || li.nome}|${li.sub || ''}`;
       indByNome.set(key, { ...li, recomendacoes: ['Matriz auditada'] });
     }
