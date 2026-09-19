@@ -1,4 +1,4 @@
 # Roadmap
 
-- [ ] Corrigir dados estatísticos ausentes nos relatórios de Recomendações, reutilizando a resolução validada dos relatórios por Artigo.
-- [ ] Validar códigos, anos, valores e resultados no relatório da §25.
+- [ ] Centralizar a resolução de códigos, séries e dados pontuais para os relatórios de evidências por Artigo e por Recomendação.
+- [ ] Eliminar linhas estatísticas vazias no relatório da §25 e validar anos, valores e resultados.
