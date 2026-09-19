@@ -9,11 +9,23 @@ const sb = createClient(process.env.VITE_SUPABASE_URL!, process.env.VITE_SUPABAS
 const norm = (s: any) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 const { data: lac } = await sb.from('lacunas_identificadas').select('id,paragrafo,documento_onu,tema,status_cumprimento').limit(200);
-const { data: vin } = await sb.from('vinculos_evidencia_curados').select('recomendacao_id,base,ref_id,nome,sub').limit(5000);
-const { data: ind } = await sb.from('indicadores_interseccionais').select('id,nome,codigo_curto,dados,tendencia,categoria').limit(3000);
+const vin: any[] = [];
+for (let from = 0; ; from += 1000) {
+  const { data } = await sb.from('vinculos_evidencia_curados').select('recomendacao_id,base,ref_id,nome,sub').range(from, from + 999);
+  if (!data || data.length === 0) break;
+  vin.push(...data);
+  if (data.length < 1000) break;
+}
+const ind: any[] = [];
+for (let from = 0; ; from += 1000) {
+  const { data } = await sb.from('indicadores_interseccionais').select('id,nome,codigo_curto,dados,tendencia,categoria').range(from, from + 999);
+  if (!data || data.length === 0) break;
+  ind.push(...data);
+  if (data.length < 1000) break;
+}
 
 const indByNome = new Map<string, any>();
-for (const i of ind || []) indByNome.set(norm(i.nome), i);
+for (const i of ind) indByNome.set(norm(i.nome), i);
 
 // --- classificador esforço x impacto (heurística sobre o nome do indicador) ---
 const IMPACTO_KW = ['taxa', 'homicid', 'letalidade', 'mortalidade', 'morte', 'obito', 'expectativa',
@@ -45,7 +57,7 @@ const faixaNorm = (n: number) => (n >= 6 ? 100 : n >= 4 ? 75 : n >= 3 ? 55 : n >
 
 type Row = any;
 const porRec = new Map<string, Row[]>();
-for (const v of vin || []) {
+for (const v of vin) {
   if (!porRec.has(v.recomendacao_id)) porRec.set(v.recomendacao_id, []);
   porRec.get(v.recomendacao_id)!.push(v);
 }
