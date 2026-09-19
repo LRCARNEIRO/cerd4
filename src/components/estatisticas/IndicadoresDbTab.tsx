@@ -815,7 +815,9 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                           </TableCell>
                           <TableCell>
                             <span className={cn("text-[10px] leading-tight", verdict.color)}>
-                              {verdict.icon} {verdict.text}
+                              {kvsFallback.length > 0
+                                ? '📐 Dado estrutural — sem par Negro×Branco (valores ao lado)'
+                                : `${verdict.icon} ${verdict.text}`}
                             </span>
                           </TableCell>
                         </TableRow>
