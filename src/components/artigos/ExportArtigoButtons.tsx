@@ -115,8 +115,9 @@ export function ExportAllArtigosButton(common: CommonProps) {
 <h1>📋 Índice — Auditoria por Artigo ICERD</h1>
 <p style="font-size:11px;color:#64748b">${ARTIGOS_CONVENCAO.length} Artigos · Gerado em ${new Date().toLocaleString('pt-BR')}</p>
 <p style="font-size:11px;color:#64748b">Cada Artigo possui um relatório HTML que agrega TODAS as recomendações vinculadas a ele e a UNIÃO deduplicada das evidências (indicadores, normativos e orçamento).</p>
+<p style="font-size:11px;color:#64748b">Matriz auditada (planilha CERD_42_BASE_2126): <strong>2.162 vínculos</strong> Artigo × Recomendação × Evidência — 1.145 orçamentária · 922 estatística · 95 normativa — correspondentes a 2.126 registros físicos (36 linhas valem para dois artigos). A coluna "Vínculos" mostra as ocorrências por Artigo, preservando as repetições legítimas da planilha.</p>
 <table>
-  <thead><tr><th>Artigo</th><th>Tema</th><th>Relatório</th></tr></thead>
+  <thead><tr><th>Artigo</th><th>Tema</th><th>Vínculos (orç./estat./norm.)</th><th>Relatório</th></tr></thead>
   <tbody>${indexRows.join('')}</tbody>
 </table>
 </body></html>`;
