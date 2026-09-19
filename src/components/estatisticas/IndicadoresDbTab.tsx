@@ -755,6 +755,10 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                         ? c.indicador.nome.replace(/—/g, '\n—').slice(0, 60) + '…'
                         : c.indicador.nome;
                       const codigo = (c.indicador as any).codigo as string | undefined;
+                      // Sem par Negro×Branco: em vez de deixar a linha vazia,
+                      // exibe os valores medidos que existem no registro.
+                      const semPar = c.negros === null && c.brancos === null && c.indigenas === null;
+                      const kvsFallback = semPar ? extractKeyValues((c.indicador.dados || {}) as Record<string, any>) : [];
                       return (
                         <TableRow
                           key={`${c.indicador.id}-${idx}`}
@@ -776,6 +780,15 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                               <div className="min-w-0">
                                 <p className="text-xs font-medium leading-tight">{shortName}</p>
                                 <p className="text-[10px] text-muted-foreground">{c.unidade} · {c.ano}</p>
+                                {kvsFallback.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {kvsFallback.map((kv, i) => (
+                                      <span key={i} className="inline-flex items-center gap-1 text-[10px] bg-secondary/60 text-secondary-foreground px-1.5 py-0.5 rounded">
+                                        <span className="font-medium">{kv.label}{kv.sublabel ? ` (${kv.sublabel})` : ''}:</span> {kv.value}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </TableCell>
@@ -802,7 +815,9 @@ function RetratoPontualSection({ indicadores, highlightedId }: { indicadores: In
                           </TableCell>
                           <TableCell>
                             <span className={cn("text-[10px] leading-tight", verdict.color)}>
-                              {verdict.icon} {verdict.text}
+                              {kvsFallback.length > 0
+                                ? '📐 Dado estrutural — sem par Negro×Branco (valores ao lado)'
+                                : `${verdict.icon} ${verdict.text}`}
                             </span>
                           </TableCell>
                         </TableRow>
