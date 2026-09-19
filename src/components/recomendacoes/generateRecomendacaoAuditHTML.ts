@@ -6,10 +6,9 @@
  * Usado pelo botão "Baixar TODOS os relatórios (.zip)" da aba
  * Acompanhamento Gerencial — gera 1 HTML por recomendação.
  */
-import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
-import { resolveRegistroEstatico, extractDadoUnico, extractSerieSub } from '@/utils/indicadorDadoUnico';
+import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -111,26 +110,11 @@ export function generateRecomendacaoAuditHTML({
 
   // ── Indicadores ────────────────────────────────────────────────
   const indEvals = linkedInd.map(li => {
-    const fallback = (!li.codigo || !li.dados)
-      ? resolveRegistroEstatico(li.nome, indicadorRegByNome)
-      : { registro: undefined, codigoCongelado: undefined };
-    const reg = fallback.registro;
-    const id = li.id || indicadorIdByNome.get(li.nome) || reg?.id || '';
-    const codigo = li.codigo || indicadorCodigoByNome?.get(li.nome) || reg?.codigo || fallback.codigoCongelado || undefined;
-    const dados = li.dados ?? reg?.dados;
-    const base = evaluateIndicadorDetailed({
-      nome: li.nome,
-      categoria: li.categoria,
-      tendencia: li.tendencia ?? reg?.tendencia,
-      dados,
+    const { id, codigo, detail, unico } = resolveIndicadorReportData(li, {
+      indicadorIdByNome,
+      indicadorCodigoByNome: indicadorCodigoByNome || new Map<string, string>(),
+      indicadorRegByNome,
     });
-    const serieSub = extractSerieSub(dados, li.sub, li.nome);
-    const detail = serieSub?.valorRecente !== undefined
-      ? { ...base, ...serieSub, result: base.result }
-      : base;
-    const unico = (detail.valorRecente === undefined && detail.valorAntigo === undefined)
-      ? extractDadoUnico(dados, li.sub, li.nome)
-      : undefined;
     return { id, codigo, nome: li.nome, sub: li.sub, detail, unico };
   });
 
