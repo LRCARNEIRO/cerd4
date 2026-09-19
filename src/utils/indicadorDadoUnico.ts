@@ -118,7 +118,10 @@ export interface DadoUnico {
   valor?: number;
   unidade?: string;
   rotulo?: string;
+  /** Valor qualitativo auditado (ex.: "+57%"), quando não há número puro. */
+  texto?: string;
 }
+
 
 export interface SerieSub {
   anoAntigo?: number;
