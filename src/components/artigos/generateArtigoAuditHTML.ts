@@ -175,16 +175,19 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const nomeCell = link
       ? `${codigoBadge}<a href="${link}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${codigo ? `${codigo} — ` : ''}${li.nome}</a>`
       : `${codigoBadge}${li.nome}`;
-    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
-    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
+    const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : unico ? '#0f766e' : '#6b7280';
+    const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : unico ? '• Dado único' : '— Neutro';
     const recsTag = li.recomendacoes.slice(0, 6).join(' ') + (li.recomendacoes.length > 6 ? ` +${li.recomendacoes.length - 6}` : '');
     const origem = li.guardaChuva ? `<div style="font-size:9px;color:#64748b;margin-top:2px">Card: ${li.guardaChuva}</div>` : '';
+    const anoRecente = detail.anoRecente ?? unico?.ano;
+    const valorRecente = detail.valorRecente !== undefined ? detail.valorRecente : unico?.valor;
+    const unidade = unico?.unidade ? ` ${unico.unidade}` : '';
     return `<tr>
       <td>${nomeCell}${origem}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
       <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
-      <td style="text-align:center">${detail.anoRecente ?? '—'}</td>
-      <td style="text-align:right">${detail.valorRecente !== undefined ? fmtNum(detail.valorRecente) : '—'}</td>
+      <td style="text-align:center">${anoRecente ?? '—'}</td>
+      <td style="text-align:right">${valorRecente !== undefined ? `${fmtNum(valorRecente)}${unidade}` : '—'}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores agregados.</td></tr>`;
