@@ -214,7 +214,7 @@ ${analysis.map(a => {
     a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total]);
+  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals]);
 
   return (
     <div className="space-y-6">
