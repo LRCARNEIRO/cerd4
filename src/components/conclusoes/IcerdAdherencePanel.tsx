@@ -163,6 +163,7 @@ th{background:#f1f5f9}
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
 <p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas, ${totalStatSeries} séries estatísticas.</p>
+<p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a 2.126 registros físicos da base curada (planilha CERD_42_BASE_2126).</p>
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {

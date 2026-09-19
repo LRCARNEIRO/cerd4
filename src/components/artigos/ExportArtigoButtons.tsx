@@ -89,9 +89,11 @@ export function ExportAllArtigosButton(common: CommonProps) {
           });
           const fileName = `artigo-${def.numero}-${safeFileName(def.titulo)}.html`;
           zip.file(fileName, html);
+          const vb = common.artigoEvidencia?.get(def.numero)?.vinculosPorBase;
           indexRows.push(`<tr>
             <td style="font-family:monospace;font-weight:600">Art. ${def.numero}</td>
             <td>${def.titulo}</td>
+            <td style="font-size:11px">${vb ? `${vb.orcamentaria + vb.estatistica + vb.normativa} (${vb.orcamentaria} orç. · ${vb.estatistica} estat. · ${vb.normativa} norm.)` : '—'}</td>
             <td><a href="./${fileName}" style="color:#2563eb">Abrir</a></td>
           </tr>`);
         } catch (err: any) {
