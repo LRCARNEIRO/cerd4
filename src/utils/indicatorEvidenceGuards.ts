@@ -165,3 +165,22 @@ export function filterEvidenceEligibleIndicators<
 >(indicators: T[] | undefined | null): T[] {
   return (indicators || []).filter(isEvidenceEligibleIndicator);
 }
+
+/**
+ * Variante para objetos JÁ vinculados pelo sensor (`LinkedIndicador`), que
+ * carregam apenas nome/categoria/dados. Reaplicar `isPendingAuditIndicator`
+ * aqui derrubaria indevidamente evidências auditadas (o campo
+ * `auditado_manualmente` não viaja no objeto vinculado). O crivo de auditoria
+ * já foi aplicado na origem (useDiagnosticSensor), então aqui só restam as
+ * defesas de Common Core e blacklist.
+ */
+export function isLinkedEvidenceEligible(indicator: {
+  id?: string | null;
+  nome?: string | null;
+  categoria?: string | null;
+  subcategoria?: string | null;
+  fonte?: string | null;
+  dados?: any;
+}): boolean {
+  return !isCommonCoreIndicator(indicator) && !isInvalidEvidenceIndicator(indicator);
+}

@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, Maximize2, Minimize2 } from 'lucide-react';
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
-import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { expandIndicadorEvidencia } from '@/hooks/useDiagnosticSensor';
 
 // ── Override types ─────────────────────────────────────────────
@@ -68,7 +68,7 @@ export function EvidenceDrilldownDialog({
 
   // ── Effective lists (with overrides applied) ──
   const effectiveIndicadores = useMemo(() => {
-    const eligibleLinked = linkedIndicadores.filter(isEvidenceEligibleIndicator);
+    const eligibleLinked = linkedIndicadores.filter(isLinkedEvidenceEligible);
     if (!overrides) return eligibleLinked;
     const base = eligibleLinked.filter(i => !overrides.removedIndicadores.includes(i.nome));
     const added = overrides.addedIndicadores.filter(isEvidenceEligibleIndicator).filter(a => !base.some(b => b.nome === a.nome));

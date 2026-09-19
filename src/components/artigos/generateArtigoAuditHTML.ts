@@ -17,7 +17,7 @@ import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndic
 import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
-import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { resolveRegistroEstatico, extractDadoUnico, extractSerieSub } from '@/utils/indicadorDadoUnico';
 
 function fmtNum(v: number | undefined): string {
@@ -115,7 +115,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     for (const li of curado ? [] : (diag?.linkedIndicadores || [])) {
       // ⚠️ REGRA DE OURO: bloquear Common Core e indicadores descartados
       // por falta de fonte racial auditável.
-      if (!isEvidenceEligibleIndicator(li)) continue;
+      if (!isLinkedEvidenceEligible(li)) continue;
       const key = `${li.id || li.nome}|${li.sub || ''}`;
       const cur = indByNome.get(key);
       if (cur) cur.recomendacoes.push(tag);
