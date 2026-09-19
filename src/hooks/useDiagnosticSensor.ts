@@ -261,7 +261,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
       while (true) {
         const { data, error } = await supabase
           .from('vinculos_evidencia_curados')
-          .select('recomendacao_id, base, ref_id, sub, nome')
+          .select('artigo, recomendacao_id, base, ref_id, sub, nome')
           .range(page * 1000, (page + 1) * 1000 - 1);
         if (error) throw error;
         if (!data || data.length === 0) break;
@@ -648,23 +648,36 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         if (v.base === 'estatistica' || v.base === 'normativa' || v.base === 'orcamentaria') entry.vinculosPorBase[v.base]++;
         entry.recomendacoes.add(v.recomendacao_id);
 
-        const dedupKey = `${v.base}|${v.ref_id}|${v.sub || ''}`;
-        const s = seen.get(art)!;
-        if (s.has(dedupKey)) continue;
-        s.add(dedupKey);
+        const s = seen.get(art);
+        if (!s) continue;
         if (v.base === 'estatistica') {
           const reg: any = indById.get(v.ref_id) || indicadorEstaticoCurado(v);
-          entry.indicadores.push({
+          const linked: LinkedIndicador = {
             id: reg.id, codigo: reg.codigo, nome: v.sub ? (v.nome || reg.nome) : reg.nome,
             categoria: reg.categoria, tendencia: reg.tendencia, dados: reg.dados,
             ...(v.sub ? { sub: v.sub, guardaChuva: reg.nome } : {}),
-          });
+          };
+          const expandidos = v.sub ? [linked] : expandIndicadorEvidencia(linked);
+          for (const indicador of expandidos) {
+            // Mesma unidade visual adotada nos cards: um indicador distinto
+            // por título exibido. Assim, repetições do mesmo bloco em linhas
+            // ou recomendações diferentes não aumentam o total do Artigo.
+            const dedupKey = `${v.base}|${indicador.nome}`;
+            if (s.has(dedupKey)) continue;
+            s.add(dedupKey);
+            entry.indicadores.push(indicador);
+          }
         } else if (v.base === 'orcamentaria') {
-
+          const dedupKey = `${v.base}|${v.ref_id}`;
+          if (s.has(dedupKey)) continue;
+          s.add(dedupKey);
           const o: any = orcById.get(v.ref_id);
           if (!o) continue;
           entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
         } else {
+          const dedupKey = `${v.base}|${v.ref_id}`;
+          if (s.has(dedupKey)) continue;
+          s.add(dedupKey);
           const n: any = normById.get(v.ref_id);
           if (!n) continue;
           entry.normativos.push({ titulo: n.titulo, status: n.status });

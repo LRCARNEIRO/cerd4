@@ -9,8 +9,9 @@
  * Vinculação:
  *  - Recomendações herdam Artigos via `artigos_convencao` (tag DB
  *    explícita) ou via `EIXO_PARA_ARTIGOS[eixo_tematico]` (fallback).
- *  - Evidências = união dos `linkedXxx` de todas as recomendações
- *    pertencentes ao Artigo, sem duplo conto (chave por id/título/triplo).
+ *  - Quando há curadoria, as evidências vêm diretamente da matriz auditada
+ *    por Artigo, preservando cards estáticos e subindicadores.
+ *  - Sem curadoria, usa a união dos `linkedXxx` das recomendações do Artigo.
  */
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
@@ -46,8 +47,9 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   retrocesso: { label: 'Não Cumprida', color: '#dc2626' },
 };
 
-function buildIndicadorLink(id: string, codigo: string | undefined, origin: string): string {
-  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}#ind-${codigo}`;
+function buildIndicadorLink(id: string, codigo: string | undefined, origin: string, sub?: string): string {
+  const subParam = sub ? `&sub=${encodeURIComponent(sub)}` : '';
+  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}${subParam}#ind-${codigo}`;
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
@@ -73,16 +75,30 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   const recsDoArtigo = recomendacoes.filter(r => getArtigosOf(r).includes(artigo));
 
   // Dedup das evidências (união)
-  const indByNome = new Map<string, { id?: string; codigo?: string; nome: string; categoria?: string; tendencia?: string; dados: any; recomendacoes: string[] }>();
+  const indByNome = new Map<string, { id?: string; codigo?: string; nome: string; categoria?: string; tendencia?: string; dados: any; sub?: string; guardaChuva?: string; recomendacoes: string[] }>();
   const normByTitulo = new Map<string, { titulo: string; recomendacoes: string[] }>();
   const orcByKey = new Map<string, { o: any; recomendacoes: string[] }>();
 
-  // Curadoria do artigo: quando existe, só entram as evidências efetivamente
-  // vinculadas a ESTE artigo na matriz auditada.
+  // Curadoria do artigo: quando existe, ela é a fonte direta das listas.
+  // Não reconstruir pela união das recomendações: isso descartava cards
+  // estatísticos fixos sem espelho no BD e colapsava subindicadores.
   const curado = artigoEvidencia?.get(artigo);
-  const allowInd = curado ? new Set(curado.indicadores.map((i: any) => i.nome)) : null;
-  const allowNorm = curado ? new Set(curado.normativos.map((n: any) => n.titulo)) : null;
-  const allowOrc = curado ? new Set(curado.orcamento.map((o: any) => `${o.programa || ''}|${o.orgao || ''}|${o.ano ?? ''}`)) : null;
+  if (curado) {
+    for (const li of curado.indicadores || []) {
+      // A lista curada já passou pelo crivo de elegibilidade no sensor.
+      // Não reaplicar o guard aqui: os registros sintéticos dos cards fixos
+      // não carregam todos os metadados administrativos do registro original.
+      const key = `${li.id || li.nome}|${li.sub || ''}`;
+      indByNome.set(key, { ...li, recomendacoes: ['Matriz auditada'] });
+    }
+    for (const ln of curado.normativos || []) {
+      normByTitulo.set(ln.titulo, { titulo: ln.titulo, recomendacoes: ['Matriz auditada'] });
+    }
+    for (const lo of curado.orcamento || []) {
+      const key = `${lo.programa || ''}|${lo.orgao || ''}|${lo.ano ?? ''}`;
+      orcByKey.set(key, { o: lo, recomendacoes: ['Matriz auditada'] });
+    }
+  }
 
   let countCumprida = 0, countParcial = 0, countNaoCumprida = 0;
 
@@ -95,24 +111,22 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
     const tag = `§${rec.paragrafo}`;
 
-    for (const li of diag?.linkedIndicadores || []) {
+    for (const li of curado ? [] : (diag?.linkedIndicadores || [])) {
       // ⚠️ REGRA DE OURO: bloquear Common Core e indicadores descartados
       // por falta de fonte racial auditável.
       if (!isEvidenceEligibleIndicator(li)) continue;
-      if (allowInd && !allowInd.has(li.nome)) continue;
-      const cur = indByNome.get(li.nome);
+      const key = `${li.id || li.nome}|${li.sub || ''}`;
+      const cur = indByNome.get(key);
       if (cur) cur.recomendacoes.push(tag);
-      else indByNome.set(li.nome, { ...li, recomendacoes: [tag] });
+      else indByNome.set(key, { ...li, recomendacoes: [tag] });
     }
-    for (const ln of diag?.linkedNormativos || []) {
-      if (allowNorm && !allowNorm.has(ln.titulo)) continue;
+    for (const ln of curado ? [] : (diag?.linkedNormativos || [])) {
       const cur = normByTitulo.get(ln.titulo);
       if (cur) cur.recomendacoes.push(tag);
       else normByTitulo.set(ln.titulo, { titulo: ln.titulo, recomendacoes: [tag] });
     }
-    for (const lo of diag?.linkedOrcamento || []) {
+    for (const lo of curado ? [] : (diag?.linkedOrcamento || [])) {
       const k = `${lo.programa || ''}|${lo.orgao || ''}|${lo.ano ?? ''}`;
-      if (allowOrc && !allowOrc.has(k)) continue;
       const cur = orcByKey.get(k);
       if (cur) cur.recomendacoes.push(tag);
       else orcByKey.set(k, { o: lo, recomendacoes: [tag] });
@@ -142,7 +156,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const id = li.id || indicadorIdByNome.get(li.nome) || '';
     const codigo = li.codigo || indicadorCodigoByNome.get(li.nome);
     const detail = evaluateIndicadorDetailed({ nome: li.nome, categoria: li.categoria, tendencia: li.tendencia, dados: li.dados });
-    const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin) : '';
+    const link = (id || codigo) ? buildIndicadorLink(id, codigo, origin, li.sub) : '';
     const codigoBadge = codigo
       ? `<span style="display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:9px;letter-spacing:0.05em;padding:2px 5px;border-radius:3px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;margin-right:6px">${codigo}</span>`
       : '';
@@ -152,8 +166,9 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : '#6b7280';
     const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : '— Neutro';
     const recsTag = li.recomendacoes.slice(0, 6).join(' ') + (li.recomendacoes.length > 6 ? ` +${li.recomendacoes.length - 6}` : '');
+    const origem = li.guardaChuva ? `<div style="font-size:9px;color:#64748b;margin-top:2px">Card: ${li.guardaChuva}</div>` : '';
     return `<tr>
-      <td>${nomeCell}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
+      <td>${nomeCell}${origem}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
       <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
       <td style="text-align:center">${detail.anoRecente ?? '—'}</td>
@@ -231,19 +246,19 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 <div class="summary">
   <p><strong>Total de recomendações vinculadas a este Artigo:</strong> ${totalRecs}</p>
   <p>✅ Cumpridas: ${countCumprida} · 🟡 Parciais: ${countParcial} · 🔴 Não Cumpridas: ${countNaoCumprida}</p>
-  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${orcByKey.size} ação(ões) orçamentária(s) — agregados sem duplo conto.</p>
+  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${orcByKey.size} ação(ões) orçamentária(s) — evidências distintas da matriz auditada, sem duplo conto por Artigo.</p>
   ${curado?.vinculosPorBase ? `<p style="font-size:10px;color:#475569">Matriz auditada: ${curado.vinculosPorBase.orcamentaria + curado.vinculosPorBase.estatistica + curado.vinculosPorBase.normativa} vínculos Artigo × Recomendação × Evidência (${curado.vinculosPorBase.orcamentaria} orçamentária · ${curado.vinculosPorBase.estatistica} estatística · ${curado.vinculosPorBase.normativa} normativa). Os números acima contam cada evidência uma única vez.</p>` : ''}
 </div>
 
 <h2>📜 Recomendações vinculadas ao Artigo ${artigo} (${totalRecs})</h2>
-<p class="legend">Recomendações da ONU monitoradas que herdam (por tag explícita ou eixo temático) o Artigo ${artigo}.</p>
+<p class="legend">Recomendações da ONU monitoradas com vínculo explícito ao Artigo ${artigo}.</p>
 <table>
   <thead><tr><th style="width:80px">§</th><th>Tema</th><th style="width:110px">Status</th><th style="text-align:center;width:70px">📊 Ind.</th><th style="text-align:center;width:70px">⚖️ Norm.</th><th style="text-align:center;width:70px">💰 Orç.</th></tr></thead>
   <tbody>${recRows}</tbody>
 </table>
 
 <h2>📊 Indicadores agregados (${indByNome.size})</h2>
-<p class="legend">União das evidências estatísticas vinculadas a qualquer recomendação acima. A coluna "vinculado por" mostra quais §/recomendações trazem este indicador.</p>
+<p class="legend">Evidências estatísticas distintas da matriz auditada para este Artigo, preservando cards fixos e subindicadores.</p>
 <table>
   <thead><tr>
     <th>Indicador</th><th style="text-align:center">Ano Antigo</th><th style="text-align:right">Valor Antigo</th>
