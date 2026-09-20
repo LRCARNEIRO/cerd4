@@ -147,6 +147,13 @@ const orcamento = orc.map((o) => {
   };
 });
 
+// evita dupla contagem quando guarda-chuva e subindicador têm o mesmo título
+const vistos = new Set<string>();
+estat.forEach((e) => {
+  const k = norm(e['Título da evidência']);
+  if (vistos.has(k)) e['Nº de vínculos'] = 0; else vistos.add(k);
+});
+
 writeFileSync('/tmp/inv.json', JSON.stringify({ estat, normativa, orcamento }));
 const semDado = estat.filter((e) => e['Valores exibidos (ano: valor)'] === '—').length;
 console.log('estat', estat.length, 'sem dado', semDado, 'norm', normativa.length, 'orc', orcamento.length,
