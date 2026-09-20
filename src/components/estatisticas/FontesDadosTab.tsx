@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Database, Globe, FileText, Download, RefreshCw, Check, AlertCircle } from 'lucide-react';
 import { dataSources } from '@/data/mockData';
+import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
 
 // Fontes oficiais com status de integração
 const fontesOficiais = [
