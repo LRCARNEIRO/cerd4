@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 
