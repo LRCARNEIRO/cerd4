@@ -189,7 +189,7 @@ function linhaEstat(o: any) {
   return {
     'Código': o.codigo, 'Tipo': o.tipo, 'Título da evidência': o.titulo, 'sub': o.sub, 'Guarda-chuva': o.gc,
     'Aba / Categoria': o.aba, 'Localização no sistema': o.loc, 'Link no sistema (CERD IV)': o.url,
-    'Registro de origem no BD': o.origem, 'Fonte': o.fonte, 'URL da fonte': o.urlFonte,
+    'Fonte': o.fonte, 'URL da fonte': o.urlFonte,
     'Tendência recalculada': o.d.tendRecalc,
     'Base do cálculo da tendência': o.d.baseCalc,
     'Função no método (esforço/impacto)': funcao,
