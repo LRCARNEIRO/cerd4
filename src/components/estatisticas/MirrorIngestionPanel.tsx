@@ -52,6 +52,11 @@ export function MirrorIngestionPanel() {
     }
   }, []);
 
+  // Painel técnico oculto da interface pública: o espelhamento continua
+  // rodando automaticamente, mas sem exibir card de migração ao usuário.
+  return null;
+
+  // eslint-disable-next-line no-unreachable
   const totalIndicators = buildMirrorIndicators().length + buildAllStage3Indicators().length + buildStage4Indicators().length + buildStage5Indicators().length;
 
   return (

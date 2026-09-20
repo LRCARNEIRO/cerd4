@@ -86,16 +86,9 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // (renda média, desocupação, pobreza), agora localizáveis pelo título.
   // Manter as entradas estáticas "sem ID" duplicava resultados na busca.
 
-  // Feminicídio
-  (mirror.feminicidioSerie || []).forEach((s: any) => {
-    results.push({
-      titulo: `Feminicídio ${s.ano} — Vítimas Negras: ${s.percentualNegras}%`,
-      fonte: 'FBSP',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Feminicídio',
-    });
-  });
+  // Feminicídio (série ano a ano) — REMOVIDO do índice: são chaves internas
+  // do registro canônico IND-112 ("Feminicídio — série histórica 2018-2024"),
+  // já indexado. As linhas por ano duplicavam a mesma evidência.
 
   // Saúde (série ano a ano) — REMOVIDA do índice: coberta pelo registro
   // canônico IND-122 + sub-indicadores (mortalidade materna / infantil).
@@ -121,18 +114,21 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // internas do registro canônico IND-197 (FBSP/DEPEN, população prisional
   // por cor/raça).
 
-  // Classe por raça — MANTIDA no índice: não existe registro canônico
-  // (guarda-chuva) para classe social por raça na Base Estatística, logo
-  // estas linhas são a única forma de localizar o dado.
-  (mirror.classePorRaca || []).forEach((s: any) => {
+  // Classe por raça — MANTIDA no índice como UM único bloco (não existe
+  // registro canônico na Base Estatística). As faixas viram aliases de busca,
+  // em vez de 10 resultados repetidos.
+  const faixas = (mirror.classePorRaca || []) as any[];
+  if (faixas.length) {
     results.push({
-      titulo: `Classe Social — ${s.faixa}: Negros ${s.negros}%, Brancos ${s.brancos}%`,
+      titulo: 'Classe Social por raça — faixas de renda (IBGE/PNAD)',
+      nome: 'Classe Social por raça — faixas de renda',
+      valor: faixas.map((s: any) => `${s.faixa}: Negros ${s.negros}%, Brancos ${s.brancos}%`).join(' • '),
       fonte: 'IBGE/PNAD',
       aba: 'Classe Social',
       abaValue: 'classe',
       categoria: 'Classe Social',
     });
-  });
+  }
 
 
   // Evasão escolar (série ano a ano) — REMOVIDA do índice: coberta pelo
@@ -214,7 +210,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
         </div>
         <Badge variant="outline" className="text-xs whitespace-nowrap">
           <Database className="w-3 h-3 mr-1" />
-          {catalog.length} itens indexados
+          {catalog.length} evidências indexadas
         </Badge>
       </div>
 
