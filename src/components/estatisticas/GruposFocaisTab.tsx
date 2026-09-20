@@ -184,7 +184,6 @@ export function GruposFocaisTab() {
                 <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
                 <p className="text-2xl font-bold">{gruposFocaisData.ciganos.populacao?.toLocaleString('pt-BR')}</p>
                 <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
-                <IndCodeBadge nome="Ciganos/Roma — lacuna de dados" codigo="IND-174" className="mt-1" />
               </div>
               <div className="flex flex-col items-end gap-1">
                 
