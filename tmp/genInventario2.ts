@@ -193,7 +193,6 @@ function linhaEstat(o: any) {
     'Tendência recalculada': o.d.tendRecalc,
     'Base do cálculo da tendência': o.d.baseCalc,
     'Função no método (esforço/impacto)': funcao,
-    'Entra no cálculo de Impacto': funcao === 'IMPACTO' && temSerie ? 'sim' : 'não',
     'Recomendações vinculadas (§)': o.v.recs, 'Artigos ICERD': o.v.arts,
     'Nº de vínculos': o.v.n, 'Auditado': o.auditado,
     'Classificação estrutural': o.d.classe, 'Nº de anos': o.d.nAnos, 'Nº valores': o.d.nValores,
