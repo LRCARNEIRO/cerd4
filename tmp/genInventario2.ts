@@ -192,10 +192,8 @@ function linhaEstat(o: any) {
     'Registro de origem no BD': o.origem, 'Fonte': o.fonte, 'URL da fonte': o.urlFonte,
     'Tendência recalculada': o.d.tendRecalc,
     'Base do cálculo da tendência': o.d.baseCalc,
-    'Função no método (esforço/impacto)':
-      /IMPACTO|Impacto Real/.test(o.v.funcao) ? 'IMPACTO'
-        : /ESFORÇO/.test(o.v.funcao) ? 'ESFORÇO'
-          : (o.d.funcaoBase.includes('IMPACTO') ? 'IMPACTO' : 'ESFORÇO'),
+    'Função no método (esforço/impacto)': funcao,
+    'Entra no cálculo de Impacto': funcao === 'IMPACTO' && temSerie ? 'sim' : 'não',
     'Recomendações vinculadas (§)': o.v.recs, 'Artigos ICERD': o.v.arts,
     'Nº de vínculos': o.v.n, 'Auditado': o.auditado,
     'Classificação estrutural': o.d.classe, 'Nº de anos': o.d.nAnos, 'Nº valores': o.d.nValores,
