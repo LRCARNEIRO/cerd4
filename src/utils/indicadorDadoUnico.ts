@@ -269,8 +269,9 @@ export function extractSerieSub(dados: any, sub?: string | null, nome?: string):
   const anos = Object.values(series).filter((v) => v && typeof v === 'object') as any[];
   if (!anos.length) return undefined;
   const chaves = Array.from(new Set(anos.flatMap((a) => Object.keys(a)))).filter(
-    (k) => !META_KEYS.test(k) && anos.some((a) => Number.isFinite(Number(a[k]))),
+    (k) => !META_KEYS.test(k) && anos.some((a) => medicao(a[k]) !== undefined),
   );
+
   if (!chaves.length) return undefined;
   const tokens = tokensDe(sub, nome);
   // Sem correspondência explícita, prioriza o recorte racial negro — é o
