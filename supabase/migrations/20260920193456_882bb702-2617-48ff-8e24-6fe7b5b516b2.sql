@@ -1,0 +1,1 @@
+update public.indicadores_interseccionais set tendencia = null where tendencia is not null;
