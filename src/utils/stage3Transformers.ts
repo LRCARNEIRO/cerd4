@@ -103,7 +103,8 @@ function ccTableToRecord(t: CommonCoreTable): DbRecord {
       headers: t.dados.headers,
       rows: t.dados.rows,
       notas: t.notas || null,
-      tendencia: t.tendencia || null,
+      // Tendência nunca vem do rótulo estático: é recalculada pela série + polaridade
+      tendencia: null,
       tabelaSidra: t.tabelaSidra || null,
     },
     ORIGIN_CC,
@@ -462,7 +463,8 @@ export function buildStage4Indicators(): DbRecord[] {
     ind.dados,
     ['espelho_estatico', 'ComplementoCerd3Data.ts'],
     {
-      tendencia: ind.tendencia || null,
+      // Tendência nunca vem do rótulo estático: é recalculada pela série + polaridade
+      tendencia: null,
       desagregacao_raca: true,
     },
   ));
