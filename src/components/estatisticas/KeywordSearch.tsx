@@ -86,16 +86,9 @@ function buildSearchCatalog(mirror: any, indicadoresDb: any[]): SearchResult[] {
   // (renda média, desocupação, pobreza), agora localizáveis pelo título.
   // Manter as entradas estáticas "sem ID" duplicava resultados na busca.
 
-  // Feminicídio
-  (mirror.feminicidioSerie || []).forEach((s: any) => {
-    results.push({
-      titulo: `Feminicídio ${s.ano} — Vítimas Negras: ${s.percentualNegras}%`,
-      fonte: 'FBSP',
-      aba: 'Segurança/Saúde/Educação',
-      abaValue: 'seguranca-saude-educacao',
-      categoria: 'Feminicídio',
-    });
-  });
+  // Feminicídio (série ano a ano) — REMOVIDO do índice: são chaves internas
+  // do registro canônico IND-112 ("Feminicídio — série histórica 2018-2024"),
+  // já indexado. As linhas por ano duplicavam a mesma evidência.
 
   // Saúde (série ano a ano) — REMOVIDA do índice: coberta pelo registro
   // canônico IND-122 + sub-indicadores (mortalidade materna / infantil).
