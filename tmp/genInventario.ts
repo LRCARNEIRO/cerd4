@@ -33,7 +33,7 @@ const ALIAS_VINC: Record<string, string> = {
   'disparidades interseccionais pcd': 'Disparidades PcD 14-59 anos por raça',
 };
 function vinc(base: string, nome: string) {
-  const alias = Object.entries(ALIAS_VINC).filter(([, t]) => norm(t) === norm(nome)).map(([k]) => k);
+  const alias = Object.entries(ALIAS_VINC).filter(([, t]) => norm(t) === norm(nome)).map(([k]) => k).filter((k) => k !== norm(nome));
   const list = [...(vByKey.get(`${base}|${norm(nome)}`) || []), ...alias.flatMap((k) => vByKey.get(`${base}|${k}`) || [])];
   const recs = [...new Set(list.map((v) => v.recomendacao_id))].sort();
   const arts = [...new Set(list.map((v) => v.artigo).filter(Boolean))].sort();
