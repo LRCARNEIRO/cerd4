@@ -217,13 +217,24 @@ export function cardFixoSerie(nome?: string | null): (SerieSub & { unidade?: str
   return CARDS_FIXOS[norm(nome)];
 }
 
+/**
+ * Converte para número aceitando só medições reais: `null`, `undefined`,
+ * `''` e booleanos viram indefinido (Number(null) === 0 faria um ano sem
+ * medição virar zero e inverter a tendência).
+ */
+function medicao(v: unknown): number | undefined {
+  if (v === null || v === undefined || v === '' || typeof v === 'boolean') return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : undefined;
+}
+
 function pontosDaSerie(series: any, chave: string): Array<[number, number]> {
   const pts: Array<[number, number]> = [];
   for (const [ano, obj] of Object.entries(series || {})) {
     const y = Number(ano);
     if (!Number.isFinite(y) || y < 1990 || y > 2100) continue;
-    const v = Number((obj as any)?.[chave]);
-    if (Number.isFinite(v)) pts.push([y, v]);
+    const v = medicao((obj as any)?.[chave]);
+    if (v !== undefined) pts.push([y, v]);
   }
   return pts.sort((a, b) => a[0] - b[0]);
 }
@@ -235,12 +246,14 @@ function seriesDeMapasPorChave(dados: any): Record<string, any> | undefined {
     if (!v || typeof v !== 'object' || Array.isArray(v)) continue;
     for (const [ano, val] of Object.entries(v as any)) {
       const y = Number(ano);
-      if (!Number.isFinite(y) || y < 1990 || y > 2100 || !Number.isFinite(Number(val))) continue;
-      out[ano] = { ...(out[ano] || {}), [k]: Number(val) };
+      const n = medicao(val);
+      if (!Number.isFinite(y) || y < 1990 || y > 2100 || n === undefined) continue;
+      out[ano] = { ...(out[ano] || {}), [k]: n };
     }
   }
   return Object.keys(out).length ? out : undefined;
 }
+
 
 /**
  * Extrai a série do SUB-indicador dentro de um registro guarda-chuva
