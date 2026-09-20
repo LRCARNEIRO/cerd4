@@ -186,10 +186,13 @@ function linhaEstat(o: any) {
     'Código': o.codigo, 'Tipo': o.tipo, 'Título da evidência': o.titulo, 'sub': o.sub, 'Guarda-chuva': o.gc,
     'Aba / Categoria': o.aba, 'Localização no sistema': o.loc, 'Link no sistema (CERD IV)': o.url,
     'Registro de origem no BD': o.origem, 'Fonte': o.fonte, 'URL da fonte': o.urlFonte,
-    'Tendência (BD)': o.d.tendenciaBD, 'Tendência recalculada': o.d.tendRecalc,
-    'Base do cálculo da tendência': o.d.baseCalc, 'Resultado (evolução)': o.d.resultado,
+    'Tendência recalculada': o.d.tendRecalc,
+    'Base do cálculo da tendência': o.d.baseCalc,
+    'Função no método (esforço/impacto)':
+      /IMPACTO|Impacto Real/.test(o.v.funcao) ? 'IMPACTO'
+        : /ESFORÇO/.test(o.v.funcao) ? 'ESFORÇO'
+          : (o.d.funcaoBase.includes('IMPACTO') ? 'IMPACTO' : 'ESFORÇO'),
     'Recomendações vinculadas (§)': o.v.recs, 'Artigos ICERD': o.v.arts,
-    'Função no método (auditada)': o.v.funcao, 'Função na base estatística': o.d.funcaoBase,
     'Nº de vínculos': o.v.n, 'Auditado': o.auditado,
     'Classificação estrutural': o.d.classe, 'Nº de anos': o.d.nAnos, 'Nº valores': o.d.nValores,
     'Valores exibidos (ano: valor)': o.d.valores,
