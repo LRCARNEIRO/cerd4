@@ -70,7 +70,7 @@ export const SANEAMENTO_GRUPOS_FOCAIS = ['IND-137', 'IND-150', 'IND-145', 'IND-1
 
 
 /** Cards de população dos grupos focais. */
-export const POPULACAO_GRUPOS_FOCAIS = ['IND-146', 'IND-152', 'IND-167', 'IND-174', 'IND-183'];
+export const POPULACAO_GRUPOS_FOCAIS = ['IND-146', 'IND-152', 'IND-167', 'IND-183'];
 
 export const ABAS_POR_CODIGO: Record<string, AbaLocalizacao[]> = {
   // Renderizados em ComplementoCerd3Tab › CensoDemografiaMapas

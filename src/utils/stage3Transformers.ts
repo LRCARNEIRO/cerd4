@@ -363,20 +363,6 @@ export function buildGruposFocaisIndicators(): DbRecord[] {
   ));
 
   all.push(rec(
-    'Ciganos/Roma — lacuna de dados',
-    'grupos_focais', 'ciganos',
-    'Lacuna crítica — Censo 2022 não incluiu pergunta específica',
-    'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html',
-    ['Art. 2', 'Art. 5'],
-    {
-      populacao: null,
-      observacoesONU: ['54', '55'],
-      paragrafos_cerd: '§33-36',
-    },
-    ORIGIN_GF,
-  ));
-
-  all.push(rec(
     'Juventude Negra (15-29) — dados demográficos',
     'grupos_focais', 'juventude_negra',
     'Estimativa IBGE Censo 2022 × PNAD Contínua',
