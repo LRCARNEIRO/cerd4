@@ -148,7 +148,7 @@ function dadosDe(nome: string, sub: string | undefined, reg: any, tipo: 'guarda-
   }
   if (tem === 'sim' && typeof vAnt === 'number' && typeof vRec === 'number') {
     const delta = vRec - vAnt;
-    tendRecalc = Math.abs(delta) < 1e-9 ? 'Estável' : ((delta < 0) === menorMelhor ? 'Melhora' : 'Piora');
+    tendRecalc = Math.abs(delta) < 1e-9 ? 'estável' : ((delta < 0) === menorMelhor ? 'melhorou' : 'piorou');
     baseCalc = `${rot || nome}: ${vAnt} (${aAnt}) → ${vRec} (${aRec}); variação ${delta >= 0 ? '+' : ''}${delta.toFixed(2)}; ${polaridade}${ajuste}`;
   } else if (tem === 'sim') {
     tendRecalc = '— (série sem valores comparáveis)';
