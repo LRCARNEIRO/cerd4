@@ -210,7 +210,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
         </div>
         <Badge variant="outline" className="text-xs whitespace-nowrap">
           <Database className="w-3 h-3 mr-1" />
-          {catalog.length} itens indexados
+          {catalog.length} evidências indexadas
         </Badge>
       </div>
 
