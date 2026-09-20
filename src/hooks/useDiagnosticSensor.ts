@@ -6,6 +6,7 @@ import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvenca
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
+import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
@@ -179,6 +180,8 @@ function inferTendencia(indicador: { nome: string; tendencia: string | null; dad
     if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
     if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
     if (t === 'estavel' || t === 'estável') return 'estavel';
+    if (t.startsWith('melhor')) return 'melhora';
+    if (t.startsWith('pior')) return 'piora';
   }
   return 'desconhecida';
 }
@@ -204,8 +207,8 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         .order('created_at', { ascending: true })
         .order('id', { ascending: true });
       if (error) throw error;
-      const all = data || [];
-      const codigos = buildIndicadorCodigoMap(all);
+      const all = withTendenciaPadrao(data || []);
+      const codigos = buildIndicadorCodigoMap(all as any);
       return all
         .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
         .filter(isEvidenceEligibleIndicator);

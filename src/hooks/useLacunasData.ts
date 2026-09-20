@@ -161,7 +161,7 @@ export function useIndicadoresInterseccionais(categoria?: string) {
         .order('id', { ascending: true });
 
       if (error) throw error;
-      const all = (data || []) as unknown as IndicadorInterseccional[];
+      const all = withTendenciaPadrao((data || []) as unknown as IndicadorInterseccional[]);
       const codigos = buildIndicadorCodigoMap(all);
       const enriched = all.map(i => ({ ...i, codigo: codigos.get(i.id) || '' }));
       return categoria ? enriched.filter(i => i.categoria === categoria) : enriched;
@@ -188,7 +188,7 @@ export function useIndicadoresAnaliticos() {
         .order('created_at', { ascending: true })
         .order('id', { ascending: true });
       if (error) throw error;
-      const all = (data || []) as unknown as IndicadorInterseccional[];
+      const all = withTendenciaPadrao((data || []) as unknown as IndicadorInterseccional[]);
       const codigos = buildIndicadorCodigoMap(all);
       return all
         .map(i => ({ ...i, codigo: codigos.get(i.id) || '' }))
