@@ -182,10 +182,10 @@ function dadosDe(nome: string, sub: string | undefined, reg: any, tipo: 'guarda-
 }
 
 function linhaEstat(o: any) {
-  const funcao = /IMPACTO|Impacto Real/.test(o.v.funcao) ? 'IMPACTO'
-    : /ESFORÇO/.test(o.v.funcao) ? 'ESFORÇO'
-      : (o.d.funcaoBase.includes('IMPACTO') ? 'IMPACTO' : 'ESFORÇO');
+  // Tendência e função seguem a MESMA regra: só há impacto quando há série
+  // histórica (dois anos medidos). Sem série => esforço.
   const temSerie = ['melhorou', 'piorou', 'estável'].includes(o.d.tendRecalc);
+  const funcao = temSerie ? 'IMPACTO' : 'ESFORÇO';
   return {
     'Código': o.codigo, 'Tipo': o.tipo, 'Título da evidência': o.titulo, 'sub': o.sub, 'Guarda-chuva': o.gc,
     'Aba / Categoria': o.aba, 'Localização no sistema': o.loc, 'Link no sistema (CERD IV)': o.url,
