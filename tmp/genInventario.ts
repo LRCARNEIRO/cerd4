@@ -13,6 +13,8 @@ const norm = (s: unknown) => String(s || '').normalize('NFD').replace(/[\u0300-\
 const all: any[] = JSON.parse(readFileSync('/tmp/indicadores_interseccionais.json', 'utf8'));
 const vincs: any[] = JSON.parse(readFileSync('/tmp/vinculos.json', 'utf8'));
 const norms: any[] = JSON.parse(readFileSync('/tmp/documentos_normativos.json', 'utf8'));
+const lac: any[] = JSON.parse(readFileSync('/tmp/lacunas.json', 'utf8'));
+const recLabel = new Map<string, string>(lac.map((l: any) => [l.id, /^\d+$/.test(String(l.paragrafo)) ? `§${l.paragrafo}` : String(l.paragrafo || '—')]));
 const orc: any[] = JSON.parse(readFileSync('/tmp/dados_orcamentarios.json', 'utf8'));
 
 all.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)) || String(a.id).localeCompare(String(b.id)));
@@ -35,7 +37,7 @@ const ALIAS_VINC: Record<string, string> = {
 function vinc(base: string, nome: string) {
   const alias = Object.entries(ALIAS_VINC).filter(([, t]) => norm(t) === norm(nome)).map(([k]) => k).filter((k) => k !== norm(nome));
   const list = [...(vByKey.get(`${base}|${norm(nome)}`) || []), ...alias.flatMap((k) => vByKey.get(`${base}|${k}`) || [])];
-  const recs = [...new Set(list.map((v) => v.recomendacao_id))].sort();
+  const recs = [...new Set(list.map((v) => recLabel.get(v.recomendacao_id) || v.recomendacao_id))].sort((a, b) => a.localeCompare(b, 'pt', { numeric: true }));
   const arts = [...new Set(list.map((v) => v.artigo).filter(Boolean))].sort();
   const fn = [...new Set(list.map((v) => v.funcao_metodo).filter(Boolean))];
   return { recs: recs.join(', ') || '—', arts: arts.join(', ') || '—', funcao: fn.join(' / ') || '—', n: list.length };
