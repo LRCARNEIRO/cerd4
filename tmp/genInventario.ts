@@ -26,8 +26,15 @@ vincs.forEach((v) => {
   const k = `${v.base}|${norm(v.nome)}`;
   (vByKey.get(k) || vByKey.set(k, []).get(k)!).push(v);
 });
+const ALIAS_VINC: Record<string, string> = {
+  'indigenas': 'Povos indígenas — Censo 2022',
+  'ciganos/roma': 'Ciganos/Roma — lacuna de dados',
+  'populacao carceraria por raca/cor': 'População carcerária por raça/cor',
+  'disparidades interseccionais pcd': 'Disparidades PcD 14-59 anos por raça',
+};
 function vinc(base: string, nome: string) {
-  const list = vByKey.get(`${base}|${norm(nome)}`) || [];
+  const alias = Object.entries(ALIAS_VINC).filter(([, t]) => norm(t) === norm(nome)).map(([k]) => k);
+  const list = [...(vByKey.get(`${base}|${norm(nome)}`) || []), ...alias.flatMap((k) => vByKey.get(`${base}|${k}`) || [])];
   const recs = [...new Set(list.map((v) => v.recomendacao_id))].sort();
   const arts = [...new Set(list.map((v) => v.artigo).filter(Boolean))].sort();
   const fn = [...new Set(list.map((v) => v.funcao_metodo).filter(Boolean))];
@@ -132,7 +139,7 @@ const orcamento = orc.map((o) => {
     'Tipo de dotação': o.tipo_dotacao || '—', 'Dotação autorizada': o.dotacao_autorizada,
     'Empenhado': o.empenhado, 'Liquidado': o.liquidado, 'Pago': o.pago, '% execução': o.percentual_execucao,
     'Eixo temático': o.eixo_tematico || '—', 'Grupo focal': o.grupo_focal || '—',
-    'Recomendações vinculadas (§)': v.recs, 'Artigos ICERD': v.arts, 'Nº de vínculos': v.n,
+    'Recomendações vinculadas (§)': v.recs, 'Artigos ICERD': v.arts, 'Nº de vínculos (do programa)': v.n,
     'Público-alvo': o.publico_alvo || '—',
     'Localização no sistema': `Orçamento › Universo da Base › ${o.programa} (${o.ano})`,
     'Link no sistema (CERD IV)': `${BASE}/orcamento?tab=universo`,
