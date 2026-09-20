@@ -89,6 +89,32 @@ const statusLabels: Record<string, string> = {
 export function FontesDadosTab() {
   return (
     <div className="space-y-6">
+      {/* Inventário consolidado das 3 bases */}
+      <Card className="border-l-4 border-l-primary">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Download className="w-5 h-5 text-primary" />
+            Inventário das 3 Bases de Evidências
+          </CardTitle>
+          <CardDescription>
+            Planilha auditada com 278 evidências estatísticas, 32 normativas e 204 orçamentárias —
+            com código, localização no sistema, fonte, série histórica, tendência padronizada
+            (melhorou · estável · piorou), função no método (esforço/impacto) e recomendações vinculadas.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-3">
+          <Button asChild>
+            <a href={inventarioAsset.url} download={inventarioAsset.original_filename}>
+              <Download className="w-4 h-4 mr-2" />
+              Baixar inventário (XLSX)
+            </a>
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            {inventarioAsset.original_filename} · {(inventarioAsset.size / 1024).toFixed(0)} KB
+          </span>
+        </CardContent>
+      </Card>
+
       {/* Resumo de integração */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-success">
