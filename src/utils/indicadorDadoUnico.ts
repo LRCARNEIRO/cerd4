@@ -46,20 +46,33 @@ function tokensDe(...partes: Array<string | null | undefined>): string[] {
     .split(/[^a-z0-9]+/)
     .filter((t) => t.length >= 4 && !/^(para|pelo|pela|entre|sobre|total|dados|taxa|indice|censo|anos|por)$/.test(t))
     .map(stem);
-  const expandidos = new Set<string>(brutos);
-  for (const t of brutos) for (const s of SINONIMOS[t] || []) expandidos.add(s);
-  return Array.from(expandidos);
+  const expandidos: string[] = [];
+  for (const t of brutos) if (!expandidos.includes(t)) expandidos.push(t);
+  for (const t of brutos) for (const s of SINONIMOS[t] || []) if (!expandidos.includes(s)) expandidos.push(s);
+  return expandidos;
 }
 
 function chaveNormalizada(k: string): string {
   return norm(k.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ')).replace(/[^a-z0-9]/g, '');
 }
 
+/**
+ * Peso por posição: o termo que abre o título do bloco identifica o assunto
+ * principal ("Letalidade policial — % de negros entre vítimas" é letalidade,
+ * não vítimas). Sem isso, blocos irmãos do mesmo guarda-chuva empatavam e a
+ * série exibida podia ser a do bloco vizinho.
+ */
+function pesoToken(idx: number): number {
+  return 1 + Math.max(0, 3 - idx) * 0.25;
+}
+
 /** Pontua o quanto uma chave do JSON corresponde ao bloco procurado. */
 function pontuar(chave: string, tokens: string[], preferirNegro: boolean): number {
   const kn = chaveNormalizada(chave);
   let score = 0;
-  for (const t of tokens) if (kn.includes(t)) score += 1;
+  tokens.forEach((t, idx) => {
+    if (kn.includes(t)) score += pesoToken(idx);
+  });
   if (score === 0) return 0;
   const temNegro = /negr|pret/.test(kn);
   const temBranco = /branc/.test(kn);
@@ -79,6 +92,7 @@ function melhorChave(chaves: string[], tokens: string[], preferirNegro = true): 
   }
   return melhor?.k;
 }
+
 
 export interface IndicadorRegistroLite {
   id?: string;
