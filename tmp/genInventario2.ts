@@ -125,14 +125,36 @@ function dadosDe(nome: string, sub: string | undefined, reg: any, tipo: 'guarda-
 
   let tendRecalc = '— (sem série histórica)';
   let baseCalc = flat.nVal === 0 ? 'Sem valores numéricos' : 'Ano único';
-  if (tem === 'sim' && typeof serie?.valorAntigo === 'number' && typeof serie?.valorRecente === 'number') {
-    const delta = serie.valorRecente - serie.valorAntigo;
+  // Guarda contra anos com valor nulo na série (ex.: 2024 sem medição): usa o
+  // último ano efetivamente medido daquele rótulo, em vez de tratar null como 0.
+  let vAnt = serie?.valorAntigo as number | undefined;
+  let vRec = serie?.valorRecente as number | undefined;
+  let aAnt = serie?.anoAntigo as any;
+  let aRec = serie?.anoRecente as any;
+  const rot = (serie as any)?.rotulo as string | undefined;
+  const raw = dados?.series;
+  let ajuste = '';
+  if (rot && raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    const pts = Object.entries(raw)
+      .filter(([ano, v]: any) => /^(19|20)\d{2}$/.test(ano) && v && typeof v === 'object' && typeof (v as any)[rot] === 'number')
+      .map(([ano, v]: any) => [ano, (v as any)[rot] as number] as [string, number])
+      .sort((a, b) => a[0].localeCompare(b[0]));
+    if (pts.length >= 2) {
+      const mudou = String(aRec) !== pts[pts.length - 1][0] || String(aAnt) !== pts[0][0];
+      [aAnt, vAnt] = pts[0];
+      [aRec, vRec] = pts[pts.length - 1];
+      if (mudou) ajuste = ' [ano sem medição descartado]';
+    }
+  }
+  if (tem === 'sim' && typeof vAnt === 'number' && typeof vRec === 'number') {
+    const delta = vRec - vAnt;
     tendRecalc = Math.abs(delta) < 1e-9 ? 'Estável' : ((delta < 0) === menorMelhor ? 'Melhora' : 'Piora');
-    baseCalc = `${serie.rotulo || nome}: ${serie.valorAntigo} (${serie.anoAntigo}) → ${serie.valorRecente} (${serie.anoRecente}); variação ${delta >= 0 ? '+' : ''}${delta.toFixed(2)}; ${polaridade}`;
+    baseCalc = `${rot || nome}: ${vAnt} (${aAnt}) → ${vRec} (${aRec}); variação ${delta >= 0 ? '+' : ''}${delta.toFixed(2)}; ${polaridade}${ajuste}`;
   } else if (tem === 'sim') {
     tendRecalc = '— (série sem valores comparáveis)';
     baseCalc = 'Valores não numéricos';
   }
+
 
   const classe = tipo === 'subindicador'
     ? 'Subindicador (recorte próprio do guarda-chuva)'
