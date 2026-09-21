@@ -53,7 +53,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const [drilldownFocus, setDrilldownFocus] = useState<'recomendacoes' | 'indicadores' | 'orcamento' | 'normativos' | null>(null);
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
   // SSoT compartilhada com os relatórios (aba Conclusões / Produtos)
-  const { analysis, diagnosticMap, artigoEvidencia } = useIcerdArtigoAnalysis({
+  const { analysis, diagnosticMap, artigoEvidencia, curadosTotal } = useIcerdArtigoAnalysis({
     lacunas, fiosCondutores, conclusoes, respostas,
   });
 
@@ -163,7 +163,7 @@ th{background:#f1f5f9}
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
 <p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas, ${totalStatSeries} séries estatísticas.</p>
-<p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a 2.126 registros físicos da base curada (planilha CERD_42_BASE_2126).</p>
+<p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a ${curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada (planilha CERD_42_BASE auditada).</p>
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
@@ -214,7 +214,7 @@ ${analysis.map(a => {
     a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals]);
+  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
 
   return (
     <div className="space-y-6">
@@ -497,7 +497,7 @@ ${analysis.map(a => {
           </CardTitle>
           <CardDescription className="text-xs">
             Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
-            {' '}Matriz auditada: <strong>{matrizTotals.all.toLocaleString('pt-BR')} vínculos</strong> Artigo × Recomendação × Evidência ({matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · {matrizTotals.est.toLocaleString('pt-BR')} estatística · {matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a 2.126 registros físicos da base curada.
+            {' '}Matriz auditada: <strong>{matrizTotals.all.toLocaleString('pt-BR')} vínculos</strong> Artigo × Recomendação × Evidência ({matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · {matrizTotals.est.toLocaleString('pt-BR')} estatística · {matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a {curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
