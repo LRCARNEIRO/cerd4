@@ -31,7 +31,7 @@ export default function Artigos() {
   // SSoT: mesmas evidências usadas em Recomendações, agora agregadas por Artigo.
   const { data: recomendacoes } = useLacunasIdentificadas({});
   const [evidenceOverrides] = useEvidenceOverrides();
-  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos, artigoEvidencia } =
+  const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos, artigoEvidencia, curadosTotal } =
     useDiagnosticSensor(recomendacoes, evidenceOverrides);
 
   return (
@@ -44,6 +44,7 @@ export default function Artigos() {
           recomendacoes={recomendacoes || []}
           diagnosticMap={diagnosticMap}
           artigoEvidencia={artigoEvidencia as any}
+          curadosTotal={curadosTotal}
           rawIndicadores={rawIndicadores}
           rawOrcamento={rawOrcamento}
           rawNormativos={rawNormativos}
