@@ -4,7 +4,6 @@ import { DataSourceCard } from '@/components/dashboard/DataSourceCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
