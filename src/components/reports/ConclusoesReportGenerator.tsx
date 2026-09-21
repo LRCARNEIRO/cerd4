@@ -56,7 +56,7 @@ export function ConclusoesReportGenerator() {
 
   // Aderência ICERD — SSoT compartilhada com o painel da aba Conclusões
   // (curadoria Artigo × Recomendação × Evidência + status computado pelo sensor).
-  const { analysis: icerdAnalysis, artigoEvidencia, diagnosticMap } = useIcerdArtigoAnalysis({
+  const { analysis: icerdAnalysis, artigoEvidencia, diagnosticMap, curadosTotal } = useIcerdArtigoAnalysis({
     lacunas: lacunas || [],
     fiosCondutores,
     conclusoes: conclusoesDinamicas,
@@ -413,7 +413,7 @@ ${retrocessos.map(c => `
     const totAll = totOrc + totEst + totNorm;
     const totRec = icerdData.reduce((s, a) => s + a.total, 0);
     return `<tr style="background:#0f3460;color:#fff;font-weight:700">
-      <td colspan="2">TOTAL — matriz auditada (planilha CERD_42_BASE_2126)</td>
+      <td colspan="2">TOTAL — matriz auditada</td>
       <td style="color:#fff">${totRec}</td>
       <td style="color:#fff">${icerdData.reduce((s, a) => s + a.cumpr, 0)}</td>
       <td style="color:#fff">${icerdData.reduce((s, a) => s + a.parc, 0)}</td>
@@ -426,8 +426,15 @@ ${retrocessos.map(c => `
   </tbody>
 </table>
 <p style="font-size:9px;color:#64748b;margin-top:-6px;">
-  Totais de vínculos por artigo conforme a matriz auditada: I 53 · II 343 · III 393 · IV 16 · V 1.172 · VI 72 · VII 113 = <strong>2.162 ocorrências</strong> Artigo × Recomendação × Evidência
-  (1.145 orçamentárias, 922 estatísticas, 95 normativas). As 2.162 ocorrências correspondem a <strong>2.126 registros físicos</strong> na base curada — 36 linhas valem para dois artigos (23 em I/II e 13 em III/VI) e 18 repetições legítimas da planilha são preservadas.
+  ${(() => {
+    const tOrc = icerdData.reduce((s2, a) => s2 + a.vinculos.orcamentaria, 0);
+    const tEst = icerdData.reduce((s2, a) => s2 + a.vinculos.estatistica, 0);
+    const tNorm = icerdData.reduce((s2, a) => s2 + a.vinculos.normativa, 0);
+    const tAll = tOrc + tEst + tNorm;
+    const porArtigo = icerdData.map(a => `${a.numero} ${(a.vinculos.orcamentaria + a.vinculos.estatistica + a.vinculos.normativa).toLocaleString('pt-BR')}`).join(' · ');
+    return `Totais de vínculos por artigo conforme a matriz auditada: ${porArtigo} = <strong>${tAll.toLocaleString('pt-BR')} ocorrências</strong> Artigo × Recomendação × Evidência
+  (${tOrc.toLocaleString('pt-BR')} orçamentárias, ${tEst.toLocaleString('pt-BR')} estatísticas, ${tNorm.toLocaleString('pt-BR')} normativas). Essas ocorrências correspondem a <strong>${curadosTotal.toLocaleString('pt-BR')} registros físicos</strong> na base curada — as linhas que valem para dois artigos são contadas uma vez em cada um, e as repetições legítimas da planilha são preservadas.`;
+  })()}
 </p>
 
 ${icerdData.map(a => `

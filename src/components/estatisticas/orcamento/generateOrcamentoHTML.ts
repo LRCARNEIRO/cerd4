@@ -118,7 +118,7 @@ export function generateUniversoBaseHTML(records: DadoOrcamentario[]): string {
     fileName: 'Orcamento-Universo-Base',
     content: `
       <div class="data-grid">
-        <div class="data-card"><div class="data-card-value">${records.length}</div><div class="data-card-label">Total Registros</div></div>
+        <div class="data-card"><div class="data-card-value">${records.length}</div><div class="data-card-label">Registros (Ação × Ano)</div></div>
         <div class="data-card"><div class="data-card-value">${orgaos.size}</div><div class="data-card-label">Órgãos</div></div>
         <div class="data-card"><div class="data-card-value">${programas.size}</div><div class="data-card-label">Programas</div></div>
         <div class="data-card"><div class="data-card-value">${orcRecs.length}</div><div class="data-card-label">Orçamentários</div></div>

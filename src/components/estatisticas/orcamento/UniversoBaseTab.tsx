@@ -200,7 +200,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         <CardContent>
           <div className="flex flex-wrap gap-3 mb-4">
             <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">{new Set(records.map(r => r.programa)).size} programas distintos</Badge>
-            <Badge className="text-sm px-3 py-1 bg-muted text-foreground border-border">{records.length} ações/registros totais</Badge>
+            <Badge className="text-sm px-3 py-1 bg-muted text-foreground border-border">{records.length} registros (Ação × Ano)</Badge>
           </div>
           <div className="overflow-auto">
             <Table>
