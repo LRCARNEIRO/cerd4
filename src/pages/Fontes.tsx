@@ -139,11 +139,36 @@ export default function Fontes() {
               <h2 className="font-bold text-lg">Catálogo de Fontes Oficiais</h2>
               <p className="text-sm text-primary-foreground/80 mt-1">
                 Este catálogo reúne as principais bases de dados oficiais brasileiras com informações 
-                desagregadas por raça/cor, necessárias para atualização do Common Core Document 
-                e elaboração do IV Relatório CERD (2018-2025).
+                desagregadas por raça/cor, utilizadas na elaboração do IV Relatório CERD (2018-2025).
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Inventário consolidado das 3 bases */}
+      <Card className="mb-6 border-l-4 border-l-primary">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Download className="w-5 h-5 text-primary" />
+            Inventário das 3 Bases de Evidências
+          </CardTitle>
+          <CardDescription>
+            Planilha auditada com as evidências estatísticas, normativas e orçamentárias —
+            com código, localização no sistema, fonte, série histórica, tendência padronizada
+            (melhorou · estável · piorou), função no método (esforço/impacto) e recomendações vinculadas.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-3">
+          <Button asChild>
+            <a href={inventarioAsset.url} download={inventarioAsset.original_filename}>
+              <Download className="w-4 h-4 mr-2" />
+              Baixar inventário (XLSX)
+            </a>
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            {inventarioAsset.original_filename} · {(inventarioAsset.size / 1024).toFixed(0)} KB
+          </span>
         </CardContent>
       </Card>
 
@@ -200,7 +225,7 @@ export default function Fontes() {
 
       {/* Fontes Oficiais com Status de Integração */}
       <h2 className="text-lg font-semibold mt-8 mb-4">Fontes Oficiais por Área Temática — Status de Integração</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border-l-4 border-l-success">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
@@ -228,19 +253,8 @@ export default function Fontes() {
             <div className="flex items-center gap-2">
               <Database className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-xs text-muted-foreground">Indicadores no BD</p>
-                <p className="text-2xl font-bold">78</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-accent">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-accent" />
-              <div>
-                <p className="text-xs text-muted-foreground">Common Core (%)</p>
-                <p className="text-2xl font-bold">81%</p>
+                <p className="text-xs text-muted-foreground">Evidências Estatísticas</p>
+                <p className="text-2xl font-bold">278</p>
               </div>
             </div>
           </CardContent>
