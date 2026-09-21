@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
 
 const additionalSources = [
   {
@@ -99,13 +100,6 @@ const fontesOficiais = [
   ]},
 ];
 
-const indicadoresCommonCore = [
-  { secao: 'I.A', titulo: 'Características demográficas', indicadores: 12, integrados: 10 },
-  { secao: 'I.B', titulo: 'Indicadores socioeconômicos', indicadores: 18, integrados: 15 },
-  { secao: 'II.A', titulo: 'Sistema político', indicadores: 8, integrados: 6 },
-  { secao: 'II.B', titulo: 'Estrutura institucional', indicadores: 10, integrados: 8 },
-  { secao: 'III', titulo: 'Quadro jurídico', indicadores: 15, integrados: 12 },
-];
 
 const statusColors: Record<string, string> = {
   integrado: 'bg-success text-success-foreground',
@@ -130,7 +124,7 @@ export default function Fontes() {
   return (
     <DashboardLayout
       title="Fontes de Dados"
-      subtitle="Bases oficiais para atualização do Common Core e relatório CERD"
+      subtitle="Bases oficiais das evidências do IV Relatório CERD (2018-2025)"
     >
       <div className="flex justify-end mb-3">
         <ExportTabButtons targetSelector="#export-fontes-dados" fileName="Fontes-de-Dados" compact />
