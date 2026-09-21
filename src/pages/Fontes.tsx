@@ -4,11 +4,11 @@ import { DataSourceCard } from '@/components/dashboard/DataSourceCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from 'react';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
 
 const additionalSources = [
   {
@@ -99,13 +99,6 @@ const fontesOficiais = [
   ]},
 ];
 
-const indicadoresCommonCore = [
-  { secao: 'I.A', titulo: 'Características demográficas', indicadores: 12, integrados: 10 },
-  { secao: 'I.B', titulo: 'Indicadores socioeconômicos', indicadores: 18, integrados: 15 },
-  { secao: 'II.A', titulo: 'Sistema político', indicadores: 8, integrados: 6 },
-  { secao: 'II.B', titulo: 'Estrutura institucional', indicadores: 10, integrados: 8 },
-  { secao: 'III', titulo: 'Quadro jurídico', indicadores: 15, integrados: 12 },
-];
 
 const statusColors: Record<string, string> = {
   integrado: 'bg-success text-success-foreground',
@@ -130,7 +123,7 @@ export default function Fontes() {
   return (
     <DashboardLayout
       title="Fontes de Dados"
-      subtitle="Bases oficiais para atualização do Common Core e relatório CERD"
+      subtitle="Bases oficiais das evidências do IV Relatório CERD (2018-2025)"
     >
       <div className="flex justify-end mb-3">
         <ExportTabButtons targetSelector="#export-fontes-dados" fileName="Fontes-de-Dados" compact />
@@ -145,11 +138,36 @@ export default function Fontes() {
               <h2 className="font-bold text-lg">Catálogo de Fontes Oficiais</h2>
               <p className="text-sm text-primary-foreground/80 mt-1">
                 Este catálogo reúne as principais bases de dados oficiais brasileiras com informações 
-                desagregadas por raça/cor, necessárias para atualização do Common Core Document 
-                e elaboração do IV Relatório CERD (2018-2025).
+                desagregadas por raça/cor, utilizadas na elaboração do IV Relatório CERD (2018-2025).
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Inventário consolidado das 3 bases */}
+      <Card className="mb-6 border-l-4 border-l-primary">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Download className="w-5 h-5 text-primary" />
+            Inventário das 3 Bases de Evidências
+          </CardTitle>
+          <CardDescription>
+            Planilha auditada com as evidências estatísticas, normativas e orçamentárias —
+            com código, localização no sistema, fonte, série histórica, tendência padronizada
+            (melhorou · estável · piorou), função no método (esforço/impacto) e recomendações vinculadas.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-center gap-3">
+          <Button asChild>
+            <a href={inventarioAsset.url} download={inventarioAsset.original_filename}>
+              <Download className="w-4 h-4 mr-2" />
+              Baixar inventário (XLSX)
+            </a>
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            {inventarioAsset.original_filename} · {(inventarioAsset.size / 1024).toFixed(0)} KB
+          </span>
         </CardContent>
       </Card>
 
@@ -206,7 +224,7 @@ export default function Fontes() {
 
       {/* Fontes Oficiais com Status de Integração */}
       <h2 className="text-lg font-semibold mt-8 mb-4">Fontes Oficiais por Área Temática — Status de Integração</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border-l-4 border-l-success">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
@@ -234,19 +252,8 @@ export default function Fontes() {
             <div className="flex items-center gap-2">
               <Database className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-xs text-muted-foreground">Indicadores no BD</p>
-                <p className="text-2xl font-bold">78</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-l-4 border-l-accent">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-accent" />
-              <div>
-                <p className="text-xs text-muted-foreground">Common Core (%)</p>
-                <p className="text-2xl font-bold">81%</p>
+                <p className="text-xs text-muted-foreground">Evidências Estatísticas</p>
+                <p className="text-2xl font-bold">278</p>
               </div>
             </div>
           </CardContent>
@@ -290,51 +297,6 @@ export default function Fontes() {
           </div>
         ))}
       </div>
-
-      {/* Cobertura Common Core */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            Cobertura do Common Core Document (HRI/CORE)
-          </CardTitle>
-          <CardDescription>Indicadores exigidos pela ONU vs. integrados no sistema</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Seção</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead className="text-right">Exigidos</TableHead>
-                <TableHead className="text-right">Integrados</TableHead>
-                <TableHead className="text-right">Cobertura</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {indicadoresCommonCore.map(item => (
-                <TableRow key={item.secao}>
-                  <TableCell className="font-mono font-medium">{item.secao}</TableCell>
-                  <TableCell>{item.titulo}</TableCell>
-                  <TableCell className="text-right">{item.indicadores}</TableCell>
-                  <TableCell className="text-right text-success font-medium">{item.integrados}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={item.integrados / item.indicadores >= 0.8 ? 'default' : 'secondary'}>
-                      {Math.round(item.integrados / item.indicadores * 100)}%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              <TableRow className="font-bold bg-muted/50">
-                <TableCell colSpan={2}>Total</TableCell>
-                <TableCell className="text-right">{indicadoresCommonCore.reduce((acc, i) => acc + i.indicadores, 0)}</TableCell>
-                <TableCell className="text-right text-success">{indicadoresCommonCore.reduce((acc, i) => acc + i.integrados, 0)}</TableCell>
-                <TableCell className="text-right"><Badge>81%</Badge></TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
 
       {/* Nota Metodológica */}
       <Card className="border-l-4 border-l-warning mb-8">
