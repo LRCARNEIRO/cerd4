@@ -60,7 +60,7 @@ function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0];
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">{records.length} reg.</Badge>
+            <Badge variant="secondary" className="text-xs" title="Registros Ação × Ano vinculados a este artigo">{records.length} registros (Ação × Ano)</Badge>
             {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
           </div>
         </div>
