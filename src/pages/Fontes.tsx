@@ -225,15 +225,75 @@ export default function Fontes() {
       </Card>
 
       {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar fonte de dados..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 max-w-md"
-        />
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar pelo título do indicador, fonte ou órgão (ex.: mortalidade materna, ODS Racial, SIDRA...)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 max-w-2xl"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          A busca cruza a Base Estatística com o catálogo: ao digitar o título de um indicador, o sistema
+          mostra a fonte de origem à qual sua URL principal está vinculada.
+        </p>
       </div>
+
+      {/* Fontes derivadas da Base Estatística */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+        <h2 className="text-lg font-semibold">Fontes de Origem das Evidências Estatísticas</h2>
+        <span className="text-xs text-muted-foreground">
+          {loadingIndicadores
+            ? 'Carregando base…'
+            : `${fontesDaBase.length} fontes · ${totalEvidenciasComFonte} evidências com URL de origem`}
+        </span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {fontesFiltradas.length === 0 && !loadingIndicadores && (
+          <p className="text-sm text-muted-foreground">Nenhuma fonte encontrada para "{searchTerm}".</p>
+        )}
+        {fontesFiltradas.map(fonte => {
+          const lista = termo ? fonte.destacados : fonte.indicadores;
+          return (
+            <Card key={fonte.host} className="border-l-4 border-l-primary/60">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-start gap-2">
+                  <Globe className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <span>{fonte.nome}</span>
+                </CardTitle>
+                <CardDescription className="flex flex-wrap items-center gap-2">
+                  <span>{fonte.orgao}</span>
+                  <Badge variant="outline" className="text-[10px]">{fonte.indicadores.length} evidência(s)</Badge>
+                  <span className="font-mono text-[10px]">{fonte.host}</span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+                  {lista.map((ind, i) => (
+                    <li key={`${ind.codigo || ind.nome}-${i}`} className="text-xs">
+                      <a
+                        href={ind.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-1.5 hover:text-primary transition-colors"
+                      >
+                        {ind.codigo && (
+                          <Badge variant="secondary" className="text-[10px] font-mono px-1 py-0 shrink-0">{ind.codigo}</Badge>
+                        )}
+                        <span className="flex-1">{ind.nome}</span>
+                        <ExternalLink className="w-3 h-3 mt-0.5 shrink-0 text-muted-foreground" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
 
       {/* Main Data Sources */}
       <h2 className="text-lg font-semibold mb-4">Bases Principais com Acesso Automatizado</h2>
