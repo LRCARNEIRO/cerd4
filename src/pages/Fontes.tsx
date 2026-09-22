@@ -4,7 +4,10 @@ import { DataSourceCard } from '@/components/dashboard/DataSourceCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { portalFromUrl } from '@/utils/fonteOrigem';
+import { isDuplicata } from '@/utils/indicadorAliases';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
@@ -110,14 +113,64 @@ const statusLabels: Record<string, string> = {
   parcial: 'Parcial',
   pendente: 'Pendente',
 };
+interface FonteEvidencia {
+  host: string;
+  nome: string;
+  orgao: string;
+  urls: Set<string>;
+  indicadores: Array<{ codigo?: string; nome: string; fonte?: string; url: string }>;
+}
+
 export default function Fontes() {
   const [searchTerm, setSearchTerm] = useState('');
+  const { data: indicadores = [], isLoading: loadingIndicadores } = useIndicadoresInterseccionais();
+
+  // Catálogo dinâmico: toda URL original registrada na Base Estatística vira fonte listada.
+  const fontesDaBase = useMemo(() => {
+    const mapa = new Map<string, FonteEvidencia>();
+    (indicadores as any[]).forEach((ind) => {
+      const url: string | undefined = ind.url_fonte || undefined;
+      const portal = portalFromUrl(url);
+      if (!portal || !url) return;
+      if (isDuplicata(ind.codigo)) return;
+      const atual = mapa.get(portal.host) || {
+        host: portal.host,
+        nome: portal.nome,
+        orgao: portal.orgao,
+        urls: new Set<string>(),
+        indicadores: [],
+      };
+      atual.urls.add(url);
+      atual.indicadores.push({ codigo: ind.codigo, nome: ind.nome, fonte: ind.fonte, url });
+      mapa.set(portal.host, atual);
+    });
+    return Array.from(mapa.values())
+      .map(f => ({ ...f, indicadores: f.indicadores.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')) }))
+      .sort((a, b) => b.indicadores.length - a.indicadores.length);
+  }, [indicadores]);
+
+  const termo = searchTerm.trim().toLowerCase();
+  const matchTexto = (...campos: Array<string | undefined>) =>
+    campos.some(c => (c || '').toLowerCase().includes(termo));
+
+  // Busca por título do indicador → filtra a fonte (URL principal) vinculada a ele.
+  const fontesFiltradas = useMemo(() => {
+    if (!termo) return fontesDaBase.map(f => ({ ...f, destacados: [] as typeof f.indicadores }));
+    return fontesDaBase
+      .map(f => {
+        const destacados = f.indicadores.filter(i => matchTexto(i.nome, i.codigo, i.fonte));
+        const portalBate = matchTexto(f.nome, f.orgao, f.host);
+        if (!destacados.length && !portalBate) return null;
+        return { ...f, destacados: destacados.length ? destacados : f.indicadores };
+      })
+      .filter(Boolean) as Array<FonteEvidencia & { destacados: FonteEvidencia['indicadores'] }>;
+  }, [fontesDaBase, termo]);
+
+  const totalEvidenciasComFonte = fontesDaBase.reduce((acc, f) => acc + f.indicadores.length, 0);
 
   const filteredSources = dataSources.filter(source =>
-    searchTerm === '' ||
-    source.sigla.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    source.nomeCompleto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    source.orgaoResponsavel.toLowerCase().includes(searchTerm.toLowerCase())
+    termo === '' ||
+    matchTexto(source.sigla, source.nomeCompleto, source.orgaoResponsavel)
   );
 
   return (
