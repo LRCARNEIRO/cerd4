@@ -6,7 +6,7 @@ import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvenca
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
+import { withTendenciaPadrao, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
