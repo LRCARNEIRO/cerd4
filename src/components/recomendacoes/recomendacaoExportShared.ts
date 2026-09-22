@@ -16,7 +16,7 @@ export interface ExportLookupMaps {
   indicadorCodigoByNome: Map<string, string>;
   /** registro completo (id, código, dados) indexado pelo nome normalizado */
   indicadorRegByNome: Map<string, { id?: string; codigo?: string | null; nome?: string; dados?: any; tendencia?: string | null }>;
-  normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
+  normativoMetaByTitulo: Map<string, { id?: string | null; url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   orcamentoMetaByKey: Map<string, any>;
   orcamentoMetaById: Map<string, any>;
   origin: string;
@@ -74,7 +74,7 @@ export function buildExportLookups(
   const normativoMetaByTitulo = new Map<string, any>();
   for (const n of rawNormativos || []) {
     if (n?.titulo) normativoMetaByTitulo.set(n.titulo, {
-      url_origem: n.url_origem, categoria: n.categoria, created_at: n.created_at,
+      id: n.id, url_origem: n.url_origem, categoria: n.categoria, created_at: n.created_at,
     });
   }
 
