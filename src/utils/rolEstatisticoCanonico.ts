@@ -67,7 +67,12 @@ export function buildRolEstatistico(indicadores: any[] | null | undefined): RolE
       titulo: s.titulo,
       detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
       fonte: umbrella?.fonte || '',
-      tendencia: '—',
+      tendencia: tendenciaLabel({
+        nome: s.titulo,
+        categoria: umbrella?.categoria,
+        dados: umbrella?.dados,
+        sub: s.sub,
+      }),
       artigos: (umbrella?.artigos_convencao || []).join(', ') || '—',
       categoria: s.abaLabel || 'outros',
       searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),
