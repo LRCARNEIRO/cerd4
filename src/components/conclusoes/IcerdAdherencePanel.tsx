@@ -124,8 +124,6 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const menosPriorizados = sorted.slice(-3).reverse();
 
   const avgEsforco = analysis.reduce((s, a) => s + a.esforcoArtigo, 0) / (analysis.length || 1);
-  // avgAdherencia legado removido — ver Esforço/Impacto v7
-  const avgAdherencia = Math.round(avgEsforco);
 
   // Total data sources summary
   const totalNormativos = documentosNormativosCount;
