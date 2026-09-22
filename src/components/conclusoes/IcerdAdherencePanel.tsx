@@ -332,9 +332,9 @@ ${analysis.map(a => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Radar de Aderência por Artigo</CardTitle>
+            <CardTitle className="text-sm">Radar de Esforço e Impacto por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Escala 0-100 integrando recomendações ONU, normativos, orçamento, indicadores e séries estatísticas
+              Escala 0-100 — Esforço (volume de evidências vinculadas) e Impacto Evidenciado (Esforço × Realização)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -344,7 +344,9 @@ ${analysis.map(a => {
                   <PolarGrid stroke="hsl(var(--border))" />
                   <PolarAngleAxis dataKey="artigo" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Radar name="Aderência (%)" dataKey="aderencia" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} strokeWidth={2} isAnimationActive={false} />
+                  <Radar name="Esforço" dataKey="esforco" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.2} strokeWidth={2} isAnimationActive={false} />
+                  <Radar name="Impacto" dataKey="impacto" stroke="hsl(var(--chart-2))" fill="hsl(var(--chart-2))" fillOpacity={0.25} strokeWidth={2} isAnimationActive={false} />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                 </RadarChart>
               </ResponsiveContainer>
