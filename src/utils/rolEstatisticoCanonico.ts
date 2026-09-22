@@ -11,6 +11,7 @@
  */
 import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
 import { isDuplicata } from '@/utils/indicadorAliases';
+import { tendenciaLabel } from '@/utils/tendenciaPadronizada';
 
 export type EvidenciaEstatistica = {
   key: string;
@@ -51,7 +52,7 @@ export function buildRolEstatistico(indicadores: any[] | null | undefined): RolE
       titulo: i.nome,
       detalhe: i.subcategoria || '—',
       fonte: i.fonte || '',
-      tendencia: i.tendencia || '—',
+      tendencia: tendenciaLabel({ nome: i.nome, categoria: i.categoria, dados: i.dados }),
       artigos: (i.artigos_convencao || []).join(', ') || '—',
       categoria: i.categoria || 'outros',
       searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
@@ -66,7 +67,12 @@ export function buildRolEstatistico(indicadores: any[] | null | undefined): RolE
       titulo: s.titulo,
       detalhe: `sub: ${s.sub} — ${s.guardaChuva}`,
       fonte: umbrella?.fonte || '',
-      tendencia: '—',
+      tendencia: tendenciaLabel({
+        nome: s.titulo,
+        categoria: umbrella?.categoria,
+        dados: umbrella?.dados,
+        sub: s.sub,
+      }),
       artigos: (umbrella?.artigos_convencao || []).join(', ') || '—',
       categoria: s.abaLabel || 'outros',
       searchText: [s.titulo, s.sub, s.guardaChuva, ...(s.aliases || [])].filter(Boolean).join(' '),

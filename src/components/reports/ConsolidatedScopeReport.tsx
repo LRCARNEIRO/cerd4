@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { tendenciaLabel } from '@/utils/tendenciaPadronizada';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -388,7 +389,7 @@ function generateConsolidatedHTML(data: {
       <td>${ind.nome}</td>
       <td>${ind.categoria}</td>
       <td>${ind.fonte}</td>
-      <td>${ind.tendencia || '—'}</td>
+      <td>${tendenciaLabel(ind)}</td>
       <td>${ind.desagregacao_raca ? '✅' : '❌'}</td>
       <td>${ind.desagregacao_genero ? '✅' : '❌'}</td>
     </tr>`).join('')}

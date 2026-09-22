@@ -10,6 +10,7 @@
  * vinculação por Artigos ICERD + Eixo Temático + Grupo Focal + Keywords.
  */
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 
 interface IndicadorRow {
   nome: string;
@@ -124,14 +125,13 @@ function isLowerBetter(nome: string): boolean {
 }
 
 
+/** Sempre recalculada pelos dados (série histórica + polaridade). */
 function inferTendencia(ind: IndicadorRow): string {
-  if (!ind.tendencia) return 'desconhecida';
-  const t = ind.tendencia.toLowerCase();
-  const lowerBetter = isLowerBetter(ind.nome);
-  if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
-  if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
-  if (t === 'estavel' || t === 'estável') return 'estável';
-  return 'desconhecida';
+  const t = tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: (ind as any).dados });
+  if (t === 'melhorou') return 'melhora';
+  if (t === 'piorou') return 'piora';
+  if (t === 'estável') return 'estável';
+  return 'sem série histórica';
 }
 
 /**
@@ -234,8 +234,10 @@ export function generateDynamicJustificativa(
     const tendencias = inds.map(i => inferTendencia(i));
     const melhoram = tendencias.filter(t => t === 'melhora').length;
     const pioram = tendencias.filter(t => t === 'piora').length;
-    if (melhoram > 0 || pioram > 0) {
-      parts.push(`Tendências: ${melhoram} melhora(s), ${pioram} piora(s)`);
+    const estaveis = tendencias.filter(t => t === 'estável').length;
+    const semSerie = tendencias.filter(t => t === 'sem série histórica').length;
+    if (melhoram > 0 || pioram > 0 || estaveis > 0) {
+      parts.push(`Tendências (recalculadas pelos dados): ${melhoram} melhorou, ${estaveis} estável, ${pioram} piorou${semSerie > 0 ? `, ${semSerie} sem série histórica` : ''}`);
     }
   } else {
     parts.push('Sem indicadores estatísticos vinculados no sistema');

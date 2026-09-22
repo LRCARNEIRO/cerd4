@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { tendenciaLabel } from '@/utils/tendenciaPadronizada';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
@@ -132,7 +133,7 @@ export function RelacaoRecomendacoesTab() {
           📊 Est: ${ei.contagens.estatistica} (${ei.contagens.favoraveis} não desfavorável(is) de ${ei.contagens.comTendencia} com série)<br/>
           💰 Orç: ${ei.contagens.orcamentaria} ações, execução ${formatScore(ei.componentes.realizacaoOrcamentaria)}%<br/>
           📋 Norm: ${ei.contagens.normativa}<br/>
-          ${diag?.linkedIndicadores?.slice(0, 5).map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || ''}
+          ${diag?.linkedIndicadores?.slice(0, 5).map(i => `• ${i.nome} (${tendenciaLabel({ nome: i.nome, categoria: (i as any).categoria, dados: i.dados, sub: (i as any).sub })})`).join('<br/>') || ''}
           ${diag?.linkedNormativos?.slice(0, 5).map(n => `• ${n.titulo}`).join('<br/>') || ''}
           ${diag?.linkedOrcamento?.slice(0, 5).map(o => `• ${o.programa} (${o.orgao}, ${o.ano})`).join('<br/>') || ''}
         </div>

@@ -1,6 +1,7 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS, IMPORTANT_SHORT_KEYWORDS } from '@/utils/recommendationKeywordConcepts';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 
 /**
  * PRODUTO 2 — PROTOCOLO METODOLÓGICO DE GOVERNANÇA (LEGADO E MÉTODO)
@@ -90,7 +91,7 @@ export function generateProtocoloGovernancaHTML(data: ProtocoloGovernancaData): 
     .join('');
   const auditados = indicadores.filter((i) => i.auditado_manualmente).length;
   const comUrl = indicadores.filter((i) => i.url_fonte).length;
-  const comTendencia = tally(indicadores, (i) => i.tendencia);
+  const comTendencia = tally(indicadores, (i) => tendenciaPadrao(i as any));
   const indPorArtigo = tally(indicadores, (i) => (Array.isArray(i.artigos_convencao) && i.artigos_convencao.length ? i.artigos_convencao.join(' · ') : null));
 
   /* ─────────── BASE ORÇAMENTÁRIA ─────────── */

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { 
   useLacunasIdentificadas, 
   useLacunasStats, 
@@ -185,7 +186,7 @@ export function useAnalyticalInsights() {
       // efetivamente vinculado (após overrides).
       const evidIndicadores = (diag.linkedIndicadores || []).map((i) => {
         indNomesUsados.add(i.nome);
-        const tend = i.tendencia ? ` [${i.tendencia}]` : '';
+        const tend = ` [${tendenciaLabel({ nome: i.nome, categoria: (i as any).categoria, dados: (i as any).dados, sub: (i as any).sub })}]`;
         return `📊 ${i.nome}${tend}`;
       });
       const evidOrcamento = (diag.linkedOrcamento || []).map((o) => {
@@ -594,8 +595,8 @@ function gerarFiosCondutores(
 
   // FIO 11: ODS Racial — Agenda 2030 e Desigualdade Racial
   if (odsRacialIndicadores.length > 0) {
-    const odsCrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'crescente').length;
-    const odsDecrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'decrescente').length;
+    const odsCrescentes = odsRacialIndicadores.filter(i => tendenciaPadrao(i as any) === 'melhorou').length;
+    const odsDecrescentes = odsRacialIndicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
     const evidOds: EvidenciaDinamica[] = odsRacialIndicadores.slice(0, 6).map(i => ({
       texto: `${i.nome}: tendência ${i.tendencia || 'sem dados'}`,
       fonte: i.fonte,
@@ -606,7 +607,7 @@ function gerarFiosCondutores(
       id: 'ods-racial-agenda-2030',
       titulo: 'ODS e Desigualdade Racial: Agenda 2030 sob Perspectiva Étnico-Racial',
       tipo: odsDecrescentes > odsCrescentes ? 'retrocesso' : 'correlacao',
-      argumento: `${odsRacialIndicadores.length} indicadores ODS desagregados por raça/cor revelam que a Agenda 2030 não avança de forma equitativa para a população negra e indígena. ${odsCrescentes > 0 ? `${odsCrescentes} indicadores mostram tendência positiva.` : ''} ${odsDecrescentes > 0 ? `${odsDecrescentes} indicadores registram retrocesso ou estagnação.` : ''} Os ODS com maior disparidade racial incluem saúde (ODS 3), educação (ODS 4), trabalho (ODS 8), desigualdade (ODS 10) e segurança (ODS 16). Esta análise evidencia que o cumprimento formal dos ODS mascara desigualdades raciais estruturais.`,
+      argumento: `${odsRacialIndicadores.length} indicadores ODS desagregados por raça/cor revelam que a Agenda 2030 não avança de forma equitativa para a população negra e indígena. ${odsCrescentes > 0 ? `${odsCrescentes} indicador(es) melhorou/melhoraram.` : ''} ${odsDecrescentes > 0 ? `${odsDecrescentes} indicador(es) piorou/pioraram.` : ''} Os ODS com maior disparidade racial incluem saúde (ODS 3), educação (ODS 4), trabalho (ODS 8), desigualdade (ODS 10) e segurança (ODS 16). Esta análise evidencia que o cumprimento formal dos ODS mascara desigualdades raciais estruturais.`,
       evidencias: evidOds,
       eixos: ['dados_estatisticas', 'saude', 'educacao', 'trabalho_renda', 'seguranca_publica'],
       grupos: ['negros', 'indigenas'],
@@ -882,16 +883,16 @@ function gerarFiosEmergentes(
     if (titulosFiosExistentes.some(t => t.includes(docLower) || docLower.includes(t.split(':')[0]))) return;
 
     const categoriasCobertas = [...new Set(inds.map(i => i.categoria))];
-    const tendencias = inds.filter(i => i.tendencia === 'crescente').length;
-    const decrescentes = inds.filter(i => i.tendencia === 'decrescente').length;
+    const tendencias = inds.filter(i => tendenciaPadrao(i as any) === 'melhorou').length;
+    const decrescentes = inds.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
 
     novos.push({
       id: `emergente-doc-${doc.replace(/\s+/g, '-').toLowerCase().substring(0, 30)}`,
       titulo: `Marco Normativo "${doc}": Evidências Transversais`,
       tipo: 'correlacao',
-      argumento: `O documento "${doc}" fundamenta ${inds.length} indicadores no banco, abrangendo ${categoriasCobertas.length} categoria(s): ${categoriasCobertas.map(c => eixoLabels[c] || c).join(', ')}. ${tendencias > 0 ? `${tendencias} indicador(es) mostram tendência crescente.` : ''} ${decrescentes > 0 ? `${decrescentes} indicador(es) mostram tendência decrescente, sinalizando áreas de atenção.` : ''} Este marco normativo pode constituir fio condutor próprio na argumentação do relatório, conectando obrigações internacionais a evidências quantitativas.`,
+      argumento: `O documento "${doc}" fundamenta ${inds.length} indicadores no banco, abrangendo ${categoriasCobertas.length} categoria(s): ${categoriasCobertas.map(c => eixoLabels[c] || c).join(', ')}. ${tendencias > 0 ? `${tendencias} indicador(es) melhorou/melhoraram.` : ''} ${decrescentes > 0 ? `${decrescentes} indicador(es) piorou/pioraram, sinalizando áreas de atenção.` : ''} Este marco normativo pode constituir fio condutor próprio na argumentação do relatório, conectando obrigações internacionais a evidências quantitativas.`,
       evidencias: inds.slice(0, 6).map(i => ({
-        texto: `${i.nome}: ${i.tendencia || 'sem tendência definida'}`,
+        texto: `${i.nome}: ${tendenciaLabel(i as any)}`,
         fonte: i.fonte,
         tipo: 'quantitativa' as const,
       })),

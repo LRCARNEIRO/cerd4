@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { tendenciaPadrao, tendenciaSeta, tendenciaCorClasse } from '@/utils/tendenciaPadronizada';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
 
@@ -123,8 +124,9 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
           <p className="text-xs font-semibold text-foreground">📊 Indicadores vinculados ({diagnostic!.linkedIndicadores.length}):</p>
           <div className="grid gap-1">
             {diagnostic!.linkedIndicadores.map((ind, i) => {
-              const tendLabel = ind.tendencia === 'crescente' ? '↑' : ind.tendencia === 'decrescente' ? '↓' : ind.tendencia === 'estavel' || ind.tendencia === 'estável' ? '→' : '?';
-              const tendColor = ind.tendencia === 'crescente' ? 'text-info' : ind.tendencia === 'decrescente' ? 'text-destructive' : 'text-muted-foreground';
+              const tendCalc = tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados });
+              const tendLabel = tendenciaSeta(tendCalc);
+              const tendColor = tendenciaCorClasse(tendCalc);
               
               // Extract most recent value from dados
               let latestValue = '';

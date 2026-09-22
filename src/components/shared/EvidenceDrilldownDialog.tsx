@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { tendenciaPadrao, tendenciaLabelFrom } from '@/utils/tendenciaPadronizada';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -273,13 +274,12 @@ export function EvidenceDrilldownDialog({
                             </TableCell>
                             <TableCell className="text-[10px] text-muted-foreground">{ind.categoria}</TableCell>
                             <TableCell>
-                              {ind.tendencia === 'crescente' ? (
-                                <span className="flex items-center gap-1 text-[10px] text-success"><TrendingUp className="w-3 h-3" /> Crescente</span>
-                              ) : ind.tendencia === 'decrescente' ? (
-                                <span className="flex items-center gap-1 text-[10px] text-destructive"><TrendingDown className="w-3 h-3" /> Decrescente</span>
-                              ) : (
-                                <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Minus className="w-3 h-3" /> {ind.tendencia || 'N/D'}</span>
-                              )}
+                              {(() => {
+                                const t = tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados, sub: (ind as any).sub });
+                                if (t === 'melhorou') return <span className="flex items-center gap-1 text-[10px] text-success"><TrendingUp className="w-3 h-3" /> Melhorou</span>;
+                                if (t === 'piorou') return <span className="flex items-center gap-1 text-[10px] text-destructive"><TrendingDown className="w-3 h-3" /> Piorou</span>;
+                                return <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Minus className="w-3 h-3" /> {tendenciaLabelFrom(t)}</span>;
+                              })()}
                             </TableCell>
                             {isEditable && (
                               <TableCell>

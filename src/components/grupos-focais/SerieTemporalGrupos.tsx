@@ -23,13 +23,17 @@ interface IndicadorTemporal {
   sub?: string;
 }
 
+/**
+ * Regra única do sistema: só há tendência com dois anos medidos distintos;
+ * qualquer variação diferente de zero define melhorou/piorou pela polaridade.
+ */
 function calcTendencia(dados: { ano: number; valor: number }[], interpretacao: 'menor_melhor' | 'maior_melhor'): 'melhoria' | 'piora' | 'estavel' {
   if (dados.length < 2) return 'estavel';
   const primeiro = dados[0].valor;
   const ultimo = dados[dados.length - 1].valor;
-  const variacao = ((ultimo - primeiro) / primeiro) * 100;
-  if (Math.abs(variacao) < 3) return 'estavel';
-  const subiu = ultimo > primeiro;
+  const delta = ultimo - primeiro;
+  if (Math.abs(delta) < 1e-9) return 'estavel';
+  const subiu = delta > 0;
   if (interpretacao === 'menor_melhor') return subiu ? 'piora' : 'melhoria';
   return subiu ? 'melhoria' : 'piora';
 }
@@ -50,10 +54,10 @@ function variacao(dados: { ano: number; valor: number }[], unidade?: string): st
 
 const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'estavel' }) => {
   if (tendencia === 'melhoria') return (
-    <Badge className="bg-success/10 text-success border-success/30 gap-1"><TrendingUp className="w-3 h-3" /> Melhoria</Badge>
+    <Badge className="bg-success/10 text-success border-success/30 gap-1"><TrendingUp className="w-3 h-3" /> Melhorou</Badge>
   );
   if (tendencia === 'piora') return (
-    <Badge className="bg-destructive/10 text-destructive border-destructive/30 gap-1"><TrendingDown className="w-3 h-3" /> Piora</Badge>
+    <Badge className="bg-destructive/10 text-destructive border-destructive/30 gap-1"><TrendingDown className="w-3 h-3" /> Piorou</Badge>
   );
   return (
     <Badge className="bg-muted text-muted-foreground gap-1"><Minus className="w-3 h-3" /> Estável</Badge>
@@ -394,11 +398,11 @@ export function SerieTemporalGrupos() {
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-success" />
-                  <span className="text-sm font-medium">{totalMelhorias} em melhoria</span>
+                  <span className="text-sm font-medium">{totalMelhorias} melhorou</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <TrendingDown className="w-4 h-4 text-destructive" />
-                  <span className="text-sm font-medium">{totalPioras} em piora</span>
+                  <span className="text-sm font-medium">{totalPioras} piorou</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Minus className="w-4 h-4 text-muted-foreground" />

@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { tendenciaLabel } from '@/utils/tendenciaPadronizada';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
@@ -124,7 +125,7 @@ export function ArtigoAdherenceDrilldownDialog({
                 <TableRow key={i}>
                   <TableCell className="text-xs">{ind.nome}</TableCell>
                   <TableCell className="text-[10px]">{ind.categoria}</TableCell>
-                  <TableCell className="text-[10px]">{ind.tendencia || '—'}</TableCell>
+                  <TableCell className="text-[10px]">{tendenciaLabel({ nome: ind.nome, categoria: (ind as any).categoria, dados: (ind as any).dados, sub: (ind as any).sub })}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

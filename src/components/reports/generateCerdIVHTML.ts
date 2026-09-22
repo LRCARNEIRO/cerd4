@@ -14,6 +14,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtig
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
+import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
@@ -547,7 +548,7 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
       : '';
     
     const indicadoresRef = relatedIndicators.length > 0
-      ? `<p style="font-size:9pt;color:#64748b"><em>Indicadores vinculados: ${relatedIndicators.map(i => `${i.nome} (${i.tendencia || 'sem tendência'})`).join('; ')}</em></p>`
+      ? `<p style="font-size:9pt;color:#64748b"><em>Indicadores vinculados: ${relatedIndicators.map(i => `${i.nome} (${tendenciaLabel(i as any)})`).join('; ')}</em></p>`
       : '';
 
     return `
@@ -626,7 +627,7 @@ function renderArticleIndicatorTable(indicadores: IndicadorInterseccional[]): st
         <tr>
           <td>${i.nome}</td>
           <td>${eixoLabels[i.categoria] || i.categoria}</td>
-          <td>${i.tendencia || '—'}</td>
+          <td>${tendenciaLabel(i as any)}</td>
           <td>${pickIndicadorSnapshot(i)}</td>
           <td style="font-size:8.5pt">${i.fonte}</td>
         </tr>`).join('')}</tbody>
@@ -924,8 +925,8 @@ function generateArticleAnalysis(
   const execucao = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
   const eixos = uniqueStrings(lacunas.map(l => eixoLabels[l.eixo_tematico] || l.eixo_tematico));
   const grupos = uniqueStrings(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal));
-  const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).map(i => i.nome);
-  const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).map(i => i.nome);
+  const melhorias = indicadores.filter(i => tendenciaPadrao(i as any) === 'melhorou').map(i => i.nome);
+  const pioras = indicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').map(i => i.nome);
 
   if (total === 0 && indicadores.length === 0 && orcDados.length === 0 && normativos.length === 0) {
     return `<p>O ${titulo} não concentrou recomendações formalmente vinculadas no banco, mas segue relevante como eixo interpretativo da Convenção. Ainda assim, o sistema não localizou base empírica suficiente para uma leitura robusta neste ciclo.</p>`;
@@ -1567,7 +1568,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const totalNormativos = d.normativos?.length || 0;
   const totalOrc = d.orcDados?.length || 0;
   const totalFios = d.fiosCondutores?.length || 0;
-  const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
+  const indicadoresCriticos = d.indicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
 
   return `
   <h2>VI. Conclusões e Compromissos</h2>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -95,7 +96,7 @@ export function DiagnosticoLacunasPanel() {
 
   const generateExportHTML = () => {
     const rows = items.map(r => {
-      const indNames = r.diag?.linkedIndicadores?.map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || '<em>Nenhum</em>';
+      const indNames = r.diag?.linkedIndicadores?.map(i => `• ${i.nome} (${tendenciaLabel({ nome: i.nome, categoria: (i as any).categoria, dados: i.dados, sub: (i as any).sub })})`).join('<br/>') || '<em>Nenhum</em>';
       const orcNames = r.diag?.linkedOrcamento?.map(o => `• ${o.programa} — ${o.orgao} (${o.ano})`).join('<br/>') || '<em>Nenhum</em>';
       const normNames = r.diag?.linkedNormativos?.map(n => `• ${n.titulo}`).join('<br/>') || '<em>Nenhum</em>';
       const statusColor = r.effectiveStatus === 'cumprido' ? '#16a34a' : r.effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : r.effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
@@ -291,8 +292,8 @@ ${rows}
                             {r.diag!.linkedIndicadores.map((ind, i) => (
                               <li key={i} className="text-[10px] text-muted-foreground flex items-start gap-1">
                                 <span className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                                  ['crescente', 'melhora'].includes((ind.tendencia || '').toLowerCase()) ? 'bg-success' :
-                                  ['decrescente', 'piora'].includes((ind.tendencia || '').toLowerCase()) ? 'bg-destructive' : 'bg-muted-foreground'
+                                  tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados, sub: (ind as any).sub }) === 'melhorou' ? 'bg-success' :
+                                  tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados, sub: (ind as any).sub }) === 'piorou' ? 'bg-destructive' : 'bg-muted-foreground'
                                 }`} />
                                 {ind.nome}
                               </li>

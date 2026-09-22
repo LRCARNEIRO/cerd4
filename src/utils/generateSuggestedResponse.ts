@@ -1,4 +1,5 @@
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
 
 /**
@@ -27,18 +28,11 @@ export function generateSuggestedResponse(
 
   // ── Indicators section ──
   if (linkedIndicadores.length > 0) {
-    const melhoram = linkedIndicadores.filter(i => {
-      const t = (i.tendencia || '').toLowerCase();
-      return t === 'crescente' || t === 'melhora';
-    });
-    const pioram = linkedIndicadores.filter(i => {
-      const t = (i.tendencia || '').toLowerCase();
-      return t === 'decrescente' || t === 'piora';
-    });
-    const estaveis = linkedIndicadores.filter(i => {
-      const t = (i.tendencia || '').toLowerCase();
-      return t === 'estavel' || t === 'estável';
-    });
+    // Tendência sempre recalculada pelos dados (série histórica + polaridade).
+    const tend = (i: any) => tendenciaPadrao({ nome: i.nome, categoria: i.categoria, dados: i.dados, sub: i.sub });
+    const melhoram = linkedIndicadores.filter(i => tend(i) === 'melhorou');
+    const pioram = linkedIndicadores.filter(i => tend(i) === 'piorou');
+    const estaveis = linkedIndicadores.filter(i => tend(i) === 'estável');
 
     const indicatorLines: string[] = [];
 

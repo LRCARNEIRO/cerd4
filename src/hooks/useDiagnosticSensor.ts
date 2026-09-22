@@ -6,7 +6,7 @@ import { EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvenca
 import { normalizeArticleTag } from '@/utils/normalizeArticleTag';
 import { getRecommendationKeywordMatch } from '@/utils/recommendationKeywordMatching';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
-import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
+import { withTendenciaPadrao, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
 import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
@@ -193,16 +193,15 @@ function isLowerBetter(nome: string): boolean {
 }
 
 
-function inferTendencia(indicador: { nome: string; tendencia: string | null; dados: any }): 'melhora' | 'piora' | 'estavel' | 'desconhecida' {
-  if (indicador.tendencia) {
-    const t = indicador.tendencia.toLowerCase();
-    const lowerBetter = isLowerBetter(indicador.nome);
-    if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
-    if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
-    if (t === 'estavel' || t === 'estável') return 'estavel';
-    if (t.startsWith('melhor')) return 'melhora';
-    if (t.startsWith('pior')) return 'piora';
-  }
+/**
+ * Tendência SEMPRE recalculada pelos dados do indicador (série histórica +
+ * polaridade). Rótulos gravados no banco/arquivo não são consultados.
+ */
+function inferTendencia(indicador: { nome: string; categoria?: string | null; dados: any }): 'melhora' | 'piora' | 'estavel' | 'desconhecida' {
+  const t = tendenciaPadrao({ nome: indicador.nome, categoria: indicador.categoria, dados: indicador.dados });
+  if (t === 'melhorou') return 'melhora';
+  if (t === 'piorou') return 'piora';
+  if (t === 'estável') return 'estavel';
   return 'desconhecida';
 }
 
@@ -486,9 +485,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
-        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) que piorou/pioraram`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
       } else if (melhoram > 0) {
-        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) que melhorou/melhoraram`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
       // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — CONTAGEM de ações (não execução) ──
