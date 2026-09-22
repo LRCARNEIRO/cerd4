@@ -223,10 +223,13 @@ ${renderRows(allItems)}
     const config = ORIGEM_CONFIG[key];
     if (items.length === 0) return null;
 
-    const statusCount: Record<string, number> = {};
+    const grupoEsforco = { alto: 0, intermediario: 0, baixo: 0 };
+    const grupoImpacto = { alto: 0, intermediario: 0, baixo: 0 };
     items.forEach(l => {
-      const eff = getEffectiveStatus(l);
-      statusCount[eff] = (statusCount[eff] || 0) + 1;
+      const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
+      if (!ei) return;
+      grupoEsforco[ei.faixaEsforco]++;
+      grupoImpacto[ei.faixaImpacto]++;
     });
 
     return (
@@ -237,10 +240,15 @@ ${renderRows(allItems)}
             {config.label}
             <Badge variant="secondary" className="ml-auto">{items.length} recomendações</Badge>
           </CardTitle>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {statusCount.cumprido > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{statusCount.cumprido} Cumprida(s)</Badge>}
-            {(statusCount.parcialmente_cumprido + statusCount.em_andamento) > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido + statusCount.em_andamento} Parcial(is)</Badge>}
-            {(statusCount.nao_cumprido + statusCount.retrocesso) > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido + statusCount.retrocesso} Não Cumprida(s)</Badge>}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <strong className="text-foreground">Esforço:</strong>
+              {grupoEsforco.alto} Alto · {grupoEsforco.intermediario} Intermediário · {grupoEsforco.baixo} Baixo
+            </span>
+            <span className="flex items-center gap-1">
+              <strong className="text-foreground">Impacto:</strong>
+              {grupoImpacto.alto} Alto · {grupoImpacto.intermediario} Intermediário · {grupoImpacto.baixo} Baixo
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
