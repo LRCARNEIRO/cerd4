@@ -1,6 +1,7 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { RECOMMENDATION_CONCEPT_BUNDLES, UBIQUITOUS_GROUP_TOKENS, IMPORTANT_SHORT_KEYWORDS } from '@/utils/recommendationKeywordConcepts';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 
 /**
  * PRODUTO 2 — PROTOCOLO METODOLÓGICO DE GOVERNANÇA (LEGADO E MÉTODO)
