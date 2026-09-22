@@ -71,7 +71,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   // Evidências do artigo para o drilldown — mesma curadoria Artigo × Rec × Evidência
   const drilldownData = useMemo(() => {
-    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; status: string }[], normativos: [] as LinkedNormativo[], orcamentos: [] as LinkedOrcamento[], indicadores: [] as LinkedIndicador[] };
+    if (!drilldownArtigo) return { recomendacoes: [] as { paragrafo: string; tema: string; esforco: number; impacto: number; faixaEsforco: any; faixaImpacto: any }[], normativos: [] as LinkedNormativo[], orcamentos: [] as LinkedOrcamento[], indicadores: [] as LinkedIndicador[] };
     // SSoT: apenas vínculos confirmados em artigos_convencao — sem inferência por eixo temático
     const artLacunas = lacunas.filter(l =>
       ((l.artigos_convencao || []) as string[])
@@ -81,8 +81,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     );
     const recomendacoes = artLacunas.map(l => {
       const diag = diagnosticMap.get(l.id);
-      const s = diag?.statusComputado || l._computedStatus || l.status_cumprimento;
-      return { paragrafo: l.paragrafo, tema: l.tema, status: s };
+      const ei = diag?.auditoria.esforcoImpacto;
+      return { paragrafo: l.paragrafo, tema: l.tema, esforco: ei?.esforco ?? 0, impacto: ei?.impacto ?? 0, faixaEsforco: ei?.faixaEsforco ?? 'baixo', faixaImpacto: ei?.faixaImpacto ?? 'baixo' };
     });
 
     const curado = artigoEvidencia.get(drilldownArtigo);
@@ -114,9 +114,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   const barData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
-    cumprido: a.lacunasCumpridas,
-    parcial: a.lacunasParciais,
-    nao_cumprido: a.lacunasNaoCumpridas,
+    esforco: Number(a.esforcoArtigo.toFixed(1)),
+    impacto: Number(a.impactoArtigo.toFixed(1)),
   }));
 
   const sorted = [...analysis].sort((a, b) => b.impactoArtigo - a.impactoArtigo);
@@ -226,9 +225,9 @@ ${analysis.map(a => {
           <div className="flex items-start gap-3">
             <Scale className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="font-semibold text-sm">Aderência do Estado Brasileiro aos Artigos da Convenção ICERD</p>
+              <p className="font-semibold text-sm">Esforço e Impacto Evidenciado por Artigo da Convenção ICERD</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Avalia se o sistema possui <strong>dados externos suficientes</strong> para fundamentar cada artigo:
+                Consolida o Esforço e o Impacto das recomendações formalmente associadas a cada artigo:
                 {' '}{stats?.total || 0} recomendações ONU, {totalNormativos} instrumentos normativos,
                 {' '}{orcamentoRecords.length} registros orçamentários,
                 {' '}{rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas oficiais.
@@ -357,9 +356,9 @@ ${analysis.map(a => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Status de Cumprimento por Artigo</CardTitle>
+            <CardTitle className="text-sm">Esforço e Impacto por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Distribuição das recomendações ONU vinculadas a cada artigo
+              Média simples dos resultados das recomendações formalmente associadas
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -371,9 +370,8 @@ ${analysis.map(a => {
                   <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                   <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                   <Legend wrapperStyle={{ fontSize: '10px' }} />
-                  <Bar dataKey="cumprido" name="Cumprido" stackId="a" fill="hsl(var(--chart-2))" isAnimationActive={false} />
-                  <Bar dataKey="parcial" name="Parcial" stackId="a" fill="hsl(var(--chart-4))" isAnimationActive={false} />
-                  <Bar dataKey="nao_cumprido" name="Não Cumprido" stackId="a" fill="hsl(var(--chart-1))" isAnimationActive={false} />
+                  <Bar dataKey="esforco" name="Esforço" fill="hsl(var(--primary))" isAnimationActive={false} />
+                  <Bar dataKey="impacto" name="Impacto" fill="hsl(var(--chart-2))" isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -389,7 +387,7 @@ ${analysis.map(a => {
             Avaliação Detalhada por Artigo
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            Esta seção mostra <strong>aderência</strong> — cobertura de dados e capacidade de resposta do Estado. Leituras de melhora, piora ou estagnação pertencem ao painel <strong>Evolução dos Artigos</strong>, não a este score.
+            Cada artigo recebe a média simples do Esforço e do Impacto das recomendações formalmente associadas, evitando favorecer artigos com maior número de recomendações.
           </p>
         </div>
         {analysis.map(a => (
@@ -437,14 +435,10 @@ ${analysis.map(a => {
                 const vb = cur?.vinculosPorBase;
                 return (
                   <>
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('recomendacoes'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{a.lacunasTotal}</p>
                   <p className="text-[10px] text-muted-foreground">Recom. ONU 🔍</p>
-                </button>
-                <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('recomendacoes'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
-                  <p className="text-lg font-bold text-success">{a.lacunasCumpridas}/{a.lacunasTotal}</p>
-                  <p className="text-[10px] text-muted-foreground">Cumpridas ({a.lacunasTotal > 0 ? Math.round((a.lacunasCumpridas / a.lacunasTotal) * 100) : 0}%) 🔍</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('orcamento'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{vb ? vb.orcamentaria : a.orcamentoProgramas}</p>

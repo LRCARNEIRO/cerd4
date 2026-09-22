@@ -18,6 +18,7 @@ import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoExportShared';
 import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
+import { FAIXA_LABEL, TETOS_ESFORCO, formatScore, mediaSimples } from '@/utils/esforcoImpacto';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -38,14 +39,6 @@ function extractOrgao(titulo: string): string {
   for (const s of siglas) if (new RegExp(`\\b${s}\\b`).test(t)) return s;
   return '—';
 }
-
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  cumprido: { label: 'Cumprida', color: '#16a34a' },
-  parcialmente_cumprido: { label: 'Parcial', color: '#ca8a04' },
-  em_andamento: { label: 'Parcial', color: '#ca8a04' },
-  nao_cumprido: { label: 'Não Cumprida', color: '#dc2626' },
-  retrocesso: { label: 'Não Cumprida', color: '#dc2626' },
-};
 
 function buildIndicadorLink(id: string, codigo: string | undefined, origin: string, sub?: string): string {
   const subParam = sub ? `&sub=${encodeURIComponent(sub)}` : '';
@@ -68,7 +61,7 @@ interface Args {
 }
 
 export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, lookups, artigoEvidencia }: Args): string {
-  const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } = lookups;
+  const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, orcamentoMetaById, origin } = lookups;
   const def = ARTIGOS_CONVENCAO.find(a => a.numero === artigo);
 
   // Filtrar recomendações vinculadas ao Artigo
@@ -100,14 +93,8 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     }
   }
 
-  let countCumprida = 0, countParcial = 0, countNaoCumprida = 0;
-
   for (const rec of recsDoArtigo) {
     const diag = diagnosticMap.get(rec.id);
-    const status = diag?.statusComputado || rec.status_cumprimento;
-    if (status === 'cumprido') countCumprida++;
-    else if (status === 'parcialmente_cumprido' || status === 'em_andamento') countParcial++;
-    else countNaoCumprida++;
 
     const tag = `§${rec.paragrafo}`;
 
@@ -136,20 +123,20 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   // ── Tabela de recomendações ──
   const recRows = recsDoArtigo.map(rec => {
     const diag = diagnosticMap.get(rec.id);
-    const status = diag?.statusComputado || rec.status_cumprimento;
-    const info = STATUS_LABEL[status] || STATUS_LABEL.nao_cumprido;
+    const ei = diag?.auditoria.esforcoImpacto;
     const ind = diag?.linkedIndicadores?.length || 0;
     const norm = diag?.linkedNormativos?.length || 0;
     const orc = diag?.linkedOrcamento?.length || 0;
     return `<tr>
       <td style="font-family:monospace">§${rec.paragrafo}</td>
       <td>${rec.tema || '—'}</td>
-      <td><span style="display:inline-block;padding:2px 8px;border-radius:10px;background:${info.color};color:white;font-size:10px;font-weight:600">${info.label}</span></td>
+      <td>${ei ? `${formatScore(ei.esforco)} · ${FAIXA_LABEL[ei.faixaEsforco]}` : '0,0 · Baixo'}</td>
+      <td>${ei ? `${formatScore(ei.impacto)} · ${FAIXA_LABEL[ei.faixaImpacto]}` : '0,0 · Baixo'}</td>
       <td style="text-align:center">${ind}</td>
       <td style="text-align:center">${norm}</td>
       <td style="text-align:center">${orc}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Nenhuma recomendação vinculada a este Artigo.</td></tr>`;
+  }).join('') || `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:12px">Nenhuma recomendação vinculada a este Artigo.</td></tr>`;
 
   // ── Indicadores (união dedup) ──
   const indRows = Array.from(indByNome.values()).map(li => {
@@ -210,7 +197,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
 
   // ── Orçamento ──
   const orcRows = Array.from(orcByKey.values()).map(({ o, recomendacoes }) => {
-    const meta = orcamentoMetaByKey.get(`${o.programa || ''}|${o.orgao || ''}|${o.ano ?? ''}`) || {};
+    const meta = (o.id ? orcamentoMetaById.get(o.id) : undefined) || orcamentoMetaByKey.get(`${o.programa || ''}|${o.orgao || ''}|${o.ano ?? ''}`) || {};
     const dot = Number(meta.dotacao_autorizada ?? o.dotacao_autorizada ?? 0);
     const emp = Number(meta.empenhado ?? o.empenhado ?? 0);
     const liq = Number(meta.liquidado ?? o.liquidado ?? 0);
@@ -233,6 +220,8 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   }).join('') || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias agregadas.</td></tr>`;
 
   const totalRecs = recsDoArtigo.length;
+  const esforcoArtigo = mediaSimples(recsDoArtigo.map(r => diagnosticMap.get(r.id)?.auditoria.esforcoImpacto.esforco ?? 0));
+  const impactoArtigo = mediaSimples(recsDoArtigo.map(r => diagnosticMap.get(r.id)?.auditoria.esforcoImpacto.impacto ?? 0));
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Auditoria — Artigo ${artigo} ICERD · ${def?.titulo || ''}</title>
@@ -258,7 +247,8 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 
 <div class="summary">
   <p><strong>Total de recomendações vinculadas a este Artigo:</strong> ${totalRecs}</p>
-  <p>✅ Cumpridas: ${countCumprida} · 🟡 Parciais: ${countParcial} · 🔴 Não Cumpridas: ${countNaoCumprida}</p>
+  <p><strong>Esforço do Artigo:</strong> ${formatScore(esforcoArtigo)} · <strong>Impacto Evidenciado do Artigo:</strong> ${formatScore(impactoArtigo)}</p>
+  <p>Os dois resultados são a média simples das recomendações formalmente associadas ao artigo, incluindo com valor zero as recomendações sem evidência. Isso evita favorecer artigos com maior número de recomendações.</p>
   <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${orcByKey.size} ação(ões) orçamentária(s) — evidências distintas da matriz auditada, sem duplo conto por Artigo.</p>
   ${curado?.vinculosPorBase ? `<p style="font-size:10px;color:#475569">Matriz auditada: ${curado.vinculosPorBase.orcamentaria + curado.vinculosPorBase.estatistica + curado.vinculosPorBase.normativa} vínculos Artigo × Recomendação × Evidência (${curado.vinculosPorBase.orcamentaria} orçamentária · ${curado.vinculosPorBase.estatistica} estatística · ${curado.vinculosPorBase.normativa} normativa). Os números acima contam cada evidência uma única vez.</p>` : ''}
 </div>
@@ -266,9 +256,15 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 <h2>📜 Recomendações vinculadas ao Artigo ${artigo} (${totalRecs})</h2>
 <p class="legend">Recomendações da ONU monitoradas com vínculo explícito ao Artigo ${artigo}.</p>
 <table>
-  <thead><tr><th style="width:80px">§</th><th>Tema</th><th style="width:110px">Status</th><th style="text-align:center;width:70px">📊 Ind.</th><th style="text-align:center;width:70px">⚖️ Norm.</th><th style="text-align:center;width:70px">💰 Orç.</th></tr></thead>
+  <thead><tr><th style="width:80px">§</th><th>Tema</th><th>Esforço</th><th>Impacto</th><th style="text-align:center;width:70px">📊 Ind.</th><th style="text-align:center;width:70px">⚖️ Norm.</th><th style="text-align:center;width:70px">💰 Orç.</th></tr></thead>
   <tbody>${recRows}</tbody>
 </table>
+
+<h2>Metodologia de Cálculo — Recomendações e Artigo</h2>
+<p><strong>Esforço de cada recomendação:</strong> E = [100 × min(nEst/${TETOS_ESFORCO.estatistica};1) + 100 × min(nOrç/${TETOS_ESFORCO.orcamentaria};1) + 100 × min(nNorm/${TETOS_ESFORCO.normativa};1)] ÷ 3.</p>
+<p><strong>Realização:</strong> R = [R_est + R_orç + R_norm] ÷ 3, onde R_est = (melhorou + estável) ÷ total com tendência mensurável × 100; R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida × 100; R_norm = 100 com presença e 0 sem presença.</p>
+<p><strong>Estável não significa fracasso:</strong> melhorou = 1, estável = 1 e piorou = 0. A pergunta é se a evidência demonstra manutenção ou evolução favorável, em vez de deterioração.</p>
+<p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100. <strong>Artigo:</strong> médias simples de E e I das recomendações formalmente associadas.</p>
 
 <h2>📊 Indicadores agregados (${indByNome.size})</h2>
 <p class="legend">Evidências estatísticas distintas da matriz auditada para este Artigo, preservando cards fixos e subindicadores.</p>
