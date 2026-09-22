@@ -882,8 +882,8 @@ function gerarFiosEmergentes(
     if (titulosFiosExistentes.some(t => t.includes(docLower) || docLower.includes(t.split(':')[0]))) return;
 
     const categoriasCobertas = [...new Set(inds.map(i => i.categoria))];
-    const tendencias = inds.filter(i => i.tendencia === 'crescente').length;
-    const decrescentes = inds.filter(i => i.tendencia === 'decrescente').length;
+    const tendencias = inds.filter(i => tendenciaPadrao(i as any) === 'melhorou').length;
+    const decrescentes = inds.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
 
     novos.push({
       id: `emergente-doc-${doc.replace(/\s+/g, '-').toLowerCase().substring(0, 30)}`,
