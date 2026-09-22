@@ -213,7 +213,7 @@ export function useEvolucaoSummary() {
       summary: { evolucao: evolCount, estagnacao: estagCount, retrocesso: retroCount },
       artigosSummary,
     };
-  }, [recomendacoes, diagnosticMap, sensorReady, artigoEvidencia]);
+  }, [recomendacoes, diagnosticMap, sensorReady, artigoEvidencia, artigoEsforcoImpacto]);
 
   return { summary, artigosSummary, isLoading, sensorSummary, sensorReady };
 }
