@@ -11,6 +11,7 @@
  */
 import { SUB_INDICADORES, hasSubIndicadores } from '@/utils/indicadorSubs';
 import { isDuplicata } from '@/utils/indicadorAliases';
+import { tendenciaLabel } from '@/utils/tendenciaPadronizada';
 
 export type EvidenciaEstatistica = {
   key: string;
