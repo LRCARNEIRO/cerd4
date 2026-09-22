@@ -185,7 +185,7 @@ export function useAnalyticalInsights() {
       // efetivamente vinculado (após overrides).
       const evidIndicadores = (diag.linkedIndicadores || []).map((i) => {
         indNomesUsados.add(i.nome);
-        const tend = i.tendencia ? ` [${i.tendencia}]` : '';
+        const tend = ` [${tendenciaLabel({ nome: i.nome, categoria: (i as any).categoria, dados: (i as any).dados, sub: (i as any).sub })}]`;
         return `📊 ${i.nome}${tend}`;
       });
       const evidOrcamento = (diag.linkedOrcamento || []).map((o) => {
