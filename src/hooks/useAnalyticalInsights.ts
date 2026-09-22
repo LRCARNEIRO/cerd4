@@ -889,9 +889,9 @@ function gerarFiosEmergentes(
       id: `emergente-doc-${doc.replace(/\s+/g, '-').toLowerCase().substring(0, 30)}`,
       titulo: `Marco Normativo "${doc}": Evidências Transversais`,
       tipo: 'correlacao',
-      argumento: `O documento "${doc}" fundamenta ${inds.length} indicadores no banco, abrangendo ${categoriasCobertas.length} categoria(s): ${categoriasCobertas.map(c => eixoLabels[c] || c).join(', ')}. ${tendencias > 0 ? `${tendencias} indicador(es) mostram tendência crescente.` : ''} ${decrescentes > 0 ? `${decrescentes} indicador(es) mostram tendência decrescente, sinalizando áreas de atenção.` : ''} Este marco normativo pode constituir fio condutor próprio na argumentação do relatório, conectando obrigações internacionais a evidências quantitativas.`,
+      argumento: `O documento "${doc}" fundamenta ${inds.length} indicadores no banco, abrangendo ${categoriasCobertas.length} categoria(s): ${categoriasCobertas.map(c => eixoLabels[c] || c).join(', ')}. ${tendencias > 0 ? `${tendencias} indicador(es) melhorou/melhoraram.` : ''} ${decrescentes > 0 ? `${decrescentes} indicador(es) piorou/pioraram, sinalizando áreas de atenção.` : ''} Este marco normativo pode constituir fio condutor próprio na argumentação do relatório, conectando obrigações internacionais a evidências quantitativas.`,
       evidencias: inds.slice(0, 6).map(i => ({
-        texto: `${i.nome}: ${i.tendencia || 'sem tendência definida'}`,
+        texto: `${i.nome}: ${tendenciaLabel(i as any)}`,
         fonte: i.fonte,
         tipo: 'quantitativa' as const,
       })),
