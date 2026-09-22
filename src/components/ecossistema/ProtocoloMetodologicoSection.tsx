@@ -8,21 +8,27 @@ import { SectionHeader } from './BaseEvidenciasSection';
 const PROTOCOLS = [
   {
     icon: Calculator,
-    title: 'Score de Esforço Governamental',
-    description: 'Cada recomendação recebe um score 0-100 composto por 3 dimensões de evidências: Indicadores (40%), Orçamento (30%) e Normativos (30%). O status final (Cumprido ≥80, Parcial ≥55, Em Andamento ≥35, Não Cumprido ≥15) reflete a quantidade e qualidade das evidências vinculadas.',
+    title: 'Esforço Governamental (0–100)',
+    description: `Mede o volume de evidências distintas vinculadas a cada recomendação, com tetos de saturação derivados do percentil 75 da matriz auditada: ${TETOS_ESFORCO.estatistica} estatística, ${TETOS_ESFORCO.orcamentaria} orçamentária e ${TETOS_ESFORCO.normativa} normativa, com peso igual de 1/3 por base.`,
     sources: ['Base Estatística', 'Base Orçamentária', 'Base Normativa'],
   },
   {
     icon: Scale,
-    title: 'Score de Aderência ICERD',
-    description: 'Avaliação multidimensional em 7 eixos: Recomendações ONU (20%), Cobertura Normativa (20%), Respostas CERD III (15%), Orçamento (15%), Conclusões Analíticas (15%), Amplitude de Evidências (10%), Séries Estatísticas (5%).',
-    sources: ['IcerdAdherencePanel', '7 dimensões integradas'],
+    title: 'Impacto Evidenciado (0–100)',
+    description: 'Impacto = Esforço × Realização ÷ 100. A Realização é a média das três bases: estatística (proporção de evidências com evolução não desfavorável), orçamentária (Liquidado ÷ Dotação autorizada válida) e normativa (presença = 100, ausência = 0).',
+    sources: ['Tendência padronizada', 'Execução orçamentária', 'Presença normativa'],
   },
   {
     icon: Layers,
-    title: 'Classificação de Lacunas e Status',
-    description: 'Política de conformidade equilibrada: reclassificação baseada em ações legislativas, cobertura orçamentária e evidências documentais. Esforços normativos são reconhecidos como "Em Andamento".',
-    sources: ['CERD/C/BRA/CO/18-20', 'Base Normativa'],
+    title: `Faixas de Classificação (Baixo · Intermediário · Alto)`,
+    description: `As mesmas faixas se aplicam ao Esforço e ao Impacto: Baixo abaixo de ${CORTE_INTERMEDIARIO}, Intermediário de ${CORTE_INTERMEDIARIO} a ${CORTE_ALTO - 0.1} e Alto a partir de ${CORTE_ALTO}. Por artigo, ambos são a média simples das recomendações associadas, incluindo as sem evidência.`,
+    sources: ['CERD/C/BRA/CO/18-20', 'Matriz auditada'],
+  },
+  {
+    icon: FileCheck,
+    title: 'Matriz Auditada de Evidências',
+    description: 'Todos os vínculos Artigo × Recomendação × Evidência são curados manualmente a partir do inventário canônico das três bases. Não há inferência automática por palavras-chave; evidências repetidas para a mesma recomendação em artigos diferentes contam uma única vez.',
+    sources: ['Inventário canônico', 'Curadoria manual'],
   },
 ];
 export default function ProtocoloMetodologicoSection() {
