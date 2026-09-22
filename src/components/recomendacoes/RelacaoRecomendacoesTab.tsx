@@ -4,7 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, ListChecks } from 'lucide-react';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
+import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 import { lazy, Suspense, useMemo, useCallback, useState } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
@@ -88,15 +89,17 @@ export function RelacaoRecomendacoesTab() {
     return result;
   }, [recomendacoes]);
 
-  const statusSummary = useMemo(() => {
-    if (!recomendacoes) return { cumprido: 0, parcialmente_cumprido: 0, em_andamento: 0, nao_cumprido: 0, retrocesso: 0 };
-    const counts: Record<string, number> = {};
-    recomendacoes.forEach(l => {
-      const diag = diagnosticMap.get(l.id);
-      const eff = diag?.statusComputado ?? l.status_cumprimento;
-      counts[eff] = (counts[eff] || 0) + 1;
+  /** v7 — distribuição nas faixas 25/60 de Esforço e Impacto */
+  const faixaSummary = useMemo(() => {
+    const esforco = { alto: 0, intermediario: 0, baixo: 0 };
+    const impacto = { alto: 0, intermediario: 0, baixo: 0 };
+    (recomendacoes || []).forEach(l => {
+      const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
+      if (!ei) return;
+      esforco[ei.faixaEsforco]++;
+      impacto[ei.faixaImpacto]++;
     });
-    return counts;
+    return { esforco, impacto };
   }, [recomendacoes, diagnosticMap]);
 
   // Drilldown data
@@ -116,21 +119,19 @@ export function RelacaoRecomendacoesTab() {
 
     const renderRows = (items: typeof allItems) => items.map(l => {
       const diag = diagnosticMap.get(l.id);
-      const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
       const artigos = getArtigosFromRecomendacao(l);
       const justificativa = getVinculacaoJustificativa(l);
       const prioridadeLabel = getPrioridadeLabel(l.prioridade);
-      const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? '#ca8a04' : '#dc2626';
-      const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? 'Parcial' : 'Não Cumprido';
+      const ei = diag?.auditoria.esforcoImpacto;
+      const corFaixa = (f?: string) => f === 'alto' ? '#16a34a' : f === 'intermediario' ? '#ca8a04' : '#dc2626';
 
-      // Evidence details for export
       const auditoria = diag?.auditoria;
-      const evidenceHtml = auditoria ? `
+      const evidenceHtml = auditoria && ei ? `
         <div style="font-size:9px;color:#555;margin-top:4px">
-          <strong>Score: ${auditoria.scoreGlobal}/100</strong><br/>
-          📊 Ind: ${auditoria.indicadores.total} (${auditoria.indicadores.melhoram}↑ ${auditoria.indicadores.pioram}↓) · Score: ${auditoria.indicadores.score}<br/>
-          💰 Orç: ${auditoria.orcamento.total} ações, exec ${auditoria.orcamento.execucaoMedia}% · Score: ${auditoria.orcamento.score}<br/>
-          📋 Norm: ${auditoria.normativos.total} · Score: ${auditoria.normativos.score}<br/>
+          <strong>Esforço ${formatScore(ei.esforco)} · Realização ${formatScore(ei.realizacao)} · Impacto ${formatScore(ei.impacto)}</strong><br/>
+          📊 Est: ${ei.contagens.estatistica} (${ei.contagens.favoraveis} não desfavorável(is) de ${ei.contagens.comTendencia} com série)<br/>
+          💰 Orç: ${ei.contagens.orcamentaria} ações, execução ${formatScore(ei.componentes.realizacaoOrcamentaria)}%<br/>
+          📋 Norm: ${ei.contagens.normativa}<br/>
           ${diag?.linkedIndicadores?.slice(0, 5).map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || ''}
           ${diag?.linkedNormativos?.slice(0, 5).map(n => `• ${n.titulo}`).join('<br/>') || ''}
           ${diag?.linkedOrcamento?.slice(0, 5).map(o => `• ${o.programa} (${o.orgao}, ${o.ano})`).join('<br/>') || ''}
@@ -142,7 +143,10 @@ export function RelacaoRecomendacoesTab() {
         <td>${l.tema}</td>
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="font-size:10px;color:#555">${justificativa}</td>
-        <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
+        <td style="font-size:10px;font-weight:bold">
+          <span style="color:${corFaixa(ei?.faixaEsforco)}">Esforço ${ei ? formatScore(ei.esforco) : '—'} · ${ei ? FAIXA_LABEL[ei.faixaEsforco] : '—'}</span><br/>
+          <span style="color:${corFaixa(ei?.faixaImpacto)}">Impacto ${ei ? formatScore(ei.impacto) : '—'} · ${ei ? FAIXA_LABEL[ei.faixaImpacto] : '—'}</span>
+        </td>
         <td style="font-size:10px">${prioridadeLabel}</td>
         <td>${evidenceHtml}</td>
       </tr>`;
@@ -162,22 +166,31 @@ th{background:#f1f5f9;font-size:10px}
 .summary{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
 .summary span{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:bold}
 </style></head><body>
-<h1>📋 Relação Completa — Recomendações, Vinculações, Status e Evidências</h1>
+<h1>📋 Relação Completa — Recomendações, Vinculações, Esforço × Impacto e Evidências</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Total:</strong> ${recomendacoes.length} recomendações (Observações Finais, Recomendações Gerais e Durban)</p>
 
 <div class="summary">
-<span style="background:#dcfce7;color:#166534">✓ ${statusSummary.cumprido || 0} Cumprida(s)</span>
-<span style="background:#fef9c3;color:#854d0e">~ ${(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
-<span style="background:#fee2e2;color:#991b1b">✗ ${(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
+<span style="background:#e0e7ff;color:#3730a3">Esforço Governamental</span>
+<span style="background:#dcfce7;color:#166534">${faixaSummary.esforco.alto} Alto</span>
+<span style="background:#fef9c3;color:#854d0e">${faixaSummary.esforco.intermediario} Intermediário</span>
+<span style="background:#fee2e2;color:#991b1b">${faixaSummary.esforco.baixo} Baixo</span>
+</div>
+<div class="summary">
+<span style="background:#e0e7ff;color:#3730a3">Impacto Evidenciado</span>
+<span style="background:#dcfce7;color:#166534">${faixaSummary.impacto.alto} Alto</span>
+<span style="background:#fef9c3;color:#854d0e">${faixaSummary.impacto.intermediario} Intermediário</span>
+<span style="background:#fee2e2;color:#991b1b">${faixaSummary.impacto.baixo} Baixo</span>
 </div>
 
         <div class="methodology">
-        <h2>🔗 Metodologia de Vinculação e Cálculo de Status (v5.2)</h2>
-        <p><strong>Vinculação Evidências → Recomendação:</strong> Híbrida e auditável por palavras-chave, com <strong>score temático mínimo</strong>. Termos extraídos do tema, descrição e texto original ONU (tokenização ≥5 letras, com exceções curtas relevantes como <em>raça</em>, + stop-words + sinônimos), combinando correspondência por <em>termo/frase inteira normalizada</em> com <em>expansão conceitual controlada</em> para casos semanticamente muito próximos (ex.: dados desagregados ↔ Censo/raça-gênero), sem substring solta. Recomendações com grupo focal exigem sinal focal explícito (ex.: quilombola, indígena, LGBTQIA+) ou frase específica correlata; termos genéricos como <em>violência</em>, <em>proteção</em> e <em>discriminação</em> não vinculam sozinhos. Busca nos campos: nome/categoria/subcategoria/análise/documentos de origem dos indicadores, programa/órgão/descritivo/eixo/público-alvo/observações/razão de seleção do orçamento, título/categoria de normativos. <em>Não</em> utiliza artigos ICERD ou eixos genéricos.</p>
-<p><strong>Vinculação Recomendação → Artigo:</strong> Tags explícitas no banco de dados (prioridade) ou inferência por eixo temático (fallback). Apenas para classificação temática.</p>
-<p><strong>Cálculo do Status:</strong> Indicadores 40% + Orçamento 30% + Normativos 30%. Todas as dimensões medem contagem (cobertura).</p>
-<p><strong>Faixas:</strong> ≥65 Cumprido | ≥35 Parcial | &lt;35 Não Cumprido</p>
+        <h2>🔗 Metodologia de Vinculação e Cálculo (v7 — Esforço × Impacto)</h2>
+        <p><strong>Vinculação Evidências → Recomendação:</strong> matriz relacional auditada Artigo × Recomendação × Evidência (2.122 endereços válidos), sobre o inventário canônico de 514 evidências (278 estatísticas, 204 orçamentárias e 32 normativas). Após deduplicação da mesma evidência para a mesma recomendação entre artigos, restam 1.658 relações distintas Recomendação × Evidência (734 estatísticas, 845 orçamentárias e 79 normativas).</p>
+<p><strong>Vinculação Recomendação → Artigo:</strong> mapa relacional combinado com o mapa formal, preservando recomendações sem evidência — Art. I = 6 · II = 7 · III = 4 · IV = 2 · V = 21 · VI = 6 · VII = 4.</p>
+<p><strong>Esforço Governamental (0–100):</strong> [100 × min(nEst/${TETOS_ESFORCO.estatistica}, 1) + 100 × min(nOrç/${TETOS_ESFORCO.orcamentaria}, 1) + 100 × min(nNorm/${TETOS_ESFORCO.normativa}, 1)] ÷ 3. Tetos derivados do P75 das evidências efetivamente vinculadas; pesos iguais de 1/3 por base.</p>
+<p><strong>Realização (0–100):</strong> média simples das bases presentes — estatística: proporção de indicadores com evolução não desfavorável (melhorou ou estável = 1; piorou = 0); orçamentária: Σ Liquidado ÷ Σ Dotação autorizada válida; normativa: presença = 100, ausência = 0.</p>
+<p><strong>Impacto Evidenciado:</strong> Esforço × Realização ÷ 100.</p>
+<p><strong>Faixas (iguais para os dois índices):</strong> Baixo &lt; 25 | Intermediário 25–59,9 | Alto ≥ 60</p>
 <table>
 <tr><th>Artigo</th><th>Escopo</th></tr>
 ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</strong></td><td>${v}</td></tr>`).join('')}
@@ -186,13 +199,13 @@ ${Object.entries(ARTIGO_DESCRICOES).map(([k, v]) => `<tr><td><strong>Art. ${k}</
 
 <h2>Detalhamento com Evidências</h2>
 <table>
-<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Status</th><th>Prioridade</th><th>Evidências (Indicadores, Orçamento, Normativos)</th></tr>
+<tr><th>§</th><th>Tema</th><th>Artigos</th><th>Justificativa</th><th>Esforço / Impacto</th><th>Prioridade</th><th>Evidências (Indicadores, Orçamento, Normativos)</th></tr>
 ${renderRows(allItems)}
 </table>
 
 <p class="nota" style="margin-top:16px">Documento gerado pelo Sistema de Monitoramento CERD IV — ${new Date().toLocaleDateString('pt-BR')}</p>
 </body></html>`;
-  }, [recomendacoes, grouped, diagnosticMap, statusSummary]);
+  }, [recomendacoes, grouped, diagnosticMap, faixaSummary]);
 
   if (isLoading) {
     return (
@@ -211,10 +224,13 @@ ${renderRows(allItems)}
     const config = ORIGEM_CONFIG[key];
     if (items.length === 0) return null;
 
-    const statusCount: Record<string, number> = {};
+    const grupoEsforco = { alto: 0, intermediario: 0, baixo: 0 };
+    const grupoImpacto = { alto: 0, intermediario: 0, baixo: 0 };
     items.forEach(l => {
-      const eff = getEffectiveStatus(l);
-      statusCount[eff] = (statusCount[eff] || 0) + 1;
+      const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
+      if (!ei) return;
+      grupoEsforco[ei.faixaEsforco]++;
+      grupoImpacto[ei.faixaImpacto]++;
     });
 
     return (
@@ -225,10 +241,15 @@ ${renderRows(allItems)}
             {config.label}
             <Badge variant="secondary" className="ml-auto">{items.length} recomendações</Badge>
           </CardTitle>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {statusCount.cumprido > 0 && <Badge variant="outline" className="text-success border-success/30 text-xs">{statusCount.cumprido} Cumprida(s)</Badge>}
-            {(statusCount.parcialmente_cumprido + statusCount.em_andamento) > 0 && <Badge variant="outline" className="text-warning border-warning/30 text-xs">{statusCount.parcialmente_cumprido + statusCount.em_andamento} Parcial(is)</Badge>}
-            {(statusCount.nao_cumprido + statusCount.retrocesso) > 0 && <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">{statusCount.nao_cumprido + statusCount.retrocesso} Não Cumprida(s)</Badge>}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <strong className="text-foreground">Esforço:</strong>
+              {grupoEsforco.alto} Alto · {grupoEsforco.intermediario} Intermediário · {grupoEsforco.baixo} Baixo
+            </span>
+            <span className="flex items-center gap-1">
+              <strong className="text-foreground">Impacto:</strong>
+              {grupoImpacto.alto} Alto · {grupoImpacto.intermediario} Intermediário · {grupoImpacto.baixo} Baixo
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -240,14 +261,14 @@ ${renderRows(allItems)}
                   <TableHead>Tema</TableHead>
                   <TableHead className="w-[120px]">Artigos</TableHead>
                   <TableHead className="w-[150px]">Justificativa</TableHead>
-                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[170px]">Esforço / Impacto</TableHead>
                   <TableHead className="w-[140px]">Prioridade cadastrada</TableHead>
                   <TableHead className="w-[60px] text-center">Relatório</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((l: any) => {
-                  const effectiveStatus = getEffectiveStatus(l);
+                  const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
                   const artigos = getArtigosFromRecomendacao(l);
                   const justificativa = getVinculacaoJustificativa(l);
 
@@ -274,10 +295,20 @@ ${renderRows(allItems)}
                       <TableCell>
                         <button
                           onClick={() => setDrilldownId(l.id)}
-                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                          className="cursor-pointer hover:opacity-80 transition-opacity text-left"
                           title="Clique para ver evidências"
                         >
-                          <StatusBadge status={effectiveStatus} size="sm" />
+                          {ei ? (
+                            <EsforcoImpactoTags
+                              esforco={ei.esforco}
+                              impacto={ei.impacto}
+                              faixaEsforco={ei.faixaEsforco}
+                              faixaImpacto={ei.faixaImpacto}
+                              className="flex-col items-start"
+                            />
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground">—</span>
+                          )}
                         </button>
                       </TableCell>
                       <TableCell>
@@ -333,15 +364,26 @@ ${renderRows(allItems)}
         </div>
         <p className="text-xs text-muted-foreground">
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
-          <strong className="ml-1">Clique no status de cada recomendação</strong> para ver as evidências que fundamentam a classificação.
+          Cada recomendação é medida por dois índices: <strong>Esforço Governamental</strong> (volume de evidências vinculadas)
+          e <strong>Impacto Evidenciado</strong> (esforço × realização).
+          <strong className="ml-1">Clique nas tags de cada recomendação</strong> para ver as evidências que fundamentam os índices.
         </p>
         <p className="text-[10px] text-muted-foreground mt-1">
           <strong>Prioridade cadastrada:</strong> este campo vem pronto da base de recomendações e não é calculado pelo sensor nem por esta tela.
         </p>
-        <div className="flex flex-wrap gap-3 mt-2 text-xs">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
+        <div className="flex flex-wrap gap-4 mt-2 text-xs">
+          <span className="flex items-center gap-1.5">
+            <strong className="text-foreground">Esforço:</strong>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {faixaSummary.esforco.alto} Alto</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {faixaSummary.esforco.intermediario} Intermediário</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {faixaSummary.esforco.baixo} Baixo</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <strong className="text-foreground">Impacto:</strong>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {faixaSummary.impacto.alto} Alto</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {faixaSummary.impacto.intermediario} Intermediário</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {faixaSummary.impacto.baixo} Baixo</span>
+          </span>
         </div>
         {sensorReady && (
           <div className="mt-2">

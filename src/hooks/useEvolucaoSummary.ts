@@ -77,7 +77,7 @@ function computeAdherenceScoreSimple(
  */
 export function useEvolucaoSummary() {
   const { data: recomendacoes, isLoading: l1 } = useLacunasIdentificadas({});
-  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady, artigoEvidencia } = useDiagnosticSensor(recomendacoes);
+  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady, artigoEvidencia, artigoEsforcoImpacto } = useDiagnosticSensor(recomendacoes);
 
   const isLoading = l1 || !sensorReady;
 
@@ -88,6 +88,8 @@ export function useEvolucaoSummary() {
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
           numero: a.numero, titulo: a.titulo, totalRecs: 0,
           cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0, aderenciaScore: 0,
+          esforcoScore: 0, impactoScore: 0,
+          faixaEsforco: 'baixo' as const, faixaImpacto: 'baixo' as const, recsArtigo: 0,
           vinculos: 0, vinculosPorBase: { estatistica: 0, normativa: 0, orcamentaria: 0 },
           indicadoresCount: 0, orcamentoCount: 0, normativosCount: 0,
         })),
@@ -153,9 +155,17 @@ export function useEvolucaoSummary() {
         cumpridas, artRecs.length, retrocessos, normMap.size, orcMap.size, indMap.size,
       );
 
+      // Metodologia v7 — média simples das recomendações do artigo
+      const ei = artigoEsforcoImpacto.get(artNum);
+
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
         cumpridas, parciais, naoCumpridas, evolScore, aderenciaScore,
+        esforcoScore: ei?.esforco ?? 0,
+        impactoScore: ei?.impacto ?? 0,
+        faixaEsforco: ei?.faixaEsforco ?? ('baixo' as const),
+        faixaImpacto: ei?.faixaImpacto ?? ('baixo' as const),
+        recsArtigo: ei?.totalRecs ?? artRecs.length,
         vinculos: curado?.vinculos || 0,
         vinculosPorBase: curado?.vinculosPorBase || { estatistica: 0, normativa: 0, orcamentaria: 0 },
         indicadoresCount: indMap.size, orcamentoCount: orcMap.size, normativosCount: normMap.size,
@@ -203,7 +213,7 @@ export function useEvolucaoSummary() {
       summary: { evolucao: evolCount, estagnacao: estagCount, retrocesso: retroCount },
       artigosSummary,
     };
-  }, [recomendacoes, diagnosticMap, sensorReady, artigoEvidencia]);
+  }, [recomendacoes, diagnosticMap, sensorReady, artigoEvidencia, artigoEsforcoImpacto]);
 
   return { summary, artigosSummary, isLoading, sensorSummary, sensorReady };
 }

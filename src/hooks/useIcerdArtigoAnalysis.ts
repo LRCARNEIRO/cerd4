@@ -17,6 +17,7 @@ import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { classificarFaixa, FAIXA_LABEL, formatScore, type Faixa } from '@/utils/esforcoImpacto';
 
 export type ArtigoAnalysis = {
   numero: ArtigoConvencao;
@@ -42,6 +43,13 @@ export type ArtigoAnalysis = {
   respostasNaoCumpridas: number;
   normativosCount: number;
   seriesEstatisticas: number;
+  /** v7 — Esforço Governamental do artigo (média simples das recomendações) */
+  esforcoArtigo: number;
+  /** v7 — Impacto Evidenciado do artigo (média simples das recomendações) */
+  impactoArtigo: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
+  /** Espelha o Esforço Governamental (compatibilidade com superfícies antigas) */
   grauAderencia: number;
   tendencia: 'melhora' | 'piora' | 'estagnacao';
   veredito: string;
@@ -145,29 +153,17 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
   });
 }
 
-export function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  let score = 0;
-
-  if (a.lacunasTotal > 0) {
-    const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.1;
-    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 50;
-  } else {
-    score += 25;
-  }
-
-  if (a.normativosCount > 0) score += Math.min(15, a.normativosCount * 1.5);
-  if (a.orcamentoProgramas > 0) score += Math.min(10, a.orcamentoProgramas * 1.0);
-  if (a.indicadoresCount > 0) score += Math.min(15, a.indicadoresCount * 1.2);
-
-  const breadth = [a.lacunasCumpridas > 0, a.orcamentoProgramas > 0, a.indicadoresCount > 0, a.normativosCount > 0]
-    .filter(Boolean).length;
-  score += (breadth / 4) * 10;
-
-  return Math.round(Math.min(100, Math.max(0, score)));
+/**
+ * @deprecated Metodologia v7 — o grau do artigo passou a ser a média simples do
+ * Esforço Governamental das recomendações associadas (mapa relacional + formal),
+ * calculada em useDiagnosticSensor. Mantido apenas como fallback quando o sensor
+ * ainda não está pronto.
+ */
+export function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito' | 'esforcoArtigo' | 'impactoArtigo' | 'faixaEsforco' | 'faixaImpacto'>): number {
+  return 0;
 }
 
-export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
+export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito' | 'esforcoArtigo' | 'impactoArtigo' | 'faixaEsforco' | 'faixaImpacto'>): 'melhora' | 'piora' | 'estagnacao' {
   const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
   const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas + Math.floor(emAndamento * 0.3);
   const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
@@ -178,15 +174,20 @@ export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
 
 export function generateVerdict(a: ArtigoAnalysis): string {
   const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
-  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
-  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
   const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
+  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoProgramas} ação(ões) orçamentária(s) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
 
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} ação(ões) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${statsText}`;
-  return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
+  if (a.faixaImpacto === 'alto') {
+    return `Impacto alto. ${base} O esforço mobilizado converteu-se em realização comprovada.${respText}${statsText}`;
+  }
+  if (a.faixaImpacto === 'intermediario') {
+    return `Impacto intermediário. ${base} Há esforço visível, mas a realização ainda é parcial.${respText}${statsText}`;
+  }
+  if (a.faixaEsforco !== 'baixo') {
+    return `Impacto baixo apesar do esforço. ${base} As evidências mobilizadas ainda não se traduzem em resultados.${respText}${statsText}`;
+  }
+  return `Esforço e impacto baixos. ${base} O artigo permanece sub-priorizado frente às obrigações da Convenção.${respText}${statsText}`;
 }
 
 interface Params {
@@ -203,7 +204,7 @@ interface Params {
 export function useIcerdArtigoAnalysis({ lacunas, fiosCondutores = [], conclusoes = [], respostas = [] }: Params) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
   const evidenceOverrides = useEvidenceOverridesReadOnly();
-  const { diagnosticMap, artigoEvidencia, curadosTotal } = useDiagnosticSensor(lacunas || [], evidenceOverrides);
+  const { diagnosticMap, artigoEvidencia, curadosTotal, artigoEsforcoImpacto } = useDiagnosticSensor(lacunas || [], evidenceOverrides);
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
@@ -275,16 +276,25 @@ export function useIcerdArtigoAnalysis({ lacunas, fiosCondutores = [], conclusoe
         seriesEstatisticas: statSeriesPerArticle[art.numero] || 0,
       };
 
+      // Metodologia v7 — média simples do Esforço e do Impacto das recomendações do artigo
+      const ei = artigoEsforcoImpacto.get(art.numero);
+      const esforcoArtigo = ei?.esforco ?? 0;
+      const impactoArtigo = ei?.impacto ?? 0;
+
       const result: ArtigoAnalysis = {
         ...base,
-        grauAderencia: computeAdherenceScore(base),
+        esforcoArtigo,
+        impactoArtigo,
+        faixaEsforco: ei?.faixaEsforco ?? classificarFaixa(esforcoArtigo),
+        faixaImpacto: ei?.faixaImpacto ?? classificarFaixa(impactoArtigo),
+        grauAderencia: Math.round(esforcoArtigo),
         tendencia: determineTrend(base),
         veredito: '',
       };
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [lacunas, fiosCondutores, conclusoes, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia]);
+  }, [lacunas, fiosCondutores, conclusoes, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia, artigoEsforcoImpacto]);
 
   return { analysis, diagnosticMap, artigoEvidencia, curadosTotal };
 }

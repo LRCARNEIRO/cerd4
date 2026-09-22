@@ -17,6 +17,8 @@ import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useIcerdArtigoAnalysis, useCountStatSeriesPerArticle, type ArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
+import { formatScore, FAIXA_LABEL, TETOS_ESFORCO, CORTE_INTERMEDIARIO, CORTE_ALTO } from '@/utils/esforcoImpacto';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
@@ -106,10 +108,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
-    aderencia: a.grauAderencia,
-    lacunas: a.lacunasTotal,
-    orcamento: Math.min(100, a.orcamentoProgramas * 15),
-    normativos: Math.min(100, a.normativosCount * 10),
+    esforco: Number(a.esforcoArtigo.toFixed(1)),
+    impacto: Number(a.impactoArtigo.toFixed(1)),
   }));
 
   const barData = analysis.map(a => ({
@@ -119,11 +119,12 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     nao_cumprido: a.lacunasNaoCumpridas,
   }));
 
-  const sorted = [...analysis].sort((a, b) => b.grauAderencia - a.grauAderencia);
+  const sorted = [...analysis].sort((a, b) => b.impactoArtigo - a.impactoArtigo);
   const maisPriorizados = sorted.slice(0, 3);
   const menosPriorizados = sorted.slice(-3).reverse();
 
-  const avgAdherencia = Math.round(analysis.reduce((s, a) => s + a.grauAderencia, 0) / analysis.length);
+  const avgEsforco = analysis.reduce((s, a) => s + a.esforcoArtigo, 0) / (analysis.length || 1);
+  const avgImpacto = analysis.reduce((s, a) => s + a.impactoArtigo, 0) / (analysis.length || 1);
 
   // Total data sources summary
   const totalNormativos = documentosNormativosCount;
@@ -159,22 +160,21 @@ th{background:#f1f5f9}
 .section{margin:12px 0;padding:12px;background:#f8fafc;border-radius:6px;border-left:4px solid}
 .nota{font-size:11px;color:#666;margin-top:4px}
 </style></head><body>
-<h1>⚖️ Anexo Analítico — Aderência ICERD por Artigo</h1>
+<h1>⚖️ Anexo Analítico — Esforço e Impacto por Artigo (ICERD)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-<p><strong>Aderência Média:</strong> ${avgAdherencia}%</p>
+<p><strong>Esforço Médio:</strong> ${formatScore(avgEsforco)} · <strong>Impacto Evidenciado Médio:</strong> ${formatScore(avgImpacto)}</p>
 <p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas, ${totalStatSeries} séries estatísticas.</p>
 <p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a ${curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada (planilha CERD_42_BASE auditada).</p>
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
-  const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
-  const badgeLabel = badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência';
+  const cls = (f: string) => f === 'alto' ? 'green' : f === 'intermediario' ? 'yellow' : 'red';
   const naoCumpridasTotal = a.lacunasNaoCumpridas + a.lacunasRetrocesso;
   return `
 <h2>Artigo ${a.numero} — ${a.titulo}</h2>
 <p>${a.tituloCompleto}</p>
-<p><span class="score" style="color:${a.grauAderencia >= 60 ? '#16a34a' : a.grauAderencia >= 30 ? '#ca8a04' : '#dc2626'}">${a.grauAderencia}%</span> 
-<span class="badge ${badgeClass}">${badgeLabel}</span></p>
+<p><span class="score">${formatScore(a.esforcoArtigo)}</span> <span class="badge ${cls(a.faixaEsforco)}">Esforço ${FAIXA_LABEL[a.faixaEsforco]}</span>
+&nbsp;&nbsp;<span class="score">${formatScore(a.impactoArtigo)}</span> <span class="badge ${cls(a.faixaImpacto)}">Impacto ${FAIXA_LABEL[a.faixaImpacto]}</span></p>
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
@@ -195,17 +195,19 @@ ${analysis.map(a => {
 }).join('')}
 
 <hr/>
-<h2>Metodologia de Cálculo — Aderência ICERD</h2>
-<p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
+<h2>Metodologia de Cálculo — Esforço e Impacto (v7)</h2>
+<p><strong>Esforço Governamental (E):</strong> mede o volume de evidências efetivamente vinculadas, com tetos de saturação derivados do P75 da matriz auditada e pesos iguais de 1/3 por base.</p>
 <table>
-<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Recomendações ONU Cumpridas</td><td>50%</td><td>Taxa relativa: cumpridas/total × 50. Peso dominante — reflete diretamente o grau de resposta do Estado ao Comitê CERD.</td></tr>
-<tr><td>Cobertura Normativa</td><td>15%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>10%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
-<tr><td>Indicadores</td><td>15%</td><td>Registros estatísticos do BD vinculados ao artigo</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recom. cumpridas, orçamento, indicadores, normativos)</td></tr>
+<tr><th>Base</th><th>Teto de saturação</th><th>Peso</th></tr>
+<tr><td>Estatística</td><td>${TETOS_ESFORCO.estatistica} evidências</td><td>1/3</td></tr>
+<tr><td>Orçamentária</td><td>${TETOS_ESFORCO.orcamentaria} evidências</td><td>1/3</td></tr>
+<tr><td>Normativa</td><td>${TETOS_ESFORCO.normativa} evidências</td><td>1/3</td></tr>
 </table>
-<p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> é uma visão <strong>gerencial</strong> — mede se o Estado está respondendo às obrigações do Comitê CERD (por isso o peso maior para recomendações atendidas). A <em>Evolução dos Artigos</em> é uma visão de <strong>evidências</strong> — avalia se orçamento, normativos e indicadores melhoraram ou pioraram ao longo do período.</p>
+<p>E = [100·min(nEst/${TETOS_ESFORCO.estatistica};1) + 100·min(nOrç/${TETOS_ESFORCO.orcamentaria};1) + 100·min(nNorm/${TETOS_ESFORCO.normativa};1)] ÷ 3</p>
+<p><strong>Realização (R):</strong> média simples das três bases — estatística = % de evidências com evolução não desfavorável (melhorou ou estável = 1; piorou = 0); orçamentária = Σ Liquidado ÷ Σ Dotação autorizada válida; normativa = 100 com presença, 0 sem.</p>
+<p><strong>Impacto Evidenciado (I):</strong> I = E × R ÷ 100.</p>
+<p><strong>Faixas (iguais para Esforço e Impacto):</strong> Baixo &lt; ${CORTE_INTERMEDIARIO} · Intermediário ${CORTE_INTERMEDIARIO}–${CORTE_ALTO - 0.1} · Alto ≥ ${CORTE_ALTO}.</p>
+<p class="nota"><strong>Do artigo:</strong> o Esforço e o Impacto de cada artigo são a média simples dos valores das recomendações a ele associadas (mapa relacional + mapa formal), preservando no denominador as recomendações sem evidência, que entram como zero.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -214,7 +216,7 @@ ${analysis.map(a => {
     a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
+  }, [analysis, avgEsforco, avgImpacto, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
 
   return (
     <div className="space-y-6">
@@ -299,30 +301,30 @@ ${analysis.map(a => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="border-primary/30">
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Aderência Média</p>
-            <p className="text-2xl font-bold text-primary">{avgAdherencia}%</p>
+            <p className="text-xs text-muted-foreground">Esforço Médio</p>
+            <p className="text-2xl font-bold text-primary">{formatScore(avgEsforco)}</p>
             <p className="text-xs text-muted-foreground">dos 7 artigos</p>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Impacto Evidenciado Médio</p>
+            <p className="text-2xl font-bold text-primary">{formatScore(avgImpacto)}</p>
+            <p className="text-xs text-muted-foreground">E × R ÷ 100</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Mais Priorizado</p>
+            <p className="text-xs text-muted-foreground">Maior Impacto</p>
             <p className="text-lg font-bold">Art. {maisPriorizados[0]?.numero}</p>
-            <p className="text-xs text-success">{maisPriorizados[0]?.grauAderencia}%</p>
+            <p className="text-xs text-success">{formatScore(maisPriorizados[0]?.impactoArtigo ?? 0)}</p>
           </CardContent>
         </Card>
         <Card className="border-destructive/30">
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Menos Priorizado</p>
+            <p className="text-xs text-muted-foreground">Menor Impacto</p>
             <p className="text-lg font-bold">Art. {menosPriorizados[0]?.numero}</p>
-            <p className="text-xs text-destructive">{menosPriorizados[0]?.grauAderencia}%</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Art. com Boa Aderência</p>
-            <p className="text-lg font-bold">{analysis.filter(a => a.grauAderencia >= 70).length}</p>
-            <p className="text-xs text-muted-foreground">≥ 70% de aderência</p>
+            <p className="text-xs text-destructive">{formatScore(menosPriorizados[0]?.impactoArtigo ?? 0)}</p>
           </CardContent>
         </Card>
       </div>
@@ -331,9 +333,9 @@ ${analysis.map(a => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Radar de Aderência por Artigo</CardTitle>
+            <CardTitle className="text-sm">Radar de Esforço e Impacto por Artigo</CardTitle>
             <CardDescription className="text-xs">
-              Escala 0-100 integrando recomendações ONU, normativos, orçamento, indicadores e séries estatísticas
+              Escala 0-100 — Esforço (volume de evidências vinculadas) e Impacto Evidenciado (Esforço × Realização)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -343,7 +345,9 @@ ${analysis.map(a => {
                   <PolarGrid stroke="hsl(var(--border))" />
                   <PolarAngleAxis dataKey="artigo" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Radar name="Aderência (%)" dataKey="aderencia" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} strokeWidth={2} isAnimationActive={false} />
+                  <Radar name="Esforço" dataKey="esforco" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.2} strokeWidth={2} isAnimationActive={false} />
+                  <Radar name="Impacto" dataKey="impacto" stroke="hsl(var(--chart-2))" fill="hsl(var(--chart-2))" fillOpacity={0.25} strokeWidth={2} isAnimationActive={false} />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} />
                   <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -407,31 +411,25 @@ ${analysis.map(a => {
                         className="cursor-pointer hover:opacity-80 transition-opacity"
                         title="Clique para ver evidências detalhadas"
                       >
-                        <Badge
-                          className={`text-[10px] ${
-                            a.grauAderencia >= 70
-                              ? 'bg-success/10 text-success border-success/30'
-                              : a.grauAderencia >= 40
-                                ? 'bg-warning/10 text-warning border-warning/30'
-                                : 'bg-destructive/10 text-destructive border-destructive/30'
-                          }`}
-                          variant="outline"
-                        >
-                          {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'} 🔍
-                        </Badge>
+                        <EsforcoImpactoTags
+                          esforco={a.esforcoArtigo}
+                          impacto={a.impactoArtigo}
+                          faixaEsforco={a.faixaEsforco}
+                          faixaImpacto={a.faixaImpacto}
+                        />
                       </button>
                     </div>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-2xl font-bold" style={{ color: a.grauAderencia >= 60 ? 'hsl(var(--chart-2))' : a.grauAderencia >= 30 ? 'hsl(var(--chart-4))' : 'hsl(var(--destructive))' }}>
-                    {a.grauAderencia}%
+                  <p className="text-2xl font-bold" style={{ color: a.faixaImpacto === 'alto' ? 'hsl(var(--chart-2))' : a.faixaImpacto === 'intermediario' ? 'hsl(var(--chart-4))' : 'hsl(var(--destructive))' }}>
+                    {formatScore(a.impactoArtigo)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground">aderência</p>
+                  <p className="text-[10px] text-muted-foreground">impacto evidenciado</p>
                 </div>
               </div>
 
-              <Progress value={a.grauAderencia} className="h-2 mb-3" />
+              <Progress value={a.impactoArtigo} className="h-2 mb-3" />
 
               {/* Metrics grid - expanded with new dimensions */}
               {(() => {
@@ -503,23 +501,23 @@ ${analysis.map(a => {
         <CardContent className="pt-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-3 bg-success/5 border border-success/20 rounded-lg">
-              <p className="text-xs font-bold text-success mb-2">✓ ARTIGOS MAIS PRIORIZADOS</p>
+              <p className="text-xs font-bold text-success mb-2">✓ ARTIGOS COM MAIOR IMPACTO EVIDENCIADO</p>
               <ul className="space-y-1">
                 {maisPriorizados.map(a => (
                   <li key={a.numero} className="text-xs text-muted-foreground flex items-center justify-between">
                     <span>Art. {a.numero} — {a.titulo}</span>
-                    <Badge variant="outline" className="text-[10px]">{a.grauAderencia}%</Badge>
+                    <Badge variant="outline" className="text-[10px]">E {formatScore(a.esforcoArtigo)} · I {formatScore(a.impactoArtigo)}</Badge>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-              <p className="text-xs font-bold text-destructive mb-2">✗ ARTIGOS MENOS PRIORIZADOS</p>
+              <p className="text-xs font-bold text-destructive mb-2">✗ ARTIGOS COM MENOR IMPACTO EVIDENCIADO</p>
               <ul className="space-y-1">
                 {menosPriorizados.map(a => (
                   <li key={a.numero} className="text-xs text-muted-foreground flex items-center justify-between">
                     <span>Art. {a.numero} — {a.titulo}</span>
-                    <Badge variant="destructive" className="text-[10px]">{a.grauAderencia}%</Badge>
+                    <Badge variant="destructive" className="text-[10px]">E {formatScore(a.esforcoArtigo)} · I {formatScore(a.impactoArtigo)}</Badge>
                   </li>
                 ))}
               </ul>
@@ -528,24 +526,24 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              <strong>⚖️ Conclusão:</strong> A aderência média do Estado brasileiro à Convenção ICERD é de <strong>{avgAdherencia}%</strong>.
-              {avgAdherencia < 50
-                ? ` Este índice revela que a maioria dos compromissos do tratado permanece sem cobertura adequada em termos de políticas públicas, orçamento e resultados mensuráveis. Os artigos ${menosPriorizados.map(a => a.numero).join(', ')} apresentam as maiores lacunas de implementação.`
-                : ` Embora existam avanços em artigos específicos (${maisPriorizados.map(a => a.numero).join(', ')}), a cobertura permanece desigual entre os compromissos, com os artigos ${menosPriorizados.map(a => a.numero).join(', ')} exigindo atenção prioritária.`
+              <strong>⚖️ Conclusão:</strong> O Esforço médio do Estado brasileiro nos sete artigos é de <strong>{formatScore(avgEsforco)}</strong> e o Impacto Evidenciado médio é de <strong>{formatScore(avgImpacto)}</strong>.
+              {avgImpacto < CORTE_INTERMEDIARIO
+                ? ` As evidências mobilizadas ainda não se convertem em realização mensurável: os artigos ${menosPriorizados.map(a => a.numero).join(', ')} apresentam as maiores lacunas de implementação.`
+                : ` Há conversão parcial do esforço em resultados, com desempenho desigual entre os compromissos; os artigos ${menosPriorizados.map(a => a.numero).join(', ')} exigem atenção prioritária.`
               }
             </p>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-lg space-y-2">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU cumpridas — taxa relativa cumpridas/total (50%), cobertura normativa (15%), cobertura orçamentária — contagem de ações (10%), indicadores (15%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo. O orçamento não considera valores em R$. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
+              <strong>Nota metodológica (v7):</strong> o <strong>Esforço Governamental</strong> mede o volume de evidências distintas vinculadas, com tetos de saturação de {TETOS_ESFORCO.estatistica} (estatística), {TETOS_ESFORCO.orcamentaria} (orçamentária) e {TETOS_ESFORCO.normativa} (normativa) e pesos iguais de 1/3 por base. A <strong>Realização</strong> é a média das três bases: estatística = proporção de evidências com evolução não desfavorável (melhorou ou estável); orçamentária = Liquidado ÷ Dotação autorizada válida; normativa = 100 com presença, 0 sem. O <strong>Impacto Evidenciado</strong> = Esforço × Realização ÷ 100. Por artigo, ambos são a média simples das recomendações associadas, inclusive as sem evidência (valor zero). Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
             <div className="text-[10px] text-muted-foreground">
-              <strong>Faixas de Status de Aderência:</strong>
+              <strong>Faixas (iguais para Esforço e Impacto):</strong>
               <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                <li><strong>Boa Aderência</strong> — Score ≥ 70%: Cobertura ampla com evidências em múltiplas dimensões e alta taxa de cumprimento das recomendações ONU.</li>
-                <li><strong>Aderência Parcial</strong> — Score 40–69%: Cobertura intermediária com esforços visíveis, mas lacunas persistentes em ao menos uma dimensão relevante.</li>
-                <li><strong>Baixa Aderência</strong> — Score &lt; 40%: Cobertura insuficiente com poucas evidências de resposta do Estado às obrigações da Convenção.</li>
+                <li><strong>Alto</strong> — ≥ {CORTE_ALTO}</li>
+                <li><strong>Intermediário</strong> — {CORTE_INTERMEDIARIO} a {CORTE_ALTO - 0.1}</li>
+                <li><strong>Baixo</strong> — &lt; {CORTE_INTERMEDIARIO}</li>
               </ul>
             </div>
           </div>

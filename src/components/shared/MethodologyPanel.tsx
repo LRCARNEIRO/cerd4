@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Info, ChevronDown, ChevronUp, Scale, BarChart3, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { TETOS_ESFORCO, CORTE_INTERMEDIARIO, CORTE_ALTO } from '@/utils/esforcoImpacto';
 
 type MethodologyVariant = 'sensor' | 'aderencia' | 'full';
 
@@ -12,18 +13,16 @@ interface MethodologyPanelProps {
   className?: string;
 }
 
-const progressCategories = [
-  { label: 'Cumprido', weight: 'Score ≥ 65', color: 'bg-emerald-500', desc: 'Cobertura robusta: 5+ indicadores, 3+ normativos, 5+ ações orçamentárias vinculadas' },
-  { label: 'Parcialmente Cumprido', weight: 'Score ≥ 35', color: 'bg-amber-500', desc: 'Cobertura moderada: 2-4 indicadores, 1-2 normativos ou 2-4 ações orçamentárias' },
-  { label: 'Não Cumprido', weight: 'Score < 35', color: 'bg-red-500', desc: 'Evidências insuficientes ou ausentes nas 3 dimensões' },
+const faixas = [
+  { label: 'Alto', weight: `≥ ${CORTE_ALTO}`, color: 'bg-emerald-500', desc: 'Volume de evidências próximo ou acima do teto de saturação e realização consistente' },
+  { label: 'Intermediário', weight: `${CORTE_INTERMEDIARIO} – ${CORTE_ALTO - 0.1}`, color: 'bg-amber-500', desc: 'Esforço visível, mas conversão parcial em realização mensurável' },
+  { label: 'Baixo', weight: `< ${CORTE_INTERMEDIARIO}`, color: 'bg-red-500', desc: 'Poucas evidências vinculadas ou realização desfavorável' },
 ];
 
-const aderenciaWeights = [
-  { label: 'Recomendações ONU Cumpridas', weight: '50%', icon: '⚠️' },
-  { label: 'Cobertura Normativa', weight: '15%', icon: '📜' },
-  { label: 'Orçamento (contagem de ações)', weight: '10%', icon: '💰' },
-  { label: 'Indicadores', weight: '15%', icon: '📊' },
-  { label: 'Amplitude de Fontes', weight: '10%', icon: '📈' },
+const realizacaoBases = [
+  { label: 'Estatística', desc: 'Proporção de evidências com evolução não desfavorável (melhorou ou estável = 1; piorou = 0)', icon: '📊' },
+  { label: 'Orçamentária', desc: 'Σ Liquidado ÷ Σ Dotação autorizada válida', icon: '💰' },
+  { label: 'Normativa', desc: 'Presença de instrumento vinculado = 100; ausência = 0', icon: '📜' },
 ];
 
 export function MethodologyPanel({ variant, className }: MethodologyPanelProps) {
@@ -50,42 +49,39 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
           <CardContent className="pt-4 pb-4 space-y-4">
             <div className="flex items-center gap-2 mb-1">
               <Scale className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">Política de Conformidade Equilibrada</span>
-              <Badge variant="outline" className="text-[10px]">v6</Badge>
+              <span className="text-sm font-semibold text-foreground">Esforço Governamental e Impacto Evidenciado</span>
+              <Badge variant="outline" className="text-[10px]">v7</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O sistema utiliza <strong>vinculação híbrida e auditável por palavras-chave</strong> para associar evidências
-              (indicadores, orçamento e normativos) a cada recomendação. As palavras-chave são extraídas
-              do <em>tema</em>, <em>descrição</em> e <em>texto original da ONU</em>, com sinônimos temáticos e
-              filtro de termos jurídicos/genéricos. O cruzamento combina <strong>termo/frase inteira normalizada</strong>
-              com <strong>expansão conceitual controlada</strong> para casos quase equivalentes (ex.: dados desagregados ↔ Censo/raça-gênero),
-              mantendo <strong>score temático mínimo</strong> e sem substring solta (ex.: <em>norma</em> não casa com <em>normal</em>).
-              Recomendações com grupo focal só aceitam evidências com sinal focal explícito (ex.: quilombola,
-              indígena, LGBTQIA+) ou frase específica correlata; termos genéricos como <em>violência</em>, <em>proteção</em>
-              e <em>discriminação</em> não vinculam sozinhos. A busca é realizada nos campos: nome/categoria/subcategoria/análise dos indicadores,
-              programa/órgão/descritivo/eixo/público-alvo/observações/razão de seleção das ações orçamentárias e título/categoria dos normativos.
-              <strong> Não</strong> utiliza artigos ICERD ou eixos temáticos genéricos.
+              As evidências vêm da <strong>matriz auditada Artigo × Recomendação × Evidência</strong>, validada manualmente
+              a partir do inventário canônico das três bases (estatística, orçamentária e normativa). Não há inferência
+              automática por palavras-chave: cada vínculo é curado. Para cada recomendação, o sistema apura dois índices
+              complementares — o <strong>Esforço</strong> (quanto o Estado mobilizou) e o <strong>Impacto Evidenciado</strong>
+              (quanto desse esforço se converteu em realização comprovada).
             </p>
 
             {showSensor && (
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">Fórmula do Score por Recomendação</span>
+                  <span className="text-xs font-semibold text-foreground">Fórmulas</span>
                 </div>
-                <div className="bg-background/80 rounded-md p-3 border border-border/50">
-                  <p className="text-[11px] font-mono text-muted-foreground mb-1">
-                    Score = (Indicadores × 40%) + (Orçamento × 30%) + (Normativos × 30%)
+                <div className="bg-background/80 rounded-md p-3 border border-border/50 space-y-2">
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    Esforço = [100 × min(nEst/{TETOS_ESFORCO.estatistica}; 1) + 100 × min(nOrç/{TETOS_ESFORCO.orcamentaria}; 1) + 100 × min(nNorm/{TETOS_ESFORCO.normativa}; 1)] ÷ 3
                   </p>
-                  <p className="text-[10px] text-muted-foreground mb-2">
-                    Cada dimensão pontua de 0 a 100 conforme a quantidade de evidências vinculadas por coerência temática.
-                    O status final é atribuído pela faixa do score combinado:
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    Realização = média das três bases &nbsp;·&nbsp; Impacto Evidenciado = Esforço × Realização ÷ 100
                   </p>
-                  <div className="space-y-1.5">
-                    {progressCategories.map((cat) => (
+                  <p className="text-[10px] text-muted-foreground">
+                    Os tetos de saturação ({TETOS_ESFORCO.estatistica} estatística · {TETOS_ESFORCO.orcamentaria} orçamentária · {TETOS_ESFORCO.normativa} normativa)
+                    derivam do percentil 75 das evidências distintas efetivamente vinculadas; as três bases têm peso igual de 1/3.
+                  </p>
+                  <div className="space-y-1.5 pt-1">
+                    {faixas.map((cat) => (
                       <div key={cat.label} className="flex items-center gap-2">
                         <div className={cn('w-2.5 h-2.5 rounded-full shrink-0', cat.color)} />
-                        <span className="text-[11px] font-medium text-foreground min-w-[140px]">{cat.label}</span>
+                        <span className="text-[11px] font-medium text-foreground min-w-[100px]">{cat.label}</span>
                         <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{cat.weight}</Badge>
                         <span className="text-[10px] text-muted-foreground">{cat.desc}</span>
                       </div>
@@ -99,27 +95,24 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <BarChart3 className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">Pesos — Aderência ICERD</span>
+                  <span className="text-xs font-semibold text-foreground">Composição da Realização</span>
                 </div>
-                <div className="bg-background/80 rounded-md p-3 border border-border/50">
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {aderenciaWeights.map((w) => (
-                      <div key={w.label} className="flex items-center gap-1.5">
-                        <span className="text-xs">{w.icon}</span>
-                        <span className="text-[11px] text-foreground">{w.label}</span>
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-auto">{w.weight}</Badge>
-                      </div>
-                    ))}
-                  </div>
+                <div className="bg-background/80 rounded-md p-3 border border-border/50 space-y-1.5">
+                  {realizacaoBases.map((w) => (
+                    <div key={w.label} className="flex items-start gap-1.5">
+                      <span className="text-xs">{w.icon}</span>
+                      <span className="text-[11px] font-medium text-foreground min-w-[90px]">{w.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{w.desc}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
             <p className="text-[10px] text-muted-foreground italic">
-              Vinculação por keywords: tema + descrição + texto ONU → tokenização → filtro de stop-words → 
-              expansão conceitual controlada → frase inteira/termo inteiro + score temático mínimo → busca ampliada.
-              Escala de indicadores: 1=20, 2=35, 3=50, 5=65, 7=80, 10+=100. Orçamento (contagem): 1=20, 2=35, 3=50, 5=65, 8=80, 12+=100.
-              Normativos: 1=20, 2=40, 3=55, 4=75, 6+=100. Faixas: ≥65 Cumprido | ≥35 Parcial | &lt;35 Não Cumprido.
+              Por artigo, o Esforço e o Impacto são a média simples dos valores das recomendações associadas
+              (mapa relacional somado ao mapa formal), preservando no denominador as recomendações sem evidência,
+              que entram como zero. Evidências repetidas para a mesma recomendação em artigos diferentes são contadas uma única vez.
             </p>
           </CardContent>
         </Card>

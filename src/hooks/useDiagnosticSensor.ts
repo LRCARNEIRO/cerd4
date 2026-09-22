@@ -12,6 +12,10 @@ import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+import {
+  computeEsforcoImpacto, classificarFaixa, mediaSimples, FAIXA_LABEL, TETOS_ESFORCO,
+  type EsforcoImpactoResultado, type Faixa,
+} from '@/utils/esforcoImpacto';
 
 /**
  * Evidência estatística auditada cujo registro não existe em
@@ -111,6 +115,8 @@ export interface AuditScoreBreakdown {
   scoreGlobal: number;
   statusComputado: ComplianceStatus;
   justificativaCompleta: string;
+  /** Metodologia v7 — Esforço Governamental × Impacto Evidenciado */
+  esforcoImpacto: EsforcoImpactoResultado;
 }
 
 /** Diagnóstico computado de uma recomendação (CERD, RG ou Durban) */
@@ -139,6 +145,19 @@ export interface DiagnosticSummary {
     em_andamento: number;
   };
   progressoSensor: number;
+  /** v7 — distribuição das 42 recomendações nas faixas 25/60 */
+  faixasEsforco: Record<Faixa, number>;
+  faixasImpacto: Record<Faixa, number>;
+  mediaEsforco: number;
+  mediaImpacto: number;
+}
+
+export interface ArtigoEsforcoImpacto {
+  esforco: number;
+  impacto: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
+  totalRecs: number;
 }
 
 const diagnosticsCache = new Map<string, RecomendacaoDiagnostic[]>();
@@ -511,45 +530,69 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         signals.push({ type: 'cobertura_normativa', severity: 'warning', message: 'Sem cobertura normativa identificada' });
       }
 
-      // ── SCORE GLOBAL (ponderado) ──
+      // ── SCORE GLOBAL (legado v6, mantido apenas para leitura interna) ──
       const PESO_IND = 0.40;
       const PESO_ORC = 0.30;
       const PESO_NORM = 0.30;
-      let scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
+      const scoreGlobal = Math.round(scoreInd * PESO_IND + scoreOrc * PESO_ORC + scoreNorm * PESO_NORM);
 
-      // ── STATUS COMPUTADO (3 faixas) ──
-      let statusComputado: ComplianceStatus;
-      if (scoreGlobal >= 65) statusComputado = 'cumprido';
-      else if (scoreGlobal >= 35) statusComputado = 'parcialmente_cumprido';
-      else statusComputado = 'nao_cumprido';
+      // ── Evidências distintas exibidas (subindicadores expandidos) ──
+      const linkedIndicadores: LinkedIndicador[] = finalIndicadores.flatMap(i => {
+        const base: LinkedIndicador = {
+          id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria,
+          tendencia: i.tendencia, dados: i.dados,
+        };
+        if ((i as any).sub) return [{ ...base, sub: (i as any).sub, guardaChuva: (i as any).guardaChuva }];
+        return expandIndicadorEvidencia(base);
+      });
+      const linkedOrcamento: LinkedOrcamento[] = finalOrcamentos.map(o => ({
+        programa: o.programa, orgao: o.orgao, ano: o.ano,
+        dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago,
+      }));
+      const linkedNormativos: LinkedNormativo[] = finalNormativos.map(n => ({ titulo: n.titulo, status: n.status }));
 
-      const statusLabels: Record<ComplianceStatus, string> = {
-        cumprido: 'Cumprido', parcialmente_cumprido: 'Parcialmente Cumprido',
-        em_andamento: 'Em Andamento', nao_cumprido: 'Não Cumprido', retrocesso: 'Retrocesso'
-      };
+      // ═══════════════════════════════════════════════════════════
+      // METODOLOGIA v7 — Esforço Governamental × Impacto Evidenciado
+      // ═══════════════════════════════════════════════════════════
+      const esforcoImpacto = computeEsforcoImpacto({
+        indicadores: linkedIndicadores,
+        orcamento: linkedOrcamento,
+        normativos: linkedNormativos,
+      });
 
+      // Compatibilidade interna: o rótulo de cumprimento deixou de ser exibido,
+      // mas painéis legados ainda leem `statusComputado`. Ele espelha a faixa
+      // do Impacto Evidenciado.
+      const statusComputado: ComplianceStatus =
+        esforcoImpacto.faixaImpacto === 'alto' ? 'cumprido'
+        : esforcoImpacto.faixaImpacto === 'intermediario' ? 'parcialmente_cumprido'
+        : 'nao_cumprido';
+
+      const ei = esforcoImpacto;
       const justificativaCompleta = [
-        `SCORE GLOBAL: ${scoreGlobal}/100 → ${statusLabels[statusComputado]}`,
+        `ESFORÇO GOVERNAMENTAL: ${ei.esforco}/100 → ${FAIXA_LABEL[ei.faixaEsforco]}`,
+        `IMPACTO EVIDENCIADO: ${ei.impacto}/100 → ${FAIXA_LABEL[ei.faixaImpacto]}`,
         ``,
-         `Motor v6: Cobertura Pura — mede se o governo buscou responder (existência de evidências).`,
-         `Palavras-chave extraídas do tema, descrição e texto ONU de cada recomendação.`,
-         `A evidência só entra se casar por termo/frase inteira normalizada e atingir coerência temática mínima.`,
-         `Todas as 3 dimensões medem CONTAGEM (quantas evidências vinculadas), não qualidade/execução.`,
-         `A análise de execução financeira e tendência de indicadores pertence ao Motor de Evolução.`,
-        `📊 INDICADORES (peso ${PESO_IND * 100}%): ${justInd}`,
-        `💰 ORÇAMENTO (peso ${PESO_ORC * 100}%): ${justOrc}`,
-        `📋 NORMATIVOS (peso ${PESO_NORM * 100}%): ${justNorm}`,
+        `Metodologia v7 — tetos P75 por base (${TETOS_ESFORCO.estatistica} estatísticas / ${TETOS_ESFORCO.orcamentaria} orçamentárias / ${TETOS_ESFORCO.normativa} normativas) e pesos iguais de 1/3.`,
+        `Esforço = [100·min(nEst/${TETOS_ESFORCO.estatistica},1) + 100·min(nOrç/${TETOS_ESFORCO.orcamentaria},1) + 100·min(nNorm/${TETOS_ESFORCO.normativa},1)] / 3`,
+        `Realização = [% de indicadores com evolução não desfavorável + (Liquidado / Dotação autorizada) + presença normativa] / 3 = ${ei.realizacao}`,
+        `Impacto Evidenciado = Esforço × Realização / 100`,
         ``,
-        `Faixas: ≥65 Cumprido | ≥35 Parcial | <35 Não Cumprido`,
+        `📊 ESTATÍSTICA: ${ei.contagens.estatistica} evidência(s) → esforço ${ei.componentes.esforcoEstatistica} | ${ei.contagens.favoraveis} não desfavorável(is) de ${ei.contagens.comTendencia} com série → realização ${ei.componentes.realizacaoEstatistica}`,
+        `💰 ORÇAMENTÁRIA: ${ei.contagens.orcamentaria} ação(ões) → esforço ${ei.componentes.esforcoOrcamentaria} | execução ${ei.componentes.realizacaoOrcamentaria}%`,
+        `📋 NORMATIVA: ${ei.contagens.normativa} instrumento(s) → esforço ${ei.componentes.esforcoNormativa} | realização ${ei.componentes.realizacaoNormativa}`,
+        ``,
+        `Faixas (iguais para Esforço e Impacto): Baixo <25 | Intermediário 25–59,9 | Alto ≥60`,
       ].filter(Boolean).join('\n');
 
       const auditoria: AuditScoreBreakdown = {
         indicadores: { score: scoreInd, total: totalInd, melhoram, pioram, estaveis, justificativa: justInd },
-        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: 0, execucaoMedia: 0, justificativa: justOrc },
+        orcamento: { score: scoreOrc, total: totalOrc, simbolicos: 0, execucaoMedia: Math.round(ei.componentes.realizacaoOrcamentaria), justificativa: justOrc },
         normativos: { score: scoreNorm, total: totalNorm, justificativa: justNorm },
         scoreGlobal,
         statusComputado,
         justificativaCompleta,
+        esforcoImpacto,
       };
 
       return {
@@ -557,17 +600,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         statusComputado,
         auditoria,
         signals,
-        linkedIndicadores: finalIndicadores.flatMap(i => {
-          const base: LinkedIndicador = {
-            id: i.id, codigo: (i as any).codigo, nome: i.nome, categoria: i.categoria,
-            tendencia: i.tendencia, dados: i.dados,
-          };
-          // Vínculo curado já aponta para o subindicador (bloco visual): não reexpandir.
-          if ((i as any).sub) return [{ ...base, sub: (i as any).sub, guardaChuva: (i as any).guardaChuva }];
-          return expandIndicadorEvidencia(base);
-        }),
-        linkedOrcamento: finalOrcamentos.map(o => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago })),
-        linkedNormativos: finalNormativos.map(n => ({ titulo: n.titulo, status: n.status })),
+        linkedIndicadores,
+        linkedOrcamento,
+        linkedNormativos,
       };
     });
 
@@ -606,14 +641,61 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         ) / total)
       : 0;
 
+    const faixasEsforco: Record<Faixa, number> = { baixo: 0, intermediario: 0, alto: 0 };
+    const faixasImpacto: Record<Faixa, number> = { baixo: 0, intermediario: 0, alto: 0 };
+    diagnostics.forEach(d => {
+      faixasEsforco[d.auditoria.esforcoImpacto.faixaEsforco]++;
+      faixasImpacto[d.auditoria.esforcoImpacto.faixaImpacto]++;
+    });
+    const mediaEsforco = mediaSimples(diagnostics.map(d => d.auditoria.esforcoImpacto.esforco));
+    const mediaImpacto = mediaSimples(diagnostics.map(d => d.auditoria.esforcoImpacto.impacto));
+
     return {
       totalOrcamentoSimbolico,
       totalTendenciaPiora,
       totalSemCoberturaNormativa,
       statusReclassificado,
       progressoSensor,
+      faixasEsforco,
+      faixasImpacto,
+      mediaEsforco,
+      mediaImpacto,
     };
   }, [diagnostics]);
+
+  /**
+   * ARTIGOS — média simples dos resultados das recomendações formalmente
+   * associadas ao artigo (mapa relacional + mapa formal), preservando
+   * recomendações sem evidência (entram com score 0).
+   * I=6 · II=7 · III=4 · IV=2 · V=21 · VI=6 · VII=4
+   */
+  const artigoEsforcoImpacto = useMemo(() => {
+    const map = new Map<ArtigoConvencao, ArtigoEsforcoImpacto>();
+    if (!recomendacoes || diagnostics.length === 0) return map;
+    const diagById = new Map(diagnostics.map(d => [d.recomendacaoId, d]));
+    const buckets = new Map<ArtigoConvencao, { esf: number[]; imp: number[] }>();
+    for (const rec of recomendacoes) {
+      const arts = getRecomendacaoArtigos(rec);
+      const ei = diagById.get(rec.id)?.auditoria.esforcoImpacto;
+      for (const art of arts) {
+        let b = buckets.get(art);
+        if (!b) { b = { esf: [], imp: [] }; buckets.set(art, b); }
+        b.esf.push(ei?.esforco ?? 0);
+        b.imp.push(ei?.impacto ?? 0);
+      }
+    }
+    for (const [art, b] of buckets) {
+      const esforco = mediaSimples(b.esf);
+      const impacto = mediaSimples(b.imp);
+      map.set(art, {
+        esforco, impacto,
+        faixaEsforco: classificarFaixa(esforco),
+        faixaImpacto: classificarFaixa(impacto),
+        totalRecs: b.esf.length,
+      });
+    }
+    return map;
+  }, [recomendacoes, diagnostics]);
 
   const diagnosticMap = useMemo(() => {
     const map = new Map<string, RecomendacaoDiagnostic>();
@@ -695,6 +777,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     diagnosticMap,
     summary,
     artigoEvidencia,
+    artigoEsforcoImpacto,
     /** Registros físicos da matriz curada (linhas da tabela auditada). */
     curadosTotal: curados?.length || 0,
     isReady: !!(recomendacoes && indicadores && orcamento && normativos && curados),
