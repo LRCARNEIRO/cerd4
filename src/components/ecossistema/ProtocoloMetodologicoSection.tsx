@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, BookOpen, Calculator, Layers, FileCheck, Scale } from 'lucide-react';
 import { SectionHeader } from './BaseEvidenciasSection';
+import { TETOS_ESFORCO, CORTE_INTERMEDIARIO, CORTE_ALTO } from '@/utils/esforcoImpacto';
 
 const PROTOCOLS = [
   {
