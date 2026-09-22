@@ -36,7 +36,7 @@ export default function Artigos() {
 
   return (
     <DashboardLayout
-      title="Artigos — Aderência ICERD"
+      title="Artigos — Esforço e Impacto (ICERD)"
       subtitle="Avaliação sistêmica da conformidade com os Artigos I-VII da Convenção Internacional sobre a Eliminação de Todas as Formas de Discriminação Racial"
     >
       <div className="flex justify-end gap-2 mb-4">

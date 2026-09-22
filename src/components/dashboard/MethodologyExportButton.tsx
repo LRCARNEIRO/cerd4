@@ -97,7 +97,7 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <tr><th>Seção do Painel</th><th>Fonte de Dados</th></tr>
 <tr><td>Esforço Governamental</td><td>Status consolidado de Recomendações (Cumprido/Parcial/Não Cumprido)</td></tr>
 <tr><td>Impacto Real</td><td>Resultado consolidado de Evolução das Recomendações (Evolução/Estagnação/Retrocesso)</td></tr>
-<tr><td>Lente dos Artigos — Esforço %</td><td>Score de Aderência ICERD por artigo</td></tr>
+<tr><td>Lente dos Artigos — Esforço e Impacto</td><td>Média simples do Esforço e do Impacto Evidenciado das recomendações do artigo</td></tr>
 <tr><td>Lente dos Artigos — Evolução %</td><td>Score de Evolução dos Artigos por artigo</td></tr>
 </table>
 
