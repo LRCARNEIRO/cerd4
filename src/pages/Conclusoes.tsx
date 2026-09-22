@@ -373,7 +373,7 @@ export default function Conclusoes() {
                     <li>• Analfabetismo negro: {edu2018.analfabetismoNegro}% → {edu2024.analfabetismoNegro}% ({(edu2024.analfabetismoNegro-edu2018.analfabetismoNegro).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-129']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Desemprego negro: {eco2018.desempregoNegro}% → {eco2024.desempregoNegro}% ({(eco2024.desempregoNegro-eco2018.desempregoNegro).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Renda média negra: R$ {eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaNegra} (+{((eco2024.rendaMediaNegra/eco2018.rendaMediaNegra-1)*100).toFixed(0)}%) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
-                    <li>• Censo 2022: primeira contagem de quilombolas ({povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')}) <LastroEvidencias indicadores={indicadores} codigos={['IND-209']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Censo 2022: primeira contagem de quilombolas ({povosTradicionais.quilombolas.populacao.toLocaleString('pt-BR')}) <LastroEvidencias indicadores={indicadores} codigos={['IND-162']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Recriação do MIR e Lei 14.532/2023 (racismo = crime inafiançável) <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} normativos={['Lei 14.532']} prefixo="" className="inline-flex ml-1" /></li>
                   </ul>
 
@@ -567,7 +567,7 @@ export default function Conclusoes() {
                     </p>
                     <LastroEvidencias
                       indicadores={indicadores}
-                      codigos={['IND-112', 'IND-179', 'IND-209', 'IND-178', 'IND-173']}
+                      codigos={['IND-112', 'IND-179', 'IND-162', 'IND-178', 'IND-173']}
                       className="-mt-2"
                     />
 
@@ -589,7 +589,7 @@ export default function Conclusoes() {
                           <li>• Feminicídio negro <LastroEvidencias indicadores={indicadores} codigos={['IND-112']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Letalidade policial</li>
                           <li>• Gap absoluto de renda</li>
-                          <li>• Titulação quilombola <LastroEvidencias indicadores={indicadores} codigos={['IND-209']} prefixo="" className="inline-flex ml-1" /></li>
+                          <li>• Titulação quilombola <LastroEvidencias indicadores={indicadores} codigos={['IND-162']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Saneamento em TIs e quilombos <LastroEvidencias indicadores={indicadores} codigos={['IND-137', 'IND-153']} prefixo="" className="inline-flex ml-1" /></li>
                         </ul>
                       </div>
