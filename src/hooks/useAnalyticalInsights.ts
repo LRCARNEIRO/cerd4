@@ -606,7 +606,7 @@ function gerarFiosCondutores(
       id: 'ods-racial-agenda-2030',
       titulo: 'ODS e Desigualdade Racial: Agenda 2030 sob Perspectiva Étnico-Racial',
       tipo: odsDecrescentes > odsCrescentes ? 'retrocesso' : 'correlacao',
-      argumento: `${odsRacialIndicadores.length} indicadores ODS desagregados por raça/cor revelam que a Agenda 2030 não avança de forma equitativa para a população negra e indígena. ${odsCrescentes > 0 ? `${odsCrescentes} indicadores mostram tendência positiva.` : ''} ${odsDecrescentes > 0 ? `${odsDecrescentes} indicadores registram retrocesso ou estagnação.` : ''} Os ODS com maior disparidade racial incluem saúde (ODS 3), educação (ODS 4), trabalho (ODS 8), desigualdade (ODS 10) e segurança (ODS 16). Esta análise evidencia que o cumprimento formal dos ODS mascara desigualdades raciais estruturais.`,
+      argumento: `${odsRacialIndicadores.length} indicadores ODS desagregados por raça/cor revelam que a Agenda 2030 não avança de forma equitativa para a população negra e indígena. ${odsCrescentes > 0 ? `${odsCrescentes} indicador(es) melhorou/melhoraram.` : ''} ${odsDecrescentes > 0 ? `${odsDecrescentes} indicador(es) piorou/pioraram.` : ''} Os ODS com maior disparidade racial incluem saúde (ODS 3), educação (ODS 4), trabalho (ODS 8), desigualdade (ODS 10) e segurança (ODS 16). Esta análise evidencia que o cumprimento formal dos ODS mascara desigualdades raciais estruturais.`,
       evidencias: evidOds,
       eixos: ['dados_estatisticas', 'saude', 'educacao', 'trabalho_renda', 'seguranca_publica'],
       grupos: ['negros', 'indigenas'],
