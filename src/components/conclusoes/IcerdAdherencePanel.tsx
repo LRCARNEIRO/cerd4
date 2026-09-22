@@ -124,7 +124,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   const menosPriorizados = sorted.slice(-3).reverse();
 
   const avgEsforco = analysis.reduce((s, a) => s + a.esforcoArtigo, 0) / (analysis.length || 1);
-  const avgImpacto = analysis.reduce((s, a) => s + a.impactoArtigo, 0) / (analysis.length || 1);
+  // avgAdherencia legado removido — ver Esforço/Impacto v7
   const avgAdherencia = Math.round(avgEsforco);
 
   // Total data sources summary
@@ -217,7 +217,7 @@ ${analysis.map(a => {
     a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [analysis, avgAdherencia, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
+  }, [analysis, avgEsforco, avgImpacto, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
 
   return (
     <div className="space-y-6">
