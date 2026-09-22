@@ -174,15 +174,20 @@ export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
 
 export function generateVerdict(a: ArtigoAnalysis): string {
   const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
-  const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
-  const emAndamentoText = emAndamento > 0 ? `, ${emAndamento} em andamento` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
   const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
+  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoProgramas} ação(ões) orçamentária(s) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
 
-  if (a.grauAderencia >= 70) return `Boa aderência. O Estado demonstra engajamento significativo com o Art. ${a.numero}: ${a.lacunasCumpridas + a.lacunasParciais} de ${a.lacunasTotal} obrigações atendidas${emAndamentoText}, ${a.orcamentoProgramas} ação(ões) orçamentária(s) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 40) return `Aderência parcial com sinais de progresso. Art. ${a.numero}: ${a.lacunasCumpridas} cumprida(s), ${a.lacunasParciais} parcial(is)${emAndamentoText} de ${a.lacunasTotal} obrigações, com ${a.orcamentoProgramas} ação(ões) vinculada(s) e ${a.indicadoresCount} indicadores${normText}.${respText}${statsText}`;
-  if (a.grauAderencia >= 15) return `Baixa aderência. O Art. ${a.numero} permanece sub-priorizado: ${a.lacunasNaoCumpridas} não cumprida(s), ${a.lacunasRetrocesso} retrocesso(s)${emAndamentoText}${normText}.${respText}${statsText}`;
-  return `Aderência crítica. O Art. ${a.numero} não recebe atenção estatal proporcional às obrigações da Convenção${normText}.${respText}${statsText}`;
+  if (a.faixaImpacto === 'alto') {
+    return `Impacto alto. ${base} O esforço mobilizado converteu-se em realização comprovada.${respText}${statsText}`;
+  }
+  if (a.faixaImpacto === 'intermediario') {
+    return `Impacto intermediário. ${base} Há esforço visível, mas a realização ainda é parcial.${respText}${statsText}`;
+  }
+  if (a.faixaEsforco !== 'baixo') {
+    return `Impacto baixo apesar do esforço. ${base} As evidências mobilizadas ainda não se traduzem em resultados.${respText}${statsText}`;
+  }
+  return `Esforço e impacto baixos. ${base} O artigo permanece sub-priorizado frente às obrigações da Convenção.${respText}${statsText}`;
 }
 
 interface Params {
