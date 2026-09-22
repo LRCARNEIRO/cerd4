@@ -194,17 +194,19 @@ ${analysis.map(a => {
 }).join('')}
 
 <hr/>
-<h2>Metodologia de Cálculo — Aderência ICERD</h2>
-<p><strong>Objetivo:</strong> Medir se o sistema possui dados externos suficientes (orçamento, normativos, indicadores, séries estatísticas) para avaliar cada artigo. <em>Respostas CERD III</em> e <em>Conclusões Analíticas</em> foram removidas por serem outputs interpretativos do próprio sistema, não evidências externas.</p>
+<h2>Metodologia de Cálculo — Esforço e Impacto (v7)</h2>
+<p><strong>Esforço Governamental (E):</strong> mede o volume de evidências efetivamente vinculadas, com tetos de saturação derivados do P75 da matriz auditada e pesos iguais de 1/3 por base.</p>
 <table>
-<tr><th>Dimensão</th><th>Peso</th><th>Descrição</th></tr>
-<tr><td>Recomendações ONU Cumpridas</td><td>50%</td><td>Taxa relativa: cumpridas/total × 50. Peso dominante — reflete diretamente o grau de resposta do Estado ao Comitê CERD.</td></tr>
-<tr><td>Cobertura Normativa</td><td>15%</td><td>Instrumentos legislativos/institucionais vinculados ao artigo</td></tr>
-<tr><td>Cobertura Orçamentária</td><td>10%</td><td>Quantidade de ações/programas vinculados por palavras-chave (sem considerar valores em R$)</td></tr>
-<tr><td>Indicadores</td><td>15%</td><td>Registros estatísticos do BD vinculados ao artigo</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td><td>Diversidade de tipos de evidência disponíveis (recom. cumpridas, orçamento, indicadores, normativos)</td></tr>
+<tr><th>Base</th><th>Teto de saturação</th><th>Peso</th></tr>
+<tr><td>Estatística</td><td>${TETOS_ESFORCO.estatistica} evidências</td><td>1/3</td></tr>
+<tr><td>Orçamentária</td><td>${TETOS_ESFORCO.orcamentaria} evidências</td><td>1/3</td></tr>
+<tr><td>Normativa</td><td>${TETOS_ESFORCO.normativa} evidências</td><td>1/3</td></tr>
 </table>
-<p class="nota"><strong>Distinção Aderência vs. Evolução:</strong> A <em>Aderência ICERD</em> é uma visão <strong>gerencial</strong> — mede se o Estado está respondendo às obrigações do Comitê CERD (por isso o peso maior para recomendações atendidas). A <em>Evolução dos Artigos</em> é uma visão de <strong>evidências</strong> — avalia se orçamento, normativos e indicadores melhoraram ou pioraram ao longo do período.</p>
+<p>E = [100·min(nEst/${TETOS_ESFORCO.estatistica};1) + 100·min(nOrç/${TETOS_ESFORCO.orcamentaria};1) + 100·min(nNorm/${TETOS_ESFORCO.normativa};1)] ÷ 3</p>
+<p><strong>Realização (R):</strong> média simples das três bases — estatística = % de evidências com evolução não desfavorável (melhorou ou estável = 1; piorou = 0); orçamentária = Σ Liquidado ÷ Σ Dotação autorizada válida; normativa = 100 com presença, 0 sem.</p>
+<p><strong>Impacto Evidenciado (I):</strong> I = E × R ÷ 100.</p>
+<p><strong>Faixas (iguais para Esforço e Impacto):</strong> Baixo &lt; ${CORTE_INTERMEDIARIO} · Intermediário ${CORTE_INTERMEDIARIO}–${CORTE_ALTO - 0.1} · Alto ≥ ${CORTE_ALTO}.</p>
+<p class="nota"><strong>Do artigo:</strong> o Esforço e o Impacto de cada artigo são a média simples dos valores das recomendações a ele associadas (mapa relacional + mapa formal), preservando no denominador as recomendações sem evidência, que entram como zero.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
