@@ -12,6 +12,10 @@ interface ArtigoData {
   numero: string;
   tituloCompleto: string;
   grauAderencia: number;
+  esforcoArtigo: number;
+  impactoArtigo: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
   lacunasTotal: number;
   lacunasCumpridas: number;
   lacunasParciais: number;
