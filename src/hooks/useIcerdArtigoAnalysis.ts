@@ -17,6 +17,7 @@ import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
+import { classificarFaixa, FAIXA_LABEL, formatScore, type Faixa } from '@/utils/esforcoImpacto';
 
 export type ArtigoAnalysis = {
   numero: ArtigoConvencao;
