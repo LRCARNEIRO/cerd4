@@ -77,7 +77,7 @@ function computeAdherenceScoreSimple(
  */
 export function useEvolucaoSummary() {
   const { data: recomendacoes, isLoading: l1 } = useLacunasIdentificadas({});
-  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady, artigoEvidencia } = useDiagnosticSensor(recomendacoes);
+  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady, artigoEvidencia, artigoEsforcoImpacto } = useDiagnosticSensor(recomendacoes);
 
   const isLoading = l1 || !sensorReady;
 
