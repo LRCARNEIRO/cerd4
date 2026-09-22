@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
-import { AlertTriangle, Database, Filter, Gauge, TrendingUp, Minus, TrendingDown } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Database, Filter, Gauge, Minus, TrendingDown } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
