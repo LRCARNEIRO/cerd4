@@ -7,11 +7,17 @@ import { CheckCircle2, XCircle, Clock, AlertTriangle, FileText, DollarSign, BarC
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
+import { formatScore, type Faixa } from '@/utils/esforcoImpacto';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
 
 interface ArtigoData {
   numero: string;
   tituloCompleto: string;
   grauAderencia: number;
+  esforcoArtigo: number;
+  impactoArtigo: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
   lacunasTotal: number;
   lacunasCumpridas: number;
   lacunasParciais: number;
@@ -52,8 +58,6 @@ export function ArtigoAdherenceDrilldownDialog({
 
   if (!artigo) return null;
 
-  const badgeLabel = artigo.grauAderencia >= 70 ? 'Boa Aderência' : artigo.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência';
-  const badgeColor = artigo.grauAderencia >= 70 ? 'bg-success/10 text-success border-success/30' : artigo.grauAderencia >= 40 ? 'bg-warning/10 text-warning border-warning/30' : 'bg-destructive/10 text-destructive border-destructive/30';
 
   const statusLabels: Record<string, { label: string }> = {
     cumprido: { label: 'Cumprido' },
@@ -232,34 +236,44 @@ export function ArtigoAdherenceDrilldownDialog({
 
         <ScrollArea className={maximized ? 'h-[calc(95vh-120px)]' : 'max-h-[calc(85vh-120px)]'}>
           <div className="space-y-4 pr-4">
-            {/* Score Summary */}
-            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+            {/* Esforço e Impacto — metodologia v7 */}
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg flex-wrap">
               <div className="text-center">
-                <p className="text-2xl font-bold">{artigo.grauAderencia}%</p>
-                <p className="text-[10px] text-muted-foreground">Aderência</p>
+                <p className="text-2xl font-bold">{formatScore(artigo.esforcoArtigo)}</p>
+                <p className="text-[10px] text-muted-foreground">Esforço</p>
               </div>
               <div className="h-8 w-px bg-border" />
-              <Badge variant="outline" className={`text-xs ${badgeColor}`}>{badgeLabel}</Badge>
-              <Progress value={artigo.grauAderencia} className="h-2 flex-1" />
+              <div className="text-center">
+                <p className="text-2xl font-bold">{formatScore(artigo.impactoArtigo)}</p>
+                <p className="text-[10px] text-muted-foreground">Impacto</p>
+              </div>
+              <div className="h-8 w-px bg-border" />
+              <EsforcoImpactoTags
+                esforco={artigo.esforcoArtigo}
+                impacto={artigo.impactoArtigo}
+                faixaEsforco={artigo.faixaEsforco}
+                faixaImpacto={artigo.faixaImpacto}
+              />
+              <Progress value={artigo.impactoArtigo} className="h-2 flex-1 min-w-[80px]" />
             </div>
 
-            {/* Composição do Score */}
+            {/* Evidências que compõem o Esforço */}
             <div className="grid grid-cols-4 gap-2 text-center">
               <div className="p-2 bg-muted/30 rounded">
-                <p className="text-sm font-bold">{artigo.lacunasCumpridas}/{artigo.lacunasTotal}</p>
-                <p className="text-[10px] text-muted-foreground">Recom. Cumpr. (50%)</p>
+                <p className="text-sm font-bold">{artigo.lacunasTotal}</p>
+                <p className="text-[10px] text-muted-foreground">Recomendações</p>
               </div>
               <div className="p-2 bg-muted/30 rounded">
                 <p className="text-sm font-bold">{indicadores.length}</p>
-                <p className="text-[10px] text-muted-foreground">Indicadores (15%)</p>
+                <p className="text-[10px] text-muted-foreground">Estatística (teto 32)</p>
               </div>
               <div className="p-2 bg-muted/30 rounded">
                 <p className="text-sm font-bold">{orcamentos.length}</p>
-                <p className="text-[10px] text-muted-foreground">Orçamento (10%)</p>
+                <p className="text-[10px] text-muted-foreground">Orçamentária (teto 25)</p>
               </div>
               <div className="p-2 bg-muted/30 rounded">
                 <p className="text-sm font-bold">{normativos.length}</p>
-                <p className="text-[10px] text-muted-foreground">Normativos (15%)</p>
+                <p className="text-[10px] text-muted-foreground">Normativa (teto 4)</p>
               </div>
             </div>
 

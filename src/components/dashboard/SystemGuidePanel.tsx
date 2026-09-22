@@ -136,7 +136,7 @@ export function SystemGuidePanel() {
                   items={[
                     "Esforço Governamental ← status consolidado de Recomendações",
                     "Impacto Real ← resultado consolidado de Evolução Recomendações",
-                    "Lente dos Artigos: Esforço% ← Aderência ICERD | Evolução% ← Evolução Artigos",
+                    "Lente dos Artigos: Esforço e Impacto Evidenciado (média das recomendações do artigo)",
                     "Nenhum cálculo próprio — espelho puro dos motores analíticos"
                   ]}
                 />

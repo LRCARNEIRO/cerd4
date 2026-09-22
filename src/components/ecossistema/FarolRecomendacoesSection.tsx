@@ -118,7 +118,7 @@ export default function FarolRecomendacoesSection() {
           </Button>
           <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" asChild>
             <Link to="/conclusoes">
-              Ver Aderência ICERD
+              Ver Esforço e Impacto por Artigo
               <ChevronRight className="w-3.5 h-3.5 ml-1" />
             </Link>
           </Button>
