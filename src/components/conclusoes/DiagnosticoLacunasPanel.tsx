@@ -291,8 +291,8 @@ ${rows}
                             {r.diag!.linkedIndicadores.map((ind, i) => (
                               <li key={i} className="text-[10px] text-muted-foreground flex items-start gap-1">
                                 <span className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                                  ['crescente', 'melhora'].includes((ind.tendencia || '').toLowerCase()) ? 'bg-success' :
-                                  ['decrescente', 'piora'].includes((ind.tendencia || '').toLowerCase()) ? 'bg-destructive' : 'bg-muted-foreground'
+                                  tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados, sub: (ind as any).sub }) === 'melhorou' ? 'bg-success' :
+                                  tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: ind.dados, sub: (ind as any).sub }) === 'piorou' ? 'bg-destructive' : 'bg-muted-foreground'
                                 }`} />
                                 {ind.nome}
                               </li>
