@@ -1,4 +1,5 @@
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
 
 /**
