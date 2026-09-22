@@ -547,7 +547,7 @@ function renderRespostasCerdIII(respostas: RespostaLacunaCerdIII[], lacunas: Lac
       : '';
     
     const indicadoresRef = relatedIndicators.length > 0
-      ? `<p style="font-size:9pt;color:#64748b"><em>Indicadores vinculados: ${relatedIndicators.map(i => `${i.nome} (${i.tendencia || 'sem tendência'})`).join('; ')}</em></p>`
+      ? `<p style="font-size:9pt;color:#64748b"><em>Indicadores vinculados: ${relatedIndicators.map(i => `${i.nome} (${tendenciaLabel(i as any)})`).join('; ')}</em></p>`
       : '';
 
     return `
