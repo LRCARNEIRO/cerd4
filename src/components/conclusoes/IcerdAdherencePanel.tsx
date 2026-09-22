@@ -106,10 +106,8 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
 
   const radarData = analysis.map(a => ({
     artigo: `Art. ${a.numero}`,
-    aderencia: a.grauAderencia,
-    lacunas: a.lacunasTotal,
-    orcamento: Math.min(100, a.orcamentoProgramas * 15),
-    normativos: Math.min(100, a.normativosCount * 10),
+    esforco: Number(a.esforcoArtigo.toFixed(1)),
+    impacto: Number(a.impactoArtigo.toFixed(1)),
   }));
 
   const barData = analysis.map(a => ({
@@ -119,11 +117,13 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
     nao_cumprido: a.lacunasNaoCumpridas,
   }));
 
-  const sorted = [...analysis].sort((a, b) => b.grauAderencia - a.grauAderencia);
+  const sorted = [...analysis].sort((a, b) => b.impactoArtigo - a.impactoArtigo);
   const maisPriorizados = sorted.slice(0, 3);
   const menosPriorizados = sorted.slice(-3).reverse();
 
-  const avgAdherencia = Math.round(analysis.reduce((s, a) => s + a.grauAderencia, 0) / analysis.length);
+  const avgEsforco = analysis.reduce((s, a) => s + a.esforcoArtigo, 0) / (analysis.length || 1);
+  const avgImpacto = analysis.reduce((s, a) => s + a.impactoArtigo, 0) / (analysis.length || 1);
+  const avgAdherencia = Math.round(avgEsforco);
 
   // Total data sources summary
   const totalNormativos = documentosNormativosCount;
