@@ -388,7 +388,7 @@ function generateConsolidatedHTML(data: {
       <td>${ind.nome}</td>
       <td>${ind.categoria}</td>
       <td>${ind.fonte}</td>
-      <td>${ind.tendencia || '—'}</td>
+      <td>${tendenciaLabel(ind)}</td>
       <td>${ind.desagregacao_raca ? '✅' : '❌'}</td>
       <td>${ind.desagregacao_genero ? '✅' : '❌'}</td>
     </tr>`).join('')}
