@@ -24,16 +24,27 @@ const COLORS = [
   'hsl(320 60% 55%)',      // magenta — reserva para 8ª série
 ];
 
-function TendenciaBadge({ t }: { t?: string }) {
-  if (!t) return null;
+/** Tendência sempre recalculada a partir dos dados do indicador (regra canônica). */
+function TendenciaBadge({ ind }: { ind: ComplementoIndicador }) {
+  const det = tendenciaPadraoDetalhada({ nome: ind.nome, categoria: ind.categoria, dados: ind.dados });
+  if (!det.tendencia) {
+    return (
+      <Badge variant="outline" className="text-[10px] gap-1 bg-chart-4/10 text-chart-4 border-chart-4/30" title={det.base}>
+        <AlertTriangle className="w-3 h-3" /> sem série histórica
+      </Badge>
+    );
+  }
   const map: Record<string, { icon: React.ReactNode; cls: string }> = {
-    melhora: { icon: <TrendingUp className="w-3 h-3" />, cls: 'bg-success/10 text-success border-success/30' },
-    piora: { icon: <TrendingDown className="w-3 h-3" />, cls: 'bg-destructive/10 text-destructive border-destructive/30' },
+    melhorou: { icon: <TrendingUp className="w-3 h-3" />, cls: 'bg-success/10 text-success border-success/30' },
+    piorou: { icon: <TrendingDown className="w-3 h-3" />, cls: 'bg-destructive/10 text-destructive border-destructive/30' },
     'estável': { icon: <Minus className="w-3 h-3" />, cls: 'bg-muted text-muted-foreground' },
-    'sub-registro': { icon: <AlertTriangle className="w-3 h-3" />, cls: 'bg-chart-4/10 text-chart-4 border-chart-4/30' },
   };
-  const m = map[t] || map['estável']!;
-  return <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)}>{m.icon} {t}</Badge>;
+  const m = map[det.tendencia]!;
+  return (
+    <Badge variant="outline" className={cn('text-[10px] gap-1', m.cls)} title={det.base}>
+      {m.icon} {det.tendencia}
+    </Badge>
+  );
 }
 
 interface DualAxisData {
