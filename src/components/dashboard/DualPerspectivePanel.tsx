@@ -1,78 +1,64 @@
-import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import {
-  CheckCircle2, Clock, XCircle, AlertTriangle, TrendingUp, Minus, TrendingDown,
-  ArrowRight, Scale, ShieldCheck, BarChart3, BookOpen, Landmark, FileText
+  TrendingUp, Minus, TrendingDown, ArrowRight, Scale, ShieldCheck, BarChart3, BookOpen,
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { type ArtigoConvencao } from '@/utils/artigosConvencao';
+import {
+  CORTE_ALTO, CORTE_INTERMEDIARIO, FAIXA_CLASSE, FAIXA_LABEL, TETOS_ESFORCO,
+  classificarFaixa, formatScore, type Faixa,
+} from '@/utils/esforcoImpacto';
+
+interface FaixaDistribuicao {
+  alto: number;
+  intermediario: number;
+  baixo: number;
+}
 
 interface DualPerspectivePanelProps {
-  statusData: {
-    cumprido: number;
-    parcial: number;
-    naoCumprido: number;
-    retrocesso: number;
-    emAndamento: number;
-  };
-  evolucaoData: {
-    evolucao: number;
-    estagnacao: number;
-    retrocesso: number;
-  };
+  /** Distribuição das recomendações nas faixas de Esforço Governamental */
+  esforcoData: FaixaDistribuicao;
+  /** Distribuição das recomendações nas faixas de Impacto Evidenciado */
+  impactoData: FaixaDistribuicao;
+  mediaEsforco: number;
+  mediaImpacto: number;
   artigosSummary: {
     numero: ArtigoConvencao;
     titulo: string;
     totalRecs: number;
-    cumpridas: number;
-    parciais: number;
-    emAndamento: number;
-    naoCumpridas: number;
-    evolScore: number;
-    aderenciaScore?: number;
+    esforcoScore: number;
+    impactoScore: number;
+    faixaEsforco?: Faixa;
+    faixaImpacto?: Faixa;
     vinculos?: number;
     vinculosPorBase?: { estatistica: number; normativa: number; orcamentaria: number };
   }[];
   isLoading?: boolean;
 }
 
-const STATUS_COLORS = {
-  cumprido: 'hsl(var(--success))',
-  parcial: 'hsl(var(--warning))',
-  naoCumprido: 'hsl(var(--destructive))',
+const FAIXA_COLORS: Record<Faixa, string> = {
+  alto: 'hsl(var(--success))',
+  intermediario: 'hsl(var(--warning))',
+  baixo: 'hsl(var(--destructive))',
 };
 
-const EVOL_COLORS = {
-  evolucao: 'hsl(var(--success))',
-  estagnacao: 'hsl(var(--warning))',
-  retrocesso: 'hsl(var(--destructive))',
-};
+export function DualPerspectivePanel({
+  esforcoData, impactoData, mediaEsforco, mediaImpacto, artigosSummary,
+}: DualPerspectivePanelProps) {
+  const totalEsforco = esforcoData.alto + esforcoData.intermediario + esforcoData.baixo;
+  const totalImpacto = impactoData.alto + impactoData.intermediario + impactoData.baixo;
 
-export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary, isLoading }: DualPerspectivePanelProps) {
-  // 3 faixas only for Esforço: Cumprido, Parcial, Não Cumprido
-  const totalCumprido = statusData.cumprido;
-  const totalParcial = statusData.parcial + statusData.emAndamento;
-  const totalNaoCumprido = statusData.naoCumprido + statusData.retrocesso;
-  const totalStatus = totalCumprido + totalParcial + totalNaoCumprido;
-  const totalEvol = evolucaoData.evolucao + evolucaoData.estagnacao + evolucaoData.retrocesso;
+  const toChart = (d: FaixaDistribuicao) => ([
+    { name: 'Alto', value: d.alto, color: FAIXA_COLORS.alto },
+    { name: 'Intermediário', value: d.intermediario, color: FAIXA_COLORS.intermediario },
+    { name: 'Baixo', value: d.baixo, color: FAIXA_COLORS.baixo },
+  ].filter(x => x.value > 0));
 
-  const statusChartData = [
-    { name: 'Cumprido', value: totalCumprido, color: STATUS_COLORS.cumprido },
-    { name: 'Parcial', value: totalParcial, color: STATUS_COLORS.parcial },
-    { name: 'Não Cumprido', value: totalNaoCumprido, color: STATUS_COLORS.naoCumprido },
-  ].filter(d => d.value > 0);
-
-  const evolChartData = [
-    { name: 'Evolução', value: evolucaoData.evolucao, color: EVOL_COLORS.evolucao },
-    { name: 'Estagnação', value: evolucaoData.estagnacao, color: EVOL_COLORS.estagnacao },
-    { name: 'Retrocesso', value: evolucaoData.retrocesso, color: EVOL_COLORS.retrocesso },
-  ].filter(d => d.value > 0);
-
-  const pctEsforco = totalStatus > 0 ? Math.round((totalCumprido / totalStatus) * 100) : 0;
-  const pctImpacto = totalEvol > 0 ? Math.round((evolucaoData.evolucao / totalEvol) * 100) : 0;
+  const esforcoChart = toChart(esforcoData);
+  const impactoChart = toChart(impactoData);
 
   return (
     <div className="space-y-6">
@@ -81,11 +67,12 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
         <CardContent className="pt-6 pb-5">
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2 mb-3">
             <BookOpen className="w-5 h-5 text-primary" />
-            Como o Brasil respondeu ao CERD? E qual foi o impacto real?
+            Como o Brasil respondeu ao CERD? E qual foi o impacto evidenciado?
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Para avaliar o cumprimento das <strong>43 recomendações</strong> do Comitê para a Eliminação da Discriminação Racial (CERD),
-            o sistema utiliza <strong>duas lentes complementares</strong>:
+            As <strong>42 recomendações</strong> do Comitê para a Eliminação da Discriminação Racial (CERD) são
+            medidas por <strong>dois índices complementares</strong>, calculados sobre a matriz auditada
+            Artigo × Recomendação × Evidência:
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div className="p-3 rounded-lg bg-card border border-border/60">
@@ -93,12 +80,12 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                 <div className="p-1.5 rounded-md bg-primary/10">
                   <ShieldCheck className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-sm font-semibold text-foreground">1ª Lente — Esforço Governamental</span>
+                <span className="text-sm font-semibold text-foreground">1º Índice — Esforço Governamental</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong>O governo procurou responder?</strong> Mede se o Estado brasileiro criou políticas, 
-                programas e marcos normativos para atender a cada recomendação. Resultado: <em>Cumprido, Parcial 
-                ou Não Cumprido</em>.
+                <strong>Quanto o Estado mobilizou?</strong> Volume de evidências vinculadas a cada recomendação,
+                com tetos por base ({TETOS_ESFORCO.estatistica} estatísticas · {TETOS_ESFORCO.orcamentaria} orçamentárias ·{' '}
+                {TETOS_ESFORCO.normativa} normativas) e peso igual de 1/3 entre as bases.
               </p>
             </div>
             <div className="p-3 rounded-lg bg-card border border-border/60">
@@ -106,21 +93,24 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                 <div className="p-1.5 rounded-md bg-success/10">
                   <BarChart3 className="w-4 h-4 text-success" />
                 </div>
-                <span className="text-sm font-semibold text-foreground">2ª Lente — Impacto Real (Evidências)</span>
+                <span className="text-sm font-semibold text-foreground">2º Índice — Impacto Evidenciado</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong>As ações se efetivaram?</strong> Avalia se, de fato, os indicadores estatísticos melhoraram, 
-                se o orçamento foi executado e se os normativos produziram mudanças concretas. Resultado: <em>Evolução, 
-                Estagnação ou Retrocesso</em>.
+                <strong>O esforço se converteu em resultado?</strong> Esforço × Realização, onde a realização combina
+                indicadores com evolução não desfavorável, execução orçamentária (liquidado ÷ dotação autorizada)
+                e presença normativa.
               </p>
             </div>
           </div>
+          <p className="text-[11px] text-muted-foreground mt-3">
+            <strong>Faixas (iguais para os dois índices):</strong> Baixo &lt; {CORTE_INTERMEDIARIO} ·
+            Intermediário {CORTE_INTERMEDIARIO}–{CORTE_ALTO - 0.1} · Alto ≥ {CORTE_ALTO}
+          </p>
         </CardContent>
       </Card>
 
       {/* Side-by-side charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* LEFT: Status / Esforço — 3 faixas */}
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
@@ -129,20 +119,20 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                 Esforço Governamental
               </h3>
               <Badge variant="outline" className="text-xs">
-                {pctEsforco}% cumpridas
+                média {formatScore(mediaEsforco)}/100
               </Badge>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
-              Das 43 recomendações, quantas o governo brasileiro procurou responder com políticas e ações?
+              Distribuição das {totalEsforco} recomendações conforme o volume de evidências mobilizadas.
             </p>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={statusChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
-                    {statusChartData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  <Pie data={esforcoChart} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
+                    {esforcoChart.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip
-                    formatter={(v: number) => [`${v} (${totalStatus ? ((v / totalStatus) * 100).toFixed(0) : 0}%)`, '']}
+                    formatter={(v: number) => [`${v} (${totalEsforco ? ((v / totalEsforco) * 100).toFixed(0) : 0}%)`, '']}
                     contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
                   />
                   <Legend verticalAlign="bottom" height={30} formatter={(v) => <span className="text-[10px] text-foreground">{v}</span>} />
@@ -150,10 +140,13 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-3 gap-2 mt-2">
-              <MiniStat icon={CheckCircle2} label="Cumprido" value={totalCumprido} className="text-success" />
-              <MiniStat icon={Clock} label="Parcial" value={totalParcial} className="text-warning" />
-              <MiniStat icon={XCircle} label="Não Cumprido" value={totalNaoCumprido} className="text-destructive" />
+              <MiniStat icon={TrendingUp} label="Alto" value={esforcoData.alto} className="text-success" />
+              <MiniStat icon={Minus} label="Intermediário" value={esforcoData.intermediario} className="text-warning" />
+              <MiniStat icon={TrendingDown} label="Baixo" value={esforcoData.baixo} className="text-destructive" />
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">
+              Esforço = [100·min(nEst/{TETOS_ESFORCO.estatistica},1) + 100·min(nOrç/{TETOS_ESFORCO.orcamentaria},1) + 100·min(nNorm/{TETOS_ESFORCO.normativa},1)] ÷ 3
+            </p>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/recomendacoes" className="text-xs text-primary hover:underline flex items-center gap-1">
                 Ver Relação Completa <ArrowRight className="w-3 h-3" />
@@ -162,29 +155,28 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
           </CardContent>
         </Card>
 
-        {/* RIGHT: Evolução / Impacto */}
         <Card>
           <CardContent className="pt-5">
             <div className="flex items-center justify-between mb-1">
               <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
                 <BarChart3 className="w-4 h-4 text-success" />
-                Impacto Real (Evidências)
+                Impacto Evidenciado
               </h3>
               <Badge variant="outline" className="text-xs">
-                {pctImpacto}% com evolução
+                média {formatScore(mediaImpacto)}/100
               </Badge>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
-              Das 43 recomendações, quantas apresentam melhoria comprovada em indicadores, orçamento e normativos?
+              Distribuição das {totalImpacto} recomendações conforme o esforço efetivamente realizado.
             </p>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={evolChartData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
-                    {evolChartData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  <Pie data={impactoChart} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" isAnimationActive={false}>
+                    {impactoChart.map((e, i) => <Cell key={i} fill={e.color} />)}
                   </Pie>
                   <Tooltip
-                    formatter={(v: number) => [`${v} (${totalEvol ? ((v / totalEvol) * 100).toFixed(0) : 0}%)`, '']}
+                    formatter={(v: number) => [`${v} (${totalImpacto ? ((v / totalImpacto) * 100).toFixed(0) : 0}%)`, '']}
                     contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }}
                   />
                   <Legend verticalAlign="bottom" height={30} formatter={(v) => <span className="text-[10px] text-foreground">{v}</span>} />
@@ -192,12 +184,12 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
               </ResponsiveContainer>
             </div>
             <div className="grid grid-cols-3 gap-2 mt-2">
-              <MiniStat icon={TrendingUp} label="Evolução" value={evolucaoData.evolucao} className="text-success" />
-              <MiniStat icon={Minus} label="Estagnação" value={evolucaoData.estagnacao} className="text-warning" />
-              <MiniStat icon={TrendingDown} label="Retrocesso" value={evolucaoData.retrocesso} className="text-destructive" />
+              <MiniStat icon={TrendingUp} label="Alto" value={impactoData.alto} className="text-success" />
+              <MiniStat icon={Minus} label="Intermediário" value={impactoData.intermediario} className="text-warning" />
+              <MiniStat icon={TrendingDown} label="Baixo" value={impactoData.baixo} className="text-destructive" />
             </div>
             <p className="text-[10px] text-muted-foreground mt-2 italic">
-              Pesos: R$ Liquidado (35%) · Normativos (35%) · Indicadores com melhoria (30%)
+              Impacto = Esforço × Realização ÷ 100 · Realização = [indicadores não desfavoráveis + liquidado/dotação + presença normativa] ÷ 3
             </p>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/conclusoes" className="text-xs text-primary hover:underline flex items-center gap-1">
@@ -208,7 +200,7 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
         </Card>
       </div>
 
-      {/* Article lens — mirrors Artigos (Aderência) + Evolução Artigos */}
+      {/* Article lens */}
       <Card className="border-border/50">
         <CardContent className="pt-5">
           <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm mb-2">
@@ -216,18 +208,14 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
             Lente dos Artigos ICERD — Como ficaram os compromissos?
           </h3>
           <p className="text-[11px] text-muted-foreground mb-4 leading-relaxed">
-            Cada recomendação está vinculada a um ou mais <strong>Artigos da Convenção (I–VII)</strong>. 
-            A etiqueta <strong>Esforço</strong> reflete a <em>Aderência ICERD</em> (Acompanhamento Gerencial → Artigos) 
-            e a etiqueta de <strong>Evolução</strong> reflete o <em>Impacto Real</em> (Produtos → Conclusões → Evolução Artigos).
+            O resultado de cada <strong>Artigo da Convenção (I–VII)</strong> é a <strong>média simples</strong> dos
+            índices das recomendações a ele associadas pelo mapa relacional e pelo mapa formal —
+            inclusive as recomendações sem evidência vinculada, que entram com zero.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {artigosSummary.map(art => {
-              const aderencia = art.aderenciaScore ?? (art.totalRecs > 0 ? Math.round((art.cumpridas / art.totalRecs) * 100) : 0);
-              const evolLabel = art.evolScore >= 60 ? 'Evolução' : art.evolScore >= 35 ? 'Estagnação' : 'Retrocesso';
-              const evolColorClass = art.evolScore >= 60 ? 'bg-success text-success-foreground' : art.evolScore >= 35 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground';
-              const aderenciaLabel = aderencia >= 70 ? 'Boa' : aderencia >= 40 ? 'Parcial' : 'Baixa';
-              const statusColorClass = aderencia >= 70 ? 'bg-success/15 text-success border-success/30' : aderencia >= 40 ? 'bg-warning/15 text-warning border-warning/30' : 'bg-destructive/15 text-destructive border-destructive/30';
-
+              const fe = art.faixaEsforco ?? classificarFaixa(art.esforcoScore);
+              const fi = art.faixaImpacto ?? classificarFaixa(art.impactoScore);
               return (
                 <div
                   key={art.numero}
@@ -236,13 +224,13 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                   <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
                     <Badge variant="default" className="text-xs">Art. {art.numero}</Badge>
                     <Link to="/artigos">
-                      <Badge variant="outline" className={`text-[9px] cursor-pointer hover:opacity-80 ${statusColorClass}`}>
-                        Esforço {aderencia}%
+                      <Badge variant="outline" className={`text-[9px] cursor-pointer hover:opacity-80 ${FAIXA_CLASSE[fe]}`}>
+                        Esforço {formatScore(art.esforcoScore)} · {FAIXA_LABEL[fe]}
                       </Badge>
                     </Link>
-                    <Link to="/conclusoes">
-                      <Badge className={`text-[9px] cursor-pointer hover:opacity-80 ${evolColorClass}`}>
-                        {evolLabel} {art.evolScore}%
+                    <Link to="/artigos">
+                      <Badge variant="outline" className={`text-[9px] cursor-pointer hover:opacity-80 ${FAIXA_CLASSE[fi]}`}>
+                        Impacto {formatScore(art.impactoScore)} · {FAIXA_LABEL[fi]}
                       </Badge>
                     </Link>
                   </div>
@@ -250,9 +238,9 @@ export function DualPerspectivePanel({ statusData, evolucaoData, artigosSummary,
                     {art.titulo}
                   </p>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <Progress value={aderencia} className="h-1.5 flex-1" />
+                    <Progress value={art.impactoScore} className="h-1.5 flex-1" />
                     <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                      {art.cumpridas}/{art.totalRecs} cumpr.
+                      {art.totalRecs} recs.
                     </span>
                   </div>
                   {art.vinculos ? (
