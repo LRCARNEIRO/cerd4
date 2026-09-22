@@ -10,6 +10,7 @@
  * vinculação por Artigos ICERD + Eixo Temático + Grupo Focal + Keywords.
  */
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 
 interface IndicadorRow {
   nome: string;
