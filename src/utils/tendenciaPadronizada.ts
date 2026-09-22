@@ -73,8 +73,31 @@ export function tendenciaPadraoDetalhada(ind: {
   };
 }
 
-export function tendenciaPadrao(ind: { nome?: string | null; categoria?: string | null; dados?: any }): TendenciaPadrao {
+export function tendenciaPadrao(ind: { nome?: string | null; categoria?: string | null; dados?: any; sub?: string | null }): TendenciaPadrao {
   return tendenciaPadraoDetalhada(ind).tendencia;
+}
+
+/** Rótulo único exibido quando o indicador não tem dois anos medidos. */
+export const TENDENCIA_SEM_SERIE = 'sem série histórica';
+
+/** Vocabulário fixo exibido em telas e relatórios. */
+export function tendenciaLabelFrom(t: TendenciaPadrao): string {
+  return t ?? TENDENCIA_SEM_SERIE;
+}
+
+/** Recalcula pelos dados e devolve o rótulo padronizado (nunca texto gravado). */
+export function tendenciaLabel(ind: { nome?: string | null; categoria?: string | null; dados?: any; sub?: string | null }): string {
+  return tendenciaLabelFrom(tendenciaPadrao(ind));
+}
+
+/** Sinal visual associado (↑ favorável, → manutenção, ↓ desfavorável). */
+export function tendenciaSeta(t: TendenciaPadrao): string {
+  return t === 'melhorou' ? '↑' : t === 'piorou' ? '↓' : t === 'estável' ? '→' : '—';
+}
+
+/** Classe de cor semântica para badges. */
+export function tendenciaCorClasse(t: TendenciaPadrao): string {
+  return t === 'melhorou' ? 'text-success' : t === 'piorou' ? 'text-destructive' : 'text-muted-foreground';
 }
 
 /** Substitui o campo `tendencia` de cada registro pelo valor padronizado. */
