@@ -54,10 +54,10 @@ function variacao(dados: { ano: number; valor: number }[], unidade?: string): st
 
 const TendenciaLabel = ({ tendencia }: { tendencia: 'melhoria' | 'piora' | 'estavel' }) => {
   if (tendencia === 'melhoria') return (
-    <Badge className="bg-success/10 text-success border-success/30 gap-1"><TrendingUp className="w-3 h-3" /> Melhoria</Badge>
+    <Badge className="bg-success/10 text-success border-success/30 gap-1"><TrendingUp className="w-3 h-3" /> Melhorou</Badge>
   );
   if (tendencia === 'piora') return (
-    <Badge className="bg-destructive/10 text-destructive border-destructive/30 gap-1"><TrendingDown className="w-3 h-3" /> Piora</Badge>
+    <Badge className="bg-destructive/10 text-destructive border-destructive/30 gap-1"><TrendingDown className="w-3 h-3" /> Piorou</Badge>
   );
   return (
     <Badge className="bg-muted text-muted-foreground gap-1"><Minus className="w-3 h-3" /> Estável</Badge>
