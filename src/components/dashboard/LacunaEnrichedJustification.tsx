@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { tendenciaPadrao, tendenciaSeta, tendenciaCorClasse } from '@/utils/tendenciaPadronizada';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
 
