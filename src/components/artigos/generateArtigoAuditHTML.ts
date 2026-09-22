@@ -175,19 +175,22 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   const normRows = Array.from(normByTitulo.values()).map(({ titulo, recomendacoes }) => {
     const meta = normativoMetaByTitulo.get(titulo) || {};
     const ano = extractAno(meta.created_at) !== '—' ? extractAno(meta.created_at) : extractAno(titulo);
-    const orgao = extractOrgao(titulo);
+    const orgao = extractOrgaoNormativo(titulo, meta.categoria);
     const tipo = meta.categoria || '—';
-    const cell = meta.url_origem
-      ? `<a href="${meta.url_origem}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${titulo}</a>`
-      : titulo;
+    const sistemaHref = buildNormativoLink(origin, (meta as any).id, titulo);
+    const cell = `<a href="${sistemaHref}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${titulo}</a>`;
+    const fonte = meta.url_origem
+      ? `<a href="${meta.url_origem}" target="_blank" rel="noopener" style="color:#0f766e;text-decoration:underline">abrir original</a>`
+      : '<span style="color:#94a3b8">sem URL</span>';
     const recsTag = recomendacoes.slice(0, 6).join(' ') + (recomendacoes.length > 6 ? ` +${recomendacoes.length - 6}` : '');
     return `<tr>
       <td style="text-align:center">${ano}</td>
       <td>${orgao}</td>
       <td style="text-transform:capitalize">${tipo}</td>
       <td>${cell}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
+      <td style="text-align:center">${fonte}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos agregados.</td></tr>`;
+  }).join('') || `<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos agregados.</td></tr>`;
 
   // ── Orçamento ──
   const orcRows = Array.from(orcByKey.values()).map(({ o, recomendacoes }) => {
@@ -272,7 +275,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 
 <h2>⚖️ Normativos agregados (${normByTitulo.size})</h2>
 <table>
-  <thead><tr><th style="text-align:center">Ano</th><th>Órgão</th><th>Tipo</th><th>Título</th></tr></thead>
+  <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
 </table>
 
