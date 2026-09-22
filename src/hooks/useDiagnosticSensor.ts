@@ -641,14 +641,61 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         ) / total)
       : 0;
 
+    const faixasEsforco: Record<Faixa, number> = { baixo: 0, intermediario: 0, alto: 0 };
+    const faixasImpacto: Record<Faixa, number> = { baixo: 0, intermediario: 0, alto: 0 };
+    diagnostics.forEach(d => {
+      faixasEsforco[d.auditoria.esforcoImpacto.faixaEsforco]++;
+      faixasImpacto[d.auditoria.esforcoImpacto.faixaImpacto]++;
+    });
+    const mediaEsforco = mediaSimples(diagnostics.map(d => d.auditoria.esforcoImpacto.esforco));
+    const mediaImpacto = mediaSimples(diagnostics.map(d => d.auditoria.esforcoImpacto.impacto));
+
     return {
       totalOrcamentoSimbolico,
       totalTendenciaPiora,
       totalSemCoberturaNormativa,
       statusReclassificado,
       progressoSensor,
+      faixasEsforco,
+      faixasImpacto,
+      mediaEsforco,
+      mediaImpacto,
     };
   }, [diagnostics]);
+
+  /**
+   * ARTIGOS — média simples dos resultados das recomendações formalmente
+   * associadas ao artigo (mapa relacional + mapa formal), preservando
+   * recomendações sem evidência (entram com score 0).
+   * I=6 · II=7 · III=4 · IV=2 · V=21 · VI=6 · VII=4
+   */
+  const artigoEsforcoImpacto = useMemo(() => {
+    const map = new Map<ArtigoConvencao, ArtigoEsforcoImpacto>();
+    if (!recomendacoes || diagnostics.length === 0) return map;
+    const diagById = new Map(diagnostics.map(d => [d.recomendacaoId, d]));
+    const buckets = new Map<ArtigoConvencao, { esf: number[]; imp: number[] }>();
+    for (const rec of recomendacoes) {
+      const arts = getRecomendacaoArtigos(rec);
+      const ei = diagById.get(rec.id)?.auditoria.esforcoImpacto;
+      for (const art of arts) {
+        let b = buckets.get(art);
+        if (!b) { b = { esf: [], imp: [] }; buckets.set(art, b); }
+        b.esf.push(ei?.esforco ?? 0);
+        b.imp.push(ei?.impacto ?? 0);
+      }
+    }
+    for (const [art, b] of buckets) {
+      const esforco = mediaSimples(b.esf);
+      const impacto = mediaSimples(b.imp);
+      map.set(art, {
+        esforco, impacto,
+        faixaEsforco: classificarFaixa(esforco),
+        faixaImpacto: classificarFaixa(impacto),
+        totalRecs: b.esf.length,
+      });
+    }
+    return map;
+  }, [recomendacoes, diagnostics]);
 
   const diagnosticMap = useMemo(() => {
     const map = new Map<string, RecomendacaoDiagnostic>();
