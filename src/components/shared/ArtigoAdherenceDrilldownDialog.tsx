@@ -7,6 +7,8 @@ import { CheckCircle2, XCircle, Clock, AlertTriangle, FileText, DollarSign, BarC
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
+import { formatScore, type Faixa } from '@/utils/esforcoImpacto';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
 
 interface ArtigoData {
   numero: string;
