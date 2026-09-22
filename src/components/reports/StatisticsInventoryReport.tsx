@@ -102,9 +102,10 @@ function indicadorToHTML(ind: any): string {
   }
 
   const formatGroup = (k: string) => k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  const tendBadge = ind.tendencia
-    ? `<span class="badge ${ind.tendencia.includes('melhora') ? 'badge-green' : ind.tendencia.includes('piora') ? 'badge-red' : 'badge-amber'}">${ind.tendencia}</span>`
-    : '';
+  // Tendência sempre recalculada pelos dados do próprio indicador
+  // (série histórica + polaridade) — nunca o rótulo gravado.
+  const tendCalc = tendenciaPadrao(ind as any);
+  const tendBadge = `<span class="badge ${tendCalc === 'melhorou' ? 'badge-green' : tendCalc === 'piorou' ? 'badge-red' : 'badge-amber'}">${tendenciaLabelFrom(tendCalc)}</span>`;
   // Código curto IND-NNN (canônico, gerado em useIndicadoresInterseccionais)
   // — facilita citação cruzada em relatórios e auditoria humana.
   const codigoBadge = ind.codigo
