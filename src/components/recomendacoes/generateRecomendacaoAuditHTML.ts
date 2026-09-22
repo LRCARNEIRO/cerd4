@@ -10,6 +10,7 @@ import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
 import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
+import { extractOrgaoNormativo, buildNormativoLink } from '@/utils/normativoDisplay';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -143,13 +144,15 @@ export function generateRecomendacaoAuditHTML({
   const normRows = linkedNorm.map(n => {
     const meta = normativoMetaByTitulo.get(n.titulo) || {};
     const ano = extractAno(meta.created_at) !== '—' ? extractAno(meta.created_at) : extractAno(n.titulo);
-    const orgao = extractOrgao(n.titulo);
+    const orgao = extractOrgaoNormativo(n.titulo, meta.categoria);
     const tipo = meta.categoria || '—';
-    const titulo = meta.url_origem
-      ? `<a href="${meta.url_origem}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${n.titulo}</a>`
-      : n.titulo;
-    return `<tr><td style="text-align:center">${ano}</td><td>${orgao}</td><td style="text-transform:capitalize">${tipo}</td><td>${titulo}</td></tr>`;
-  }).join('') || `<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos vinculados.</td></tr>`;
+    const sistemaHref = buildNormativoLink(origin, (meta as any).id, n.titulo);
+    const titulo = `<a href="${sistemaHref}" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:underline">${n.titulo}</a>`;
+    const fonte = meta.url_origem
+      ? `<a href="${meta.url_origem}" target="_blank" rel="noopener" style="color:#0f766e;text-decoration:underline">abrir original</a>`
+      : '<span style="color:#94a3b8">sem URL</span>';
+    return `<tr><td style="text-align:center">${ano}</td><td>${orgao}</td><td style="text-transform:capitalize">${tipo}</td><td>${titulo}</td><td style="text-align:center">${fonte}</td></tr>`;
+  }).join('') || `<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos vinculados.</td></tr>`;
 
   // ── Orçamento ──────────────────────────────────────────────────
   const orcRows = linkedOrc.map(o => {
