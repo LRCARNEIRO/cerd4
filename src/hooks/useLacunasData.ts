@@ -440,7 +440,10 @@ export function useOrcamentoStats() {
       
 
       
-      const registrosLimpos = registros.filter(r => !is5034Distortion(r));
+      // O Painel Geral usa exatamente o mesmo conjunto canônico da Base
+      // Orçamentária. O diagnóstico 5034 permanece disponível separadamente,
+      // mas não altera silenciosamente os totais exibidos.
+      const registrosLimpos = registros;
       
       const valorEfetivo = (r: typeof registros[0]) => 
         Number(r.pago) || Number(r.dotacao_autorizada) || 0;

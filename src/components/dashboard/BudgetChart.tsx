@@ -24,7 +24,7 @@ export function BudgetChart({ data }: BudgetChartProps) {
     <div className="data-card h-full">
       <h3 className="font-semibold text-foreground mb-4">Execução Orçamentária - Políticas Raciais</h3>
       <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
+        {data.length > 0 ? <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
@@ -57,9 +57,16 @@ export function BudgetChart({ data }: BudgetChartProps) {
             <Bar dataKey="empenhado" name="Empenhado" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
             <Bar dataKey="pago" name="Pago" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} isAnimationActive={false} />
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveContainer> : (
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            Dados orçamentários indisponíveis.
+          </div>
+        )}
       </div>
       <div className="mt-3 pt-2 border-t border-border/50 space-y-1">
+        <p className="text-[10px] text-muted-foreground">
+          Base canônica: registros Ação × Ano, após deduplicação lógica. Valores incluem SESAI e não usam dados simulados.
+        </p>
         <p className="text-[10px] text-muted-foreground flex items-center gap-1">
           <FileText className="w-3 h-3" /> <strong>Fontes:</strong>
         </p>

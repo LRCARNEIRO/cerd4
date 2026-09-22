@@ -26,20 +26,20 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <p><strong>Sistema de Subsídios para o IV Relatório CERD</strong></p>
 <p>Gerado em: ${now}</p>
 
-<h2>1. Princípio de Retroalimentação Automática (Single Source of Truth)</h2>
-<p>O sistema opera sob o princípio de <strong>Fonte Única de Verdade</strong>: toda evidência cadastrada ou editada na aba <em>Recomendações</em> (Acompanhamento Gerencial) propaga automaticamente para todas as abas dependentes. Ao incluir ou excluir um indicador, ação orçamentária ou normativo, os seguintes painéis recalculam instantaneamente:</p>
+<h2>1. Fontes canônicas e fluxo de atualização — Metodologia v7</h2>
+<p>O sistema parte de três bases canônicas e imutáveis na camada analítica: <strong>278 evidências estatísticas, 204 orçamentárias e 32 normativas</strong>, totalizando <strong>514 evidências</strong>. Os vínculos auditados entre essas bases e as recomendações alimentam Produtos, Conclusões, relatórios e o Painel Geral. Ajustes nos produtos não retornam nem alteram as três bases.</p>
 <ul>
-<li>Esforço e Impacto de cada recomendação</li>
-<li>Esforço e Impacto por artigo ICERD</li>
-<li>Diagnóstico de lacunas remanescentes</li>
-<li>Gráficos e badges do Painel Geral</li>
+<li>Inventário canônico: 514 evidências — 278 estatísticas, 204 orçamentárias e 32 normativas</li>
+<li>Matriz relacional auditada: 2.122 endereços válidos Artigo × Recomendação × Evidência</li>
+<li>Após deduplicar a mesma evidência para a mesma recomendação entre artigos: 1.658 relações distintas — 734 estatísticas, 845 orçamentárias e 79 normativas</li>
+<li>As 42 recomendações originais permanecem no universo analítico, inclusive quando não possuem evidência vinculada</li>
 </ul>
 
 <h2>2. Fluxo de Dados — Passo a Passo</h2>
 
 <div class="step">
-<span class="step-num">1</span><strong>Base de Evidências — Recomendações (Acompanhamento Gerencial)</strong>
-<p>Ponto de partida: as 42 recomendações ONU e a matriz auditada Artigo × Recomendação × Evidência.</p>
+<span class="step-num">1</span><strong>Bases de Evidências e Matriz Relacional Auditada</strong>
+<p>Ponto de partida: o inventário canônico, as 42 recomendações originais e os 2.122 endereços válidos da matriz auditada. Para calcular cada recomendação, uma evidência repetida entre artigos é contada uma única vez.</p>
 <table>
 <tr><th>Base</th><th>Teto do Esforço</th><th>Peso</th></tr>
 <tr><td>Estatística</td><td>31 evidências</td><td>1/3</td></tr>
@@ -59,7 +59,7 @@ ul{padding-left:20px}li{margin-bottom:4px}
 
 <div class="step">
 <span class="step-num">3</span><strong>Diagnóstico e Painel Geral</strong>
-<p>Mesma base de Recomendações, com visualização focada nas lacunas remanescentes. Apresenta resposta sugerida textual que amarra as evidências encontradas. Atualiza automaticamente ao editar evidências em Recomendações.</p>
+<p>Visualização das lacunas remanescentes e das evidências auditadas. Os resultados são recalculados quando as bases canônicas ou os vínculos curados são atualizados, sem criar uma fonte paralela de dados.</p>
 </div>
 
 <h2>3. Reflexo no Painel Geral</h2>
@@ -68,10 +68,11 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <tr><td>Esforço Governamental</td><td>Distribuição e média do índice de Esforço das recomendações</td></tr>
 <tr><td>Impacto Evidenciado</td><td>Distribuição e média do índice E × R ÷ 100 das recomendações</td></tr>
 <tr><td>Lente dos Artigos — Esforço e Impacto</td><td>Média simples do Esforço e do Impacto Evidenciado das recomendações do artigo</td></tr>
+<tr><td>Execução Orçamentária</td><td>Base Orçamentária canônica, por Ação × Ano, após deduplicação lógica; inclui SESAI</td></tr>
 </table>
 
 <div class="note">
-<strong>Nenhum cálculo próprio:</strong> O Painel Geral é um espelho puro dos motores analíticos. Qualquer edição em Recomendações se reflete automaticamente em todos os painéis e no Painel Geral.
+<strong>Nenhuma retroalimentação paralela:</strong> o Painel Geral apenas apresenta os resultados dos motores analíticos e os totais das bases canônicas. Ele não grava, altera ou devolve dados às bases Estatística, Orçamentária e Normativa.
 </div>
 
 <hr/>

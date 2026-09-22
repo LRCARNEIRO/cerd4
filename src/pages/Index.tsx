@@ -60,16 +60,7 @@ export default function Index() {
         empenhado: v.empenhado || 0,
         pago: v.pago || 0
       })).sort((a, b) => a.ano - b.ano)
-    : [
-        { ano: 2018, autorizado: 45000000, empenhado: 38000000, pago: 32000000 },
-        { ano: 2019, autorizado: 52000000, empenhado: 45000000, pago: 40000000 },
-        { ano: 2020, autorizado: 48000000, empenhado: 35000000, pago: 28000000 },
-        { ano: 2021, autorizado: 42000000, empenhado: 32000000, pago: 25000000 },
-        { ano: 2022, autorizado: 38000000, empenhado: 28000000, pago: 22000000 },
-        { ano: 2023, autorizado: 85000000, empenhado: 72000000, pago: 58000000 },
-        { ano: 2024, autorizado: 120000000, empenhado: 98000000, pago: 85000000 },
-        { ano: 2025, autorizado: 145000000, empenhado: 115000000, pago: 95000000 }
-      ];
+    : [];
 
   return (
     <DashboardLayout
