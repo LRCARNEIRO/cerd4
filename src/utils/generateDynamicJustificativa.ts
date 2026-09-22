@@ -234,8 +234,10 @@ export function generateDynamicJustificativa(
     const tendencias = inds.map(i => inferTendencia(i));
     const melhoram = tendencias.filter(t => t === 'melhora').length;
     const pioram = tendencias.filter(t => t === 'piora').length;
-    if (melhoram > 0 || pioram > 0) {
-      parts.push(`Tendências: ${melhoram} melhora(s), ${pioram} piora(s)`);
+    const estaveis = tendencias.filter(t => t === 'estável').length;
+    const semSerie = tendencias.filter(t => t === 'sem série histórica').length;
+    if (melhoram > 0 || pioram > 0 || estaveis > 0) {
+      parts.push(`Tendências (recalculadas pelos dados): ${melhoram} melhorou, ${estaveis} estável, ${pioram} piorou${semSerie > 0 ? `, ${semSerie} sem série histórica` : ''}`);
     }
   } else {
     parts.push('Sem indicadores estatísticos vinculados no sistema');
