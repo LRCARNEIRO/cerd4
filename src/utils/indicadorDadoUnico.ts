@@ -274,12 +274,17 @@ export function extractSerieSub(dados: any, sub?: string | null, nome?: string):
 
   if (!chaves.length) return undefined;
   const tokens = tokensDe(sub, nome);
-  // Sem correspondência explícita, prioriza o recorte racial negro — é o
-  // objeto da Convenção — e só então a primeira métrica disponível.
-  const chave = melhorChave(chaves, tokens)
-    || chaves.find((k) => /negr|pret/.test(chaveNormalizada(k)))
-    || chaves.find((k) => /total/.test(chaveNormalizada(k)))
-    || chaves[0];
+  const chaveRacial = chaves.find((k) => /negr|pret/.test(chaveNormalizada(k)));
+  // Leitura do indicador inteiro (sem recorte explícito): o objeto da
+  // Convenção é sempre o recorte racial. Sem isso, um total agregado
+  // (ex.: total de crianças em trabalho infantil) sequestrava a leitura e
+  // invertia a tendência do recorte negro.
+  const chave = (!sub && chaveRacial)
+    ? chaveRacial
+    : melhorChave(chaves, tokens)
+      || chaveRacial
+      || chaves.find((k) => /total/.test(chaveNormalizada(k)))
+      || chaves[0];
   const pts = pontosDaSerie(series, chave);
   if (!pts.length) return undefined;
   const first = pts[0];
