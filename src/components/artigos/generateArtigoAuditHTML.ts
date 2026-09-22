@@ -19,6 +19,7 @@ import type { ExportLookupMaps } from '@/components/recomendacoes/recomendacaoEx
 import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
 import { FAIXA_LABEL, TETOS_ESFORCO, formatScore, mediaSimples } from '@/utils/esforcoImpacto';
+import { extractOrgaoNormativo, buildNormativoLink } from '@/utils/normativoDisplay';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -31,13 +32,6 @@ function extractAno(d: any): string {
   if (!d) return '—';
   const m = String(d).match(/(19|20)\d{2}/);
   return m ? m[0] : '—';
-}
-function extractOrgao(titulo: string): string {
-  if (!titulo) return '—';
-  const t = titulo.toUpperCase();
-  const siglas = ['MIR', 'MDHC', 'SEPPIR', 'STF', 'STJ', 'TSE', 'TST', 'CNJ', 'CNMP', 'AGU', 'PGR', 'MJ', 'MPF', 'MEC', 'MS', 'INCRA', 'FUNAI', 'SESAI', 'IBGE', 'DPU', 'DPF', 'IPHAN', 'CONANDA', 'CONAQ'];
-  for (const s of siglas) if (new RegExp(`\\b${s}\\b`).test(t)) return s;
-  return '—';
 }
 
 function buildIndicadorLink(id: string, codigo: string | undefined, origin: string, sub?: string): string {

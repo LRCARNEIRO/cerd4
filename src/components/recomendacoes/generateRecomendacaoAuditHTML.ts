@@ -228,7 +228,7 @@ ${ei ? `<div class="summary">
 
 <h2>⚖️ Normativos (${linkedNorm.length})</h2>
 <table>
-  <thead><tr><th style="text-align:center">Ano</th><th>Órgão</th><th>Tipo</th><th>Título</th></tr></thead>
+  <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
 </table>
 
