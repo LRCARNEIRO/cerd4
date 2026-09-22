@@ -133,8 +133,10 @@ export default function Index() {
       {/* Dual Perspective Panel */}
       <div className="mb-6">
         <DualPerspectivePanel
-          statusData={dashboardStatusData}
-          evolucaoData={evolSummary}
+          esforcoData={esforcoData}
+          impactoData={impactoData}
+          mediaEsforco={sensorReady ? sensorSummary.mediaEsforco : 0}
+          mediaImpacto={sensorReady ? sensorSummary.mediaImpacto : 0}
           artigosSummary={artigosSummary}
           isLoading={isLoading || loadingEvol}
         />
