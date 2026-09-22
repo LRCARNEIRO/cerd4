@@ -626,7 +626,7 @@ function renderArticleIndicatorTable(indicadores: IndicadorInterseccional[]): st
         <tr>
           <td>${i.nome}</td>
           <td>${eixoLabels[i.categoria] || i.categoria}</td>
-          <td>${i.tendencia || '—'}</td>
+          <td>${tendenciaLabel(i as any)}</td>
           <td>${pickIndicadorSnapshot(i)}</td>
           <td style="font-size:8.5pt">${i.fonte}</td>
         </tr>`).join('')}</tbody>
