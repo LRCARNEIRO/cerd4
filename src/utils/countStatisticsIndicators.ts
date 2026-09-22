@@ -19,18 +19,6 @@ import {
   dadosDemograficos,
 } from '@/components/estatisticas/StatisticsData';
 
-import {
-  tabelasDemograficas,
-  tabelasEconomicas,
-  tabelasEducacao,
-  tabelasSaude,
-  tabelasTrabalho,
-  tabelasPobreza,
-  tabelasSeguranca,
-  tabelasHabitacao,
-  tabelasSistemaPolitico,
-} from '@/components/estatisticas/CommonCoreTab';
-
 import { TOTAL_DADOS_NOVOS } from '@/components/estatisticas/DadosNovosTab';
 
 // Re-exportar para uso em outros módulos
@@ -55,7 +43,6 @@ export interface CountsInput {
   violenciaInterseccional?: any[];
   evolucaoDesigualdade?: any[];
   dadosDemograficos?: any;
-  ccTablesFromBD?: any[];
 }
 
 export function computeStatisticsCounts(input: CountsInput = {}) {
@@ -78,18 +65,10 @@ export function computeStatisticsCounts(input: CountsInput = {}) {
 
   const demo = input.dadosDemograficos ?? dadosDemograficos;
 
-  const tabelasCC = [
-    ...tabelasDemograficas, ...tabelasEconomicas, ...tabelasEducacao,
-    ...tabelasSaude, ...tabelasTrabalho, ...tabelasPobreza,
-    ...tabelasSeguranca, ...tabelasHabitacao, ...tabelasSistemaPolitico,
-  ];
-
   const totalDadosEstatisticas = series.reduce((s, a) => s + a.length, 0)
     + (demo.composicaoRacial?.length ?? 0);
-  const totalTabelasCommonCore = tabelasCC.length;
-  const totalDadosCommonCore = tabelasCC.reduce((s, t) => s + t.dados.rows.length, 0);
 
-  return { totalDadosEstatisticas, totalTabelasCommonCore, totalDadosCommonCore };
+  return { totalDadosEstatisticas };
 }
 
 // ═══════════════════════════════════════════
@@ -100,9 +79,3 @@ const _defaults = computeStatisticsCounts();
 
 /** Total de dados nas séries de Estatísticas Gerais */
 export const TOTAL_DADOS_ESTATISTICAS = _defaults.totalDadosEstatisticas;
-
-/** Total de tabelas do Common Core */
-export const TOTAL_TABELAS_COMMON_CORE = _defaults.totalTabelasCommonCore;
-
-/** Total de dados individuais nas tabelas do Common Core (linhas de dados) */
-export const TOTAL_DADOS_COMMON_CORE = _defaults.totalDadosCommonCore;

@@ -148,7 +148,7 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
   
   // Relevância marcada nas conclusões (peso 25%)
   const conclusoesRelevantes = conclusoes.filter((c: any) => 
-    c.relevancia_cerd_iv || c.relevancia_common_core
+    c.relevancia_cerd_iv
   ).length;
   const percentualRelevantes = conclusoes.length > 0 
     ? (conclusoesRelevantes / conclusoes.length) * 100 
@@ -161,34 +161,6 @@ function calcularProgressoMeta4(conclusoes: any[], lacunasStats: any): number {
   );
 }
 
-// Hook para progresso do Common Core
-export function useCommonCoreProgress() {
-  const { data: indicadores } = useIndicadoresInterseccionais();
-  const { data: lacunas } = useLacunasIdentificadas();
-  
-  // 77 indicadores do Common Core
-  const totalIndicadoresCC = 77;
-  const indicadoresPreenchidos = indicadores?.length || 0;
-  
-  // Categorizar status
-  const atualizados = indicadores?.filter(i => {
-    const updatedAt = new Date(i.updated_at);
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    return updatedAt > sixMonthsAgo;
-  }).length || 0;
-  
-  const desatualizados = indicadoresPreenchidos - atualizados;
-  
-  return {
-    total: totalIndicadoresCC,
-    preenchidos: indicadoresPreenchidos,
-    atualizados,
-    parciais: Math.max(0, totalIndicadoresCC - indicadoresPreenchidos - desatualizados),
-    desatualizados,
-    progresso: Math.round((indicadoresPreenchidos / totalIndicadoresCC) * 100),
-  };
-}
 
 // Hook para progresso do CERD IV
 export function useCerdIVProgress() {

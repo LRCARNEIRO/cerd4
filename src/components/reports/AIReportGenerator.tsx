@@ -9,11 +9,10 @@ import { toast } from 'sonner';
 import { injectExportToolbar, downloadAsDocx } from '@/utils/reportExportToolbar';
 
 interface AIReportGeneratorProps {
-  defaultType?: 'common-core' | 'cerd-iv' | 'tematico' | 'orcamentario';
+  defaultType?: 'cerd-iv' | 'tematico' | 'orcamentario';
 }
 
 const tipoOptions = [
-  { value: 'common-core', label: 'Common Core Document', description: 'Documento básico comum para todos os tratados' },
   { value: 'cerd-iv', label: 'Relatório CERD IV', description: 'Relatório periódico ao Comitê CERD' },
   { value: 'tematico', label: 'Relatório Temático', description: 'Análise por eixo ou grupo focal' },
   { value: 'orcamentario', label: 'Dossiê Orçamentário', description: 'Execução financeira de políticas raciais' },
@@ -48,7 +47,7 @@ const esferaOptions = [
   { value: 'municipal', label: 'Municipal' },
 ];
 
-export function AIReportGenerator({ defaultType = 'common-core' }: AIReportGeneratorProps) {
+export function AIReportGenerator({ defaultType = 'cerd-iv' }: AIReportGeneratorProps) {
   const [tipo, setTipo] = useState(defaultType);
   const [eixo, setEixo] = useState('todos');
   const [grupo, setGrupo] = useState('todos');

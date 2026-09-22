@@ -2,7 +2,7 @@
  * Registry of all deep links used across the system for health-check validation.
  * Each entry maps a data source URL to its section, indicator, and description.
  *
- * Coverage: Dados Gerais, Common Core, Segurança/Saúde/Educação, Interseccionalidade,
+ * Coverage: Dados Gerais, Segurança/Saúde/Educação, Interseccionalidade,
  * COVID Racial, Vulnerabilidades, Adm. Pública, Dados Novos, Lacunas CERD,
  * Fontes de Dados, Orçamento, Grupos Focais, Séries Temporais.
  */
@@ -71,17 +71,6 @@ export const deepLinksRegistry: DeepLinkEntry[] = [
     url: 'https://sidra.ibge.gov.br/tabela/6402',
     fonte: 'SIDRA/IBGE',
     descricao: 'Tabela 6402 — Taxa de desocupação por cor/raça',
-  },
-
-  // ═══════════════════════════════════════════
-  // COMMON CORE
-  // ═══════════════════════════════════════════
-  {
-    indicador: 'Indicadores vitais — mortalidade/fecundidade',
-    secao: 'Common Core',
-    url: 'https://sidra.ibge.gov.br/tabela/7358',
-    fonte: 'SIDRA/IBGE',
-    descricao: 'Tabela 7358 — Taxa de mortalidade infantil e fecundidade',
   },
 
   // ═══════════════════════════════════════════

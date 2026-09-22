@@ -65,15 +65,6 @@ const fontesOficiais = [
   },
 ];
 
-// Indicadores mapeados do Common Core
-const indicadoresCommonCore = [
-  { secao: 'I.A', titulo: 'Características demográficas', indicadores: 12, integrados: 10 },
-  { secao: 'I.B', titulo: 'Indicadores socioeconômicos', indicadores: 18, integrados: 15 },
-  { secao: 'II.A', titulo: 'Sistema político', indicadores: 8, integrados: 6 },
-  { secao: 'II.B', titulo: 'Estrutura institucional', indicadores: 10, integrados: 8 },
-  { secao: 'III', titulo: 'Quadro jurídico', indicadores: 15, integrados: 12 },
-];
-
 const statusColors: Record<string, string> = {
   integrado: 'bg-success text-success-foreground',
   parcial: 'bg-warning text-warning-foreground',
@@ -116,7 +107,7 @@ export function FontesDadosTab() {
       </Card>
 
       {/* Resumo de integração */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-l-4 border-l-success">
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
@@ -150,65 +141,7 @@ export function FontesDadosTab() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-accent">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-accent" />
-              <div>
-                <p className="text-xs text-muted-foreground">Common Core (%)</p>
-                <p className="text-2xl font-bold">81%</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-
-      {/* Progresso Common Core */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            Cobertura do Common Core Document (HRI/CORE)
-          </CardTitle>
-          <CardDescription>Indicadores exigidos pela ONU vs. integrados no sistema</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Seção</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead className="text-right">Exigidos</TableHead>
-                <TableHead className="text-right">Integrados</TableHead>
-                <TableHead className="text-right">Cobertura</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {indicadoresCommonCore.map(item => (
-                <TableRow key={item.secao}>
-                  <TableCell className="font-mono font-medium">{item.secao}</TableCell>
-                  <TableCell>{item.titulo}</TableCell>
-                  <TableCell className="text-right">{item.indicadores}</TableCell>
-                  <TableCell className="text-right text-success font-medium">{item.integrados}</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={item.integrados / item.indicadores >= 0.8 ? 'default' : 'secondary'}>
-                      {Math.round(item.integrados / item.indicadores * 100)}%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              <TableRow className="font-bold bg-muted/50">
-                <TableCell colSpan={2}>Total</TableCell>
-                <TableCell className="text-right">{indicadoresCommonCore.reduce((acc, i) => acc + i.indicadores, 0)}</TableCell>
-                <TableCell className="text-right text-success">{indicadoresCommonCore.reduce((acc, i) => acc + i.integrados, 0)}</TableCell>
-                <TableCell className="text-right">
-                  <Badge>81%</Badge>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
 
       {/* Fontes por categoria */}
       <Card>

@@ -5,7 +5,6 @@ import { BookOpen, Globe, FileDown, Loader2, Download, Scale, Compass, DollarSig
 import { useState } from 'react';
 import { useLacunasIdentificadas, useRespostasLacunasCerdIII, useLacunasStats, useIndicadoresInterseccionais, useOrcamentoStats, useOrcamentoCanonico } from '@/hooks/useLacunasData';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
-import { generateCommonCoreHTML } from './generateCommonCoreHTML';
 import { generateCerdIVFullHTML } from './generateCerdIVHTML';
 import { generateMethodologyHTML } from './generateMethodologyHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
@@ -32,7 +31,6 @@ export function DocumentReportCards() {
     },
   });
 
-  const [generatingCCD, setGeneratingCCD] = useState(false);
   const [generatingCERD, setGeneratingCERD] = useState(false);
   const [generatingConclusoes, setGeneratingConclusoes] = useState(false);
   const [generatingMethodology, setGeneratingMethodology] = useState(false);
@@ -43,9 +41,6 @@ export function DocumentReportCards() {
 
   const totalLacunas = stats?.total || 0;
   const indicadoresCount = indicadores?.length || 0;
-
-  // Common Core progress: based on indicadores filled
-  const ccdProgress = Math.round((indicadoresCount / 77) * 100);
 
   // CERD IV progress: based on lacunas with responses
   const respostasCount = respostas?.length || 0;
@@ -61,22 +56,6 @@ export function DocumentReportCards() {
   const lacunasPersist = conclusoesDinamicas.filter(c => c.tipo === 'lacuna_persistente').length;
   const totalConclusoes = fiosCondutores.length + insightsCruzamento.length + avancos + retrocessos + lacunasPersist;
   const conclusoesProgress = Math.min(100, Math.round((totalConclusoes / 25) * 100));
-
-  const handleGenerateCCD = async () => {
-    setGeneratingCCD(true);
-    try {
-      const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
-        segurancaPublica: mirror.segurancaPublica,
-        ccTablesFromBD: mirror.ccTablesFromBD,
-        dadosDemograficos: mirror.dadosDemograficos,
-        povosTradicionais: mirror.povosTradicionais,
-        normativos: normativos || [],
-      });
-      openHtmlPreview(html, 'Common-Core-HRI-CORE-BRA');
-    } finally {
-      setGeneratingCCD(false);
-    }
-  };
 
   const buildCerdIVData = () => ({
     lacunas: lacunas || [], respostas: respostas || [], stats, indicadores: indicadores || [],
@@ -103,7 +82,6 @@ export function DocumentReportCards() {
       rendimentosCenso2022: mirror.rendimentosCenso2022,
       terrasQuilombolasHistorico: mirror.terrasQuilombolasHistorico,
       resumoExecutivo: mirror.resumoExecutivo,
-      ccTablesFromBD: mirror.ccTablesFromBD,
       gfMirrors: mirror.gfMirrors,
       covidMirrors: mirror.covidMirrors,
       usandoBD: mirror.usandoBD,
@@ -151,74 +129,7 @@ export function DocumentReportCards() {
   const [generatingBudget, setGeneratingBudget] = useState(false);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-6">
-      {/* Common Core Document */}
-      <Card className="border-l-4 border-l-primary">
-        <CardContent className="pt-6 space-y-4">
-          <div className="flex items-start gap-3">
-            <BookOpen className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold">Common Core Document (HRI/CORE/BRA)</h3>
-              <p className="text-sm text-muted-foreground">Período: 2018-2025</p>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>Progresso (<span className="text-primary">Dinâmico</span>)</span>
-              <span>{ccdProgress}%</span>
-            </div>
-            <Progress value={ccdProgress} className="h-2" />
-          </div>
-
-          <div className="flex justify-between text-sm">
-            <div>
-              <p className="text-muted-foreground">Prazo:</p>
-              <p className="font-medium">Dezembro 2025</p>
-            </div>
-            <div className="text-right">
-              <p className="text-muted-foreground">Indicadores:</p>
-              <p className="font-medium">{indicadoresCount}/77 indicadores</p>
-            </div>
-          </div>
-
-          <div className="p-3 bg-muted/50 rounded-lg">
-            <p className="text-xs">
-              <strong>Status:</strong>{' '}
-              {indicadoresCount} atualizados, {77 - indicadoresCount} parciais, 0 desatualizados
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <Button 
-              className="gap-2" 
-              onClick={handleGenerateCCD}
-              disabled={generatingCCD}
-            >
-              {generatingCCD ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-              PDF / HTML
-            </Button>
-            <Button 
-              variant="outline"
-              className="gap-2" 
-              onClick={() => {
-                const html = generateCommonCoreHTML(indicadores || [], lacunas || [], stats, orcStats, {
-                  segurancaPublica: mirror.segurancaPublica,
-                  ccTablesFromBD: mirror.ccTablesFromBD,
-                  dadosDemograficos: mirror.dadosDemograficos,
-                  povosTradicionais: mirror.povosTradicionais,
-                  normativos: normativos || [],
-                });
-                downloadAsDocx(html, 'Common-Core-HRI-CORE-BRA');
-              }}
-            >
-              <Download className="w-4 h-4" />
-              DOCX
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
       {/* CERD IV */}
       <Card className="border-l-4 border-l-success">
         <CardContent className="pt-6 space-y-4">

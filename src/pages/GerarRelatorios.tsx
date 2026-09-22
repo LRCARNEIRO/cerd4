@@ -374,7 +374,7 @@ ${(respostasCerd || []).map(r => {
         {/* ABA: RELATÓRIOS COM IA */}
         <TabsContent value="ia-generator">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AIReportGenerator defaultType="common-core" />
+            <AIReportGenerator defaultType="cerd-iv" />
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -400,7 +400,6 @@ ${(respostasCerd || []).map(r => {
                 <div className="space-y-2">
                   <p className="font-medium text-foreground">Tipos disponíveis:</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li><strong>Common Core:</strong> Análise demográfica e socioeconômica por raça</li>
                     <li><strong>CERD IV:</strong> Balanço das políticas raciais para a ONU</li>
                     <li><strong>Temático:</strong> Análise aprofundada por eixo ou grupo</li>
                     <li><strong>Orçamentário:</strong> Análise de execução orçamentária racial</li>

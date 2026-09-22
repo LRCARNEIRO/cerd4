@@ -4,7 +4,6 @@ import type {
   InvestigationAxis,
   StatisticalIndicator,
   DataSource,
-  CommonCoreSection,
   UNObservation,
   DashboardStats,
   FocalGroup,
@@ -383,59 +382,6 @@ export const dataSources: DataSource[] = [
   }
 ];
 
-// Seções do Common Core Document
-export const commonCoreSections: CommonCoreSection[] = [
-  {
-    id: 'ccd-1',
-    numero: 'I.A',
-    titulo: 'Características demográficas, econômicas, sociais e culturais',
-    tituloIngles: 'Demographic, economic, social and cultural characteristics',
-    statusAtualizacao: 'atualizado',
-    ultimaVersao: 2022,
-    periodoCobertura: '2018-2025',
-    subsecoes: [
-      {
-        id: 'ccd-1-1',
-        numero: 'I.A.i',
-        titulo: 'Características demográficas',
-        conteudoAtual: 'Dados do Censo 2022 via SIDRA',
-        indicadoresNecessarios: ['População total 2022', 'Distribuição por raça/cor 2022', 'Taxa de crescimento'],
-        fontesNecessarias: ['SIDRA Tab. 9605', 'SIDRA Tab. 9674'],
-        statusAtualizacao: 'atualizado',
-        notas: 'Atualizado com dados do Universo do Censo 2022'
-      },
-      {
-        id: 'ccd-1-2',
-        numero: 'I.A.ii',
-        titulo: 'Características econômicas',
-        conteudoAtual: 'PIB e indicadores macroeconômicos até 2025',
-        indicadoresNecessarios: ['PIB 2018-2025', 'Renda per capita', 'Gini por raça'],
-        fontesNecessarias: ['IBGE', 'BCB', 'IPEA'],
-        statusAtualizacao: 'parcial'
-      }
-    ]
-  },
-  {
-    id: 'ccd-2',
-    numero: 'I.B',
-    titulo: 'Estrutura constitucional, política e legal',
-    tituloIngles: 'Constitutional, political and legal structure',
-    statusAtualizacao: 'parcial',
-    ultimaVersao: 2020,
-    periodoCobertura: '1988-2025',
-    subsecoes: [
-      {
-        id: 'ccd-2-1',
-        numero: 'I.B.i',
-        titulo: 'Sistema de governo',
-        conteudoAtual: 'Estrutura federativa e sistema de governo',
-        indicadoresNecessarios: ['Composição atual do governo', 'Estrutura ministerial 2023-2025'],
-        fontesNecessarias: ['Decreto de estrutura regimental'],
-        statusAtualizacao: 'parcial'
-      }
-    ]
-  }
-];
 
 // Grupos focais específicos - DADOS SIDRA/IBGE AUDITADOS
 export const focalGroups: FocalGroup[] = [
