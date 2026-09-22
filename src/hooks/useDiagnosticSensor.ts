@@ -485,9 +485,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
       // Signals for indicators
       if (pioram > 0 && pioram >= melhoram) {
-        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) com tendência de piora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'critical', message: `${pioram} indicador(es) que piorou/pioraram`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'piora').map(i => i.nome).slice(0, 4).join(', ') });
       } else if (melhoram > 0) {
-        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) com tendência de melhora`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
+        signals.push({ type: 'tendencia', severity: 'info', message: `${melhoram} indicador(es) que melhorou/melhoraram`, detail: finalIndicadores.filter(i => inferTendencia(i) === 'melhora').map(i => i.nome).slice(0, 4).join(', ') });
       }
 
       // ── 2. SCORE ORÇAMENTO (0-100, peso 30%) — CONTAGEM de ações (não execução) ──
