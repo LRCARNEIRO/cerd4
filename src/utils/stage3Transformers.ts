@@ -1,21 +1,8 @@
 /**
- * STAGE 3+4 — Transformadores para Common Core, Adm Pública, COVID Racial, Grupos Focais e Complemento CERD 3
+ * STAGE 3+4 — Transformadores para Adm Pública, COVID Racial, Grupos Focais e Complemento CERD 3
  * Converte dados hardcoded destes módulos para o formato indicadores_interseccionais.
  */
 
-import {
-  tabelasDemograficas,
-  tabelasEconomicas,
-  tabelasEducacao,
-  tabelasSaude,
-  tabelasTrabalho,
-  tabelasPobreza,
-  tabelasSeguranca,
-  tabelasHabitacao,
-  tabelasMoradia,
-  tabelasSistemaPolitico,
-  type CommonCoreTable,
-} from '@/components/estatisticas/CommonCoreTab';
 import { complementoCerd3Indicators } from '@/components/estatisticas/ComplementoCerd3Data';
 
 type DbRecord = {
@@ -40,7 +27,6 @@ type DbRecord = {
 };
 
 const now = new Date().toISOString();
-const ORIGIN_CC = ['espelho_estatico', 'CommonCoreTab.tsx'];
 const ORIGIN_ADM = ['espelho_estatico', 'AdmPublicaSection.tsx'];
 const ORIGIN_COVID = ['espelho_estatico', 'CovidRacialSection.tsx'];
 const ORIGIN_GF = ['espelho_estatico', 'GruposFocaisTab.tsx'];
@@ -68,63 +54,6 @@ function rec(
     desagregacao_territorio: false,
     ...opts,
   };
-}
-
-// ─── COMMON CORE ───
-const ccCategoryMap: Record<string, string> = {
-  Demografia: 'cc_demografia',
-  Economia: 'cc_economia',
-  'Educação': 'cc_educacao',
-  'Saúde': 'cc_saude',
-  Trabalho: 'cc_trabalho',
-  Pobreza: 'cc_pobreza',
-  'Segurança': 'cc_seguranca',
-  'Habitação': 'cc_habitacao',
-  Moradia: 'cc_moradia',
-  'Sistema Político': 'cc_sistema_politico',
-};
-
-function ccTableToRecord(t: CommonCoreTable): DbRecord {
-  const subcat = ccCategoryMap[t.categoria] || 'cc_outros';
-  return rec(
-    `[CC-${t.numero}] ${t.titulo}`,
-    'common_core',
-    subcat,
-    t.fonteCompleta || t.fonte,
-    t.urlFonte || null,
-    ['Art. 1', 'Art. 2', 'Art. 5'],
-    {
-      id_cc: t.id,
-      numero: t.numero,
-      tituloIngles: t.tituloIngles,
-      periodoOriginal: t.periodoOriginal,
-      periodoAtualizado: t.periodoAtualizado,
-      statusAtualizacao: t.statusAtualizacao,
-      headers: t.dados.headers,
-      rows: t.dados.rows,
-      notas: t.notas || null,
-      // Tendência nunca vem do rótulo estático: é recalculada pela série + polaridade
-      tendencia: null,
-      tabelaSidra: t.tabelaSidra || null,
-    },
-    ORIGIN_CC,
-  );
-}
-
-export function buildCommonCoreIndicators(): DbRecord[] {
-  const allTables: CommonCoreTable[] = [
-    ...tabelasDemograficas,
-    ...tabelasEconomicas,
-    ...tabelasEducacao,
-    ...tabelasSaude,
-    ...tabelasTrabalho,
-    ...tabelasPobreza,
-    ...tabelasSeguranca,
-    ...tabelasHabitacao,
-    ...tabelasMoradia,
-    ...tabelasSistemaPolitico,
-  ];
-  return allTables.map(ccTableToRecord);
 }
 
 // ─── ADM PÚBLICA ───
@@ -424,7 +353,7 @@ export function buildGruposFocaisIndicators(): DbRecord[] {
 
 /** All Stage 3 categories for clearing before re-insert */
 export function getStage3Categories(): string[] {
-  return ['common_core', 'adm_publica', 'covid_racial', 'grupos_focais'];
+  return ['common_core', 'adm_publica', 'covid_racial', 'grupos_focais']; // 'common_core' mantido apenas para LIMPAR resíduos
 }
 
 /** Stage 4 categories (Complemento CERD 3) — must include ALL categories used by complementoCerd3Indicators.
@@ -459,10 +388,6 @@ export function buildStage4Indicators(): DbRecord[] {
 /** Build all Stage 3 indicators */
 export function buildAllStage3Indicators(): DbRecord[] {
   return [
-    // Common Core NÃO é mais espelhado: são dados universais sem recorte
-    // racial, fora da base analítica (Regra de Ouro). A categoria
-    // 'common_core' permanece em getStage3Categories() para que cada
-    // espelhamento LIMPE registros CC remanescentes em vez de recriá-los.
     ...buildAdmPublicaIndicators(),
     ...buildCovidRacialIndicators(),
     ...buildGruposFocaisIndicators(),

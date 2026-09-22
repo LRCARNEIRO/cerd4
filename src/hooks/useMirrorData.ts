@@ -4,7 +4,7 @@
  * Fornece TODOS os dados espelhados do banco de dados (indicadores_interseccionais)
  * com fallback automático para arquivos hardcoded.
  * 
- * Padrão SSoT Etapas 1-4 — Todas as abas temáticas + Common Core + Adm Pública + COVID + Grupos Focais.
+ * Padrão SSoT Etapas 1-4 — Todas as abas temáticas + Adm Pública + COVID + Grupos Focais.
  */
 
 import { useMemo } from 'react';
@@ -41,7 +41,6 @@ import {
   resumoExecutivo as hcResumoExecutivo,
 } from '@/components/estatisticas/StatisticsData';
 
-import type { CommonCoreTable } from '@/components/estatisticas/CommonCoreTab';
 
 /** Reconstruct array from mirror's { series: { year: {...} } } format */
 function rebuildSeries(dados: any, fallback: any[]): any[] {
@@ -186,39 +185,6 @@ export function useMirrorData() {
       : [];
     const fonteTerrasQuilombolas: MirrorSource = terrasQuiloHistorico ? 'bd' : 'hardcoded';
     // ══════════════════════════════════
-    // STAGE 3 — Common Core
-    // ══════════════════════════════════
-    const ccMirrors = findAllByCategory('common_core');
-    const ccSource: MirrorSource = ccMirrors.length > 0 ? 'bd' : 'hardcoded';
-    const ccCount = ccMirrors.length;
-
-    // Reconstruct CommonCoreTable[] from BD mirrors (when available)
-    const ccTablesFromBD: CommonCoreTable[] = ccMirrors.map((rec: any) => {
-      const d = rec.dados as any;
-      return {
-        id: d.id_cc || rec.id,
-        numero: d.numero || 0,
-        titulo: rec.nome.replace(/^\[CC-\d+\]\s*/, ''),
-        tituloIngles: d.tituloIngles || '',
-        categoria: d.categoria || rec.subcategoria || '',
-        descricao: rec.nome,
-        fonte: rec.fonte,
-        fonteCompleta: rec.fonte,
-        urlFonte: rec.url_fonte || undefined,
-        tabelaSidra: d.tabelaSidra || undefined,
-        periodoOriginal: d.periodoOriginal || '',
-        periodoAtualizado: d.periodoAtualizado || '',
-        statusAtualizacao: d.statusAtualizacao || 'atualizado',
-        dados: {
-          headers: d.headers || [],
-          rows: d.rows || [],
-        },
-        notas: d.notas || undefined,
-        tendencia: d.tendencia || undefined,
-      } as CommonCoreTable;
-    });
-
-    // ══════════════════════════════════
     // STAGE 3 — Adm Pública
     // ══════════════════════════════════
     const admMirrors = findAllByCategory('adm_publica');
@@ -251,7 +217,7 @@ export function useMirrorData() {
       trabalhoRG.source, educacaoRG.source, chefia.source, deficiencia.source,
       disparidades.source, antra.source, lgbtqia.source, classe.source,
       rendimentos.source, evolDesig.source, socioeco.source, ptSource,
-      ccSource, admSource, covidSource, gfSource,
+      admSource, covidSource, gfSource,
     ];
     const bdCount = allSources.filter(s => s === 'bd').length;
     const totalCount = allSources.length;
@@ -302,10 +268,6 @@ export function useMirrorData() {
       resumoExecutivo: hcResumoExecutivo,
 
       // ── STAGE 3 ──
-      // Common Core
-      ccTablesFromBD,
-      ccSource,
-      ccCount,
       // Adm Pública
       admSource,
       estadicEstruturaData: estadicEstrutura ? (estadicEstrutura.dados as any) : null,
