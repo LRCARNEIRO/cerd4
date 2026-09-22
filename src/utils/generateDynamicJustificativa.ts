@@ -124,14 +124,13 @@ function isLowerBetter(nome: string): boolean {
 }
 
 
+/** Sempre recalculada pelos dados (série histórica + polaridade). */
 function inferTendencia(ind: IndicadorRow): string {
-  if (!ind.tendencia) return 'desconhecida';
-  const t = ind.tendencia.toLowerCase();
-  const lowerBetter = isLowerBetter(ind.nome);
-  if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
-  if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
-  if (t === 'estavel' || t === 'estável') return 'estável';
-  return 'desconhecida';
+  const t = tendenciaPadrao({ nome: ind.nome, categoria: (ind as any).categoria, dados: (ind as any).dados });
+  if (t === 'melhorou') return 'melhora';
+  if (t === 'piorou') return 'piora';
+  if (t === 'estável') return 'estável';
+  return 'sem série histórica';
 }
 
 /**
