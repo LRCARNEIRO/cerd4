@@ -260,7 +260,7 @@ ${renderRows(allItems)}
                   <TableHead>Tema</TableHead>
                   <TableHead className="w-[120px]">Artigos</TableHead>
                   <TableHead className="w-[150px]">Justificativa</TableHead>
-                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[170px]">Esforço / Impacto</TableHead>
                   <TableHead className="w-[140px]">Prioridade cadastrada</TableHead>
                   <TableHead className="w-[60px] text-center">Relatório</TableHead>
                 </TableRow>
