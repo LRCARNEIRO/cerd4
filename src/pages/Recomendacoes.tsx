@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { lazy, useState, useMemo } from 'react';
-import { AlertTriangle, CheckCircle2, Clock, XCircle, Database, Filter } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Database, Filter, Gauge, Minus, TrendingDown } from 'lucide-react';
 import { useLacunasIdentificadas, useLacunasStats, useRespostasLacunasCerdIII, type ComplianceStatus, type PriorityLevel, type ThematicAxis, type FocalGroupType } from '@/hooks/useLacunasData';
 import { ORIGEM_CONFIG } from '@/utils/classificarOrigemLacuna';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
@@ -68,23 +68,15 @@ export default function Recomendacoes() {
 
   // Status efetivo vem do sensor (evidências auditadas), como na Relação Completa
   const [evidenceOverrides] = useEvidenceOverrides();
-  const { diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
+  const { diagnosticMap, summary: sensorSummary, isReady: sensorReady } = useDiagnosticSensor(lacunas, evidenceOverrides);
 
   const isLoading = loadingLacunas || loadingStats;
-  const statusStats = useMemo(() => {
-    const c: Record<string, number> = {};
-    (lacunas || []).forEach(l => {
-      const st = (sensorReady ? diagnosticMap.get(l.id)?.statusComputado : undefined) ?? l.status_cumprimento;
-      c[st] = (c[st] || 0) + 1;
-    });
-    return c as Record<ComplianceStatus, number>;
-  }, [lacunas, diagnosticMap, sensorReady]);
   const criticas = useMemo(() => (lacunas || []).filter(l => l.prioridade === 'critica').length, [lacunas]);
 
   return (
     <DashboardLayout
       title="Recomendações"
-      subtitle="Observações Finais, Recomendações Gerais e Durban · Análise de Cumprimento 2018-2025"
+      subtitle="Observações Finais, Recomendações Gerais e Durban · Esforço e Impacto Evidenciado 2018-2025"
     >
       {/* Stats */}
       {(() => {
@@ -109,41 +101,41 @@ export default function Recomendacoes() {
                      <CheckCircle2 className="w-5 h-5 text-success" />
                    </div>
                    <div>
-                     <p className="text-xs text-muted-foreground">Cumpridas</p>
-                      <p className="text-xl font-bold text-success">{isLoading ? '...' : statusStats?.cumprido || 0}</p>
+                      <p className="text-xs text-muted-foreground">Esforço Alto</p>
+                       <p className="text-xl font-bold text-success">{isLoading ? '...' : sensorSummary.faixasEsforco.alto}</p>
                    </div>
                  </CardContent>
                </Card>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
                    <div className="p-2 bg-warning/10 rounded-lg">
-                     <Clock className="w-5 h-5 text-warning" />
+                      <Minus className="w-5 h-5 text-warning" />
                    </div>
                    <div>
-                     <p className="text-xs text-muted-foreground">Parciais</p>
-                      <p className="text-xl font-bold text-warning">{isLoading ? '...' : statusStats?.parcialmente_cumprido || 0}</p>
+                      <p className="text-xs text-muted-foreground">Esforço Intermediário</p>
+                       <p className="text-xl font-bold text-warning">{isLoading ? '...' : sensorSummary.faixasEsforco.intermediario}</p>
                    </div>
                  </CardContent>
                </Card>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
                     <div className="p-2 bg-destructive/10 rounded-lg">
-                      <XCircle className="w-5 h-5 text-destructive" />
+                       <TrendingDown className="w-5 h-5 text-destructive" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground">Não Cumpridas</p>
-                       <p className="text-xl font-bold text-destructive">{isLoading ? '...' : (statusStats?.nao_cumprido || 0) + (statusStats?.retrocesso || 0) + (statusStats?.em_andamento || 0)}</p>
+                       <p className="text-xs text-muted-foreground">Esforço Baixo</p>
+                        <p className="text-xl font-bold text-destructive">{isLoading ? '...' : sensorSummary.faixasEsforco.baixo}</p>
                     </div>
                   </CardContent>
                 </Card>
                <Card>
                  <CardContent className="pt-4 pb-4 flex items-center gap-3">
-                   <div className="p-2 bg-destructive/10 rounded-lg">
-                     <AlertTriangle className="w-5 h-5 text-destructive" />
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Gauge className="w-5 h-5 text-primary" />
                    </div>
                    <div>
-                     <p className="text-xs text-muted-foreground">Críticas</p>
-                     <p className="text-xl font-bold">{isLoading ? '...' : criticas}</p>
+                      <p className="text-xs text-muted-foreground">Impacto Médio</p>
+                      <p className="text-xl font-bold">{isLoading ? '...' : sensorSummary.mediaImpacto.toFixed(1)}</p>
                    </div>
                  </CardContent>
                </Card>
@@ -160,7 +152,7 @@ export default function Recomendacoes() {
                 </Badge>
               ))}
               <Badge variant="secondary" className="text-xs font-semibold">
-                Total: {totalGeral} recomendações com avaliação de status
+                 Total: {totalGeral} recomendações com índices de Esforço e Impacto
               </Badge>
             </div>
           </>

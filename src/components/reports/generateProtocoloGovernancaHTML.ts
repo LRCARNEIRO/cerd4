@@ -148,14 +148,6 @@ export function generateProtocoloGovernancaHTML(data: ProtocoloGovernancaData): 
   const mediaOrc = totalRec ? somaOrcLinks / totalRec : 0;
   const mediaNorm = totalRec ? somaNorm / totalRec : 0;
 
-  const statusLabel: Record<string, string> = {
-    cumprido: 'Cumprido',
-    parcialmente_cumprido: 'Parcialmente cumprido',
-    nao_cumprido: 'Não cumprido',
-    retrocesso: 'Retrocesso (legado)',
-    em_andamento: 'Em andamento (legado)',
-  };
-
   /* ─────────── HTML ─────────── */
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Protocolo Metodológico de Governança — Legado e Método | Sistema CERD IV</title>
@@ -228,7 +220,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 </table>
 
 
-<div class="legend"><strong>Princípio da Fonte Única de Verdade (SSoT):</strong> nenhum painel recalcula por conta própria. Toda tela, relatório e exportação espelha os mesmos motores de cálculo descritos na Seção 5. Editar uma evidência em Recomendações propaga instantaneamente para status, aderência por artigo, evolução, diagnóstico e Painel Geral.</div>
+<div class="legend"><strong>Princípio da Fonte Única de Verdade (SSoT):</strong> nenhum painel recalcula por conta própria. Toda tela, relatório e exportação espelha os mesmos índices de Esforço e Impacto descritos na Seção 5.</div>
 
 <h2>2. Taxonomia do sistema</h2>
 
@@ -239,8 +231,8 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <tr><td><strong>Lacuna</strong></td><td>Estado de descumprimento de uma recomendação. Não é sinônimo de recomendação: é o seu resultado negativo.</td></tr>
 <tr><td><strong>Evidência</strong></td><td>Registro de uma das três bases vinculado a uma recomendação. Só entra no cálculo se for elegível (Seção 6.3).</td></tr>
 <tr><td><strong>Esforço Governamental</strong></td><td>Quanto o Estado produziu de norma, orçamento e medição para a obrigação. Responde "o que foi feito?".</td></tr>
-<tr><td><strong>Impacto Real</strong></td><td>Se os indicadores efetivamente melhoraram no período 2018–2025. Responde "adiantou?".</td></tr>
-<tr><td><strong>Aderência ICERD</strong></td><td>Nota 0–100 do artigo da Convenção, agregando as recomendações a ele vinculadas e as três bases.</td></tr>
+<tr><td><strong>Impacto Evidenciado</strong></td><td>Parcela do Esforço convertida em Realização estatística, orçamentária e normativa. Responde "o esforço se converteu em resultado?".</td></tr>
+<tr><td><strong>Resultado do Artigo</strong></td><td>Média simples do Esforço e do Impacto das recomendações formalmente associadas.</td></tr>
 <tr><td><strong>Orçamento simbólico</strong></td><td>Ação com dotação autorizada relevante e liquidação residual — sinal de política anunciada e não executada.</td></tr>
 <tr><td><strong>Dotação extraorçamentária</strong></td><td>Recurso fora do orçamento fiscal (fundos, emendas, transferências) classificado em <code>tipo_dotacao</code>.</td></tr>
 </table>
@@ -392,53 +384,22 @@ ${block(
 
 <h2>5. Fórmulas de cálculo</h2>
 
-<h3>5.1 Motor 1 — Score de Esforço Governamental (por recomendação)</h3>
-<div class="formula">Score = 0,40 × Cobertura(Indicadores) + 0,30 × Cobertura(Orçamento) + 0,30 × Cobertura(Normativos)
+<h3>5.1 Esforço Governamental (por recomendação)</h3>
+<div class="formula">E = [100 × min(nEst/31; 1) + 100 × min(nOrç/25; 1) + 100 × min(nNorm/4; 1)] ÷ 3</div>
+<div class="legend">Os tetos correspondem ao P75 operacionalizado da matriz auditada; cada base tem peso igual de 1/3.</div>
 
-Cobertura(Indicadores): 0 evidência = 0 · escala progressiva · 10 ou mais = 100
-Cobertura(Orçamento):   0 evidência = 0 · escala progressiva · 12 ou mais = 100
-Cobertura(Normativos):  0 evidência = 0 · escala progressiva · saturação no estoque vinculado
+<h3>5.2 Realização e Impacto Evidenciado (por recomendação)</h3>
+<div class="formula">R_est = (indicadores que melhoraram + indicadores estáveis) ÷ total com tendência mensurável × 100
+R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida × 100
+R_norm = 100 se há presença normativa; 0 se não há
+R = (R_est + R_orç + R_norm) ÷ 3
+I = E × R ÷ 100</div>
+<div class="legend"><strong>Evolução não desfavorável:</strong> melhorou = 1; estável = 1; piorou = 0. Estabilidade representa manutenção do resultado, e somente a deterioração é penalizada.</div>
 
-Status = Cumprido            se Score >= 65
-         Parcialmente        se Score >= 35
-         Não cumprido        se Score  < 35</div>
-<div class="legend"><strong>Por que escala progressiva e não linear:</strong> a curva é logarítmica para reconhecer esforço pequeno porém real (sair de 0 para 1 evidência vale muito mais que sair de 8 para 9), sem permitir que acúmulo bruto de registros produza nota alta artificial.</div>
-
-<h3>5.2 Motor 2 — Score de Aderência ICERD (por artigo)</h3>
-<div class="formula">Aderência = 0,50 × Proporção de recomendações cumpridas do artigo
-          + 0,15 × Cobertura normativa
-          + 0,10 × Cobertura orçamentária (contagem de ações)
-          + 0,15 × Cobertura de indicadores
-          + 0,10 × Amplitude de fontes
-
-Proporção = (cumpridas + 0,5 × parciais) / total de recomendações do artigo
-            Artigo sem recomendação vinculada recebe 25 (metade neutra).
-
-Amplitude de fontes = nº de dimensões ocupadas (recomendação cumprida, orçamento,
-                      indicador, normativo): 4 → 10 pts · 3 → 7,5 · 2 → 5 · 1 → 2,5
-
-Faixas: Boa Aderência >= 70 · Aderência Parcial 40–69 · Baixa Aderência < 40</div>
-<div class="legend"><strong>Racional dos pesos:</strong> 50% mede resultado cobrado por terceiro (a ONU), 40% mede esforço declarado pelo Estado (norma, dinheiro, medição) e 10% mede integralidade do ciclo de política. Sem cumprir recomendação, o teto matemático da nota é 50 — acúmulo de insumo não compra aderência.</div>
-
-<h3>5.3 Motor 3 — Score de Evolução (impacto real)</h3>
-<div class="formula">Evolução da recomendação = 0,50 × Tendência dos indicadores
-                         + 0,30 × Orçamento liquidado (R$)
-                         + 0,20 × Estoque normativo
-
-Evolução do artigo       = 0,35 × Orçamento liquidado por faixas
-                         + 0,35 × Estoque normativo por faixas
-                         + 0,30 × Tendência dos indicadores
-
-Faixas de orçamento (liquidado): > 0 → 20 · >= R$ 100 mi → 40 · >= R$ 1 bi → 60
-                                 >= R$ 5 bi → 80 · >= R$ 10 bi → 100
-Faixas de normativos (estoque):  1 → 25 · 3 → 50 · 6 → 75 · 10+ → 100
-
-Classificação: Evolução >= 60 · Estagnação 35–59 · Retrocesso < 35</div>
-<div class="legend"><strong>Tendência com sinal invertido:</strong> em indicadores negativos (mortalidade, homicídio, desemprego, analfabetismo, déficit, encarceramento) série decrescente é <em>melhora</em>; em indicadores positivos, série crescente é melhora. Só melhoria comprovada ou medição nova pontua; piora penaliza na proporção 1:1.</div>
-
-<h3>5.4 Progresso global ponderado</h3>
-<div class="formula">Progresso = (100 × cumpridas + 50 × parciais + 10 × não cumpridas) / (100 × total)</div>
-<div class="legend"><strong>Por que 10 e não 0 para não cumpridas:</strong> o piso reconhece a existência de monitoramento e cadastro da obrigação, evitando que o índice global oscile de forma binária. É constante para todas as recomendações, portanto não distorce comparações.</div>
+<h3>5.3 Resultados por Artigo</h3>
+<div class="formula">Esforço do Artigo = média simples do E das recomendações formalmente associadas
+Impacto do Artigo = média simples do I das recomendações formalmente associadas</div>
+<div class="legend">Recomendações sem evidência são preservadas no denominador com zero. Assim, artigos com maior número de recomendações não são favorecidos.</div>
 
 <h3>5.5 IEAT — Índice de Eficácia da Ação Transformadora</h3>
 <div class="formula">IEAT = f(benchmark social observado, benchmark orçamentário executado)
@@ -515,34 +476,19 @@ ${RECOMMENDATION_CONCEPT_BUNDLES.map(
 
 
 <h2>7. Critérios de classificação</h2>
-
-${block(
-  '7.1 Status de cumprimento vigente',
-  recPorStatus.length
-    ? `<table><tr><th>Status</th><th>Recomendações</th><th>Participação</th></tr>${tableRows(
-        recPorStatus.map(([k, v]) => [statusLabel[k] || k, v] as [string, number]),
-        totalRec,
-      )}</table>`
-    : '',
-)}
-
-<h3>7.2 Escalas e legendas oficiais</h3>
+<h3>7.1 Escalas e legendas oficiais</h3>
 <table>
 <tr><th>Escala</th><th>Faixas</th><th>Aplicação</th></tr>
-<tr><td>Status da recomendação</td><td>Cumprido ≥ 65 · Parcial ≥ 35 · Não cumprido &lt; 35</td><td>Esforço governamental</td></tr>
-<tr><td>Aderência ICERD</td><td>Boa ≥ 70 · Parcial 40–69 · Baixa &lt; 40</td><td>Artigos I–VII</td></tr>
-<tr><td>Evolução</td><td>Evolução ≥ 60 · Estagnação 35–59 · Retrocesso &lt; 35</td><td>Impacto real 2018–2025</td></tr>
-<tr><td>Progresso global</td><td>Cumprido = 100 · Parcial = 50 · Não cumprido = 10</td><td>Ponderação do índice-síntese</td></tr>
-<tr><td>Cobertura de evidências</td><td>Indicadores: 10+ = 100 · Orçamento: 12+ = 100</td><td>Componentes do Motor 1</td></tr>
+<tr><td>Esforço e Impacto</td><td>Alto ≥ 60 · Intermediário 25–59,9 · Baixo &lt; 25</td><td>Recomendações e Artigos I–VII</td></tr>
+<tr><td>Tetos do Esforço</td><td>Estatística 31 · Orçamentária 25 · Normativa 4</td><td>Saturação por base</td></tr>
 </table>
-<div class="legend"><strong>Legenda metodológica obrigatória:</strong> os pesos 100 / 50 / 10 do progresso global e os cortes 65 / 35 do status são constantes do sistema (motor v6, três faixas). Classificações legadas — "em andamento" e "retrocesso" — foram normalizadas para as três faixas atuais e permanecem apenas como histórico.</div>
 
-<h3>7.3 Perspectiva dual</h3>
+<h3>7.2 Perspectiva dual</h3>
 <p>Nenhum artigo ou recomendação é avaliado por um número só. O sistema sempre apresenta o par:</p>
 <div class="flow">
    ESFORÇO GOVERNAMENTAL                    IMPACTO REAL
    (o que o Estado fez)                     (o que mudou na vida das pessoas)
-   Status + Aderência ICERD      x          Evolução 2018–2025
+   Esforço Governamental        x          Impacto Evidenciado
    -----------------------------            -----------------------------
    Alto esforço + alto impacto  = política efetiva
    Alto esforço + baixo impacto = política anunciada / execução frágil

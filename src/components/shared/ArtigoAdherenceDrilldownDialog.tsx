@@ -3,11 +3,11 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle2, XCircle, Clock, AlertTriangle, FileText, DollarSign, BarChart3, Scale, Maximize2, Minimize2 } from 'lucide-react';
+import { FileText, DollarSign, BarChart3, Scale, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import type { LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
-import { formatScore, type Faixa } from '@/utils/esforcoImpacto';
+import { formatScore, TETOS_ESFORCO, type Faixa } from '@/utils/esforcoImpacto';
 import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
 
 interface ArtigoData {
@@ -36,7 +36,10 @@ interface ArtigoData {
 interface RecomendacaoDetail {
   paragrafo: string;
   tema: string;
-  status: string;
+  esforco: number;
+  impacto: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
 }
 
 interface ArtigoAdherenceDrilldownDialogProps {
@@ -59,16 +62,6 @@ export function ArtigoAdherenceDrilldownDialog({
   if (!artigo) return null;
 
 
-  const statusLabels: Record<string, { label: string }> = {
-    cumprido: { label: 'Cumprido' },
-    parcialmente_cumprido: { label: 'Parcial' },
-    em_andamento: { label: 'Parcial' },
-    nao_cumprido: { label: 'Não Cumprido' },
-    retrocesso: { label: 'Não Cumprido' },
-  };
-
-  const naoCumpridasTotal = artigo.lacunasNaoCumpridas + artigo.lacunasRetrocesso;
-
   // Order sections based on focusTab
   const sections = ['recomendacoes', 'indicadores', 'orcamento', 'normativos'] as const;
   const ordered = focusTab ? [focusTab, ...sections.filter(s => s !== focusTab)] : sections;
@@ -79,11 +72,6 @@ export function ArtigoAdherenceDrilldownDialog({
         <BarChart3 className="w-4 h-4 text-chart-1" />
         Recomendações ONU Vinculadas ({recomendacoes.length})
       </h4>
-      <div className="flex flex-wrap gap-2 mb-2">
-        <Badge variant="outline" className="text-[10px] text-success border-success/30">✓ {artigo.lacunasCumpridas} Cumprida(s)</Badge>
-        <Badge variant="outline" className="text-[10px] text-warning border-warning/30">~ {artigo.lacunasParciais} Parcial(is)</Badge>
-        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/30">✗ {naoCumpridasTotal} Não Cumprida(s)</Badge>
-      </div>
       {recomendacoes.length > 0 && (
         <div className="rounded-md border overflow-auto max-h-48">
           <Table>
@@ -91,17 +79,18 @@ export function ArtigoAdherenceDrilldownDialog({
               <TableRow>
                 <TableHead className="text-[10px] w-16">§</TableHead>
                 <TableHead className="text-[10px]">Tema</TableHead>
-                <TableHead className="text-[10px] w-28">Status</TableHead>
+                <TableHead className="text-[10px] w-28">Esforço</TableHead>
+                <TableHead className="text-[10px] w-28">Impacto</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {recomendacoes.map((r, i) => {
-                const st = statusLabels[r.status] || statusLabels.nao_cumprido;
                 return (
                   <TableRow key={i}>
                     <TableCell className="font-mono text-xs">{r.paragrafo}</TableCell>
                     <TableCell className="text-xs">{r.tema}</TableCell>
-                    <TableCell><Badge variant="outline" className="text-[10px]">{st.label}</Badge></TableCell>
+                    <TableCell className="text-[10px]">{formatScore(r.esforco)}</TableCell>
+                    <TableCell className="text-[10px]">{formatScore(r.impacto)}</TableCell>
                   </TableRow>
                 );
               })}
@@ -161,6 +150,8 @@ export function ArtigoAdherenceDrilldownDialog({
                 <TableHead className="text-[10px]">Programa</TableHead>
                 <TableHead className="text-[10px] w-28">Órgão</TableHead>
                 <TableHead className="text-[10px] w-16">Ano</TableHead>
+                <TableHead className="text-[10px] w-24">Empenhado</TableHead>
+                <TableHead className="text-[10px] w-24">Liquidado</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -169,6 +160,8 @@ export function ArtigoAdherenceDrilldownDialog({
                   <TableCell className="text-xs">{o.programa}</TableCell>
                   <TableCell className="text-[10px]">{o.orgao}</TableCell>
                   <TableCell className="text-[10px]">{o.ano}</TableCell>
+                  <TableCell className="text-[10px]">{o.empenhado != null ? `R$ ${(Number(o.empenhado) / 1e6).toFixed(2)}M` : '—'}</TableCell>
+                  <TableCell className="text-[10px]">{o.liquidado != null ? `R$ ${(Number(o.liquidado) / 1e6).toFixed(2)}M` : '—'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -265,7 +258,7 @@ export function ArtigoAdherenceDrilldownDialog({
               </div>
               <div className="p-2 bg-muted/30 rounded">
                 <p className="text-sm font-bold">{indicadores.length}</p>
-                <p className="text-[10px] text-muted-foreground">Estatística (teto 32)</p>
+                <p className="text-[10px] text-muted-foreground">Estatística (teto {TETOS_ESFORCO.estatistica})</p>
               </div>
               <div className="p-2 bg-muted/30 rounded">
                 <p className="text-sm font-bold">{orcamentos.length}</p>
@@ -289,7 +282,7 @@ export function ArtigoAdherenceDrilldownDialog({
 
             {/* Methodology */}
             <div className="p-2 bg-muted/30 rounded text-[10px] text-muted-foreground">
-              <strong>Fonte:</strong> Evidências agregadas das recomendações vinculadas a este artigo (mesma base do motor diagnóstico em Recomendações). Recomendações ONU cumpridas — taxa relativa (50%), Normativos (15%), Orçamento — contagem de ações (10%), Indicadores (15%), Amplitude de Fontes (10%).
+              <strong>Metodologia:</strong> cada artigo recebe a média simples do Esforço e do Impacto das recomendações formalmente associadas, incluindo zeros quando não há evidência. Realização = [R_est + R_orç + R_norm] ÷ 3; R_est considera melhorou e estável como evolução não desfavorável; R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida; R_norm = presença 100, ausência 0. Impacto = Esforço × Realização ÷ 100.
             </div>
           </div>
         </ScrollArea>

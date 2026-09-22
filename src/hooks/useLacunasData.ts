@@ -465,12 +465,13 @@ export function useOrcamentoStats() {
 
       // Por ano com métricas detalhadas
       const porAno: Record<number, number> = {};
-      const porAnoDetalhado: Record<number, { pago: number; liquidado: number; dotacao: number }> = {};
+      const porAnoDetalhado: Record<number, { pago: number; liquidado: number; empenhado: number; dotacao: number }> = {};
       registrosLimpos.forEach(r => {
         porAno[r.ano] = (porAno[r.ano] || 0) + valorEfetivo(r);
-        if (!porAnoDetalhado[r.ano]) porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        if (!porAnoDetalhado[r.ano]) porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, empenhado: 0, dotacao: 0 };
         porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
         porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        porAnoDetalhado[r.ano].empenhado += Number(r.empenhado) || 0;
         porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
       });
 
@@ -504,12 +505,13 @@ export function useOrcamentoStats() {
         liquidadoP2: semSesaiP2.reduce((acc, r) => acc + (Number(r.liquidado) || 0), 0),
         pagoP1: semSesaiP1.reduce((acc, r) => acc + (Number(r.pago) || 0), 0),
         pagoP2: semSesaiP2.reduce((acc, r) => acc + (Number(r.pago) || 0), 0),
-        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; dotacao: number }>,
+        porAnoDetalhado: {} as Record<number, { pago: number; liquidado: number; empenhado: number; dotacao: number }>,
       };
       semSesaiLimpos.forEach(r => {
-        if (!semSesai.porAnoDetalhado[r.ano]) semSesai.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, dotacao: 0 };
+        if (!semSesai.porAnoDetalhado[r.ano]) semSesai.porAnoDetalhado[r.ano] = { pago: 0, liquidado: 0, empenhado: 0, dotacao: 0 };
         semSesai.porAnoDetalhado[r.ano].pago += Number(r.pago) || 0;
         semSesai.porAnoDetalhado[r.ano].liquidado += Number(r.liquidado) || 0;
+        semSesai.porAnoDetalhado[r.ano].empenhado += Number(r.empenhado) || 0;
         semSesai.porAnoDetalhado[r.ano].dotacao += Number(r.dotacao_autorizada) || 0;
       });
       const semSesaiVariacaoDotacao = semSesai.dotacaoP1 > 0 ? ((semSesai.dotacaoP2 - semSesai.dotacaoP1) / semSesai.dotacaoP1 * 100) : 0;

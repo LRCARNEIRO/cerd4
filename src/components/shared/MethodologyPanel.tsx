@@ -71,8 +71,15 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
                     Esforço = [100 × min(nEst/{TETOS_ESFORCO.estatistica}; 1) + 100 × min(nOrç/{TETOS_ESFORCO.orcamentaria}; 1) + 100 × min(nNorm/{TETOS_ESFORCO.normativa}; 1)] ÷ 3
                   </p>
                   <p className="text-[11px] font-mono text-muted-foreground">
-                    Realização = média das três bases &nbsp;·&nbsp; Impacto Evidenciado = Esforço × Realização ÷ 100
+                    R_est = (melhorou + estável) ÷ total com tendência mensurável × 100
                   </p>
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida × 100 &nbsp;·&nbsp; R_norm = presença ? 100 : 0
+                  </p>
+                  <p className="text-[11px] font-mono text-muted-foreground">
+                    Realização = (R_est + R_orç + R_norm) ÷ 3 &nbsp;·&nbsp; Impacto Evidenciado = Esforço × Realização ÷ 100
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">“Estável” representa manutenção do resultado: melhorou = 1, estável = 1 e somente piorou = 0.</p>
                   <p className="text-[10px] text-muted-foreground">
                     Os tetos de saturação ({TETOS_ESFORCO.estatistica} estatística · {TETOS_ESFORCO.orcamentaria} orçamentária · {TETOS_ESFORCO.normativa} normativa)
                     derivam do percentil 75 das evidências distintas efetivamente vinculadas; as três bases têm peso igual de 1/3.

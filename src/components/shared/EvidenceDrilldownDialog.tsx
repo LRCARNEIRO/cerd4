@@ -3,13 +3,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { StatusBadge } from '@/components/ui/status-badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TrendingUp, TrendingDown, Minus, FileText, DollarSign, BarChart3, Trash2, Plus, Search, Maximize2, Minimize2 } from 'lucide-react';
 import type { RecomendacaoDiagnostic, LinkedIndicador, LinkedOrcamento, LinkedNormativo } from '@/hooks/useDiagnosticSensor';
 import { useState, useMemo } from 'react';
 import { isEvidenceEligibleIndicator, isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { expandIndicadorEvidencia } from '@/hooks/useDiagnosticSensor';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
+import { TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 
 // ── Override types ─────────────────────────────────────────────
 export interface EvidenceOverride {
@@ -115,7 +116,7 @@ export function EvidenceDrilldownDialog({
         return text.includes(term) && !effectiveOrcamento.some(e => orcKey(e) === key);
       })
       .slice(0, 15)
-      .map((o: any) => ({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, pago: o.pago }));
+      .map((o: any) => ({ id: o.id, programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, empenhado: o.empenhado, liquidado: o.liquidado, pago: o.pago }));
   }, [searchOrc, allOrcamento, effectiveOrcamento]);
 
   const searchNormResults = useMemo(() => {
@@ -212,23 +213,23 @@ export function EvidenceDrilldownDialog({
           <DialogDescription className="text-xs">
             {isEditable
               ? 'Evidências vinculadas — remova ou adicione itens para ajustar a avaliação.'
-              : 'Evidências cruzadas que fundamentam o status computado'}
+               : 'Evidências que fundamentam os índices de Esforço e Impacto'}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-1 pr-2">
           <div className="space-y-4">
-            {/* Score Summary */}
+            {/* Esforço e Impacto */}
             <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-              <div className="text-center">
-                <p className="text-2xl font-bold">{auditoria.scoreGlobal}</p>
-                <p className="text-[10px] text-muted-foreground">Score</p>
-              </div>
-              <div className="h-8 w-px bg-border" />
-              <StatusBadge status={auditoria.statusComputado} size="sm" />
+              <EsforcoImpactoTags
+                esforco={auditoria.esforcoImpacto.esforco}
+                impacto={auditoria.esforcoImpacto.impacto}
+                faixaEsforco={auditoria.esforcoImpacto.faixaEsforco}
+                faixaImpacto={auditoria.esforcoImpacto.faixaImpacto}
+              />
               <div className="flex-1 text-xs text-muted-foreground space-y-0.5">
-                <p>Ind: {effectiveIndicadores.length} evid. → {auditoria.indicadores.score} pts (×40%) · Orç: {effectiveOrcamento.length} ações → {auditoria.orcamento.score} pts (×30%) · Norm: {effectiveNormativos.length} leis → {auditoria.normativos.score} pts (×30%)</p>
-                <p className="text-[10px]">Escala cobertura: 0=5 · 1=40 · 2=55 · 3=70 · 5+=85 · 8+=100 pts</p>
+                <p>Realização {formatScore(auditoria.esforcoImpacto.realizacao)} · Estatística {formatScore(auditoria.esforcoImpacto.componentes.realizacaoEstatistica)}% · Orçamentária {formatScore(auditoria.esforcoImpacto.componentes.realizacaoOrcamentaria)}% · Normativa {formatScore(auditoria.esforcoImpacto.componentes.realizacaoNormativa)}%</p>
+                <p className="text-[10px]">Tetos do Esforço: {TETOS_ESFORCO.estatistica} estatísticas · {TETOS_ESFORCO.orcamentaria} orçamentárias · {TETOS_ESFORCO.normativa} normativas.</p>
               </div>
               {hasOverrides && (
                 <Badge variant="secondary" className="text-[10px] bg-accent/20 text-accent">
@@ -356,7 +357,8 @@ export function EvidenceDrilldownDialog({
                         <TableHead className="text-[10px]">Programa</TableHead>
                         <TableHead className="text-[10px] w-28">Órgão</TableHead>
                         <TableHead className="text-[10px] w-16">Ano</TableHead>
-                        <TableHead className="text-[10px] w-24">Pago</TableHead>
+                        <TableHead className="text-[10px] w-24">Empenhado</TableHead>
+                        <TableHead className="text-[10px] w-24">Liquidado</TableHead>
                         {isEditable && <TableHead className="text-[10px] w-10" />}
                       </TableRow>
                     </TableHeader>
@@ -372,8 +374,9 @@ export function EvidenceDrilldownDialog({
                             <TableCell className="text-[10px] text-muted-foreground">{orc.orgao}</TableCell>
                             <TableCell className="text-[10px]">{orc.ano}</TableCell>
                             <TableCell className="text-[10px]">
-                              {orc.pago ? `R$ ${(Number(orc.pago) / 1e6).toFixed(1)}M` : '—'}
+                              {orc.empenhado != null ? `R$ ${(Number(orc.empenhado) / 1e6).toFixed(1)}M` : '—'}
                             </TableCell>
+                            <TableCell className="text-[10px]">{orc.liquidado != null ? `R$ ${(Number(orc.liquidado) / 1e6).toFixed(1)}M` : '—'}</TableCell>
                             {isEditable && (
                               <TableCell>
                                 <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive/70 hover:text-destructive" onClick={() => removeOrcamento(orcKey(orc))}>
@@ -512,12 +515,11 @@ export function EvidenceDrilldownDialog({
 
             {/* Methodology note */}
             <div className="p-3 bg-muted/30 rounded text-[10px] text-muted-foreground space-y-1">
-              <p><strong>Metodologia — Esforço Governamental (Compliance):</strong></p>
-              <p>Este score mede se o governo brasileiro <em>procurou responder</em> às recomendações, com base na <strong>cobertura de evidências</strong> (existência de indicadores, ações orçamentárias e normativos vinculados).</p>
-              <p><strong>Indicadores (40%):</strong> Score por quantidade — ≥8: 100 | ≥5: 85 | ≥3: 70 | ≥2: 55 | 1: 40 | 0: 5. A tendência (melhora/piora) é informativa, mas <em>não afeta</em> este score — a análise de impacto real pertence ao Motor de Evolução.</p>
-              <p><strong>Orçamento (30%):</strong> Score por execução financeira média das ações vinculadas, com penalização por ações simbólicas (&lt;5% de execução).</p>
-              <p><strong>Normativos (30%):</strong> Score por quantidade — ≥5: 100 | ≥3: 80 | ≥2: 60 | 1: 40 | 0: 5.</p>
-              <p><strong>Faixas:</strong> ≥80 Cumprido | ≥55 Parcial | ≥35 Em Andamento | ≥15 Não Cumprido | &lt;15 Retrocesso.</p>
+              <p><strong>Metodologia — Esforço e Impacto Evidenciado:</strong></p>
+              <p><strong>Esforço:</strong> [100 × min(nEst/{TETOS_ESFORCO.estatistica};1) + 100 × min(nOrç/{TETOS_ESFORCO.orcamentaria};1) + 100 × min(nNorm/{TETOS_ESFORCO.normativa};1)] ÷ 3.</p>
+              <p><strong>Realização:</strong> [% de indicadores com evolução não desfavorável + %(Σ Liquidado ÷ Σ Dotação autorizada válida) + %(presença normativa)] ÷ 3.</p>
+              <p><strong>Componente estatístico:</strong> (melhorou + estável) ÷ total com tendência mensurável × 100. Estável representa manutenção; somente piora recebe 0.</p>
+              <p><strong>Impacto Evidenciado:</strong> Esforço × Realização ÷ 100. Faixas: Baixo &lt;25 · Intermediário 25–59,9 · Alto ≥60.</p>
               {isEditable && (
                 <p className="mt-1"><strong>Nota:</strong> Ajustes manuais (inclusão/exclusão) são aplicados em tempo real e recalculam o status automaticamente.</p>
               )}

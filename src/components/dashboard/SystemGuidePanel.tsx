@@ -40,7 +40,7 @@ export function SystemGuidePanel() {
               icon={<ClipboardCheck className="w-5 h-5" />}
               title="Base de Evidências"
               subtitle="Acompanhamento Gerencial → Recomendações"
-              description="Ponto de partida: as 43 recomendações ONU com evidências vinculadas (indicadores, orçamento e normativos). Edições manuais aqui propagam automaticamente."
+              description="Ponto de partida: as 42 recomendações ONU com evidências vinculadas (indicadores, orçamento e normativos)."
               color="primary"
             />
             {/* Arrow */}
@@ -53,7 +53,7 @@ export function SystemGuidePanel() {
               icon={<Layers className="w-5 h-5" />}
               title="Análises Derivadas"
               subtitle="Alimentadas automaticamente"
-              description="Artigos (aderência ICERD), Evolução Recomendações (impacto real), Evolução Artigos (tendência) e Diagnóstico de Lacunas recebem os mesmos dados."
+              description="Artigos, relatórios, diagnóstico e Painel Geral recebem os mesmos índices de Esforço e Impacto."
               color="secondary"
             />
             <div className="hidden md:flex items-center justify-center absolute left-[66%] top-1/2 -translate-y-1/2 z-10">
@@ -65,7 +65,7 @@ export function SystemGuidePanel() {
               icon={<Eye className="w-5 h-5" />}
               title="Painel Geral"
               subtitle="Espelho consolidado"
-              description="Este painel reflete os resultados finais: Esforço (status), Impacto (evolução) e Lente dos Artigos (aderência + evolução por artigo)."
+              description="Este painel reflete os resultados finais de Esforço e Impacto nas recomendações e nos artigos."
               color="accent"
             />
           </div>
@@ -86,10 +86,10 @@ export function SystemGuidePanel() {
                   icon={<ClipboardCheck className="w-4 h-4 text-primary" />}
                   title="Recomendações (Acompanhamento Gerencial)"
                   items={[
-                    "43 recomendações ONU com score de esforço (0-100)",
+                    "42 recomendações ONU com índices de Esforço e Impacto (0-100)",
                     "Evidências vinculadas: indicadores, ações orçamentárias, normativos",
                     "Edição manual (incluir/excluir) → recálculo instantâneo em todo o sistema",
-                    "Status: Cumprido (≥65), Parcial (≥35), Não Cumprido (<35)"
+                    "Faixas comuns: Baixo (<25), Intermediário (25–59,9) e Alto (≥60)"
                   ]}
                 />
                 <DetailRow
@@ -97,28 +97,19 @@ export function SystemGuidePanel() {
                   title="Artigos ICERD (Acompanhamento Gerencial)"
                   items={[
                     "Consolida recomendações por artigo da Convenção",
-                    "Score de Aderência = Rec. 50% + Normativos 15% + Orçamento 10% + Indicadores 15% + Amplitude 10%",
+                    "Esforço e Impacto do artigo = média simples das recomendações formalmente associadas",
                     "Mesmas evidências de Recomendações, filtradas por artigo",
                     "Pop-up de auditagem ao clicar em cada tag de evidência"
                   ]}
                 />
                 <DetailRow
                   icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
-                  title="Evolução Recomendações (Produtos → Conclusões)"
+                  title="Realização e Impacto"
                   items={[
-                    "Avalia se o esforço gerou resultado no período 2018-2025",
-                    "Pesos: Indicadores 50% (variação positiva) + Orçamento 30% (R$ liquidado) + Normativos 20%",
-                    "Classifica: Evolução (≥60), Estagnação (35-59), Retrocesso (<35)",
-                    "Base de evidências idêntica à de Recomendações"
-                  ]}
-                />
-                <DetailRow
-                  icon={<BarChart3 className="w-4 h-4 text-blue-500" />}
-                  title="Evolução Artigos (Produtos → Conclusões)"
-                  items={[
-                    "Avalia impacto por artigo: Orçamento 35% + Normativos 35% + Indicadores 30%",
-                    "Orçamento por faixas de valor liquidado; Normativos por estoque; Indicadores por tendência",
-                    "Complementa a Aderência com a dimensão de resultado efetivo"
+                    "Estatística: melhorou + estável sobre o total com tendência mensurável",
+                    "Orçamentária: soma liquidada dividida pela dotação autorizada válida",
+                    "Normativa: presença vale 100; ausência vale zero",
+                    "Impacto Evidenciado = Esforço × média das três realizações ÷ 100"
                   ]}
                 />
                 <DetailRow
@@ -134,8 +125,8 @@ export function SystemGuidePanel() {
                   icon={<Eye className="w-4 h-4 text-muted-foreground" />}
                   title="Painel Geral (este painel)"
                   items={[
-                    "Esforço Governamental ← status consolidado de Recomendações",
-                    "Impacto Real ← resultado consolidado de Evolução Recomendações",
+                    "Esforço Governamental ← volume saturado das três bases",
+                    "Impacto Evidenciado ← Esforço × Realização ÷ 100",
                     "Lente dos Artigos: Esforço e Impacto Evidenciado (média das recomendações do artigo)",
                     "Nenhum cálculo próprio — espelho puro dos motores analíticos"
                   ]}
@@ -164,9 +155,8 @@ export function SystemGuidePanel() {
                   recalculam instantaneamente:
                 </p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Score e status de cada recomendação</li>
-                  <li>Aderência por artigo ICERD</li>
-                  <li>Score de evolução por recomendação e por artigo</li>
+                  <li>Esforço e Impacto de cada recomendação</li>
+                  <li>Esforço e Impacto por artigo ICERD</li>
                   <li>Diagnóstico de lacunas remanescentes</li>
                   <li>Gráficos e badges deste Painel Geral</li>
                 </ul>

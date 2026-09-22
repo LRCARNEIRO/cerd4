@@ -189,7 +189,7 @@ export function DualPerspectivePanel({
               <MiniStat icon={TrendingDown} label="Baixo" value={impactoData.baixo} className="text-destructive" />
             </div>
             <p className="text-[10px] text-muted-foreground mt-2 italic">
-              Impacto = Esforço × Realização ÷ 100 · Realização = [indicadores não desfavoráveis + liquidado/dotação + presença normativa] ÷ 3
+              R_est = (melhorou + estável) ÷ total mensurável × 100 · R_orç = Σ liquidado ÷ Σ dotação válida × 100 · R_norm = presença 100, ausência 0 · Realização = (R_est + R_orç + R_norm) ÷ 3 · Impacto = Esforço × Realização ÷ 100. Estável representa manutenção; somente piora é penalizada.
             </p>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/conclusoes" className="text-xs text-primary hover:underline flex items-center gap-1">

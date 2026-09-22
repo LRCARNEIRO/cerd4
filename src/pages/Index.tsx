@@ -57,7 +57,7 @@ export default function Index() {
     ? Object.entries(activeSource).map(([ano, v]) => ({
         ano: parseInt(ano),
         autorizado: v.dotacao || 0,
-        empenhado: v.liquidado || 0,
+        empenhado: v.empenhado || 0,
         pago: v.pago || 0
       })).sort((a, b) => a.ano - b.ano)
     : [

@@ -9,6 +9,7 @@
 import type { RecomendacaoDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { isLinkedEvidenceEligible } from '@/utils/indicatorEvidenceGuards';
 import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
+import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 
 function fmtNum(v: number | undefined): string {
   if (v === undefined || v === null || Number.isNaN(v)) return '—';
@@ -45,14 +46,6 @@ function buildIndicadorLink(id: string, codigo: string | undefined, origin: stri
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
-const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  cumprido: { label: 'Cumprida', color: '#16a34a' },
-  parcialmente_cumprido: { label: 'Parcial', color: '#ca8a04' },
-  em_andamento: { label: 'Parcial', color: '#ca8a04' },
-  nao_cumprido: { label: 'Não Cumprida', color: '#dc2626' },
-  retrocesso: { label: 'Não Cumprida', color: '#dc2626' },
-};
-
 interface Args {
   recomendacao: {
     id: string;
@@ -80,6 +73,7 @@ interface Args {
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   /** Mapa composto orçamento → metadata p/ resolver dotação, execução. */
   orcamentoMetaByKey: Map<string, any>;
+  orcamentoMetaById: Map<string, any>;
   origin: string;
 }
 
@@ -95,6 +89,7 @@ export function generateRecomendacaoAuditHTML({
   indicadorRegByNome,
   normativoMetaByTitulo,
   orcamentoMetaByKey,
+  orcamentoMetaById,
   origin,
 }: Args): string {
   // ⚠️ REGRA DE OURO: defesa redundante ao sensor — bloqueia Common Core e
@@ -104,9 +99,8 @@ export function generateRecomendacaoAuditHTML({
   const linkedOrc = diagnostic?.linkedOrcamento || [];
   const linkedNorm = diagnostic?.linkedNormativos || [];
 
-  const effective = diagnostic?.statusComputado || recomendacao.status_cumprimento;
-  const statusInfo = STATUS_LABEL[effective] || STATUS_LABEL.nao_cumprido;
   const auditoria = diagnostic?.auditoria;
+  const ei = auditoria?.esforcoImpacto;
 
   // ── Indicadores ────────────────────────────────────────────────
   const indEvals = linkedInd.map(li => {
@@ -159,7 +153,7 @@ export function generateRecomendacaoAuditHTML({
 
   // ── Orçamento ──────────────────────────────────────────────────
   const orcRows = linkedOrc.map(o => {
-    const meta = orcamentoMetaByKey.get(orcKey(o)) || {};
+    const meta = (o.id ? orcamentoMetaById.get(o.id) : undefined) || orcamentoMetaByKey.get(orcKey(o)) || {};
     const dot = Number(meta.dotacao_autorizada ?? o.dotacao_autorizada ?? 0);
     const emp = Number(meta.empenhado ?? (o as any).empenhado ?? 0);
     const liq = Number(meta.liquidado ?? o.liquidado ?? 0);
@@ -190,8 +184,8 @@ export function generateRecomendacaoAuditHTML({
   h1{font-size:18px;border-bottom:3px solid #1e40af;padding-bottom:8px;margin-bottom:6px}
   h2{margin-top:1.8rem;color:#1e40af;font-size:15px;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
   .meta{font-size:11px;color:#64748b;margin-bottom:12px}
-  .status-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-weight:600;font-size:11px;color:white;background:${statusInfo.color}}
-  .summary{background:#f8fafc;border-left:4px solid ${statusInfo.color};padding:10px 14px;margin:12px 0;border-radius:4px;font-size:12px}
+  .metric-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-weight:600;font-size:11px;background:#e2e8f0;color:#1e293b;margin-right:5px}
+  .summary{background:#f8fafc;border-left:4px solid #1e40af;padding:10px 14px;margin:12px 0;border-radius:4px;font-size:12px}
   .summary p{margin:3px 0}
   table{width:100%;border-collapse:collapse;margin:8px 0}
   th,td{border:1px solid #e2e8f0;padding:6px 8px;font-size:11px;vertical-align:top}
@@ -202,17 +196,22 @@ export function generateRecomendacaoAuditHTML({
 </style></head><body>
 
 <h1>Auditoria — §${recomendacao.paragrafo}: ${recomendacao.tema}</h1>
-<div class="meta">Artigos ICERD: <strong>${artigos}</strong> · Prioridade cadastrada: <strong>${recomendacao.prioridade || '—'}</strong> · Status atual: <span class="status-pill">${statusInfo.label}</span></div>
+<div class="meta">Artigos ICERD: <strong>${artigos}</strong> · Prioridade cadastrada: <strong>${recomendacao.prioridade || '—'}</strong></div>
 <div class="meta">Gerado em ${new Date().toLocaleString('pt-BR')}</div>
 
 ${textoOriginal ? `<div class="quote">${textoOriginal}</div>` : ''}
 
-${auditoria ? `<div class="summary">
-  <p><strong>Score Global: ${auditoria.scoreGlobal}/100</strong></p>
-  <p>📊 Indicadores: ${auditoria.indicadores.total} (${auditoria.indicadores.melhoram}↑ ${auditoria.indicadores.pioram}↓ ${auditoria.indicadores.estaveis}=) · Score ${auditoria.indicadores.score}</p>
-  <p>💰 Orçamento: ${auditoria.orcamento.total} ações · Execução média ${auditoria.orcamento.execucaoMedia}% · Score ${auditoria.orcamento.score}</p>
-  <p>⚖️ Normativos: ${auditoria.normativos.total} · Score ${auditoria.normativos.score}</p>
+${ei ? `<div class="summary">
+  <p><span class="metric-pill">Esforço ${formatScore(ei.esforco)} · ${FAIXA_LABEL[ei.faixaEsforco]}</span><span class="metric-pill">Impacto ${formatScore(ei.impacto)} · ${FAIXA_LABEL[ei.faixaImpacto]}</span></p>
+  <p><strong>Realização: ${formatScore(ei.realizacao)}</strong> · estatística ${formatScore(ei.componentes.realizacaoEstatistica)}% · orçamentária ${formatScore(ei.componentes.realizacaoOrcamentaria)}% · normativa ${formatScore(ei.componentes.realizacaoNormativa)}%</p>
+  <p>📊 ${ei.contagens.favoraveis} indicador(es) com evolução não desfavorável entre ${ei.contagens.comTendencia} com tendência mensurável · 💰 ${ei.contagens.orcamentaria} ações · ⚖️ ${ei.contagens.normativa} normativos.</p>
 </div>` : ''}
+
+<h2>Metodologia de Cálculo — Esforço e Impacto</h2>
+<p><strong>Esforço:</strong> E = [100 × min(nEst/${TETOS_ESFORCO.estatistica}; 1) + 100 × min(nOrç/${TETOS_ESFORCO.orcamentaria}; 1) + 100 × min(nNorm/${TETOS_ESFORCO.normativa}; 1)] ÷ 3.</p>
+<p><strong>Realização:</strong> R = [% de indicadores com evolução não desfavorável + %(Σ Liquidado ÷ Σ Dotação autorizada válida) + %(presença normativa)] ÷ 3. A presença normativa vale 100 e a ausência vale 0.</p>
+<p><strong>Componente estatístico:</strong> (indicadores que melhoraram + indicadores estáveis) ÷ total de indicadores com tendência mensurável × 100. “Estável” representa manutenção do resultado e recebe 1; somente a piora é penalizada com 0.</p>
+<p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100.</p>
 
 <h2>📊 Indicadores (${linkedInd.length})</h2>
 <p style="font-size:10px;color:#64748b;margin:4px 0">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
