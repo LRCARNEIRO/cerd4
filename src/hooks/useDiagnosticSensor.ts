@@ -12,6 +12,10 @@ import { dedupOrcamento } from '@/utils/orcamentoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import type { EvidenceOverride, EvidenceOverrides } from '@/components/shared/EvidenceDrilldownDialog';
 import { getSubsForGuardaChuva } from '@/utils/indicadorSubs';
+import {
+  computeEsforcoImpacto, classificarFaixa, mediaSimples, FAIXA_LABEL, TETOS_ESFORCO,
+  type EsforcoImpactoResultado, type Faixa,
+} from '@/utils/esforcoImpacto';
 
 /**
  * Evidência estatística auditada cujo registro não existe em
@@ -111,6 +115,8 @@ export interface AuditScoreBreakdown {
   scoreGlobal: number;
   statusComputado: ComplianceStatus;
   justificativaCompleta: string;
+  /** Metodologia v7 — Esforço Governamental × Impacto Evidenciado */
+  esforcoImpacto: EsforcoImpactoResultado;
 }
 
 /** Diagnóstico computado de uma recomendação (CERD, RG ou Durban) */
