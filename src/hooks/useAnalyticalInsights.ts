@@ -594,8 +594,8 @@ function gerarFiosCondutores(
 
   // FIO 11: ODS Racial — Agenda 2030 e Desigualdade Racial
   if (odsRacialIndicadores.length > 0) {
-    const odsCrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'crescente').length;
-    const odsDecrescentes = odsRacialIndicadores.filter(i => i.tendencia === 'decrescente').length;
+    const odsCrescentes = odsRacialIndicadores.filter(i => tendenciaPadrao(i as any) === 'melhorou').length;
+    const odsDecrescentes = odsRacialIndicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
     const evidOds: EvidenciaDinamica[] = odsRacialIndicadores.slice(0, 6).map(i => ({
       texto: `${i.nome}: tendência ${i.tendencia || 'sem dados'}`,
       fonte: i.fonte,
