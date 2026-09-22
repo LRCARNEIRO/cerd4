@@ -204,7 +204,7 @@ interface Params {
 export function useIcerdArtigoAnalysis({ lacunas, fiosCondutores = [], conclusoes = [], respostas = [] }: Params) {
   const statSeriesPerArticle = useCountStatSeriesPerArticle();
   const evidenceOverrides = useEvidenceOverridesReadOnly();
-  const { diagnosticMap, artigoEvidencia, curadosTotal } = useDiagnosticSensor(lacunas || [], evidenceOverrides);
+  const { diagnosticMap, artigoEvidencia, curadosTotal, artigoEsforcoImpacto } = useDiagnosticSensor(lacunas || [], evidenceOverrides);
 
   const analysis = useMemo<ArtigoAnalysis[]>(() => {
     return ARTIGOS_CONVENCAO.map(art => {
