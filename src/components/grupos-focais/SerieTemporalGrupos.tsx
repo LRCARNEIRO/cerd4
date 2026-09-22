@@ -402,7 +402,7 @@ export function SerieTemporalGrupos() {
                 </div>
                 <div className="flex items-center gap-2">
                   <TrendingDown className="w-4 h-4 text-destructive" />
-                  <span className="text-sm font-medium">{totalPioras} em piora</span>
+                  <span className="text-sm font-medium">{totalPioras} piorou</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Minus className="w-4 h-4 text-muted-foreground" />
