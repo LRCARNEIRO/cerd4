@@ -88,6 +88,8 @@ export function useEvolucaoSummary() {
         artigosSummary: ARTIGOS_CONVENCAO.map(a => ({
           numero: a.numero, titulo: a.titulo, totalRecs: 0,
           cumpridas: 0, parciais: 0, naoCumpridas: 0, evolScore: 0, aderenciaScore: 0,
+          esforcoScore: 0, impactoScore: 0,
+          faixaEsforco: 'baixo' as const, faixaImpacto: 'baixo' as const, recsArtigo: 0,
           vinculos: 0, vinculosPorBase: { estatistica: 0, normativa: 0, orcamentaria: 0 },
           indicadoresCount: 0, orcamentoCount: 0, normativosCount: 0,
         })),
