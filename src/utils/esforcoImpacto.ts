@@ -8,7 +8,7 @@
  * ESFORÇO (0–100) — quanta evidência distinta foi efetivamente vinculada,
  * com teto por base (P75 da distribuição observada) e pesos iguais (1/3):
  *
- *   E = [100·min(nEst/32,1) + 100·min(nOrç/25,1) + 100·min(nNorm/4,1)] / 3
+ *   E = [100·min(nEst/31,1) + 100·min(nOrç/25,1) + 100·min(nNorm/4,1)] / 3
  *
  * REALIZAÇÃO (0–100) — quanto dessa resposta se converteu em resultado:
  *   • estatística  = % de indicadores com evolução não desfavorável
@@ -26,7 +26,7 @@
  */
 import { tendenciaPadraoDetalhada } from '@/utils/tendenciaPadronizada';
 
-export const TETOS_ESFORCO = { estatistica: 32, orcamentaria: 25, normativa: 4 } as const;
+export const TETOS_ESFORCO = { estatistica: 31, orcamentaria: 25, normativa: 4 } as const;
 export const CORTE_INTERMEDIARIO = 25;
 export const CORTE_ALTO = 60;
 

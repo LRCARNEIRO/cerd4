@@ -32,7 +32,7 @@ export function ExportAllRecomendacoesButton({
     if (!recomendacoes?.length) return;
     setBusy(true);
     try {
-      const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin } =
+      const { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, orcamentoMetaById, origin } =
         buildExportLookups(rawIndicadores || [], rawOrcamento || [], rawNormativos || []);
 
       console.time('[ExportAll] total');
@@ -67,6 +67,7 @@ export function ExportAllRecomendacoesButton({
             indicadorRegByNome,
             normativoMetaByTitulo,
             orcamentoMetaByKey,
+            orcamentoMetaById,
             origin,
           });
         } catch (err: any) {
@@ -78,12 +79,12 @@ export function ExportAllRecomendacoesButton({
         const fileName = `paragrafo-${safeFileName(rec.paragrafo || String(i))}-${safeFileName(rec.tema || 'sem-tema')}.html`;
         zip.file(fileName, html);
 
-        const status = diag?.statusComputado || rec.status_cumprimento;
-        const statusLabel = status === 'cumprido' ? 'Cumprida' : status === 'parcialmente_cumprido' || status === 'em_andamento' ? 'Parcial' : 'Não Cumprida';
+        const ei = diag?.auditoria.esforcoImpacto;
         indexRows.push(`<tr>
           <td style="font-family:monospace">§${rec.paragrafo}</td>
           <td>${rec.tema}</td>
-          <td>${statusLabel}</td>
+          <td>${ei ? `${ei.esforco.toFixed(1)} · ${ei.faixaEsforco}` : '—'}</td>
+          <td>${ei ? `${ei.impacto.toFixed(1)} · ${ei.faixaImpacto}` : '—'}</td>
           <td>${diag?.linkedIndicadores?.length || 0}</td>
           <td>${diag?.linkedNormativos?.length || 0}</td>
           <td>${diag?.linkedOrcamento?.length || 0}</td>
@@ -105,7 +106,7 @@ export function ExportAllRecomendacoesButton({
 <p style="font-size:11px;color:#64748b">${recomendacoes.length} recomendações · Gerado em ${new Date().toLocaleString('pt-BR')}</p>
 <p style="font-size:11px;color:#64748b">Cada recomendação possui um relatório HTML individual com Indicadores, Normativos e Orçamento vinculados (mesmo layout do Farol Drilldown). Clique em "Abrir" para visualizar.</p>
 <table>
-  <thead><tr><th>§</th><th>Tema</th><th>Status</th><th>📊 Ind.</th><th>⚖️ Norm.</th><th>💰 Orç.</th><th>Relatório</th></tr></thead>
+  <thead><tr><th>§</th><th>Tema</th><th>Esforço</th><th>Impacto</th><th>📊 Ind.</th><th>⚖️ Norm.</th><th>💰 Orç.</th><th>Relatório</th></tr></thead>
   <tbody>${indexRows.join('')}</tbody>
 </table>
 </body></html>`;

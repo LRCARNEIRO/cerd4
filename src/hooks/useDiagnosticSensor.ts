@@ -94,11 +94,12 @@ export interface ArtigoEvidenciaCurada {
 
 
 export interface LinkedOrcamento {
-
+  id?: string;
   programa: string;
   orgao: string;
   ano: number;
   dotacao_autorizada: number | null;
+  empenhado: number | null;
   liquidado: number | null;
   pago: number | null;
 }
@@ -546,8 +547,9 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
         return expandIndicadorEvidencia(base);
       });
       const linkedOrcamento: LinkedOrcamento[] = finalOrcamentos.map(o => ({
-        programa: o.programa, orgao: o.orgao, ano: o.ano,
-        dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago,
+        id: o.id, programa: o.programa, orgao: o.orgao, ano: o.ano,
+        dotacao_autorizada: o.dotacao_autorizada, empenhado: o.empenhado,
+        liquidado: o.liquidado, pago: o.pago,
       }));
       const linkedNormativos: LinkedNormativo[] = finalNormativos.map(n => ({ titulo: n.titulo, status: n.status }));
 
@@ -758,7 +760,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
           s.add(dedupKey);
           const o: any = orcById.get(v.ref_id);
           if (!o) continue;
-          entry.orcamento.push({ programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, liquidado: o.liquidado, pago: o.pago });
+          entry.orcamento.push({ id: o.id, programa: o.programa, orgao: o.orgao, ano: o.ano, dotacao_autorizada: o.dotacao_autorizada, empenhado: o.empenhado, liquidado: o.liquidado, pago: o.pago });
         } else {
           const dedupKey = `${v.base}|${v.ref_id}`;
           if (s.has(dedupKey)) continue;

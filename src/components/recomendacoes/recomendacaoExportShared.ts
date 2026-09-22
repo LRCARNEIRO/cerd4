@@ -18,6 +18,7 @@ export interface ExportLookupMaps {
   indicadorRegByNome: Map<string, { id?: string; codigo?: string | null; nome?: string; dados?: any; tendencia?: string | null }>;
   normativoMetaByTitulo: Map<string, { url_origem?: string | null; categoria?: string | null; created_at?: string | null }>;
   orcamentoMetaByKey: Map<string, any>;
+  orcamentoMetaById: Map<string, any>;
   origin: string;
 }
 
@@ -78,14 +79,16 @@ export function buildExportLookups(
   }
 
   const orcamentoMetaByKey = new Map<string, any>();
+  const orcamentoMetaById = new Map<string, any>();
   for (const o of rawOrcamento || []) {
     const key = `${o?.programa || ''}|${o?.orgao || ''}|${o?.ano ?? ''}`;
     if (!orcamentoMetaByKey.has(key)) orcamentoMetaByKey.set(key, o);
+    if (o?.id) orcamentoMetaById.set(o.id, o);
   }
 
   const origin = getReportLinkOrigin();
 
-  return { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, origin };
+  return { indicadorIdByNome, indicadorCodigoByNome, indicadorRegByNome, normativoMetaByTitulo, orcamentoMetaByKey, orcamentoMetaById, origin };
 }
 
 export function safeFileName(s: string): string {
