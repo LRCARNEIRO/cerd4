@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Info, ChevronDown, ChevronUp, Scale, BarChart3, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TETOS_ESFORCO, CORTE_INTERMEDIARIO, CORTE_ALTO } from '@/utils/esforcoImpacto';
+import { MetodologiaDetalhadaButton } from '@/components/shared/MetodologiaDetalhadaButton';
 
 type MethodologyVariant = 'sensor' | 'aderencia' | 'full';
 
@@ -33,16 +34,19 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
 
   return (
     <div className={cn('', className)}>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setOpen(!open)}
-        className="gap-1.5 text-xs border-primary/30 text-primary hover:bg-primary/10"
-      >
-        <Info className="w-3.5 h-3.5" />
-        Metodologia de Cálculo
-        {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-      </Button>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setOpen(!open)}
+          className="gap-1.5 text-xs border-primary/30 text-primary hover:bg-primary/10"
+        >
+          <Info className="w-3.5 h-3.5" />
+          Metodologia de Cálculo
+          {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        </Button>
+        <MetodologiaDetalhadaButton />
+      </div>
 
       {open && (
         <Card className="mt-2 border-primary/20 bg-primary/5 animate-fade-in">
