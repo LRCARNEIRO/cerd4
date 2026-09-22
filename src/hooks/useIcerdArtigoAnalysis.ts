@@ -42,6 +42,13 @@ export type ArtigoAnalysis = {
   respostasNaoCumpridas: number;
   normativosCount: number;
   seriesEstatisticas: number;
+  /** v7 — Esforço Governamental do artigo (média simples das recomendações) */
+  esforcoArtigo: number;
+  /** v7 — Impacto Evidenciado do artigo (média simples das recomendações) */
+  impactoArtigo: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
+  /** Espelha o Esforço Governamental (compatibilidade com superfícies antigas) */
   grauAderencia: number;
   tendencia: 'melhora' | 'piora' | 'estagnacao';
   veredito: string;
