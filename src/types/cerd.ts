@@ -59,7 +59,7 @@ export interface AxisTheme {
   indicadores: string[];
 }
 
-// Indicadores estatísticos do Common Core
+// Indicadores estatísticos
 export interface StatisticalIndicator {
   id: string;
   categoria: 'demografico' | 'economico' | 'social' | 'educacional' | 'saude' | 'seguranca' | 'trabalho';
@@ -121,29 +121,6 @@ export interface DataSource {
   desagregacoes: string[];
   periodicidade: string;
   ultimaAtualizacao?: string;
-}
-
-// Documento Common Core
-export interface CommonCoreSection {
-  id: string;
-  numero: string;
-  titulo: string;
-  tituloIngles: string;
-  subsecoes: CommonCoreSubsection[];
-  statusAtualizacao: 'atualizado' | 'parcial' | 'desatualizado';
-  ultimaVersao: number;
-  periodoCobertura: string;
-}
-
-export interface CommonCoreSubsection {
-  id: string;
-  numero: string;
-  titulo: string;
-  conteudoAtual: string;
-  indicadoresNecessarios: string[];
-  fontesNecessarias: string[];
-  statusAtualizacao: 'atualizado' | 'parcial' | 'desatualizado';
-  notas?: string;
 }
 
 // Timeline do projeto

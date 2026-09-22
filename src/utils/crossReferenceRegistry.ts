@@ -90,7 +90,6 @@ export const CROSS_REFERENCE_REGISTRY: IndicatorLocation[] = [
     arquivos: [
       { arquivo: 'Conclusoes.tsx', aba: 'Conclusões', uso: 'Fios condutores' },
       { arquivo: 'ConclusoesReportGenerator.tsx', aba: 'Relatórios', uso: 'Relatório' },
-      { arquivo: 'generateCommonCoreHTML.ts', aba: 'Relatórios > Common Core', uso: 'Export' },
       { arquivo: 'narrativeHelpers.ts', aba: 'Narrativas', uso: 'Textos derivados' },
       { arquivo: 'countStatisticsIndicators.ts', aba: 'Contagem global', uso: 'Total de dados' },
     ],
@@ -104,7 +103,6 @@ export const CROSS_REFERENCE_REGISTRY: IndicatorLocation[] = [
       { arquivo: 'LacunasCerdTab.tsx', aba: 'Estatísticas > Lacunas CERD', uso: 'Lacunas específicas' },
       { arquivo: 'Conclusoes.tsx', aba: 'Conclusões', uso: 'Fios condutores' },
       { arquivo: 'ConclusoesReportGenerator.tsx', aba: 'Relatórios', uso: 'Relatório' },
-      { arquivo: 'generateCommonCoreHTML.ts', aba: 'Relatórios > Common Core', uso: 'Export' },
       { arquivo: 'generateConclusoesFullHTML.ts', aba: 'Relatórios > Conclusões HTML', uso: 'Export' },
       { arquivo: 'narrativeHelpers.ts', aba: 'Narrativas', uso: 'narrativaQuilombolas()' },
       { arquivo: 'StatisticsInventoryReport.tsx', aba: 'Relatórios > Inventário', uso: 'Listagem' },
