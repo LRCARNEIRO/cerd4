@@ -398,7 +398,7 @@ export function SerieTemporalGrupos() {
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-success" />
-                  <span className="text-sm font-medium">{totalMelhorias} em melhoria</span>
+                  <span className="text-sm font-medium">{totalMelhorias} melhorou</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <TrendingDown className="w-4 h-4 text-destructive" />
