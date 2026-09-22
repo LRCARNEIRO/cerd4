@@ -14,6 +14,7 @@ import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, inferArtig
 import { getSafeIndicadores, inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { summarizeIndicatorEvolution } from '@/utils/articleIndicatorEvolution';
+import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { generateDynamicJustificativa } from '@/utils/generateDynamicJustificativa';
 import { svgLineChart, svgBarChart, svgDonutChart, fmtBRL, fmtNum, dataCards, trend } from './cerdiv/chartUtils';
