@@ -153,26 +153,14 @@ function mapRespostasToArticle(respostas: RespostaLacunaCerdIII[], artigo: Artig
   });
 }
 
-export function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): number {
-  let score = 0;
-
-  if (a.lacunasTotal > 0) {
-    const taxaCumprimento = a.lacunasCumpridas / a.lacunasTotal;
-    const retrocessoPenalty = a.lacunasRetrocesso / a.lacunasTotal * 0.1;
-    score += Math.max(0, (taxaCumprimento - retrocessoPenalty)) * 50;
-  } else {
-    score += 25;
-  }
-
-  if (a.normativosCount > 0) score += Math.min(15, a.normativosCount * 1.5);
-  if (a.orcamentoProgramas > 0) score += Math.min(10, a.orcamentoProgramas * 1.0);
-  if (a.indicadoresCount > 0) score += Math.min(15, a.indicadoresCount * 1.2);
-
-  const breadth = [a.lacunasCumpridas > 0, a.orcamentoProgramas > 0, a.indicadoresCount > 0, a.normativosCount > 0]
-    .filter(Boolean).length;
-  score += (breadth / 4) * 10;
-
-  return Math.round(Math.min(100, Math.max(0, score)));
+/**
+ * @deprecated Metodologia v7 — o grau do artigo passou a ser a média simples do
+ * Esforço Governamental das recomendações associadas (mapa relacional + formal),
+ * calculada em useDiagnosticSensor. Mantido apenas como fallback quando o sensor
+ * ainda não está pronto.
+ */
+export function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito' | 'esforcoArtigo' | 'impactoArtigo' | 'faixaEsforco' | 'faixaImpacto'>): number {
+  return 0;
 }
 
 export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
