@@ -626,7 +626,7 @@ function generateConsolidatedHTML(data: {
       feminicídio: ${fem2018.percentualNegras}% → ${fem2024.percentualNegras}%,
       letalidade policial: ${seg2018.letalidadePolicial}% → ${seg2024.letalidadePolicial}%,
       gap absoluto de renda ampliou. A ESTADIC 2024 revela que 25 das 27 UFs têm legislação racial específica, mas apenas 2 mantêm
-      Fundo de Igualdade Racial ativo (IND-179); na titulação quilombola são 384 títulos expedidos frente a 2.019 processos abertos (IND-209).
+      Fundo de Igualdade Racial ativo (IND-179); na titulação quilombola são 384 títulos expedidos frente a 2.019 processos abertos (IND-162).
     </p>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">
