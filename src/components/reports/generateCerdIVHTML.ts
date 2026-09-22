@@ -924,8 +924,8 @@ function generateArticleAnalysis(
   const execucao = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
   const eixos = uniqueStrings(lacunas.map(l => eixoLabels[l.eixo_tematico] || l.eixo_tematico));
   const grupos = uniqueStrings(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal));
-  const melhorias = indicadores.filter(i => ['melhoria', 'melhoria_lenta', 'crescente'].includes(i.tendencia || '')).map(i => i.nome);
-  const pioras = indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).map(i => i.nome);
+  const melhorias = indicadores.filter(i => tendenciaPadrao(i as any) === 'melhorou').map(i => i.nome);
+  const pioras = indicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').map(i => i.nome);
 
   if (total === 0 && indicadores.length === 0 && orcDados.length === 0 && normativos.length === 0) {
     return `<p>O ${titulo} não concentrou recomendações formalmente vinculadas no banco, mas segue relevante como eixo interpretativo da Convenção. Ainda assim, o sistema não localizou base empírica suficiente para uma leitura robusta neste ciclo.</p>`;
