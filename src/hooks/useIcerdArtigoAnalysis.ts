@@ -276,16 +276,25 @@ export function useIcerdArtigoAnalysis({ lacunas, fiosCondutores = [], conclusoe
         seriesEstatisticas: statSeriesPerArticle[art.numero] || 0,
       };
 
+      // Metodologia v7 — média simples do Esforço e do Impacto das recomendações do artigo
+      const ei = artigoEsforcoImpacto.get(art.numero);
+      const esforcoArtigo = ei?.esforco ?? 0;
+      const impactoArtigo = ei?.impacto ?? 0;
+
       const result: ArtigoAnalysis = {
         ...base,
-        grauAderencia: computeAdherenceScore(base),
+        esforcoArtigo,
+        impactoArtigo,
+        faixaEsforco: ei?.faixaEsforco ?? classificarFaixa(esforcoArtigo),
+        faixaImpacto: ei?.faixaImpacto ?? classificarFaixa(impactoArtigo),
+        grauAderencia: Math.round(esforcoArtigo),
         tendencia: determineTrend(base),
         veredito: '',
       };
       result.veredito = generateVerdict(result);
       return result;
     });
-  }, [lacunas, fiosCondutores, conclusoes, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia]);
+  }, [lacunas, fiosCondutores, conclusoes, respostas, statSeriesPerArticle, diagnosticMap, artigoEvidencia, artigoEsforcoImpacto]);
 
   return { analysis, diagnosticMap, artigoEvidencia, curadosTotal };
 }
