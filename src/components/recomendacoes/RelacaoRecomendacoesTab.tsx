@@ -350,10 +350,19 @@ ${renderRows(allItems)}
         <p className="text-[10px] text-muted-foreground mt-1">
           <strong>Prioridade cadastrada:</strong> este campo vem pronto da base de recomendações e não é calculado pelo sensor nem por esta tela.
         </p>
-        <div className="flex flex-wrap gap-3 mt-2 text-xs">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {statusSummary.cumprido || 0} Cumprida(s)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {(statusSummary.parcialmente_cumprido || 0) + (statusSummary.em_andamento || 0)} Parcial(is)</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {(statusSummary.nao_cumprido || 0) + (statusSummary.retrocesso || 0)} Não Cumprida(s)</span>
+        <div className="flex flex-wrap gap-4 mt-2 text-xs">
+          <span className="flex items-center gap-1.5">
+            <strong className="text-foreground">Esforço:</strong>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {faixaSummary.esforco.alto} Alto</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {faixaSummary.esforco.intermediario} Intermediário</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {faixaSummary.esforco.baixo} Baixo</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <strong className="text-foreground">Impacto:</strong>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success" /> {faixaSummary.impacto.alto} Alto</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning" /> {faixaSummary.impacto.intermediario} Intermediário</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive" /> {faixaSummary.impacto.baixo} Baixo</span>
+          </span>
         </div>
         {sensorReady && (
           <div className="mt-2">
