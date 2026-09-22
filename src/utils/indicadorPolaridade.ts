@@ -20,6 +20,12 @@ export const NEGATIVE_INDICATOR_TERMS: string[] = [
   'internaç', 'hospitaliza', 'adoecimento',
   'fome', 'desnutrição', 'gravidez na adolescência', 'reprova', 'defasagem',
   'sem instrução', 'nem-nem', 'despejo', 'remoção forçada', 'conflito',
+  // correções de leitura auditadas (set/2026)
+  // denúncias: critério único — quanto mais denúncias, pior
+  'denúncia', 'denuncia',
+  'baixo peso', 'menores de idade', 'sem ensino superior',
+  'até 2 salários', 'ate 2 salarios', 'remuneração abaixo', 'remuneracao abaixo',
+  'rmm ', 'mortalidade materna',
 ];
 
 export function isLowerBetterNome(nome: string, categoria?: string): boolean {

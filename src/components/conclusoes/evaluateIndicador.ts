@@ -98,12 +98,9 @@ export interface IndicadorEvalDetail {
   seriesLength?: number;
 }
 
-const NEGATIVE_KEYWORDS = [
-  'homicíd', 'letalidade', 'analfabet', 'mortalidade', 'evasão',
-  'desemprego', 'encarcer', 'feminicíd', 'violência', 'estupro',
-  'infanticíd', 'suicíd', 'abandono', 'sem ensino superior',
-  'inadequa', 'déficit', 'pobreza', 'extrema pobreza',
-];
+// Polaridade vem da SSoT única (src/utils/indicadorPolaridade.ts) para não
+// divergir da tendência exibida nas abas, no inventário e nos relatórios.
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 
 /**
  * Evaluates whether an indicator counts as "favorable" for the farol.
@@ -124,7 +121,7 @@ export function evaluateIndicadorDetailed(ind: any): IndicadorEvalDetail {
     const last = timeSeries[timeSeries.length - 1];
 
     const nome = (ind.nome || '').toLowerCase();
-    const isNegative = NEGATIVE_KEYWORDS.some(kw => nome.includes(kw));
+    const isNegative = isLowerBetterNome(nome, ind?.categoria);
 
     const detail: IndicadorEvalDetail = {
       result: 'neutro',
