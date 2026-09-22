@@ -500,23 +500,23 @@ ${analysis.map(a => {
         <CardContent className="pt-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-3 bg-success/5 border border-success/20 rounded-lg">
-              <p className="text-xs font-bold text-success mb-2">✓ ARTIGOS MAIS PRIORIZADOS</p>
+              <p className="text-xs font-bold text-success mb-2">✓ ARTIGOS COM MAIOR IMPACTO EVIDENCIADO</p>
               <ul className="space-y-1">
                 {maisPriorizados.map(a => (
                   <li key={a.numero} className="text-xs text-muted-foreground flex items-center justify-between">
                     <span>Art. {a.numero} — {a.titulo}</span>
-                    <Badge variant="outline" className="text-[10px]">{a.grauAderencia}%</Badge>
+                    <Badge variant="outline" className="text-[10px]">E {formatScore(a.esforcoArtigo)} · I {formatScore(a.impactoArtigo)}</Badge>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-              <p className="text-xs font-bold text-destructive mb-2">✗ ARTIGOS MENOS PRIORIZADOS</p>
+              <p className="text-xs font-bold text-destructive mb-2">✗ ARTIGOS COM MENOR IMPACTO EVIDENCIADO</p>
               <ul className="space-y-1">
                 {menosPriorizados.map(a => (
                   <li key={a.numero} className="text-xs text-muted-foreground flex items-center justify-between">
                     <span>Art. {a.numero} — {a.titulo}</span>
-                    <Badge variant="destructive" className="text-[10px]">{a.grauAderencia}%</Badge>
+                    <Badge variant="destructive" className="text-[10px]">E {formatScore(a.esforcoArtigo)} · I {formatScore(a.impactoArtigo)}</Badge>
                   </li>
                 ))}
               </ul>
@@ -525,24 +525,24 @@ ${analysis.map(a => {
 
           <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              <strong>⚖️ Conclusão:</strong> A aderência média do Estado brasileiro à Convenção ICERD é de <strong>{avgAdherencia}%</strong>.
-              {avgAdherencia < 50
-                ? ` Este índice revela que a maioria dos compromissos do tratado permanece sem cobertura adequada em termos de políticas públicas, orçamento e resultados mensuráveis. Os artigos ${menosPriorizados.map(a => a.numero).join(', ')} apresentam as maiores lacunas de implementação.`
-                : ` Embora existam avanços em artigos específicos (${maisPriorizados.map(a => a.numero).join(', ')}), a cobertura permanece desigual entre os compromissos, com os artigos ${menosPriorizados.map(a => a.numero).join(', ')} exigindo atenção prioritária.`
+              <strong>⚖️ Conclusão:</strong> O Esforço médio do Estado brasileiro nos sete artigos é de <strong>{formatScore(avgEsforco)}</strong> e o Impacto Evidenciado médio é de <strong>{formatScore(avgImpacto)}</strong>.
+              {avgImpacto < CORTE_INTERMEDIARIO
+                ? ` As evidências mobilizadas ainda não se convertem em realização mensurável: os artigos ${menosPriorizados.map(a => a.numero).join(', ')} apresentam as maiores lacunas de implementação.`
+                : ` Há conversão parcial do esforço em resultados, com desempenho desigual entre os compromissos; os artigos ${menosPriorizados.map(a => a.numero).join(', ')} exigem atenção prioritária.`
               }
             </p>
           </div>
 
           <div className="p-3 bg-muted/30 rounded-lg space-y-2">
             <p className="text-[10px] text-muted-foreground">
-              <strong>Nota metodológica:</strong> O score de aderência (0-100%) pondera: recomendações ONU cumpridas — taxa relativa cumpridas/total (50%), cobertura normativa (15%), cobertura orçamentária — contagem de ações (10%), indicadores (15%) e amplitude de fontes (10%). Respostas CERD III, fios condutores e conclusões analíticas podem aparecer como contexto narrativo, mas não compõem o cálculo. O orçamento não considera valores em R$. Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
+              <strong>Nota metodológica (v7):</strong> o <strong>Esforço Governamental</strong> mede o volume de evidências distintas vinculadas, com tetos de saturação de {TETOS_ESFORCO.estatistica} (estatística), {TETOS_ESFORCO.orcamentaria} (orçamentária) e {TETOS_ESFORCO.normativa} (normativa) e pesos iguais de 1/3 por base. A <strong>Realização</strong> é a média das três bases: estatística = proporção de evidências com evolução não desfavorável (melhorou ou estável); orçamentária = Liquidado ÷ Dotação autorizada válida; normativa = 100 com presença, 0 sem. O <strong>Impacto Evidenciado</strong> = Esforço × Realização ÷ 100. Por artigo, ambos são a média simples das recomendações associadas, inclusive as sem evidência (valor zero). Base Normativa inclui {totalNormativos} instrumentos legislativos e institucionais (2018-2025).
             </p>
             <div className="text-[10px] text-muted-foreground">
-              <strong>Faixas de Status de Aderência:</strong>
+              <strong>Faixas (iguais para Esforço e Impacto):</strong>
               <ul className="list-disc pl-4 mt-1 space-y-0.5">
-                <li><strong>Boa Aderência</strong> — Score ≥ 70%: Cobertura ampla com evidências em múltiplas dimensões e alta taxa de cumprimento das recomendações ONU.</li>
-                <li><strong>Aderência Parcial</strong> — Score 40–69%: Cobertura intermediária com esforços visíveis, mas lacunas persistentes em ao menos uma dimensão relevante.</li>
-                <li><strong>Baixa Aderência</strong> — Score &lt; 40%: Cobertura insuficiente com poucas evidências de resposta do Estado às obrigações da Convenção.</li>
+                <li><strong>Alto</strong> — ≥ {CORTE_ALTO}</li>
+                <li><strong>Intermediário</strong> — {CORTE_INTERMEDIARIO} a {CORTE_ALTO - 0.1}</li>
+                <li><strong>Baixo</strong> — &lt; {CORTE_INTERMEDIARIO}</li>
               </ul>
             </div>
           </div>
