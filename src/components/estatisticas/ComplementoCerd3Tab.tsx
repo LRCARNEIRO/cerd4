@@ -10,6 +10,7 @@ import { complementoCerd3Indicators, COMPLEMENTO_CERD3_STATS, type ComplementoIn
 import { CensoDemografiaMapas } from './maps/CensoDemografiaMapas';
 import { cn } from '@/lib/utils';
 import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
+import { tendenciaPadraoDetalhada } from '@/utils/tendenciaPadronizada';
 
 const COLOR_ABS = 'hsl(var(--chart-1))';
 const COLOR_PCT = 'hsl(var(--chart-2))';
