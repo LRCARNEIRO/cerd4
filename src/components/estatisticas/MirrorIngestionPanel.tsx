@@ -44,16 +44,10 @@ export function MirrorIngestionPanel() {
     }
   };
 
-  // Auto-run on mount (once per session)
-  useEffect(() => {
-    if (!hasAutoRun.current) {
-      hasAutoRun.current = true;
-      runIngest();
-    }
-  }, []);
-
-  // Painel técnico oculto da interface pública: o espelhamento continua
-  // rodando automaticamente, mas sem exibir card de migração ao usuário.
+  // ATENÇÃO: o espelhamento NUNCA roda automaticamente. A execução apagava e
+  // recriava registros da Base Estatística com novos IDs/códigos, quebrando os
+  // vínculos auditados e inflando o quantitativo de evidências. Só pode ser
+  // disparado manualmente, de forma consciente.
   return null;
 
   // eslint-disable-next-line no-unreachable

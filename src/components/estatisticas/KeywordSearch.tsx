@@ -12,6 +12,7 @@ import { abasDoIndicador, focusIndicadorNaAba, type AbaLocalizacao } from '@/uti
 import { isDuplicata } from '@/utils/indicadorAliases';
 import { SUB_INDICADORES, hasSubIndicadores, abasDoSub, getSubIndicadorAnchor, abaLabelCompleto } from '@/utils/indicadorSubs';
 import { normalizeSearchText, searchableMatches } from '@/utils/searchText';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 
 
 interface SearchResult {
