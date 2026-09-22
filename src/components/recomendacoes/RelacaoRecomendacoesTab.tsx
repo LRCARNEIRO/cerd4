@@ -118,21 +118,19 @@ export function RelacaoRecomendacoesTab() {
 
     const renderRows = (items: typeof allItems) => items.map(l => {
       const diag = diagnosticMap.get(l.id);
-      const effectiveStatus = diag?.statusComputado ?? l.status_cumprimento;
       const artigos = getArtigosFromRecomendacao(l);
       const justificativa = getVinculacaoJustificativa(l);
       const prioridadeLabel = getPrioridadeLabel(l.prioridade);
-      const statusColor = effectiveStatus === 'cumprido' ? '#16a34a' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? '#ca8a04' : '#dc2626';
-      const statusLabel = effectiveStatus === 'cumprido' ? 'Cumprido' : effectiveStatus === 'parcialmente_cumprido' || effectiveStatus === 'em_andamento' ? 'Parcial' : 'Não Cumprido';
+      const ei = diag?.auditoria.esforcoImpacto;
+      const corFaixa = (f?: string) => f === 'alto' ? '#16a34a' : f === 'intermediario' ? '#ca8a04' : '#dc2626';
 
-      // Evidence details for export
       const auditoria = diag?.auditoria;
-      const evidenceHtml = auditoria ? `
+      const evidenceHtml = auditoria && ei ? `
         <div style="font-size:9px;color:#555;margin-top:4px">
-          <strong>Score: ${auditoria.scoreGlobal}/100</strong><br/>
-          📊 Ind: ${auditoria.indicadores.total} (${auditoria.indicadores.melhoram}↑ ${auditoria.indicadores.pioram}↓) · Score: ${auditoria.indicadores.score}<br/>
-          💰 Orç: ${auditoria.orcamento.total} ações, exec ${auditoria.orcamento.execucaoMedia}% · Score: ${auditoria.orcamento.score}<br/>
-          📋 Norm: ${auditoria.normativos.total} · Score: ${auditoria.normativos.score}<br/>
+          <strong>Esforço ${formatScore(ei.esforco)} · Realização ${formatScore(ei.realizacao)} · Impacto ${formatScore(ei.impacto)}</strong><br/>
+          📊 Est: ${ei.contagens.estatistica} (${ei.contagens.favoraveis} não desfavorável(is) de ${ei.contagens.comTendencia} com série)<br/>
+          💰 Orç: ${ei.contagens.orcamentaria} ações, execução ${formatScore(ei.componentes.realizacaoOrcamentaria)}%<br/>
+          📋 Norm: ${ei.contagens.normativa}<br/>
           ${diag?.linkedIndicadores?.slice(0, 5).map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || ''}
           ${diag?.linkedNormativos?.slice(0, 5).map(n => `• ${n.titulo}`).join('<br/>') || ''}
           ${diag?.linkedOrcamento?.slice(0, 5).map(o => `• ${o.programa} (${o.orgao}, ${o.ano})`).join('<br/>') || ''}
@@ -144,7 +142,10 @@ export function RelacaoRecomendacoesTab() {
         <td>${l.tema}</td>
         <td>${artigos.map(a => `<span style="display:inline-block;padding:1px 5px;border:1px solid #ccc;border-radius:3px;font-size:10px;margin:1px">Art.${a}</span>`).join(' ')}</td>
         <td style="font-size:10px;color:#555">${justificativa}</td>
-        <td style="color:${statusColor};font-weight:bold">${statusLabel}</td>
+        <td style="font-size:10px;font-weight:bold">
+          <span style="color:${corFaixa(ei?.faixaEsforco)}">Esforço ${ei ? formatScore(ei.esforco) : '—'} · ${ei ? FAIXA_LABEL[ei.faixaEsforco] : '—'}</span><br/>
+          <span style="color:${corFaixa(ei?.faixaImpacto)}">Impacto ${ei ? formatScore(ei.impacto) : '—'} · ${ei ? FAIXA_LABEL[ei.faixaImpacto] : '—'}</span>
+        </td>
         <td style="font-size:10px">${prioridadeLabel}</td>
         <td>${evidenceHtml}</td>
       </tr>`;
