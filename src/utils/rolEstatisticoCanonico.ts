@@ -52,7 +52,7 @@ export function buildRolEstatistico(indicadores: any[] | null | undefined): RolE
       titulo: i.nome,
       detalhe: i.subcategoria || '—',
       fonte: i.fonte || '',
-      tendencia: i.tendencia || '—',
+      tendencia: tendenciaLabel({ nome: i.nome, categoria: i.categoria, dados: i.dados }),
       artigos: (i.artigos_convencao || []).join(', ') || '—',
       categoria: i.categoria || 'outros',
       searchText: [i.nome, i.subcategoria, i.fonte, i.analise_interseccional].filter(Boolean).join(' '),
