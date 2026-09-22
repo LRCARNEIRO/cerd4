@@ -777,6 +777,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     diagnosticMap,
     summary,
     artigoEvidencia,
+    artigoEsforcoImpacto,
     /** Registros físicos da matriz curada (linhas da tabela auditada). */
     curadosTotal: curados?.length || 0,
     isReady: !!(recomendacoes && indicadores && orcamento && normativos && curados),
