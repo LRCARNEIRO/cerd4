@@ -88,15 +88,17 @@ export function RelacaoRecomendacoesTab() {
     return result;
   }, [recomendacoes]);
 
-  const statusSummary = useMemo(() => {
-    if (!recomendacoes) return { cumprido: 0, parcialmente_cumprido: 0, em_andamento: 0, nao_cumprido: 0, retrocesso: 0 };
-    const counts: Record<string, number> = {};
-    recomendacoes.forEach(l => {
-      const diag = diagnosticMap.get(l.id);
-      const eff = diag?.statusComputado ?? l.status_cumprimento;
-      counts[eff] = (counts[eff] || 0) + 1;
+  /** v7 — distribuição nas faixas 25/60 de Esforço e Impacto */
+  const faixaSummary = useMemo(() => {
+    const esforco = { alto: 0, intermediario: 0, baixo: 0 };
+    const impacto = { alto: 0, intermediario: 0, baixo: 0 };
+    (recomendacoes || []).forEach(l => {
+      const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
+      if (!ei) return;
+      esforco[ei.faixaEsforco]++;
+      impacto[ei.faixaImpacto]++;
     });
-    return counts;
+    return { esforco, impacto };
   }, [recomendacoes, diagnosticMap]);
 
   // Drilldown data
