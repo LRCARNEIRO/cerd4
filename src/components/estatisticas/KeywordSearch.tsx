@@ -150,6 +150,13 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
 
   const catalog = useMemo(() => buildSearchCatalog(mirror, indicadoresDb), [mirror, indicadoresDb]);
 
+  // O contador exibido é sempre o rol canônico do inventário (guarda-chuvas
+  // sem subindicadores + subindicadores), nunca o tamanho do índice interno.
+  const totalCanonico = useMemo(
+    () => buildRolEstatistico(indicadoresDb as any[]).total,
+    [indicadoresDb],
+  );
+
   const results = useMemo(() => {
     if (normalizeSearchText(query).length < 2) return [];
     const codigoNorm = normalizeCodigoInput(query);
@@ -211,7 +218,7 @@ export function KeywordSearch({ onNavigateTab }: KeywordSearchProps) {
         </div>
         <Badge variant="outline" className="text-xs whitespace-nowrap">
           <Database className="w-3 h-3 mr-1" />
-          {catalog.length} evidências indexadas
+          {totalCanonico} evidências indexadas
         </Badge>
       </div>
 
