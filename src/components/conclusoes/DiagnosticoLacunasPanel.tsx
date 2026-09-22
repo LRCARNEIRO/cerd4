@@ -95,7 +95,7 @@ export function DiagnosticoLacunasPanel() {
 
   const generateExportHTML = () => {
     const rows = items.map(r => {
-      const indNames = r.diag?.linkedIndicadores?.map(i => `• ${i.nome} (${i.tendencia || 'N/D'})`).join('<br/>') || '<em>Nenhum</em>';
+      const indNames = r.diag?.linkedIndicadores?.map(i => `• ${i.nome} (${tendenciaLabel({ nome: i.nome, categoria: (i as any).categoria, dados: i.dados, sub: (i as any).sub })})`).join('<br/>') || '<em>Nenhum</em>';
       const orcNames = r.diag?.linkedOrcamento?.map(o => `• ${o.programa} — ${o.orgao} (${o.ano})`).join('<br/>') || '<em>Nenhum</em>';
       const normNames = r.diag?.linkedNormativos?.map(n => `• ${n.titulo}`).join('<br/>') || '<em>Nenhum</em>';
       const statusColor = r.effectiveStatus === 'cumprido' ? '#16a34a' : r.effectiveStatus === 'parcialmente_cumprido' ? '#ca8a04' : r.effectiveStatus === 'em_andamento' ? '#2563eb' : '#dc2626';
