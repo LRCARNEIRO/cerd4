@@ -1567,7 +1567,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
   const totalNormativos = d.normativos?.length || 0;
   const totalOrc = d.orcDados?.length || 0;
   const totalFios = d.fiosCondutores?.length || 0;
-  const indicadoresCriticos = d.indicadores.filter(i => ['piora', 'estável_negativo', 'decrescente'].includes(i.tendencia || '')).length;
+  const indicadoresCriticos = d.indicadores.filter(i => tendenciaPadrao(i as any) === 'piorou').length;
 
   return `
   <h2>VI. Conclusões e Compromissos</h2>
