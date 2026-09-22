@@ -4,7 +4,10 @@ import { DataSourceCard } from '@/components/dashboard/DataSourceCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { portalFromUrl } from '@/utils/fonteOrigem';
+import { isDuplicata } from '@/utils/indicadorAliases';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
@@ -110,14 +113,64 @@ const statusLabels: Record<string, string> = {
   parcial: 'Parcial',
   pendente: 'Pendente',
 };
+interface FonteEvidencia {
+  host: string;
+  nome: string;
+  orgao: string;
+  urls: Set<string>;
+  indicadores: Array<{ codigo?: string; nome: string; fonte?: string; url: string }>;
+}
+
 export default function Fontes() {
   const [searchTerm, setSearchTerm] = useState('');
+  const { data: indicadores = [], isLoading: loadingIndicadores } = useIndicadoresInterseccionais();
+
+  // Catálogo dinâmico: toda URL original registrada na Base Estatística vira fonte listada.
+  const fontesDaBase = useMemo(() => {
+    const mapa = new Map<string, FonteEvidencia>();
+    (indicadores as any[]).forEach((ind) => {
+      const url: string | undefined = ind.url_fonte || undefined;
+      const portal = portalFromUrl(url);
+      if (!portal || !url) return;
+      if (isDuplicata(ind.codigo)) return;
+      const atual = mapa.get(portal.host) || {
+        host: portal.host,
+        nome: portal.nome,
+        orgao: portal.orgao,
+        urls: new Set<string>(),
+        indicadores: [],
+      };
+      atual.urls.add(url);
+      atual.indicadores.push({ codigo: ind.codigo, nome: ind.nome, fonte: ind.fonte, url });
+      mapa.set(portal.host, atual);
+    });
+    return Array.from(mapa.values())
+      .map(f => ({ ...f, indicadores: f.indicadores.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')) }))
+      .sort((a, b) => b.indicadores.length - a.indicadores.length);
+  }, [indicadores]);
+
+  const termo = searchTerm.trim().toLowerCase();
+  const matchTexto = (...campos: Array<string | undefined>) =>
+    campos.some(c => (c || '').toLowerCase().includes(termo));
+
+  // Busca por título do indicador → filtra a fonte (URL principal) vinculada a ele.
+  const fontesFiltradas = useMemo(() => {
+    if (!termo) return fontesDaBase.map(f => ({ ...f, destacados: [] as typeof f.indicadores }));
+    return fontesDaBase
+      .map(f => {
+        const destacados = f.indicadores.filter(i => matchTexto(i.nome, i.codigo, i.fonte));
+        const portalBate = matchTexto(f.nome, f.orgao, f.host);
+        if (!destacados.length && !portalBate) return null;
+        return { ...f, destacados: destacados.length ? destacados : f.indicadores };
+      })
+      .filter(Boolean) as Array<FonteEvidencia & { destacados: FonteEvidencia['indicadores'] }>;
+  }, [fontesDaBase, termo]);
+
+  const totalEvidenciasComFonte = fontesDaBase.reduce((acc, f) => acc + f.indicadores.length, 0);
 
   const filteredSources = dataSources.filter(source =>
-    searchTerm === '' ||
-    source.sigla.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    source.nomeCompleto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    source.orgaoResponsavel.toLowerCase().includes(searchTerm.toLowerCase())
+    termo === '' ||
+    matchTexto(source.sigla, source.nomeCompleto, source.orgaoResponsavel)
   );
 
   return (
@@ -172,15 +225,75 @@ export default function Fontes() {
       </Card>
 
       {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar fonte de dados..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-9 max-w-md"
-        />
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar pelo título do indicador, fonte ou órgão (ex.: mortalidade materna, ODS Racial, SIDRA...)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-9 max-w-2xl"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          A busca cruza a Base Estatística com o catálogo: ao digitar o título de um indicador, o sistema
+          mostra a fonte de origem à qual sua URL principal está vinculada.
+        </p>
       </div>
+
+      {/* Fontes derivadas da Base Estatística */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+        <h2 className="text-lg font-semibold">Fontes de Origem das Evidências Estatísticas</h2>
+        <span className="text-xs text-muted-foreground">
+          {loadingIndicadores
+            ? 'Carregando base…'
+            : `${fontesDaBase.length} fontes · ${totalEvidenciasComFonte} evidências com URL de origem`}
+        </span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {fontesFiltradas.length === 0 && !loadingIndicadores && (
+          <p className="text-sm text-muted-foreground">Nenhuma fonte encontrada para "{searchTerm}".</p>
+        )}
+        {fontesFiltradas.map(fonte => {
+          const lista = termo ? fonte.destacados : fonte.indicadores;
+          return (
+            <Card key={fonte.host} className="border-l-4 border-l-primary/60">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base flex items-start gap-2">
+                  <Globe className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                  <span>{fonte.nome}</span>
+                </CardTitle>
+                <CardDescription className="flex flex-wrap items-center gap-2">
+                  <span>{fonte.orgao}</span>
+                  <Badge variant="outline" className="text-[10px]">{fonte.indicadores.length} evidência(s)</Badge>
+                  <span className="font-mono text-[10px]">{fonte.host}</span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+                  {lista.map((ind, i) => (
+                    <li key={`${ind.codigo || ind.nome}-${i}`} className="text-xs">
+                      <a
+                        href={ind.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-1.5 hover:text-primary transition-colors"
+                      >
+                        {ind.codigo && (
+                          <Badge variant="secondary" className="text-[10px] font-mono px-1 py-0 shrink-0">{ind.codigo}</Badge>
+                        )}
+                        <span className="flex-1">{ind.nome}</span>
+                        <ExternalLink className="w-3 h-3 mt-0.5 shrink-0 text-muted-foreground" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
 
       {/* Main Data Sources */}
       <h2 className="text-lg font-semibold mb-4">Bases Principais com Acesso Automatizado</h2>
