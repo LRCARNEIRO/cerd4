@@ -40,7 +40,7 @@ export function SystemGuidePanel() {
               icon={<ClipboardCheck className="w-5 h-5" />}
               title="Base de Evidências"
               subtitle="Acompanhamento Gerencial → Recomendações"
-              description="Ponto de partida: as 43 recomendações ONU com evidências vinculadas (indicadores, orçamento e normativos). Edições manuais aqui propagam automaticamente."
+              description="Ponto de partida: as 42 recomendações ONU com evidências vinculadas (indicadores, orçamento e normativos)."
               color="primary"
             />
             {/* Arrow */}
@@ -53,7 +53,7 @@ export function SystemGuidePanel() {
               icon={<Layers className="w-5 h-5" />}
               title="Análises Derivadas"
               subtitle="Alimentadas automaticamente"
-              description="Artigos (aderência ICERD), Evolução Recomendações (impacto real), Evolução Artigos (tendência) e Diagnóstico de Lacunas recebem os mesmos dados."
+              description="Artigos, relatórios, diagnóstico e Painel Geral recebem os mesmos índices de Esforço e Impacto."
               color="secondary"
             />
             <div className="hidden md:flex items-center justify-center absolute left-[66%] top-1/2 -translate-y-1/2 z-10">
@@ -104,21 +104,12 @@ export function SystemGuidePanel() {
                 />
                 <DetailRow
                   icon={<TrendingUp className="w-4 h-4 text-emerald-500" />}
-                  title="Evolução Recomendações (Produtos → Conclusões)"
+                  title="Realização e Impacto"
                   items={[
-                    "Avalia se o esforço gerou resultado no período 2018-2025",
-                    "Pesos: Indicadores 50% (variação positiva) + Orçamento 30% (R$ liquidado) + Normativos 20%",
-                    "Classifica: Evolução (≥60), Estagnação (35-59), Retrocesso (<35)",
-                    "Base de evidências idêntica à de Recomendações"
-                  ]}
-                />
-                <DetailRow
-                  icon={<BarChart3 className="w-4 h-4 text-blue-500" />}
-                  title="Evolução Artigos (Produtos → Conclusões)"
-                  items={[
-                    "Avalia impacto por artigo: Orçamento 35% + Normativos 35% + Indicadores 30%",
-                    "Orçamento por faixas de valor liquidado; Normativos por estoque; Indicadores por tendência",
-                    "Explicita a realização estatística, orçamentária e normativa"
+                    "Estatística: melhorou + estável sobre o total com tendência mensurável",
+                    "Orçamentária: soma liquidada dividida pela dotação autorizada válida",
+                    "Normativa: presença vale 100; ausência vale zero",
+                    "Impacto Evidenciado = Esforço × média das três realizações ÷ 100"
                   ]}
                 />
                 <DetailRow

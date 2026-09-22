@@ -58,30 +58,7 @@ ul{padding-left:20px}li{margin-bottom:4px}
 </div>
 
 <div class="step">
-<span class="step-num">3</span><strong>Evolução das Recomendações (Produtos → Conclusões)</strong>
-<p>Avalia se o esforço gerou resultado no período 2018-2025. Base de evidências idêntica à de Recomendações.</p>
-<table>
-<tr><th>Dimensão</th><th>Peso</th><th>Critério</th></tr>
-<tr><td>Indicadores (tendência histórica)</td><td>50%</td><td>Somente melhorias comprovadas ou novas medições pontuam</td></tr>
-<tr><td>Orçamento (R$ liquidado)</td><td>30%</td><td>Valor liquidado acumulado</td></tr>
-<tr><td>Normativos (estoque)</td><td>20%</td><td>Quantidade de instrumentos</td></tr>
-</table>
-<p><strong>Classifica:</strong> Evolução (≥ 60%) | Estagnação (35–59%) | Retrocesso (&lt; 35%)</p>
-</div>
-
-<div class="step">
-<span class="step-num">4</span><strong>Evolução dos Artigos (Produtos → Conclusões)</strong>
-<p>Avalia impacto real por artigo. Complementa a Aderência com a dimensão de resultado efetivo.</p>
-<table>
-<tr><th>Dimensão</th><th>Peso</th><th>Critério</th></tr>
-<tr><td>Orçamento (valor liquidado por faixas)</td><td>35%</td><td>Faixas: &gt;0 (20pts), ≥R$100M (40), ≥R$1B (60), ≥R$5B (80), ≥R$10B (100)</td></tr>
-<tr><td>Normativos (estoque por faixas)</td><td>35%</td><td>Faixas: 1 (25pts), 3 (50), 6 (75), 10+ (100)</td></tr>
-<tr><td>Indicadores (tendência)</td><td>30%</td><td>Melhorias = 100%, pioras penalizam na proporção 1:1</td></tr>
-</table>
-</div>
-
-<div class="step">
-<span class="step-num">5</span><strong>Diagnóstico de Lacunas (Produtos → Conclusões)</strong>
+<span class="step-num">3</span><strong>Diagnóstico e Painel Geral</strong>
 <p>Mesma base de Recomendações, com visualização focada nas lacunas remanescentes. Apresenta resposta sugerida textual que amarra as evidências encontradas. Atualiza automaticamente ao editar evidências em Recomendações.</p>
 </div>
 
@@ -89,9 +66,8 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <table>
 <tr><th>Seção do Painel</th><th>Fonte de Dados</th></tr>
 <tr><td>Esforço Governamental</td><td>Distribuição e média do índice de Esforço das recomendações</td></tr>
-<tr><td>Impacto Real</td><td>Resultado consolidado de Evolução das Recomendações (Evolução/Estagnação/Retrocesso)</td></tr>
+<tr><td>Impacto Evidenciado</td><td>Distribuição e média do índice E × R ÷ 100 das recomendações</td></tr>
 <tr><td>Lente dos Artigos — Esforço e Impacto</td><td>Média simples do Esforço e do Impacto Evidenciado das recomendações do artigo</td></tr>
-<tr><td>Lente dos Artigos — Evolução %</td><td>Score de Evolução dos Artigos por artigo</td></tr>
 </table>
 
 <div class="note">
