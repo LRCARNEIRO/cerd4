@@ -145,6 +145,19 @@ export interface DiagnosticSummary {
     em_andamento: number;
   };
   progressoSensor: number;
+  /** v7 — distribuição das 42 recomendações nas faixas 25/60 */
+  faixasEsforco: Record<Faixa, number>;
+  faixasImpacto: Record<Faixa, number>;
+  mediaEsforco: number;
+  mediaImpacto: number;
+}
+
+export interface ArtigoEsforcoImpacto {
+  esforco: number;
+  impacto: number;
+  faixaEsforco: Faixa;
+  faixaImpacto: Faixa;
+  totalRecs: number;
 }
 
 const diagnosticsCache = new Map<string, RecomendacaoDiagnostic[]>();
