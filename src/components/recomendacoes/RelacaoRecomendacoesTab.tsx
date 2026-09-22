@@ -165,7 +165,7 @@ th{background:#f1f5f9;font-size:10px}
 .summary{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
 .summary span{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:bold}
 </style></head><body>
-<h1>📋 Relação Completa — Recomendações, Vinculações, Status e Evidências</h1>
+<h1>📋 Relação Completa — Recomendações, Vinculações, Esforço × Impacto e Evidências</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Total:</strong> ${recomendacoes.length} recomendações (Observações Finais, Recomendações Gerais e Durban)</p>
 
