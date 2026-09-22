@@ -267,7 +267,7 @@ ${renderRows(allItems)}
               </TableHeader>
               <TableBody>
                 {items.map((l: any) => {
-                  const effectiveStatus = getEffectiveStatus(l);
+                  const ei = diagnosticMap.get(l.id)?.auditoria.esforcoImpacto;
                   const artigos = getArtigosFromRecomendacao(l);
                   const justificativa = getVinculacaoJustificativa(l);
 
@@ -294,10 +294,20 @@ ${renderRows(allItems)}
                       <TableCell>
                         <button
                           onClick={() => setDrilldownId(l.id)}
-                          className="cursor-pointer hover:opacity-80 transition-opacity"
+                          className="cursor-pointer hover:opacity-80 transition-opacity text-left"
                           title="Clique para ver evidências"
                         >
-                          <StatusBadge status={effectiveStatus} size="sm" />
+                          {ei ? (
+                            <EsforcoImpactoTags
+                              esforco={ei.esforco}
+                              impacto={ei.impacto}
+                              faixaEsforco={ei.faixaEsforco}
+                              faixaImpacto={ei.faixaImpacto}
+                              className="flex-col items-start"
+                            />
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground">—</span>
+                          )}
                         </button>
                       </TableCell>
                       <TableCell>
