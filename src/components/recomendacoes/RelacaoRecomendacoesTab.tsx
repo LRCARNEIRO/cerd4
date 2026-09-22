@@ -345,7 +345,9 @@ ${renderRows(allItems)}
         </div>
         <p className="text-xs text-muted-foreground">
           Total de <strong>{recomendacoes?.length || 0}</strong> recomendações monitoradas com vinculações aos Artigos I-VII da ICERD.
-          <strong className="ml-1">Clique no status de cada recomendação</strong> para ver as evidências que fundamentam a classificação.
+          Cada recomendação é medida por dois índices: <strong>Esforço Governamental</strong> (volume de evidências vinculadas)
+          e <strong>Impacto Evidenciado</strong> (esforço × realização).
+          <strong className="ml-1">Clique nas tags de cada recomendação</strong> para ver as evidências que fundamentam os índices.
         </p>
         <p className="text-[10px] text-muted-foreground mt-1">
           <strong>Prioridade cadastrada:</strong> este campo vem pronto da base de recomendações e não é calculado pelo sensor nem por esta tela.
