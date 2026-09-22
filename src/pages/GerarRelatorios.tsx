@@ -374,7 +374,7 @@ ${(respostasCerd || []).map(r => {
         {/* ABA: RELATÓRIOS COM IA */}
         <TabsContent value="ia-generator">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AIReportGenerator defaultType="common-core" />
+            <AIReportGenerator defaultType="cerd-iv" />
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
