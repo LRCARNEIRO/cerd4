@@ -193,16 +193,15 @@ function isLowerBetter(nome: string): boolean {
 }
 
 
-function inferTendencia(indicador: { nome: string; tendencia: string | null; dados: any }): 'melhora' | 'piora' | 'estavel' | 'desconhecida' {
-  if (indicador.tendencia) {
-    const t = indicador.tendencia.toLowerCase();
-    const lowerBetter = isLowerBetter(indicador.nome);
-    if (t === 'crescente') return lowerBetter ? 'piora' : 'melhora';
-    if (t === 'decrescente') return lowerBetter ? 'melhora' : 'piora';
-    if (t === 'estavel' || t === 'estável') return 'estavel';
-    if (t.startsWith('melhor')) return 'melhora';
-    if (t.startsWith('pior')) return 'piora';
-  }
+/**
+ * Tendência SEMPRE recalculada pelos dados do indicador (série histórica +
+ * polaridade). Rótulos gravados no banco/arquivo não são consultados.
+ */
+function inferTendencia(indicador: { nome: string; categoria?: string | null; dados: any }): 'melhora' | 'piora' | 'estavel' | 'desconhecida' {
+  const t = tendenciaPadrao({ nome: indicador.nome, categoria: indicador.categoria, dados: indicador.dados });
+  if (t === 'melhorou') return 'melhora';
+  if (t === 'piorou') return 'piora';
+  if (t === 'estável') return 'estavel';
   return 'desconhecida';
 }
 
