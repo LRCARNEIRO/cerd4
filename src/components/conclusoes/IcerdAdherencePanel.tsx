@@ -167,14 +167,13 @@ th{background:#f1f5f9}
 <p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
 <hr/>
 ${analysis.map(a => {
-  const badgeClass = a.grauAderencia >= 70 ? 'green' : a.grauAderencia >= 40 ? 'yellow' : 'red';
-  const badgeLabel = badgeClass === 'green' ? 'Boa Aderência' : badgeClass === 'yellow' ? 'Aderência Parcial' : 'Baixa Aderência';
+  const cls = (f: string) => f === 'alto' ? 'green' : f === 'intermediario' ? 'yellow' : 'red';
   const naoCumpridasTotal = a.lacunasNaoCumpridas + a.lacunasRetrocesso;
   return `
 <h2>Artigo ${a.numero} — ${a.titulo}</h2>
 <p>${a.tituloCompleto}</p>
-<p><span class="score" style="color:${a.grauAderencia >= 60 ? '#16a34a' : a.grauAderencia >= 30 ? '#ca8a04' : '#dc2626'}">${a.grauAderencia}%</span> 
-<span class="badge ${badgeClass}">${badgeLabel}</span></p>
+<p><span class="score">${formatScore(a.esforcoArtigo)}</span> <span class="badge ${cls(a.faixaEsforco)}">Esforço ${FAIXA_LABEL[a.faixaEsforco]}</span>
+&nbsp;&nbsp;<span class="score">${formatScore(a.impactoArtigo)}</span> <span class="badge ${cls(a.faixaImpacto)}">Impacto ${FAIXA_LABEL[a.faixaImpacto]}</span></p>
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
