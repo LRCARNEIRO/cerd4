@@ -410,31 +410,25 @@ ${analysis.map(a => {
                         className="cursor-pointer hover:opacity-80 transition-opacity"
                         title="Clique para ver evidências detalhadas"
                       >
-                        <Badge
-                          className={`text-[10px] ${
-                            a.grauAderencia >= 70
-                              ? 'bg-success/10 text-success border-success/30'
-                              : a.grauAderencia >= 40
-                                ? 'bg-warning/10 text-warning border-warning/30'
-                                : 'bg-destructive/10 text-destructive border-destructive/30'
-                          }`}
-                          variant="outline"
-                        >
-                          {a.grauAderencia >= 70 ? 'Boa Aderência' : a.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência'} 🔍
-                        </Badge>
+                        <EsforcoImpactoTags
+                          esforco={a.esforcoArtigo}
+                          impacto={a.impactoArtigo}
+                          faixaEsforco={a.faixaEsforco}
+                          faixaImpacto={a.faixaImpacto}
+                        />
                       </button>
                     </div>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-2xl font-bold" style={{ color: a.grauAderencia >= 60 ? 'hsl(var(--chart-2))' : a.grauAderencia >= 30 ? 'hsl(var(--chart-4))' : 'hsl(var(--destructive))' }}>
-                    {a.grauAderencia}%
+                  <p className="text-2xl font-bold" style={{ color: a.faixaImpacto === 'alto' ? 'hsl(var(--chart-2))' : a.faixaImpacto === 'intermediario' ? 'hsl(var(--chart-4))' : 'hsl(var(--destructive))' }}>
+                    {formatScore(a.impactoArtigo)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground">aderência</p>
+                  <p className="text-[10px] text-muted-foreground">impacto evidenciado</p>
                 </div>
               </div>
 
-              <Progress value={a.grauAderencia} className="h-2 mb-3" />
+              <Progress value={a.impactoArtigo} className="h-2 mb-3" />
 
               {/* Metrics grid - expanded with new dimensions */}
               {(() => {
