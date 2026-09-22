@@ -163,7 +163,7 @@ export function computeAdherenceScore(a: Omit<ArtigoAnalysis, 'grauAderencia' | 
   return 0;
 }
 
-export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito'>): 'melhora' | 'piora' | 'estagnacao' {
+export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tendencia' | 'veredito' | 'esforcoArtigo' | 'impactoArtigo' | 'faixaEsforco' | 'faixaImpacto'>): 'melhora' | 'piora' | 'estagnacao' {
   const emAndamento = a.lacunasTotal - a.lacunasCumpridas - a.lacunasParciais - a.lacunasNaoCumpridas - a.lacunasRetrocesso;
   const avancos = a.fiosAvanco + a.conclusoesAvanco + a.respostasCumpridas + Math.floor(emAndamento * 0.3);
   const retrocessos = a.fiosRetrocesso + a.conclusoesRetrocesso + a.lacunasRetrocesso + a.respostasNaoCumpridas;
