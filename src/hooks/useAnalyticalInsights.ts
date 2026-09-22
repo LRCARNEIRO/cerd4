@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { 
   useLacunasIdentificadas, 
   useLacunasStats, 
