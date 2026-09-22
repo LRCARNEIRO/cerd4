@@ -30,31 +30,21 @@ export default function Index() {
   // Single source: useEvolucaoSummary already runs useDiagnosticSensor internally
   const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol, sensorSummary, sensorReady } = useEvolucaoSummary();
 
-  const dashboardStatusData = sensorReady ? {
-    cumprido: sensorSummary.statusReclassificado.cumprido,
-    parcial: sensorSummary.statusReclassificado.parcialmente_cumprido,
-    naoCumprido: sensorSummary.statusReclassificado.nao_cumprido,
-    retrocesso: sensorSummary.statusReclassificado.retrocesso,
-    emAndamento: sensorSummary.statusReclassificado.em_andamento || 0,
-  } : {
-    cumprido: stats.recomendacoesCumpridas,
-    parcial: stats.recomendacoesParciais,
-    naoCumprido: stats.recomendacoesNaoCumpridas,
-    retrocesso: stats.recomendacoesRetrocesso,
-    emAndamento: 0,
-  };
+  const esforcoData = sensorReady
+    ? sensorSummary.faixasEsforco
+    : { alto: 0, intermediario: 0, baixo: 0 };
+  const impactoData = sensorReady
+    ? sensorSummary.faixasImpacto
+    : { alto: 0, intermediario: 0, baixo: 0 };
 
   const artigosSummary = useMemo(() => {
     if (!evolArtigosSummary) {
       return ARTIGOS_CONVENCAO.map(a => ({
         numero: a.numero, titulo: a.titulo, totalRecs: 0,
-        cumpridas: 0, parciais: 0, emAndamento: 0, naoCumpridas: 0, evolScore: 0,
+        esforcoScore: 0, impactoScore: 0,
       }));
     }
-    return evolArtigosSummary.map(a => ({
-      ...a,
-      emAndamento: 0,
-    }));
+    return evolArtigosSummary;
   }, [evolArtigosSummary]);
 
   const handleRefresh = () => {
