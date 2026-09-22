@@ -491,7 +491,7 @@ export function TabelaSinteseComparativa() {
                   <td className="text-center p-2">{d.variacao}</td>
                   <td className="text-center p-2">
                     <Badge variant={d.tendencia === 'melhora' ? 'default' : 'destructive'} className="text-xs">
-                      {d.tendencia === 'melhora' ? '↑ Melhora' : '↓ Piora'}
+                      {d.tendencia === 'melhora' ? '↑ Melhorou' : '↓ Piorou'}
                     </Badge>
                   </td>
                   <td className="text-center p-2">
