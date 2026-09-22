@@ -88,7 +88,6 @@ export interface CerdIVFullData {
      rendimentosCenso2022?: any;
      terrasQuilombolasHistorico?: any[];
      resumoExecutivo?: any;
-     ccTablesFromBD?: any[];
      gfMirrors?: any[];
      covidMirrors?: any[];
      usandoBD?: boolean;

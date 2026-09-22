@@ -122,7 +122,6 @@ export function FinalCerdIVReport() {
       rendimentosCenso2022: mirror.rendimentosCenso2022,
       terrasQuilombolasHistorico: mirror.terrasQuilombolasHistorico,
       resumoExecutivo: mirror.resumoExecutivo,
-      ccTablesFromBD: mirror.ccTablesFromBD,
       gfMirrors: mirror.gfMirrors,
       covidMirrors: mirror.covidMirrors,
       usandoBD: mirror.usandoBD,
