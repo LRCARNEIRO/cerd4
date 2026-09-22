@@ -4,7 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useLacunasIdentificadas } from '@/hooks/useLacunasData';
 import { classificarOrigemLacuna, ORIGEM_CONFIG, type OrigemLacuna } from '@/utils/classificarOrigemLacuna';
 import { Loader2, ListChecks } from 'lucide-react';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
+import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 import { lazy, Suspense, useMemo, useCallback, useState } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
