@@ -584,7 +584,7 @@ function IndicadorCard({ ind }: { ind: ComplementoIndicador }) {
               </Badge>
             )}
           </div>
-          <TendenciaBadge t={ind.tendencia} />
+          <TendenciaBadge ind={ind} />
         </div>
         {nota && <CardDescription className="text-xs mt-1">{nota}</CardDescription>}
         {/* Source links */}
