@@ -8,6 +8,7 @@
  * aqui — este módulo apenas monta o endereço de leitura.
  */
 import { abasDoIndicador } from './indicadorLocator';
+import { SUB_INDICADORES } from './indicadorSubs';
 
 export type BaseLastro = 'estatistica' | 'orcamentaria' | 'normativa';
 
@@ -31,7 +32,16 @@ export function hrefIndicador(codigo: string, indicadores?: any[] | null): strin
     const sub = (aba as any).subTab ? `&sub=${(aba as any).subTab}` : '';
     return `/estatisticas?tab=${aba.tabValue}${sub}&ind=${encodeURIComponent(cod)}#ind-${cod}`;
   }
+  // Reserva canônica: o código pode pertencer a um card das abas estáticas que
+  // ainda não foi resolvido pelo registro do banco. Nunca cair na busca global
+  // sem antes consultar o catálogo de subindicadores.
+  const cat = SUB_INDICADORES.find((s) => s.codigo.toUpperCase() === cod);
+  if (cat) {
+    const sub = cat.subTab ? `&sub=${cat.subTab}` : '';
+    return `/estatisticas?tab=${cat.tabValue}${sub}&ind=${encodeURIComponent(cod)}#ind-${cod}`;
+  }
   return `/busca?q=${encodeURIComponent(cod)}`;
+
 }
 
 /** Link para a Base Orçamentária (opcionalmente com termo de busca). */
