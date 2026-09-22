@@ -58,8 +58,6 @@ export function ArtigoAdherenceDrilldownDialog({
 
   if (!artigo) return null;
 
-  const badgeLabel = artigo.grauAderencia >= 70 ? 'Boa Aderência' : artigo.grauAderencia >= 40 ? 'Aderência Parcial' : 'Baixa Aderência';
-  const badgeColor = artigo.grauAderencia >= 70 ? 'bg-success/10 text-success border-success/30' : artigo.grauAderencia >= 40 ? 'bg-warning/10 text-warning border-warning/30' : 'bg-destructive/10 text-destructive border-destructive/30';
 
   const statusLabels: Record<string, { label: string }> = {
     cumprido: { label: 'Cumprido' },
