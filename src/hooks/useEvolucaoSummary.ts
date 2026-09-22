@@ -153,9 +153,17 @@ export function useEvolucaoSummary() {
         cumpridas, artRecs.length, retrocessos, normMap.size, orcMap.size, indMap.size,
       );
 
+      // Metodologia v7 — média simples das recomendações do artigo
+      const ei = artigoEsforcoImpacto.get(artNum);
+
       return {
         numero: artNum, titulo: art.titulo, totalRecs: artRecs.length,
         cumpridas, parciais, naoCumpridas, evolScore, aderenciaScore,
+        esforcoScore: ei?.esforco ?? 0,
+        impactoScore: ei?.impacto ?? 0,
+        faixaEsforco: ei?.faixaEsforco ?? ('baixo' as const),
+        faixaImpacto: ei?.faixaImpacto ?? ('baixo' as const),
+        recsArtigo: ei?.totalRecs ?? artRecs.length,
         vinculos: curado?.vinculos || 0,
         vinculosPorBase: curado?.vinculosPorBase || { estatistica: 0, normativa: 0, orcamentaria: 0 },
         indicadoresCount: indMap.size, orcamentoCount: orcMap.size, normativosCount: normMap.size,
