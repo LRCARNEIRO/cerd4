@@ -23,13 +23,17 @@ interface IndicadorTemporal {
   sub?: string;
 }
 
+/**
+ * Regra única do sistema: só há tendência com dois anos medidos distintos;
+ * qualquer variação diferente de zero define melhorou/piorou pela polaridade.
+ */
 function calcTendencia(dados: { ano: number; valor: number }[], interpretacao: 'menor_melhor' | 'maior_melhor'): 'melhoria' | 'piora' | 'estavel' {
   if (dados.length < 2) return 'estavel';
   const primeiro = dados[0].valor;
   const ultimo = dados[dados.length - 1].valor;
-  const variacao = ((ultimo - primeiro) / primeiro) * 100;
-  if (Math.abs(variacao) < 3) return 'estavel';
-  const subiu = ultimo > primeiro;
+  const delta = ultimo - primeiro;
+  if (Math.abs(delta) < 1e-9) return 'estavel';
+  const subiu = delta > 0;
   if (interpretacao === 'menor_melhor') return subiu ? 'piora' : 'melhoria';
   return subiu ? 'melhoria' : 'piora';
 }
