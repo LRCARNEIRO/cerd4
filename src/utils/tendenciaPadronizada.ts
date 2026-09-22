@@ -29,9 +29,11 @@ export function tendenciaPadraoDetalhada(ind: {
   nome?: string | null;
   categoria?: string | null;
   dados?: any;
+  /** recorte (subindicador) dentro de um registro guarda-chuva */
+  sub?: string | null;
 }): TendenciaDetalhe {
   const nome = ind?.nome || '';
-  const serie: any = extractSerieSub(ind?.dados, undefined, nome);
+  const serie: any = extractSerieSub(ind?.dados, ind?.sub ?? undefined, nome);
   let vAnt = serie?.valorAntigo as number | undefined;
   let vRec = serie?.valorRecente as number | undefined;
   let aAnt = serie?.anoAntigo as string | number | undefined;
