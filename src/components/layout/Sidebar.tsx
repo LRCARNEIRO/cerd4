@@ -63,7 +63,7 @@ const navSections: NavSection[] = [
 
 const escopoSubsections: NavSection[] = [
   {
-    title: 'Base Estatística (Meta 3)',
+    title: 'Base Estatística',
     icon: BarChart3,
     defaultOpen: false,
     items: [
@@ -71,7 +71,7 @@ const escopoSubsections: NavSection[] = [
     ]
   },
   {
-    title: 'Base Orçamentária (Meta 3)',
+    title: 'Base Orçamentária',
     icon: DollarSign,
     defaultOpen: false,
     items: [
@@ -80,7 +80,7 @@ const escopoSubsections: NavSection[] = [
     ]
   },
   {
-    title: 'Base Normativa (Meta 1-2)',
+    title: 'Base Normativa',
     icon: Scale,
     defaultOpen: false,
     items: [
@@ -104,9 +104,9 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     'Acompanhamento Gerencial': true,
     'Escopo do Projeto': true,
-    'Base Estatística (Meta 3)': false,
-    'Base Orçamentária (Meta 3)': false,
-    'Base Normativa (Meta 1-2)': false,
+    'Base Estatística': false,
+    'Base Orçamentária': false,
+    'Base Normativa': false,
     'Produtos': false,
   });
   const location = useLocation();

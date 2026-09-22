@@ -8,3 +8,6 @@
 - [x] Explicar a média simples por artigo e o tratamento de “estável” como evolução não desfavorável.
 - [x] Aplicar o teto estatístico 31 da matriz v19 em todas as superfícies.
 - [x] Validar páginas e relatórios após os ajustes.
+- [x] Conferir e alinhar a execução orçamentária do Painel Geral à Base Orçamentária canônica.
+- [x] Atualizar a Metodologia de Alimentação de Dados com inventário, matriz, deduplicação e fluxo vigente.
+- [x] Remover as referências a metas dos títulos das três bases.
