@@ -121,7 +121,7 @@ export function evaluateIndicadorDetailed(ind: any): IndicadorEvalDetail {
     const last = timeSeries[timeSeries.length - 1];
 
     const nome = (ind.nome || '').toLowerCase();
-    const isNegative = NEGATIVE_KEYWORDS.some(kw => nome.includes(kw));
+    const isNegative = isLowerBetterNome(nome, ind?.categoria);
 
     const detail: IndicadorEvalDetail = {
       result: 'neutro',
