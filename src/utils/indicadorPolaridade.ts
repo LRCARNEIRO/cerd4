@@ -28,8 +28,21 @@ export const NEGATIVE_INDICATOR_TERMS: string[] = [
   'rmm ', 'mortalidade materna',
 ];
 
+/**
+ * Indicadores de COBERTURA/EXISTÊNCIA de estrutura: medem quantas unidades
+ * federativas ou órgãos oferecem o serviço, não a ocorrência da violação.
+ * Precedem a lista negativa (ex.: "UFs com Canal de Denúncia Racial" é
+ * "maior é melhor", ainda que contenha a palavra "denúncia").
+ */
+export const POSITIVE_OVERRIDE_TERMS: string[] = [
+  'ufs com', 'uf com', 'estados com', 'municípios com', 'municipios com',
+  'canal de denúncia', 'canal de denuncia', 'canais de denúncia', 'canais de denuncia',
+  'cobertura', 'existência de', 'existencia de',
+];
+
 export function isLowerBetterNome(nome: string, categoria?: string): boolean {
   const n = (nome || '').toLowerCase();
   const c = (categoria || '').toLowerCase();
+  if (POSITIVE_OVERRIDE_TERMS.some((t) => n.includes(t))) return false;
   return NEGATIVE_INDICATOR_TERMS.some((t) => n.includes(t) || (!!c && c.includes(t)));
 }
