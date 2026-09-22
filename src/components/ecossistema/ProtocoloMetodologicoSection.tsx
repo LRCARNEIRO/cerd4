@@ -39,7 +39,7 @@ export default function ProtocoloMetodologicoSection() {
         <SectionHeader
           number="04"
           title="Protocolo Metodológico Digital"
-          subtitle="Documentação das fórmulas, fontes de dados e limitações técnicas de cada métrica utilizada na plataforma"
+          subtitle="Fórmulas, fontes e faixas da metodologia v7 — Esforço Governamental e Impacto Evidenciado"
         />
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
