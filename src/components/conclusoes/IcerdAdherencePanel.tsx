@@ -300,30 +300,30 @@ ${analysis.map(a => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="border-primary/30">
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Aderência Média</p>
-            <p className="text-2xl font-bold text-primary">{avgAdherencia}%</p>
+            <p className="text-xs text-muted-foreground">Esforço Médio</p>
+            <p className="text-2xl font-bold text-primary">{formatScore(avgEsforco)}</p>
             <p className="text-xs text-muted-foreground">dos 7 artigos</p>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/30">
+          <CardContent className="pt-3 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Impacto Evidenciado Médio</p>
+            <p className="text-2xl font-bold text-primary">{formatScore(avgImpacto)}</p>
+            <p className="text-xs text-muted-foreground">E × R ÷ 100</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Mais Priorizado</p>
+            <p className="text-xs text-muted-foreground">Maior Impacto</p>
             <p className="text-lg font-bold">Art. {maisPriorizados[0]?.numero}</p>
-            <p className="text-xs text-success">{maisPriorizados[0]?.grauAderencia}%</p>
+            <p className="text-xs text-success">{formatScore(maisPriorizados[0]?.impactoArtigo ?? 0)}</p>
           </CardContent>
         </Card>
         <Card className="border-destructive/30">
           <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Menos Priorizado</p>
+            <p className="text-xs text-muted-foreground">Menor Impacto</p>
             <p className="text-lg font-bold">Art. {menosPriorizados[0]?.numero}</p>
-            <p className="text-xs text-destructive">{menosPriorizados[0]?.grauAderencia}%</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-3 pb-3 text-center">
-            <p className="text-xs text-muted-foreground">Art. com Boa Aderência</p>
-            <p className="text-lg font-bold">{analysis.filter(a => a.grauAderencia >= 70).length}</p>
-            <p className="text-xs text-muted-foreground">≥ 70% de aderência</p>
+            <p className="text-xs text-destructive">{formatScore(menosPriorizados[0]?.impactoArtigo ?? 0)}</p>
           </CardContent>
         </Card>
       </div>
