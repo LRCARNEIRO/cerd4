@@ -17,6 +17,8 @@ import { useIndicadoresAnaliticos } from '@/hooks/useLacunasData';
 import { useIcerdArtigoAnalysis, useCountStatSeriesPerArticle, type ArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
+import { formatScore, FAIXA_LABEL, TETOS_ESFORCO, CORTE_INTERMEDIARIO, CORTE_ALTO } from '@/utils/esforcoImpacto';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis
