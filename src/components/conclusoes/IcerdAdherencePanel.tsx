@@ -144,7 +144,7 @@ export function IcerdAdherencePanel({ fiosCondutores, conclusoes, lacunas, orcam
   // ── Annex download ──
   const downloadAnnex = useCallback(() => {
     const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
-<title>Anexo — Aderência ICERD Detalhada</title>
+<title>Anexo — Esforço e Impacto ICERD</title>
 <style>
 body{font-family:Arial,sans-serif;max-width:1000px;margin:20px auto;color:#222;font-size:13px}
 h1{font-size:18px;border-bottom:2px solid #1e40af;padding-bottom:8px}
@@ -168,7 +168,6 @@ th{background:#f1f5f9}
 <hr/>
 ${analysis.map(a => {
   const cls = (f: string) => f === 'alto' ? 'green' : f === 'intermediario' ? 'yellow' : 'red';
-  const naoCumpridasTotal = a.lacunasNaoCumpridas + a.lacunasRetrocesso;
   return `
 <h2>Artigo ${a.numero} — ${a.titulo}</h2>
 <p>${a.tituloCompleto}</p>
@@ -177,7 +176,7 @@ ${analysis.map(a => {
 
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
-<tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>✓ ${a.lacunasCumpridas} cumprida(s), ~ ${a.lacunasParciais} parcial(is), ✗ ${naoCumpridasTotal} não cumprida(s)</td></tr>
+<tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>Denominador da média simples do artigo</td></tr>
 <tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoProgramas}</td><td>Nº de ações/programas mapeados por palavras-chave</td></tr>
 <tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
 <tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>

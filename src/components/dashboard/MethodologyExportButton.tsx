@@ -29,9 +29,8 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <h2>1. Princípio de Retroalimentação Automática (Single Source of Truth)</h2>
 <p>O sistema opera sob o princípio de <strong>Fonte Única de Verdade</strong>: toda evidência cadastrada ou editada na aba <em>Recomendações</em> (Acompanhamento Gerencial) propaga automaticamente para todas as abas dependentes. Ao incluir ou excluir um indicador, ação orçamentária ou normativo, os seguintes painéis recalculam instantaneamente:</p>
 <ul>
-<li>Score e status de cada recomendação</li>
-<li>Aderência por artigo ICERD</li>
-<li>Score de evolução por recomendação e por artigo</li>
+<li>Esforço e Impacto de cada recomendação</li>
+<li>Esforço e Impacto por artigo ICERD</li>
 <li>Diagnóstico de lacunas remanescentes</li>
 <li>Gráficos e badges do Painel Geral</li>
 </ul>
@@ -40,28 +39,22 @@ ul{padding-left:20px}li{margin-bottom:4px}
 
 <div class="step">
 <span class="step-num">1</span><strong>Base de Evidências — Recomendações (Acompanhamento Gerencial)</strong>
-<p>Ponto de partida: as 43 recomendações ONU com evidências vinculadas automaticamente por coerência temática. O usuário pode editar manualmente (incluir/excluir indicadores, ações orçamentárias e normativos) no pop-up de auditagem de cada recomendação.</p>
+<p>Ponto de partida: as 42 recomendações ONU e a matriz auditada Artigo × Recomendação × Evidência.</p>
 <table>
-<tr><th>Dimensão</th><th>Peso</th><th>Critério</th></tr>
-<tr><td>Indicadores vinculados</td><td>40%</td><td>Quantidade de indicadores com correspondência temática</td></tr>
-<tr><td>Ações Orçamentárias</td><td>30%</td><td>Quantidade de ações/programas mapeados</td></tr>
-<tr><td>Normativos</td><td>30%</td><td>Quantidade de instrumentos legislativos vinculados</td></tr>
+<tr><th>Base</th><th>Teto do Esforço</th><th>Peso</th></tr>
+<tr><td>Estatística</td><td>31 evidências</td><td>1/3</td></tr>
+<tr><td>Orçamentária</td><td>25 evidências</td><td>1/3</td></tr>
+<tr><td>Normativa</td><td>4 evidências</td><td>1/3</td></tr>
 </table>
-<p><strong>Status:</strong> Cumprido (Score ≥ 65) | Parcial (Score ≥ 35) | Não Cumprido (Score &lt; 35)</p>
+<p><strong>Esforço:</strong> E = [100×min(nEst/31;1) + 100×min(nOrç/25;1) + 100×min(nNorm/4;1)] ÷ 3.</p>
+<p><strong>Realização:</strong> R_est = (melhorou + estável) ÷ total mensurável × 100; R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida × 100; R_norm = presença 100, ausência 0; R = (R_est + R_orç + R_norm) ÷ 3.</p>
+<p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100. Estável representa manutenção e vale 1; apenas piora vale 0.</p>
+<p><strong>Faixas:</strong> Baixo &lt;25 | Intermediário 25–59,9 | Alto ≥60.</p>
 </div>
 
 <div class="step">
 <span class="step-num">2</span><strong>Artigos ICERD (Acompanhamento Gerencial)</strong>
-<p>Consolida as recomendações por artigo da Convenção (I–VII). As evidências são as mesmas de Recomendações, filtradas por artigo.</p>
-<table>
-<tr><th>Dimensão</th><th>Peso</th></tr>
-<tr><td>Recomendações ONU Cumpridas (taxa relativa)</td><td>50%</td></tr>
-<tr><td>Cobertura Normativa</td><td>15%</td></tr>
-<tr><td>Cobertura Orçamentária (contagem de ações)</td><td>10%</td></tr>
-<tr><td>Indicadores</td><td>15%</td></tr>
-<tr><td>Amplitude de Fontes</td><td>10%</td></tr>
-</table>
-<p><strong>Faixas:</strong> Boa Aderência (≥ 70%) | Aderência Parcial (40–69%) | Baixa Aderência (&lt; 40%)</p>
+<p>Cada artigo recebe a média simples do Esforço e do Impacto das recomendações formalmente associadas. Recomendações sem evidência permanecem no denominador com zero, evitando favorecer artigos com maior número de recomendações.</p>
 </div>
 
 <div class="step">
@@ -95,7 +88,7 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <h2>3. Reflexo no Painel Geral</h2>
 <table>
 <tr><th>Seção do Painel</th><th>Fonte de Dados</th></tr>
-<tr><td>Esforço Governamental</td><td>Status consolidado de Recomendações (Cumprido/Parcial/Não Cumprido)</td></tr>
+<tr><td>Esforço Governamental</td><td>Distribuição e média do índice de Esforço das recomendações</td></tr>
 <tr><td>Impacto Real</td><td>Resultado consolidado de Evolução das Recomendações (Evolução/Estagnação/Retrocesso)</td></tr>
 <tr><td>Lente dos Artigos — Esforço e Impacto</td><td>Média simples do Esforço e do Impacto Evidenciado das recomendações do artigo</td></tr>
 <tr><td>Lente dos Artigos — Evolução %</td><td>Score de Evolução dos Artigos por artigo</td></tr>
@@ -104,14 +97,6 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <div class="note">
 <strong>Nenhum cálculo próprio:</strong> O Painel Geral é um espelho puro dos motores analíticos. Qualquer edição em Recomendações se reflete automaticamente em todos os painéis e no Painel Geral.
 </div>
-
-<h2>4. Progresso Global — Ponderação</h2>
-<table>
-<tr><th>Status</th><th>Peso no Progresso</th></tr>
-<tr><td>Cumprido</td><td>100%</td></tr>
-<tr><td>Parcialmente Cumprido</td><td>50%</td></tr>
-<tr><td>Não Cumprido</td><td>10%</td></tr>
-</table>
 
 <hr/>
 <p style="font-size:10px;color:#94a3b8;">📋 Documento gerado pelo Sistema de Subsídios CERD IV — ${now}</p>

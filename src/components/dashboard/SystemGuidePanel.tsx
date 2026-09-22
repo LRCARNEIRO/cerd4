@@ -65,7 +65,7 @@ export function SystemGuidePanel() {
               icon={<Eye className="w-5 h-5" />}
               title="Painel Geral"
               subtitle="Espelho consolidado"
-              description="Este painel reflete os resultados finais: Esforço (status), Impacto (evolução) e Lente dos Artigos (aderência + evolução por artigo)."
+              description="Este painel reflete os resultados finais de Esforço e Impacto nas recomendações e nos artigos."
               color="accent"
             />
           </div>
@@ -86,10 +86,10 @@ export function SystemGuidePanel() {
                   icon={<ClipboardCheck className="w-4 h-4 text-primary" />}
                   title="Recomendações (Acompanhamento Gerencial)"
                   items={[
-                    "43 recomendações ONU com score de esforço (0-100)",
+                    "42 recomendações ONU com índices de Esforço e Impacto (0-100)",
                     "Evidências vinculadas: indicadores, ações orçamentárias, normativos",
                     "Edição manual (incluir/excluir) → recálculo instantâneo em todo o sistema",
-                    "Status: Cumprido (≥65), Parcial (≥35), Não Cumprido (<35)"
+                    "Faixas comuns: Baixo (<25), Intermediário (25–59,9) e Alto (≥60)"
                   ]}
                 />
                 <DetailRow
@@ -97,7 +97,7 @@ export function SystemGuidePanel() {
                   title="Artigos ICERD (Acompanhamento Gerencial)"
                   items={[
                     "Consolida recomendações por artigo da Convenção",
-                    "Score de Aderência = Rec. 50% + Normativos 15% + Orçamento 10% + Indicadores 15% + Amplitude 10%",
+                    "Esforço e Impacto do artigo = média simples das recomendações formalmente associadas",
                     "Mesmas evidências de Recomendações, filtradas por artigo",
                     "Pop-up de auditagem ao clicar em cada tag de evidência"
                   ]}
@@ -118,7 +118,7 @@ export function SystemGuidePanel() {
                   items={[
                     "Avalia impacto por artigo: Orçamento 35% + Normativos 35% + Indicadores 30%",
                     "Orçamento por faixas de valor liquidado; Normativos por estoque; Indicadores por tendência",
-                    "Complementa a Aderência com a dimensão de resultado efetivo"
+                    "Explicita a realização estatística, orçamentária e normativa"
                   ]}
                 />
                 <DetailRow
@@ -134,8 +134,8 @@ export function SystemGuidePanel() {
                   icon={<Eye className="w-4 h-4 text-muted-foreground" />}
                   title="Painel Geral (este painel)"
                   items={[
-                    "Esforço Governamental ← status consolidado de Recomendações",
-                    "Impacto Real ← resultado consolidado de Evolução Recomendações",
+                    "Esforço Governamental ← volume saturado das três bases",
+                    "Impacto Evidenciado ← Esforço × Realização ÷ 100",
                     "Lente dos Artigos: Esforço e Impacto Evidenciado (média das recomendações do artigo)",
                     "Nenhum cálculo próprio — espelho puro dos motores analíticos"
                   ]}
@@ -164,9 +164,8 @@ export function SystemGuidePanel() {
                   recalculam instantaneamente:
                 </p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Score e status de cada recomendação</li>
-                  <li>Aderência por artigo ICERD</li>
-                  <li>Score de evolução por recomendação e por artigo</li>
+                  <li>Esforço e Impacto de cada recomendação</li>
+                  <li>Esforço e Impacto por artigo ICERD</li>
                   <li>Diagnóstico de lacunas remanescentes</li>
                   <li>Gráficos e badges deste Painel Geral</li>
                 </ul>
