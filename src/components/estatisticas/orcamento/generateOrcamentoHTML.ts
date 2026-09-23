@@ -30,7 +30,7 @@ function buildAnoTable(records: DadoOrcamentario[]): string {
       <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtBRLFull(d.dotacao)}</td>
       <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtBRLFull(d.liquidado)}</td>
       <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtBRLFull(d.pago)}</td>
-      <td style="text-align:center">${exec}%</td>
+      <td style="text-align:center">${exec === '—' ? exec : `${exec}%`}</td>
     </tr>`;
   }).join('');
   return `<table><tr><th>Ano</th><th>Dotação Autorizada</th><th>Liquidado</th><th>Pago</th><th>Execução</th></tr>${rows}</table>`;
@@ -193,7 +193,7 @@ export function generateResumoComparativoHTML(records: DadoOrcamentario[]): stri
 /* ─────────── RELATÓRIO ─────────── */
 export function generateRelatorioHTML(records: DadoOrcamentario[]): string {
   const s = periodSummary(records);
-  const programas = new Set(records.map(r => r.programa));
+  const programas = new Set(records.map(r => `${r.orgao}|${r.programa}`));
 
   return generateTabReportHTML({
     title: 'Relatório Orçamentário Federal',

@@ -1355,7 +1355,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 <div className="bg-chart-2/5 rounded p-4 border border-chart-2/20">
                   <p className="font-semibold text-foreground mb-2">🔍 Curiosidades e Destaques</p>
                   <ul className="list-disc pl-4 space-y-1.5">
-                    <li><strong>Melhor execução anual:</strong> {bestExecYear?.ano} com {bestExecPct.toFixed(1)}% de taxa de pagamento.</li>
+                    <li><strong>Melhor execução anual:</strong> {bestExecYear?.ano} com {bestExecPct.toFixed(1)}% de liquidação sobre a dotação autorizada elegível.</li>
                     {ciganos && <li><strong>Menor investimento:</strong> Povos Ciganos/Romani receberam apenas {formatCurrency(ciganos.pagoP1 + ciganos.pagoP2)} em todo o período — {ciganos.programas} programa(s).</li>}
                     {quilombola && <li><strong>Quilombolas:</strong> {quilombola.programas} programas ativos, totalizando {formatCurrency(quilombola.pagoP1 + quilombola.pagoP2)}. A regularização fundiária permanece sub-executada.</li>}
                     <li><strong>Reclassificação contábil (2023):</strong> Parte do aumento aparente pós-2023 é explicada pela formalização de recursos
@@ -1384,7 +1384,6 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
       {/* ═══ 13. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
       {(() => {
-        const allRecs = [...records, ...sesaiRecords];
         const artigosComDados = [...icerdData.chartData].sort((a, b) => b.pago - a.pago);
         const topArt = artigosComDados[0];
         const bottomArt = artigosComDados.length > 1 ? artigosComDados[artigosComDados.length - 1] : null;

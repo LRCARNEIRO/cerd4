@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
-import { dedupOrcamento } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, dedupOrcamento } from '@/utils/orcamentoCanonico';
 
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';

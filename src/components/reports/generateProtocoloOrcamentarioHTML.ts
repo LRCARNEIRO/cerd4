@@ -1,5 +1,5 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
-import { LEGENDA_DEDUP } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, LEGENDA_DEDUP } from '@/utils/orcamentoCanonico';
 
 /**
  * PRODUTO 3 — GUIA METODOLÓGICO DA BASE ORÇAMENTÁRIA
@@ -50,6 +50,8 @@ function blocoPeriodos(rows: any[], rotulo: string): string {
   const pagoP2 = soma(p2, 'pago');
   const autP1 = soma(p1, 'dotacao_autorizada');
   const autP2 = soma(p2, 'dotacao_autorizada');
+  const liqP1 = soma(p1, 'liquidado');
+  const liqP2 = soma(p2, 'liquidado');
   const mediaP1 = pagoP1 / 5;
   const mediaP2 = pagoP2 / 3;
   const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1) * 100 : 0;
@@ -60,7 +62,8 @@ function blocoPeriodos(rows: any[], rotulo: string): string {
 <tr><td>Dotação autorizada</td><td class="num">${fmtBRL(autP1)}</td><td class="num">${fmtBRL(autP2)}</td><td class="num">${sinal(varAut)}</td></tr>
 <tr><td>Pago acumulado</td><td class="num">${fmtBRL(pagoP1)}</td><td class="num">${fmtBRL(pagoP2)}</td><td class="num">${sinal(varPago)}</td></tr>
 <tr><td><strong>Pago — média anual</strong> (corrige a assimetria 5×3)</td><td class="num"><strong>${fmtBRL(mediaP1)}</strong></td><td class="num"><strong>${fmtBRL(mediaP2)}</strong></td><td class="num"><strong>${sinal(varMedia)}</strong></td></tr>
-<tr><td>Execução (pago / autorizado)</td><td class="num">${pct(autP1 > 0 ? (pagoP1 / autP1) * 100 : NaN)}</td><td class="num">${pct(autP2 > 0 ? (pagoP2 / autP2) * 100 : NaN)}</td><td class="num">—</td></tr>
+<tr><td>Liquidado acumulado</td><td class="num">${fmtBRL(liqP1)}</td><td class="num">${fmtBRL(liqP2)}</td><td class="num">—</td></tr>
+<tr><td>Execução (liquidado / autorizado; somente LOA elegível)</td><td class="num">${pct(calcularExecucaoOrcamentaria(p1).percentual ?? NaN)}</td><td class="num">${pct(calcularExecucaoOrcamentaria(p2).percentual ?? NaN)}</td><td class="num">—</td></tr>
 <tr><td>Registros</td><td class="num">${fmtInt(p1.length)}</td><td class="num">${fmtInt(p2.length)}</td><td class="num">—</td></tr>
 </table>`;
 }
@@ -74,20 +77,22 @@ function tabelaAnos(rows: any[]): string {
       const pagoTotal = soma(g, 'pago');
       const pagoSem = soma(semSesai, 'pago');
       const aut = soma(g, 'dotacao_autorizada');
+      const liquidado = soma(g, 'liquidado');
       const share = pagoTotal > 0 ? ((pagoTotal - pagoSem) / pagoTotal) * 100 : 0;
-      return `<tr><td>${a}</td><td class="num">${fmtInt(g.length)}</td><td class="num">${fmtBRL(aut)}</td><td class="num">${fmtBRL(pagoTotal)}</td><td class="num">${fmtBRL(pagoSem)}</td><td class="num">${pct(share)}</td><td class="num">${pct(aut > 0 ? (pagoTotal / aut) * 100 : NaN)}</td></tr>`;
+      return `<tr><td>${a}</td><td class="num">${fmtInt(g.length)}</td><td class="num">${fmtBRL(aut)}</td><td class="num">${fmtBRL(liquidado)}</td><td class="num">${fmtBRL(pagoTotal)}</td><td class="num">${fmtBRL(pagoSem)}</td><td class="num">${pct(share)}</td><td class="num">${pct(calcularExecucaoOrcamentaria(g).percentual ?? NaN)}</td></tr>`;
     })
     .join('');
 }
 
 function ranking(rows: any[], campo: string, limite = 20): string {
-  const map = new Map<string, { n: number; pago: number; aut: number }>();
+  const map = new Map<string, { n: number; pago: number; aut: number; rows: any[] }>();
   rows.forEach((r) => {
     const k = String(r[campo] || '—');
-    const cur = map.get(k) || { n: 0, pago: 0, aut: 0 };
+    const cur = map.get(k) || { n: 0, pago: 0, aut: 0, rows: [] };
     cur.n += 1;
     cur.pago += num(r.pago);
     cur.aut += num(r.dotacao_autorizada);
+    cur.rows.push(r);
     map.set(k, cur);
   });
   return [...map.entries()]
@@ -95,7 +100,7 @@ function ranking(rows: any[], campo: string, limite = 20): string {
     .slice(0, limite)
     .map(
       ([k, v]) =>
-        `<tr><td>${esc(k)}</td><td class="num">${fmtInt(v.n)}</td><td class="num">${fmtBRL(v.aut)}</td><td class="num">${fmtBRL(v.pago)}</td><td class="num">${pct(v.aut > 0 ? (v.pago / v.aut) * 100 : NaN)}</td></tr>`,
+        `<tr><td>${esc(k)}</td><td class="num">${fmtInt(v.n)}</td><td class="num">${fmtBRL(v.aut)}</td><td class="num">${fmtBRL(v.pago)}</td><td class="num">${pct(calcularExecucaoOrcamentaria(v.rows).percentual ?? NaN)}</td></tr>`,
     )
     .join('');
 }
@@ -122,6 +127,7 @@ export function generateProtocoloOrcamentarioHTML(data: ProtocoloOrcamentarioDat
   const pagoTotal = soma(rows, 'pago');
   const liqTotal = soma(rows, 'liquidado');
   const empTotal = soma(rows, 'empenhado');
+  const execucaoTotal = calcularExecucaoOrcamentaria(rows);
 
   const anos = [...new Set(rows.map((r) => Number(r.ano)).filter(Boolean))].sort((a, b) => a - b);
   const orgaos = new Set(rows.map((r) => r.orgao)).size;
@@ -129,7 +135,7 @@ export function generateProtocoloOrcamentarioHTML(data: ProtocoloOrcamentarioDat
   const esferas = new Set(rows.map((r) => r.esfera)).size;
 
   // Orçamento simbólico: dotação relevante e execução residual
-  const simbolicos = rows.filter((r) => num(r.dotacao_autorizada) > 1e6 && num(r.pago) / Math.max(num(r.dotacao_autorizada), 1) < 0.1);
+  const simbolicos = rows.filter((r) => r.tipo_dotacao !== 'extraorcamentario' && num(r.dotacao_autorizada) > 1e6 && num(r.liquidado) / num(r.dotacao_autorizada) < 0.1);
   const semDotacao = rows.filter((r) => num(r.dotacao_autorizada) === 0 && num(r.pago) > 0);
 
   const pagoSesai = soma(sesai, 'pago');
@@ -187,7 +193,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 <div class="kpi"><div class="v">${fmtInt(total)}</div><div class="l">Registros canônicos</div></div>
 <div class="kpi"><div class="v">${fmtBRL(autTotal)}</div><div class="l">Dotação autorizada</div></div>
 <div class="kpi"><div class="v">${fmtBRL(pagoTotal)}</div><div class="l">Pago</div></div>
-<div class="kpi"><div class="v">${pct(autTotal > 0 ? (pagoTotal / autTotal) * 100 : NaN)}</div><div class="l">Execução</div></div>
+<div class="kpi"><div class="v">${pct(execucaoTotal.percentual ?? NaN)}</div><div class="l">Execução (Liquidado ÷ Dotação LOA)</div></div>
 </div>
 
 <div class="toc">
@@ -297,7 +303,7 @@ critério de desempate: valor pago > 0  →  existência de URL de fonte  →  m
 
 <h3>6.1 Série anual — total, sem SESAI e participação da SESAI</h3>
 <table>
-<tr><th>Ano</th><th>Registros</th><th>Autorizado</th><th>Pago total</th><th>Pago sem SESAI</th><th>Peso SESAI</th><th>Execução</th></tr>
+<tr><th>Ano</th><th>Registros</th><th>Autorizado</th><th>Liquidado</th><th>Pago total</th><th>Pago sem SESAI</th><th>Peso SESAI</th><th>Execução</th></tr>
 ${tabelaAnos(rows)}
 </table>
 
@@ -359,19 +365,19 @@ ${anoExtra ? `<h3>8.1 Distribuição anual do extraorçamentário</h3><table><tr
 </table>
 
 <h2>10. Achado 4 — Orçamento simbólico e execução</h2>
-<p>Chamamos de <strong>orçamento simbólico</strong> a ação com dotação autorizada relevante (acima de R$ 1 milhão) e execução residual (abaixo de 10% do autorizado). É o padrão típico da política anunciada e não entregue.</p>
+<p>Chamamos de <strong>orçamento simbólico</strong> a ação LOA com dotação autorizada relevante (acima de R$ 1 milhão) e liquidação residual (abaixo de 10% do autorizado). É o padrão típico da política anunciada e não entregue.</p>
 <table>
-<tr><th>Sinal</th><th>Registros</th><th>Autorizado envolvido</th><th>Pago</th></tr>
-<tr><td>Orçamento simbólico</td><td class="num">${fmtInt(simbolicos.length)}</td><td class="num">${fmtBRL(soma(simbolicos, 'dotacao_autorizada'))}</td><td class="num">${fmtBRL(soma(simbolicos, 'pago'))}</td></tr>
+<tr><th>Sinal</th><th>Registros</th><th>Autorizado envolvido</th><th>Liquidado</th><th>Pago</th></tr>
+<tr><td>Orçamento simbólico</td><td class="num">${fmtInt(simbolicos.length)}</td><td class="num">${fmtBRL(soma(simbolicos, 'dotacao_autorizada'))}</td><td class="num">${fmtBRL(soma(simbolicos, 'liquidado'))}</td><td class="num">${fmtBRL(soma(simbolicos, 'pago'))}</td></tr>
 <tr><td>Pagamento sem dotação (extraorçamentário por natureza)</td><td class="num">${fmtInt(semDotacao.length)}</td><td class="num">—</td><td class="num">${fmtBRL(soma(semDotacao, 'pago'))}</td></tr>
 </table>
-${simbolicos.length ? `<table><tr><th>Programa / ação</th><th>Órgão</th><th>Ano</th><th>Autorizado</th><th>Pago</th><th>Execução</th></tr>${simbolicos
+${simbolicos.length ? `<table><tr><th>Programa / ação</th><th>Órgão</th><th>Ano</th><th>Autorizado</th><th>Liquidado</th><th>Pago</th><th>Execução</th></tr>${simbolicos
     .slice()
     .sort((a, b) => num(b.dotacao_autorizada) - num(a.dotacao_autorizada))
     .slice(0, 20)
     .map(
       (r) =>
-        `<tr><td>${esc(r.programa)}</td><td>${esc(r.orgao)}</td><td class="num">${esc(r.ano)}</td><td class="num">${fmtBRL(num(r.dotacao_autorizada))}</td><td class="num">${fmtBRL(num(r.pago))}</td><td class="num">${pct((num(r.pago) / Math.max(num(r.dotacao_autorizada), 1)) * 100)}</td></tr>`,
+        `<tr><td>${esc(r.programa)}</td><td>${esc(r.orgao)}</td><td class="num">${esc(r.ano)}</td><td class="num">${fmtBRL(num(r.dotacao_autorizada))}</td><td class="num">${fmtBRL(num(r.liquidado))}</td><td class="num">${fmtBRL(num(r.pago))}</td><td class="num">${pct(calcularExecucaoOrcamentaria([r]).percentual ?? NaN)}</td></tr>`,
     )
     .join('')}</table>` : ''}
 
