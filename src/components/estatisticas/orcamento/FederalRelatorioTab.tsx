@@ -1,3 +1,4 @@
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +59,7 @@ function SN({ n }: { n: number }) {
 }
 
 export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, formatCurrency, formatCurrencyFull }: Props) {
+  const allRecordsByYear = (ano: number) => records.filter(r => r.ano === ano);
   const analysis = useMemo(() => {
     if (records.length === 0) return null;
 
@@ -65,7 +67,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const nonSesai = allRecords.filter(r => classifyThematic(r) !== 'sesai');
 
     const valorEfetivo = (r: DadoOrcamentario) => Number(r.pago) || 0;
-    const dotacao = (r: DadoOrcamentario) => Number(r.dotacao_inicial) || Number(r.dotacao_autorizada) || 0;
+    const dotacao = (r: DadoOrcamentario) => Number(r.dotacao_autorizada) || 0;
     const dotAutorizada = (r: DadoOrcamentario) => Number(r.dotacao_autorizada) || 0;
     const liquidado = (r: DadoOrcamentario) => Number(r.liquidado) || 0;
 
@@ -126,12 +128,15 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     });
 
     // Top programs (non-SESAI)
-    const progTotals: Record<string, { pago: number; orgao: string; dot: number }> = {};
+    const progTotals: Record<string, { pago: number; orgao: string; dot: number; liqLoa: number }> = {};
     nonSesai.forEach(r => {
       const key = r.programa;
-      if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao, dot: 0 };
+      if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao, dot: 0, liqLoa: 0 };
       progTotals[key].pago += valorEfetivo(r);
-      progTotals[key].dot += dotacao(r);
+      if (r.tipo_dotacao !== 'extraorcamentario' && dotacao(r) > 0) {
+        progTotals[key].dot += dotacao(r);
+        progTotals[key].liqLoa += liquidado(r);
+      }
     });
     const topPrograms = Object.entries(progTotals)
       .sort((a, b) => b[1].pago - a[1].pago)
@@ -155,8 +160,8 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
       .sort((a, b) => a.ano - b.ano);
 
     // Execution rate
-    const execP1 = totalDotAutP1 > 0 ? (totalPagoP1 / totalDotAutP1 * 100) : 0;
-    const execP2 = totalDotAutP2 > 0 ? (totalPagoP2 / totalDotAutP2 * 100) : 0;
+    const execP1 = calcularExecucaoOrcamentaria(p1).percentual || 0;
+    const execP2 = calcularExecucaoOrcamentaria(p2).percentual || 0;
 
     const totalProgramas = new Set(allRecords.map(r => r.programa)).size;
     const anos = Array.from(new Set(allRecords.map(r => r.ano))).sort();
@@ -1168,10 +1173,10 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
-              {analysis.topPrograms.map(([programa, { pago, orgao, dot }], idx) => {
+              {analysis.topPrograms.map(([programa, { pago, orgao, dot, liqLoa }], idx) => {
                 const maxVal = analysis.topPrograms[0]?.[1].pago || 1;
                 const pct = (pago / maxVal) * 100;
-                const execRate = dot > 0 ? (pago / dot * 100) : null;
+                const execRate = dot > 0 ? (liqLoa / dot * 100) : null;
                 const colors = ['hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
                 return (
                   <div key={programa} className="space-y-0.5">
@@ -1327,11 +1332,11 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
             // Curiosidade: ano com maior execução
             const bestExecYear = analysis.annualData.reduce((best, d) => {
-              const ex = d.dotacao > 0 ? (d.pago / d.dotacao * 100) : 0;
-              const bex = best.dotacao > 0 ? (best.pago / best.dotacao * 100) : 0;
+              const ex = calcularExecucaoOrcamentaria(allRecordsByYear(d.ano)).percentual || 0;
+              const bex = calcularExecucaoOrcamentaria(allRecordsByYear(best.ano)).percentual || 0;
               return ex > bex ? d : best;
             }, analysis.annualData[0]);
-            const bestExecPct = bestExecYear?.dotacao > 0 ? (bestExecYear.pago / bestExecYear.dotacao * 100) : 0;
+            const bestExecPct = bestExecYear ? (calcularExecucaoOrcamentaria(allRecordsByYear(bestExecYear.ano)).percentual || 0) : 0;
 
             // Curiosidade: quilombola/ciganos
             const ciganos = analysis.themeData.find(t => t.key === 'ciganos');
