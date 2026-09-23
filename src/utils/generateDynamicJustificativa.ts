@@ -1,3 +1,4 @@
+import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
 /**
  * Gerador Dinâmico de Avaliação Técnica por Parágrafo CERD III
  * 
@@ -258,13 +259,9 @@ export function generateDynamicJustificativa(
     parts.push(`Orçamento (${orcs.length} ações vinculadas): ${orcText}`);
 
     // Orçamento simbólico warning
-    const simbolicos = latestOrcs.filter(o => {
-      const dot = Number(o.dotacao_autorizada) || 0;
-      const pag = Number(o.pago) || 0;
-      return dot > 100000 && pag < dot * 0.05;
-    });
+    const simbolicos = latestOrcs.filter(o => isOrcamentoSimbolico(o as any));
     if (simbolicos.length > 0) {
-      parts.push(`⚠️ ${simbolicos.length} ação(ões) com execução inferior a 5% (orçamento simbólico)`);
+      parts.push(`⚠️ ${simbolicos.length} ação(ões) com liquidação inferior a 10% da dotação autorizada (orçamento simbólico)`);
     }
   }
 

@@ -1,3 +1,4 @@
+import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
@@ -78,18 +79,14 @@ export function generateSuggestedResponse(
     const totalPago = linkedOrcamento.reduce((s, o) => s + (Number(o.pago) || 0), 0);
     const execGlobal = totalDotacao > 0 ? ((totalPago / totalDotacao) * 100).toFixed(1) : '0';
 
-    const simbolicos = linkedOrcamento.filter(o => {
-      const dot = Number(o.dotacao_autorizada) || 0;
-      const pg = Number(o.pago) || 0;
-      return dot > 100000 && pg < dot * 0.05;
-    });
+    const simbolicos = linkedOrcamento.filter(o => isOrcamentoSimbolico(o as any));
 
     const topProgramas = [...new Set(linkedOrcamento.map(o => o.programa))].slice(0, 4).join('; ');
 
     let budgetText = `\nQuanto ao investimento público, foram identificadas ${linkedOrcamento.length} ação(ões) orçamentária(s) vinculada(s), com dotação total autorizada de R$ ${formatBRL(totalDotacao)} e execução global de ${execGlobal}%. Programas relevantes incluem: ${topProgramas}.`;
 
     if (simbolicos.length > 0) {
-      budgetText += ` Alerta-se que ${simbolicos.length} ação(ões) apresenta(m) execução inferior a 5% do autorizado, configurando orçamento simbólico que compromete a efetividade da política pública.`;
+      budgetText += ` Alerta-se que ${simbolicos.length} ação(ões) apresenta(m) dotação autorizada acima de R$ 1 milhão e liquidação inferior a 10%, configurando orçamento simbólico que compromete a efetividade da política pública.`;
     }
 
     parts.push(budgetText);
