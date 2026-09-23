@@ -616,7 +616,7 @@ export default function Orcamento() {
             const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
             // Structure
-            const programas = new Set(filtered.map(r => r.programa)).size;
+            const programas = new Set(filtered.map(r => `${r.orgao}|${r.programa}`)).size;
             const orgaos = new Set(filtered.map(r => r.orgao)).size;
             const anosCobertura = [...new Set(filtered.map(r => r.ano))].sort();
             const anosRange = anosCobertura.length > 0 ? `${anosCobertura[0]}–${anosCobertura[anosCobertura.length - 1]}` : '—';
