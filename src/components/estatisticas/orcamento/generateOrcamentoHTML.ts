@@ -3,6 +3,7 @@
  */
 import { generateTabReportHTML } from '@/utils/generateTabReportHTML';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 const fmtBRL = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', minimumFractionDigits: 2 }).format(v);
@@ -22,7 +23,7 @@ function buildAnoTable(records: DadoOrcamentario[]): string {
   const anos = Object.keys(byAno).map(Number).sort();
   const rows = anos.map(a => {
     const d = byAno[a];
-    const exec = d.dotacao > 0 ? (d.pago / d.dotacao * 100).toFixed(1) : '—';
+    const exec = d.dotacao > 0 ? (d.liquidado / d.dotacao * 100).toFixed(1) : '—';
     return `<tr${a === 2023 ? ' style="border-top:3px solid #2563eb"' : ''}>
       <td style="font-weight:bold">${a}</td>
       <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtBRLFull(d.dotacao)}</td>
@@ -51,7 +52,9 @@ export function generateVisaoGeralHTML(records: DadoOrcamentario[]): string {
   const s = periodSummary(records);
   const totalDot = s.dotP1 + s.dotP2;
   const totalPago = s.pagoP1 + s.pagoP2;
-  const exec = totalDot > 0 ? (totalPago / totalDot * 100).toFixed(1) : '—';
+  const execucao = calcularExecucaoOrcamentaria(records);
+  const exec = execucao.percentual !== null ? execucao.percentual.toFixed(1) : '—';
+  const totalLiquidado = records.reduce((sum, r) => sum + (Number(r.liquidado) || 0), 0);
   const programas = new Set(records.map(r => r.programa)).size;
   const orgaos = new Set(records.map(r => r.orgao)).size;
 
@@ -62,8 +65,9 @@ export function generateVisaoGeralHTML(records: DadoOrcamentario[]): string {
     content: `
       <div class="data-grid">
         <div class="data-card"><div class="data-card-value">${fmtBRL(totalDot)}</div><div class="data-card-label">Dotação Total</div></div>
+        <div class="data-card"><div class="data-card-value">${fmtBRL(totalLiquidado)}</div><div class="data-card-label">Total Liquidado</div></div>
         <div class="data-card"><div class="data-card-value" style="color:#166534">${fmtBRL(totalPago)}</div><div class="data-card-label">Total Pago</div></div>
-        <div class="data-card"><div class="data-card-value">${exec}%</div><div class="data-card-label">Execução</div></div>
+        <div class="data-card"><div class="data-card-value">${exec}%</div><div class="data-card-label">Execução (Liquidado ÷ Dotação LOA)</div></div>
         <div class="data-card"><div class="data-card-value">${programas}</div><div class="data-card-label">Programas</div></div>
         <div class="data-card"><div class="data-card-value">${orgaos}</div><div class="data-card-label">Órgãos</div></div>
       </div>
@@ -108,9 +112,12 @@ export function generateUniversoBaseHTML(records: DadoOrcamentario[]): string {
   const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
   const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
 
-  const rows = records.map(r =>
-    `<tr><td>${r.orgao}</td><td>${r.programa}</td><td>${r.ano}</td><td>${r.tipo_dotacao}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(Number(r.pago) || 0)}</td></tr>`
-  ).join('');
+  const rows = records.map(r => {
+    const dot = Number(r.dotacao_autorizada) || 0;
+    const liq = Number(r.liquidado) || 0;
+    const exec = r.tipo_dotacao === 'extraorcamentario' ? 'n/a' : dot > 0 ? `${(liq / dot * 100).toFixed(1)}%` : '—';
+    return `<tr><td>${r.orgao}</td><td>${r.programa}</td><td>${r.ano}</td><td>${r.tipo_dotacao}</td><td style="text-align:right;font-family:monospace">${dot > 0 ? fmtBRLFull(dot) : '—'}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(Number(r.empenhado) || 0)}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(liq)}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(Number(r.pago) || 0)}</td><td style="text-align:center">${exec}</td></tr>`;
+  }).join('');
 
   return generateTabReportHTML({
     title: 'Orçamento — Universo da Base',
@@ -125,7 +132,7 @@ export function generateUniversoBaseHTML(records: DadoOrcamentario[]): string {
         <div class="data-card"><div class="data-card-value">${extraRecs.length}</div><div class="data-card-label">Extraorçamentários</div></div>
       </div>
       <h2>Listagem Completa</h2>
-      <table><tr><th>Órgão</th><th>Programa</th><th>Ano</th><th>Tipo</th><th>Pago</th></tr>${rows}</table>
+      <table><tr><th>Órgão</th><th>Programa</th><th>Ano</th><th>Tipo</th><th>Dotação</th><th>Empenhado</th><th>Liquidado</th><th>Pago</th><th>Execução</th></tr>${rows}</table>
     `,
   });
 }

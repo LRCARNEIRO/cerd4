@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Database, Layers, Calendar, DollarSign, TrendingUp, Building, Users, TreePine, MapPin, Tent, Info } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 interface UniversoBaseTabProps {
   records: DadoOrcamentario[];
@@ -66,9 +67,8 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
     const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
     // Metodologia canônica: Execução = ΣLiquidado / ΣDotação, apenas sobre registros com dotação (orçamentários)
-    const comDot = filtered.filter(r => (Number(r.dotacao_autorizada) || 0) > 0);
-    const liqComDot = comDot.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-    const execucao = totalDotacao > 0 ? (liqComDot / totalDotacao * 100) : 0;
+    const execucaoCanonica = calcularExecucaoOrcamentaria(filtered);
+    const execucao = execucaoCanonica.percentual || 0;
     const pagoExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     return { totalRegistros, totalProgramas: programas.size, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, totalDotacao, totalPago, totalLiquidado, execucao, pagoExtra };
   }, [filtered]);
