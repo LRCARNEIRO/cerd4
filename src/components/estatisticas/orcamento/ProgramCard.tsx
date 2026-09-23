@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ChevronDown, ChevronUp, Calendar, ExternalLink, Users, EyeOff, Info } from 'lucide-react';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, ARTIGOS_CONVENCAO, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 interface ProgramCardProps {
   programa: string;
@@ -69,6 +70,11 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const latestLabel = isEstadual ? 'Dot. Inicial' : 'Pago';
   const fonte = registros[0]?.fonte_dados;
   const urlFonte = registros[0]?.url_fonte;
+  const tipoExtra = registros.every(r => r.tipo_dotacao === 'extraorcamentario');
+  const execucaoPrograma = calcularExecucaoOrcamentaria(registros);
+  const semValorFinanceiro = !tipoExtra && registros.every(r =>
+    !(Number(r.dotacao_autorizada) || Number(r.empenhado) || Number(r.liquidado) || Number(r.pago))
+  );
 
   return (
     <Card className={`overflow-hidden ${excluded ? 'opacity-60 border-dashed border-muted-foreground/30' : ''}`}>
@@ -92,6 +98,19 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
                 title={`Subitem da ação — Plano Orçamentário ${po}`}
               >
                 Subitem · PO {poCodigo}
+              </Badge>
+            )}
+            <Badge variant={tipoExtra ? 'outline' : 'secondary'} className="text-[10px] px-1.5 py-0">
+              {tipoExtra ? 'Extraorçamentário' : 'Orçamentário'}
+            </Badge>
+            {tipoExtra && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
+                Execução não se aplica
+              </Badge>
+            )}
+            {semValorFinanceiro && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-warning border-warning">
+                Sem valor financeiro no inventário
               </Badge>
             )}
             {excluded && (
@@ -224,24 +243,29 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
                       {r.pago ? formatCompact(r.pago) : '—'}
                     </TableCell>
                     <TableCell className="text-xs text-right">
-                      {r.percentual_execucao ? (
+                      {r.tipo_dotacao !== 'extraorcamentario' && (Number(r.dotacao_autorizada) || 0) > 0 ? (
                         <Badge
                           variant="outline"
                           className={
-                            r.percentual_execucao >= 80 ? 'border-success text-success' :
-                            r.percentual_execucao >= 50 ? 'border-warning text-warning' :
+                            ((Number(r.liquidado) || 0) / Number(r.dotacao_autorizada) * 100) >= 80 ? 'border-success text-success' :
+                            ((Number(r.liquidado) || 0) / Number(r.dotacao_autorizada) * 100) >= 50 ? 'border-warning text-warning' :
                             'border-destructive text-destructive'
                           }
                         >
-                          {r.percentual_execucao.toFixed(0)}%
+                          {((Number(r.liquidado) || 0) / Number(r.dotacao_autorizada) * 100).toFixed(1)}%
                         </Badge>
-                      ) : '—'}
+                      ) : r.tipo_dotacao === 'extraorcamentario' ? 'n/a' : '—'}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+          {!tipoExtra && execucaoPrograma.percentual !== null && sorted.length > 1 && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Execução acumulada: <strong className="text-foreground">{execucaoPrograma.percentual.toFixed(1)}%</strong> (Σ Liquidado ÷ Σ Dotação)
+            </p>
+          )}
 
           {/* Fonte */}
           <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">

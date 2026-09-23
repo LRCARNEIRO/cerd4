@@ -7,6 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Database, Layers, Calendar, DollarSign, TrendingUp, Building, Users, TreePine, MapPin, Tent, Info } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 interface UniversoBaseTabProps {
   records: DadoOrcamentario[];
@@ -21,6 +22,8 @@ const formatFull = (value: number) =>
 /** Âncora estável por programa, usada nos links de inventário (#prog-...). */
 export const slugPrograma = (p: string) =>
   p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+
+const chaveProgramaOrgao = (r: Pick<DadoOrcamentario, 'orgao' | 'programa'>) => `${r.orgao}|${r.programa}`;
 
 function classifyThematic(r: DadoOrcamentario): string {
   const prog = r.programa.toLowerCase();
@@ -56,19 +59,18 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   const summary = useMemo(() => {
     const totalRegistros = filtered.length;
-    const programas = new Set(filtered.map(r => r.programa));
+    const programas = new Set(filtered.map(chaveProgramaOrgao));
     const orgaos = new Set(filtered.map(r => r.orgao));
     const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
     const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
-    const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
-    const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
+    const acoesOrc = new Set(orcRecs.map(chaveProgramaOrgao)).size;
+    const acoesExtra = new Set(extraRecs.map(chaveProgramaOrgao)).size;
     const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
     const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
     // Metodologia canônica: Execução = ΣLiquidado / ΣDotação, apenas sobre registros com dotação (orçamentários)
-    const comDot = filtered.filter(r => (Number(r.dotacao_autorizada) || 0) > 0);
-    const liqComDot = comDot.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-    const execucao = totalDotacao > 0 ? (liqComDot / totalDotacao * 100) : 0;
+    const execucaoCanonica = calcularExecucaoOrcamentaria(filtered);
+    const execucao = execucaoCanonica.percentual || 0;
     const pagoExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     return { totalRegistros, totalProgramas: programas.size, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, totalDotacao, totalPago, totalLiquidado, execucao, pagoExtra };
   }, [filtered]);
@@ -88,9 +90,9 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
       const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
       return {
         ...g,
-        progP1: new Set(p1.map(r => r.programa)).size,
-        progP2: new Set(p2.map(r => r.programa)).size,
-        progTotal: new Set(recs.map(r => r.programa)).size,
+        progP1: new Set(p1.map(chaveProgramaOrgao)).size,
+        progP2: new Set(p2.map(chaveProgramaOrgao)).size,
+        progTotal: new Set(recs.map(chaveProgramaOrgao)).size,
         acoesP1: p1.length, acoesP2: p2.length, acoesTotal: recs.length,
       };
     });
@@ -110,22 +112,26 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   // Top 10
   const top10 = useMemo(() => {
-    const map: Record<string, number> = {};
+    const map = new Map<string, { programa: string; orgao: string; pago: number }>();
     for (const r of filtered) {
-      map[r.programa] = (map[r.programa] || 0) + (Number(r.pago) || 0);
+      const key = chaveProgramaOrgao(r);
+      const atual = map.get(key);
+      if (atual) atual.pago += Number(r.pago) || 0;
+      else map.set(key, { programa: r.programa, orgao: r.orgao, pago: Number(r.pago) || 0 });
     }
-    return Object.entries(map).map(([programa, pago]) => ({ programa, pago })).sort((a, b) => b.pago - a.pago).slice(0, 10);
+    return Array.from(map.values()).sort((a, b) => b.pago - a.pago).slice(0, 10);
   }, [filtered]);
 
   // Program table
   const programaRows = useMemo(() => {
     const map = new Map<string, { programa: string; orgao: string; tipo: string; anos: Set<number>; dotacao: number; liquidado: number; liqComDot: number; pago: number; registros: number }>();
     for (const r of filtered) {
-      const key = r.programa;
+      const key = chaveProgramaOrgao(r);
       if (!map.has(key)) {
         map.set(key, { programa: r.programa, orgao: r.orgao, tipo: r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.', anos: new Set(), dotacao: 0, liquidado: 0, liqComDot: 0, pago: 0, registros: 0 });
       }
-      const entry = map.get(key)!;
+      const entry = map.get(key);
+      if (!entry) continue;
       entry.anos.add(r.ano);
       const d = Number(r.dotacao_autorizada) || 0;
       entry.dotacao += d;
@@ -219,7 +225,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3 mb-4">
-            <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">{new Set(records.map(r => r.programa)).size} programas distintos</Badge>
+            <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">{new Set(records.map(chaveProgramaOrgao)).size} programas/ações por órgão</Badge>
             <Badge className="text-sm px-3 py-1 bg-muted text-foreground border-border">{records.length} registros (Ação × Ano)</Badge>
           </div>
           <div className="overflow-auto">
@@ -303,7 +309,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                         <span className="text-xs font-mono text-muted-foreground w-5 text-right shrink-0">{idx + 1}</span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                            <p className="text-xs font-medium truncate" title={item.programa}>{item.programa}</p>
+                             <p className="text-xs font-medium truncate" title={`${item.orgao} · ${item.programa}`}>{item.programa} · {item.orgao}</p>
                             <span className="text-xs font-bold text-foreground shrink-0">{formatCompact(item.pago)}</span>
                           </div>
                           <div className="w-full bg-muted rounded-full h-2.5">
@@ -327,6 +333,9 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
             <Layers className="w-4 h-4 text-primary" />
             Programas na Base ({programaRows.length})
           </h4>
+          <p className="text-xs text-muted-foreground mb-3">
+            {programaRows.reduce((s, row) => s + row.registros, 0)} registros canônicos distribuídos por programa/ação e órgão.
+          </p>
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
             <Table>
               <TableHeader>
@@ -343,8 +352,8 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {programaRows.map((row, i) => (
-                  <TableRow key={i} id={`prog-${slugPrograma(row.programa)}`} className="scroll-mt-24">
+                {programaRows.map((row) => (
+                  <TableRow key={`${row.orgao}|${row.programa}`} id={`prog-${slugPrograma(row.programa)}`} className="scroll-mt-24">
                     <TableCell className="text-xs whitespace-normal break-words">{row.programa}</TableCell>
                     <TableCell className="text-xs">{row.orgao}</TableCell>
                     <TableCell className="text-xs text-center">
@@ -390,7 +399,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.sort((a, b) => a.ano - b.ano || a.programa.localeCompare(b.programa)).map((r, i) => {
+                {[...filtered].sort((a, b) => a.ano - b.ano || a.programa.localeCompare(b.programa)).map((r, i) => {
                   const dot = Number(r.dotacao_autorizada) || 0;
                   const pg = Number(r.pago) || 0;
                   return (

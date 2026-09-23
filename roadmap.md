@@ -11,3 +11,4 @@
 - [x] Conferir e alinhar a execução orçamentária do Painel Geral à Base Orçamentária canônica.
 - [x] Atualizar a Metodologia de Alimentação de Dados com inventário, matriz, deduplicação e fluxo vigente.
 - [x] Remover as referências a metas dos títulos das três bases.
+- [x] Alinhar Visão Geral, Programa/Ação, Universo e exportações às 204 linhas do inventário orçamentário canônico.

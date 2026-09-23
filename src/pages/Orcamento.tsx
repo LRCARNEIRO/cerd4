@@ -42,6 +42,7 @@ import { ApiRawAuditPanel } from '@/components/dashboard/ApiRawAuditPanel';
 
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 // Estrutura de fontes para referência
 const estruturaFederal = [
@@ -601,8 +602,8 @@ export default function Orcamento() {
             const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
             const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
             const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
-            const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
-            const razao = totalDotacao > 0 ? (totalPago / totalDotacao) : 0;
+            const execucaoCanonica = calcularExecucaoOrcamentaria(filtered);
+            const execucao = execucaoCanonica.percentual || 0;
 
             // Period splits
             const p1 = filtered.filter(r => r.ano >= 2018 && r.ano <= 2022);
@@ -692,7 +693,7 @@ export default function Orcamento() {
                           {execucao.toFixed(1)}%
                         </p>
                         <p className="text-[10px] text-muted-foreground mt-1">
-                          {razao >= 1 ? `${razao.toFixed(1)}x acima da dotação` : `${razao.toFixed(2)}x da dotação executada`}
+                          Σ Liquidado ÷ Σ Dotação · {execucaoCanonica.registrosComDotacao} registros LOA
                         </p>
                       </CardContent>
                     </Card>

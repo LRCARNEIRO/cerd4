@@ -22,6 +22,8 @@ export interface OrcamentoDedupBase {
   fonte_dados?: string | null;
   pago?: number | null;
   dotacao_autorizada?: number | null;
+  liquidado?: number | null;
+  tipo_dotacao?: 'orcamentario' | 'extraorcamentario' | null;
   url_fonte?: string | null;
 }
 
@@ -70,6 +72,26 @@ export interface DedupResultado<T> {
   anotados: Canonizado<T>[];
   suprimidos: number;
   valorSuprimido: number;
+}
+
+export interface ExecucaoOrcamentaria {
+  dotacao: number;
+  liquidado: number;
+  percentual: number | null;
+  registrosComDotacao: number;
+}
+
+/** Regra canônica: Σ Liquidado ÷ Σ Dotação, somente linhas LOA com dotação positiva. */
+export function calcularExecucaoOrcamentaria<T extends OrcamentoDedupBase>(rows: T[] | null | undefined): ExecucaoOrcamentaria {
+  const elegiveis = (rows || []).filter(r => r.tipo_dotacao !== 'extraorcamentario' && (Number(r.dotacao_autorizada) || 0) > 0);
+  const dotacao = elegiveis.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
+  const liquidado = elegiveis.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+  return {
+    dotacao,
+    liquidado,
+    percentual: dotacao > 0 ? liquidado / dotacao * 100 : null,
+    registrosComDotacao: elegiveis.length,
+  };
 }
 
 /** Aplica a deduplicação lógica. Não altera a base — apenas classifica. */
