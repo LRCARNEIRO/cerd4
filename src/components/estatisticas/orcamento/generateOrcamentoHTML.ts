@@ -23,7 +23,8 @@ function buildAnoTable(records: DadoOrcamentario[]): string {
   const anos = Object.keys(byAno).map(Number).sort();
   const rows = anos.map(a => {
     const d = byAno[a];
-    const exec = d.dotacao > 0 ? (d.liquidado / d.dotacao * 100).toFixed(1) : '—';
+    const execucao = calcularExecucaoOrcamentaria(records.filter(r => r.ano === a));
+    const exec = execucao.percentual !== null ? execucao.percentual.toFixed(1) : '—';
     return `<tr${a === 2023 ? ' style="border-top:3px solid #2563eb"' : ''}>
       <td style="font-weight:bold">${a}</td>
       <td style="text-align:right;font-family:monospace;font-size:9pt">${fmtBRLFull(d.dotacao)}</td>
@@ -55,7 +56,7 @@ export function generateVisaoGeralHTML(records: DadoOrcamentario[]): string {
   const execucao = calcularExecucaoOrcamentaria(records);
   const exec = execucao.percentual !== null ? execucao.percentual.toFixed(1) : '—';
   const totalLiquidado = records.reduce((sum, r) => sum + (Number(r.liquidado) || 0), 0);
-  const programas = new Set(records.map(r => r.programa)).size;
+  const programas = new Set(records.map(r => `${r.orgao}|${r.programa}`)).size;
   const orgaos = new Set(records.map(r => r.orgao)).size;
 
   return generateTabReportHTML({
@@ -107,7 +108,7 @@ export function generateVisaoGeralHTML(records: DadoOrcamentario[]): string {
 /* ─────────── UNIVERSO DA BASE ─────────── */
 export function generateUniversoBaseHTML(records: DadoOrcamentario[]): string {
   const orgaos = new Set(records.map(r => r.orgao));
-  const programas = new Set(records.map(r => r.programa));
+  const programas = new Set(records.map(r => `${r.orgao}|${r.programa}`));
   const anos = [...new Set(records.map(r => r.ano))].sort();
   const orcRecs = records.filter(r => r.tipo_dotacao !== 'extraorcamentario');
   const extraRecs = records.filter(r => r.tipo_dotacao === 'extraorcamentario');
@@ -211,13 +212,14 @@ export function generateRelatorioHTML(records: DadoOrcamentario[]): string {
       <table>
         <tr><th>Programa</th><th>Órgão</th><th>Pago Total</th></tr>
         ${(() => {
-          const progMap: Record<string, { orgao: string; pago: number }> = {};
+          const progMap: Record<string, { programa: string; orgao: string; pago: number }> = {};
           records.forEach(r => {
-            if (!progMap[r.programa]) progMap[r.programa] = { orgao: r.orgao, pago: 0 };
-            progMap[r.programa].pago += Number(r.pago) || 0;
+            const key = `${r.orgao}|${r.programa}`;
+            if (!progMap[key]) progMap[key] = { programa: r.programa, orgao: r.orgao, pago: 0 };
+            progMap[key].pago += Number(r.pago) || 0;
           });
-          return Object.entries(progMap).sort((a, b) => b[1].pago - a[1].pago).map(([prog, { orgao, pago }]) =>
-            `<tr><td>${prog}</td><td>${orgao}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(pago)}</td></tr>`
+          return Object.values(progMap).sort((a, b) => b.pago - a.pago).map(({ programa, orgao, pago }) =>
+            `<tr><td>${programa}</td><td>${orgao}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(pago)}</td></tr>`
           ).join('');
         })()}
       </table>
