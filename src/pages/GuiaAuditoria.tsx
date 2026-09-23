@@ -784,14 +784,14 @@ export default function GuiaAuditoria() {
                   Orçamento Simbólico — Política no Papel Sem Entrega na Ponta
                 </h4>
                 <p className="text-sm text-muted-foreground mt-2">
-                  O conceito de <strong>"Orçamento Simbólico"</strong> identifica registros onde existe <strong>dotação inicial prevista</strong> 
-                  (a política foi planejada e aprovada na LOA), mas o valor <strong>pago é zero ou próximo de zero</strong>.
+                  O conceito de <strong>"Orçamento Simbólico"</strong> identifica registros onde existe <strong>dotação autorizada acima de R$ 1 milhão</strong> 
+                  (a política foi planejada e aprovada na LOA), mas o <strong>liquidado é inferior a 10% da dotação autorizada</strong>. Extraorçamentários não entram no critério.
                 </p>
                 <div className="bg-background rounded-lg border p-4 mt-3 space-y-2">
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-mono bg-primary/10 text-primary rounded px-2 py-1 text-xs">dotacao_inicial &gt; 0</span>
+                    <span className="font-mono bg-primary/10 text-primary rounded px-2 py-1 text-xs">dotacao_autorizada &gt; R$ 1 mi</span>
                     <span className="text-muted-foreground font-bold">+</span>
-                    <span className="font-mono bg-destructive/10 text-destructive rounded px-2 py-1 text-xs">pago ≈ 0</span>
+                    <span className="font-mono bg-destructive/10 text-destructive rounded px-2 py-1 text-xs">liquidado &lt; 10%</span>
                     <span className="text-muted-foreground font-bold">=</span>
                     <Badge variant="destructive">Orçamento Simbólico</Badge>
                   </div>

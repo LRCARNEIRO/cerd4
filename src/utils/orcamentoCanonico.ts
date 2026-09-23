@@ -94,6 +94,26 @@ export function calcularExecucaoOrcamentaria<T extends OrcamentoDedupBase>(rows:
   };
 }
 
+/** Critério único de Orçamento Simbólico: LOA, dotação autorizada > R$ 1 mi e liquidado < 10% da dotação. */
+export const SIMBOLICO_DOTACAO_MIN = 1_000_000;
+export const SIMBOLICO_LIQ_MAX = 0.1;
+export function isOrcamentoSimbolico(r: Partial<OrcamentoDedupBase>): boolean {
+  if (r.tipo_dotacao === 'extraorcamentario') return false;
+  const dot = Number(r.dotacao_autorizada) || 0;
+  if (dot <= SIMBOLICO_DOTACAO_MIN) return false;
+  return (Number(r.liquidado) || 0) / dot < SIMBOLICO_LIQ_MAX;
+}
+export const CRITERIO_SIMBOLICO =
+  'Orçamento Simbólico = ação LOA com Dotação Autorizada > R$ 1 milhão e Liquidado < 10% da Dotação Autorizada';
+
+/** Heurística SESAI — mesma usada nos painéis de Orçamento. */
+export function isSesaiRegistro(r: any): boolean {
+  const prog = String(r?.programa || '').toLowerCase();
+  const orgao = String(r?.orgao || '').toUpperCase();
+  const obs = String(r?.observacoes || '').toLowerCase();
+  return orgao.includes('SESAI') || obs.includes('sesai') || prog.includes('20yp') || prog.includes('7684') || prog.includes('21cj');
+}
+
 /** Aplica a deduplicação lógica. Não altera a base — apenas classifica. */
 export function dedupOrcamento<T extends OrcamentoDedupBase>(rows: T[] | null | undefined): DedupResultado<T> {
   const lista = rows || [];

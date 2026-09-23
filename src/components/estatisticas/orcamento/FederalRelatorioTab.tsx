@@ -1,3 +1,4 @@
+import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
 import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -497,7 +498,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
               </div>
               <div>
                 <p className="font-medium text-foreground">Orçamento Simbólico:</p>
-                <code className="bg-background px-2 py-1 rounded block mt-1">Dotação Autorizada &gt; 0 AND Pago ≈ R$ 0</code>
+                <code className="bg-background px-2 py-1 rounded block mt-1">LOA AND Dotação Autorizada &gt; R$ 1 mi AND Liquidado &lt; 10% da Dotação Autorizada</code>
                 <p className="mt-0.5 italic">Evidência de hiato entre previsão legal e entrega efetiva.</p>
               </div>
               <div>
@@ -509,11 +510,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
           {/* Orçamento Simbólico detection */}
           {(() => {
-            const simbolicos = records.filter(r => {
-              const dot = Number(r.dotacao_autorizada) || 0;
-              const pg = Number(r.pago) || 0;
-              return dot > 100000 && pg < 1000;
-            });
+            const simbolicos = records.filter(isOrcamentoSimbolico);
             if (simbolicos.length === 0) return null;
             const totalDotSimb = simbolicos.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
             return (
@@ -523,7 +520,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 </p>
                 <p className="text-xs">
                   Foram identificadas <strong>{simbolicos.length} ações</strong> com dotação autorizada total de <strong>{formatCurrency(totalDotSimb)}</strong> mas
-                  valor pago ≈ R$ 0. Isso evidencia planejamento formal sem execução real — um padrão que o Comitê CERD denomina
+                  liquidação inferior a 10% do autorizado. Isso evidencia planejamento formal sem execução real — um padrão que o Comitê CERD denomina
                   "medidas de papel" (CERD/C/BRA/CO/18-20 §14).
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
@@ -1460,7 +1457,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                   <li>Incluir a análise de <strong>dupla perspectiva (com/sem SESAI)</strong> como padrão metodológico.</li>
                   <li>Incluir a análise de <strong>tripla perspectiva (LOA vs. Compensatório)</strong> para distinguir esforço genuíno do Estado.</li>
                   {icerdData.artigosSemDados.length > 0 && <li>Solicitar <strong>plano de ação</strong> para os artigos {icerdData.artigosSemDados.map(a => a.numero).join(', ')} sem cobertura orçamentária.</li>}
-                  <li>Investigar o fenômeno de <strong>"Orçamento Simbólico"</strong> — ações com dotação significativa e pagamento ≈ R$ 0.</li>
+                  <li>Investigar o fenômeno de <strong>"Orçamento Simbólico"</strong> — ações LOA com dotação autorizada acima de R$ 1 milhão e liquidação inferior a 10%.</li>
                   <li>Monitorar o <strong>efeito de reclassificação contábil</strong> pós-2023 para distinguir investimento novo de reorganização administrativa.</li>
                 </ol>
               </div>

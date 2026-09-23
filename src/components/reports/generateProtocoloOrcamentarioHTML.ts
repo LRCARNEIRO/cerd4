@@ -1,5 +1,5 @@
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
-import { calcularExecucaoOrcamentaria, LEGENDA_DEDUP } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, isOrcamentoSimbolico, LEGENDA_DEDUP } from '@/utils/orcamentoCanonico';
 
 /**
  * PRODUTO 3 — GUIA METODOLÓGICO DA BASE ORÇAMENTÁRIA
@@ -135,7 +135,8 @@ export function generateProtocoloOrcamentarioHTML(data: ProtocoloOrcamentarioDat
   const esferas = new Set(rows.map((r) => r.esfera)).size;
 
   // Orçamento simbólico: dotação relevante e execução residual
-  const simbolicos = rows.filter((r) => r.tipo_dotacao !== 'extraorcamentario' && num(r.dotacao_autorizada) > 1e6 && num(r.liquidado) / num(r.dotacao_autorizada) < 0.1);
+  const simbolicos = rows.filter(isOrcamentoSimbolico);
+  const anoPrimeiroBi = anos.find((a) => soma(semSesai.filter((r) => Number(r.ano) === a), 'pago') >= 1e9);
   const semDotacao = rows.filter((r) => num(r.dotacao_autorizada) === 0 && num(r.pago) > 0);
 
   const pagoSesai = soma(sesai, 'pago');
@@ -361,7 +362,7 @@ ${anoExtra ? `<h3>8.1 Distribuição anual do extraorçamentário</h3><table><tr
 <tr><td>2018–2019</td><td>Base modesta: SEPPIR ativa em patamar reduzido; FUNAI operante com ações finalísticas</td></tr>
 <tr><td>2020–2022</td><td>Desmonte institucional: política racial absorvida por rubrica genérica do MDHC; queda expressiva no pago sem SESAI</td></tr>
 <tr><td>2023</td><td>Reconstrução: criação do MIR e do MPI, forte elevação de dotação com execução ainda incipiente</td></tr>
-<tr><td>2024–2025</td><td>Novos programas do PPA e Agendas Transversais; pela primeira vez as políticas raciais sem SESAI superam a casa do bilhão</td></tr>
+<tr><td>2024–2025</td><td>Novos programas do PPA e Agendas Transversais${anoPrimeiroBi ? `; em ${anoPrimeiroBi}, pela primeira vez, o pago das políticas raciais sem SESAI supera R$ 1 bilhão (${fmtBRL(soma(semSesai.filter((r) => Number(r.ano) === anoPrimeiroBi), 'pago'))})` : '; o pago sem SESAI não alcança R$ 1 bilhão em nenhum exercício da base vigente'}</td></tr>
 </table>
 
 <h2>10. Achado 4 — Orçamento simbólico e execução</h2>
