@@ -155,7 +155,7 @@ export function BudgetReportGenerator() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency((stats?.dotacaoPeriodo1 || 0) + (stats?.dotacaoPeriodo2 || 0))}<br />Dotação Total</Badge>
                 <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : formatCurrency((stats?.pagoPeriodo1 || 0) + (stats?.pagoPeriodo2 || 0))}<br />Total Pago</Badge>
-                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : `${(((stats?.pagoPeriodo1 || 0) + (stats?.pagoPeriodo2 || 0)) / Math.max((stats?.dotacaoPeriodo1 || 0) + (stats?.dotacaoPeriodo2 || 0), 1) * 100).toFixed(1)}%`}<br />Execução Geral</Badge>
+                <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : stats?.execucaoCanonica == null ? 'n/a' : `${stats.execucaoCanonica.toFixed(1)}%`}<br />Execução Geral</Badge>
                 <Badge variant="outline" className="justify-center py-3 text-center leading-relaxed">{isLoading ? '...' : stats?.totalRegistros || 0}<br />Registros Orçamentários</Badge>
               </div>
 

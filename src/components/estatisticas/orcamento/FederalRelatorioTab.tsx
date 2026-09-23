@@ -128,10 +128,10 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     });
 
     // Top programs (non-SESAI)
-    const progTotals: Record<string, { pago: number; orgao: string; dot: number; liqLoa: number }> = {};
+    const progTotals: Record<string, { programa: string; pago: number; orgao: string; dot: number; liqLoa: number }> = {};
     nonSesai.forEach(r => {
-      const key = r.programa;
-      if (!progTotals[key]) progTotals[key] = { pago: 0, orgao: r.orgao, dot: 0, liqLoa: 0 };
+      const key = `${r.orgao}|${r.programa}`;
+      if (!progTotals[key]) progTotals[key] = { programa: r.programa, pago: 0, orgao: r.orgao, dot: 0, liqLoa: 0 };
       progTotals[key].pago += valorEfetivo(r);
       if (r.tipo_dotacao !== 'extraorcamentario' && dotacao(r) > 0) {
         progTotals[key].dot += dotacao(r);
@@ -247,7 +247,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
   // ICERD data — must be before early return
   const icerdData = useMemo(() => {
-    const allRecs = [...records, ...sesaiRecords];
+    const allRecs = records;
     const byArtigo = new Map<ArtigoConvencao, { records: DadoOrcamentario[]; pago: number; programas: Set<string> }>();
     for (const art of ARTIGOS_CONVENCAO) {
       byArtigo.set(art.numero, { records: [], pago: 0, programas: new Set() });
@@ -489,7 +489,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
               <div>
                 <p className="font-medium text-foreground">Taxa de Execução:</p>
-                <code className="bg-background px-2 py-1 rounded block mt-1">% Execução = (Valor Pago / Dotação Autorizada) × 100</code>
+                <code className="bg-background px-2 py-1 rounded block mt-1">% Execução = (Σ Liquidado / Σ Dotação Autorizada) × 100, somente LOA com dotação positiva</code>
               </div>
               <div>
                 <p className="font-medium text-foreground">Deduplicação:</p>
@@ -1173,13 +1173,13 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
           </CardHeader>
           <CardContent>
             <div className="space-y-2.5">
-              {analysis.topPrograms.map(([programa, { pago, orgao, dot, liqLoa }], idx) => {
+              {analysis.topPrograms.map(([key, { programa, pago, orgao, dot, liqLoa }], idx) => {
                 const maxVal = analysis.topPrograms[0]?.[1].pago || 1;
                 const pct = (pago / maxVal) * 100;
                 const execRate = dot > 0 ? (liqLoa / dot * 100) : null;
                 const colors = ['hsl(var(--primary))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
                 return (
-                  <div key={programa} className="space-y-0.5">
+                  <div key={key} className="space-y-0.5">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <span className="text-xs font-bold text-muted-foreground w-5 text-right flex-shrink-0">{idx + 1}.</span>
@@ -1355,7 +1355,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
                 <div className="bg-chart-2/5 rounded p-4 border border-chart-2/20">
                   <p className="font-semibold text-foreground mb-2">🔍 Curiosidades e Destaques</p>
                   <ul className="list-disc pl-4 space-y-1.5">
-                    <li><strong>Melhor execução anual:</strong> {bestExecYear?.ano} com {bestExecPct.toFixed(1)}% de taxa de pagamento.</li>
+                    <li><strong>Melhor execução anual:</strong> {bestExecYear?.ano} com {bestExecPct.toFixed(1)}% de liquidação sobre a dotação autorizada elegível.</li>
                     {ciganos && <li><strong>Menor investimento:</strong> Povos Ciganos/Romani receberam apenas {formatCurrency(ciganos.pagoP1 + ciganos.pagoP2)} em todo o período — {ciganos.programas} programa(s).</li>}
                     {quilombola && <li><strong>Quilombolas:</strong> {quilombola.programas} programas ativos, totalizando {formatCurrency(quilombola.pagoP1 + quilombola.pagoP2)}. A regularização fundiária permanece sub-executada.</li>}
                     <li><strong>Reclassificação contábil (2023):</strong> Parte do aumento aparente pós-2023 é explicada pela formalização de recursos
@@ -1384,7 +1384,6 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
 
       {/* ═══ 13. CONCLUSÃO E VEREDITO TÉCNICO ═══ */}
       {(() => {
-        const allRecs = [...records, ...sesaiRecords];
         const artigosComDados = [...icerdData.chartData].sort((a, b) => b.pago - a.pago);
         const topArt = artigosComDados[0];
         const bottomArt = artigosComDados.length > 1 ? artigosComDados[artigosComDados.length - 1] : null;

@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { buildIndicadorCodigoMap } from '@/utils/indicadorCodigo';
 import { withTendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
-import { dedupOrcamento } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, dedupOrcamento } from '@/utils/orcamentoCanonico';
 
 
 export type ComplianceStatus = 'cumprido' | 'parcialmente_cumprido' | 'nao_cumprido' | 'retrocesso' | 'em_andamento';
@@ -571,11 +571,7 @@ export function useOrcamentoStats() {
         totalRegistrosBruto: totalBruto,
         registrosSuprimidos,
         valorSuprimido,
-        execucaoCanonica: (() => {
-          const dot = registrosLimpos.reduce((a, r) => a + (Number(r.dotacao_autorizada) || 0), 0);
-          const pg = registrosLimpos.reduce((a, r) => a + (Number(r.pago) || 0), 0);
-          return dot > 0 ? (pg / dot) * 100 : 0;
-        })(),
+        execucaoCanonica: calcularExecucaoOrcamentaria(registrosLimpos).percentual,
 
         sesaiTotal,
         sesaiRegistros: sesaiRegistros.length,

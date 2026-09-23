@@ -21,17 +21,17 @@ function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0];
   const [open, setOpen] = useState(false);
 
   const programas = useMemo(() => {
-    const map = new Map<string, { liquidado: number; pago: number; anos: Set<number>; orgao: string }>();
+    const map = new Map<string, { programa: string; liquidado: number; pago: number; anos: Set<number>; orgao: string }>();
     for (const r of records) {
-      const key = r.programa;
-      const existing = map.get(key) || { liquidado: 0, pago: 0, anos: new Set<number>(), orgao: r.orgao };
+      const key = `${r.orgao}|${r.programa}`;
+      const existing = map.get(key) || { programa: r.programa, liquidado: 0, pago: 0, anos: new Set<number>(), orgao: r.orgao };
       existing.liquidado += Number(r.liquidado) || 0;
       existing.pago += Number(r.pago) || 0;
       existing.anos.add(r.ano);
       map.set(key, existing);
     }
     return Array.from(map.entries())
-      .map(([prog, data]) => ({ prog, ...data }))
+      .map(([key, data]) => ({ key, prog: data.programa, ...data }))
       .sort((a, b) => b.liquidado - a.liquidado);
   }, [records]);
 
@@ -70,7 +70,7 @@ function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0];
         <CardContent className="pt-0 border-t">
           <div className="divide-y">
             {sample.map(p => (
-              <div key={p.prog} className="py-2 flex items-center justify-between gap-4">
+              <div key={p.key} className="py-2 flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium truncate">{p.prog}</p>
                   <p className="text-[10px] text-muted-foreground">{p.orgao} · {Array.from(p.anos).sort().join(', ')}</p>

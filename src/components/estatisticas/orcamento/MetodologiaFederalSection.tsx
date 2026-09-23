@@ -367,7 +367,7 @@ export function MetodologiaFederalSection() {
               <div className="flex items-center gap-2 text-left">
                 <Badge className="shrink-0 bg-amber-600 hover:bg-amber-700">Passo 7</Badge>
                 <span className="font-semibold">Complementação Manual (SIOP)</span>
-                <Badge variant="secondary" className="text-xs shrink-0">11 registros · ~R$ 67,5 mi</Badge>
+                <Badge variant="secondary" className="text-xs shrink-0">Registros identificados no SIOP</Badge>
               </div>
             </AccordionTrigger>
             <AccordionContent>
@@ -389,65 +389,13 @@ export function MetodologiaFederalSection() {
                   </ul>
                 </div>
 
-                <div>
-                  <p className="text-xs font-semibold mb-2">Ações incluídas (2020–2023)</p>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-12">Ano</TableHead>
-                        <TableHead className="w-20">Órgão</TableHead>
-                        <TableHead>Ação / PO</TableHead>
-                        <TableHead className="text-right w-24">Autorizada</TableHead>
-                        <TableHead className="text-right w-24">Pago</TableHead>
-                        <TableHead className="text-right w-16">Exec %</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[
-                        { ano: 2020, orgao: 'MDHC', acao: '21AR – PO 0001 (Ações Afirmativas)', aut: 2686538, pago: 2394915 },
-                        { ano: 2020, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 229432, pago: 62327 },
-                        { ano: 2021, orgao: 'ICMBio', acao: '20WM – PO 000D (ADPF 709)', aut: 89805, pago: 89805 },
-                        { ano: 2021, orgao: 'SESAI', acao: '21CJ – Saneamento Indígena', aut: 35500000, pago: 20588223 },
-                        { ano: 2021, orgao: 'MDHC', acao: '21AR – 3 POs raciais agregados', aut: 3410120, pago: 288145 },
-                        { ano: 2021, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 389749, pago: 66608 },
-                        { ano: 2022, orgao: 'SESAI', acao: '21CJ – Saneamento Indígena', aut: 46150000, pago: 32231085 },
-                        { ano: 2022, orgao: 'MDHC', acao: '21AR – 3 POs raciais agregados', aut: 5294732, pago: 3639445 },
-                        { ano: 2022, orgao: 'MDHC', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 261314, pago: 95711 },
-                        { ano: 2023, orgao: 'MIR', acao: '21AR – 3 POs raciais agregados', aut: 37777674, pago: 7825048 },
-                        { ano: 2023, orgao: 'MIR', acao: '21AT – PO 0007 (CNPIR/CNPCT)', aut: 305637, pago: 232465 },
-                      ].map((r, i) => (
-                        <TableRow key={i}>
-                          <TableCell className="text-xs font-mono">{r.ano}</TableCell>
-                          <TableCell><Badge variant="outline" className="text-[10px]">{r.orgao}</Badge></TableCell>
-                          <TableCell className="text-xs">{r.acao}</TableCell>
-                          <TableCell className="text-xs text-right font-mono">
-                            {new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(r.aut)}
-                          </TableCell>
-                          <TableCell className="text-xs text-right font-mono">
-                            {new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(r.pago)}
-                          </TableCell>
-                          <TableCell className="text-xs text-right font-mono">
-                            {r.aut > 0 ? `${((r.pago / r.aut) * 100).toFixed(0)}%` : '—'}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      <TableRow className="font-semibold bg-muted/50">
-                        <TableCell colSpan={3} className="text-xs">TOTAL (11 registros)</TableCell>
-                        <TableCell className="text-xs text-right font-mono">R$ 132,1 mi</TableCell>
-                        <TableCell className="text-xs text-right font-mono">R$ 67,5 mi</TableCell>
-                        <TableCell className="text-xs text-right font-mono">51%</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-
                 <div className="bg-primary/10 rounded-lg p-3 border border-primary/30 space-y-1">
-                  <p className="text-xs font-semibold">📊 Impacto na base</p>
+                  <p className="text-xs font-semibold">Tratamento na base canônica</p>
                   <ul className="list-disc pl-5 space-y-0.5 text-xs text-muted-foreground">
-                    <li><strong>+11 registros</strong> (261 total → base ampliada em 4,4%)</li>
-                    <li><strong>+R$ 67,5 mi em valor pago</strong> — representa 1,6% do total com SESAI e 1,6% do total sem SESAI</li>
-                    <li><strong>Valor qualitativo:</strong> Documenta ações que eram <em>invisíveis</em> às camadas automatizadas, revelando o paradoxo de políticas raciais lançadas sob ações genéricas de direitos humanos</li>
-                    <li><strong>Padrão identificado:</strong> Execução média de 51% — consistente com o represamento orçamentário do período 2020–2022</li>
+                    <li>Os registros identificados no SIOP só entram nos totais quando constam no inventário canônico.</li>
+                    <li>Dotação, liquidação e pagamento são lidos da base; nenhum valor financeiro fica fixado nesta metodologia.</li>
+                    <li>A execução é calculada por <strong>Σ Liquidado ÷ Σ Dotação Autorizada</strong>, apenas para registros LOA com dotação positiva.</li>
+                    <li>Registros extraorçamentários permanecem visíveis, mas não recebem taxa de execução.</li>
                   </ul>
                 </div>
               </div>
@@ -459,7 +407,7 @@ export function MetodologiaFederalSection() {
 
         <div className="bg-primary/10 rounded-lg p-4 border border-primary/30 mt-3">
           <p className="font-semibold text-foreground text-sm mb-1">📌 Diferença para a seção TESTE</p>
-          <p className="text-sm text-muted-foreground">Esta seção utiliza a metodologia de <strong>4 camadas + 2 passos complementares</strong> (programas temáticos expandidos + subfunção 422 + órgãos MIR/MPI + SESAI + dotação LOA + keyword-first), capturando ~R$ 9 bi pagos em 2023–2025. A seção <strong>TESTE</strong> utiliza exclusivamente os 18 códigos de programas da <em>Agenda Transversal PPA 2024–2027</em>, resultando em ~R$ 4,5 bi — uma cobertura deliberadamente mais restrita.</p>
+          <p className="text-sm text-muted-foreground">Esta seção documenta a metodologia de <strong>4 camadas + 3 passos complementares</strong>. Os quantitativos e valores válidos são sempre os exibidos nas demais subabas, calculados diretamente sobre a base canônica vigente.</p>
         </div>
       </section>
 
@@ -642,21 +590,17 @@ export function MetodologiaFederalSection() {
 
         {/* NOTA METODOLÓGICA: Pago vs Liquidado */}
         <div className="bg-primary/10 rounded-lg p-4 border border-primary/30 mb-3">
-          <p className="font-semibold text-foreground text-sm mb-2">📌 Nota Metodológica — Métrica Principal: "Pago" (vs. "Liquidado")</p>
+          <p className="font-semibold text-foreground text-sm mb-2">Nota Metodológica — Valores financeiros e taxa de execução</p>
           <p className="text-sm text-muted-foreground mb-2">
-            O sistema adota <strong>"Pago"</strong> como métrica principal de análise, comparada à <strong>"Dotação Inicial"</strong> (previsão na LOA). 
-            A escolha é metodológica:
+            O sistema apresenta dotação autorizada, empenhado, liquidado e pago como dimensões distintas. Para a <strong>taxa de execução</strong>, aplica a regra canônica:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+            <li><strong>Execução</strong> = Σ Liquidado ÷ Σ Dotação Autorizada, somente em registros orçamentários com dotação positiva.</li>
             <li><strong>Pago</strong> = transferência efetiva de recursos ao beneficiário final. Mede a <em>entrega real</em> da política pública.</li>
             <li><strong>Liquidado</strong> = verificação de que o bem/serviço foi entregue ao Estado. Mede a <em>obrigação confirmada</em>, mas não garante que o recurso chegou à ponta.</li>
-            <li><strong>Dotação Inicial</strong> = previsão na Lei Orçamentária Anual. Mede a <em>intenção legislativa</em>.</li>
+            <li><strong>Dotação Autorizada</strong> = dotação vigente após créditos adicionais; é o denominador da execução.</li>
+            <li><strong>Extraorçamentário</strong> = não possui dotação LOA comparável; por isso, sua execução é “não aplicável”.</li>
           </ul>
-          <p className="text-sm text-muted-foreground mt-2">
-            <strong>Justificativa:</strong> Para o objetivo do projeto — avaliar se as políticas raciais <em>evoluíram ou não</em> entre 2018 e 2025 — 
-            o "Pago" é o indicador mais rigoroso: identifica "orçamentos de papel" (dotação sem entrega) e detecta represamento de recursos 
-            que o "Liquidado" pode mascarar. É também o padrão do TCU e do Portal da Transparência.
-          </p>
           <p className="text-sm text-muted-foreground mt-1 italic">
             <strong>⚠️ Cautela para 2025:</strong> Dados parciais (até 6º bimestre). Valores de "Pago" podem estar defasados em relação ao "Liquidado" 
             por atrasos normais de processamento. A execução final pode diferir significativamente.

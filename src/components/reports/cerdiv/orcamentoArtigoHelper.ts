@@ -10,6 +10,7 @@
 
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { fmtBRL } from './chartUtils';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 function num(v: unknown): number {
   const p = Number(v);
@@ -30,10 +31,11 @@ export function renderOrcamentoArtigoBlock(
   if (dados.length === 0) return '';
 
   const dot = dados.reduce((s, o) => s + num(o.dotacao_autorizada), 0);
+  const liquidado = dados.reduce((s, o) => s + num(o.liquidado), 0);
   const pago = dados.reduce((s, o) => s + num(o.pago), 0);
-  if (dot <= 0 && pago <= 0) return '';
+  if (dot <= 0 && liquidado <= 0 && pago <= 0) return '';
 
-  const exec = dot > 0 ? (pago / dot * 100) : 0;
+  const exec = calcularExecucaoOrcamentaria(dados).percentual;
   const ctx = contexto ? `${contexto} ` : '';
-  return `<p>${paragrafo}. ${ctx}Foram rastreadas <strong>${dados.length} ações orçamentárias</strong> com vínculo ao Artigo ${artigo}, totalizando ${fmtBRL(dot)} de dotação autorizada e ${fmtBRL(pago)} pagos (execução de ${exec.toFixed(1)}%). Detalhamento na Base Orçamentária do sistema.</p>`;
+  return `<p>${paragrafo}. ${ctx}Foram rastreadas <strong>${dados.length} ações orçamentárias</strong> com vínculo ao Artigo ${artigo}, totalizando ${fmtBRL(dot)} de dotação autorizada, ${fmtBRL(liquidado)} liquidados e ${fmtBRL(pago)} pagos${exec !== null ? ` (execução de ${exec.toFixed(1)}%, por Liquidado ÷ Dotação Autorizada nas linhas LOA elegíveis)` : ''}. Detalhamento na Base Orçamentária do sistema.</p>`;
 }
