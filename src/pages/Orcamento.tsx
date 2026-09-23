@@ -1549,7 +1549,7 @@ export default function Orcamento() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 text-sm text-muted-foreground">
-                <MetodologiaFederalSection />
+                <MetodologiaFederalSection records={dadosOrcamentarios || []} />
               </CardContent>
             </Card>
           </div>

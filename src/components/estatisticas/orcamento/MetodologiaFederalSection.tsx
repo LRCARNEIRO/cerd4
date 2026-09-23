@@ -4,6 +4,32 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { BookOpen, Layers, Search, Building2, Heart, FileText, ShieldAlert, TrendingUp, Database as DatabaseIcon, Filter, Wrench } from 'lucide-react';
 import { ExtraorcamentarioSection } from './ExtraorcamentarioSection';
+import { isSesaiRegistro } from '@/utils/orcamentoCanonico';
+
+const fmtMi = (v: number) => v >= 1e9
+  ? `R$ ${(v / 1e9).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} bi`
+  : `R$ ${(v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} mi`;
+
+function useLinhaTempo(records: any[]) {
+  const fed = records.filter(r => (r.esfera || 'federal') === 'federal');
+  const semSesai = fed.filter(r => !isSesaiRegistro(r));
+  const soma = (rs: any[], k: string) => rs.reduce((s, r) => s + (Number(r[k]) || 0), 0);
+  const doAno = (rs: any[], a: number) => rs.filter(r => Number(r.ano) === a);
+  const pagoSem = (a: number) => soma(doAno(semSesai, a), 'pago');
+  const dotSem = (a: number) => soma(doAno(semSesai, a).filter(r => r.tipo_dotacao !== 'extraorcamentario'), 'dotacao_autorizada');
+  const faixa = (anos: number[]) => {
+    const v = anos.map(pagoSem);
+    const mn = Math.min(...v), mx = Math.max(...v);
+    return mn === mx ? fmtMi(mn) : `${fmtMi(mn)}–${fmtMi(mx)}`;
+  };
+  const isMpi = (r: any) => /MPI|POVOS IND/i.test(String(r.orgao || ''));
+  const pagoMpi = (a: number) => soma(doAno(fed.filter(isMpi), a), 'pago');
+  const d22 = dotSem(2022), d23 = dotSem(2023);
+  const varDot = d22 > 0 ? ((d23 - d22) / d22) * 100 : null;
+  const anos = [...new Set(semSesai.map(r => Number(r.ano)))].sort((a, b) => a - b);
+  const anoBi = anos.find(a => pagoSem(a) >= 1e9);
+  return { faixa, pagoSem, varDot, pagoMpi, anoBi, vazio: fed.length === 0 };
+}
 
 /* ── Dados das camadas e ações ── */
 
@@ -89,7 +115,8 @@ const EXCLUSOES_ACOES_MDHC = [
   { codigo: '21AU', nome: 'SINDH - Sistema Nacional de Direitos Humanos' },
 ];
 
-export function MetodologiaFederalSection() {
+export function MetodologiaFederalSection({ records = [] }: { records?: any[] }) {
+  const lt = useLinhaTempo(records);
   return (
     <>
       {/* 1. Estratégia de Coleta */}
@@ -610,19 +637,19 @@ export function MetodologiaFederalSection() {
         <div className="space-y-3">
           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
             <h5 className="font-semibold text-foreground">2018–2019 — Base Modesta</h5>
-            <p className="text-sm text-muted-foreground">SEPPIR ativa com R$ 5–20 mi/ano (sem SESAI). FUNAI operante com 5 ações finalísticas.</p>
+            <p className="text-sm text-muted-foreground">SEPPIR ativa; pago sem SESAI de {lt.faixa([2018, 2019])}/ano (base vigente). FUNAI operante com 5 ações finalísticas.</p>
           </div>
           <div className="bg-destructive/10 rounded-lg p-4 space-y-2 border border-destructive/30">
             <h5 className="font-semibold text-destructive">2020–2022 — Desmonte Institucional</h5>
-            <p className="text-sm text-muted-foreground">Programa 5034/MDHC inflou total com ações genéricas (filtrado). 2021–2022: queda para R$ 60–63 mi sem SESAI.</p>
+            <p className="text-sm text-muted-foreground">Programa 5034/MDHC inflou total com ações genéricas (filtrado). 2021–2022: pago sem SESAI de {lt.faixa([2021, 2022])}/ano.</p>
           </div>
           <div className="bg-green-500/10 rounded-lg p-4 space-y-2 border border-green-500/30">
             <h5 className="font-semibold text-green-700 dark:text-green-400">2023 — Reconstrução</h5>
-            <p className="text-sm text-muted-foreground">Criação do MIR. Sem SESAI, pago ~R$ 107 mi (+180% em dotação).</p>
+            <p className="text-sm text-muted-foreground">Criação do MIR. Sem SESAI, pago de {fmtMi(lt.pagoSem(2023))}{lt.varDot !== null ? ` (${lt.varDot >= 0 ? '+' : ''}${lt.varDot.toFixed(0)}% em dotação autorizada frente a 2022)` : ''}.</p>
           </div>
           <div className="bg-primary/10 rounded-lg p-4 space-y-2 border border-primary/30">
             <h5 className="font-semibold text-primary">2024–2025 — Novos Programas PPA + Agendas Transversais</h5>
-            <p className="text-sm text-muted-foreground">MPI: R$ 307 mi (2024) → R$ 1,4 bi (2025). MIR: 5802/5803/5804. <strong>14 programas das Agendas Transversais</strong> integrados à Camada 1. Pela primeira vez, políticas raciais sem SESAI superam R$ 1 bilhão.</p>
+            <p className="text-sm text-muted-foreground">MPI: pago de {fmtMi(lt.pagoMpi(2024))} (2024) → {fmtMi(lt.pagoMpi(2025))} (2025). MIR: 5802/5803/5804. <strong>14 programas das Agendas Transversais</strong> integrados à Camada 1. {lt.anoBi ? <>Em {lt.anoBi}, pela primeira vez, o pago das políticas raciais sem SESAI supera R$ 1 bilhão ({fmtMi(lt.pagoSem(lt.anoBi))}).</> : 'O pago sem SESAI não alcança R$ 1 bilhão em nenhum exercício da base vigente.'}</p>
           </div>
         </div>
       </section>
