@@ -871,8 +871,8 @@ export default function Orcamento() {
                     <div className="space-y-2">
                       <h4 className="font-semibold text-sm">Nota Explicativa — Critérios e Dupla Perspectiva (Federal)</h4>
                       <p className="text-xs text-muted-foreground">
-                        A métrica principal é <strong>"Pago"</strong> (transferência efetiva de recursos), comparada à <strong>"Dotação Inicial"</strong> (previsão na LOA).
-                        Os valores utilizam <strong>exclusivamente campos reais da API</strong> (<code className="bg-muted px-1 rounded">programa</code> e <code className="bg-muted px-1 rounded">descritivo</code>).
+                        Dotação autorizada, liquidado e pago são apresentados separadamente. A taxa de execução é <strong>Σ Liquidado ÷ Σ Dotação Autorizada</strong>, somente para registros LOA com dotação positiva; extraorçamentários não recebem taxa.
+                        Os valores são calculados diretamente sobre a base canônica vigente.
                       </p>
                       <p className="text-xs text-muted-foreground">
                         <strong>⚠️ Assimetria temporal:</strong> P1 = <strong>5 anos</strong> (2018–2022), P2 = <strong>3 anos</strong> (2023–2025).

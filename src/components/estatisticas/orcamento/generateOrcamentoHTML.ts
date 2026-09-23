@@ -257,7 +257,9 @@ export function generateMetodologiaHTML(): string {
 
       <h2>Métricas</h2>
       <div class="highlight-box">
-        <p><strong>Métrica principal: "Pago"</strong> — mede a transferência efetiva de recursos do Tesouro para os beneficiários finais.</p>
+        <p><strong>Taxa de execução:</strong> Σ Liquidado ÷ Σ Dotação Autorizada, somente para registros LOA com dotação positiva.</p>
+        <p><strong>Extraorçamentário:</strong> não possui dotação LOA comparável e, portanto, não recebe taxa de execução.</p>
+        <p><strong>Pago</strong> — mede a transferência efetiva de recursos do Tesouro para os beneficiários finais e é apresentado separadamente.</p>
         <p><strong>Dotação Autorizada</strong> — previsão na LOA, incluindo créditos adicionais.</p>
         <p><strong>Liquidado</strong> — obrigação assumida pelo Estado.</p>
       </div>
