@@ -131,7 +131,7 @@ export function generateProtocoloOrcamentarioHTML(data: ProtocoloOrcamentarioDat
 
   const anos = [...new Set(rows.map((r) => Number(r.ano)).filter(Boolean))].sort((a, b) => a - b);
   const orgaos = new Set(rows.map((r) => r.orgao)).size;
-  const programas = new Set(rows.map((r) => r.programa)).size;
+  const programas = new Set(rows.map((r) => `${r.orgao}|${r.programa}`)).size;
   const esferas = new Set(rows.map((r) => r.esfera)).size;
 
   // Orçamento simbólico: dotação relevante e execução residual
@@ -369,7 +369,7 @@ ${anoExtra ? `<h3>8.1 Distribuição anual do extraorçamentário</h3><table><tr
 <table>
 <tr><th>Sinal</th><th>Registros</th><th>Autorizado envolvido</th><th>Liquidado</th><th>Pago</th></tr>
 <tr><td>Orçamento simbólico</td><td class="num">${fmtInt(simbolicos.length)}</td><td class="num">${fmtBRL(soma(simbolicos, 'dotacao_autorizada'))}</td><td class="num">${fmtBRL(soma(simbolicos, 'liquidado'))}</td><td class="num">${fmtBRL(soma(simbolicos, 'pago'))}</td></tr>
-<tr><td>Pagamento sem dotação (extraorçamentário por natureza)</td><td class="num">${fmtInt(semDotacao.length)}</td><td class="num">—</td><td class="num">${fmtBRL(soma(semDotacao, 'pago'))}</td></tr>
+<tr><td>Pagamento sem dotação (extraorçamentário por natureza)</td><td class="num">${fmtInt(semDotacao.length)}</td><td class="num">—</td><td class="num">—</td><td class="num">${fmtBRL(soma(semDotacao, 'pago'))}</td></tr>
 </table>
 ${simbolicos.length ? `<table><tr><th>Programa / ação</th><th>Órgão</th><th>Ano</th><th>Autorizado</th><th>Liquidado</th><th>Pago</th><th>Execução</th></tr>${simbolicos
     .slice()
