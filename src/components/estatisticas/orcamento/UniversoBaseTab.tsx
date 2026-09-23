@@ -64,8 +64,13 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
     const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
     const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
     const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
-    const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
-    return { totalRegistros, totalProgramas: programas.size, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, totalDotacao, totalPago, execucao };
+    const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+    // Metodologia canônica: Execução = ΣLiquidado / ΣDotação, apenas sobre registros com dotação (orçamentários)
+    const comDot = filtered.filter(r => (Number(r.dotacao_autorizada) || 0) > 0);
+    const liqComDot = comDot.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
+    const execucao = totalDotacao > 0 ? (liqComDot / totalDotacao * 100) : 0;
+    const pagoExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
+    return { totalRegistros, totalProgramas: programas.size, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, totalDotacao, totalPago, totalLiquidado, execucao, pagoExtra };
   }, [filtered]);
 
   // Panorama by group
@@ -93,11 +98,14 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   // Evolução por ano
   const evolucaoPorAno = useMemo(() => {
-    const map: Record<number, number> = {};
+    const map: Record<number, { dotacao: number; liquidado: number; pago: number }> = {};
     for (const r of filtered) {
-      map[r.ano] = (map[r.ano] || 0) + (Number(r.pago) || 0);
+      const m = (map[r.ano] ||= { dotacao: 0, liquidado: 0, pago: 0 });
+      m.dotacao += Number(r.dotacao_autorizada) || 0;
+      m.liquidado += Number(r.liquidado) || 0;
+      m.pago += Number(r.pago) || 0;
     }
-    return Object.entries(map).map(([ano, pago]) => ({ ano: Number(ano), pago })).sort((a, b) => a.ano - b.ano);
+    return Object.entries(map).map(([ano, v]) => ({ ano: Number(ano), ...v })).sort((a, b) => a.ano - b.ano);
   }, [filtered]);
 
   // Top 10
@@ -111,15 +119,19 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   // Program table
   const programaRows = useMemo(() => {
-    const map = new Map<string, { programa: string; orgao: string; tipo: string; anos: Set<number>; dotacao: number; pago: number; registros: number }>();
+    const map = new Map<string, { programa: string; orgao: string; tipo: string; anos: Set<number>; dotacao: number; liquidado: number; liqComDot: number; pago: number; registros: number }>();
     for (const r of filtered) {
       const key = r.programa;
       if (!map.has(key)) {
-        map.set(key, { programa: r.programa, orgao: r.orgao, tipo: r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.', anos: new Set(), dotacao: 0, pago: 0, registros: 0 });
+        map.set(key, { programa: r.programa, orgao: r.orgao, tipo: r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.', anos: new Set(), dotacao: 0, liquidado: 0, liqComDot: 0, pago: 0, registros: 0 });
       }
       const entry = map.get(key)!;
       entry.anos.add(r.ano);
-      entry.dotacao += Number(r.dotacao_autorizada) || 0;
+      const d = Number(r.dotacao_autorizada) || 0;
+      entry.dotacao += d;
+      entry.liquidado += Number(r.liquidado) || 0;
+      if (d > 0) entry.liqComDot += Number(r.liquidado) || 0;
+      if (r.tipo_dotacao !== 'extraorcamentario') entry.tipo = 'Orç.';
       entry.pago += Number(r.pago) || 0;
       entry.registros++;
     }
@@ -166,7 +178,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
       </div>
 
       {/* Financial summary */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="border-l-4 border-l-primary">
           <CardContent className="pt-4 pb-3">
             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
@@ -175,8 +187,15 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         </Card>
         <Card className="border-l-4 border-l-success">
           <CardContent className="pt-4 pb-3">
+            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Liquidado</p>
+            <p className="text-xl font-bold text-foreground mt-1">{formatCompact(summary.totalLiquidado)}</p>
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-success">
+          <CardContent className="pt-4 pb-3">
             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Valor Pago</p>
             <p className="text-xl font-bold text-foreground mt-1">{formatCompact(summary.totalPago)}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">inclui {formatCompact(summary.pagoExtra)} extraorçamentário</p>
           </CardContent>
         </Card>
         <Card className="border-l-4 border-l-chart-3">
@@ -185,6 +204,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
             <p className={`text-xl font-bold mt-1 ${summary.execucao >= 80 ? 'text-success' : summary.execucao >= 50 ? 'text-warning' : 'text-destructive'}`}>
               {summary.execucao.toFixed(1)}%
             </p>
+            <p className="text-[10px] text-muted-foreground mt-1">Σ Liquidado ÷ Σ Dotação (só orçamentários)</p>
           </CardContent>
         </Card>
       </div>
@@ -259,7 +279,9 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="ano" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatCompact(v)} />
-                    <Tooltip formatter={(value: number) => [formatFull(value), 'Pago']} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                    <Tooltip formatter={(value: number, name: string) => [formatFull(value), name]} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                    <Line type="monotone" dataKey="dotacao" name="Dotação" stroke="hsl(var(--chart-3))" strokeWidth={2} />
+                    <Line type="monotone" dataKey="liquidado" name="Liquidado" stroke="hsl(var(--chart-2))" strokeWidth={2} />
                     <Line type="monotone" dataKey="pago" name="Pago" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ fill: 'hsl(var(--primary))' }} />
                   </LineChart>
                 </ResponsiveContainer>
@@ -269,7 +291,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         )}
         {top10.length > 0 && (
           <Card>
-            <CardHeader><CardTitle className="text-base">Top 10 Programas por Execução</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">Top 10 Programas por Valor Pago</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-2">
                 {top10.map((item, idx) => {
@@ -315,7 +337,9 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                   <TableHead className="text-xs text-center">Anos</TableHead>
                   <TableHead className="text-xs text-center">Registros</TableHead>
                   <TableHead className="text-xs text-right">Dotação</TableHead>
+                  <TableHead className="text-xs text-right">Liquidado</TableHead>
                   <TableHead className="text-xs text-right">Pago</TableHead>
+                  <TableHead className="text-xs text-center">Execução</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -330,8 +354,10 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                       {row.anos.size === 1 ? Array.from(row.anos)[0] : `${Math.min(...row.anos)}–${Math.max(...row.anos)}`}
                     </TableCell>
                     <TableCell className="text-xs text-center">{row.registros}</TableCell>
-                    <TableCell className="text-xs text-right font-mono">{formatCompact(row.dotacao)}</TableCell>
+                    <TableCell className="text-xs text-right font-mono">{row.dotacao > 0 ? formatCompact(row.dotacao) : <span className="text-muted-foreground" title="Extraorçamentário: sem dotação LOA">—</span>}</TableCell>
+                    <TableCell className="text-xs text-right font-mono">{formatCompact(row.liquidado)}</TableCell>
                     <TableCell className="text-xs text-right font-mono font-medium">{formatCompact(row.pago)}</TableCell>
+                    <ExecCell dot={row.dotacao} liq={row.liqComDot} />
                   </TableRow>
                 ))}
               </TableBody>
@@ -367,7 +393,6 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                 {filtered.sort((a, b) => a.ano - b.ano || a.programa.localeCompare(b.programa)).map((r, i) => {
                   const dot = Number(r.dotacao_autorizada) || 0;
                   const pg = Number(r.pago) || 0;
-                  const exec = dot > 0 ? (pg / dot * 100) : 0;
                   return (
                     <TableRow key={r.id || i}>
                       <TableCell className="text-xs whitespace-normal break-words">{r.programa}</TableCell>
@@ -385,13 +410,11 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                           {r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs text-right font-mono">{formatCompact(dot)}</TableCell>
+                      <TableCell className="text-xs text-right font-mono">{dot > 0 ? formatCompact(dot) : <span className="text-muted-foreground" title="Sem dotação LOA">—</span>}</TableCell>
                       <TableCell className="text-xs text-right font-mono">{formatCompact(Number(r.empenhado) || 0)}</TableCell>
                       <TableCell className="text-xs text-right font-mono">{formatCompact(Number(r.liquidado) || 0)}</TableCell>
                       <TableCell className="text-xs text-right font-mono font-medium">{formatCompact(pg)}</TableCell>
-                      <TableCell className={`text-xs text-center font-bold ${exec >= 80 ? 'text-success' : exec >= 50 ? 'text-warning' : 'text-destructive'}`}>
-                        {exec.toFixed(1)}%
-                      </TableCell>
+                      <ExecCell dot={dot} liq={Number(r.liquidado) || 0} />
                     </TableRow>
                   );
                 })}
@@ -401,5 +424,15 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function ExecCell({ dot, liq }: { dot: number; liq: number }) {
+  if (!(dot > 0)) return <TableCell className="text-xs text-center text-muted-foreground" title="Sem dotação LOA (extraorçamentário) — execução não se aplica">n/a</TableCell>;
+  const exec = liq / dot * 100;
+  return (
+    <TableCell className={`text-xs text-center font-bold ${exec >= 80 ? 'text-success' : exec >= 50 ? 'text-warning' : 'text-destructive'}`}>
+      {exec.toFixed(1)}%
+    </TableCell>
   );
 }
