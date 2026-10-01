@@ -58,7 +58,7 @@ async function processYear(
   // Step 1: Get existing records
   const { data: existingRecords, error: qErr } = await supabase
     .from("dados_orcamentarios")
-    .select("id, programa, pago")
+    .select("id, programa, pago, liquidado, tipo_dotacao")
     .eq("ano", ano)
     .eq("esfera", "federal");
 
@@ -198,9 +198,9 @@ async function processYear(
       if (dot.dotInicial > 0) updateData.dotacao_inicial = Math.round(dot.dotInicial * share * 100) / 100;
       if (dot.dotAtualizada > 0) updateData.dotacao_autorizada = Math.round(dot.dotAtualizada * share * 100) / 100;
 
-      const dotRef = updateData.dotacao_autorizada || updateData.dotacao_inicial || 0;
-      if (dotRef > 0 && rec.pago) {
-        updateData.percentual_execucao = Math.min(Math.round((rec.pago / dotRef) * 10000) / 100, 99999.99);
+      const dotRef = updateData.dotacao_autorizada || 0;
+      if (dotRef > 0 && rec.tipo_dotacao !== 'extraorcamentario') {
+        updateData.percentual_execucao = Math.min(Math.round(((Number(rec.liquidado) || 0) / dotRef) * 10000) / 100, 99999.99);
       }
 
       if (Object.keys(updateData).length === 0) continue;

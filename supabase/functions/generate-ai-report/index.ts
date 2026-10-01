@@ -407,7 +407,7 @@ ESPECÍFICO PARA ANÁLISE ORÇAMENTÁRIA:
 - Compare períodos: 2018-2022 (desmonte) vs 2023-2025 (reconstrução)
 - Taxas de execução por programa e esfera (federal, estadual, municipal)
 - CRUZAMENTO CENTRAL: investimento orçamentário × resultados dos indicadores
-- Destaque: MIR com ~99% de execução em 2024/2025 como evidência de fortalecimento
+- Destaque: execução do MIR em 2024/2025 (Σ liquidado ÷ Σ dotação autorizada) somente conforme os dados fornecidos acima; não invente percentuais
 - Analise se aumentos orçamentários se traduziram em melhoria dos indicadores
 - Inclua fragilidade subnacional (MUNIC/ESTADIC: poucos municípios com orçamento racial)`;
   }

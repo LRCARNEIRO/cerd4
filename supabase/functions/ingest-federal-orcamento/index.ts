@@ -371,7 +371,7 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number, camada: stri
   const grupoFocal = classificarGrupoFocal(item, orgaoFinal);
   const eixoTematico = classificarEixoTematico(grupoFocal);
   const dotacaoRef = dotacaoAutorizada || dotacaoInicial;
-  const percentual = dotacaoRef && pago ? Math.round((pago / dotacaoRef) * 10000) / 100 : null;
+  const percentual = dotacaoAutorizada ? Math.round(((liquidado || 0) / dotacaoAutorizada) * 10000) / 100 : null;
 
   return {
     programa: programa.substring(0, 250),
@@ -444,7 +444,7 @@ function mergeFinancials(existing: any, incoming: any): any {
   }
   // Recalculate percentual_execucao
   const dotRef = merged.dotacao_autorizada || merged.dotacao_inicial;
-  merged.percentual_execucao = dotRef && merged.pago ? Math.round((merged.pago / dotRef) * 10000) / 100 : null;
+  merged.percentual_execucao = merged.dotacao_autorizada && merged.tipo_dotacao !== 'extraorcamentario' ? Math.round(((merged.liquidado || 0) / merged.dotacao_autorizada) * 10000) / 100 : null;
   return merged;
 }
 
@@ -761,8 +761,8 @@ Deno.serve(async (req) => {
             
             if (updated) {
               const dotRef = record.dotacao_autorizada || record.dotacao_inicial;
-              record.percentual_execucao = dotRef && record.pago 
-                ? Math.round((record.pago / dotRef) * 10000) / 100 
+              record.percentual_execucao = record.dotacao_autorizada && record.tipo_dotacao !== 'extraorcamentario'
+                ? Math.round(((record.liquidado || 0) / record.dotacao_autorizada) * 10000) / 100 
                 : null;
               registrosMap.set(regKey, record);
               movLiquidaComplementados++;

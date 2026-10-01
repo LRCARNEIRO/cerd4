@@ -261,11 +261,11 @@ Deno.serve(async (req) => {
         if (updates.dotacao_autorizada && existing[0]) {
           const { data: fullRec } = await supabase
             .from("dados_orcamentarios")
-            .select("pago")
+            .select("liquidado,tipo_dotacao")
             .eq("id", existing[0].id)
             .single();
-          if (fullRec?.pago && updates.dotacao_autorizada) {
-            updates.percentual_execucao = Math.round((fullRec.pago / updates.dotacao_autorizada) * 10000) / 100;
+          if (updates.dotacao_autorizada && fullRec?.tipo_dotacao !== 'extraorcamentario') {
+            updates.percentual_execucao = Math.round(((fullRec?.liquidado || 0) / updates.dotacao_autorizada) * 10000) / 100;
           }
         }
 
@@ -294,8 +294,8 @@ Deno.serve(async (req) => {
           empenhado: row.empenhado,
           liquidado: row.liquidado,
           pago: row.pago,
-          percentual_execucao: row.dotacao_autorizada && row.pago
-            ? Math.round((row.pago / row.dotacao_autorizada) * 10000) / 100
+          percentual_execucao: row.dotacao_autorizada
+            ? Math.round(((row.liquidado || 0) / row.dotacao_autorizada) * 10000) / 100
             : null,
           fonte_dados: "CSV SIOP",
           url_fonte: "https://www1.siop.planejamento.gov.br/QvAJAXZfc/opendoc.htm?document=IAS%2FExecucao_Orcamentaria.qvw&host=QVS%40paborc04&anonymous=true",

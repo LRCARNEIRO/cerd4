@@ -205,10 +205,10 @@ async function enrichViaCSV(
     if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
     if (dot.dotAtualizada > 0) updateData.dotacao_autorizada = dot.dotAtualizada;
 
-    const pago = Number(rec.pago) || 0;
-    const dotRef = dot.dotAtualizada || dot.dotInicial;
-    if (dotRef > 0 && pago > 0) {
-      updateData.percentual_execucao = Math.min(Math.round((pago / dotRef) * 10000) / 100, 99999.99);
+    const liq = Number(rec.liquidado) || 0;
+    const dotRef = dot.dotAtualizada;
+    if (dotRef > 0 && rec.tipo_dotacao !== 'extraorcamentario') {
+      updateData.percentual_execucao = Math.min(Math.round((liq / dotRef) * 10000) / 100, 99999.99);
     }
     if (Object.keys(updateData).length === 0) { remaining.push(rec); continue; }
 
@@ -339,10 +339,10 @@ async function enrichViaAPI(
       if (dot.dotInicial > 0) updateData.dotacao_inicial = dot.dotInicial;
       if (dot.dotAtualizada > 0) updateData.dotacao_autorizada = dot.dotAtualizada;
 
-      const pago = Number(rec.pago) || 0;
-      const dotRef = dot.dotAtualizada || dot.dotInicial;
-      if (dotRef > 0 && pago > 0) {
-        updateData.percentual_execucao = Math.min(Math.round((pago / dotRef) * 10000) / 100, 99999.99);
+      const liq = Number(rec.liquidado) || 0;
+      const dotRef = dot.dotAtualizada;
+      if (dotRef > 0 && rec.tipo_dotacao !== 'extraorcamentario') {
+        updateData.percentual_execucao = Math.min(Math.round((liq / dotRef) * 10000) / 100, 99999.99);
       }
       if (Object.keys(updateData).length === 0) continue;
 
@@ -427,10 +427,10 @@ async function enrichViaAPI(
           if (dotI > 0) updateData.dotacao_inicial = dotI;
           if (dotA > 0) updateData.dotacao_autorizada = dotA;
 
-          const pago = Number(rec.pago) || 0;
-          const dotRef = dotA || dotI;
-          if (dotRef > 0 && pago > 0) {
-            updateData.percentual_execucao = Math.min(Math.round((pago / dotRef) * 10000) / 100, 99999.99);
+          const liq = Number(rec.liquidado) || 0;
+          const dotRef = dotA;
+          if (dotRef > 0 && rec.tipo_dotacao !== 'extraorcamentario') {
+            updateData.percentual_execucao = Math.min(Math.round((liq / dotRef) * 10000) / 100, 99999.99);
           }
           if (Object.keys(updateData).length === 0) { noMatch++; continue; }
 
@@ -486,7 +486,7 @@ Deno.serve(async (req) => {
     // Fetch records missing dotação
     const { data: records, error: qErr } = await supabase
       .from("dados_orcamentarios")
-      .select("id, programa, pago")
+      .select("id, programa, pago, liquidado, tipo_dotacao")
       .eq("esfera", "federal")
       .eq("ano", ano)
       .is("dotacao_inicial", null)

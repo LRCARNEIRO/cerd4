@@ -223,7 +223,7 @@ function bindingToRecord(b: any, ano: number, camada: string, fallbackOrgao: str
 
   const orgaoSigla = resolveOrgaoSigla(codOrgao) || fallbackOrgao;
   const dotacaoAutorizada = loaMaisCredito || loa || ploa;
-  const percentual = dotacaoAutorizada && pago ? Math.round((pago / dotacaoAutorizada) * 10000) / 100 : null;
+  const percentual = dotacaoAutorizada ? Math.round(((liquidado || 0) / dotacaoAutorizada) * 10000) / 100 : null;
 
   return {
     programa: programa.substring(0, 250),
