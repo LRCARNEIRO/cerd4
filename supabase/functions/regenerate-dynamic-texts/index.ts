@@ -192,7 +192,7 @@ Deno.serve(async (req: Request) => {
     // Fetch all data (excluding common_core)
     const [indRes, orcRes, normRes, respostasRes, lacunasRes] = await Promise.all([
       adminClient.from('indicadores_interseccionais').select('nome,categoria,subcategoria,dados,fonte,tendencia,artigos_convencao').neq('categoria', 'common_core'),
-      adminClient.from('dados_orcamentarios').select('programa,orgao,ano,pago,dotacao_autorizada,percentual_execucao,eixo_tematico,esfera,artigos_convencao'),
+      adminClient.from('dados_orcamentarios').select('programa,orgao,ano,pago,liquidado,tipo_dotacao,dotacao_autorizada,percentual_execucao,eixo_tematico,esfera,artigos_convencao'),
       adminClient.from('documentos_normativos').select('titulo,categoria,status,artigos_convencao'),
       adminClient.from('respostas_lacunas_cerd_iii').select('*'),
       adminClient.from('lacunas_identificadas').select('*'),
