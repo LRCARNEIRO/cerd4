@@ -162,9 +162,7 @@ export function generateRecomendacaoAuditHTML({
     const liq = Number(meta.liquidado ?? o.liquidado ?? 0);
     const pago = Number(meta.pago ?? o.pago ?? 0);
     const exec = Number(meta.percentual_execucao);
-    const execStr = Number.isFinite(exec) && exec > 0
-      ? `${exec.toFixed(1)}%`
-      : (dot > 0 ? `${(pago / dot * 100).toFixed(1)}%` : '—');
+    const execStr = (dot > 0 && ((meta as any).tipo_dotacao ?? (o as any).tipo_dotacao) !== 'extraorcamentario' ? `${(liq / dot * 100).toFixed(1)}%` : '—');
     return `<tr>
       <td style="text-align:center">${o.ano ?? '—'}</td>
       <td>${o.programa || '—'}</td>

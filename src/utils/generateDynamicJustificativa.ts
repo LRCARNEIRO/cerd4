@@ -12,6 +12,7 @@ import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
  */
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 interface IndicadorRow {
   nome: string;
@@ -250,10 +251,10 @@ export function generateDynamicJustificativa(
     const latestOrcs = orcs.filter(o => o.ano === latestYear);
     const totalPago = latestOrcs.reduce((s, o) => s + (o.pago || 0), 0);
     const totalAutorizado = latestOrcs.reduce((s, o) => s + (o.dotacao_autorizada || 0), 0);
-    const execucao = totalAutorizado > 0 ? (totalPago / totalAutorizado) * 100 : null;
+    const execucao = calcularExecucaoOrcamentaria(latestOrcs as any).percentual;
 
     const orcText = totalPago > 0
-      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução ${execucao ? pct(execucao) : '—'}`
+      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução (liquidado ÷ dotação) ${execucao != null ? pct(execucao) : '—'}`
       : `${latestOrcs.length} ação(ões) orçamentária(s) em ${latestYear}`;
 
     parts.push(`Orçamento (${orcs.length} ações vinculadas): ${orcText}`);

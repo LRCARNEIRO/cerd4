@@ -170,7 +170,7 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
             {diagnostic!.linkedOrcamento.slice(0, 10).map((orc, i) => {
               const dotacao = Number(orc.dotacao_autorizada) || 0;
               const pago = Number(orc.pago) || 0;
-              const exec = dotacao > 0 ? ((pago / dotacao) * 100) : 0;
+              const exec = dotacao > 0 && (orc as any).tipo_dotacao !== 'extraorcamentario' ? ((Number((orc as any).liquidado) || 0) / dotacao * 100) : 0;
               const execColor = exec < 5 ? 'text-destructive' : exec < 50 ? 'text-warning' : 'text-success';
 
               return (

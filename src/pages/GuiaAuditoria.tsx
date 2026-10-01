@@ -648,9 +648,9 @@ export default function GuiaAuditoria() {
 
               <div className="bg-background rounded border p-3 text-xs">
                 <p className="font-semibold text-foreground mb-1">💡 Dica: fórmula de percentual de execução</p>
-                <code className="text-primary">% Execução = (Pago ÷ Dotação Atualizada) × 100</code>
+                <code className="text-primary">% Execução = (Σ Liquidado ÷ Σ Dotação Autorizada) × 100</code>
                 <p className="text-muted-foreground mt-1">
-                  Se a dotação atualizada for zero, usa-se a dotação inicial como referência.
+                  Somente linhas orçamentárias (LOA) com dotação autorizada positiva; extraorçamentários não recebem taxa.
                 </p>
               </div>
             </div>
@@ -741,7 +741,7 @@ export default function GuiaAuditoria() {
                   <tr>
                     <td className="p-2 font-mono font-semibold text-foreground">percentual_execucao</td>
                     <td className="p-2">Calculado internamente</td>
-                    <td className="p-2"><code className="text-primary">pago ÷ dotacao_autorizada × 100</code></td>
+                    <td className="p-2"><code className="text-primary">Σ liquidado ÷ Σ dotacao_autorizada × 100 (LOA)</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -752,11 +752,11 @@ export default function GuiaAuditoria() {
               <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-xs text-muted-foreground">
                 <p className="font-semibold text-sm text-foreground">📐 Fórmula de % Execução</p>
                 <div className="bg-background rounded border p-3 text-center">
-                  <code className="text-primary text-sm font-bold">% Execução = (Pago ÷ Dotação Autorizada) × 100</code>
+                  <code className="text-primary text-sm font-bold">% Execução = (Σ Liquidado ÷ Σ Dotação Autorizada) × 100</code>
                 </div>
                 <ul className="list-disc list-inside space-y-1 mt-2">
-                  <li>Se <code>dotacao_autorizada</code> = 0 ou nulo → usa <code>dotacao_inicial</code> como fallback</li>
-                  <li>Se ambas = 0 → percentual fica <strong>nulo</strong> (não divide por zero)</li>
+                  <li>Extraorçamentários e linhas sem <code>dotacao_autorizada</code> positiva → sem taxa (excluídos do denominador)</li>
+                  <li>Pago é exibido separadamente como valor desembolsado, não como numerador da execução</li>
                 </ul>
               </div>
 

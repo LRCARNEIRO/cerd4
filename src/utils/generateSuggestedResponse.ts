@@ -2,6 +2,7 @@ import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
 import type { LacunaDiagnostic } from '@/hooks/useDiagnosticSensor';
 import { tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import type { LacunaIdentificada } from '@/hooks/useLacunasData';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 /**
  * Generates a dynamic CERD IV suggested response based on cross-referenced
@@ -77,7 +78,8 @@ export function generateSuggestedResponse(
   if (linkedOrcamento.length > 0) {
     const totalDotacao = linkedOrcamento.reduce((s, o) => s + (Number(o.dotacao_autorizada) || 0), 0);
     const totalPago = linkedOrcamento.reduce((s, o) => s + (Number(o.pago) || 0), 0);
-    const execGlobal = totalDotacao > 0 ? ((totalPago / totalDotacao) * 100).toFixed(1) : '0';
+    const execCanon = calcularExecucaoOrcamentaria(linkedOrcamento as any);
+    const execGlobal = execCanon.percentual != null ? execCanon.percentual.toFixed(1) : '—';
 
     const simbolicos = linkedOrcamento.filter(o => isOrcamentoSimbolico(o as any));
 

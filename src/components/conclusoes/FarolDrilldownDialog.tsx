@@ -115,7 +115,7 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
       const exec = Number(o.percentual_execucao);
       const execStr = Number.isFinite(exec) && exec > 0
         ? `${exec.toFixed(1)}%`
-        : (dot > 0 ? `${(pago / dot * 100).toFixed(1)}%` : '—');
+        : (dot > 0 && (o as any).tipo_dotacao !== 'extraorcamentario' ? `${(Number((o as any).liquidado || 0) / dot * 100).toFixed(1)}%` : '—');
       return `
       <tr><td style="text-align:center">${o.ano ?? '—'}</td><td>${o.programa}</td><td>${o.orgao}</td><td style="text-align:right">R$ ${(dot / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${(Number(o.liquidado || 0) / 1e6).toFixed(2)}M</td><td style="text-align:right">R$ ${(pago / 1e6).toFixed(2)}M</td><td style="text-align:center">${execStr}</td></tr>`;
     }).join('');
@@ -264,9 +264,7 @@ export function FarolDrilldownDialog({ open, onOpenChange, artigoNumero, artigoT
                     const dot = Number(o.dotacao_autorizada || 0);
                     const pago = Number(o.pago || 0);
                     const exec = Number(o.percentual_execucao);
-                    const execStr = Number.isFinite(exec) && exec > 0
-                      ? `${exec.toFixed(1)}%`
-                      : (dot > 0 ? `${(pago / dot * 100).toFixed(1)}%` : '—');
+                    const execStr = (dot > 0 && (o as any).tipo_dotacao !== 'extraorcamentario' ? `${(Number((o as any).liquidado || 0) / dot * 100).toFixed(1)}%` : '—');
                     return (
                       <TableRow key={o.id}>
                         <TableCell className="text-xs text-center">{o.ano ?? '—'}</TableCell>

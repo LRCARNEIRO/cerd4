@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const __isLoa = (r: any) => r.tipo_dotacao !== 'extraorcamentario' && parseFloat(r.dotacao_autorizada || 0) > 0;
+const __dotL = (r: any) => __isLoa(r) ? parseFloat(r.dotacao_autorizada || 0) : 0;
+const __liqL = (r: any) => __isLoa(r) ? parseFloat(r.liquidado || 0) : 0;
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -272,6 +276,8 @@ serve(async (req) => {
         dotacao: recs.reduce((s: number, r: any) => s + parseFloat(r.dotacao_autorizada || 0), 0),
         pago: recs.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0),
         liquidado: recs.reduce((s: number, r: any) => s + parseFloat(r.liquidado || 0), 0),
+        dotLoa: recs.reduce((s: number, r: any) => s + __dotL(r), 0),
+        liqLoa: recs.reduce((s: number, r: any) => s + __liqL(r), 0),
       };
     });
 
@@ -294,9 +300,10 @@ serve(async (req) => {
     all.forEach(r => {
       const arts = inferArtigosOrcamento(r);
       arts.forEach((a: string) => {
-        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, programas: new Set(), registros: 0 };
+        if (!byArtigo[a]) byArtigo[a] = { pago: 0, dotacao: 0, dotLoa: 0, liqLoa: 0, programas: new Set(), registros: 0 } as any;
         byArtigo[a].pago += parseFloat(r.pago || 0);
         byArtigo[a].dotacao += parseFloat(r.dotacao_autorizada || 0);
+        (byArtigo[a] as any).dotLoa += __dotL(r); (byArtigo[a] as any).liqLoa += __liqL(r);
         byArtigo[a].programas.add(r.programa);
         byArtigo[a].registros++;
       });
@@ -310,7 +317,8 @@ serve(async (req) => {
     const orgaos = new Set(all.map(r => r.orgao));
     const totalDot = all.reduce((s: number, r: any) => s + parseFloat(r.dotacao_autorizada || 0), 0);
     const totalPago = all.reduce((s: number, r: any) => s + parseFloat(r.pago || 0), 0);
-    const execGeral = totalDot > 0 ? (totalPago / totalDot * 100).toFixed(1) : '—';
+    const __dotLoaAll = all.reduce((s: number, r: any) => s + __dotL(r), 0);
+    const execGeral = __dotLoaAll > 0 ? (all.reduce((s: number, r: any) => s + __liqL(r), 0) / __dotLoaAll * 100).toFixed(1) : '—';
 
     const dataGeracao = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -592,7 +600,7 @@ tr:nth-child(even){background:#f8fafc;}
     <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:12px;padding:20px;text-align:center;">
       <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#1e40af;font-weight:600;margin-bottom:4px;">📊 Execução Geral</div>
       <div style="font-size:1.6rem;font-weight:900;color:#1e40af;">${execGeral}%</div>
-      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">Pago ÷ Dotação</div>
+      <div style="font-size:.7rem;color:#64748b;margin-top:4px;">Σ Liquidado ÷ Σ Dotação Autorizada (LOA)</div>
     </div>
     <div style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:2px solid #94a3b8;border-radius:12px;padding:20px;text-align:center;">
       <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#475569;font-weight:600;margin-bottom:4px;">📁 Registros</div>
@@ -642,7 +650,7 @@ tr:nth-child(even){background:#f8fafc;}
     <p style="font-size:.9rem;margin-bottom:8px;">O volume total de recursos pagos (<strong>${fmtC(totalPago)}</strong>) representa <strong>${execGeral}%</strong> da dotação autorizada (<strong>${fmtC(totalDot)}</strong>).</p>
     <p style="font-size:.9rem;margin-bottom:8px;">A variação entre P1 e P2 (<strong>${sAll.varPago >= 0 ? '+' : ''}${sAll.varPago.toFixed(1)}%</strong> no pago) deve ser contextualizada: P1 compreende <strong>5 anos</strong> de execução enquanto P2 abrange <strong>3 anos</strong> — portanto, a ${sAll.varPago > 0 ? 'expansão é proporcionalmente ainda mais expressiva quando anualizada' : 'contração reflete uma reversão real na priorização orçamentária'}.</p>
     <div style="background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;padding:14px;margin-top:8px;">
-      <p style="font-size:.85rem;margin:0;color:#92400e;"><strong>⚠️ Ressalva Metodológica — Comparação Dotação × Pago:</strong> Este relatório <strong>não apresenta comparativo direto entre dotação autorizada e valor pago</strong> como métrica isolada de desempenho. No P1 (2018–2022), houve significativo volume de pagamentos <strong>extraorçamentários</strong> (${fmtC(sExtra.pagoP1)}) — royalties, compensações e indenizações — que se reduziram no P2 (${fmtC(sExtra.pagoP2)}, variação de <strong>${sExtra.varPago >= 0 ? '+' : ''}${sExtra.varPago.toFixed(1)}%</strong>). A <strong>reclassificação contábil de 2023</strong> (formalização de recursos antes executados como extraorçamentários em ações LOA diretas, exigência TCU/CGU) ampliou a dotação sem correspondente aumento proporcional no pago orçamentário. Portanto, uma taxa de execução (pago/dotação) aparentemente baixa no P2 não reflete necessariamente desinvestimento, mas sim uma mudança na estrutura contábil do financiamento público. A análise de eficácia deste relatório concentra-se nas <strong>3 perspectivas comparativas (Total, Sem SESAI, Apenas SESAI)</strong> e no <strong>IEAT-Racial</strong>.</p>
+      <p style="font-size:.85rem;margin:0;color:#92400e;"><strong>⚠️ Ressalva Metodológica — Comparação Dotação × Pago:</strong> Este relatório <strong>não apresenta comparativo direto entre dotação autorizada e valor pago</strong> como métrica isolada de desempenho. No P1 (2018–2022), houve significativo volume de pagamentos <strong>extraorçamentários</strong> (${fmtC(sExtra.pagoP1)}) — royalties, compensações e indenizações — que se reduziram no P2 (${fmtC(sExtra.pagoP2)}, variação de <strong>${sExtra.varPago >= 0 ? '+' : ''}${sExtra.varPago.toFixed(1)}%</strong>). A <strong>reclassificação contábil de 2023</strong> (formalização de recursos antes executados como extraorçamentários em ações LOA diretas, exigência TCU/CGU) ampliou a dotação sem correspondente aumento proporcional no pago orçamentário. Portanto, uma relação pago/dotação aparentemente baixa no P2 não reflete necessariamente desinvestimento, mas sim uma mudança na estrutura contábil do financiamento público. A análise de eficácia deste relatório concentra-se nas <strong>3 perspectivas comparativas (Total, Sem SESAI, Apenas SESAI)</strong> e no <strong>IEAT-Racial</strong>.</p>
     </div>
   </div>
 </div>
@@ -674,7 +682,7 @@ tr:nth-child(even){background:#f8fafc;}
       <thead><tr><th>Ano</th><th>Dotação Autorizada</th><th>Liquidado</th><th>Pago</th><th>Execução</th><th>Var. Anual</th></tr></thead>
       <tbody>
       ${evolucao.map((e, i) => {
-        const exec = e.dotacao > 0 ? (e.pago / e.dotacao * 100).toFixed(1) : '—';
+        const exec = e.dotLoa > 0 ? (e.liqLoa / e.dotLoa * 100).toFixed(1) : '—';
         const prev = i > 0 ? evolucao[i-1].pago : 0;
         const varAnual = prev > 0 ? ((e.pago - prev) / prev * 100).toFixed(1) : '—';
         return `<tr${e.ano === 2023 ? ' style="border-top:3px solid #2563eb"' : ''}>
@@ -907,7 +915,7 @@ tr:nth-child(even){background:#f8fafc;}
       <thead><tr><th>Artigo</th><th>Título</th><th>Programas</th><th>Registros</th><th>Dotação Total</th><th>Pago Total</th><th>Execução</th></tr></thead>
       <tbody>
       ${sortedArtigos.map(([art, data]) => {
-        const exec = data.dotacao > 0 ? (data.pago / data.dotacao * 100).toFixed(1) : '—';
+        const exec = (data as any).dotLoa > 0 ? ((data as any).liqLoa / (data as any).dotLoa * 100).toFixed(1) : '—';
         return '<tr><td><strong>Art. ' + art + '</strong></td><td>' + (artigoTitulos[art] || art) + '</td><td style="text-align:center">' + data.programas.size + '</td><td style="text-align:center">' + data.registros + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.dotacao) + '</td><td style="text-align:right;font-family:monospace">' + fmtFull(data.pago) + '</td><td>' + exec + '%</td></tr>';
       }).join('')}
       </tbody>
@@ -1610,7 +1618,7 @@ tr:nth-child(even){background:#f8fafc;}
       ${all.sort((a: any, b: any) => a.programa.localeCompare(b.programa) || a.ano - b.ano).map((r: any) => {
         const dot = parseFloat(r.dotacao_autorizada || 0);
         const pago = parseFloat(r.pago || 0);
-        const exec = dot > 0 ? (pago / dot * 100).toFixed(0) : '—';
+        const exec = __isLoa(r) ? (parseFloat(r.liquidado || 0) / dot * 100).toFixed(0) : '—';
         return `<tr>
           <td style="font-size:.8rem">${r.programa}</td>
           <td style="font-size:.8rem">${r.orgao}</td>
@@ -1656,8 +1664,9 @@ tr:nth-child(even){background:#f8fafc;}
         if (existing) {
           existing.pago += parseFloat(r.pago || 0);
           existing.dotacao += parseFloat(r.dotacao_autorizada || 0);
+          (existing as any).dotLoa = ((existing as any).dotLoa || 0) + __dotL(r); (existing as any).liqLoa = ((existing as any).liqLoa || 0) + __liqL(r);
         } else {
-          artigoProgDetails[a].push({ prog: r.programa, orgao: r.orgao, pago: parseFloat(r.pago || 0), dotacao: parseFloat(r.dotacao_autorizada || 0) });
+          artigoProgDetails[a].push({ prog: r.programa, orgao: r.orgao, pago: parseFloat(r.pago || 0), dotacao: parseFloat(r.dotacao_autorizada || 0), dotLoa: __dotL(r), liqLoa: __liqL(r) } as any);
         }
       });
     });
@@ -1671,7 +1680,7 @@ tr:nth-child(even){background:#f8fafc;}
         '<div class="table-header"><h3>' + (artigoTitulosFull[art] || art) + '</h3><p>' + progs.length + ' programas · Total pago: ' + fmtC(totalPago) + '</p></div>' +
         '<table><thead><tr><th>Programa</th><th>Órgão</th><th>Dotação</th><th>Pago</th><th>Execução</th></tr></thead><tbody>' +
         progs.map(p => {
-          const exec = p.dotacao > 0 ? (p.pago / p.dotacao * 100).toFixed(0) : '—';
+          const exec = (p as any).dotLoa > 0 ? ((p as any).liqLoa / (p as any).dotLoa * 100).toFixed(0) : '—';
           return '<tr><td style="font-size:.8rem">' + p.prog + '</td><td>' + p.orgao + '</td><td style="text-align:right;font-family:monospace;font-size:9pt">' + fmtFull(p.dotacao) + '</td><td style="text-align:right;font-family:monospace;font-size:9pt"><strong>' + fmtFull(p.pago) + '</strong></td><td>' + exec + '%</td></tr>';
         }).join('') +
         '</tbody></table></div>';
@@ -1821,7 +1830,7 @@ tr:nth-child(even){background:#f8fafc;}
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
       <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">2. Foi apenas planejado ou efetivamente executado?</p>
       <p style="margin:0;line-height:1.7;opacity:.92;">
-        Execução geral de <strong>${execGeral}%</strong> (pago/dotação). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}${extraOrc.length > 0 && Math.abs(sAll.varDot - sAll.varPago) > 15 ? ' <em style="opacity:.85">A reclassificação contábil de 2023 e a redução do extraorçamentário explicam parcialmente a aparente queda na taxa de execução.</em>' : ''}
+        Execução geral de <strong>${execGeral}%</strong> (Σ liquidado ÷ Σ dotação autorizada, apenas LOA). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}${extraOrc.length > 0 && Math.abs(sAll.varDot - sAll.varPago) > 15 ? ' <em style="opacity:.85">A reclassificação contábil de 2023 e a redução do extraorçamentário explicam parcialmente a aparente queda na taxa de execução.</em>' : ''}
       </p>
     </div>
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;">

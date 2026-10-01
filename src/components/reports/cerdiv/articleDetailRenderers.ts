@@ -8,6 +8,7 @@
 import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { fmtBRL, fmtNum, svgBarChart, svgLineChart } from './chartUtils';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 function num(v: unknown): number {
   const parsed = Number(v);
@@ -99,7 +100,7 @@ export function renderFullBudgetTable(orcDados: DadoOrcamentario[]): string {
   const ordered = [...orcDados].sort((a, b) => num(b.pago) - num(a.pago));
   const totalDotacao = ordered.reduce((s, o) => s + num(o.dotacao_autorizada), 0);
   const totalPago = ordered.reduce((s, o) => s + num(o.pago), 0);
-  const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
+  const execucao = calcularExecucaoOrcamentaria(ordered as any).percentual ?? 0;
 
   const rows = ordered.map(row => `<tr>
     <td style="font-size:8.5pt">${row.programa}</td>
@@ -326,7 +327,7 @@ export function renderKeyInsights(
 ): string {
   const totalPago = orcStats?.totalPago || 0;
   const totalDot = orcStats?.totalDotacao || 0;
-  const execucao = totalDot > 0 ? (totalPago / totalDot * 100) : 0;
+  const execucao = typeof orcStats?.execucaoCanonica === 'number' ? orcStats.execucaoCanonica : (totalDot > 0 && orcStats?.totalLiquidado != null ? orcStats.totalLiquidado / totalDot * 100 : 0);
   
   const favCount = indicadores.filter(i => evaluateIndicadorDetailed(i).result === 'favoravel').length;
   const desfavCount = indicadores.filter(i => evaluateIndicadorDetailed(i).result === 'desfavoravel').length;
@@ -347,7 +348,7 @@ export function renderKeyInsights(
 
       <div class="budget-box">
         <h4>💰 Perspectiva 2 — Orçamento: O que o Estado investiu</h4>
-        <p>O investimento total rastreável em igualdade racial somou <strong>${fmtBRL(totalDot)}</strong> em dotação autorizada, com <strong>${fmtBRL(totalPago)} efetivamente pago</strong> (execução: ${execucao.toFixed(1)}%). A variação entre os períodos 2018-2022 e 2023-2025 mostra ${orcStats?.variacaoPago > 0 ? 'aumento' : 'redução'} de ${Math.abs(orcStats?.variacaoPago || 0).toFixed(1)}% nos valores pagos. A SESAI (Saúde Indígena) responde pelo maior volume singular. <strong>Conclusão:</strong> houve recomposição orçamentária pós-2023, mas insuficiente para a escala da desigualdade.</p>
+        <p>O investimento total rastreável em igualdade racial somou <strong>${fmtBRL(totalDot)}</strong> em dotação autorizada, com <strong>${fmtBRL(totalPago)} efetivamente pago</strong> (execução — liquidado ÷ dotação: ${execucao.toFixed(1)}%). A variação entre os períodos 2018-2022 e 2023-2025 mostra ${orcStats?.variacaoPago > 0 ? 'aumento' : 'redução'} de ${Math.abs(orcStats?.variacaoPago || 0).toFixed(1)}% nos valores pagos. A SESAI (Saúde Indígena) responde pelo maior volume singular. <strong>Conclusão:</strong> houve recomposição orçamentária pós-2023, mas insuficiente para a escala da desigualdade.</p>
       </div>
 
       <div class="normative-box">
