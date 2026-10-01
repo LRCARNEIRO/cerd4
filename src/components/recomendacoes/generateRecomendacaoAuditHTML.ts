@@ -138,7 +138,7 @@ export function generateRecomendacaoAuditHTML({
       <td style="text-align:right">${celulaRecente}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores vinculados.</td></tr>`;
+  }).join('');
 
   // ── Normativos ─────────────────────────────────────────────────
   const normRows = linkedNorm.map(n => {
@@ -152,7 +152,7 @@ export function generateRecomendacaoAuditHTML({
       ? `<a href="${meta.url_origem}" target="_blank" rel="noopener" style="color:#0f766e;text-decoration:underline">abrir original</a>`
       : '<span style="color:#94a3b8">sem URL</span>';
     return `<tr><td style="text-align:center">${ano}</td><td>${orgao}</td><td style="text-transform:capitalize">${tipo}</td><td>${titulo}</td><td style="text-align:center">${fonte}</td></tr>`;
-  }).join('') || `<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos vinculados.</td></tr>`;
+  }).join('');
 
   // ── Orçamento ──────────────────────────────────────────────────
   const orcRows = linkedOrc.map(o => {
@@ -173,7 +173,7 @@ export function generateRecomendacaoAuditHTML({
       <td style="text-align:right">R$ ${(pago / 1e6).toFixed(2)}M</td>
       <td style="text-align:center;font-weight:600">${execStr}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias vinculadas.</td></tr>`;
+  }).join('');
 
   const artigos = (recomendacao.artigos_convencao || []).join(', ') || '—';
   const textoOriginal = (recomendacao.texto_original_onu || recomendacao.descricao_lacuna || '').trim();
@@ -214,7 +214,7 @@ ${ei ? `<div class="summary">
 <p><strong>Componente estatístico:</strong> (indicadores que melhoraram + indicadores estáveis) ÷ total de indicadores com tendência mensurável × 100. “Estável” representa manutenção do resultado e recebe 1; somente a piora é penalizada com 0.</p>
 <p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100.</p>
 
-<h2>📊 Indicadores (${linkedInd.length})</h2>
+${linkedInd.length ? `<h2>📊 Indicadores (${linkedInd.length})</h2>
 <p style="font-size:10px;color:#64748b;margin:4px 0">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
 <table>
   <thead><tr>
@@ -222,15 +222,15 @@ ${ei ? `<div class="summary">
     <th style="text-align:center">Ano Recente</th><th style="text-align:right">Valor Recente</th><th style="text-align:center">Resultado</th>
   </tr></thead>
   <tbody>${indRows}</tbody>
-</table>
+</table>` : ''}
 
-<h2>⚖️ Normativos (${linkedNorm.length})</h2>
+${linkedNorm.length ? `<h2>⚖️ Normativos (${linkedNorm.length})</h2>
 <table>
   <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
-</table>
+</table>` : ''}
 
-<h2>💰 Orçamento (${linkedOrc.length} ações)</h2>
+${linkedOrc.length ? `<h2>💰 Orçamento (${linkedOrc.length} ações)</h2>
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
@@ -238,7 +238,7 @@ ${ei ? `<div class="summary">
     <th style="text-align:right">Pago</th><th style="text-align:center">Execução (%)</th>
   </tr></thead>
   <tbody>${orcRows}</tbody>
-</table>
+</table>` : ''}
 
 <div class="footer">Sistema de Subsídios CERD IV — Evidências espelhadas do gerenciador de recomendações (SSoT)</div>
 </body></html>`;
