@@ -32,7 +32,7 @@ import {
   classePorRaca as hcClasse,
 } from '@/components/estatisticas/StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
-import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, resumoMirCanonico } from '@/utils/orcamentoCanonico';
 
 function generateConsolidatedHTML(data: {
   indicadores: any[];
@@ -617,7 +617,7 @@ function generateConsolidatedHTML(data: {
       O cruzamento exaustivo dos ${fiosCondutores.length} fios condutores revela um quadro de avanço parcial e assimétrico.
       O Estado brasileiro avançou no plano normativo e institucional — recriação do MIR (2023), Lei 14.532/2023 (racismo crime inafiançável),
       Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial
-      (dotação R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025, execução em recuperação de 21,2% → 75,6%) e ingresso por cotas raciais
+      ${(() => { const m = resumoMirCanonico(orcamentarios); return m ? `(dotação R$ ${m.dotIni} mi em ${m.ini} → R$ ${m.dotFim} mi em ${m.fim}, execução — liquidado ÷ dotação autorizada — de ${m.execIni}% → ${m.execFim}%)` : ''; })()} e ingresso por cotas raciais
       em universidades federais (14.422 em 2012 → 55.371 em 2022, +284% — IND-211).
       Houve ganhos em educação (superior negro: ${edu2018.superiorNegroPercent}% → ${edu2024.superiorNegroPercent}%),
       emprego (desemprego negro: ${eco2018.desempregoNegro}% → ${eco2024.desempregoNegro}%) e renda nominal.
@@ -647,7 +647,7 @@ function generateConsolidatedHTML(data: {
     <div style="padding:8px;background:#fef3c7;border-radius:6px;">
       <p style="font-size:10px;font-weight:700;color:#92400e;">⚠ PARADOXO CENTRAL</p>
       <ul style="font-size:9px;color:#78350f;margin:0;padding-left:12px;">
-        <li>Leis avançam, implementação não</li><li>Orçamento cresce, execução do órgão ainda em recuperação (75,6%)</li><li>Legislação estadual quase universal (25/27 UFs), fundo próprio em 2 UFs</li><li>Renda sobe, desigualdade persiste</li>
+        <li>Leis avançam, implementação não</li><li>Orçamento cresce, execução do órgão ainda em recuperação (${resumoMirCanonico(orcamentarios)?.execFim ?? '—'}%)</li><li>Legislação estadual quase universal (25/27 UFs), fundo próprio em 2 UFs</li><li>Renda sobe, desigualdade persiste</li>
       </ul>
     </div>
   </div>
