@@ -1711,7 +1711,7 @@ tr:nth-child(even){background:#f8fafc;}
         <tr><td><span style="color:#7f1d1d;font-weight:700">⛔ Retrocesso</span></td><td style="text-align:center;font-weight:700">&lt; 15</td><td>Nenhuma evidência e indicadores com tendência de piora comprovada</td></tr>
       </tbody>
     </table>
-    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Escalas de cobertura — Indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento: execução média × 1.3, penalização para dotações simbólicas (&lt;5%).</p>
+    <p style="font-size:.8rem;color:#64748b;margin-top:8px;">Escalas de cobertura — Indicadores: 1=40, 2=55, 3=70, 5+=85, 8+=100. Normativos: 1=40, 2=60, 3=80, 5+=100. Orçamento: execução média × 1.3, penalização para dotações simbólicas (LOA, dotação &gt; R$ 1 mi, liquidado &lt; 10%).</p>
   </div>
 
   <div class="table-container" style="margin-bottom:20px;">
@@ -1830,7 +1830,7 @@ tr:nth-child(even){background:#f8fafc;}
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;margin-bottom:12px;">
       <p style="font-weight:700;color:#93c5fd;margin:0 0 6px;">2. Foi apenas planejado ou efetivamente executado?</p>
       <p style="margin:0;line-height:1.7;opacity:.92;">
-        Execução geral de <strong>${execGeral}%</strong> (Σ liquidado ÷ Σ dotação autorizada, apenas LOA). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (dotação > R$ 100k, pago = R$ 0).' : ''}${extraOrc.length > 0 && Math.abs(sAll.varDot - sAll.varPago) > 15 ? ' <em style="opacity:.85">A reclassificação contábil de 2023 e a redução do extraorçamentário explicam parcialmente a aparente queda na taxa de execução.</em>' : ''}
+        Execução geral de <strong>${execGeral}%</strong> (Σ liquidado ÷ Σ dotação autorizada, apenas LOA). ${parseFloat(execGeral) >= 70 ? 'A maior parte foi efetivamente transferida — não se tratou apenas de planejamento.' : parseFloat(execGeral) >= 50 ? 'Execução parcial, com margem de recursos não pagos.' : 'Parcela significativa não executada.'}${simbolicos.length > 0 ? ' <strong>' + simbolicos.length + ' dotações simbólicas</strong> (LOA, dotação > R$ 1 mi, liquidado < 10%).' : ''}${extraOrc.length > 0 && Math.abs(sAll.varDot - sAll.varPago) > 15 ? ' <em style="opacity:.85">A reclassificação contábil de 2023 e a redução do extraorçamentário explicam parcialmente a aparente queda na taxa de execução.</em>' : ''}
       </p>
     </div>
     <div style="background:rgba(255,255,255,.1);padding:16px;border-radius:8px;">
