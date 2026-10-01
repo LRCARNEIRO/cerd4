@@ -294,7 +294,7 @@ Deno.serve(async (req) => {
           empenhado: row.empenhado,
           liquidado: row.liquidado,
           pago: row.pago,
-          percentual_execucao: row.dotacao_autorizada && row.pago
+          percentual_execucao: row.dotacao_autorizada
             ? Math.round(((row.liquidado || 0) / row.dotacao_autorizada) * 10000) / 100
             : null,
           fonte_dados: "CSV SIOP",

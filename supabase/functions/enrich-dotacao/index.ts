@@ -486,7 +486,7 @@ Deno.serve(async (req) => {
     // Fetch records missing dotação
     const { data: records, error: qErr } = await supabase
       .from("dados_orcamentarios")
-      .select("id, programa, pago")
+      .select("id, programa, pago, liquidado, tipo_dotacao")
       .eq("esfera", "federal")
       .eq("ano", ano)
       .is("dotacao_inicial", null)
