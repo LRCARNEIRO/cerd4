@@ -46,6 +46,7 @@ import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { LastroEvidencias } from '@/components/shared/LastroEvidencias';
 
 import { supabase } from '@/integrations/supabase/client';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 import { useQuery } from '@tanstack/react-query';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -58,6 +59,23 @@ export default function Conclusoes() {
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados, lastUpdated,
   } = useAnalyticalInsights();
   const { dadosDemograficos, segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais } = useMirrorData();
+  const { data: mirRows } = useQuery({
+    queryKey: ['conclusoes-mir-exec'],
+    queryFn: async () => {
+      const { data } = await supabase.from('dados_orcamentarios').select('ano,orgao,tipo_dotacao,dotacao_autorizada,liquidado,pago').ilike('orgao', '%MIR%');
+      return data || [];
+    },
+  });
+  const mirExec = useMemo(() => {
+    const rows = (mirRows || []) as any[];
+    const anos = [...new Set(rows.filter(r => r.tipo_dotacao !== 'extraorcamentario' && Number(r.dotacao_autorizada) > 0).map(r => r.ano))].sort();
+    if (anos.length === 0) return null;
+    const ini = anos[0], fim = anos[anos.length - 1];
+    const calc = (a: number) => calcularExecucaoOrcamentaria(rows.filter(r => r.ano === a));
+    const ci = calc(ini), cf = calc(fim);
+    const f1 = (n: number | null) => n == null ? '—' : n.toFixed(1).replace('.', ',');
+    return { ini, fim, dotIni: f1(ci.dotacao / 1e6), dotFim: f1(cf.dotacao / 1e6), execIni: f1(ci.percentual), execFim: f1(cf.percentual) };
+  }, [mirRows]);
 
   const { data: documentosNormativos } = useQuery({
     queryKey: ['documentos_normativos_aderencia'],
@@ -547,7 +565,7 @@ export default function Conclusoes() {
                       O cruzamento exaustivo dos fios condutores revela um quadro de <strong>avanço parcial e assimétrico</strong>. 
                       O Estado brasileiro avançou no plano <strong>normativo, institucional e orçamentário</strong> — recriação do MIR (2023), Lei 14.532/2023 
                       (racismo crime inafiançável), Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial 
-                      (dotação de R$ 38,1 mi em 2023 para R$ 135,9 mi em 2025, com execução em recuperação de 21,2% para 75,6%) 
+                      {mirExec ? `(dotação de R$ ${mirExec.dotIni} mi em ${mirExec.ini} para R$ ${mirExec.dotFim} mi em ${mirExec.fim}, com execução — liquidado ÷ dotação autorizada — de ${mirExec.execIni}% para ${mirExec.execFim}%)` : ''} 
                       e variação de {orcStats?.variacao >= 0 ? `+${orcStats?.variacao?.toFixed(0)}` : orcStats?.variacao?.toFixed(0)}% no orçamento entre períodos. 
                       Houve também ganhos em <strong>educação</strong> (superior negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}%), 
                       no <strong>ingresso por cotas raciais em universidades federais</strong> (14.422 em 2012 → 55.371 em 2022, +284%), 
@@ -597,7 +615,7 @@ export default function Conclusoes() {
                         <p className="text-xs font-bold text-warning mb-1">⚠ PARADOXO CENTRAL</p>
                         <ul className="text-xs text-muted-foreground space-y-1">
                           <li>• Leis avançam, implementação não</li>
-                          <li>• Orçamento cresce, execução ainda em recuperação (75,6%) <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} prefixo="" className="inline-flex ml-1" /></li>
+                          <li>• Orçamento cresce, execução ainda em recuperação ({mirExec ? `${mirExec.execFim}%` : '—'}) <LastroEvidencias indicadores={indicadores} orcamento={['MIR']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Legislação estadual quase universal, fundo próprio em 2 UFs <LastroEvidencias indicadores={indicadores} codigos={['IND-179']} prefixo="" className="inline-flex ml-1" /></li>
                           <li>• Renda sobe, desigualdade persiste</li>
                           <li>• Dados melhoram, lacunas permanecem</li>
