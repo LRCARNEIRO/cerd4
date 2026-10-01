@@ -32,12 +32,12 @@ function toCSV(rows: RawRow[]): string {
   const head = [
     'ano', 'codigo_programa', 'nome_programa', 'codigo_acao', 'nome_acao',
     'funcao', 'subfuncao', 'dotacao_inicial', 'dotacao_atualizada',
-    'empenhado', 'liquidado', 'pago', 'execucao_%', 'fonte_dotacao', 'coletado_em',
+    'empenhado', 'liquidado', 'pago', 'execucao_%_liquidado_sobre_dotacao_atualizada', 'fonte_dotacao', 'coletado_em',
   ];
   const esc = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const body = rows.map(r => {
-    const dot = r.dotacao_atualizada || r.dotacao_inicial || 0;
-    const exec = dot > 0 && r.pago ? ((r.pago / dot) * 100).toFixed(2) : '';
+    const dot = r.dotacao_atualizada || 0;
+    const exec = dot > 0 ? (((r.liquidado || 0) / dot) * 100).toFixed(2) : '';
     return [
       r.ano, r.codigo_programa, r.nome_programa, r.codigo_acao, r.nome_acao,
       r.nome_funcao, r.nome_subfuncao, r.dotacao_inicial ?? '', r.dotacao_atualizada ?? '',
