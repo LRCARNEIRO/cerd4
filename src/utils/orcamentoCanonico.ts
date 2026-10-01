@@ -151,3 +151,15 @@ export const LEGENDA_DEDUP =
   'Ranking de fontes: (1) API Portal da Transparência — ação específica, (2) Programa Temático PPA, ' +
   '(3) captura por órgão/keyword e SIOP, (4) subfunção 422, (5) Agenda Transversal. ' +
   'Registros duplicados permanecem visíveis na listagem, mas não são somados.';
+
+/** Resumo dinâmico do órgão de igualdade racial (MIR) a partir de 2023: dotação e execução canônica. */
+export function resumoMirCanonico(rows: any[] | null | undefined) {
+  const mir = (rows || []).filter(r => /MIR/i.test(String(r.orgao || '')) && Number(r.ano) >= 2023);
+  const anos = [...new Set(mir.filter(r => r.tipo_dotacao !== 'extraorcamentario' && Number(r.dotacao_autorizada) > 0).map(r => Number(r.ano)))].sort();
+  if (anos.length === 0) return null;
+  const ini = anos[0], fim = anos[anos.length - 1];
+  const ci = calcularExecucaoOrcamentaria(mir.filter(r => Number(r.ano) === ini));
+  const cf = calcularExecucaoOrcamentaria(mir.filter(r => Number(r.ano) === fim));
+  const f1 = (n: number | null) => n == null ? '—' : n.toFixed(1).replace('.', ',');
+  return { ini, fim, dotIni: f1(ci.dotacao / 1e6), dotFim: f1(cf.dotacao / 1e6), execIni: f1(ci.percentual), execFim: f1(cf.percentual) };
+}

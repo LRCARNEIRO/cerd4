@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { resumoMirCanonico } from '@/utils/orcamentoCanonico';
 import { tendenciaLabel, tendenciaPadrao } from '@/utils/tendenciaPadronizada';
 import { 
   useLacunasIdentificadas, 
@@ -558,7 +559,7 @@ function gerarFiosCondutores(
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
       relevancia: 'alta',
-      comparativo2018: `O orçamento do órgão de igualdade racial caiu 99,6% entre 2018 e 2020 (R$ 32,3 mi → R$ 0,115 mi), sem registros orçamentários próprios em 2021-2022; a recuperação vem com a recriação do MIR (R$ 38,1 mi em 2023 → R$ 135,9 mi em 2025). Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`,
+      comparativo2018: `O orçamento do órgão de igualdade racial caiu 99,6% entre 2018 e 2020 (R$ 32,3 mi → R$ 0,115 mi), sem registros orçamentários próprios em 2021-2022; a recuperação vem com a recriação do MIR${(() => { const m = resumoMirCanonico(orcDados); return m ? ` (R$ ${m.dotIni} mi em ${m.ini} → R$ ${m.dotFim} mi em ${m.fim})` : ''; })()}. Nota: valores referem-se apenas a programas com componente institucional explícito de igualdade racial (MIR, FUNAI, INCRA, Palmares etc.), excluindo programas transversais.`,
       orcamentoLastro: ['MIR', 'SEPPIR'],
     });
 
@@ -912,7 +913,7 @@ function gerarFiosEmergentes(
         id: 'emergente-execucao-recorde',
         titulo: 'Expansão Orçamentária sem Precedentes (valores)',
         tipo: 'avanco',
-        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). O salto do período é de VALORES — a dotação do órgão de igualdade racial vai de R$ 38,1 mi (2023) a R$ 135,9 mi (2025) —, enquanto a taxa de execução do próprio órgão ainda está em recuperação (21,2% em 2023 → 75,6% em 2025). O ganho é de escala orçamentária, não de desempenho de execução.`,
+        argumento: `${altaExecucao.length} registros orçamentários do período 2023-2025 apresentam execução ≥90%, abrangendo ${programas.length} programa(s). O salto do período é de VALORES — ${(() => { const m = resumoMirCanonico(orcDados); return m ? `a dotação do órgão de igualdade racial vai de R$ ${m.dotIni} mi (${m.ini}) a R$ ${m.dotFim} mi (${m.fim}) —, enquanto a taxa de execução do próprio órgão (liquidado ÷ dotação autorizada) está em recuperação (${m.execIni}% em ${m.ini} → ${m.execFim}% em ${m.fim})` : 'a dotação do órgão de igualdade racial cresce —'; })()}. O ganho é de escala orçamentária, não de desempenho de execução.`,
 
         evidencias: altaExecucao.slice(0, 6).map(d => ({
           texto: `${d.programa} (${d.ano}): ${d.percentual_execucao?.toFixed(0)}% execução`,
