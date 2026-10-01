@@ -31,7 +31,7 @@ export function BaixarTudoButton() {
     queryFn: async () => (await supabase.from('documentos_normativos').select('*')).data || [],
   });
   const overrides = useEvidenceOverridesReadOnly();
-  const { diagnosticMap, isReady } = useDiagnosticSensor(recomendacoes, overrides);
+  const { diagnosticMap, isReady, rawIndicadores, rawOrcamento, rawNormativos, artigoEvidencia } = useDiagnosticSensor(recomendacoes, overrides) as any;
   const carregando = l1 || l2 || l3 || l4 || l5 || !isReady;
 
   const gerar = async () => {
@@ -46,6 +46,23 @@ export function BaixarTudoButton() {
         import('@/components/reports/generateProtocoloOrcamentarioHTML'),
         import('@/components/reports/generateProtocoloGovernancaHTML'),
       ]);
+      const [indTab, guards, tab, recAudit, artAudit, shared, artConv] = await Promise.all([
+        import('@/components/estatisticas/IndicadoresDbTab'),
+        import('@/utils/indicatorEvidenceGuards'),
+        import('@/utils/generateTabReportHTML'),
+        import('@/components/recomendacoes/generateRecomendacaoAuditHTML'),
+        import('@/components/artigos/generateArtigoAuditHTML'),
+        import('@/components/recomendacoes/recomendacaoExportShared'),
+        import('@/utils/artigosConvencao'),
+      ]);
+      const lookups = shared.buildExportLookups(rawIndicadores || indicadores || [], rawOrcamento || orc || [], rawNormativos || normativos || []);
+      const esc = (v: any) => String(v ?? '—').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
+      const normativaHTML = () => {
+        const docs = [...((normativos || []) as any[])].sort((a, b) => String(a.categoria).localeCompare(String(b.categoria)) || String(a.titulo).localeCompare(String(b.titulo)));
+        const linhas = docs.map(d => `<tr><td>${esc(d.titulo)}</td><td>${esc(d.categoria)}</td><td>${esc((d.artigos_convencao || []).join(', '))}</td><td>${esc((d.recomendacoes_impactadas || []).map((x: string) => '§' + String(x).replace(/^§/, '')).join(', '))}</td><td>${d.url_origem ? `<a href="${esc(d.url_origem)}">fonte</a>` : '—'}</td></tr>`).join('');
+        return tab.generateTabReportHTML({ title: 'Base Normativa/Institucional', subtitle: `${docs.length} documentos normativos`, content: `<table><thead><tr><th>Documento</th><th>Categoria</th><th>Artigos ICERD</th><th>Recomendações</th><th>Fonte</th></tr></thead><tbody>${linhas}</tbody></table>` });
+      };
+      const indFiltrados = ((indicadores || []) as any[]).filter(i => !guards.isPendingAuditIndicator(i));
       const r = (orc || []) as any[];
       const itens: Item[] = [
         { titulo: 'Metodologia do Sistema', html: () => met.generateMethodologyHTML() },
@@ -63,6 +80,16 @@ export function BaixarTudoButton() {
         { titulo: 'Base Orçamentária — Relatório', html: () => o.generateRelatorioHTML(r) },
         { titulo: 'Base Orçamentária — Metodologia', html: () => o.generateMetodologiaHTML() },
         { titulo: 'Base Orçamentária — Artigos ICERD', html: () => o.generateArtigosCruzamentoHTML(r) },
+        { titulo: 'Base Estatística — Indicadores', html: () => indTab.generateIndicadoresHTML(indFiltrados as any) },
+        { titulo: 'Base Normativa/Institucional', html: normativaHTML },
+        ...((recomendacoes || []) as any[]).map((rec): Item => ({
+          titulo: `Recomendação §${rec.paragrafo} — ${rec.tema}`,
+          html: () => recAudit.generateRecomendacaoAuditHTML({ recomendacao: rec, diagnostic: diagnosticMap.get(rec.id), ...lookups } as any),
+        })),
+        ...artConv.ARTIGOS_CONVENCAO.map((def: any): Item => ({
+          titulo: `Artigo ${def.numero} ICERD — ${def.titulo}`,
+          html: () => artAudit.generateArtigoAuditHTML({ artigo: def.numero, recomendacoes: recomendacoes || [], diagnosticMap, lookups, artigoEvidencia } as any),
+        })),
         { titulo: 'Protocolo Orçamentário', html: () => prOrc.generateProtocoloOrcamentarioHTML({ orcDados: r } as any) },
       ];
 
@@ -70,6 +97,7 @@ export function BaixarTudoButton() {
       const secoes: string[] = [];
       const falhas: string[] = [];
       for (let i = 0; i < itens.length; i++) {
+        if (i % 5 === 0) await new Promise(res => setTimeout(res, 0));
         try {
           const { styles, body } = extrair(await itens[i].html());
           if (styles) estilos.add(styles);
