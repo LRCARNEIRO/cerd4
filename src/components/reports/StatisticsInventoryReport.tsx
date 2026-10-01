@@ -320,7 +320,7 @@ ${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros<
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero.</div>
 
 <h3>3.6. Saúde Interseccional</h3>
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>

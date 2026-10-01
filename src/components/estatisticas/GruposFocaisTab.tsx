@@ -74,7 +74,6 @@ export function GruposFocaisTab() {
 
   const lacunasQuilo = lacunas?.filter(l => l.grupo_focal === 'quilombolas') || [];
   const lacunasIndig = lacunas?.filter(l => l.grupo_focal === 'indigenas') || [];
-  const lacunasCiganos = lacunas?.filter(l => l.grupo_focal === 'ciganos') || [];
   const lacunasJuventude = lacunas?.filter(l => l.grupo_focal === 'juventude_negra') || [];
 
   return (
@@ -171,30 +170,6 @@ export function GruposFocaisTab() {
               tabela={gruposFocaisData.indigenas.tabela}
               link={gruposFocaisData.indigenas.link}
               atualizacao={gruposFocaisData.indigenas.ultimaAtualizacao}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Ciganos */}
-        <Card className="border-t-4 border-t-destructive">
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <AlertTriangle className="w-8 h-8 mb-2 text-destructive" />
-                <p className="text-sm font-medium">{gruposFocaisData.ciganos.nome}</p>
-                <p className="text-2xl font-bold">{gruposFocaisData.ciganos.populacao?.toLocaleString('pt-BR')}</p>
-                <p className="text-xs text-muted-foreground mt-1">Censo 2022 — SIDRA 9891</p>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                
-                <Badge variant="outline" className="text-xs">Censo 2022</Badge>
-              </div>
-            </div>
-            <FonteInfo 
-              fonte={gruposFocaisData.ciganos.fonte}
-              tabela={gruposFocaisData.ciganos.tabela}
-              link={gruposFocaisData.ciganos.link}
-              atualizacao={gruposFocaisData.ciganos.ultimaAtualizacao}
             />
           </CardContent>
         </Card>
@@ -1133,27 +1108,6 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
                 </div>
               </CardContent>
             </Card>
-
-            {/* Ciganos — dados precários */}
-            <Card className="border-l-4 border-l-destructive">
-              <CardContent className="pt-6 flex gap-3">
-                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0" />
-                <div>
-                  <p className="font-semibold">Ciganos/Roma — Indicadores Sociais Indisponíveis</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Não há dados oficiais desagregados sobre saúde, educação ou renda para povos ciganos.
-                    O Censo 2022 não incluiu pergunta específica (lacuna CERD §54-55).
-                    Primeiro levantamento parcial: MUNIC/IBGE 2024 (apenas acampamentos identificados por municípios).
-                  </p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="destructive" className="text-xs">Dados Indisponíveis</Badge>
-                    <a href="https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html" target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-3 h-3" /> MUNIC/IBGE 2024
-                    </a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
@@ -1208,10 +1162,6 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
                   <div className="flex items-center justify-between p-2 bg-muted rounded">
                     <span className="text-sm">Indígenas</span>
                     <Badge>{lacunasIndig.length}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="text-sm">Ciganos</span>
-                    <Badge variant="destructive">{lacunasCiganos.length}</Badge>
                   </div>
                   <div className="flex items-center justify-between p-2 bg-muted rounded">
                     <span className="text-sm">Juventude Negra</span>

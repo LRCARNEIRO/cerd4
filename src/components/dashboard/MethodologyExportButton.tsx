@@ -2,8 +2,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileText, Loader2 } from 'lucide-react';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/useLacunasData';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
-function generateMethodologyHTML(): string {
+type Contagens = { est: number; orc: number; norm: number };
+
+function generateMethodologyHTML({ est, orc, norm }: Contagens): string {
+  const tot = est + orc + norm;
+  const f = (n: number) => n.toLocaleString('pt-BR');
   const now = new Date().toLocaleString('pt-BR');
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Metodologia de Alimentação de Dados — Sistema CERD IV</title>
@@ -27,9 +35,9 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <p>Gerado em: ${now}</p>
 
 <h2>1. Fontes canônicas e fluxo de atualização — Metodologia v7</h2>
-<p>O sistema parte de três bases canônicas e imutáveis na camada analítica: <strong>278 evidências estatísticas, 204 orçamentárias e 32 normativas</strong>, totalizando <strong>514 evidências</strong>. Os vínculos auditados entre essas bases e as recomendações alimentam Produtos, Conclusões, relatórios e o Painel Geral. Ajustes nos produtos não retornam nem alteram as três bases.</p>
+<p>O sistema parte de três bases canônicas e imutáveis na camada analítica: <strong>${f(est)} evidências estatísticas, ${f(orc)} orçamentárias e ${f(norm)} normativas</strong>, totalizando <strong>${f(tot)} evidências</strong>. Os vínculos auditados entre essas bases e as recomendações alimentam Produtos, Conclusões, relatórios e o Painel Geral. Ajustes nos produtos não retornam nem alteram as três bases.</p>
 <ul>
-<li>Inventário canônico: 514 evidências — 278 estatísticas, 204 orçamentárias e 32 normativas</li>
+<li>Inventário canônico: ${f(tot)} evidências — ${f(est)} estatísticas, ${f(orc)} orçamentárias e ${f(norm)} normativas</li>
 <li>Matriz relacional auditada: 2.122 endereços válidos Artigo × Recomendação × Evidência</li>
 <li>Após deduplicar a mesma evidência para a mesma recomendação entre artigos: 1.658 relações distintas — 734 estatísticas, 845 orçamentárias e 79 normativas</li>
 <li>As 42 recomendações originais permanecem no universo analítico, inclusive quando não possuem evidência vinculada</li>
@@ -82,9 +90,24 @@ ul{padding-left:20px}li{margin-bottom:4px}
 
 export function MethodologyExportButton() {
   const [generating, setGenerating] = useState(false);
+  const { data: indicadores } = useIndicadoresInterseccionais();
+  const { data: orcamento } = useOrcamentoCanonico();
+  const { data: normCount } = useQuery({
+    queryKey: ['metodologia-normativos-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase.from('documentos_normativos').select('id', { count: 'exact', head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+  const contagens = (): Contagens => ({
+    est: buildRolEstatistico(indicadores as any[]).total,
+    orc: (orcamento as any[] | undefined)?.length || 0,
+    norm: normCount || 0,
+  });
 
   const handleExport = () => {
-    const html = generateMethodologyHTML();
+    const html = generateMethodologyHTML(contagens());
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     window.open(URL.createObjectURL(blob), '_blank');
   };
@@ -92,7 +115,7 @@ export function MethodologyExportButton() {
   const handleDocx = async () => {
     setGenerating(true);
     try {
-      const html = generateMethodologyHTML();
+      const html = generateMethodologyHTML(contagens());
       await downloadAsDocx(html, 'metodologia-alimentacao-dados');
     } finally {
       setGenerating(false);
