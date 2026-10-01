@@ -113,10 +113,10 @@ function generateJustificativa(paragrafo: string, indicadores: any[], orcamento:
 
     const simbolicos = latestOrcs.filter((o: any) => {
       const dot = Number(o.dotacao_autorizada) || 0;
-      const pag = Number(o.pago) || 0;
-      return dot > 100000 && pag < dot * 0.05;
+      const liq = Number(o.liquidado) || 0;
+      return o.tipo_dotacao !== 'extraorcamentario' && dot > 1000000 && liq < dot * 0.1;
     });
-    if (simbolicos.length > 0) parts.push(`⚠️ ${simbolicos.length} ação(ões) com execução inferior a 5% (orçamento simbólico)`);
+    if (simbolicos.length > 0) parts.push(`⚠️ ${simbolicos.length} ação(ões) em orçamento simbólico (LOA, dotação > R$ 1 mi e liquidado < 10%)`);
   }
 
   // Normative

@@ -293,7 +293,7 @@ serve(async (req) => {
     const byGrupo: Record<string, any[]> = {};
     all.forEach(r => { const g = r.grupo_focal || 'geral'; if (!byGrupo[g]) byGrupo[g] = []; byGrupo[g].push(r); });
 
-    const simbolicos = all.filter(r => parseFloat(r.dotacao_autorizada || 0) > 100000 && parseFloat(r.pago || 0) === 0);
+    const simbolicos = all.filter(r => __isLoa(r) && parseFloat(r.dotacao_autorizada || 0) > 1000000 && parseFloat(r.liquidado || 0) < parseFloat(r.dotacao_autorizada || 0) * 0.1);
 
     // Use inferArtigosOrcamento for byArtigo (matches Orçamento > Artigos ICERD tab)
     const byArtigo: Record<string, { pago: number; dotacao: number; programas: Set<string>; registros: number }> = {};
