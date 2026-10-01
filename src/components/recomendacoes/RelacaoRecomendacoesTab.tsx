@@ -9,6 +9,7 @@ import { EsforcoImpactoTags } from '@/components/shared/EsforcoImpactoTags';
 import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 import { lazy, Suspense, useMemo, useCallback, useState } from 'react';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useMatrizAuditada } from '@/utils/matrizAuditada';
 import { EIXO_PARA_ARTIGOS } from '@/utils/artigosConvencao';
 import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
@@ -75,6 +76,7 @@ export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
   const [evidenceOverrides, setEvidenceOverrides] = useEvidenceOverrides();
   const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
+  const { data: matriz } = useMatrizAuditada();
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
   const [paragraphDialogId, setParagraphDialogId] = useState<string | null>(null);
 
@@ -186,7 +188,7 @@ th{background:#f1f5f9;font-size:10px}
 
         <div class="methodology">
         <h2>🔗 Metodologia de Vinculação e Cálculo (v7 — Esforço × Impacto)</h2>
-        <p><strong>Vinculação Evidências → Recomendação:</strong> matriz relacional auditada Artigo × Recomendação × Evidência (2.122 endereços válidos), sobre o inventário canônico de 514 evidências (278 estatísticas, 204 orçamentárias e 32 normativas). Após deduplicação da mesma evidência para a mesma recomendação entre artigos, restam 1.658 relações distintas Recomendação × Evidência (734 estatísticas, 845 orçamentárias e 79 normativas).</p>
+        <p><strong>Vinculação Evidências → Recomendação:</strong> matriz relacional auditada Artigo × Recomendação × Evidência (${(matriz?.enderecos ?? 0).toLocaleString('pt-BR')} endereços válidos), sobre o inventário canônico de 514 evidências (278 estatísticas, 204 orçamentárias e 32 normativas). Após deduplicação da mesma evidência para a mesma recomendação entre artigos, restam ${(matriz?.relacoes.total ?? 0).toLocaleString('pt-BR')} relações distintas Recomendação × Evidência (${matriz?.relacoes.est ?? 0} estatísticas, ${matriz?.relacoes.orc ?? 0} orçamentárias e ${matriz?.relacoes.norm ?? 0} normativas).</p>
 <p><strong>Vinculação Recomendação → Artigo:</strong> mapa relacional combinado com o mapa formal, preservando recomendações sem evidência — Art. I = 6 · II = 7 · III = 4 · IV = 2 · V = 21 · VI = 6 · VII = 4.</p>
 <p><strong>Esforço Governamental (0–100):</strong> [100 × min(nEst/${TETOS_ESFORCO.estatistica}, 1) + 100 × min(nOrç/${TETOS_ESFORCO.orcamentaria}, 1) + 100 × min(nNorm/${TETOS_ESFORCO.normativa}, 1)] ÷ 3. Tetos derivados do P75 das evidências efetivamente vinculadas; pesos iguais de 1/3 por base.</p>
 <p><strong>Realização (0–100):</strong> média simples das bases presentes — estatística: proporção de indicadores com evolução não desfavorável (melhorou ou estável = 1; piorou = 0); orçamentária: Σ Liquidado ÷ Σ Dotação autorizada válida; normativa: presença = 100, ausência = 0.</p>
