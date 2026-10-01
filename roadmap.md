@@ -13,4 +13,4 @@
 - [x] Remover as referências a metas dos títulos das três bases.
 - [x] Alinhar Visão Geral, Programa/Ação, Universo e exportações às 204 linhas do inventário orçamentário canônico.
 - [ ] Auditar e alinhar todas as subabas de Orçamento, removendo exemplos fixos e fórmulas divergentes da base canônica.
-- [x] Reunir avisos de lacunas estatísticas em seção exclusiva dos relatórios, sem misturar recortes não equivalentes aos dados auditados.
+- [ ] Revisar relatórios: omitir lacunas fora das seções de lacunas já existentes, sem criar novas seções.

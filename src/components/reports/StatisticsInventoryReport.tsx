@@ -240,7 +240,6 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
   @media print { .no-print { display: none !important; } body { padding: 10px; } }
   @page { margin: 1.5cm; size: A4; @bottom-center { content: counter(page) " / " counter(pages); font-size: 9pt; color: #64748b; } }
   @page :first { @bottom-center { content: none; } }
-  .lacuna-box { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 8px 10px; margin: 6px 0; font-size: 10px; color: #991b1b; }
   .chart-inline { margin: 10px 0; page-break-inside: avoid; }
 </style></head><body>
 ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
@@ -309,7 +308,6 @@ ${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${e
 
 <h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
 ${arrayToHTMLTable(saudeSerieHistorica, '')}
-${saudeSerieHistorica.length ? `<div class="section-summary">Razão de mortalidade materna negra/branca: <strong>${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x</strong> em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano} (DataSUS/SIM; comparação por raça, não por renda).</div>` : ''}
 <div class="chart-inline">${svgLineChart({
   label: saudeSerieHistorica.map((d: any) => String(d.ano)).join(','),
   series: [
@@ -419,15 +417,6 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 </table>
 <p class="meta">Fontes: <a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a> | <a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a> | <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas">FUNAI Geoprocessamento</a></p>
 
-
-<h2>7. LACUNAS DE DADOS — Cruzamentos ainda não auditados</h2>
-<p class="meta">Os itens abaixo não são indicadores medidos nem entram nas contagens de evidências. Recortes distintos não substituem o cruzamento ausente.</p>
-<h3>Chefia monoparental por raça</h3>
-<div class="lacuna-box">SIDRA 6403 não publica série temporal desse cruzamento; requer processamento de microdados PNAD.</div>
-<h3>Educação: raça × gênero</h3>
-<div class="lacuna-box">O percentual de ensino superior da população negra (IND-129), apresentado em Educação, é um recorte racial e não mede o cruzamento raça × gênero.</div>
-<h3>Mortalidade materna por renda</h3>
-<div class="lacuna-box">A série DataSUS/SIM apresentada em Saúde permite a comparação por raça, mas não o cruzamento por renda. A pesquisa Nascer no Brasil II (novembro de 2023) usa metodologia própria; seus resultados não são intercambiáveis com essa série.</div>
 
 <div class="footer">
   <p>📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}</p>
