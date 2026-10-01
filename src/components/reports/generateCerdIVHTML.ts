@@ -515,7 +515,7 @@ function renderDemographicContext(demo: any): string {
   return `
   <h3>Contexto Demográfico (Censo 2022)</h3>
   <div class="section">
-    <p>O Brasil possui uma população de ${fmtNum(demo?.populacaoTotal || 203080756)} habitantes (Censo 2022), dos quais <strong>${fmtNum(demo?.populacaoNegra || 112700000)} (55,5%) se autodeclaram negros</strong> (pretos e pardos). A população indígena soma ${fmtNum(demo?.populacaoIndigena || 1227642)} pessoas, a quilombola ${fmtNum(demo?.populacaoQuilombola || 1327802)} e a cigana ${fmtNum(demo?.populacaoCigana || 41738)}.</p>
+    <p>O Brasil possui uma população de ${fmtNum(demo?.populacaoTotal || 203080756)} habitantes (Censo 2022), dos quais <strong>${fmtNum(demo?.populacaoNegra || 112700000)} (55,5%) se autodeclaram negros</strong> (pretos e pardos). A população indígena soma ${fmtNum(demo?.populacaoIndigena || 1227642)} pessoas e a quilombola ${fmtNum(demo?.populacaoQuilombola || 1327802)}.</p>
     ${comp.pardos ? `
     ${dataCards([
       { value: fmtNum(comp.pardos), label: 'Pardos (45,3%)' },
@@ -1472,7 +1472,7 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
 
     <div class="analysis-box">
       <h4>🔍 Lacunas de Interseccionalidade</h4>
-      <p>Apesar dos avanços na desagregação de dados, persistem lacunas significativas para grupos como <strong>LGBTQIA+ negros</strong> (dados limitados ao Disque 100), <strong>PcD negros</strong> (sem série temporal completa) e <strong>Povos Ciganos</strong> (primeira contagem apenas no Censo 2022 com ${fmtNum(41738)} pessoas). O Comitê recomenda fortemente a ampliação da coleta de dados interseccionais para esses grupos sub-representados.</p>
+      <p>Apesar dos avanços na desagregação de dados, persistem lacunas significativas para grupos como <strong>LGBTQIA+ negros</strong> (dados limitados ao Disque 100) e <strong>PcD negros</strong> (sem série temporal completa). O Comitê recomenda fortemente a ampliação da coleta de dados interseccionais para esses grupos sub-representados.</p>
     </div>
   </div>`;
 }
@@ -1485,7 +1485,6 @@ function renderTraditionalPeoples(povos: any): string {
     <div class="highlight-box">
       <p><strong>População:</strong> ${fmtNum(povos?.indigenas?.populacaoCorRaca || 1227642)} pessoas (Censo 2022) — ${povos?.indigenas?.etnias || 305} etnias, ${povos?.indigenas?.linguas || 274} línguas</p>
       <p><strong>Territórios:</strong> ${povos?.indigenas?.terrasHomologadas2018_2022 || 0} terras homologadas (2018-2022), ${povos?.indigenas?.terrasHomologadas2023_2025 || 0} em 2023-2025</p>
-      <p>Destaque: 63,4% da população indígena reside <strong>fora de Terras Indígenas</strong>, enfrentando vulnerabilidades urbanas e invisibilidade estatística.</p>
     </div>
 
     <h3>B. Comunidades Quilombolas</h3>
@@ -1494,12 +1493,6 @@ function renderTraditionalPeoples(povos: any): string {
       <p><strong>Comunidades certificadas:</strong> ${fmtNum(povos?.quilombolas?.comunidadesCertificadas || 3697)}</p>
       <p><strong>Territórios titulados:</strong> ${povos?.quilombolas?.territoriosTitulados || 52} (${povos?.quilombolas?.titulosExpedidos || 80} títulos para ${povos?.quilombolas?.comunidadesAbrangidas || 169} comunidades)</p>
       <p>O PNGTAQ (Decreto 11.786/2023) representa avanço significativo na gestão territorial quilombola.</p>
-    </div>
-
-    <h3>C. Comunidades Ciganas</h3>
-    <div class="highlight-box">
-      <p><strong>População:</strong> ${fmtNum(povos?.ciganos?.populacao || 41738)} (Censo 2022 — primeira contagem oficial)</p>
-      <p>A inclusão dos povos ciganos no Censo 2022 é um marco histórico, mas a ausência de séries temporais anteriores limita a análise de evolução das condições de vida desta população.</p>
     </div>
   </div>`;
 }
@@ -1593,7 +1586,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
         <tr><td><strong>Saúde</strong></td><td>Mortalidade materna negra persiste elevada; COVID impactou</td><td><span class="badge badge-warning">Estagnação</span></td></tr>
         <tr><td><strong>Trabalho e Renda</strong></td><td>Redução desemprego; gap salarial persiste (~40%)</td><td><span class="badge badge-warning">Avanço Parcial</span></td></tr>
         <tr><td><strong>Terra e Território</strong></td><td>Retomada demarcações/titulações em 2023+</td><td><span class="badge badge-success">Avanço</span></td></tr>
-        <tr><td><strong>Dados Interseccionais</strong></td><td>Censo 2022 incluiu quilombolas e ciganos pela 1ª vez</td><td><span class="badge badge-success">Avanço</span></td></tr>
+        <tr><td><strong>Dados Interseccionais</strong></td><td>Censo 2022 incluiu quilombolas pela 1ª vez</td><td><span class="badge badge-success">Avanço</span></td></tr>
         <tr><td><strong>Orçamento</strong></td><td>Aumento ${variacao > 0 ? '+' : ''}${variacao.toFixed(1)}% (pago); mas gap execução persiste</td><td><span class="badge badge-warning">Avanço Parcial</span></td></tr>
       </tbody>
     </table>
@@ -1602,7 +1595,7 @@ function renderConclusions(d: CerdIVFullData, total: number, cumpridas: number, 
     <ol>
       <li><strong>Segurança Pública:</strong> Implementar mecanismos efetivos de redução da letalidade policial contra jovens negros, com metas mensuráveis e accountability</li>
       <li><strong>Terra e Território:</strong> Acelerar titulações quilombolas e demarcações indígenas, garantindo orçamento adequado para INCRA e FUNAI</li>
-      <li><strong>Interseccionalidade:</strong> Ampliar a coleta sistemática de dados para LGBTQIA+ negros, PcD negros e povos ciganos</li>
+      <li><strong>Interseccionalidade:</strong> Ampliar a coleta sistemática de dados para LGBTQIA+ negros e PcD negros</li>
       <li><strong>Execução Orçamentária:</strong> Reduzir o gap entre dotação autorizada e valores pagos, combatendo o "orçamento simbólico"</li>
       <li><strong>Saúde:</strong> Enfrentar a mortalidade materna negra com políticas específicas de pré-natal de qualidade</li>
       <li><strong>Efetividade Legal:</strong> Garantir que os avanços legislativos (Lei 14.532, cotas) se traduzam em mudanças mensuráveis nos indicadores</li>

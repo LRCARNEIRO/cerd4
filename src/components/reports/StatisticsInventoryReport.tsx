@@ -320,7 +320,7 @@ ${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros<
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero. Dado real: negros com superior 11,4% (PNAD 2024).</div>
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero.</div>
 
 <h3>3.6. Saúde Interseccional</h3>
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
@@ -412,74 +412,6 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
   <tr><td>Rendimento médio</td><td>R$ ${safeNum(povosTradicionais.indigenas.rendimentoMedio)}</td><td><a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a></td></tr>
 </table>
 <p class="meta">Fontes: <a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a> | <a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a> | <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas">FUNAI Geoprocessamento</a></p>
-
-<h3>6.3. Ciganos/Roma — Lacuna Crítica</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Ciganos</a> | Observações ONU: §54, §55</div>
-<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px;margin:8px 0;">
-  <p style="font-size:11px;color:#991b1b;font-weight:600;">⚠️ LACUNA CRÍTICA: Censo 2022 não incluiu pergunta específica para Ciganos/Roma</p>
-  <p style="font-size:10px;color:#7f1d1d;">Estimativa não-oficial: ~${safeNum(povosTradicionais.ciganos.populacaoEstimada)} pessoas | ${povosTradicionais.ciganos.acampamentosIdentificados} acampamentos identificados</p>
-  <p style="font-size:10px;color:#7f1d1d;">O CERD expressou preocupação específica (§54-55) sobre a ausência de dados oficiais. MUNIC 2024 registra apenas presença/ausência de acampamentos por município.</p>
-</div>
-
-<h3>6.4. Juventude Negra (15-29 anos)</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Juventude Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | ONU: §32-§36</div>
-<table>
-  <tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr>
-  ${juventudeNegraBD.map((j: any) => '<tr>' +
-    '<td>' + j.indicador + '</td>' +
-    '<td style="font-weight:600;color:#991b1b;">' + j.valor + '</td>' +
-    '<td>' + j.referencia + '</td>' +
-    '<td><a href="' + j.url + '">' + j.fonte + '</a></td>' +
-  '</tr>').join('')}
-</table>
-<div class="interpretation">📊 Jovens negros: ${jovensNegrosViolencia.percentualObitosExternos}% dos óbitos por causas externas (${jovensNegrosViolencia.fonte}). Pop. carcerária: ${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}% negra (${jovensNegrosViolencia.fonteCarce}).</div>
-
-<h3>6.5. Mulheres Negras — Violência e Saúde</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Interseccionalidades</a> | <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → Mulheres Negras</a> | ONU: §15, §17, §23, §28</div>
-<h4>Violência contra Mulheres Negras</h4>
-${arrayToHTMLTable(violenciaInterseccional, '')}
-<h4>Saúde Interseccional (Raça × Classe)</h4>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não publica mortalidade materna por faixa de renda. Dado verificado: mortalidade materna negra ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra} vs branca ${saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca} por 100 mil NV (${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}), razão ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x (DataSUS/SIM).</div>
-<h4>Mulheres Chefes de Família — Série Histórica</h4>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça.</div>
-
-<h3>6.6. População Negra — Infraestrutura Domiciliar</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/grupos-focais">Grupos Focais → População Negra</a> | <a href="${systemBaseUrl}/estatisticas">Base Estatística → Dados Gerais</a></div>
-<table>
-  <tr><th>Indicador</th><th>Pop. Negra</th><th>Pop. Branca</th><th>Média Nacional</th></tr>
-  <tr><td>Água rede geral</td><td>${povosTradicionais.populacaoNegra.infraestrutura.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.aguaRedeGeral}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.aguaRedeGeral}%</td></tr>
-  <tr><td>Esgoto adequado</td><td>${povosTradicionais.populacaoNegra.infraestrutura.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.esgotoAdequado}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.esgotoAdequado}%</td></tr>
-  <tr><td>Coleta de lixo</td><td>${povosTradicionais.populacaoNegra.infraestrutura.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.coletaLixo}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.coletaLixo}%</td></tr>
-  <tr><td>Sem banheiro</td><td>${povosTradicionais.populacaoNegra.infraestrutura.semBanheiro}%</td><td>${povosTradicionais.populacaoNegra.infraestruturaBrancos.semBanheiro}%</td><td>${povosTradicionais.populacaoNegra.mediaNacional.semBanheiro}%</td></tr>
-</table>
-<p class="meta">Fonte: <a href="${povosTradicionais.populacaoNegra.infraestrutura.link}">IBGE Censo 2022 — Características dos domicílios (Fev/2024)</a> | <a href="${povosTradicionais.populacaoNegra.infraestrutura.linkPanorama}">Panorama Censo 2022</a></p>
-<div class="interpretation">📊 ${povosTradicionais.populacaoNegra.infraestrutura.nota}</div>
-
-<!-- ═══════════════════════════════════════ -->
-<h2>7. ABAS ESPECIAIS</h2>
-
-<h3>7.1. COVID-19 e Desigualdade Racial</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → COVID-19</a> | Dados de mortalidade COVID-19 por raça/cor (DataSUS/SIVEP-Gripe 2020-2023).</div>
-
-<h3>7.2. Administração Pública (MUNIC/ESTADIC)</h3>
-<div class="section-summary">📍 <a href="${systemBaseUrl}/estatisticas">Base Estatística → Adm. Pública</a> | Dados MUNIC/IBGE sobre órgãos municipais de igualdade racial e adesão ao SINAPIR.</div>
-
-<!-- ═══════════════════════════════════════ -->
-<h2>8. INDICADORES DO BANCO DE DADOS — ${indicadoresBD.length} registros</h2>
-
-
-${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
-<h3>${catLabels[cat] || cat} (${inds.length})</h3>
-${inds.map((ind: any) => indicadorToHTML(ind)).join('')}
-`).join('')}
-
-<!-- ═══════════════════════════════════════ -->
-<h2>Resumo Executivo</h2>
-<div class="stats-grid">
-  <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${indicadoresBD.length}</div><div class="label">Indicadores BD</div></div>
-  <div class="stat-card"><div class="value">${Object.keys(bdCategorias).length}</div><div class="label">Categorias</div></div>
-</div>
 
 
 <div class="footer">
