@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { extractDadoUnico } from '@/utils/indicadorDadoUnico';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
@@ -1421,7 +1422,10 @@ export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
           }
         }
       } else {
-        html += `<p class="meta">Dados não disponíveis para visualização tabular.</p>`;
+        const unico = extractDadoUnico(ind.dados, undefined, ind.nome);
+        if (unico && (unico.valor !== undefined || unico.texto)) {
+          html += `<p class="meta"><strong>Dado único${unico.ano ? ` (${unico.ano})` : ''}:</strong> ${unico.valor !== undefined ? unico.valor.toLocaleString('pt-BR') : unico.texto}${unico.unidade ? ` ${unico.unidade}` : ''}</p>`;
+        }
       }
       
       html += `<p class="fonte">Fonte: ${ind.fonte}${ind.url_fonte ? ` — ${ind.url_fonte}` : ''}</p>`;

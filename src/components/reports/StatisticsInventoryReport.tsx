@@ -9,7 +9,7 @@ import { useJuventudeAuditados } from '@/hooks/useOdsRacialData';
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
-import { isEvidenceEligibleIndicator } from '@/utils/indicatorEvidenceGuards';
+import { isEvidenceEligibleIndicator, isMethodologicalGapPlaceholder } from '@/utils/indicatorEvidenceGuards';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { useMirrorData } from '@/hooks/useMirrorData';
@@ -85,10 +85,7 @@ function arrayToHTMLTable(data: any[], title?: string): string {
 function indicadorToHTML(ind: any): string {
   const dados = ind.dados || {};
   const objectKeys = Object.keys(dados).filter(k => typeof dados[k] === 'object' && !['por_uf_2024','idade_media_vitima','unidade'].includes(k));
-  if (objectKeys.length === 0) {
-    const codBadge = ind.codigo ? `<span class="badge badge-blue" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.05em">${ind.codigo}</span> ` : '';
-    return `<div class="card"${ind.codigo ? ` id="ind-${ind.codigo}"` : ''}><h4>${codBadge}${ind.nome}</h4><p class="meta">${ind.fonte} — Dados não disponíveis para tabulação</p></div>`;
-  }
+  if (objectKeys.length === 0) return '';
 
   const topKeysAreYears = objectKeys.every((k: string) => /^\d{4}$/.test(k));
   let groups: string[], years: string[], chartData: Record<string, any>[];
@@ -450,7 +447,7 @@ function generateInventoryHTML(
 
   // Regra de Ouro: Common Core e indicadores descartados não podem constar
   // no inventário de evidências aptas.
-  const indicadoresBD = (indicadoresBDRaw || []).filter(isEvidenceEligibleIndicator);
+  const indicadoresBD = (indicadoresBDRaw || []).filter(i => isEvidenceEligibleIndicator(i) && !isMethodologicalGapPlaceholder(i));
 
   const { dadosDemograficos, evolucaoComposicaoRacial, indicadoresSocioeconomicos,
     segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica,
