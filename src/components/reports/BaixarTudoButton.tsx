@@ -1,0 +1,129 @@
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Download, Loader2, Package } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useLacunasIdentificadas, useIndicadoresInterseccionais, useOrcamentoCanonico, useRespostasLacunasCerdIII, useLacunasStats } from '@/hooks/useLacunasData';
+import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
+import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
+import { toast } from 'sonner';
+
+type Item = { titulo: string; html: () => string | Promise<string> };
+
+/** Extrai estilos e corpo de um documento HTML completo, removendo barras de ferramentas. */
+function extrair(html: string) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script, .no-print, .export-toolbar, #export-toolbar').forEach(el => el.remove());
+  const styles = Array.from(doc.querySelectorAll('style')).map(s => s.textContent || '').join('\n');
+  return { styles, body: doc.body?.innerHTML || '' };
+}
+
+export function BaixarTudoButton() {
+  const [gerando, setGerando] = useState(false);
+  const { data: recomendacoes, isLoading: l1 } = useLacunasIdentificadas();
+  const { data: indicadores, isLoading: l2 } = useIndicadoresInterseccionais();
+  const { data: orc, isLoading: l3 } = useOrcamentoCanonico();
+  const { data: respostas, isLoading: l4 } = useRespostasLacunasCerdIII();
+  const { data: stats } = useLacunasStats();
+  const { data: normativos, isLoading: l5 } = useQuery({
+    queryKey: ['documentos_normativos_baixar_tudo'],
+    queryFn: async () => (await supabase.from('documentos_normativos').select('*')).data || [],
+  });
+  const overrides = useEvidenceOverridesReadOnly();
+  const { diagnosticMap, isReady } = useDiagnosticSensor(recomendacoes, overrides);
+  const carregando = l1 || l2 || l3 || l4 || l5 || !isReady;
+
+  const gerar = async () => {
+    setGerando(true);
+    try {
+      const [o, rec, fu, met, metDet, prOrc, prGov] = await Promise.all([
+        import('@/components/estatisticas/orcamento/generateOrcamentoHTML'),
+        import('@/components/recomendacoes/generateRecomendacoesHTML'),
+        import('@/components/recomendacoes/generateFollowUpHTML'),
+        import('@/components/reports/generateMethodologyHTML'),
+        import('@/components/shared/generateMetodologiaDetalhadaHTML'),
+        import('@/components/reports/generateProtocoloOrcamentarioHTML'),
+        import('@/components/reports/generateProtocoloGovernancaHTML'),
+      ]);
+      const r = (orc || []) as any[];
+      const itens: Item[] = [
+        { titulo: 'Metodologia do Sistema', html: () => met.generateMethodologyHTML() },
+        { titulo: 'Metodologia Detalhada — Esforço e Impacto', html: () => metDet.generateMetodologiaDetalhadaHTML() },
+        { titulo: 'Protocolo Metodológico de Governança', html: () => prGov.generateProtocoloGovernancaHTML({ indicadores: indicadores || [], orcDados: r, normativos: normativos || [], recomendacoes: recomendacoes || [], diagnosticMap } as any) },
+        { titulo: 'Recomendações — Observações Finais', html: () => rec.generateObservacoesFinaisHTML() },
+        { titulo: 'Recomendações — Lacunas', html: () => rec.generateLacunasExportHTML(recomendacoes || [], stats) },
+        { titulo: 'Respostas às críticas do CERD III', html: () => rec.generateRespostasCerdIIIExportHTML(respostas || []) },
+        { titulo: 'Recomendações Gerais', html: () => rec.generateRecomendacoesGeraisHTML() },
+        { titulo: 'Durban — Cruzamento', html: () => rec.generateDurbanExportHTML() },
+        { titulo: 'Follow-up 2026', html: () => fu.generateFollowUpHTML() },
+        { titulo: 'Base Orçamentária — Visão Geral', html: () => o.generateVisaoGeralHTML(r) },
+        { titulo: 'Base Orçamentária — Universo da Base', html: () => o.generateUniversoBaseHTML(r) },
+        { titulo: 'Base Orçamentária — Resumo Comparativo', html: () => o.generateResumoComparativoHTML(r) },
+        { titulo: 'Base Orçamentária — Relatório', html: () => o.generateRelatorioHTML(r) },
+        { titulo: 'Base Orçamentária — Metodologia', html: () => o.generateMetodologiaHTML() },
+        { titulo: 'Base Orçamentária — Artigos ICERD', html: () => o.generateArtigosCruzamentoHTML(r) },
+        { titulo: 'Protocolo Orçamentário', html: () => prOrc.generateProtocoloOrcamentarioHTML({ orcDados: r } as any) },
+      ];
+
+      const estilos = new Set<string>();
+      const secoes: string[] = [];
+      const falhas: string[] = [];
+      for (let i = 0; i < itens.length; i++) {
+        try {
+          const { styles, body } = extrair(await itens[i].html());
+          if (styles) estilos.add(styles);
+          secoes.push(`<section class="bt-sec" id="sec-${i}"><div class="bt-cab">${i + 1}. ${itens[i].titulo}</div>${body}</section>`);
+        } catch (e) {
+          console.error('Falha em', itens[i].titulo, e);
+          falhas.push(itens[i].titulo);
+        }
+      }
+      const ok = itens.filter(it => !falhas.includes(it.titulo));
+      const indice = ok.map((it) => `<li><a href="#sec-${itens.indexOf(it)}">${it.titulo}</a></li>`).join('');
+      const agora = new Date().toLocaleString('pt-BR');
+      const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Sistema CERD IV — Conteúdo completo</title>
+<style>${[...estilos].join('\n')}
+.bt-sec{page-break-before:always;break-before:page}
+.bt-cab{font:600 11px sans-serif;color:#555;border-bottom:1px solid #ccc;padding:4px 0;margin-bottom:12px}
+.bt-capa{font-family:sans-serif;padding:40px}
+.bt-print{position:fixed;top:12px;right:12px;padding:8px 14px;font:600 13px sans-serif;cursor:pointer}
+@media print{.bt-print{display:none}}
+</style></head><body>
+<button class="bt-print" onclick="window.print()">Salvar como PDF</button>
+<div class="bt-capa"><h1>Sistema CERD IV — Conteúdo completo</h1><p>Gerado em ${agora}, a partir dos dados atuais do sistema.</p><h2>Índice</h2><ol>${indice}</ol></div>
+${secoes.join('\n')}
+</body></html>`;
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Sistema-CERD-IV-completo-${new Date().toISOString().slice(0, 10)}.html`;
+      document.body.appendChild(a); a.click(); a.remove();
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      toast.success(`${ok.length} relatórios reunidos em um único arquivo.`);
+      if (falhas.length) toast.warning(`Não incluídos: ${falhas.join(', ')}`);
+    } finally {
+      setGerando(false);
+    }
+  };
+
+  return (
+    <Card className="mb-6 border-l-4 border-l-primary">
+      <CardContent className="pt-6 flex items-start justify-between gap-3 flex-wrap">
+        <div className="flex items-start gap-3">
+          <Package className="w-6 h-6 text-primary flex-shrink-0" />
+          <div>
+            <h3 className="font-semibold mb-1">Baixar tudo — todos os relatórios em um único arquivo</h3>
+            <p className="text-sm text-muted-foreground">Monta em segundos, com os dados atuais, metodologias, protocolos, recomendações e base orçamentária, com índice. Use “Salvar como PDF” no arquivo aberto.</p>
+          </div>
+        </div>
+        <Button onClick={gerar} disabled={carregando || gerando} className="gap-2">
+          {carregando || gerando ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+          {carregando ? 'Carregando dados…' : gerando ? 'Montando…' : 'Baixar tudo'}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}

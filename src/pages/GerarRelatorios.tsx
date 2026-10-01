@@ -27,6 +27,7 @@ import { DeepLinkHealthCheck } from '@/components/health-check/DeepLinkHealthChe
 import { AuditInventoryPanel } from '@/components/audit/AuditInventoryPanel';
 import { AuditVerifyPanel } from '@/components/audit/AuditVerifyPanel';
 import { useState } from 'react';
+import { BaixarTudoButton } from '@/components/reports/BaixarTudoButton';
 
 const statusLabels: Record<string, { label: string; color: string }> = {
   cumprido: { label: 'Cumprido', color: 'bg-success text-success-foreground' },
@@ -747,6 +748,7 @@ ${conclusoes.map((c: any) => `
 
   return (
     <>
+      <BaixarTudoButton />
       <Card className="mb-6 border-l-4 border-l-accent">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-3">
