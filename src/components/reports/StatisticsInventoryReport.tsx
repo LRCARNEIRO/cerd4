@@ -309,6 +309,7 @@ ${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${e
 
 <h3>2.4. Saúde — Série Histórica (DataSUS)</h3>
 ${arrayToHTMLTable(saudeSerieHistorica, '')}
+${saudeSerieHistorica.length ? `<div class="section-summary">Razão de mortalidade materna negra/branca: <strong>${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x</strong> em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano} (DataSUS/SIM; comparação por raça, não por renda).</div>` : ''}
 <div class="chart-inline">${svgLineChart({
   label: saudeSerieHistorica.map((d: any) => String(d.ano)).join(','),
   series: [
@@ -323,33 +324,23 @@ ${arrayToHTMLTable(saudeSerieHistorica, '')}
 <h3>3.1. Raça × Gênero — Trabalho (PNAD Contínua)</h3>
 ${arrayToHTMLTable(interseccionalidadeTrabalho, '')}
 
-<h3>3.2. Mulheres Chefes de Família</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — SIDRA 6403 não publica série temporal de chefia monoparental por raça. Requer processamento de microdados PNAD.</div>
-
-<h3>3.3. Violência Interseccional</h3>
+<h3>3.2. Violência Interseccional</h3>
 ${arrayToHTMLTable(violenciaInterseccional, '')}
 
-<h3>3.4. Juventude Negra</h3>
+<h3>3.3. Juventude Negra</h3>
 ${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros</th><th>Não Negros</th><th>Fonte</th></tr></thead><tbody>${juventudeNegraBD.map((j: any) => `<tr><td>${j.indicador}</td><td style="font-weight:600;color:#991b1b;">${j.valor}</td><td>${j.referencia}</td><td><a href="${j.url}">${j.fonte}</a></td></tr>`).join('')}</tbody></table>` : '<p class="meta">⏳ Carregando dados do banco...</p>'}
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
-<h3>3.5. Educação Interseccional</h3>
-${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${ensinoSuperiorNegroAuditado(indicadoresBD)}</div>` : ''}
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> O recorte racial acima não equivale ao cruzamento raça × gênero; não há dado auditado desse cruzamento neste relatório.</div>
-
-<h3>3.6. Saúde Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
-
-<h3>3.7. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
+<h3>3.4. LGBTQIA+ — Assassinatos Trans (ANTRA)</h3>
 ${arrayToHTMLTable(serieAntraTrans, '')}
 
-<h3>3.8. LGBTQIA+ × Raça</h3>
+<h3>3.5. LGBTQIA+ × Raça</h3>
 ${arrayToHTMLTable(lgbtqiaPorRaca, '')}
 
-<h3>3.9. Deficiência × Raça</h3>
+<h3>3.6. Deficiência × Raça</h3>
 ${arrayToHTMLTable(deficienciaPorRaca, '')}
 
-<h3>3.10. Classe Social × Raça</h3>
+<h3>3.7. Classe Social × Raça</h3>
 ${arrayToHTMLTable(classePorRaca, '')}
 
 <!-- ═══════════════════════════════════════ -->
@@ -429,6 +420,15 @@ ${arrayToHTMLTable(evolucaoDesigualdade, '')}
 <p class="meta">Fontes: <a href="${povosTradicionais.indigenas.urlFontePessoasIndigenas}">IBGE Brasil Indígena</a> | <a href="${povosTradicionais.indigenas.urlFonteCorRaca}">SIDRA 9605</a> | <a href="https://www.gov.br/funai/pt-br/atuacao/terras-indigenas/geoprocessamento-e-mapas">FUNAI Geoprocessamento</a></p>
 
 
+<h2>7. LACUNAS DE DADOS — Cruzamentos ainda não auditados</h2>
+<p class="meta">Os itens abaixo não são indicadores medidos nem entram nas contagens de evidências. Recortes distintos não substituem o cruzamento ausente.</p>
+<h3>Chefia monoparental por raça</h3>
+<div class="lacuna-box">SIDRA 6403 não publica série temporal desse cruzamento; requer processamento de microdados PNAD.</div>
+<h3>Educação: raça × gênero</h3>
+<div class="lacuna-box">O percentual de ensino superior da população negra (IND-129), apresentado em Educação, é um recorte racial e não mede o cruzamento raça × gênero.</div>
+<h3>Mortalidade materna por renda</h3>
+<div class="lacuna-box">A série DataSUS/SIM apresentada em Saúde permite a comparação por raça, mas não o cruzamento por renda. A pesquisa Nascer no Brasil II (novembro de 2023) usa metodologia própria; seus resultados não são intercambiáveis com essa série.</div>
+
 <div class="footer">
   <p>📋 Relatório gerado pelo Sistema de Subsídios CERD IV — ${now}</p>
   <p>Todos os dados seguem a Regra de Ouro: apenas fontes oficiais auditáveis.</p>
@@ -482,19 +482,11 @@ function generateInventoryHTML(
     { nome: 'LGBTQIA+ — ANTRA/Trans', registros: serieAntraTrans.length, fonte: 'ANTRA / FBSP', periodo: '2018-2024' },
     { nome: 'LGBTQIA+ × Raça', registros: lgbtqiaPorRaca.length, fonte: 'Pesquisa Sexualidade IBGE', periodo: '2022' },
     { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
-    { nome: 'Mulheres Chefes de Família', registros: 0, fonte: '🔴 LACUNA — SIDRA 6403 não publica por raça', periodo: 'N/A' },
     { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
     { nome: 'Juventude Negra', registros: juventudeNegraBD.length, fonte: 'BD — Atlas/FBSP (auditado)', periodo: '2022-2025' },
-    { nome: 'Educação Interseccional', registros: 0, fonte: '🔴 LACUNA — IBGE/INEP não publica raça×gênero', periodo: 'N/A' },
-    { nome: 'Saúde Interseccional', registros: 0, fonte: '🔴 LACUNA — DataSUS não cruza raça×renda', periodo: 'N/A' },
     { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
     { nome: 'Evolução da Desigualdade', registros: evolucaoDesigualdade.length, fonte: 'IBGE / PNAD', periodo: '2018-2024' },
   ];
-
-  const totalSeriesRegistros = series.reduce((s, a) => s + a.registros, 0);
-
-
-
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
