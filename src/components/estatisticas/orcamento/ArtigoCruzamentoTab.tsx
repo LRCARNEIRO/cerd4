@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Scale, ChevronDown, ChevronUp } from 'lucide-react';
 import { ARTIGOS_CONVENCAO, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { useMatrizAuditada } from '@/utils/matrizAuditada';
 
 interface ArtigoCruzamentoTabProps {
   records: DadoOrcamentario[];
@@ -15,7 +16,6 @@ const formatCompact = (value: number) => {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 };
 
-const inferArtigos = inferArtigosOrcamento;
 
 function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0]; records: DadoOrcamentario[] }) {
   const [open, setOpen] = useState(false);
@@ -94,6 +94,9 @@ function ArtigoGroup({ artigo, records }: { artigo: typeof ARTIGOS_CONVENCAO[0];
 }
 
 export function ArtigoCruzamentoTab({ records }: ArtigoCruzamentoTabProps) {
+  const { data: matriz } = useMatrizAuditada();
+  const inferArtigos = (r: DadoOrcamentario): ArtigoConvencao[] =>
+    matriz ? ((matriz.artigosPorOrcamento.get(r.id) || []) as ArtigoConvencao[]) : inferArtigosOrcamento(r);
   const byArtigo = useMemo(() => {
     const map = new Map<ArtigoConvencao, DadoOrcamentario[]>();
     for (const art of ARTIGOS_CONVENCAO) map.set(art.numero, []);
@@ -105,11 +108,11 @@ export function ArtigoCruzamentoTab({ records }: ArtigoCruzamentoTabProps) {
       }
     }
     return map;
-  }, [records]);
+  }, [records, matriz]);
 
   const unmapped = useMemo(() => {
     return records.filter(r => inferArtigos(r).length === 0);
-  }, [records]);
+  }, [records, matriz]);
 
   return (
     <div className="space-y-4">
@@ -118,8 +121,8 @@ export function ArtigoCruzamentoTab({ records }: ArtigoCruzamentoTabProps) {
         <h3 className="font-semibold text-sm">Cruzamento Orçamento × Artigos da Convenção ICERD</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
-        Mapeamento automático dos programas e ações orçamentárias aos artigos I–VII da Convenção,
-        baseado nos eixos temáticos e palavras-chave. Facilita a análise sem alterar os dados encontrados.
+        Programas e ações orçamentárias por artigo I–VII da Convenção, conforme a matriz auditada
+        Artigo × Recomendação × Evidência. Facilita a análise sem alterar os dados encontrados.
       </p>
 
       <div className="space-y-3">
@@ -149,7 +152,7 @@ export function ArtigoCruzamentoTab({ records }: ArtigoCruzamentoTabProps) {
         <Card className="border-dashed">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground">
-              {unmapped.length} registros sem mapeamento automático
+              {unmapped.length} registros sem vínculo na matriz auditada
             </CardTitle>
           </CardHeader>
           <CardContent>

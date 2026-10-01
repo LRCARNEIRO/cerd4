@@ -273,14 +273,15 @@ export function generateMetodologiaHTML(): string {
 }
 
 /* ─────────── ARTIGOS ICERD ─────────── */
-export function generateArtigosCruzamentoHTML(records: DadoOrcamentario[]): string {
+export function generateArtigosCruzamentoHTML(records: DadoOrcamentario[], artigosPorOrcamento?: Map<string, string[]>): string {
+  const ORDEM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
   return generateTabReportHTML({
     title: 'Cruzamento Orçamentário × Artigos ICERD',
     subtitle: 'Mapeamento dos programas orçamentários aos artigos da Convenção Internacional',
     fileName: 'Orcamento-Artigos-ICERD',
     content: `
       <h2>Base de Dados</h2>
-      <p>${records.length} registros orçamentários mapeados para artigos da Convenção ICERD.</p>
+      <p>${records.length} registros orçamentários; artigos conforme a matriz auditada Artigo × Recomendação × Evidência.</p>
 
       <h2>Detalhamento por Programa</h2>
       <table>
@@ -288,12 +289,13 @@ export function generateArtigosCruzamentoHTML(records: DadoOrcamentario[]): stri
         ${(() => {
           const progMap: Record<string, { orgao: string; pago: number; artigos: Set<string> }> = {};
           records.forEach(r => {
-            if (!progMap[r.programa]) progMap[r.programa] = { orgao: r.orgao, pago: 0, artigos: new Set() };
-            progMap[r.programa].pago += Number(r.pago) || 0;
-            (r.artigos_convencao || []).forEach(a => progMap[r.programa].artigos.add(a));
+            const k = `${r.orgao}|${r.programa}`;
+            if (!progMap[k]) progMap[k] = { orgao: r.orgao, pago: 0, artigos: new Set() };
+            progMap[k].pago += Number(r.pago) || 0;
+            (artigosPorOrcamento?.get(r.id) || r.artigos_convencao || []).forEach(a => progMap[k].artigos.add(a));
           });
-          return Object.entries(progMap).sort((a, b) => b[1].pago - a[1].pago).map(([prog, { orgao, pago, artigos }]) =>
-            `<tr><td>${prog}</td><td>${orgao}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(pago)}</td><td>${Array.from(artigos).join(', ') || '—'}</td></tr>`
+          return Object.entries(progMap).sort((a, b) => b[1].pago - a[1].pago).map(([k, { orgao, pago, artigos }]) =>
+            `<tr><td>${k.slice(orgao.length + 1)}</td><td>${orgao}</td><td style="text-align:right;font-family:monospace">${fmtBRLFull(pago)}</td><td>${Array.from(artigos).sort((a, b) => ORDEM.indexOf(a) - ORDEM.indexOf(b)).join(', ') || 'Sem vínculo na matriz auditada'}</td></tr>`
           ).join('');
         })()}
       </table>
