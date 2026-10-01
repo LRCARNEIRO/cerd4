@@ -208,7 +208,7 @@ ${renderRows(allItems)}
 
 <p class="nota" style="margin-top:16px">Documento gerado pelo Sistema de Monitoramento CERD IV — ${new Date().toLocaleDateString('pt-BR')}</p>
 </body></html>`;
-  }, [recomendacoes, grouped, diagnosticMap, faixaSummary]);
+  }, [recomendacoes, grouped, diagnosticMap, faixaSummary, matriz]);
 
   if (isLoading) {
     return (
