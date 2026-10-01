@@ -1122,13 +1122,6 @@ CORREÇÃO HISTÓRICA: Até a entrada em vigor da LGPD, era possível corrigir e
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
-                  <p className="font-medium">Ciganos/Roma - §54-55</p>
-                  <p className="text-sm text-muted-foreground">
-                    Não há dados populacionais oficiais. O Censo 2022 não incluiu pergunta específica.
-                  </p>
-                  <Badge variant="destructive" className="mt-2 text-xs">Prioridade Crítica</Badge>
-                </div>
                 <div className="p-3 bg-warning/5 border border-warning/20 rounded-lg">
                   <p className="font-medium">Comunidades de Matriz Africana</p>
                   <p className="text-sm text-muted-foreground">
