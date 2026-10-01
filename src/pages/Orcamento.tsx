@@ -1,3 +1,4 @@
+import { useMatrizAuditada } from '@/utils/matrizAuditada';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -298,6 +299,7 @@ function EsferaSummaryCards({
 type Esfera = 'federal';
 
 export default function Orcamento() {
+  const { data: matrizAuditada } = useMatrizAuditada();
   const [orcSearchParams] = useSearchParams();
   const [activeOrcTab, setActiveOrcTab] = useState(orcSearchParams.get('tab') || 'visao-geral');
   const { data: dadosBrutos, isLoading: orcLoading } = useDadosOrcamentarios();
@@ -1528,7 +1530,7 @@ export default function Orcamento() {
         {/* ===== ARTIGOS ICERD ===== */}
         <TabsContent value="artigos">
           <div className="flex justify-end mb-3" data-export-ignore="true">
-            <ExportTabButtons targetSelector="#export-orcamento-artigos" generateHTML={() => generateArtigosCruzamentoHTML(currentRecords)} fileName="Orcamento-Artigos-ICERD" compact />
+            <ExportTabButtons targetSelector="#export-orcamento-artigos" generateHTML={() => generateArtigosCruzamentoHTML(currentRecords, matrizAuditada?.artigosPorOrcamento)} fileName="Orcamento-Artigos-ICERD" compact />
           </div>
           <div id="export-orcamento-artigos">
             <ArtigoCruzamentoTab records={currentRecords} />

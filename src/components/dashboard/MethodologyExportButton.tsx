@@ -6,10 +6,11 @@ import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/use
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { useMatrizAuditada } from '@/utils/matrizAuditada';
 
-type Contagens = { est: number; orc: number; norm: number };
+type Contagens = { est: number; orc: number; norm: number; enderecos: number; rel: { total: number; est: number; orc: number; norm: number } };
 
-function generateMethodologyHTML({ est, orc, norm }: Contagens): string {
+function generateMethodologyHTML({ est, orc, norm, enderecos, rel }: Contagens): string {
   const tot = est + orc + norm;
   const f = (n: number) => n.toLocaleString('pt-BR');
   const now = new Date().toLocaleString('pt-BR');
@@ -38,8 +39,8 @@ ul{padding-left:20px}li{margin-bottom:4px}
 <p>O sistema parte de três bases canônicas e imutáveis na camada analítica: <strong>${f(est)} evidências estatísticas, ${f(orc)} orçamentárias e ${f(norm)} normativas</strong>, totalizando <strong>${f(tot)} evidências</strong>. Os vínculos auditados entre essas bases e as recomendações alimentam Produtos, Conclusões, relatórios e o Painel Geral. Ajustes nos produtos não retornam nem alteram as três bases.</p>
 <ul>
 <li>Inventário canônico: ${f(tot)} evidências — ${f(est)} estatísticas, ${f(orc)} orçamentárias e ${f(norm)} normativas</li>
-<li>Matriz relacional auditada: 2.122 endereços válidos Artigo × Recomendação × Evidência</li>
-<li>Após deduplicar a mesma evidência para a mesma recomendação entre artigos: 1.658 relações distintas — 734 estatísticas, 845 orçamentárias e 79 normativas</li>
+<li>Matriz relacional auditada: ${f(enderecos)} endereços válidos Artigo × Recomendação × Evidência</li>
+<li>Após deduplicar a mesma evidência para a mesma recomendação entre artigos: ${f(rel.total)} relações distintas — ${f(rel.est)} estatísticas, ${f(rel.orc)} orçamentárias e ${f(rel.norm)} normativas</li>
 <li>As 42 recomendações originais permanecem no universo analítico, inclusive quando não possuem evidência vinculada</li>
 </ul>
 
@@ -47,7 +48,7 @@ ul{padding-left:20px}li{margin-bottom:4px}
 
 <div class="step">
 <span class="step-num">1</span><strong>Bases de Evidências e Matriz Relacional Auditada</strong>
-<p>Ponto de partida: o inventário canônico, as 42 recomendações originais e os 2.122 endereços válidos da matriz auditada. Para calcular cada recomendação, uma evidência repetida entre artigos é contada uma única vez.</p>
+<p>Ponto de partida: o inventário canônico, as 42 recomendações originais e os ${f(enderecos)} endereços válidos da matriz auditada. Para calcular cada recomendação, uma evidência repetida entre artigos é contada uma única vez.</p>
 <table>
 <tr><th>Base</th><th>Teto do Esforço</th><th>Peso</th></tr>
 <tr><td>Estatística</td><td>31 evidências</td><td>1/3</td></tr>
@@ -100,7 +101,10 @@ export function MethodologyExportButton() {
       return count || 0;
     },
   });
+  const { data: matriz } = useMatrizAuditada();
   const contagens = (): Contagens => ({
+    enderecos: matriz?.enderecos ?? 0,
+    rel: matriz?.relacoes ?? { total: 0, est: 0, orc: 0, norm: 0 },
     est: buildRolEstatistico(indicadores as any[]).total,
     orc: (orcamento as any[] | undefined)?.length || 0,
     norm: normCount || 0,

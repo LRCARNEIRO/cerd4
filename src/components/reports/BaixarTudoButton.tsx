@@ -55,6 +55,7 @@ export function BaixarTudoButton() {
         import('@/components/recomendacoes/recomendacaoExportShared'),
         import('@/utils/artigosConvencao'),
       ]);
+      const matriz = await (await import('@/utils/matrizAuditada')).fetchMatrizAuditada();
       const lookups = shared.buildExportLookups(rawIndicadores || indicadores || [], rawOrcamento || orc || [], rawNormativos || normativos || []);
       const esc = (v: any) => String(v ?? '—').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!));
       const normativaHTML = () => {
@@ -79,7 +80,7 @@ export function BaixarTudoButton() {
         { titulo: 'Base Orçamentária — Resumo Comparativo', html: () => o.generateResumoComparativoHTML(r) },
         { titulo: 'Base Orçamentária — Relatório', html: () => o.generateRelatorioHTML(r) },
         { titulo: 'Base Orçamentária — Metodologia', html: () => o.generateMetodologiaHTML() },
-        { titulo: 'Base Orçamentária — Artigos ICERD', html: () => o.generateArtigosCruzamentoHTML(r) },
+        { titulo: 'Base Orçamentária — Artigos ICERD', html: () => o.generateArtigosCruzamentoHTML(r, matriz.artigosPorOrcamento) },
         { titulo: 'Base Estatística — Indicadores', html: () => indTab.generateIndicadoresHTML(indFiltrados as any) },
         { titulo: 'Base Normativa/Institucional', html: normativaHTML },
         ...((recomendacoes || []) as any[]).map((rec): Item => ({
