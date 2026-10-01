@@ -247,6 +247,7 @@ ${(respostasCerd || []).map(r => {
       title="Gerar Relatórios Analíticos"
       subtitle="Análise de políticas raciais com base nos dados do sistema — Recomendações ONU, Orçamento, Indicadores"
     >
+      <BaixarTudoButton />
       {/* Header analítico */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -748,7 +749,6 @@ ${conclusoes.map((c: any) => `
 
   return (
     <>
-      <BaixarTudoButton />
       <Card className="mb-6 border-l-4 border-l-accent">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-3">
