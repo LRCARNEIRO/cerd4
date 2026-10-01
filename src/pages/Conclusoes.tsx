@@ -565,7 +565,7 @@ export default function Conclusoes() {
                       O cruzamento exaustivo dos fios condutores revela um quadro de <strong>avanço parcial e assimétrico</strong>. 
                       O Estado brasileiro avançou no plano <strong>normativo, institucional e orçamentário</strong> — recriação do MIR (2023), Lei 14.532/2023 
                       (racismo crime inafiançável), Censo 2022 com contagem inédita de quilombolas, expansão orçamentária sem precedentes do órgão de igualdade racial 
-                      {mirExec ? `(dotação de R$ ${mirExec.dotIni} mi em ${mirExec.ini} para R$ ${mirExec.dotFim} mi em ${mirExec.fim}, com execução — liquidado ÷ dotação autorizada — de ${mirExec.execIni}% para ${mirExec.execFim}%)` : ''} 
+                      {mirExec ? `(dotação de R$ ${mirExec.dotIni} mi em ${mirExec.ini} para R$ ${mirExec.dotFim} mi em ${mirExec.fim}, com execução — liquidado ÷ dotação autorizada — de ${mirExec.execIni}% para ${mirExec.execFim}%) ` : ''} 
                       e variação de {orcStats?.variacao >= 0 ? `+${orcStats?.variacao?.toFixed(0)}` : orcStats?.variacao?.toFixed(0)}% no orçamento entre períodos. 
                       Houve também ganhos em <strong>educação</strong> (superior negro: {edu2018.superiorNegroPercent}% → {edu2024.superiorNegroPercent}%), 
                       no <strong>ingresso por cotas raciais em universidades federais</strong> (14.422 em 2012 → 55.371 em 2022, +284%), 
