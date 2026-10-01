@@ -73,7 +73,7 @@ export function NormativaUpload() {
       }
       if (c.tipo === 'indicador') {
         metas.push('Meta 3 - Dados Estatísticos');
-        secoes.push('Estatísticas', 'Indicadores (BD)');
+        secoes.push('Estatísticas');
       }
       if (c.tipo === 'orcamento') {
         metas.push('Meta 3 - Base Orçamentária');

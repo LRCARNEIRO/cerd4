@@ -168,7 +168,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       <td style="text-align:right">${celulaRecente}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
-  }).join('');
+  }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores agregados.</td></tr>`;
 
 
   // ── Normativos ──
@@ -190,7 +190,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       <td>${cell}<div style="font-size:9px;color:#64748b;margin-top:2px;font-family:monospace">vinculado por: ${recsTag}</div></td>
       <td style="text-align:center">${fonte}</td>
     </tr>`;
-  }).join('');
+  }).join('') || `<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:12px">Sem normativos agregados.</td></tr>`;
 
   // ── Orçamento ──
   const orcRows = Array.from(orcByKey.values()).map(({ o, recomendacoes }) => {
@@ -212,7 +212,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       <td style="text-align:right">R$ ${(pago / 1e6).toFixed(2)}M</td>
       <td style="text-align:center;font-weight:600">${execStr}</td>
     </tr>`;
-  }).join('');
+  }).join('') || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias agregadas.</td></tr>`;
 
   const totalRecs = recsDoArtigo.length;
   const esforcoArtigo = mediaSimples(recsDoArtigo.map(r => diagnosticMap.get(r.id)?.auditoria.esforcoImpacto.esforco ?? 0));
@@ -261,7 +261,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 <p><strong>Estável não significa fracasso:</strong> melhorou = 1, estável = 1 e piorou = 0. A pergunta é se a evidência demonstra manutenção ou evolução favorável, em vez de deterioração.</p>
 <p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100. <strong>Artigo:</strong> médias simples de E e I das recomendações formalmente associadas.</p>
 
-${indByNome.size ? `<h2>📊 Indicadores agregados (${indByNome.size})</h2>
+<h2>📊 Indicadores agregados (${indByNome.size})</h2>
 <p class="legend">Evidências estatísticas distintas da matriz auditada para este Artigo, preservando cards fixos e subindicadores.</p>
 <table>
   <thead><tr>
@@ -269,15 +269,15 @@ ${indByNome.size ? `<h2>📊 Indicadores agregados (${indByNome.size})</h2>
     <th style="text-align:center">Ano Recente</th><th style="text-align:right">Valor Recente</th><th style="text-align:center">Resultado</th>
   </tr></thead>
   <tbody>${indRows}</tbody>
-</table>` : ''}
+</table>
 
-${normByTitulo.size ? `<h2>⚖️ Normativos agregados (${normByTitulo.size})</h2>
+<h2>⚖️ Normativos agregados (${normByTitulo.size})</h2>
 <table>
   <thead><tr><th style="text-align:center">Ano</th><th>Órgão emissor</th><th>Tipo</th><th>Título (abre no sistema)</th><th style="text-align:center">Fonte oficial</th></tr></thead>
   <tbody>${normRows}</tbody>
-</table>` : ''}
+</table>
 
-${orcByKey.size ? `<h2>💰 Orçamento agregado (${orcByKey.size} ações)</h2>
+<h2>💰 Orçamento agregado (${orcByKey.size} ações)</h2>
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
@@ -285,7 +285,7 @@ ${orcByKey.size ? `<h2>💰 Orçamento agregado (${orcByKey.size} ações)</h2>
     <th style="text-align:right">Pago</th><th style="text-align:center">Execução (%)</th>
   </tr></thead>
   <tbody>${orcRows}</tbody>
-</table>` : ''}
+</table>
 
 <div class="footer">Sistema de Subsídios CERD IV — Agregação de evidências por Artigo ICERD via SSoT (useDiagnosticSensor)</div>
 </body></html>`;
