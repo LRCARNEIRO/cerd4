@@ -1325,7 +1325,7 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
   );
 }
 
-function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
+export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   
   const categorias = [...new Set(indicadores.map(i => i.categoria))].sort();
