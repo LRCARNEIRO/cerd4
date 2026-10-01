@@ -103,9 +103,11 @@ function generateJustificativa(paragrafo: string, indicadores: any[], orcamento:
     const latestOrcs = orcs.filter((o: any) => o.ano === latestYear);
     const totalPago = latestOrcs.reduce((s: number, o: any) => s + (o.pago || 0), 0);
     const totalAutorizado = latestOrcs.reduce((s: number, o: any) => s + (o.dotacao_autorizada || 0), 0);
-    const execucao = totalAutorizado > 0 ? (totalPago / totalAutorizado) * 100 : null;
+    const __el = latestOrcs.filter((o: any) => o.tipo_dotacao !== 'extraorcamentario' && Number(o.dotacao_autorizada) > 0);
+    const __d = __el.reduce((s: number, o: any) => s + Number(o.dotacao_autorizada), 0);
+    const execucao = __d > 0 ? __el.reduce((s: number, o: any) => s + (Number(o.liquidado) || 0), 0) / __d * 100 : null;
     const orcText = totalPago > 0
-      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução ${execucao ? pct(execucao) : '—'}`
+      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução (liquidado ÷ dotação) ${execucao != null ? pct(execucao) : '—'}`
       : `${latestOrcs.length} ação(ões) orçamentária(s) em ${latestYear}`;
     parts.push(`Orçamento (${orcs.length} ações vinculadas): ${orcText}`);
 
@@ -161,7 +163,9 @@ function generateSuggestedResponse(lacuna: any, indicadores: any[], orcamento: a
   if (linkedOrcs.length > 0) {
     const totalDot = linkedOrcs.reduce((s:number, o:any) => s + (Number(o.dotacao_autorizada)||0), 0);
     const totalPago = linkedOrcs.reduce((s:number, o:any) => s + (Number(o.pago)||0), 0);
-    const exec = totalDot > 0 ? ((totalPago/totalDot)*100).toFixed(1) : '0';
+    const __el2 = linkedOrcs.filter((o:any) => o.tipo_dotacao !== 'extraorcamentario' && Number(o.dotacao_autorizada) > 0);
+    const __d2 = __el2.reduce((s:number,o:any)=> s + Number(o.dotacao_autorizada), 0);
+    const exec = __d2 > 0 ? (__el2.reduce((s:number,o:any)=> s + (Number(o.liquidado)||0), 0) / __d2 * 100).toFixed(1) : '—';
     parts.push(`Investimento: ${linkedOrcs.length} ação(ões), dotação R$ ${fmt(totalDot/1e6)}M, execução ${exec}%.`);
   }
 
