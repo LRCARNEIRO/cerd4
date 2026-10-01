@@ -52,6 +52,19 @@ function safeNum(n: any): string {
   return String(n);
 }
 
+// Cita somente o recorte auditado do indicador canônico, nunca o espelho ou um valor fixo.
+function ensinoSuperiorNegroAuditado(indicadores: any[]): string {
+  const ind = indicadores.find(i => i.codigo === 'IND-129' && isEvidenceEligibleIndicator(i));
+  const series = ind?.dados?.series;
+  if (!series || typeof series !== 'object') return '';
+  const anos = Object.keys(series).filter(ano => /^\d{4}$/.test(ano)).sort();
+  const ano = anos.reverse().find(ano => typeof series[ano]?.superiorNegroPercent === 'number' && Number.isFinite(series[ano].superiorNegroPercent));
+  if (!ano) return '';
+  const valor = series[ano].superiorNegroPercent as number;
+  const fonte = String(ind.fonte || 'PNAD Contínua');
+  return `Entre a população negra, o percentual com ensino superior completo é de <strong>${valor.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%</strong> em ${ano} (${fonte}; ${ind.codigo}, recorte “superiorNegroPercent”).`;
+}
+
 // ─── Helper: render any array of objects as HTML table ───
 function arrayToHTMLTable(data: any[], title?: string): string {
   if (!data || data.length === 0) return '';
@@ -283,6 +296,7 @@ ${arrayToHTMLTable(feminicidioSerie, '')}
 
 <h3>2.3. Educação — Série Histórica</h3>
 ${arrayToHTMLTable(educacaoSerieHistorica, '')}
+${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${ensinoSuperiorNegroAuditado(indicadoresBD)}</div>` : ''}
 <div class="chart-inline">${svgLineChart({
   label: educacaoSerieHistorica.map((d: any) => String(d.ano)).join(','),
   series: [
@@ -320,7 +334,8 @@ ${juventudeNegraBD.length > 0 ? `<table><thead><tr><th>Indicador</th><th>Negros<
 <div class="section-summary">Jovens negros: <strong>${jovensNegrosViolencia.percentualObitosExternos}%</strong> dos óbitos por causas externas (Fiocruz 2025). Pop. carcerária: <strong>${jovensNegrosViolencia.populacaoCarcerariaPercentualNegra}%</strong> negra.</div>
 
 <h3>3.5. Educação Interseccional</h3>
-<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados removidos — IBGE/INEP não publica educação superior desagregada por raça × gênero.</div>
+${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${ensinoSuperiorNegroAuditado(indicadoresBD)}</div>` : ''}
+<div class="lacuna-box">⚠️ <strong>LACUNA:</strong> O recorte racial acima não equivale ao cruzamento raça × gênero; não há dado auditado desse cruzamento neste relatório.</div>
 
 <h3>3.6. Saúde Interseccional</h3>
 <div class="lacuna-box">⚠️ <strong>LACUNA:</strong> Dados numéricos removidos — DataSUS não cruza mortalidade materna por renda. Série DataSUS/SIM: razão negra/branca = ${(saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaNegra / saudeSerieHistorica[saudeSerieHistorica.length - 1].mortalidadeMaternaBranca).toFixed(1)}x em ${saudeSerieHistorica[saudeSerieHistorica.length - 1].ano}. Pesquisa Nascer no Brasil II (Nov/2023) reporta ~2x com metodologia própria.</div>
@@ -749,6 +764,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 </div>
 
 <h2>1. Indicadores de Séries Históricas — ${seriesExpandidas.length}</h2>
+${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${ensinoSuperiorNegroAuditado(indicadoresBD)}</div>` : ''}
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Cada linha representa <strong>um indicador</strong>; as categorias internas (Branca, Negra, Preta, Parda, gênero, PCD etc.) aparecem na coluna <strong>Desagregações</strong>.
   O link <strong>↗ abrir no sistema</strong> leva à <em>aba específica</em> da <a href="${systemBaseUrl}/estatisticas">Base Estatística</a> onde o gráfico/tabela do indicador é renderizado (não há replicação de valores aqui — para auditar, abra no sistema).
