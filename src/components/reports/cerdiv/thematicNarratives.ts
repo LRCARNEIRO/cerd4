@@ -458,9 +458,8 @@ export function renderLGBTandDisabilityNarrative(serieAntra: any[], lgbtqia: any
   return `
   <h3>F. Interseccionalidades Específicas — LGBTQIA+ e Deficiência</h3>
   <div class="section">
-    <p>A análise interseccional revela grupos sub-representados nas estatísticas oficiais, mas cuja vulnerabilidade é agravada pela sobreposição de raça com outras dimensões de exclusão.</p>
+    <p>As evidências disponíveis permitem analisar conjuntamente raça e outras dimensões de exclusão nos recortes apresentados a seguir.</p>
     ${blocks.join('')}
-    <p><strong>Conclusão:</strong> O Comitê CERD reiteradamente recomenda a ampliação da coleta de dados interseccionais. Embora o Brasil tenha avançado (Censo 2022 incluiu quilombolas e ciganos), persistem lacunas graves para LGBTQIA+ negros e PcD negros.</p>
   </div>`;
 }
 

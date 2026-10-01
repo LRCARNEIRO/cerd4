@@ -1470,10 +1470,6 @@ function renderIntersectionalAnalysis(indicadores: IndicadorInterseccional[], la
       }))
     )}
 
-    <div class="analysis-box">
-      <h4>🔍 Lacunas de Interseccionalidade</h4>
-      <p>Apesar dos avanços na desagregação de dados, persistem lacunas significativas para grupos como <strong>LGBTQIA+ negros</strong> (dados limitados ao Disque 100) e <strong>PcD negros</strong> (sem série temporal completa). O Comitê recomenda fortemente a ampliação da coleta de dados interseccionais para esses grupos sub-representados.</p>
-    </div>
   </div>`;
 }
 

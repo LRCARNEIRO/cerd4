@@ -13,12 +13,13 @@ import { BarChart3, TrendingUp, FileText, Layers, Users, Activity, ExternalLink,
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
-import { isPendingAuditIndicator } from '@/utils/indicatorEvidenceGuards';
+import { isPendingAuditIndicator, isMethodologicalGapPlaceholder } from '@/utils/indicatorEvidenceGuards';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { injectExportToolbar } from '@/utils/reportExportToolbar';
 import { normalizeCodigoInput } from '@/utils/indicadorCodigo';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { extractDadoUnico } from '@/utils/indicadorDadoUnico';
 
 const COLORS = [
   'hsl(var(--chart-1))', 
@@ -1327,8 +1328,9 @@ function SummaryCards({ indicadores }: { indicadores: IndicadorData[] }) {
 
 export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
   const now = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
-  
-  const categorias = [...new Set(indicadores.map(i => i.categoria))].sort();
+  // Não misturar registros que só documentam falta de dados com indicadores medidos.
+  const medidos = indicadores.filter(i => !isMethodologicalGapPlaceholder(i));
+  const categorias = [...new Set(medidos.map(i => i.categoria))].sort();
   
   let html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
 <title>Inventário de Indicadores Interseccionais — CERD IV Brasil</title>
@@ -1358,18 +1360,18 @@ export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
 </style></head><body>
 <h1>Inventário de Indicadores Interseccionais</h1>
 <p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2025) — Gerado em ${now}</p>
-<p class="meta">${indicadores.length} indicadores em ${categorias.length} categorias temáticas</p>
+<p class="meta">${medidos.length} indicadores em ${categorias.length} categorias temáticas</p>
 
 <div class="summary">
-  <div class="summary-item"><div class="value">${indicadores.length}</div><div class="label">Indicadores</div></div>
+  <div class="summary-item"><div class="value">${medidos.length}</div><div class="label">Indicadores</div></div>
   <div class="summary-item"><div class="value">${categorias.length}</div><div class="label">Categorias</div></div>
-  <div class="summary-item"><div class="value">${indicadores.filter(i => i.desagregacao_raca).length}</div><div class="label">Desagregação Racial</div></div>
-  <div class="summary-item"><div class="value">${new Set(indicadores.map(i => i.fonte)).size}</div><div class="label">Fontes Oficiais</div></div>
+  <div class="summary-item"><div class="value">${medidos.filter(i => i.desagregacao_raca).length}</div><div class="label">Desagregação Racial</div></div>
+  <div class="summary-item"><div class="value">${new Set(medidos.map(i => i.fonte)).size}</div><div class="label">Fontes Oficiais</div></div>
 </div>
 `;
 
   for (const cat of categorias) {
-    const catInds = indicadores.filter(i => i.categoria === cat);
+    const catInds = medidos.filter(i => i.categoria === cat);
     html += `<h2>${cat} (${catInds.length} indicadores)</h2>`;
     
     for (const ind of catInds) {
@@ -1420,7 +1422,10 @@ export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
           }
         }
       } else {
-        html += `<p class="meta">Dados não disponíveis para visualização tabular.</p>`;
+        const unico = extractDadoUnico(ind.dados, undefined, ind.nome);
+        if (unico && (unico.valor !== undefined || unico.texto)) {
+          html += `<p class="meta"><strong>Dado único${unico.ano ? ` (${unico.ano})` : ''}:</strong> ${unico.valor !== undefined ? unico.valor.toLocaleString('pt-BR') : unico.texto}${unico.unidade ? ` ${unico.unidade}` : ''}</p>`;
+        }
       }
       
       html += `<p class="fonte">Fonte: ${ind.fonte}${ind.url_fonte ? ` — ${ind.url_fonte}` : ''}</p>`;

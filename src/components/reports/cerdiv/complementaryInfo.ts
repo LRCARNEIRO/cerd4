@@ -120,23 +120,17 @@ export function renderDataAnnexes(
   <h3>A.1 — Composição racial da população brasileira (Censo 2022)</h3>
   ${renderComposicaoRacialTable(demo)}
 
-  <h3>A.2 — Indicadores socioeconômicos por raça/cor (2018–2025)</h3>
-  ${renderSocioeconomicTable(eco)}
+  ${eco.length ? `<h3>A.2 — Indicadores socioeconômicos por raça/cor (2018–2025)</h3>${renderSocioeconomicTable(eco)}` : ''}
 
-  <h3>A.3 — Indicadores de segurança pública por raça/cor (2018–2024)</h3>
-  ${renderSecurityTable(seg)}
+  ${seg.length ? `<h3>A.3 — Indicadores de segurança pública por raça/cor (2018–2024)</h3>${renderSecurityTable(seg)}` : ''}
 
-  <h3>A.4 — Mortalidade materna por raça/cor (2018–2024)</h3>
-  ${renderMaternalMortalityTable(sau)}
+  ${sau.length ? `<h3>A.4 — Mortalidade materna por raça/cor (2018–2024)</h3>${renderMaternalMortalityTable(sau)}` : ''}
 
-  <h3>A.5 — Indicadores educacionais por raça/cor (2018–2024)</h3>
-  ${renderEducationTable(edu)}
+  ${edu.length ? `<h3>A.5 — Indicadores educacionais por raça/cor (2018–2024)</h3>${renderEducationTable(edu)}` : ''}
 
-  <h3>A.6 — Feminicídio por raça (série histórica)</h3>
-  ${renderFeminicideTable(fem)}
+  ${fem.length ? `<h3>A.6 — Feminicídio por raça (série histórica)</h3>${renderFeminicideTable(fem)}` : ''}
 
-  <h3>A.7 — Processos judiciais de racismo e denúncias (2020–2025)</h3>
-  ${renderJudicialTable(indicadores)}
+  ${renderJudicialTable(indicadores) ? `<h3>A.7 — Processos judiciais de racismo e denúncias (2020–2025)</h3>${renderJudicialTable(indicadores)}` : ''}
   `;
 }
 
@@ -159,7 +153,7 @@ function renderComposicaoRacialTable(demo: any): string {
 }
 
 function renderSocioeconomicTable(eco: any[]): string {
-  if (!eco.length) return '<p>Dados não disponíveis.</p>';
+  if (!eco.length) return '';
   return `<table>
     <thead><tr><th>Ano</th><th>Renda negra (R$)</th><th>Renda branca (R$)</th><th>Razão N/B</th><th>Desempr. N (%)</th><th>Desempr. B (%)</th></tr></thead>
     <tbody>${eco.map(e => `<tr>
@@ -175,7 +169,7 @@ function renderSocioeconomicTable(eco: any[]): string {
 }
 
 function renderSecurityTable(seg: any[]): string {
-  if (!seg.length) return '<p>Dados não disponíveis.</p>';
+  if (!seg.length) return '';
   return `<table>
     <thead><tr><th>Ano</th><th>Taxa hom. negros (100 mil)</th><th>Taxa hom. não negros</th><th>Risco relativo</th><th>Vítimas negras hom. (%)</th><th>Vítimas negras let. pol. (%)</th></tr></thead>
     <tbody>${seg.map(s => `<tr>
@@ -191,7 +185,7 @@ function renderSecurityTable(seg: any[]): string {
 }
 
 function renderMaternalMortalityTable(sau: any[]): string {
-  if (!sau.length) return '<p>Dados não disponíveis.</p>';
+  if (!sau.length) return '';
   return `<table>
     <thead><tr><th>Ano</th><th>MM negras (100 mil NV)</th><th>MM brancas</th><th>Fonte</th></tr></thead>
     <tbody>${sau.map(s => `<tr>
@@ -204,7 +198,7 @@ function renderMaternalMortalityTable(sau: any[]): string {
 }
 
 function renderEducationTable(edu: any[]): string {
-  if (!edu.length) return '<p>Dados não disponíveis.</p>';
+  if (!edu.length) return '';
   const first = edu[0];
   const last = edu[edu.length - 1];
   return `<table>
@@ -217,7 +211,7 @@ function renderEducationTable(edu: any[]): string {
 }
 
 function renderFeminicideTable(fem: any[]): string {
-  if (!fem.length) return '<p>Dados não disponíveis.</p>';
+  if (!fem.length) return '';
   return `<table>
     <thead><tr><th>Ano</th><th>Total feminicídios</th><th>% mulheres negras</th><th>Fonte</th></tr></thead>
     <tbody>${fem.map(f => `<tr>
