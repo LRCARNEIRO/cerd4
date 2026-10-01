@@ -44,6 +44,7 @@ import {
 } from './cerdiv/thematicNarratives';
 import { renderArticleNarrative } from './cerdiv/articleNarratives';
 import { renderComplementaryInfo, renderConsideracoesFinais, renderDialogoSociedadeCivil, renderDataAnnexes } from './cerdiv/complementaryInfo';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 // ═══════════════════════════════════════════
 // TIPOS
@@ -921,7 +922,7 @@ function generateArticleAnalysis(
   const critico = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
   const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
   const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
-  const execucao = totalDotacao > 0 ? (totalPago / totalDotacao) * 100 : 0;
+  const execucao = calcularExecucaoOrcamentaria(orcDados as any).percentual ?? 0;
   const eixos = uniqueStrings(lacunas.map(l => eixoLabels[l.eixo_tematico] || l.eixo_tematico));
   const grupos = uniqueStrings(lacunas.map(l => grupoLabels[l.grupo_focal] || l.grupo_focal));
   const melhorias = indicadores.filter(i => tendenciaPadrao(i as any) === 'melhorou').map(i => i.nome);
@@ -938,7 +939,7 @@ function generateArticleAnalysis(
     <p>No recorte deste artigo, o sistema consolidou <strong>${total}</strong> lacunas/recomendações diretamente associadas, <strong>${indicadores.length}</strong> indicadores vinculados, <strong>${normativos.length}</strong> marcos normativos e <strong>${orcDados.length}</strong> registros orçamentários rastreáveis. Os eixos mais associados são ${eixos.join(', ') || 'não identificados'}; os grupos mais afetados são ${grupos.join(', ') || 'não identificados'}.</p>
     ${total > 0 ? `<p>Do total de recomendações vinculadas, ${cumprido} foram classificadas como cumpridas, ${parcial} como parcialmente cumpridas e ${critico} seguem em não cumprimento ou retrocesso. Isso significa que ${((cumprido + parcial) / Math.max(total, 1) * 100).toFixed(1)}% do conjunto teve algum grau de resposta estatal, porém com persistência de déficits estruturais que impedem a conclusão positiva do ciclo.</p>` : ''}
     ${indicadores.length > 0 ? `<p>Na base estatística, os principais sinais são: ${melhorias.length ? `<strong>melhoras parciais</strong> em ${melhorias.slice(0, 4).join(', ')}` : 'sem melhoras robustas registradas'}${melhorias.length && pioras.length ? '; ' : ''}${pioras.length ? `<strong>alertas</strong> em ${pioras.slice(0, 4).join(', ')}` : ''}. A leitura do artigo não é, portanto, apenas normativa: ela se ancora em séries históricas, quadros-síntese e evidências quantitativas do sistema.</p>` : ''}
-    ${orcDados.length > 0 ? `<p>Na dimensão orçamentária, foram rastreados ${fmtBRL(totalDotacao)} em dotação autorizada e ${fmtBRL(totalPago)} pagos, com execução média de ${execucao.toFixed(1)}%. Esse dado importa porque evidencia se a promessa normativa e programática se converteu, ou não, em capacidade material de implementação.</p>` : ''}
+    ${orcDados.length > 0 ? `<p>Na dimensão orçamentária, foram rastreados ${fmtBRL(totalDotacao)} em dotação autorizada e ${fmtBRL(totalPago)} pagos, com execução (liquidado ÷ dotação autorizada) de ${execucao.toFixed(1)}%. Esse dado importa porque evidencia se a promessa normativa e programática se converteu, ou não, em capacidade material de implementação.</p>` : ''}
     ${normativos.length > 0 ? `<p>Na dimensão normativa, o artigo foi sustentado por ${normativos.length} documentos do acervo institucional. Esses marcos ajudam a explicar por que certos resultados melhoram lentamente, enquanto outros permanecem apenas no plano declaratório.</p>` : ''}
     ${transversalHTML}`;
 }
@@ -1090,7 +1091,7 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   const critico = lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').length;
   const totalPago = orcDados.reduce((acc, row) => acc + num(row.pago), 0);
   const totalDotacao = orcDados.reduce((acc, row) => acc + num(row.dotacao_autorizada), 0);
-  const execucao = totalDotacao > 0 ? (totalPago / totalDotacao * 100) : 0;
+  const execucao = calcularExecucaoOrcamentaria(orcDados as any).percentual ?? 0;
   const evolution = summarizeIndicatorEvolution(indicadores);
   const melhorias = evolution.favoraveis + evolution.novos;
   const pioras = evolution.desfavoraveis;
@@ -1115,7 +1116,7 @@ function renderArticleAssessment(artigo: string, lacunas: LacunaIdentificada[], 
   return `
     <div class="fio-condutor" style="margin-top:0.8cm;border-left-width:5px">
       <h4 style="margin-top:0;font-size:11pt">${icon} Veredito — Artigo ${artigo}: <span class="badge ${badgeClass}" style="font-size:9.5pt;padding:4px 12px">${veredito}</span></h4>
-      <p style="font-size:10pt">O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (${fmtBRL(totalPago)} de ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018–2025.</p>
+      <p style="font-size:10pt">O cruzamento entre as ${total} recomendações vinculadas (${cumprido} atendidas${emAndamentoText}, ${critico} em déficit), ${indicadores.length} indicadores vinculados (${melhorias} com leitura favorável, ${pioras} com piora), ${normativos.length} marcos normativos, ${orcDados.length} ação(ões) orçamentária(s) vinculada(s) e execução orçamentária de ${execucao.toFixed(1)}% (liquidado ÷ dotação autorizada; pago: ${fmtBRL(totalPago)}; dotação: ${fmtBRL(totalDotacao)}) fundamenta a classificação de <strong>${veredito}</strong> para este artigo no período 2018–2025.</p>
        ${critico > 0 ? `<p style="font-size:9pt;color:#991b1b;margin-bottom:0"><strong>⚠ Lacunas prioritárias:</strong> ${lacunas.filter(l => l.status_cumprimento === 'nao_cumprido' || l.status_cumprimento === 'retrocesso').slice(0, 3).map(l => `§${l.paragrafo} (${l.tema})`).join('; ')}.</p>` : ''}
     </div>
     ${renderStatusLegend()}`;

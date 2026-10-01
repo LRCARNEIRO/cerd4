@@ -32,6 +32,7 @@ import {
   classePorRaca as hcClasse,
 } from '@/components/estatisticas/StatisticsData';
 import { useMirrorData } from '@/hooks/useMirrorData';
+import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 function generateConsolidatedHTML(data: {
   indicadores: any[];
@@ -100,9 +101,10 @@ function generateConsolidatedHTML(data: {
   // REGRA DE OURO: Zero dados fabricados — usar exclusivamente dados do BD
   const budgetHistorical = (() => {
     if (!orcamentarios || orcamentarios.length === 0) return [];
-    const byYear = new Map<number, { autorizado: number; pago: number }>();
+    const byYear = new Map<number, { autorizado: number; pago: number; rows: any[] }>();
     orcamentarios.forEach((o: any) => {
-      const entry = byYear.get(o.ano) || { autorizado: 0, pago: 0 };
+      const entry = byYear.get(o.ano) || { autorizado: 0, pago: 0, rows: [] as any[] };
+      entry.rows.push(o);
       entry.autorizado += Number(o.dotacao_autorizada || 0);
       entry.pago += Number(o.pago || 0);
       byYear.set(o.ano, entry);
@@ -113,7 +115,7 @@ function generateConsolidatedHTML(data: {
         ano,
         autorizado: v.autorizado,
         pago: v.pago,
-        execucao: v.autorizado > 0 ? Math.round((v.pago / v.autorizado) * 1000) / 10 : 0,
+        execucao: Math.round((calcularExecucaoOrcamentaria(v.rows).percentual ?? 0) * 10) / 10,
       }));
   })();
 
