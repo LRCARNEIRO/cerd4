@@ -748,7 +748,6 @@ ${conclusoes.map((c: any) => `
 
   return (
     <>
-      <BaixarTudoButton />
       <Card className="mb-6 border-l-4 border-l-accent">
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-3">
