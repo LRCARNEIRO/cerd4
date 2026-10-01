@@ -280,7 +280,7 @@ Deno.serve(async (req) => {
             const grupoFocal = classificarGrupoFocal(item, orgao);
             const eixoTematico = classificarEixoTematico(grupoFocal);
             const dotRef = dotacaoAutorizada || dotacaoInicial;
-            const percentual = dotRef && pago ? Math.round((pago / dotRef) * 10000) / 100 : null;
+            const percentual = dotacaoAutorizada ? Math.round(((liquidado || 0) / dotacaoAutorizada) * 10000) / 100 : null;
 
             const key = `${orgao}|${programa.substring(0, 250)}|${ano}`;
             if (!registrosMap.has(key)) {

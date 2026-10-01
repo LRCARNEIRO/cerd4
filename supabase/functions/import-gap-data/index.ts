@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       const pago = r.pago || null;
 
       const dotRef = dotacaoAutorizada || dotacaoInicial;
-      const percentual = dotRef && pago ? Math.round((pago / dotRef) * 10000) / 100 : null;
+      const percentual = r.dotacao_autorizada ? Math.round(((liquidado || 0) / r.dotacao_autorizada) * 10000) / 100 : null;
 
       const isSesai = orgao === "SESAI";
 

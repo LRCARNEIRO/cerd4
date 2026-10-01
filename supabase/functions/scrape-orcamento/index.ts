@@ -149,7 +149,7 @@ function buildRecord(item: any, fallbackOrgao: string, ano: number) {
   if (!dotacao && !empenhado && !liquidado && !pago) return null;
 
   const orgao = resolveOrgao(item, fallbackOrgao);
-  const percentual = dotacao && pago ? Math.round((pago / dotacao) * 10000) / 100 : null;
+  const percentual = dotacao ? Math.round(((liquidado || 0) / dotacao) * 10000) / 100 : null;
 
   return {
     programa: programa.substring(0, 250),

@@ -200,7 +200,7 @@ async function processYear(
 
       const dotRef = updateData.dotacao_autorizada || updateData.dotacao_inicial || 0;
       if (dotRef > 0 && rec.pago) {
-        updateData.percentual_execucao = Math.min(Math.round((rec.pago / dotRef) * 10000) / 100, 99999.99);
+        updateData.percentual_execucao = Math.min(Math.round(((Number(rec.liquidado) || 0) / dotRef) * 10000) / 100, 99999.99);
       }
 
       if (Object.keys(updateData).length === 0) continue;

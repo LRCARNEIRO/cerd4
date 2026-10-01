@@ -295,7 +295,7 @@ Deno.serve(async (req) => {
             const grupoFocal = resolveGrupoFocal(prog.agenda, orgao, textoCompleto);
 
             const dotRef = dotacaoAutorizada || dotacaoInicial;
-            const percentual = dotRef && pago ? Math.round((pago / dotRef) * 10000) / 100 : null;
+            const percentual = dotacaoAutorizada ? Math.round(((liquidado || 0) / dotacaoAutorizada) * 10000) / 100 : null;
 
             registros.push({
               programa: programa.substring(0, 250),
