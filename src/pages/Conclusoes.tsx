@@ -68,7 +68,7 @@ export default function Conclusoes() {
   });
   const mirExec = useMemo(() => {
     const rows = (mirRows || []) as any[];
-    const anos = [...new Set(rows.filter(r => r.tipo_dotacao !== 'extraorcamentario' && Number(r.dotacao_autorizada) > 0).map(r => r.ano))].sort();
+    const anos = [...new Set(rows.filter(r => r.ano >= 2023 && r.tipo_dotacao !== 'extraorcamentario' && Number(r.dotacao_autorizada) > 0).map(r => r.ano))].sort();
     if (anos.length === 0) return null;
     const ini = anos[0], fim = anos[anos.length - 1];
     const calc = (a: number) => calcularExecucaoOrcamentaria(rows.filter(r => r.ano === a));
