@@ -67,6 +67,13 @@ export default function Conclusoes() {
       return data || [];
     },
   });
+  const quilombolaTit = useMemo(() => {
+    const ind = ((indicadores || []) as any[]).find(i => (i.codigo_curto || i.codigo) === 'IND-162');
+    const series = ind?.dados?.series || {};
+    const anos = Object.keys(series).sort();
+    const ano = anos[anos.length - 1];
+    return ano ? { ano, tituladas: series[ano]?.tituladas, certificadas: series[ano]?.certificadas } : null;
+  }, [indicadores]);
   const mirExec = useMemo(() => {
     const rows = (mirRows || []) as any[];
     const anos = [...new Set(rows.filter(r => r.ano >= 2023 && r.tipo_dotacao !== 'extraorcamentario' && Number(r.dotacao_autorizada) > 0).map(r => r.ano))].sort();
