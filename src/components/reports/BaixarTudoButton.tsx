@@ -27,7 +27,7 @@ const espera = (ms: number) => new Promise(res => setTimeout(res, ms));
  * - `chaves`: relatórios registrados pela página (mesmos geradores dos botões PDF/DOCX);
  * - `seletor`: a área exportável da tela, como faz o botão "PDF/HTML" da página.
  */
-async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: string; titulo?: string; aba?: string }, timeoutMs = 60000) {
+async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: string; titulo?: string; aba?: string; todasAbas?: boolean }, timeoutMs = 60000) {
   const itens: { titulo: string; html: string }[] = [];
   const falhas: string[] = [];
   const iframe = document.createElement('iframe');
@@ -49,7 +49,38 @@ async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: s
       aba.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
       aba.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true }));
     }
-    if (opt.chaves) {
+    if (opt.todasAbas && opt.seletor) {
+      let container: HTMLElement | null = null;
+      while (Date.now() - inicio < timeoutMs) {
+        container = iframe.contentDocument?.querySelector<HTMLElement>(opt.seletor) || null;
+        if (container?.querySelector('[role="tab"]')) break;
+        await espera(500);
+      }
+      const abas = Array.from(container?.querySelectorAll<HTMLElement>('[role="tab"]') || []);
+      const { buildExportHtmlFromElement } = await import('@/utils/reportExportToolbar');
+      for (const aba of abas) {
+        const titulo = `${opt.titulo} — ${aba.innerText.trim()}`;
+        aba.focus();
+        aba.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
+        aba.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true }));
+        let ultimo = -1, estavel = 0, painel: HTMLElement | null = null;
+        const prazo = Date.now() + timeoutMs;
+        while (Date.now() < prazo) {
+          painel = container?.querySelector<HTMLElement>('[role="tabpanel"][data-state="active"]') || null;
+          const n = painel?.innerText.length ?? -1;
+          const carregando = !!painel?.querySelector('.animate-spin');
+          if (aba.getAttribute('data-state') === 'active' && n > 0 && n === ultimo && !carregando) {
+            if (++estavel >= 4) break;
+          } else estavel = 0;
+          ultimo = n;
+          await espera(500);
+        }
+        if (aba.getAttribute('data-state') === 'active' && painel?.innerText.trim()) {
+          itens.push({ titulo, html: buildExportHtmlFromElement(painel, rota, titulo) });
+        } else falhas.push(titulo);
+      }
+      if (!abas.length) falhas.push(opt.titulo || rota);
+    } else if (opt.chaves) {
       let regs: Map<string, any> | undefined;
       while (Date.now() - inicio < timeoutMs) {
         regs = iframe.contentWindow ? getExportRegistry(iframe.contentWindow) : undefined;
@@ -170,7 +201,7 @@ export function BaixarTudoButton() {
         coletarPagina('/gerar-relatorios', { aba: 'consolidado', chaves: ['escopo'], titulo: 'Escopo Consolidado' }),
         coletarPagina('/', { chaves: ['met-alim'] }),
         coletarPagina('/conclusoes', { chaves: ['conc-fios', 'conc-cruz', 'conc-alr', 'conc-tab', 'conc-sint'] }),
-        coletarPagina('/estatisticas', { seletor: '#export-estatisticas', titulo: 'Estatísticas — visão da tela' }),
+        coletarPagina('/estatisticas', { seletor: '#export-estatisticas', titulo: 'Estatísticas — visão da tela', todasAbas: true }),
         coletarPagina('/fontes', { seletor: '#export-fontes-dados', titulo: 'Fontes de Dados' }),
         coletarPagina('/documentos-balizadores', { seletor: '#export-documentos-balizadores', titulo: 'Documentos Balizadores' }),
         coletarPagina('/guia-auditoria', { seletor: '#export-guia-auditoria', titulo: 'Guia de Auditoria' }),
