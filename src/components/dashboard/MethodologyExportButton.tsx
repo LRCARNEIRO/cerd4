@@ -7,6 +7,7 @@ import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useMatrizAuditada } from '@/utils/matrizAuditada';
+import { useRegisterExport } from '@/utils/exportRegistry';
 
 type Contagens = { est: number; orc: number; norm: number; enderecos: number; rel: { total: number; est: number; orc: number; norm: number } };
 
@@ -125,6 +126,8 @@ export function MethodologyExportButton() {
       setGenerating(false);
     }
   };
+
+  useRegisterExport('met-alim', 'Metodologia de Alimentação de Dados', 160, !!(indicadores && orcamento && matriz && normCount !== undefined), () => generateMethodologyHTML(contagens()));
 
   return (
     <div className="flex gap-2">

@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import { generateSectionPDF, cardHTML, evidenceListHTML, tagsHTML, sectionTitleHTML, statCardHTML } from '@/utils/generateSectionPDF';
+import { useRegisterExport, captureSectionPDF } from '@/utils/exportRegistry';
 import {
   ViolenciaRacialChart, FeminicidioChart, EducacaoComparativaChart,
   SaudeComparativaChart, RendaComparativaChart, DesigualdadeEvolucaoChart,
@@ -227,6 +228,18 @@ export default function Conclusoes() {
 
     generateSectionPDF({ titulo: 'Síntese Executiva', subtitulo: `${stats?.total || 0} recomendações ONU × ${respostas?.length || 0} respostas CERD III`, dataGeracao: now, conteudo: content });
   };
+
+  // "Baixar tudo": as 5 seções exportáveis desta página, com os mesmos geradores dos botões.
+  const secoesReady = !isLoading;
+  useRegisterExport('conc-fios', 'Conclusões — Fios Condutores', 210, secoesReady, () => captureSectionPDF(gerarPDFFios));
+  useRegisterExport('conc-cruz', 'Conclusões — Cruzamentos Analíticos', 211, secoesReady, () => captureSectionPDF(gerarPDFCruzamentos));
+  useRegisterExport('conc-alr', 'Conclusões — Avanços, Retrocessos e Lacunas Persistentes', 212, secoesReady, () => captureSectionPDF(() => {
+    gerarPDFConclusoes('avanco', 'Avanços');
+    gerarPDFConclusoes('retrocesso', 'Retrocessos');
+    gerarPDFConclusoes('lacuna_persistente', 'Lacunas Persistentes');
+  }));
+  useRegisterExport('conc-tab', 'Conclusões — Tabela Síntese 2018→2024', 213, secoesReady, () => captureSectionPDF(gerarPDFSintese));
+  useRegisterExport('conc-sint', 'Conclusões — Síntese Executiva', 214, secoesReady && !!sinteseExecutiva, () => captureSectionPDF(gerarPDFSinteseExecutiva));
 
   const conclusoesAgrupadas = {
     lacuna_persistente: conclusoesFiltradas.filter(c => c.tipo === 'lacuna_persistente'),
