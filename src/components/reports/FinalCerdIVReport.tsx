@@ -12,7 +12,6 @@ import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { generateCerdIVFullHTML, type CerdIVFullData } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview } from '@/utils/reportPreview';
-import { useRegisterExport } from '@/utils/exportRegistry';
 
 export function FinalCerdIVReport() {
   const {
