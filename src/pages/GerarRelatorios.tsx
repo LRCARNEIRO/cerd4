@@ -51,6 +51,7 @@ export default function GerarRelatorios() {
 
   // Use sensor-reclassified status (same source as Dashboard/Painel Geral)
   const { summary: sensorSummary, diagnosticMap, isReady: sensorReady } = useDiagnosticSensor(lacunas);
+  if (sensorReady && typeof window !== 'undefined') (window as any).__cerdDiagnosticMap = diagnosticMap;
 
   const totalLacunas = stats?.total || 0;
   const cumpridas = sensorReady ? sensorSummary.statusReclassificado.cumprido : (stats?.porStatus.cumprido || 0);
