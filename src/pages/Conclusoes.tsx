@@ -188,13 +188,13 @@ export default function Conclusoes() {
 
   const gerarPDFSintese = () => {
     const seg2018L = segurancaPublica[0];
-    const seg2024L = segurancaPublica[segurancaPublica.length - 1];
+    const seg2024L = ((segurancaPublica as any[]).find((d: any) => Number(d.ano) === 2024) ?? segurancaPublica[segurancaPublica.length - 1]);
     const edu2018L = educacaoSerieHistorica[0];
-    const edu2024L = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+    const edu2024L = ((educacaoSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? educacaoSerieHistorica[educacaoSerieHistorica.length - 1]);
     const eco2018L = indicadoresSocioeconomicos[0];
     const eco2024L = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
     const fem2018L = feminicidioSerie[0];
-    const fem2024L = feminicidioSerie[feminicidioSerie.length - 1];
+    const fem2024L = ((feminicidioSerie as any[]).find((d: any) => Number(d.ano) === 2024) ?? feminicidioSerie[feminicidioSerie.length - 1]);
     
     let content = sectionTitleHTML('Indicadores-Chave 2018 → 2024');
     content += '<div class="grid-2">';
@@ -256,13 +256,13 @@ export default function Conclusoes() {
 
   // Dados do Escopo para síntese
   const seg2018 = segurancaPublica[0];
-  const seg2024 = segurancaPublica[segurancaPublica.length - 1];
+  const seg2024 = ((segurancaPublica as any[]).find((d: any) => Number(d.ano) === 2024) ?? segurancaPublica[segurancaPublica.length - 1]);
   const edu2018 = educacaoSerieHistorica[0];
-  const edu2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+  const edu2024 = ((educacaoSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? educacaoSerieHistorica[educacaoSerieHistorica.length - 1]);
   const eco2018 = indicadoresSocioeconomicos[0];
   const eco2024 = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
   const fem2018 = feminicidioSerie[0];
-  const fem2024 = feminicidioSerie[feminicidioSerie.length - 1];
+  const fem2024 = ((feminicidioSerie as any[]).find((d: any) => Number(d.ano) === 2024) ?? feminicidioSerie[feminicidioSerie.length - 1]);
 
   return (
     <DashboardLayout

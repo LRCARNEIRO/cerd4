@@ -108,7 +108,7 @@ const SOURCES = {
 export function ViolenciaRacialChart() {
   const { segurancaPublica } = useMirrorData();
   const dado2018 = segurancaPublica[0];
-  const dado2024 = segurancaPublica[segurancaPublica.length - 1];
+  const dado2024 = ((segurancaPublica as any[]).find((d: any) => Number(d.ano) === 2024) ?? segurancaPublica[segurancaPublica.length - 1]);
 
   return (
     <Card>
@@ -161,7 +161,7 @@ export function ViolenciaRacialChart() {
 export function FeminicidioChart() {
   const { feminicidioSerie } = useMirrorData();
   const dado2018 = feminicidioSerie[0];
-  const dado2024 = feminicidioSerie[feminicidioSerie.length - 1];
+  const dado2024 = ((feminicidioSerie as any[]).find((d: any) => Number(d.ano) === 2024) ?? feminicidioSerie[feminicidioSerie.length - 1]);
 
   return (
     <Card>
@@ -205,7 +205,7 @@ export function FeminicidioChart() {
 export function EducacaoComparativaChart() {
   const { educacaoSerieHistorica } = useMirrorData();
   const dado2018 = educacaoSerieHistorica[0];
-  const dado2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+  const dado2024 = ((educacaoSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? educacaoSerieHistorica[educacaoSerieHistorica.length - 1]);
 
   return (
     <Card>
@@ -251,7 +251,7 @@ export function EducacaoComparativaChart() {
 export function SaudeComparativaChart() {
   const { saudeSerieHistorica } = useMirrorData();
   const dado2018 = saudeSerieHistorica[0];
-  const dado2024 = saudeSerieHistorica[saudeSerieHistorica.length - 1];
+  const dado2024 = ((saudeSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? saudeSerieHistorica[saudeSerieHistorica.length - 1]);
 
   return (
     <Card>
@@ -430,15 +430,15 @@ export function TabelaSinteseComparativa() {
   const { data: indicadoresBase } = useIndicadoresInterseccionais();
   const { segurancaPublica, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, feminicidioSerie } = useMirrorData();
   const dado2018Seg = segurancaPublica[0];
-  const dado2024Seg = segurancaPublica[segurancaPublica.length - 1];
+  const dado2024Seg = ((segurancaPublica as any[]).find((d: any) => Number(d.ano) === 2024) ?? segurancaPublica[segurancaPublica.length - 1]);
   const dado2018Edu = educacaoSerieHistorica[0];
-  const dado2024Edu = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
+  const dado2024Edu = ((educacaoSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? educacaoSerieHistorica[educacaoSerieHistorica.length - 1]);
   const dado2018Sau = saudeSerieHistorica[0];
-  const dado2024Sau = saudeSerieHistorica[saudeSerieHistorica.length - 1];
+  const dado2024Sau = ((saudeSerieHistorica as any[]).find((d: any) => Number(d.ano) === 2024) ?? saudeSerieHistorica[saudeSerieHistorica.length - 1]);
   const dado2018Eco = indicadoresSocioeconomicos[0];
   const dado2024Eco = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
   const dado2018Fem = feminicidioSerie[0];
-  const dado2024Fem = feminicidioSerie[feminicidioSerie.length - 1];
+  const dado2024Fem = ((feminicidioSerie as any[]).find((d: any) => Number(d.ano) === 2024) ?? feminicidioSerie[feminicidioSerie.length - 1]);
 
   const sourceUrls: Record<string, string> = {
     'FBSP 2025': 'https://forumseguranca.org.br/anuario-brasileiro-de-seguranca-publica/',
@@ -452,14 +452,14 @@ export function TabelaSinteseComparativa() {
     { indicador: 'Vítimas de homicídio negras', codigos: ['IND-117'], v2018: `${dado2018Seg.percentualVitimasNegras}%`, v2024: `${dado2024Seg.percentualVitimasNegras}%`, variacao: `+${(dado2024Seg.percentualVitimasNegras - dado2018Seg.percentualVitimasNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
     { indicador: 'Letalidade policial negra', codigos: ['IND-117'], v2018: `${dado2018Seg.letalidadePolicial}%`, v2024: `${dado2024Seg.letalidadePolicial}%`, variacao: `+${(dado2024Seg.letalidadePolicial - dado2018Seg.letalidadePolicial).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
     { indicador: 'Feminicídio mulheres negras', codigos: ['IND-112'], v2018: `${dado2018Fem.percentualNegras}%`, v2024: `${dado2024Fem.percentualNegras}%`, variacao: `+${(dado2024Fem.percentualNegras - dado2018Fem.percentualNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
-    { indicador: 'Risco homicídio negro', codigos: ['IND-117'], v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco}x (${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).ano})`, variacao: `${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco) >= 0 ? '+' : ''}${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: 'piora', fonte: 'Atlas 2025' },
+    { indicador: 'Risco homicídio negro', codigos: ['IND-117'], v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco}x (${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).ano})`, variacao: `${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco) >= 0 ? '+' : ''}${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: (([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco < dado2018Seg.razaoRisco ? 'melhora' : 'piora', fonte: 'Atlas 2025' },
     { indicador: 'Renda média negra', codigos: ['IND-119'], v2018: `R$ ${dado2018Eco.rendaMediaNegra}`, v2024: `R$ ${dado2024Eco.rendaMediaNegra}`, variacao: `+${((dado2024Eco.rendaMediaNegra/dado2018Eco.rendaMediaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'PNAD 2024' },
     { indicador: 'Razão renda branca/negra', codigos: ['IND-119'], v2018: `${(dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra).toFixed(2)}x`, v2024: `${(dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra).toFixed(2)}x`, variacao: `${((dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra)) ? '↓' : '↑'}`, tendencia: (dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra) ? 'melhora' : 'piora', fonte: 'PNAD 2024' },
-    { indicador: 'Desemprego negro', codigos: ['IND-119'], v2018: `${dado2018Eco.desempregoNegro}%`, v2024: `${dado2024Eco.desempregoNegro}%`, variacao: `${(dado2024Eco.desempregoNegro - dado2018Eco.desempregoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD 2024' },
+    { indicador: 'Desemprego negro', codigos: ['IND-119'], v2018: `${dado2018Eco.desempregoNegro}%`, v2024: `${dado2024Eco.desempregoNegro}%`, variacao: `${(dado2024Eco.desempregoNegro - dado2018Eco.desempregoNegro).toFixed(1)}pp`, tendencia: dado2024Eco.desempregoNegro < dado2018Eco.desempregoNegro ? 'melhora' : 'piora', fonte: 'PNAD 2024' },
     { indicador: 'Superior completo negro', codigos: ['IND-129'], v2018: `${dado2018Edu.superiorNegroPercent}%`, v2024: `${dado2024Edu.superiorNegroPercent}%`, variacao: `+${(dado2024Edu.superiorNegroPercent - dado2018Edu.superiorNegroPercent).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
-    { indicador: 'Analfabetismo negro', codigos: ['IND-129'], v2018: `${dado2018Edu.analfabetismoNegro}%`, v2024: `${dado2024Edu.analfabetismoNegro}%`, variacao: `${(dado2024Edu.analfabetismoNegro - dado2018Edu.analfabetismoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD Edu 2024' },
-    { indicador: 'Mortalidade materna negra', codigos: ['IND-122'], v2018: `${dado2018Sau.mortalidadeMaternaNegra}`, v2024: `${dado2024Sau.mortalidadeMaternaNegra}`, variacao: `${((dado2024Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'DataSUS' },
-    { indicador: 'Razão mort. materna negra/branca', codigos: ['IND-122'], v2018: `${(dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca).toFixed(1)}x`, v2024: `${(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x`, variacao: 'Persistente', tendencia: 'piora', fonte: 'DataSUS' },
+    { indicador: 'Analfabetismo negro', codigos: ['IND-129'], v2018: `${dado2018Edu.analfabetismoNegro}%`, v2024: `${dado2024Edu.analfabetismoNegro}%`, variacao: `${(dado2024Edu.analfabetismoNegro - dado2018Edu.analfabetismoNegro).toFixed(1)}pp`, tendencia: dado2024Edu.analfabetismoNegro < dado2018Edu.analfabetismoNegro ? 'melhora' : 'piora', fonte: 'PNAD Edu 2024' },
+    { indicador: 'Mortalidade materna negra', codigos: ['IND-122'], v2018: `${dado2018Sau.mortalidadeMaternaNegra}`, v2024: `${dado2024Sau.mortalidadeMaternaNegra}`, variacao: `${((dado2024Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaNegra - 1)*100).toFixed(0)}%`, tendencia: dado2024Sau.mortalidadeMaternaNegra < dado2018Sau.mortalidadeMaternaNegra ? 'melhora' : 'piora', fonte: 'DataSUS' },
+    { indicador: 'Razão mort. materna negra/branca', codigos: ['IND-122'], v2018: `${(dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca).toFixed(1)}x`, v2024: `${(dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca).toFixed(1)}x`, variacao: (dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca) < (dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca) ? '↓ hiato menor' : '↑ hiato maior', tendencia: (dado2024Sau.mortalidadeMaternaNegra/dado2024Sau.mortalidadeMaternaBranca) < (dado2018Sau.mortalidadeMaternaNegra/dado2018Sau.mortalidadeMaternaBranca) ? 'melhora' : 'piora', fonte: 'DataSUS' },
   ];
 
   return (
