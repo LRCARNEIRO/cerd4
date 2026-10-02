@@ -145,10 +145,10 @@ export function BaixarTudoButton() {
         { titulo: 'Protocolo Orçamentário', html: () => prOrc.generateProtocoloOrcamentarioHTML({ orcDados: r } as any) },
       ];
 
-      // Relatórios desta página (CERD IV, Conclusões integral, Escopo, Inventários) — mesmos geradores dos botões.
+      // Relatórios desta página (Conclusões integral, Escopo, Inventários) — mesmos geradores dos botões.
       const locais = [...getExportRegistry().entries()].sort((a, b) => a[1].ordem - b[1].ordem);
       for (const [, e] of locais) itens.push({ titulo: e.titulo, html: e.html as any });
-      const faltandoLocais = ['cerd-iv', 'conc-integral', 'escopo', 'inv-est', 'inv-evid'].filter(k => !getExportRegistry().has(k));
+      const faltandoLocais = ['conc-integral', 'escopo', 'inv-est', 'inv-evid'].filter(k => !getExportRegistry().has(k));
 
       // Outras páginas: carregadas em segundo plano para usar os mesmos dados e geradores da tela.
       toast.info('Reunindo páginas (Painel Geral, Conclusões, Estatísticas, Fontes, Balizadores, Guia)…');
@@ -220,7 +220,7 @@ ${secoes.join('\n')}
           <Package className="w-6 h-6 text-primary flex-shrink-0" />
           <div>
             <h3 className="font-semibold mb-1">Baixar tudo — todos os relatórios em um único arquivo</h3>
-            <p className="text-sm text-muted-foreground">Reúne, com os dados atuais, metodologias, protocolos, bases, recomendações, artigos, CERD IV, Conclusões, inventários, escopo e as telas de Estatísticas, Fontes, Balizadores e Guia, com índice (cerca de 1 minuto). Use “Salvar como PDF” no arquivo aberto.</p>
+            <p className="text-sm text-muted-foreground">Reúne, com os dados atuais, metodologias, protocolos, bases, recomendações, artigos, Conclusões, inventários, escopo e as telas de Estatísticas, Fontes, Balizadores e Guia, com índice (cerca de 1 minuto). Use “Salvar como PDF” no arquivo aberto.</p>
           </div>
         </div>
         <Button onClick={gerar} disabled={carregando || gerando} className="gap-2">
