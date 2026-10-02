@@ -190,23 +190,6 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
   const evolucaoDesigualdade = m?.evolucaoDesigualdade?.length ? m.evolucaoDesigualdade : hcEvolucaoDesigualdade;
   const povosTradicionais = m?.povosTradicionais || hcPovosTradicionais;
 
-  const bdCategorias: Record<string, any[]> = {};
-  indicadoresBD.forEach(i => {
-    const cat = i.categoria || 'outros';
-    if (!bdCategorias[cat]) bdCategorias[cat] = [];
-    bdCategorias[cat].push(i);
-  });
-
-  const catLabels: Record<string, string> = {
-    seguranca_publica: 'Segurança Pública', saude: 'Saúde', educacao: 'Educação',
-    terra_territorio: 'Terras e Territórios', trabalho_renda: 'Trabalho e Renda',
-    politicas_institucionais: 'Políticas Institucionais', legislacao_justica: 'Legislação e Justiça',
-    participacao_social: 'Participação Social', dados_estatisticas: 'Dados e Estatísticas',
-    cultura_patrimonio: 'Cultura e Patrimônio', habitacao: 'Habitação',
-  };
-
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const rolFull = buildRolEstatistico(indicadoresBD || []);
 
 
