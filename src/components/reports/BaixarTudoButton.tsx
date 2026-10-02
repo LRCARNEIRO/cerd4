@@ -8,6 +8,7 @@ import { useLacunasIdentificadas, useIndicadoresInterseccionais, useOrcamentoCan
 import { useDiagnosticSensor } from '@/hooks/useDiagnosticSensor';
 import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { toast } from 'sonner';
+import { getExportRegistry } from '@/utils/exportRegistry';
 
 type Item = { titulo: string; html: () => string | Promise<string> };
 
@@ -17,6 +18,56 @@ function extrair(html: string) {
   doc.querySelectorAll('script, .no-print, .export-toolbar, #export-toolbar').forEach(el => el.remove());
   const styles = Array.from(doc.querySelectorAll('style')).map(s => s.textContent || '').join('\n');
   return { styles, body: doc.body?.innerHTML || '' };
+}
+
+const espera = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+/**
+ * Abre uma página do sistema em iframe oculto (mesma sessão) e coleta:
+ * - `chaves`: relatórios registrados pela página (mesmos geradores dos botões PDF/DOCX);
+ * - `seletor`: a área exportável da tela, como faz o botão "PDF/HTML" da página.
+ */
+async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: string; titulo?: string }, timeoutMs = 60000) {
+  const itens: { titulo: string; html: string }[] = [];
+  const falhas: string[] = [];
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-20000px;top:0;width:1280px;height:1800px;border:0;';
+  iframe.src = rota;
+  document.body.appendChild(iframe);
+  const inicio = Date.now();
+  try {
+    if (opt.chaves) {
+      let regs: Map<string, any> | undefined;
+      while (Date.now() - inicio < timeoutMs) {
+        regs = iframe.contentWindow ? getExportRegistry(iframe.contentWindow) : undefined;
+        if (regs && opt.chaves.every(k => regs!.has(k))) break;
+        await espera(500);
+      }
+      await espera(800);
+      for (const k of opt.chaves) {
+        const e = regs?.get(k);
+        if (!e) { falhas.push(`${rota} (${k})`); continue; }
+        try { itens.push({ titulo: e.titulo, html: await e.html() }); } catch { falhas.push(e.titulo); }
+      }
+    } else if (opt.seletor) {
+      let ultimo = -1, estavel = 0, el: HTMLElement | null = null;
+      while (Date.now() - inicio < timeoutMs) {
+        el = iframe.contentDocument?.querySelector<HTMLElement>(opt.seletor) || null;
+        const n = el?.innerText.length ?? -1;
+        const carregando = !!iframe.contentDocument?.querySelector('.animate-spin');
+        if (el && n > 0 && n === ultimo && !carregando) { if (++estavel >= 4) break; } else estavel = 0;
+        ultimo = n;
+        await espera(500);
+      }
+      if (el) {
+        const { buildExportHtmlFromElement } = await import('@/utils/reportExportToolbar');
+        itens.push({ titulo: opt.titulo || rota, html: buildExportHtmlFromElement(el, rota, opt.titulo) });
+      } else falhas.push(opt.titulo || rota);
+    }
+  } finally {
+    iframe.remove();
+  }
+  return { itens, falhas };
 }
 
 export function BaixarTudoButton() {
@@ -94,9 +145,33 @@ export function BaixarTudoButton() {
         { titulo: 'Protocolo Orçamentário', html: () => prOrc.generateProtocoloOrcamentarioHTML({ orcDados: r } as any) },
       ];
 
+      // Relatórios desta página (CERD IV, Conclusões integral, Escopo, Inventários) — mesmos geradores dos botões.
+      const locais = [...getExportRegistry().entries()].sort((a, b) => a[1].ordem - b[1].ordem);
+      for (const [, e] of locais) itens.push({ titulo: e.titulo, html: e.html as any });
+      const faltandoLocais = ['cerd-iv', 'conc-integral', 'escopo', 'inv-est', 'inv-evid'].filter(k => !getExportRegistry().has(k));
+
+      // Outras páginas: carregadas em segundo plano para usar os mesmos dados e geradores da tela.
+      toast.info('Reunindo páginas (Painel Geral, Conclusões, Estatísticas, Fontes, Balizadores, Guia)…');
+      const [painel, conc, ...telas] = await Promise.all([
+        coletarPagina('/', { chaves: ['met-alim'] }),
+        coletarPagina('/conclusoes', { chaves: ['conc-fios', 'conc-cruz', 'conc-alr', 'conc-tab', 'conc-sint'] }),
+        coletarPagina('/estatisticas', { seletor: '#export-estatisticas', titulo: 'Estatísticas — visão da tela' }),
+        coletarPagina('/fontes', { seletor: '#export-fontes-dados', titulo: 'Fontes de Dados' }),
+        coletarPagina('/documentos-balizadores', { seletor: '#export-documentos-balizadores', titulo: 'Documentos Balizadores' }),
+        coletarPagina('/guia-auditoria', { seletor: '#export-guia-auditoria', titulo: 'Guia de Auditoria' }),
+      ]);
+      for (const p of [painel, conc, ...telas]) {
+        for (const s of p.itens) itens.push({ titulo: s.titulo, html: () => s.html });
+      }
+      const naoColetados = [...faltandoLocais.map(k => `relatório ${k} (dados ainda carregando)`), ...[painel, conc, ...telas].flatMap(p => p.falhas)];
+
+      // Folhas de estilo da aplicação embutidas (necessárias às capturas de tela).
+      const appCss = (await Promise.all(Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).map(l => fetch(l.href).then(x => x.text()).catch(() => '')))).join('\n');
+
       const estilos = new Set<string>();
+      if (appCss) estilos.add(appCss);
       const secoes: string[] = [];
-      const falhas: string[] = [];
+      const falhas: string[] = [...naoColetados];
       for (let i = 0; i < itens.length; i++) {
         if (i % 5 === 0) await new Promise(res => setTimeout(res, 0));
         try {
