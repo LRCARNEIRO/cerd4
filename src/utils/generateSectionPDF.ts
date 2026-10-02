@@ -71,6 +71,7 @@ export function generateSectionPDF(section: PDFSection) {
 </body>
 </html>`;
 
+  if (window.__cerdCapture) { window.__cerdCapture.push(html); return; }
   const win = window.open('', '_blank');
   if (win) {
     win.document.write(html);
