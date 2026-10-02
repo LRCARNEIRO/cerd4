@@ -1,3 +1,5 @@
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import { useState } from 'react';
 import { tendenciaPadrao, tendenciaLabelFrom } from '@/utils/tendenciaPadronizada';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -149,7 +151,7 @@ function indicadorToHTML(ind: any): string {
       if (vals.length < 2) return null;
       const first = vals[0], last = vals[vals.length - 1], diff = last - first;
       const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
-      const isSeg = ind.categoria === 'Segurança Pública' || ind.categoria === 'seguranca_publica';
+      const isSeg = isLowerBetterNome(ind.nome, ind.categoria);
       const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
       return `${formatGroup(g)}: ${safeNum(first)} → ${safeNum(last)} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
     }).filter(Boolean);
@@ -665,6 +667,8 @@ function generateInventoryHTML(
   );
 
   const totalGeral = seriesExpandidas.length + indicadoresBDUnicos.length + dadosNovosIndividuais.length;
+  const rol = buildRolEstatistico(indicadoresBDRaw || []);
+  const ponteRol = `<strong>🔗 Ponte entre os dois universos:</strong> os <strong>${totalGeral} indicadores consolidados</strong> deste inventário são a unidade de leitura temática (cada série conta uma vez, com desagregações em coluna). A unidade de <em>vinculação</em> às recomendações é o <strong>rol vinculável de ${rol.total} evidências estatísticas</strong>, obtido a partir dos ${rol.registrosBrutos} registros da Base Estatística: ${rol.totalGuardaChuvas} indicadores sem subdivisão + ${rol.totalSubindicadores} subindicadores (os ${rol.consolidados} registros-mãe com subindicadores são substituídos por seus recortes, evitando dupla contagem). São contagens de unidades diferentes, não universos concorrentes.`;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -712,14 +716,16 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
   é apenas painel administrativo de curadoria e pode exibir um número maior de registros candidatos.
   Já este inventário lista apenas os <strong>indicadores aptos como evidência</strong>: exclui registros do tipo
   "espelho_estático" (que duplicariam séries já hardcoded) e consolida cada série em indicadores únicos,
-  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Total apto: <strong>${totalGeral}</strong>.
+  mantendo raça/cor, gênero, idade e PCD na coluna de desagregações. Total: <strong>${totalGeral} indicadores consolidados</strong>.
+  <br><br>
+  ${ponteRol}
 
 </div>
 
 <div class="stats-grid">
   <div class="stat-card">
     <div class="value">${safeNum(totalGeral)}</div>
-    <div class="label">TOTAL GERAL (aptos)</div>
+    <div class="label">INDICADORES CONSOLIDADOS</div>
   </div>
   <div class="stat-card">
     <div class="value">${seriesExpandidas.length}</div>
@@ -738,7 +744,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <div class="section-summary">
   <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores consolidados das ${series.length} séries temporais hardcoded
   + ${indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
-  + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores aptos</strong>.
+  + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores consolidados</strong>, que se desagregam no rol vinculável de ${rol.total} evidências.
   Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 

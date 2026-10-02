@@ -166,7 +166,7 @@ function generateSuggestedResponse(lacuna: any, indicadores: any[], orcamento: a
     const __el2 = linkedOrcs.filter((o:any) => o.tipo_dotacao !== 'extraorcamentario' && Number(o.dotacao_autorizada) > 0);
     const __d2 = __el2.reduce((s:number,o:any)=> s + Number(o.dotacao_autorizada), 0);
     const exec = __d2 > 0 ? (__el2.reduce((s:number,o:any)=> s + (Number(o.liquidado)||0), 0) / __d2 * 100).toFixed(1) : '—';
-    parts.push(`Investimento: ${linkedOrcs.length} ação(ões), dotação R$ ${fmt(totalDot/1e6)}M, execução ${exec}%.`);
+    parts.push(`Investimento: ${linkedOrcs.length} ação(ões), dotação R$ ${fmt(totalDot/1e6)}M, execução (liquidado ÷ dotação) ${exec}%.`);
   }
 
   if (linkedNorms.length > 0) {

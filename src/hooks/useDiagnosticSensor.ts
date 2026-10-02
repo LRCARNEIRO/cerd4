@@ -262,7 +262,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
     queryFn: async () => {
       const { data, error } = await supabase
         .from('documentos_normativos')
-        .select('id, titulo, artigos_convencao, status, categoria');
+        .select('id, titulo, artigos_convencao, status, categoria, url_origem, created_at, recomendacoes_impactadas');
       if (error) throw error;
       return data || [];
     },
