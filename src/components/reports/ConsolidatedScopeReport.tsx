@@ -795,7 +795,7 @@ export function ConsolidatedScopeReport() {
             <div className="flex justify-between"><span>Interseccionalidade</span><Badge variant="outline" className="text-xs">4 eixos</Badge></div>
             <div className="flex justify-between"><span>Povos Tradicionais</span><Badge variant="outline" className="text-xs">Indígenas + Quilomb.</Badge></div>
             <div className="flex justify-between"><span>Recomendações ONU</span><Badge variant="outline" className="text-xs">{lacunas?.length || 0} reg.</Badge></div>
-            <div className="flex justify-between"><span>Indicadores BD</span><Badge variant="outline" className="text-xs">{indicadores?.length || 0} reg.</Badge></div>
+            <div className="flex justify-between"><span>Indicadores (IND-NNN)</span><Badge variant="outline" className="text-xs">{indicadores?.length || 0} reg.</Badge></div>
           </CardContent>
         </Card>
 
