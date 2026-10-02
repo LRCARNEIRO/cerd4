@@ -227,7 +227,7 @@ export function renderMethodologyDiagram(
     { x: 280, y: 100, label: 'Base Normativa', sub: `${totalNormativos} documentos`, color: '#14b8a6' },
     { x: 510, y: 100, label: 'Recomendações ONU', sub: `${totalLacunas} lacunas`, color: '#f97316' },
     { x: 280, y: 200, label: 'Motor de Cruzamento', sub: 'Artigos I-VII ICERD', color: '#1e3a5f' },
-    { x: 120, y: 310, label: 'Evolução Artigos', sub: 'Score 0-100%', color: '#22c55e' },
+    { x: 120, y: 310, label: 'Esforço × Realização', sub: 'Impacto Evidenciado', color: '#22c55e' },
     { x: 350, y: 310, label: 'Aderência ICERD', sub: 'Capacidade resposta', color: '#eab308' },
     { x: 280, y: 380, label: 'RELATÓRIO CERD IV', sub: 'Veredito por artigo', color: '#dc2626' },
   ];
