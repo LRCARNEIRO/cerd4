@@ -27,7 +27,7 @@ const eixoLabels: Record<string, string> = {
 
 export function ConclusoesReportGenerator() {
   const {
-    isLoading, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
+    isLoading, sensorReady, fiosCondutores, conclusoesDinamicas, insightsCruzamento,
     sinteseExecutiva, stats, lacunas, respostas, orcStats, indicadores, orcDados,
   } = useAnalyticalInsights();
   const { segurancaPublica, feminicidioSerie, educacaoSerieHistorica, saudeSerieHistorica, indicadoresSocioeconomicos, povosTradicionais, dadosDemograficos } = useMirrorData();
@@ -479,7 +479,7 @@ ${icerdData.map(a => `
 </body></html>`;
   };
 
-  useRegisterExport('conc-integral', 'Conclusões Analíticas — Relatório integral', 120, !isLoading, generateFullHTML);
+  useRegisterExport('conc-integral', 'Conclusões Analíticas — Relatório integral', 120, !isLoading && sensorReady && !!documentosNormativos, generateFullHTML);
 
   if (isLoading) {
     return (

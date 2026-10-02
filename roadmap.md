@@ -16,3 +16,5 @@
 - [x] Revisar relatórios: omitir lacunas fora das seções de lacunas já existentes, sem criar novas seções.
 - [x] Conferir os oito códigos IND no “Baixar tudo” e imprimir o código canônico no inventário exportado.
 - [x] Retirar da Base Normativa as referências à divisão antiga Meta 1/Meta 2, inclusive na revisão de importações.
+
+- [x] Integrar Escopo e Conclusões integrais atuais ao botão “Baixar tudo” e validar o arquivo gerado.

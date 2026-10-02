@@ -708,7 +708,7 @@ export function ConsolidatedScopeReport() {
   const mirrorData = useMirrorData();
 
   const {
-    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva,
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, sensorReady,
   } = useAnalyticalInsights();
 
   const { data: documentosNormativos } = useQuery({
@@ -753,7 +753,7 @@ export function ConsolidatedScopeReport() {
 
   const totalItems = (indicadores?.length || 0) + (lacunas?.length || 0) + (orcamentarios?.length || 0) + (documentosNormativos?.length || 0);
 
-  useRegisterExport('escopo', 'Escopo Consolidado', 130, !!(indicadores && lacunas && orcamentarios && documentosNormativos && respostas), () => generateConsolidatedHTML({
+  useRegisterExport('escopo', 'Escopo Consolidado', 130, !!(indicadores && lacunas && orcamentarios && documentosNormativos && respostas && sensorReady && sinteseExecutiva), () => generateConsolidatedHTML({
     indicadores: indicadores || [], lacunas: lacunas || [], lacunasStats, orcStats,
     orcamentarios: orcamentarios || [], documentosNormativos: documentosNormativos || [],
     fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas: respostas || [],

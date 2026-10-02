@@ -321,7 +321,7 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="final-cerd-iv" className="gap-1 bg-primary/20 font-semibold">
             <BookOpen className="w-4 h-4" /> Relatório Final CERD IV
           </TabsTrigger>
-          <TabsTrigger value="consolidado" className="gap-1 bg-primary/10">
+          <TabsTrigger value="consolidado" data-export-tab="consolidado" className="gap-1 bg-primary/10">
             <FileText className="w-4 h-4" /> Consolidado (Escopo)
           </TabsTrigger>
           <TabsTrigger value="ia-generator" className="gap-1">
@@ -333,7 +333,7 @@ ${(respostasCerd || []).map(r => {
           <TabsTrigger value="orcamento" className="gap-1">
             <DollarSign className="w-4 h-4" /> Orçamento
           </TabsTrigger>
-          <TabsTrigger value="conclusoes-full" className="gap-1 bg-primary/10">
+          <TabsTrigger value="conclusoes-full" data-export-tab="conclusoes-full" className="gap-1 bg-primary/10">
             <Scale className="w-4 h-4" /> Conclusões (Integral)
           </TabsTrigger>
           <TabsTrigger value="balanco" className="gap-1 bg-accent/20">
