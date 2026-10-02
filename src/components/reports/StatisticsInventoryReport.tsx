@@ -440,53 +440,6 @@ function generateInventoryHTML(
     interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
     lgbtqiaPorRaca, deficienciaPorRaca, classePorRaca, evolucaoDesigualdade } = m;
 
-  // Series data
-  const series = [
-    { nome: 'Composição Racial (PNAD)', registros: evolucaoComposicaoRacial.length, fonte: 'SIDRA/IBGE Tab. 6403', periodo: '2018-2024' },
-    { nome: 'Dados Demográficos (Censo 2022)', registros: dadosDemograficos.composicaoRacial.length, fonte: 'SIDRA/IBGE Tab. 9605', periodo: '2022' },
-    { nome: 'Indicadores Socioeconômicos', registros: indicadoresSocioeconomicos.length, fonte: 'PNAD Contínua', periodo: '2018-2024' },
-    { nome: 'Segurança Pública', registros: segurancaPublica.length, fonte: 'FBSP / SIM-DataSUS', periodo: '2018-2024' },
-    { nome: 'Feminicídio', registros: feminicidioSerie.length, fonte: 'FBSP', periodo: '2018-2024' },
-    { nome: 'Educação — Série Histórica', registros: educacaoSerieHistorica.length, fonte: 'INEP / PNAD', periodo: '2018-2024' },
-    { nome: 'Saúde — Série Histórica', registros: saudeSerieHistorica.length, fonte: 'DataSUS / SIM / SINASC', periodo: '2018-2024' },
-    { nome: 'Trabalho Interseccional', registros: interseccionalidadeTrabalho.length, fonte: 'PNAD Contínua', periodo: '2018-2024' },
-    { nome: 'Deficiência × Raça', registros: deficienciaPorRaca.length, fonte: 'IBGE / Censo 2022', periodo: '2022' },
-    { nome: 'LGBTQIA+ — ANTRA/Trans', registros: serieAntraTrans.length, fonte: 'ANTRA / FBSP', periodo: '2018-2024' },
-    { nome: 'LGBTQIA+ × Raça', registros: lgbtqiaPorRaca.length, fonte: 'Pesquisa Sexualidade IBGE', periodo: '2022' },
-    { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
-    { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
-    { nome: 'Juventude Negra', registros: juventudeNegraBD.length, fonte: 'BD — Atlas/FBSP (auditado)', periodo: '2022-2025' },
-    { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
-    { nome: 'Evolução da Desigualdade', registros: evolucaoDesigualdade.length, fonte: 'IBGE / PNAD', periodo: '2018-2024' },
-  ];
-
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-
-  // BD indicators by category — usa APENAS indicadoresBDUnicos para evitar
-  // double-counting com séries temporais expandidas.
-  const bdCategorias: Record<string, any[]> = {};
-  indicadoresBDUnicos.forEach((i: any) => {
-    const cat = i.categoria || 'outros';
-    if (!bdCategorias[cat]) bdCategorias[cat] = [];
-    bdCategorias[cat].push(i);
-  });
-
-  const catLabels: Record<string, string> = {
-    seguranca_publica: 'Segurança Pública',
-    saude: 'Saúde',
-    educacao: 'Educação',
-    terra_territorio: 'Terras e Territórios',
-    trabalho_renda: 'Trabalho e Renda',
-    politicas_institucionais: 'Políticas Institucionais',
-    legislacao_justica: 'Legislação e Justiça',
-    participacao_social: 'Participação Social',
-    dados_estatisticas: 'Dados e Estatísticas',
-    cultura_patrimonio: 'Cultura e Patrimônio',
-    habitacao: 'Habitação',
-  };
-
-
   // ── Consolidação das séries temporais em indicadores auditáveis ──
   // Regra: raça/cor, gênero, idade etc. entram em coluna própria de
   // DESAGREGAÇÕES. Não se cria uma linha para "Branca" e outra para "Negra",
