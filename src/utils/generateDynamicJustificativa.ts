@@ -254,7 +254,7 @@ export function generateDynamicJustificativa(
     const execucao = calcularExecucaoOrcamentaria(latestOrcs as any).percentual;
 
     const orcText = totalPago > 0
-      ? `R$ ${fmt(totalPago / 1e6)}M pagos de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução (liquidado ÷ dotação) ${execucao != null ? pct(execucao) : '—'}`
+      ? `R$ ${fmt(latestOrcs.reduce((s, o) => s + ((o as any).liquidado || 0), 0) / 1e6)}M liquidados de R$ ${fmt(totalAutorizado / 1e6)}M autorizados (${latestYear}), execução (liquidado ÷ dotação autorizada) ${execucao != null ? pct(execucao) : '—'}; pago: R$ ${fmt(totalPago / 1e6)}M`
       : `${latestOrcs.length} ação(ões) orçamentária(s) em ${latestYear}`;
 
     parts.push(`Orçamento (${orcs.length} ações vinculadas): ${orcText}`);
