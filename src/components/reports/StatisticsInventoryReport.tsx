@@ -730,48 +730,7 @@ ${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${e
   </tbody>
 </table>
 
-<h2>2. Indicadores complementares (fora das séries da seção 1) — ${indicadoresBDUnicos.length}</h2>
-<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
-  Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
-  A coluna <strong>Recomendações</strong> mostra as §§ que vinculam este indicador como evidência (via SSoT do diagnóstico).
-</p>
-${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
-<h3>${catLabels[cat] || cat} (${inds.length})</h3>
-<table>
-  <thead>
-    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Desagregações</th></tr>
-  </thead>
-  <tbody>
-    ${inds.map((ind: any) => {
-      const desags = [];
-      if (ind.desagregacao_raca) desags.push('Raça');
-      if (ind.desagregacao_genero) desags.push('Gênero');
-      if (ind.desagregacao_idade) desags.push('Idade');
-      if (ind.desagregacao_territorio) desags.push('Território');
-      if (ind.desagregacao_classe) desags.push('Classe');
-      if (ind.desagregacao_deficiencia) desags.push('Deficiência');
-      const artsDb = (ind.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
-      const arts = artsDb.length
-        ? artsDb.map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ')
-        : artigosBadges(ind);
-      const codigo = ind.codigo || '';
-      const codigoCell = codigo
-        ? `<a href="${systemBaseUrl}/estatisticas?ind=${encodeURIComponent(codigo)}#ind-${encodeURIComponent(codigo)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${codigo}</a>`
-        : '<span style="color:#94a3b8;">—</span>';
-      return `<tr id="ind-${codigo}">
-        <td>${codigoCell}</td>
-        <td>${ind.nome}</td>
-        <td>${ind.fonte}</td>
-        <td>${arts || '—'}</td>
-        <td>${recsBadges(ind.nome)}</td>
-        <td>${desags.map(d => `<span class="badge badge-blue">${d}</span>`).join('')}</td>
-      </tr>`;
-    }).join('')}
-  </tbody>
-</table>`).join('')}
-
-<h2>3. Dados Novos — ${dadosNovosIndividuais.length}</h2>
+<h2>2. Dados Novos — ${dadosNovosIndividuais.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   Indicadores auditáveis listados na aba "Dados Novos" da Base Estatística, com link direto à fonte oficial.
   Vinculação a Artigos ICERD inferida pelo classificador; vinculação a recomendações via SSoT do diagnóstico.
