@@ -85,17 +85,12 @@ export function NormativaDocCard({ doc, onDelete }: NormativaDocCardProps) {
           </div>
         </div>
 
-        {/* Tags row: categoria + metas + artigos ICERD */}
+        {/* Tags row: categoria + artigos ICERD */}
         <div className="flex flex-wrap gap-1.5">
           <Badge variant="outline" className={`text-[10px] gap-1 ${catConfig.color}`}>
             <CatIcon className="w-3 h-3" />
             {catConfig.label}
           </Badge>
-          {doc.metas_impactadas?.map((m) => (
-            <Badge key={m} className="text-[10px] bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-              {m}
-            </Badge>
-          ))}
           {getDocArticles(doc).map((art) => (
             <Badge key={art} variant="outline" className="text-[10px] font-bold border-primary/30 bg-primary/10 text-primary">
               Art. {art}
@@ -182,7 +177,6 @@ function buildBriefSummary(doc: any): string {
   const artigos = getDocArticles(doc);
   const artigoStr = artigos.length > 0 ? `Vinculado ao${artigos.length > 1 ? 's' : ''} Art. ${artigos.join(', ')} da ICERD.` : '';
   
-  const metasCount = doc.metas_impactadas?.length || 0;
   const recsCount = doc.recomendacoes_impactadas?.length || 0;
   const eixos = (doc.secoes_impactadas || []).map((s: string) => formatEixo(s));
   
@@ -190,7 +184,6 @@ function buildBriefSummary(doc: any): string {
   parts.push(`Instrumento de ${cat.toLowerCase()}.`);
   if (artigoStr) parts.push(artigoStr);
   if (eixos.length > 0) parts.push(`Atua nos eixos: ${eixos.slice(0, 3).join(', ')}${eixos.length > 3 ? ` (+${eixos.length - 3})` : ''}.`);
-  if (metasCount > 0) parts.push(`Impacta ${metasCount} meta${metasCount > 1 ? 's' : ''}.`);
   if (recsCount > 0) parts.push(`Endereça ${recsCount} recomendação(ões) do Comitê.`);
   
   return parts.join(' ');

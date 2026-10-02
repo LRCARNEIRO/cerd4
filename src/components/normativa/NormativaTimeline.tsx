@@ -320,11 +320,6 @@ export function NormativaTimeline({ documentos }: NormativaTimelineProps) {
                                 Art. {a}
                               </Badge>
                             ))}
-                            {doc.metas_impactadas?.slice(0, 2).map((m: string) => (
-                              <Badge key={m} className="text-[10px] bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-                                {m}
-                              </Badge>
-                            ))}
                           </div>
 
                           {/* Racial summary */}
