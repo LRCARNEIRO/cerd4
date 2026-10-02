@@ -388,18 +388,25 @@ function gerarFiosCondutores(
       });
     });
 
-    const retrocessos = lacunasTerritorio.filter(l => l.status_cumprimento === 'retrocesso').length;
+    const naoCumpTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'nao_cumprido').length;
+    const parcTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+    const cumpTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'cumprido').length;
+    const ind162: any = (indicadores as any[]).find(i => i.codigo_curto === 'IND-162');
+    const s162 = ind162?.dados?.series || {};
+    const anos162 = Object.keys(s162).sort();
+    const a162 = anos162[anos162.length - 1];
+    const tit162 = a162 ? `${a162}: ${s162[a162]?.tituladas} terras quilombolas tituladas frente a ${Number(s162[a162]?.certificadas).toLocaleString('pt-BR')} comunidades certificadas (IND-162).` : '';
 
     fios.push({
       id: 'territorios-tradicionais',
-      titulo: 'Territórios Tradicionais: Retrocesso e Retomada',
+      titulo: 'Territórios Tradicionais: Paralisia e Retomada',
       tipo: 'retrocesso',
-      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
+      argumento: `Das ${lacunasTerritorio.length} recomendações do eixo territorial, ${cumpTerr} cumpridas, ${parcTerr} parciais e ${naoCumpTerr} não cumpridas. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
       evidencias: evidTerr.slice(0, 8),
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada, com 384 títulos expedidos frente a 2.019 processos de titulação abertos no INCRA — menos de um quinto dos processos concluídos (IND-162). Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada. ${tit162} Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
       codigosLastro: ['IND-162'],
     });
 
@@ -514,22 +521,22 @@ function gerarFiosCondutores(
     
     if (orcStats.totalPeriodo1 > 0 || orcStats.totalPeriodo2 > 0) {
       evidOrc.push({
-        texto: `Período 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)} executados`,
+        texto: `Período 2018-2022: R$ ${formatBRL(orcStats.liquidadoPeriodo1 ?? 0)} liquidados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
-        valor2018: formatBRL(orcStats.totalPeriodo1)
+        valor2018: formatBRL(orcStats.liquidadoPeriodo1 ?? 0)
       });
       evidOrc.push({
-        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
+        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.liquidadoPeriodo2 ?? 0)} liquidados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
-        valorAtual: formatBRL(orcStats.totalPeriodo2)
+        valorAtual: formatBRL(orcStats.liquidadoPeriodo2 ?? 0)
       });
       evidOrc.push({
-        texto: `Variação: ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}%`,
+        texto: `Variação: ${orcStats.variacaoLiquidado >= 0 ? '+' : ''}${orcStats.variacaoLiquidado.toFixed(0)}%`,
         fonte: 'Cálculo baseado nos dados do BD',
         tipo: 'orcamentaria',
-        variacao: `${orcStats.variacao.toFixed(0)}%`
+        variacao: `${orcStats.variacaoLiquidado.toFixed(0)}%`
       });
     }
 
@@ -555,7 +562,7 @@ function gerarFiosCondutores(
       id: 'orcamento-vs-resultados',
       titulo: 'Investimento vs. Resultados: A Lacuna Orçamentária',
       tipo: 'correlacao',
-      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2025 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
+      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacaoLiquidado >= 0 ? '+' : ''}${orcStats.variacaoLiquidado.toFixed(0)}% entre os períodos 2018-2022 e 2023-2025 ${orcStats.variacaoLiquidado > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
       evidencias: evidOrc,
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
@@ -624,9 +631,9 @@ function gerarFiosCondutores(
     id: 'adm-publica-munic-estadic',
     titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
     tipo: 'lacuna_critica',
-    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
+    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 das 27 UFs possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
     evidencias: [
-      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: 'Apenas 2 das 27 UFs com Fundo de Igualdade Racial ativo', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
       { texto: '25 das 27 UFs com legislação específica de igualdade racial', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
       { texto: 'Gestão estadual de igualdade racial: 24 dos 27 gestores são mulheres e 14 dos 27 são pessoas negras', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-180'] },
       { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'ESTADIC 2024 / IBGE', tipo: 'qualitativa', codigosLastro: ['IND-180'] },
@@ -1197,11 +1204,11 @@ function gerarInsightsCruzamento(
   }
 
   // Insight 5: Contradição orçamento × lacunas
-  if (orcStats && orcStats.variacao > 0 && criticasNaoCumpridas.length > 0) {
+  if (orcStats && orcStats.variacaoLiquidado > 0 && criticasNaoCumpridas.length > 0) {
     insights.push({
       id: 'contradição-orcamento',
       titulo: 'Contradição: Orçamento cresceu, lacunas persistem',
-      descricao: `O orçamento para políticas raciais variou ${orcStats.variacao.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
+      descricao: `O orçamento para políticas raciais variou ${orcStats.variacaoLiquidado.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
       dados: [
         `Orçamento 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)}`,
         `Orçamento 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
@@ -1283,7 +1290,7 @@ function gerarSinteseExecutiva(
     totalIndicadores: indicadores.length,
     totalOdsRacial: odsRacialCount,
     totalOrcamento: orcStats?.totalRegistros || 0,
-    variacaoOrcamento: orcStats?.variacao || 0,
+    variacaoOrcamento: orcStats?.variacaoLiquidado || 0,
     narrativa: `O Brasil possui ${total} observações/recomendações do Comitê CERD mapeadas. ${percentualPositivo}% tiveram algum grau de cumprimento (${cumpridas} cumpridas + ${parciais} parciais), enquanto ${percentualNegativo}% permanecem não cumpridas (${naoCumpridas}) ou em retrocesso (${retrocesso}). ${respostasNaoCumpridas.length} de ${respostas.length} críticas do relatório anterior seguem sem resposta adequada. ${odsRacialCount > 0 ? `${odsRacialCount} indicadores ODS desagregados por raça monitoram o cumprimento da Agenda 2030. ` : ''}${eixosMaisProblematicos.length > 0 ? `O eixo mais crítico é ${eixosMaisProblematicos[0]?.eixo} com ${Math.round(eixosMaisProblematicos[0]?.gravidade * 100)}% de não-cumprimento.` : ''}`
   };
 }
