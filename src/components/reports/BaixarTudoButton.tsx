@@ -220,7 +220,7 @@ ${secoes.join('\n')}
           <Package className="w-6 h-6 text-primary flex-shrink-0" />
           <div>
             <h3 className="font-semibold mb-1">Baixar tudo — todos os relatórios em um único arquivo</h3>
-            <p className="text-sm text-muted-foreground">Monta em segundos, com os dados atuais, metodologias, protocolos, recomendações e base orçamentária, com índice. Use “Salvar como PDF” no arquivo aberto.</p>
+            <p className="text-sm text-muted-foreground">Reúne, com os dados atuais, metodologias, protocolos, bases, recomendações, artigos, CERD IV, Conclusões, inventários, escopo e as telas de Estatísticas, Fontes, Balizadores e Guia, com índice (cerca de 1 minuto). Use “Salvar como PDF” no arquivo aberto.</p>
           </div>
         </div>
         <Button onClick={gerar} disabled={carregando || gerando} className="gap-2">
