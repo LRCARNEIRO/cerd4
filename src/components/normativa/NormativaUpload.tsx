@@ -49,38 +49,30 @@ export function NormativaUpload() {
 
   const enrichWithImpact = (changes: any[]): ImpactChange[] => {
     return changes.map((c: any) => {
-      // Determine which metas are impacted based on type/eixo
-      const metas: string[] = [];
+      // Keep the legacy field empty; this import is reviewed by section and recommendation.
       const secoes: string[] = [];
       const recomendacoes: string[] = [];
 
       if (c.tipo === 'lacuna') {
-        metas.push('Meta 1 - Legislação', 'Meta 2 - Políticas');
         const eixo = c.dados?.eixo_tematico || '';
         if (['legislacao_justica'].includes(eixo)) {
           secoes.push('Legislação Antidiscriminatória');
-          metas.push('Meta 1');
         }
         if (['politicas_institucionais', 'participacao_social'].includes(eixo)) {
           secoes.push('Estrutura Institucional', 'Políticas Públicas');
-          metas.push('Meta 2');
         }
         if (['seguranca_publica', 'saude', 'educacao', 'trabalho_renda'].includes(eixo)) {
           secoes.push('Base Estatística');
-          metas.push('Meta 3');
         }
         recomendacoes.push(`§${c.dados?.paragrafo || '?'} — ${c.dados?.tema || c.titulo}`);
       }
       if (c.tipo === 'indicador') {
-        metas.push('Meta 3 - Dados Estatísticos');
         secoes.push('Estatísticas');
       }
       if (c.tipo === 'orcamento') {
-        metas.push('Meta 3 - Base Orçamentária');
         secoes.push('Orçamento');
       }
       if (c.tipo === 'conclusao') {
-        metas.push('Meta 4 - Análise Transversal');
         secoes.push('Conclusões Analíticas');
         if (c.dados?.relevancia_cerd_iv) secoes.push('Relatório CERD IV');
         if (c.dados?.relevancia_common_core) secoes.push('Common Core Document');
@@ -89,7 +81,7 @@ export function NormativaUpload() {
       return {
         ...c,
         accepted: true,
-        metas_impactadas: [...new Set(metas)],
+        metas_impactadas: [],
         secoes_impactadas: [...new Set(secoes)],
         recomendacoes_impactadas: [...new Set(recomendacoes)],
       };
@@ -169,7 +161,6 @@ export function NormativaUpload() {
 
   const handleReviewComplete = async (acceptedChanges: ImpactChange[], snapshotId?: string | null) => {
     // Save document record with snapshot reference
-    const metas = [...new Set(acceptedChanges.flatMap(c => c.metas_impactadas))];
     const secoes = [...new Set(acceptedChanges.flatMap(c => c.secoes_impactadas))];
     const recs = [...new Set(acceptedChanges.flatMap(c => c.recomendacoes_impactadas))];
 
@@ -190,7 +181,7 @@ export function NormativaUpload() {
       tipo_arquivo: selectedFile ? selectedFile.name.split('.').pop()?.toUpperCase() : 'URL',
       tamanho: selectedFile ? `${(selectedFile.size / 1024).toFixed(0)} KB` : null,
       url_origem: !selectedFile ? urlInput.trim() : null,
-      metas_impactadas: metas,
+      metas_impactadas: [],
       secoes_impactadas: secoes,
       recomendacoes_impactadas: recs,
       artigos_convencao: artigos,

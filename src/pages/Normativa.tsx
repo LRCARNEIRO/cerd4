@@ -28,10 +28,10 @@ import { toast } from 'sonner';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, type ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const categoriasNormativas = [
-  { id: 'legislacao', titulo: 'Legislação Antidiscriminatória', descricao: 'Leis, decretos e normas', icon: Scale, meta: 'Meta 1', cor: 'bg-blue-500' },
-  { id: 'institucional', titulo: 'Estrutura Institucional', descricao: 'Órgãos, conselhos, comissões', icon: Building2, meta: 'Meta 1', cor: 'bg-green-500' },
-  { id: 'politicas', titulo: 'Políticas Públicas', descricao: 'Programas, planos e ações', icon: FileCheck, meta: 'Meta 2', cor: 'bg-purple-500' },
-  { id: 'jurisprudencia', titulo: 'Jurisprudência', descricao: 'Decisões judiciais relevantes', icon: FileText, meta: 'Meta 2', cor: 'bg-amber-500' },
+  { id: 'legislacao', titulo: 'Legislação Antidiscriminatória', descricao: 'Leis, decretos e normas', icon: Scale, cor: 'bg-blue-500' },
+  { id: 'institucional', titulo: 'Estrutura Institucional', descricao: 'Órgãos, conselhos, comissões', icon: Building2, cor: 'bg-green-500' },
+  { id: 'politicas', titulo: 'Políticas Públicas', descricao: 'Programas, planos e ações', icon: FileCheck, cor: 'bg-purple-500' },
+  { id: 'jurisprudencia', titulo: 'Jurisprudência', descricao: 'Decisões judiciais relevantes', icon: FileText, cor: 'bg-amber-500' },
 ];
 
 export default function Normativa() {
@@ -66,8 +66,6 @@ export default function Normativa() {
   const processados = documentos.filter(d => d.status === 'processado').length;
   const percentualCompleto = totalDocumentos > 0 ? Math.round((processados / totalDocumentos) * 100) : 0;
 
-  // Impacted metas summary
-  const allMetas = [...new Set(documentos.flatMap(d => d.metas_impactadas || []))];
   const allRecomendacoes = [...new Set(documentos.flatMap(d => d.recomendacoes_impactadas || []))].sort();
   const recomendacaoCoverage = allRecomendacoes.map(r => ({
     recomendacao: r,
@@ -148,7 +146,7 @@ export default function Normativa() {
   return (
     <DashboardLayout
       title="Base Normativa/Institucional"
-      subtitle="Gestão de dados jurídicos e institucionais para Meta 1 e Meta 2 do CERD IV"
+      subtitle="Acervo jurídico e institucional relacionado à Convenção e às recomendações do CERD"
     >
       {/* Export + GoBack button - top right prominent */}
       <div className="flex justify-end mb-4 gap-2">
@@ -185,11 +183,9 @@ export default function Normativa() {
             <div>
               <h3 className="font-semibold text-foreground mb-1">Base em Desenvolvimento Externo</h3>
               <p className="text-sm text-muted-foreground">
-                Use o botão abaixo para carregar documentos. A IA analisa o impacto em cada meta e seção antes de inserir no banco de dados.
+                Use o botão abaixo para carregar documentos. A análise identifica as seções e recomendações relacionadas antes da inserção.
               </p>
               <div className="flex flex-wrap gap-2 mt-3">
-                <Badge variant="outline">Meta 1 - Legislação</Badge>
-                <Badge variant="outline">Meta 2 - Políticas</Badge>
                 <Badge className="bg-amber-500/10 text-amber-600">Equipe Externa</Badge>
               </div>
             </div>
@@ -205,7 +201,7 @@ export default function Normativa() {
             Upload de Dados
           </CardTitle>
           <CardDescription>
-            Carregue documentos ou links. A IA extrai os dados, mostra o impacto por meta/seção, e você aprova antes de aplicar.
+            Carregue documentos ou links. A análise mostra as seções e recomendações relacionadas para sua aprovação.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -274,7 +270,6 @@ export default function Normativa() {
                   <div className={`p-2 rounded-lg ${categoria.cor}/10`}>
                     <Icon className={`w-5 h-5 ${categoria.cor.replace('bg-', 'text-')}`} />
                   </div>
-                  <Badge variant="outline" className="text-xs">{categoria.meta}</Badge>
                 </div>
                 <h3 className="font-medium text-sm mb-1">{categoria.titulo}</h3>
                 <p className="text-xs text-muted-foreground mb-3">{categoria.descricao}</p>
@@ -337,39 +332,6 @@ export default function Normativa() {
         </CardContent>
       </Card>
 
-      {/* CERD requirements */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Requisitos CERD IV - Base Normativa</CardTitle>
-          <CardDescription>Exigências do Comitê para Meta 1 (Legislação) e Meta 2 (Políticas Institucionais)</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="meta1">
-            <TabsList>
-              <TabsTrigger value="meta1">Meta 1 - Legislação</TabsTrigger>
-              <TabsTrigger value="meta2">Meta 2 - Políticas</TabsTrigger>
-            </TabsList>
-            <TabsContent value="meta1" className="mt-4">
-              <div className="space-y-3">
-                {['Leis antidiscriminatórias federais, estaduais e municipais', 'Legislação específica para povos indígenas e comunidades quilombolas', 'Normas sobre tipificação do crime de racismo', 'Legislação sobre ações afirmativas', 'Tratados internacionais ratificados'].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" /><span className="text-sm">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="meta2" className="mt-4">
-              <div className="space-y-3">
-                {['Instituições nacionais de direitos humanos', 'Órgãos de promoção da igualdade racial', 'Mecanismos de denúncia e reparação', 'Programas de educação em direitos humanos', 'Políticas de combate ao discurso de ódio'].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                    <CheckCircle2 className="w-5 h-5 text-green-500" /><span className="text-sm">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
         </TabsContent>
 
         {/* ===== TAB: LINHA DO TEMPO ===== */}
@@ -403,7 +365,7 @@ export default function Normativa() {
               Excluir Documento e Desfazer Alterações
             </DialogTitle>
             <DialogDescription>
-              Ao excluir este documento, todas as alterações que ele causou no banco de dados (metas, conclusões, indicadores, lacunas) serão desfeitas automaticamente.
+              Ao excluir este documento, todas as alterações que ele causou nos dados relacionados serão desfeitas automaticamente.
             </DialogDescription>
           </DialogHeader>
           {confirmDelete && (
@@ -412,13 +374,6 @@ export default function Normativa() {
               <p className="text-xs text-muted-foreground">
                 {confirmDelete.total_itens_extraidos} itens serão removidos
               </p>
-              {confirmDelete.metas_impactadas?.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {confirmDelete.metas_impactadas.map((m: string) => (
-                    <Badge key={m} variant="secondary" className="text-xs">{m}</Badge>
-                  ))}
-                </div>
-              )}
               {!confirmDelete.snapshot_id && (
                 <p className="text-xs text-amber-600 mt-2">
                   ⚠️ Este documento não tem snapshot vinculado. Apenas o registro será removido, sem restauração automática de dados.

@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Check, X, ChevronDown, ChevronUp, BarChart3, Database,
-  AlertTriangle, FileText, Loader2, CheckCircle, Target, Layers, BookOpen,
+  AlertTriangle, FileText, Loader2, CheckCircle, Target, BookOpen,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -49,7 +49,6 @@ export function NormativaImpactReview({ changes: initialChanges, fileName, onCom
   const acceptedCount = changes.filter(c => c.accepted).length;
 
   // Impact summary for accepted items
-  const allMetas = [...new Set(changes.filter(c => c.accepted).flatMap(c => c.metas_impactadas))];
   const allSecoes = [...new Set(changes.filter(c => c.accepted).flatMap(c => c.secoes_impactadas))];
   const allRecs = [...new Set(changes.filter(c => c.accepted).flatMap(c => c.recomendacoes_impactadas))];
 
@@ -99,18 +98,6 @@ export function NormativaImpactReview({ changes: initialChanges, fileName, onCom
             Resumo de Impacto ({acceptedCount} itens aceitos)
           </h3>
 
-          {allMetas.length > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1">
-                <Layers className="w-3 h-3" /> Metas impactadas:
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {allMetas.map(m => (
-                  <Badge key={m} className="text-xs bg-primary/10 text-primary border-primary/30">{m}</Badge>
-                ))}
-              </div>
-            </div>
-          )}
 
           {allSecoes.length > 0 && (
             <div>
@@ -176,13 +163,8 @@ export function NormativaImpactReview({ changes: initialChanges, fileName, onCom
                       </div>
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{change.descricao}</p>
 
-                      {/* Meta/section impact badges */}
+                      {/* Section impact badges */}
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {change.metas_impactadas.slice(0, 3).map(m => (
-                          <Badge key={m} variant="outline" className="text-xs border-primary/30 text-primary">
-                            <Target className="w-2.5 h-2.5 mr-0.5" />{m}
-                          </Badge>
-                        ))}
                         {change.secoes_impactadas.slice(0, 2).map(s => (
                           <Badge key={s} variant="outline" className="text-xs">{s}</Badge>
                         ))}
