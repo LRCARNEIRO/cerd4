@@ -600,7 +600,7 @@ export default function Conclusoes() {
                       letalidade policial negra de {seg2018.letalidadePolicial}% para {seg2024.letalidadePolicial}%, 
                       e o gap absoluto de renda branca-negra <strong>aumentou</strong> (R$ {eco2018.rendaMediaBranca - eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca - eco2024.rendaMediaNegra}). 
                       A ESTADIC 2024 mostra que 25 das 27 UFs têm legislação racial específica, mas apenas 2 mantêm Fundos de Igualdade Racial ativos — 
-                      institucionalização formal sem sustentação financeira. Na titulação quilombola, são 384 títulos expedidos frente a 2.019 processos abertos no INCRA. 
+                      institucionalização formal sem sustentação financeira. {quilombolaTit ? `Na titulação quilombola, eram ${quilombolaTit.tituladas} terras tituladas frente a ${Number(quilombolaTit.certificadas).toLocaleString('pt-BR')} comunidades certificadas em ${quilombolaTit.ano} (IND-162). ` : ''}
                       A COVID-19 (2020-2022) aprofundou as disparidades: excesso de mortalidade de +57% entre pretos e pardos em 2020 e alta de 66% na mortalidade materna de mulheres pretas.
                     </p>
                     <LastroEvidencias
