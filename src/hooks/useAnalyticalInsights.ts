@@ -533,10 +533,10 @@ function gerarFiosCondutores(
         valorAtual: formatBRL(orcStats.liquidadoPeriodo2 ?? 0)
       });
       evidOrc.push({
-        texto: `Variação: ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}%`,
+        texto: `Variação: ${orcStats.variacaoLiquidado >= 0 ? '+' : ''}${orcStats.variacaoLiquidado.toFixed(0)}%`,
         fonte: 'Cálculo baseado nos dados do BD',
         tipo: 'orcamentaria',
-        variacao: `${orcStats.variacao.toFixed(0)}%`
+        variacao: `${orcStats.variacaoLiquidado.toFixed(0)}%`
       });
     }
 
@@ -562,7 +562,7 @@ function gerarFiosCondutores(
       id: 'orcamento-vs-resultados',
       titulo: 'Investimento vs. Resultados: A Lacuna Orçamentária',
       tipo: 'correlacao',
-      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}% entre os períodos 2018-2022 e 2023-2025 ${orcStats.variacao > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
+      argumento: `Com ${orcStats.totalRegistros} registros orçamentários analisados (excluindo 7 programas transversais não específicos de igualdade racial, que totalizam R$ 461,7 bi em dotação), a variação de ${orcStats.variacaoLiquidado >= 0 ? '+' : ''}${orcStats.variacaoLiquidado.toFixed(0)}% entre os períodos 2018-2022 e 2023-2025 ${orcStats.variacaoLiquidado > 0 ? 'indica recuperação, porém insuficiente para reverter a dívida histórica de subfinanciamento' : 'revela continuidade do subfinanciamento das políticas raciais'}. Os dados cruzados com indicadores socioeconômicos mostram que aumentos orçamentários não foram proporcionais à gravidade das lacunas. Programas como MCMV (R$ 42,8 bi), Fundo Amazônia (R$ 3,4 bi) e Urbanização de Favelas (R$ 3,2 bi) beneficiam indiretamente a população negra, mas sem componente institucional explícito de igualdade racial.`,
       evidencias: evidOrc,
       eixos: Object.keys(orcStats.porPrograma || {}),
       grupos: [],
@@ -1204,11 +1204,11 @@ function gerarInsightsCruzamento(
   }
 
   // Insight 5: Contradição orçamento × lacunas
-  if (orcStats && orcStats.variacao > 0 && criticasNaoCumpridas.length > 0) {
+  if (orcStats && orcStats.variacaoLiquidado > 0 && criticasNaoCumpridas.length > 0) {
     insights.push({
       id: 'contradição-orcamento',
       titulo: 'Contradição: Orçamento cresceu, lacunas persistem',
-      descricao: `O orçamento para políticas raciais variou ${orcStats.variacao.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
+      descricao: `O orçamento para políticas raciais variou ${orcStats.variacaoLiquidado.toFixed(0)}% entre períodos, mas ${criticasNaoCumpridas.length} lacunas críticas permanecem sem cumprimento. Isso sugere que o aumento de recursos não foi direcionado às áreas de maior necessidade.`,
       dados: [
         `Orçamento 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)}`,
         `Orçamento 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)}`,
@@ -1290,7 +1290,7 @@ function gerarSinteseExecutiva(
     totalIndicadores: indicadores.length,
     totalOdsRacial: odsRacialCount,
     totalOrcamento: orcStats?.totalRegistros || 0,
-    variacaoOrcamento: orcStats?.variacao || 0,
+    variacaoOrcamento: orcStats?.variacaoLiquidado || 0,
     narrativa: `O Brasil possui ${total} observações/recomendações do Comitê CERD mapeadas. ${percentualPositivo}% tiveram algum grau de cumprimento (${cumpridas} cumpridas + ${parciais} parciais), enquanto ${percentualNegativo}% permanecem não cumpridas (${naoCumpridas}) ou em retrocesso (${retrocesso}). ${respostasNaoCumpridas.length} de ${respostas.length} críticas do relatório anterior seguem sem resposta adequada. ${odsRacialCount > 0 ? `${odsRacialCount} indicadores ODS desagregados por raça monitoram o cumprimento da Agenda 2030. ` : ''}${eixosMaisProblematicos.length > 0 ? `O eixo mais crítico é ${eixosMaisProblematicos[0]?.eixo} com ${Math.round(eixosMaisProblematicos[0]?.gravidade * 100)}% de não-cumprimento.` : ''}`
   };
 }
