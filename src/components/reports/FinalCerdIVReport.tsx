@@ -12,7 +12,6 @@ import { useEvidenceOverridesReadOnly } from '@/hooks/useEvidenceOverrides';
 import { generateCerdIVFullHTML, type CerdIVFullData } from './generateCerdIVHTML';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
 import { openHtmlPreview } from '@/utils/reportPreview';
-import { useRegisterExport } from '@/utils/exportRegistry';
 
 export function FinalCerdIVReport() {
   const {
@@ -134,7 +133,6 @@ export function FinalCerdIVReport() {
     openHtmlPreview(html, 'Relatório Final CERD IV');
   };
 
-  useRegisterExport('cerd-iv', 'Relatório CERD IV completo', 110, !loading, () => generateCerdIVFullHTML(buildFullData()));
 
   const handleGenerateDocx = () => {
     const html = generateCerdIVFullHTML(buildFullData());
