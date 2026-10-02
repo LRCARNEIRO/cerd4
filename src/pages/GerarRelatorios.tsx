@@ -698,46 +698,14 @@ ${conclusoes.map((c: any) => `
   <p class="source">Fonte: SIOP/Portal da Transparência | <a class="link" href="${systemUrl}/orcamento">→ Ver no sistema</a></p>
 </div>
 
-<!-- IMPLEMENTAÇÕES 24H -->
-<h2>7. Registro de Implementações — Últimas 24 Horas</h2>
-<div class="section-box">
-  <h3>Alterações realizadas</h3>
-  <table>
-    <tr><th>Módulo</th><th>Alteração</th><th>Impacto</th></tr>
-    <tr><td>Base Estatística</td><td>6 indicadores de habitação/saneamento enriquecidos com séries PNAD Contínua</td><td>Séries históricas 2016-2023 onde antes havia dado pontual</td></tr>
-    <tr><td>Base Estatística</td><td>Deep links SIDRA + metadados de metodologia adicionados</td><td>Auditabilidade total — cada indicador rastreável à fonte primária</td></tr>
-    <tr><td>Base Estatística</td><td>Notas sobre cruzamentos e baselines inaugurais (Censo 2022)</td><td>Transparência sobre limitações de séries quilombolas/indígenas</td></tr>
-    <tr><td>Gerar Relatórios</td><td>Exportação DOCX adicionada a todos os relatórios analíticos</td><td>Todos os produtos exportáveis em PDF/HTML + Word editável</td></tr>
-    <tr><td>Gerar Relatórios</td><td>Relatórios Recomendações ONU e Respostas CERD III com exportação</td><td>Dados do BD alimentam diretamente os documentos exportados</td></tr>
-    <tr><td>Base Estatística</td><td>Seção Grupos Focais integrada ao relatório de Inventário</td><td>Quilombolas, indígenas, ciganos, juventude e mulheres negras no documento</td></tr>
-    <tr><td>Base Estatística</td><td>Deep links bidirecionais sistema↔documento adicionados</td><td>Navegação direta do DOCX para a tela correspondente no sistema</td></tr>
-    <tr><td>Base Estatística</td><td>Persistência de indicadores de alta prioridade (homicídios, letalidade, encarceramento)</td><td>Base elevada para ${indicadores.length} indicadores auditáveis</td></tr>
-  </table>
-</div>
-
-<div class="highlight">
-  🔄 <strong>Impacto nas Conclusões:</strong> As conclusões analíticas (${conclusoes.length} registros) e os fios condutores permanecem estáveis — 
-  as alterações das últimas 24h foram de <strong>enriquecimento de dados</strong> (mais séries, mais deep links, mais metadados), 
-  não de reclassificação. Os vereditos de cumprimento das recomendações ONU (${cumpridas} cumpridas, ${naoCumpridas} não cumpridas, ${retrocessos} retrocessos) 
-  e a composição de avanços/retrocessos nas conclusões (${avancos.length}/${retrocessosConc.length}) não sofreram alteração.
-  <br/><br/>
-  A aderência ICERD e o cruzamento artigos×lacunas×orçamento mantêm a mesma estrutura, agora com evidências mais robustas 
-  nos indicadores de habitação/saneamento que fundamentam os Artigos V(e)(iii) e V(e)(iv) da Convenção.
-</div>
-
 <!-- CONCLUSÃO -->
-<h2>8. Veredito</h2>
+<h2>7. Síntese</h2>
 <div class="section-box">
-  <p><strong>Estabilidade analítica confirmada.</strong> As implementações das últimas 24 horas foram de caráter qualitativo 
-  (enriquecimento de séries, adição de metadados, ampliação de exportação), sem alterar:</p>
   <ul style="margin:8px 0;padding-left:20px;">
-    <li>Classificação de cumprimento das ${totalLacunas} recomendações ONU</li>
-    <li>Composição dos ${conclusoes.length} fios condutores (${avancos.length} avanço, ${lacunasPersist.length} lacunas persistentes, ${retrocessosConc.length} retrocesso)</li>
-    <li>Pontuação de aderência ICERD por artigo</li>
+    <li>Cumprimento das ${totalLacunas} recomendações ONU: ${cumpridas} cumpridas, ${naoCumpridas} não cumpridas, ${retrocessos} retrocessos</li>
+    <li>Conclusões analíticas: ${conclusoes.length} (${avancos.length} avanço, ${lacunasPersist.length} lacunas persistentes, ${retrocessosConc.length} retrocesso)</li>
     <li>Diagnóstico orçamentário (${orcStats?.totalRegistros || 0} registros, variação ${orcStats?.variacao ? `${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(1)}%` : 'N/A'})</li>
   </ul>
-  <p>O sistema está <strong>mais robusto</strong> para auditoria internacional, com ${indicadores.length} indicadores 
-  agora contendo deep links, metodologia e notas de cruzamento — atendendo ao padrão de transparência exigido pelo Comitê CERD.</p>
 </div>
 
 <div class="source" style="margin-top:24px;padding-top:12px;border-top:2px solid #0f3460;">
