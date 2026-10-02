@@ -1413,7 +1413,7 @@ export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
             const first = vals[0], last = vals[vals.length - 1];
             const diff = last - first;
             const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
-            const isSeg = ind.categoria === 'Segurança Pública';
+            const isSeg = isLowerBetter(ind.nome, ind.categoria);
             const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
             return `${formatGroupName(group)}: ${first.toLocaleString('pt-BR')} → ${last.toLocaleString('pt-BR')} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
           }).filter(Boolean);

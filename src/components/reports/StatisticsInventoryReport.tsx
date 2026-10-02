@@ -1,3 +1,4 @@
+import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import { useState } from 'react';
 import { tendenciaPadrao, tendenciaLabelFrom } from '@/utils/tendenciaPadronizada';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -149,7 +150,7 @@ function indicadorToHTML(ind: any): string {
       if (vals.length < 2) return null;
       const first = vals[0], last = vals[vals.length - 1], diff = last - first;
       const pct = first !== 0 ? ((diff / first) * 100).toFixed(1) : null;
-      const isSeg = ind.categoria === 'Segurança Pública' || ind.categoria === 'seguranca_publica';
+      const isSeg = isLowerBetterNome(ind.nome, ind.categoria);
       const dir = diff > 0 ? (isSeg ? 'piorou' : 'melhorou') : diff < 0 ? (isSeg ? 'melhorou' : 'piorou') : 'estável';
       return `${formatGroup(g)}: ${safeNum(first)} → ${safeNum(last)} (${pct ? `${parseFloat(pct) > 0 ? '+' : ''}${pct}%` : 'n/d'}, ${dir})`;
     }).filter(Boolean);
