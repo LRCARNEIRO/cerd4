@@ -14,3 +14,5 @@
 - [x] Alinhar Visão Geral, Programa/Ação, Universo e exportações às 204 linhas do inventário orçamentário canônico.
 - [x] Auditar e alinhar todas as subabas de Orçamento, removendo exemplos fixos e fórmulas divergentes da base canônica.
 - [x] Revisar relatórios: omitir lacunas fora das seções de lacunas já existentes, sem criar novas seções.
+- [x] Conferir os oito códigos IND no “Baixar tudo” e imprimir o código canônico no inventário exportado.
+- [x] Retirar da Base Normativa as referências à divisão antiga Meta 1/Meta 2, inclusive na revisão de importações.
