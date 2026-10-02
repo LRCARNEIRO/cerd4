@@ -44,7 +44,10 @@ async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: s
         await espera(500);
       }
       if (!aba) return { itens, falhas: [opt.titulo || `${rota} (${opt.aba})`] };
-      aba.click();
+      // Radix Tabs ativa no teclado; click() programático fora da viewport é ignorado.
+      aba.focus();
+      aba.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
+      aba.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', bubbles: true }));
     }
     if (opt.chaves) {
       let regs: Map<string, any> | undefined;
