@@ -260,6 +260,7 @@ export function useAnalyticalInsights() {
   return {
     isLoading,
     isFetching,
+    sensorReady,
     fiosCondutores,
     conclusoesDinamicas,
     insightsCruzamento,

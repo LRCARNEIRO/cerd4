@@ -27,7 +27,7 @@ const espera = (ms: number) => new Promise(res => setTimeout(res, ms));
  * - `chaves`: relatórios registrados pela página (mesmos geradores dos botões PDF/DOCX);
  * - `seletor`: a área exportável da tela, como faz o botão "PDF/HTML" da página.
  */
-async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: string; titulo?: string }, timeoutMs = 60000) {
+async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: string; titulo?: string; aba?: string }, timeoutMs = 60000) {
   const itens: { titulo: string; html: string }[] = [];
   const falhas: string[] = [];
   const iframe = document.createElement('iframe');
@@ -36,11 +36,21 @@ async function coletarPagina(rota: string, opt: { chaves?: string[]; seletor?: s
   document.body.appendChild(iframe);
   const inicio = Date.now();
   try {
+    if (opt.aba) {
+      let aba: HTMLElement | null = null;
+      while (Date.now() - inicio < timeoutMs) {
+        aba = iframe.contentDocument?.querySelector<HTMLElement>(`[data-export-tab="${opt.aba}"]`) || null;
+        if (aba) break;
+        await espera(500);
+      }
+      if (!aba) return { itens, falhas: [opt.titulo || `${rota} (${opt.aba})`] };
+      aba.click();
+    }
     if (opt.chaves) {
       let regs: Map<string, any> | undefined;
       while (Date.now() - inicio < timeoutMs) {
         regs = iframe.contentWindow ? getExportRegistry(iframe.contentWindow) : undefined;
-        if (regs && opt.chaves.every(k => regs!.has(k))) break;
+        if (regs && opt.chaves.every(k => regs.has(k))) break;
         await espera(500);
       }
       await espera(800);
@@ -145,14 +155,16 @@ export function BaixarTudoButton() {
         { titulo: 'Protocolo Orçamentário', html: () => prOrc.generateProtocoloOrcamentarioHTML({ orcDados: r } as any) },
       ];
 
-      // Relatórios desta página (Conclusões integral, Escopo, Inventários) — mesmos geradores dos botões.
-      const locais = [...getExportRegistry().entries()].sort((a, b) => a[1].ordem - b[1].ordem);
+      // Os inventários ficam montados nesta página; Escopo e Conclusões só montam ao abrir suas abas.
+      const locais = [...getExportRegistry().entries()].filter(([k]) => ['inv-est', 'inv-evid'].includes(k)).sort((a, b) => a[1].ordem - b[1].ordem);
       for (const [, e] of locais) itens.push({ titulo: e.titulo, html: e.html as any });
-      const faltandoLocais = ['conc-integral', 'escopo', 'inv-est', 'inv-evid'].filter(k => !getExportRegistry().has(k));
+      const faltandoLocais = ['inv-est', 'inv-evid'].filter(k => !getExportRegistry().has(k));
 
       // Outras páginas: carregadas em segundo plano para usar os mesmos dados e geradores da tela.
       toast.info('Reunindo páginas (Painel Geral, Conclusões, Estatísticas, Fontes, Balizadores, Guia)…');
-      const [painel, conc, ...telas] = await Promise.all([
+      const [integral, escopo, painel, conc, ...telas] = await Promise.all([
+        coletarPagina('/gerar-relatorios', { aba: 'conclusoes-full', chaves: ['conc-integral'], titulo: 'Conclusões Analíticas — Relatório integral' }),
+        coletarPagina('/gerar-relatorios', { aba: 'consolidado', chaves: ['escopo'], titulo: 'Escopo Consolidado' }),
         coletarPagina('/', { chaves: ['met-alim'] }),
         coletarPagina('/conclusoes', { chaves: ['conc-fios', 'conc-cruz', 'conc-alr', 'conc-tab', 'conc-sint'] }),
         coletarPagina('/estatisticas', { seletor: '#export-estatisticas', titulo: 'Estatísticas — visão da tela' }),
@@ -160,10 +172,10 @@ export function BaixarTudoButton() {
         coletarPagina('/documentos-balizadores', { seletor: '#export-documentos-balizadores', titulo: 'Documentos Balizadores' }),
         coletarPagina('/guia-auditoria', { seletor: '#export-guia-auditoria', titulo: 'Guia de Auditoria' }),
       ]);
-      for (const p of [painel, conc, ...telas]) {
+      for (const p of [integral, escopo, painel, conc, ...telas]) {
         for (const s of p.itens) itens.push({ titulo: s.titulo, html: () => s.html });
       }
-      const naoColetados = [...faltandoLocais.map(k => `relatório ${k} (dados ainda carregando)`), ...[painel, conc, ...telas].flatMap(p => p.falhas)];
+      const naoColetados = [...faltandoLocais.map(k => `relatório ${k} (dados ainda carregando)`), ...[integral, escopo, painel, conc, ...telas].flatMap(p => p.falhas)];
 
       // Folhas de estilo da aplicação embutidas (necessárias às capturas de tela).
       const appCss = (await Promise.all(Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')).map(l => fetch(l.href).then(x => x.text()).catch(() => '')))).join('\n');
