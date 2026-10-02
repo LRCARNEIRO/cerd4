@@ -1381,7 +1381,7 @@ export function generateIndicadoresHTML(indicadores: IndicadorData[]): string {
         : '';
       
       html += `<div class="card">
-<h3>${ind.nome} ${tendBadge}</h3>
+<h3>${ind.codigo ? `${ind.codigo} · ` : ''}${ind.nome} ${tendBadge}</h3>
 <p class="meta">${ind.subcategoria ? ind.subcategoria + ' • ' : ''}${ind.fonte}</p>`;
       
       if (groups.length > 0 && years.length > 0) {
