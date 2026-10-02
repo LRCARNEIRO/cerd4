@@ -679,7 +679,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <div class="section-summary">
   <strong>Como o total é composto:</strong> a Base Estatística tem <strong>${rol.registrosBrutos} indicadores</strong> com código IND-NNN, que se desagregam no inventário canônico de <strong>${rol.total} evidências</strong>
   (${rol.totalGuardaChuvas} indicadores sem subdivisão + ${rol.totalSubindicadores} subindicadores).
-  A seção 1 apresenta esses indicadores organizados pelas séries das abas; a seção 2 lista os ${indicadoresBDUnicos.length} indicadores complementares que não aparecem nas séries da seção 1, evitando repetição.
+  A seção 1 apresenta esses indicadores organizados pelas séries das abas.
   Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 
