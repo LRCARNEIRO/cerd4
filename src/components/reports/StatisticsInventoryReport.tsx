@@ -951,7 +951,7 @@ export function StatisticsInventoryReport() {
   // Aptos como evidência: BD sem Common Core + Dados Novos.
   const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);
   const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = indicadoresBDSemCC.length + TOTAL_DADOS_NOVOS;
+  const rolCard = buildRolEstatistico(indicadoresBD || []);
 
   return (
     <Card className="border-l-4 border-l-chart-3">
