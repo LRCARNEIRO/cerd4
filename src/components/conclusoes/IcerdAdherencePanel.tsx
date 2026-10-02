@@ -211,7 +211,7 @@ ${analysis.map(a => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `anexo-aderencia-icerd-${new Date().toISOString().slice(0,10)}.html`;
+    a.download = `anexo-esforco-impacto-icerd-${new Date().toISOString().slice(0,10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
   }, [analysis, avgEsforco, avgImpacto, stats, totalNormativos, totalRespostas, totalStatSeries, orcamentoRecords.length, rolEstatistico.total, matrizTotals, curadosTotal]);
