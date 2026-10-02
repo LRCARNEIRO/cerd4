@@ -71,11 +71,34 @@ export function buildExportLookups(
     }
   }
 
-  const normativoMetaByTitulo = new Map<string, any>();
+  // Títulos vindos da matriz auditada podem diferir em acentos, caixa,
+  // pontuação ou sufixos ("§42b ..."). O lookup tolera essas variações
+  // para que o link oficial (url_origem) nunca se perca nas fichas.
+  const normTitulo = (s: string) => (s || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const normEntries: Array<[string, any]> = [];
+  class TolerantMap extends Map<string, any> {
+    get(key: string) {
+      const direct = super.get(key);
+      if (direct) return direct;
+      const k = normTitulo(key);
+      if (!k) return undefined;
+      const exact = normEntries.find(([t]) => t === k);
+      if (exact) return exact[1];
+      const partial = normEntries
+        .filter(([t]) => t.length >= 6 && (k.includes(t) || t.includes(k)))
+        .sort((a, b) => b[0].length - a[0].length)[0];
+      return partial?.[1];
+    }
+  }
+  const normativoMetaByTitulo = new TolerantMap();
   for (const n of rawNormativos || []) {
-    if (n?.titulo) normativoMetaByTitulo.set(n.titulo, {
-      id: n.id, url_origem: n.url_origem, categoria: n.categoria, created_at: n.created_at,
-    });
+    if (!n?.titulo) continue;
+    const meta = { id: n.id, url_origem: n.url_origem, categoria: n.categoria, created_at: n.created_at };
+    normativoMetaByTitulo.set(n.titulo, meta);
+    if (n.id) normativoMetaByTitulo.set(n.id, meta);
+    normEntries.push([normTitulo(n.titulo), meta]);
   }
 
   const orcamentoMetaByKey = new Map<string, any>();
