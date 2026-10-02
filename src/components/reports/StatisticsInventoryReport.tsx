@@ -855,8 +855,7 @@ export function StatisticsInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
-          (séries, {indicadoresBDSemCC.length} indicadores, 
-          interseccionalidades, vulnerabilidades) ou o inventário resumido.
+          (séries históricas, interseccionalidades, vulnerabilidades) ou o inventário resumido.
 
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
@@ -865,8 +864,8 @@ export function StatisticsInventoryReport() {
             <p className="text-xs text-muted-foreground">Evidências estatísticas (inventário canônico)</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{indicadoresBDSemCC.length}</p>
-            <p className="text-xs text-muted-foreground">Indicadores (13 subabas)</p>
+            <p className="text-lg font-bold text-foreground">{rolCard.registrosBrutos}</p>
+            <p className="text-xs text-muted-foreground">Indicadores (IND-NNN) na Base Estatística</p>
           </div>
 
         </div>
