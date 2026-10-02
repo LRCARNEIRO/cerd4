@@ -724,27 +724,27 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 
 <div class="stats-grid">
   <div class="stat-card">
-    <div class="value">${safeNum(totalGeral)}</div>
-    <div class="label">INDICADORES CONSOLIDADOS</div>
+    <div class="value">${rol.registrosBrutos}</div>
+    <div class="label">INDICADORES (IND-NNN) NA BASE ESTATÍSTICA</div>
   </div>
   <div class="stat-card">
-    <div class="value">${seriesExpandidas.length}</div>
-    <div class="label">INDICADORES DE SÉRIES (${series.length} séries)</div>
+    <div class="value">${rol.total}</div>
+    <div class="label">EVIDÊNCIAS ESTATÍSTICAS (INVENTÁRIO CANÔNICO)</div>
   </div>
   <div class="stat-card">
-    <div class="value">${indicadoresBDUnicos.length}</div>
-    <div class="label">INDICADORES BD (únicos, sem espelhos)</div>
+    <div class="value">${rol.totalGuardaChuvas}</div>
+    <div class="label">INDICADORES SEM SUBDIVISÃO</div>
   </div>
   <div class="stat-card">
-    <div class="value">${dadosNovosIndividuais.length}</div>
-    <div class="label">DADOS NOVOS</div>
+    <div class="value">${rol.totalSubindicadores}</div>
+    <div class="label">SUBINDICADORES (recortes de ${rol.consolidados} registros-mãe)</div>
   </div>
 </div>
 
 <div class="section-summary">
-  <strong>Como o total é composto:</strong> ${seriesExpandidas.length} indicadores consolidados das ${series.length} séries temporais hardcoded
-  + ${indicadoresBDUnicos.length} indicadores únicos do banco de dados (sem espelhos, com código IND-NNN)
-  + ${dadosNovosIndividuais.length} indicadores auditáveis da aba "Dados Novos" = <strong>${totalGeral} indicadores consolidados</strong>, que se desagregam no rol vinculável de ${rol.total} evidências.
+  <strong>Como o total é composto:</strong> a Base Estatística tem <strong>${rol.registrosBrutos} indicadores</strong> com código IND-NNN, que se desagregam no inventário canônico de <strong>${rol.total} evidências</strong>
+  (${rol.totalGuardaChuvas} indicadores sem subdivisão + ${rol.totalSubindicadores} subindicadores).
+  A seção 1 apresenta esses indicadores organizados pelas séries das abas; a seção 2 lista os ${indicadoresBDUnicos.length} indicadores complementares que não aparecem nas séries da seção 1, evitando repetição.
   Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 
@@ -795,7 +795,7 @@ ${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${e
   </tbody>
 </table>
 
-<h2>2. Indicadores BD — ${indicadoresBDUnicos.length}</h2>
+<h2>2. Indicadores complementares (fora das séries da seção 1) — ${indicadoresBDUnicos.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
   Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
