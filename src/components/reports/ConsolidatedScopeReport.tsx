@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAnalyticalInsights } from '@/hooks/useAnalyticalInsights';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useRegisterExport } from '@/utils/exportRegistry';
 import type { FioCondutor, InsightCruzamento, ConclusaoDinamica } from '@/hooks/useAnalyticalInsights';
 import {
   dadosDemograficos as hcDemo,
@@ -751,6 +752,13 @@ export function ConsolidatedScopeReport() {
   };
 
   const totalItems = (indicadores?.length || 0) + (lacunas?.length || 0) + (orcamentarios?.length || 0) + (documentosNormativos?.length || 0);
+
+  useRegisterExport('escopo', 'Escopo Consolidado', 130, !!(indicadores && lacunas && orcamentarios && documentosNormativos && respostas), () => generateConsolidatedHTML({
+    indicadores: indicadores || [], lacunas: lacunas || [], lacunasStats, orcStats,
+    orcamentarios: orcamentarios || [], documentosNormativos: documentosNormativos || [],
+    fiosCondutores, conclusoesDinamicas, insightsCruzamento, sinteseExecutiva, respostas: respostas || [],
+    mirrorData,
+  }));
 
   return (
     <div className="space-y-6">

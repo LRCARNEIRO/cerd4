@@ -6,6 +6,7 @@ import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/use
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useRegisterExport } from '@/utils/exportRegistry';
 import { openHtmlPreview, prepareHtmlPreview } from '@/utils/reportPreview';
 import { matchesRecommendationEvidence, normalizeSearchText } from '@/utils/recommendationKeywordMatching';
 import { inferArtigosOrcamento } from '@/utils/artigosConvencao';
@@ -286,6 +287,8 @@ export function EvidenceInventoryReport() {
       setGenerating(null);
     }
   };
+
+  useRegisterExport('inv-evid', 'Inventário de Evidências (3 bases)', 150, !!(indicadores && orcamento && normativos && recomendacoes), () => generateEvidenceInventoryHTML(evidEstatistica, normativos || [], orcamento || [], recomendacoes || []));
 
   return (
     <Card className="border-l-4 border-l-chart-5">

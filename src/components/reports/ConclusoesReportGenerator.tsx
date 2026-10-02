@@ -7,6 +7,7 @@ import { svgLineChart, svgBarChart } from '@/components/reports/cerdiv/chartUtil
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getExportToolbarHTML, downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useRegisterExport } from '@/utils/exportRegistry';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIcerdArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
@@ -477,6 +478,8 @@ ${icerdData.map(a => `
 </div>
 </body></html>`;
   };
+
+  useRegisterExport('conc-integral', 'Conclusões Analíticas — Relatório integral', 120, !isLoading, generateFullHTML);
 
   if (isLoading) {
     return (

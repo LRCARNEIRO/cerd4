@@ -12,6 +12,7 @@ import { inferArtigosIndicador } from '@/utils/inferArtigosIndicador';
 import { isEvidenceEligibleIndicator, isMethodologicalGapPlaceholder } from '@/utils/indicatorEvidenceGuards';
 import { getExportToolbarHTML } from '@/utils/reportExportToolbar';
 import { downloadAsDocx } from '@/utils/reportExportToolbar';
+import { useRegisterExport } from '@/utils/exportRegistry';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { openHtmlPreview } from '@/utils/reportPreview';
 import { svgLineChart, svgBarChart } from '@/components/reports/cerdiv/chartUtils';
@@ -938,6 +939,8 @@ export function StatisticsInventoryReport() {
       setGenerating(null);
     }
   };
+
+  useRegisterExport('inv-est', 'Inventário de Estatísticas', 140, !!(indicadoresBD && juventudeNegraBD && recomendacoes), () => generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror, recsByNomeLower));
 
   // Aptos como evidência: BD sem Common Core + Dados Novos.
   const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);

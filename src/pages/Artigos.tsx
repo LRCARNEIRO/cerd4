@@ -52,7 +52,7 @@ export default function Artigos() {
         />
         <ExportTabButtons
           targetSelector="#export-artigos-aderencia"
-          fileName="artigos-aderencia-icerd"
+          fileName="artigos-esforco-impacto-icerd"
           compact
         />
       </div>
