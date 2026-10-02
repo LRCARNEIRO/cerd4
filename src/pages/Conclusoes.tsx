@@ -34,8 +34,6 @@ const eixoLabels: Record<string, string> = {
 };
 
 import { RefreshDiffDialog, captureSnapshot, type SnapshotData } from '@/components/conclusoes/RefreshDiffDialog';
-import { FarolEvolucaoPanel } from '@/components/conclusoes/FarolEvolucaoPanel';
-import { EvolucaoRecomendacoesPanel } from '@/components/conclusoes/EvolucaoRecomendacoesPanel';
 import { LacunasCerdTab } from '@/components/estatisticas/LacunasCerdTab';
 import { DiagnosticoLacunasPanel } from '@/components/conclusoes/DiagnosticoLacunasPanel';
 // rebuild trigger
@@ -456,8 +454,6 @@ export default function Conclusoes() {
               <TabsTrigger value="sintese" className="gap-1"><FileText className="w-4 h-4" /> Síntese Indicadores-Chave</TabsTrigger>
               <TabsTrigger value="fios" className="gap-1"><Link2 className="w-4 h-4" /> Fios Condutores ({fiosFiltrados.length})</TabsTrigger>
               <TabsTrigger value="cruzamentos" className="gap-1"><Zap className="w-4 h-4" /> Cruzamentos</TabsTrigger>
-              <TabsTrigger value="farol" className="gap-1"><Scale className="w-4 h-4" /> Evolução dos Artigos</TabsTrigger>
-              <TabsTrigger value="evolucao-recomendacoes" className="gap-1"><TrendingUp className="w-4 h-4" /> Evolução Recomendações</TabsTrigger>
               <TabsTrigger value="diagnostico-lacunas" className="gap-1"><FileText className="w-4 h-4" /> Diagnóstico de Lacunas</TabsTrigger>
             </TabsList>
 
@@ -667,24 +663,7 @@ export default function Conclusoes() {
             </TabsContent>
 
             {/* Abas Lacunas, Avanços e Retrocessos removidas */}
-
-            {/* ABA: FAROL DE EVOLUÇÃO */}
-            <TabsContent value="farol">
-              <FarolEvolucaoPanel
-                lacunas={lacunas || []}
-                orcamentoRecords={orcDados || []}
-                indicadores={indicadores || []}
-                stats={stats}
-                documentosNormativos={documentosNormativos || []}
-                respostasCerdIII={respostas || []}
-              />
-            </TabsContent>
-
-            {/* ABA: EVOLUÇÃO RECOMENDAÇÕES */}
-            <TabsContent value="evolucao-recomendacoes">
-              <EvolucaoRecomendacoesPanel />
-            </TabsContent>
-
+            {/* Abas Evolução dos Artigos e Evolução Recomendações removidas — leitura única: Esforço × Realização × Impacto */}
 
             <TabsContent value="diagnostico-lacunas">
               <DiagnosticoLacunasPanel />

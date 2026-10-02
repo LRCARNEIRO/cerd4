@@ -193,7 +193,7 @@ export function DualPerspectivePanel({
             </p>
             <div className="mt-3 pt-2 border-t border-border/40">
               <Link to="/conclusoes" className="text-xs text-primary hover:underline flex items-center gap-1">
-                Ver Evolução Recomendações <ArrowRight className="w-3 h-3" />
+                Ver Conclusões Analíticas <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </CardContent>
