@@ -388,18 +388,25 @@ function gerarFiosCondutores(
       });
     });
 
-    const retrocessos = lacunasTerritorio.filter(l => l.status_cumprimento === 'retrocesso').length;
+    const naoCumpTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'nao_cumprido').length;
+    const parcTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'parcialmente_cumprido').length;
+    const cumpTerr = lacunasTerritorio.filter(l => l.status_cumprimento === 'cumprido').length;
+    const ind162: any = (indicadores as any[]).find(i => i.codigo_curto === 'IND-162');
+    const s162 = ind162?.dados?.series || {};
+    const anos162 = Object.keys(s162).sort();
+    const a162 = anos162[anos162.length - 1];
+    const tit162 = a162 ? `${a162}: ${s162[a162]?.tituladas} terras quilombolas tituladas frente a ${Number(s162[a162]?.certificadas).toLocaleString('pt-BR')} comunidades certificadas (IND-162).` : '';
 
     fios.push({
       id: 'territorios-tradicionais',
-      titulo: 'Territórios Tradicionais: Retrocesso e Retomada',
+      titulo: 'Territórios Tradicionais: Paralisia e Retomada',
       tipo: 'retrocesso',
-      argumento: `${retrocessos} de ${lacunasTerritorio.length} lacunas territoriais registram retrocesso. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
+      argumento: `Das ${lacunasTerritorio.length} recomendações do eixo territorial, ${cumpTerr} cumpridas, ${parcTerr} parciais e ${naoCumpTerr} não cumpridas. O período 2019-2022 praticamente paralisou demarcações e titulações. A retomada a partir de 2023 é lenta frente à dívida histórica acumulada.`,
       evidencias: evidTerr.slice(0, 8),
       eixos: ['terra_territorio'],
       grupos: [...new Set(lacunasTerritorio.map(l => l.grupo_focal))],
       relevancia: 'alta',
-      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada, com 384 títulos expedidos frente a 2.019 processos de titulação abertos no INCRA — menos de um quinto dos processos concluídos (IND-162). Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
+      comparativo2018: `2018: processos em andamento com orçamento regular. 2019-2022: paralisia institucional. 2023-2025: retomada. ${tit162} Dados orçamentários detalhados disponíveis no módulo Orçamento.`,
       codigosLastro: ['IND-162'],
     });
 
@@ -514,16 +521,16 @@ function gerarFiosCondutores(
     
     if (orcStats.totalPeriodo1 > 0 || orcStats.totalPeriodo2 > 0) {
       evidOrc.push({
-        texto: `Período 2018-2022: R$ ${formatBRL(orcStats.totalPeriodo1)} executados`,
+        texto: `Período 2018-2022: R$ ${formatBRL(orcStats.liquidadoPeriodo1 ?? 0)} liquidados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
-        valor2018: formatBRL(orcStats.totalPeriodo1)
+        valor2018: formatBRL(orcStats.liquidadoPeriodo1 ?? 0)
       });
       evidOrc.push({
-        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.totalPeriodo2)} executados`,
+        texto: `Período 2023-2025: R$ ${formatBRL(orcStats.liquidadoPeriodo2 ?? 0)} liquidados`,
         fonte: 'SIOP/Portal da Transparência',
         tipo: 'orcamentaria',
-        valorAtual: formatBRL(orcStats.totalPeriodo2)
+        valorAtual: formatBRL(orcStats.liquidadoPeriodo2 ?? 0)
       });
       evidOrc.push({
         texto: `Variação: ${orcStats.variacao >= 0 ? '+' : ''}${orcStats.variacao.toFixed(0)}%`,
@@ -624,9 +631,9 @@ function gerarFiosCondutores(
     id: 'adm-publica-munic-estadic',
     titulo: 'Fragilidade Institucional: Estruturas de Igualdade Racial nos Governos',
     tipo: 'lacuna_critica',
-    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 estados (RN e PR) possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
+    argumento: `A ESTADIC 2024 (IBGE) revela que apenas 2 das 27 UFs possuem Fundos de Igualdade Racial ativos, ainda que 25 das 27 UFs contem com legislação específica — sinal de institucionalização formal sem sustentação financeira. A gestão estadual de igualdade racial é majoritariamente feminina (24 dos 27 gestores) e negra (14 dos 27), mas povos ciganos e indígenas praticamente não possuem estrutura específica em nenhuma esfera.`,
     evidencias: [
-      { texto: 'Apenas 2 UFs com Fundo de Igualdade Racial ativo (RN e PR)', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
+      { texto: 'Apenas 2 das 27 UFs com Fundo de Igualdade Racial ativo', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
       { texto: '25 das 27 UFs com legislação específica de igualdade racial', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-179'] },
       { texto: 'Gestão estadual de igualdade racial: 24 dos 27 gestores são mulheres e 14 dos 27 são pessoas negras', fonte: 'ESTADIC 2024 / IBGE', tipo: 'quantitativa', codigosLastro: ['IND-180'] },
       { texto: 'Povos ciganos e indígenas sem estrutura em governos subnacionais', fonte: 'ESTADIC 2024 / IBGE', tipo: 'qualitativa', codigosLastro: ['IND-180'] },
