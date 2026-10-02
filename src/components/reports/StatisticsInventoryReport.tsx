@@ -207,7 +207,7 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
 
   // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
   const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-  const totalGeral = TOTAL_DADOS_ESTATISTICAS + TOTAL_DADOS_NOVOS + indicadoresBDUnicos.length;
+  const rolFull = buildRolEstatistico(indicadoresBD || []);
 
 
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
@@ -248,8 +248,8 @@ ${getExportToolbarHTML('Relatorio-Completo-Base-Estatistica-CERD-IV')}
 <p class="meta">IV Relatório Periódico do Brasil ao CERD (2018-2025) — Gerado em ${now}</p>
 
 <div class="stats-grid">
-  <div class="stat-card"><div class="value">${safeNum(totalGeral)}</div><div class="label">TOTAL GERAL</div></div>
-  <div class="stat-card"><div class="value">${indicadoresBDUnicos.length}</div><div class="label">INDICADORES BD (exclusivos)</div></div>
+  <div class="stat-card"><div class="value">${rolFull.registrosBrutos}</div><div class="label">INDICADORES (IND-NNN)</div></div>
+  <div class="stat-card"><div class="value">${rolFull.total}</div><div class="label">EVIDÊNCIAS ESTATÍSTICAS (INVENTÁRIO CANÔNICO)</div></div>
   <div class="stat-card"><div class="value">${TOTAL_DADOS_NOVOS}</div><div class="label">DADOS NOVOS</div></div>
 </div>
 
