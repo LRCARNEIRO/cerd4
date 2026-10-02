@@ -842,9 +842,6 @@ export function StatisticsInventoryReport() {
 
   useRegisterExport('inv-est', 'Inventário de Estatísticas', 140, !!(indicadoresBD && juventudeNegraBD && recomendacoes), () => generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror, recsByNomeLower));
 
-  // Aptos como evidência: BD sem Common Core + Dados Novos.
-  const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);
-  const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const rolCard = buildRolEstatistico(indicadoresBD || []);
 
   return (
