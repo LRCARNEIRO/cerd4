@@ -704,14 +704,14 @@ ${conclusoes.map((c: any) => `
   <h3>Alterações realizadas</h3>
   <table>
     <tr><th>Módulo</th><th>Alteração</th><th>Impacto</th></tr>
-    <tr><td>Indicadores BD</td><td>6 indicadores de habitação/saneamento enriquecidos com séries PNAD Contínua</td><td>Séries históricas 2016-2023 onde antes havia dado pontual</td></tr>
-    <tr><td>Indicadores BD</td><td>Deep links SIDRA + metadados de metodologia adicionados</td><td>Auditabilidade total — cada indicador rastreável à fonte primária</td></tr>
-    <tr><td>Indicadores BD</td><td>Notas sobre cruzamentos e baselines inaugurais (Censo 2022)</td><td>Transparência sobre limitações de séries quilombolas/indígenas</td></tr>
+    <tr><td>Base Estatística</td><td>6 indicadores de habitação/saneamento enriquecidos com séries PNAD Contínua</td><td>Séries históricas 2016-2023 onde antes havia dado pontual</td></tr>
+    <tr><td>Base Estatística</td><td>Deep links SIDRA + metadados de metodologia adicionados</td><td>Auditabilidade total — cada indicador rastreável à fonte primária</td></tr>
+    <tr><td>Base Estatística</td><td>Notas sobre cruzamentos e baselines inaugurais (Censo 2022)</td><td>Transparência sobre limitações de séries quilombolas/indígenas</td></tr>
     <tr><td>Gerar Relatórios</td><td>Exportação DOCX adicionada a todos os relatórios analíticos</td><td>Todos os produtos exportáveis em PDF/HTML + Word editável</td></tr>
     <tr><td>Gerar Relatórios</td><td>Relatórios Recomendações ONU e Respostas CERD III com exportação</td><td>Dados do BD alimentam diretamente os documentos exportados</td></tr>
     <tr><td>Base Estatística</td><td>Seção Grupos Focais integrada ao relatório de Inventário</td><td>Quilombolas, indígenas, ciganos, juventude e mulheres negras no documento</td></tr>
     <tr><td>Base Estatística</td><td>Deep links bidirecionais sistema↔documento adicionados</td><td>Navegação direta do DOCX para a tela correspondente no sistema</td></tr>
-    <tr><td>Indicadores BD</td><td>Persistência de indicadores de alta prioridade (homicídios, letalidade, encarceramento)</td><td>Base elevada para ${indicadores.length} indicadores auditáveis</td></tr>
+    <tr><td>Base Estatística</td><td>Persistência de indicadores de alta prioridade (homicídios, letalidade, encarceramento)</td><td>Base elevada para ${indicadores.length} indicadores auditáveis</td></tr>
   </table>
 </div>
 
@@ -797,7 +797,7 @@ ${conclusoes.map((c: any) => `
         </Card>
         <Card>
           <CardContent className="pt-4 pb-4 text-center">
-            <p className="text-xs text-muted-foreground">Indicadores BD</p>
+            <p className="text-xs text-muted-foreground">Indicadores</p>
             <p className="text-2xl font-bold">{indicadores.length}</p>
             <p className="text-xs text-muted-foreground">{comSerie} com série | {pontoUnico} pontual</p>
           </CardContent>

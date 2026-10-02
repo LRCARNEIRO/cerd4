@@ -190,23 +190,6 @@ function generateFullStatisticsHTML(indicadoresBD: any[], juventudeNegraBD: any[
   const evolucaoDesigualdade = m?.evolucaoDesigualdade?.length ? m.evolucaoDesigualdade : hcEvolucaoDesigualdade;
   const povosTradicionais = m?.povosTradicionais || hcPovosTradicionais;
 
-  const bdCategorias: Record<string, any[]> = {};
-  indicadoresBD.forEach(i => {
-    const cat = i.categoria || 'outros';
-    if (!bdCategorias[cat]) bdCategorias[cat] = [];
-    bdCategorias[cat].push(i);
-  });
-
-  const catLabels: Record<string, string> = {
-    seguranca_publica: 'Segurança Pública', saude: 'Saúde', educacao: 'Educação',
-    terra_territorio: 'Terras e Territórios', trabalho_renda: 'Trabalho e Renda',
-    politicas_institucionais: 'Políticas Institucionais', legislacao_justica: 'Legislação e Justiça',
-    participacao_social: 'Participação Social', dados_estatisticas: 'Dados e Estatísticas',
-    cultura_patrimonio: 'Cultura e Patrimônio', habitacao: 'Habitação',
-  };
-
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const rolFull = buildRolEstatistico(indicadoresBD || []);
 
 
@@ -457,53 +440,6 @@ function generateInventoryHTML(
     interseccionalidadeTrabalho, violenciaInterseccional, serieAntraTrans,
     lgbtqiaPorRaca, deficienciaPorRaca, classePorRaca, evolucaoDesigualdade } = m;
 
-  // Series data
-  const series = [
-    { nome: 'Composição Racial (PNAD)', registros: evolucaoComposicaoRacial.length, fonte: 'SIDRA/IBGE Tab. 6403', periodo: '2018-2024' },
-    { nome: 'Dados Demográficos (Censo 2022)', registros: dadosDemograficos.composicaoRacial.length, fonte: 'SIDRA/IBGE Tab. 9605', periodo: '2022' },
-    { nome: 'Indicadores Socioeconômicos', registros: indicadoresSocioeconomicos.length, fonte: 'PNAD Contínua', periodo: '2018-2024' },
-    { nome: 'Segurança Pública', registros: segurancaPublica.length, fonte: 'FBSP / SIM-DataSUS', periodo: '2018-2024' },
-    { nome: 'Feminicídio', registros: feminicidioSerie.length, fonte: 'FBSP', periodo: '2018-2024' },
-    { nome: 'Educação — Série Histórica', registros: educacaoSerieHistorica.length, fonte: 'INEP / PNAD', periodo: '2018-2024' },
-    { nome: 'Saúde — Série Histórica', registros: saudeSerieHistorica.length, fonte: 'DataSUS / SIM / SINASC', periodo: '2018-2024' },
-    { nome: 'Trabalho Interseccional', registros: interseccionalidadeTrabalho.length, fonte: 'PNAD Contínua', periodo: '2018-2024' },
-    { nome: 'Deficiência × Raça', registros: deficienciaPorRaca.length, fonte: 'IBGE / Censo 2022', periodo: '2022' },
-    { nome: 'LGBTQIA+ — ANTRA/Trans', registros: serieAntraTrans.length, fonte: 'ANTRA / FBSP', periodo: '2018-2024' },
-    { nome: 'LGBTQIA+ × Raça', registros: lgbtqiaPorRaca.length, fonte: 'Pesquisa Sexualidade IBGE', periodo: '2022' },
-    { nome: 'Classe Social × Raça', registros: classePorRaca.length, fonte: 'PNAD Contínua / SIS', periodo: '2022' },
-    { nome: 'Violência Interseccional', registros: violenciaInterseccional.length, fonte: 'FBSP / DataSUS', periodo: '2018-2024' },
-    { nome: 'Juventude Negra', registros: juventudeNegraBD.length, fonte: 'BD — Atlas/FBSP (auditado)', periodo: '2022-2025' },
-    { nome: 'Radar de Vulnerabilidades', registros: radarVulnerabilidades.length, fonte: 'Múltiplas', periodo: '2022-2024' },
-    { nome: 'Evolução da Desigualdade', registros: evolucaoDesigualdade.length, fonte: 'IBGE / PNAD', periodo: '2018-2024' },
-  ];
-
-  // Exclude espelho mirrors from BD count to avoid double-counting with hardcoded series
-  const indicadoresBDUnicos = indicadoresBD.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
-
-  // BD indicators by category — usa APENAS indicadoresBDUnicos para evitar
-  // double-counting com séries temporais expandidas.
-  const bdCategorias: Record<string, any[]> = {};
-  indicadoresBDUnicos.forEach((i: any) => {
-    const cat = i.categoria || 'outros';
-    if (!bdCategorias[cat]) bdCategorias[cat] = [];
-    bdCategorias[cat].push(i);
-  });
-
-  const catLabels: Record<string, string> = {
-    seguranca_publica: 'Segurança Pública',
-    saude: 'Saúde',
-    educacao: 'Educação',
-    terra_territorio: 'Terras e Territórios',
-    trabalho_renda: 'Trabalho e Renda',
-    politicas_institucionais: 'Políticas Institucionais',
-    legislacao_justica: 'Legislação e Justiça',
-    participacao_social: 'Participação Social',
-    dados_estatisticas: 'Dados e Estatísticas',
-    cultura_patrimonio: 'Cultura e Patrimônio',
-    habitacao: 'Habitação',
-  };
-
-
   // ── Consolidação das séries temporais em indicadores auditáveis ──
   // Regra: raça/cor, gênero, idade etc. entram em coluna própria de
   // DESAGREGAÇÕES. Não se cria uma linha para "Branca" e outra para "Negra",
@@ -743,7 +679,7 @@ ${getExportToolbarHTML('Inventario-Base-Estatistica-CERD-IV')}
 <div class="section-summary">
   <strong>Como o total é composto:</strong> a Base Estatística tem <strong>${rol.registrosBrutos} indicadores</strong> com código IND-NNN, que se desagregam no inventário canônico de <strong>${rol.total} evidências</strong>
   (${rol.totalGuardaChuvas} indicadores sem subdivisão + ${rol.totalSubindicadores} subindicadores).
-  A seção 1 apresenta esses indicadores organizados pelas séries das abas; a seção 2 lista os ${indicadoresBDUnicos.length} indicadores complementares que não aparecem nas séries da seção 1, evitando repetição.
+  A seção 1 apresenta esses indicadores organizados pelas séries das abas.
   Cada item abaixo é listado uma vez; as categorias internas aparecem como desagregações.
 </div>
 
@@ -794,48 +730,7 @@ ${ensinoSuperiorNegroAuditado(indicadoresBD) ? `<div class="section-summary">${e
   </tbody>
 </table>
 
-<h2>2. Indicadores complementares (fora das séries da seção 1) — ${indicadoresBDUnicos.length}</h2>
-<p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
-  💡 Clique no código <strong>IND-NNN</strong> para abrir o indicador na Base Estatística (rola até a posição exata).
-  Indicadores tipo "espelho_estático" foram excluídos para não duplicar as séries temporais já listadas na seção 1.
-  A coluna <strong>Recomendações</strong> mostra as §§ que vinculam este indicador como evidência (via SSoT do diagnóstico).
-</p>
-${Object.entries(bdCategorias).sort((a, b) => b[1].length - a[1].length).map(([cat, inds]) => `
-<h3>${catLabels[cat] || cat} (${inds.length})</h3>
-<table>
-  <thead>
-    <tr><th>Código</th><th>Indicador</th><th>Fonte</th><th>Artigos ICERD</th><th>Recomendações (§)</th><th>Desagregações</th></tr>
-  </thead>
-  <tbody>
-    ${inds.map((ind: any) => {
-      const desags = [];
-      if (ind.desagregacao_raca) desags.push('Raça');
-      if (ind.desagregacao_genero) desags.push('Gênero');
-      if (ind.desagregacao_idade) desags.push('Idade');
-      if (ind.desagregacao_territorio) desags.push('Território');
-      if (ind.desagregacao_classe) desags.push('Classe');
-      if (ind.desagregacao_deficiencia) desags.push('Deficiência');
-      const artsDb = (ind.artigos_convencao || []).filter((a: string) => ['I','II','III','IV','V','VI','VII'].includes(a));
-      const arts = artsDb.length
-        ? artsDb.map((a: string) => `<span class="badge badge-purple">Art. ${a}</span>`).join(' ')
-        : artigosBadges(ind);
-      const codigo = ind.codigo || '';
-      const codigoCell = codigo
-        ? `<a href="${systemBaseUrl}/estatisticas?ind=${encodeURIComponent(codigo)}#ind-${encodeURIComponent(codigo)}" target="_blank" rel="noopener" style="display:inline-block;padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:4px;font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;text-decoration:none;letter-spacing:.05em;">${codigo}</a>`
-        : '<span style="color:#94a3b8;">—</span>';
-      return `<tr id="ind-${codigo}">
-        <td>${codigoCell}</td>
-        <td>${ind.nome}</td>
-        <td>${ind.fonte}</td>
-        <td>${arts || '—'}</td>
-        <td>${recsBadges(ind.nome)}</td>
-        <td>${desags.map(d => `<span class="badge badge-blue">${d}</span>`).join('')}</td>
-      </tr>`;
-    }).join('')}
-  </tbody>
-</table>`).join('')}
-
-<h2>3. Dados Novos — ${dadosNovosIndividuais.length}</h2>
+<h2>2. Dados Novos — ${dadosNovosIndividuais.length}</h2>
 <p style="font-size:11px;color:#64748b;margin:4px 0 12px;">
   Indicadores auditáveis listados na aba "Dados Novos" da Base Estatística, com link direto à fonte oficial.
   Vinculação a Artigos ICERD inferida pelo classificador; vinculação a recomendações via SSoT do diagnóstico.
@@ -947,9 +842,6 @@ export function StatisticsInventoryReport() {
 
   useRegisterExport('inv-est', 'Inventário de Estatísticas', 140, !!(indicadoresBD && juventudeNegraBD && recomendacoes), () => generateInventoryHTML(indicadoresBD || [], juventudeNegraBD || [], mirror, recsByNomeLower));
 
-  // Aptos como evidência: BD sem Common Core + Dados Novos.
-  const indicadoresBDSemCC = (indicadoresBD || []).filter(isEvidenceEligibleIndicator);
-  const indicadoresBDUnicos = indicadoresBDSemCC.filter((i: any) => !(i.documento_origem || []).includes('espelho_estatico'));
   const rolCard = buildRolEstatistico(indicadoresBD || []);
 
   return (
@@ -963,8 +855,7 @@ export function StatisticsInventoryReport() {
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
           Gere o <strong>relatório completo</strong> com todos os dados de todas as abas 
-          (séries, {indicadoresBDSemCC.length} indicadores, 
-          interseccionalidades, vulnerabilidades) ou o inventário resumido.
+          (séries históricas, interseccionalidades, vulnerabilidades) ou o inventário resumido.
 
         </p>
         <div className="grid grid-cols-2 gap-2 text-center">
@@ -973,8 +864,8 @@ export function StatisticsInventoryReport() {
             <p className="text-xs text-muted-foreground">Evidências estatísticas (inventário canônico)</p>
           </div>
           <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-foreground">{indicadoresBDSemCC.length}</p>
-            <p className="text-xs text-muted-foreground">Indicadores (13 subabas)</p>
+            <p className="text-lg font-bold text-foreground">{rolCard.registrosBrutos}</p>
+            <p className="text-xs text-muted-foreground">Indicadores (IND-NNN) na Base Estatística</p>
           </div>
 
         </div>
