@@ -134,7 +134,7 @@ export function ViolenciaRacialChart() {
           </div>
           <div className="text-center p-2 bg-destructive/10 rounded-lg">
             <p className="text-xs text-muted-foreground">Risco homicídio negro</p>
-            <p className="text-sm font-bold text-destructive">{dado2018.razaoRisco}x → {dado2024.razaoRisco}x</p>
+            <p className="text-sm font-bold text-destructive">{dado2018.razaoRisco}x → {(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco}x</p>
             <Badge variant="outline" className="text-xs mt-1">Persistente</Badge>
           </div>
         </div>
@@ -297,7 +297,7 @@ export function SaudeComparativaChart() {
 export function RendaComparativaChart() {
   const { indicadoresSocioeconomicos } = useMirrorData();
   const dado2018 = indicadoresSocioeconomicos[0];
-  const dado2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+  const dado2024 = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
 
   return (
     <Card>
@@ -436,7 +436,7 @@ export function TabelaSinteseComparativa() {
   const dado2018Sau = saudeSerieHistorica[0];
   const dado2024Sau = saudeSerieHistorica[saudeSerieHistorica.length - 1];
   const dado2018Eco = indicadoresSocioeconomicos[0];
-  const dado2024Eco = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+  const dado2024Eco = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
   const dado2018Fem = feminicidioSerie[0];
   const dado2024Fem = feminicidioSerie[feminicidioSerie.length - 1];
 
@@ -452,7 +452,7 @@ export function TabelaSinteseComparativa() {
     { indicador: 'Vítimas de homicídio negras', codigos: ['IND-117'], v2018: `${dado2018Seg.percentualVitimasNegras}%`, v2024: `${dado2024Seg.percentualVitimasNegras}%`, variacao: `+${(dado2024Seg.percentualVitimasNegras - dado2018Seg.percentualVitimasNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
     { indicador: 'Letalidade policial negra', codigos: ['IND-117'], v2018: `${dado2018Seg.letalidadePolicial}%`, v2024: `${dado2024Seg.letalidadePolicial}%`, variacao: `+${(dado2024Seg.letalidadePolicial - dado2018Seg.letalidadePolicial).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
     { indicador: 'Feminicídio mulheres negras', codigos: ['IND-112'], v2018: `${dado2018Fem.percentualNegras}%`, v2024: `${dado2024Fem.percentualNegras}%`, variacao: `+${(dado2024Fem.percentualNegras - dado2018Fem.percentualNegras).toFixed(1)}pp`, tendencia: 'piora', fonte: 'FBSP 2025' },
-    { indicador: 'Risco homicídio negro', codigos: ['IND-117'], v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${dado2024Seg.razaoRisco}x`, variacao: `+${(dado2024Seg.razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: 'piora', fonte: 'Atlas 2025' },
+    { indicador: 'Risco homicídio negro', codigos: ['IND-117'], v2018: `${dado2018Seg.razaoRisco}x`, v2024: `${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco}x (${(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).ano})`, variacao: `${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco) >= 0 ? '+' : ''}${((([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco - dado2018Seg.razaoRisco).toFixed(1)}x`, tendencia: 'piora', fonte: 'Atlas 2025' },
     { indicador: 'Renda média negra', codigos: ['IND-119'], v2018: `R$ ${dado2018Eco.rendaMediaNegra}`, v2024: `R$ ${dado2024Eco.rendaMediaNegra}`, variacao: `+${((dado2024Eco.rendaMediaNegra/dado2018Eco.rendaMediaNegra - 1)*100).toFixed(0)}%`, tendencia: 'melhora', fonte: 'PNAD 2024' },
     { indicador: 'Razão renda branca/negra', codigos: ['IND-119'], v2018: `${(dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra).toFixed(2)}x`, v2024: `${(dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra).toFixed(2)}x`, variacao: `${((dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra)) ? '↓' : '↑'}`, tendencia: (dado2024Eco.rendaMediaBranca/dado2024Eco.rendaMediaNegra) < (dado2018Eco.rendaMediaBranca/dado2018Eco.rendaMediaNegra) ? 'melhora' : 'piora', fonte: 'PNAD 2024' },
     { indicador: 'Desemprego negro', codigos: ['IND-119'], v2018: `${dado2018Eco.desempregoNegro}%`, v2024: `${dado2024Eco.desempregoNegro}%`, variacao: `${(dado2024Eco.desempregoNegro - dado2018Eco.desempregoNegro).toFixed(1)}pp`, tendencia: 'melhora', fonte: 'PNAD 2024' },

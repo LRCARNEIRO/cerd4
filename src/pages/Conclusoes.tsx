@@ -192,7 +192,7 @@ export default function Conclusoes() {
     const edu2018L = educacaoSerieHistorica[0];
     const edu2024L = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
     const eco2018L = indicadoresSocioeconomicos[0];
-    const eco2024L = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+    const eco2024L = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
     const fem2018L = feminicidioSerie[0];
     const fem2024L = feminicidioSerie[feminicidioSerie.length - 1];
     
@@ -260,7 +260,7 @@ export default function Conclusoes() {
   const edu2018 = educacaoSerieHistorica[0];
   const edu2024 = educacaoSerieHistorica[educacaoSerieHistorica.length - 1];
   const eco2018 = indicadoresSocioeconomicos[0];
-  const eco2024 = indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1];
+  const eco2024 = ((indicadoresSocioeconomicos as any[]).find((d: any) => Number(d.ano) === 2024) ?? indicadoresSocioeconomicos[indicadoresSocioeconomicos.length - 1]);
   const fem2018 = feminicidioSerie[0];
   const fem2024 = feminicidioSerie[feminicidioSerie.length - 1];
 
@@ -400,7 +400,7 @@ export default function Conclusoes() {
                     <li>• Homicídio: vítimas negras {seg2018.percentualVitimasNegras}% → {seg2024.percentualVitimasNegras}% (+{(seg2024.percentualVitimasNegras-seg2018.percentualVitimasNegras).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Letalidade policial negra: {seg2018.letalidadePolicial}% → {seg2024.letalidadePolicial}% (+{(seg2024.letalidadePolicial-seg2018.letalidadePolicial).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Feminicídio mulheres negras: {fem2018.percentualNegras}% → {fem2024.percentualNegras}% (+{(fem2024.percentualNegras-fem2018.percentualNegras).toFixed(1)}pp) <LastroEvidencias indicadores={indicadores} codigos={['IND-112']} prefixo="" className="inline-flex ml-1" /></li>
-                    <li>• Risco homicídio negro: persistente em {seg2024.razaoRisco}x maior <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
+                    <li>• Risco homicídio negro: persistente em {(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).razaoRisco}x maior ({(([...(segurancaPublica as any[])].reverse().find((d: any) => d.razaoRisco != null) ?? {}) as any).ano}, último dado disponível) <LastroEvidencias indicadores={indicadores} codigos={['IND-117']} prefixo="" className="inline-flex ml-1" /></li>
                     <li>• Gap absoluto renda: R$ {eco2018.rendaMediaBranca-eco2018.rendaMediaNegra} → R$ {eco2024.rendaMediaBranca-eco2024.rendaMediaNegra} (aumentou!) <LastroEvidencias indicadores={indicadores} codigos={['IND-119']} prefixo="" className="inline-flex ml-1" /></li>
                   </ul>
                 </div>
