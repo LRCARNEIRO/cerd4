@@ -20,6 +20,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { programaKey } from '@/utils/orcamentoCanonico';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -182,7 +183,7 @@ export function TesteOrcamentoTab({ allRecords, isLoading }: TesteOrcamentoTabPr
     const t1 = p1.reduce((s, r) => s + valorLiq(r), 0);
     const t2 = p2.reduce((s, r) => s + valorLiq(r), 0);
     const anos = new Set(filteredRecords.map(r => r.ano));
-    const programas = new Set(filteredRecords.map(r => r.programa));
+    const programas = new Set(filteredRecords.map(r => programaKey(r.programa)));
     return {
       totalP1: t1, totalP2: t2,
       variacao: t1 > 0 ? ((t2 - t1) / t1 * 100) : 0,

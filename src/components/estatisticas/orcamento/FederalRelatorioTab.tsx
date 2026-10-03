@@ -1,5 +1,5 @@
 import { isOrcamentoSimbolico } from '@/utils/orcamentoCanonico';
-import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, programaKey } from '@/utils/orcamentoCanonico';
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -164,7 +164,7 @@ export function FederalRelatorioTab({ records, sesaiRecords, summaryStats, forma
     const execP1 = calcularExecucaoOrcamentaria(p1).percentual || 0;
     const execP2 = calcularExecucaoOrcamentaria(p2).percentual || 0;
 
-    const totalProgramas = new Set(allRecords.map(r => r.programa)).size;
+    const totalProgramas = new Set(allRecords.map(r => programaKey(r.programa))).size;
     const anos = Array.from(new Set(allRecords.map(r => r.ano))).sort();
 
     // ── Extraorçamentário analysis ──

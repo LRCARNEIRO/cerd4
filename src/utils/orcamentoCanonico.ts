@@ -43,6 +43,18 @@ export function chaveCanonica(r: OrcamentoDedupBase): string {
   return `${codPrograma}|${codAcao}|${r.ano}|${esfera}`;
 }
 
+/**
+ * Identidade única do programa PPA: código de 4 dígitos quando existir;
+ * nome completo caso contrário. Normaliza variantes de nomenclatura do
+ * mesmo programa (ex.: 5022 em caixa alta e caixa-título contam como um).
+ */
+export function programaKey(programa: string): string {
+  const partes = norm(programa || '').split(/\s+\/\s+/);
+  const m = partes[0].match(/^(\d{4})\b/);
+  return m ? m[1] : partes[0];
+}
+
+
 export function rankFonte(fonte?: string | null): number {
   const f = norm(fonte || '');
   if (f.includes('AGENDA TRANSVERSAL')) return 5;
