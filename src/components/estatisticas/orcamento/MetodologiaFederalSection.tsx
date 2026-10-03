@@ -35,14 +35,14 @@ function useLinhaTempo(records: any[]) {
 
 const CAMADA_1_PROGRAMAS_HISTORICOS = [
   { codigo: '2034', nome: 'Promoção da Igualdade Racial e Superação do Racismo', orgao: 'SEPPIR', ppa: '2016–2019' },
-  { codigo: '5034', nome: 'Igualdade Racial e Superação do Racismo (guarda-chuva MDHC)', orgao: 'MDHC', ppa: '2020–2023', nota: 'Filtrado por keywords raciais' },
+  { codigo: '5034', nome: 'Proteção à Vida, Fortalecimento da Família, Promoção e Defesa dos Direitos Humanos para Todos', orgao: 'MDHC', ppa: '2020–2023', nota: 'guarda-chuva; filtrado por keywords raciais' },
   { codigo: '0617', nome: 'Proteção e Promoção dos Direitos dos Povos Indígenas', orgao: 'MPI', ppa: '2020–2023' },
   { codigo: '2065', nome: 'Proteção e Promoção dos Direitos dos Povos Indígenas', orgao: 'MPI', ppa: '2012–2019' },
   { codigo: '0153', nome: 'Promoção e Defesa dos Direitos da Criança e do Adolescente', orgao: 'MDHC', ppa: '2004+' },
   { codigo: '5802', nome: 'Direitos dos Povos Quilombolas e Ciganos', orgao: 'MIR', ppa: '2024–2027' },
   { codigo: '5803', nome: 'Juventude Negra Viva', orgao: 'MIR', ppa: '2024–2027' },
   { codigo: '5804', nome: 'Igualdade Étnico-Racial e Superação do Racismo', orgao: 'MIR', ppa: '2024–2027' },
-  { codigo: '5136', nome: 'Proteção e Promoção dos Direitos dos Povos Indígenas', orgao: 'MPI', ppa: '2024–2027' },
+  { codigo: '5136', nome: 'Governança Fundiária, Reforma Agrária e Regularização de Territórios Quilombolas e de Povos e Comunidades Tradicionais', orgao: 'MPI', ppa: '2024–2027' },
 ];
 
 const CAMADA_1_AGENDA_TRANSVERSAL = [
@@ -117,6 +117,10 @@ const EXCLUSOES_ACOES_MDHC = [
 
 export function MetodologiaFederalSection({ records = [] }: { records?: any[] }) {
   const lt = useLinhaTempo(records);
+  const acoesNaBase = (cod: string) => new Set(records.filter(r => String(r.programa || '').trim().startsWith(cod)).map(r => `${String(r.programa).split(/\s+\/\s+/)[1]?.slice(0, 4) || ''}|${r.orgao || ''}`)).size;
+  const celAcoes = (cod: string) => { const n = acoesNaBase(cod); return <TableCell className="text-xs text-center">{n > 0 ? n : <span className="text-muted-foreground italic">0 — sem retorno</span>}</TableCell>; };
+  const totAcoesC1 = [...CAMADA_1_PROGRAMAS_HISTORICOS, ...CAMADA_1_AGENDA_TRANSVERSAL].reduce((s, p) => s + acoesNaBase(p.codigo), 0);
+  const progComAcoes = [...CAMADA_1_PROGRAMAS_HISTORICOS, ...CAMADA_1_AGENDA_TRANSVERSAL].filter(p => acoesNaBase(p.codigo) > 0).length;
   return (
     <>
       {/* 1. Estratégia de Coleta */}
@@ -144,6 +148,9 @@ export function MetodologiaFederalSection({ records = [] }: { records?: any[] })
                 <p className="text-sm text-muted-foreground">
                   Consulta direta por código de programa finalístico do PPA. Dividida em <strong>programas historicamente mapeados</strong> (todas as épocas) e <strong>programas das Agendas Transversais</strong> (PPA 2024–2027).
                 </p>
+                <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
+                  Esta lista mostra os <strong>programas consultados</strong>. A coluna “Ações na base” informa quantos pares ação + órgão cada programa efetivamente trouxe: {progComAcoes} dos {CAMADA_1_PROGRAMAS_HISTORICOS.length + CAMADA_1_AGENDA_TRANSVERSAL.length} programas retornaram ações, somando {totAcoesC1} pares dentro do universo de {new Set(records.map(r => `${r.programa}|${r.orgao}`)).size} da base. Programas com “0 — sem retorno” foram pesquisados, mas nenhuma ação atendeu aos filtros.
+                </p>
 
                 {/* Programas históricos */}
                 <div>
@@ -158,6 +165,7 @@ export function MetodologiaFederalSection({ records = [] }: { records?: any[] })
                         <TableHead>Nome</TableHead>
                         <TableHead className="w-16">Órgão</TableHead>
                         <TableHead className="w-24">PPA</TableHead>
+                        <TableHead className="w-24 text-center">Ações na base</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -170,6 +178,7 @@ export function MetodologiaFederalSection({ records = [] }: { records?: any[] })
                           </TableCell>
                           <TableCell><Badge variant="outline" className="text-xs">{p.orgao}</Badge></TableCell>
                           <TableCell className="text-xs">{p.ppa}</TableCell>
+                          {celAcoes(p.codigo)}
                         </TableRow>
                       ))}
                     </TableBody>
@@ -196,6 +205,7 @@ export function MetodologiaFederalSection({ records = [] }: { records?: any[] })
                         <TableHead className="w-16">Órgão</TableHead>
                         <TableHead className="w-20">Agenda</TableHead>
                         <TableHead className="w-20">Filtro</TableHead>
+                        <TableHead className="w-24 text-center">Ações na base</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -210,6 +220,7 @@ export function MetodologiaFederalSection({ records = [] }: { records?: any[] })
                               {p.tipo === 'focal' ? '✓ Integral' : '🔑 Keywords'}
                             </Badge>
                           </TableCell>
+                          {celAcoes(p.codigo)}
                         </TableRow>
                       ))}
                     </TableBody>

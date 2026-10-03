@@ -238,7 +238,7 @@ ul{padding-left:18px;margin:6px 0}li{margin-bottom:3px}
 </div>
 <table>
 <tr><th>Etapa</th><th>O que captura</th><th>Por que é necessária</th></tr>
-<tr><td><strong>Camada 1 — Programas PPA</strong></td><td>Programas finalísticos: 2034 (SEPPIR), 5034 (MDHC, filtrado), 2065 / 0617 / 5136 (indígenas), 5802 / 5803 / 5804 (MIR), 1617 (demarcação) e as Agendas Transversais do PPA 2024–2027</td><td>É a espinha dorsal: onde a política racial aparece formalmente organizada</td></tr>
+<tr><td><strong>Camada 1 — Programas PPA</strong></td><td>Programas finalísticos: 2034 (SEPPIR), 5034 (MDHC, filtrado), 2065 / 0617 (indígenas), 5136 (governança fundiária e territórios quilombolas/tradicionais), 5802 / 5803 / 5804 (MIR), 1617 (demarcação) e as Agendas Transversais do PPA 2024–2027</td><td>É a espinha dorsal: onde a política racial aparece formalmente organizada</td></tr>
 <tr><td><strong>Camada 2 — Subfunção 422</strong></td><td>Ações de direitos difusos em órgãos transversais</td><td>Alcança o que está fora dos programas temáticos; validada por palavra-chave para excluir direitos humanos genéricos</td></tr>
 <tr><td><strong>Camada 3 — Órgãos de mandato direto</strong></td><td>Todas as despesas do MIR e do MPI</td><td>Órgãos cujo mandato é integralmente racial/indígena: qualquer despesa sua é política do tema</td></tr>
 <tr><td><strong>Camada 4 — SESAI</strong></td><td>Ações 20YP (saúde indígena) e 7684 (saneamento em aldeias)</td><td>A SESAI migrou do programa indígena para o programa de saúde e escaparia das camadas 1–3</td></tr>
