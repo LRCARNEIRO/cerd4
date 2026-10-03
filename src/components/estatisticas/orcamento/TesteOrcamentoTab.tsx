@@ -20,6 +20,7 @@ import { EmptyEsferaCard } from '@/components/estatisticas/orcamento/EmptyEsfera
 import { AuditFooter } from '@/components/ui/audit-footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
+import { programaKey } from '@/utils/orcamentoCanonico';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
