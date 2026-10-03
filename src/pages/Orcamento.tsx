@@ -618,7 +618,7 @@ export default function Orcamento() {
             const varPago = pagoP1 > 0 ? ((pagoP2 - pagoP1) / pagoP1 * 100) : 0;
 
             // Structure
-            const programas = new Set(filtered.map(r => `${r.orgao}|${r.programa}`)).size;
+            const programas = new Set(filtered.map(r => r.programa)).size;
             const orgaos = new Set(filtered.map(r => r.orgao)).size;
             const anosCobertura = [...new Set(filtered.map(r => r.ano))].sort();
             const anosRange = anosCobertura.length > 0 ? `${anosCobertura[0]}–${anosCobertura[anosCobertura.length - 1]}` : '—';
@@ -702,7 +702,7 @@ export default function Orcamento() {
                     <Card className="border-l-4 border-l-muted-foreground/40">
                       <CardContent className="pt-4 pb-3">
                         <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Estrutura</p>
-                        <p className="text-xl font-bold text-foreground mt-1">{programas} <span className="text-sm font-normal text-muted-foreground">prog.</span></p>
+                        <p className="text-xl font-bold text-foreground mt-1">{programas} <span className="text-sm font-normal text-muted-foreground">ações</span></p>
                         <p className="text-[10px] text-muted-foreground mt-1">{orgaos} órgãos · {filtered.length} registros</p>
                       </CardContent>
                     </Card>
