@@ -7,7 +7,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Database, Layers, Calendar, DollarSign, TrendingUp, Building, Users, TreePine, MapPin, Tent, Info } from 'lucide-react';
 import { AuditFooter } from '@/components/ui/audit-footer';
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
-import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, programaKey } from '@/utils/orcamentoCanonico';
 
 interface UniversoBaseTabProps {
   records: DadoOrcamentario[];
@@ -59,12 +59,16 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   const summary = useMemo(() => {
     const totalRegistros = filtered.length;
-    const programas = new Set(filtered.map(chaveProgramaOrgao));
+    const programasUnicos = new Set(filtered.map(r => programaKey(r.programa))).size;
+    const paresAcaoOrgao = new Set(filtered.map(chaveProgramaOrgao)).size;
     const orgaos = new Set(filtered.map(r => r.orgao));
     const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
     const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
-    const acoesOrc = new Set(orcRecs.map(chaveProgramaOrgao)).size;
-    const acoesExtra = new Set(extraRecs.map(chaveProgramaOrgao)).size;
+    // Ações únicas = nomes distintos de ação; pares = ação + órgão
+    const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
+    const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
+    const paresOrc = new Set(orcRecs.map(chaveProgramaOrgao)).size;
+    const paresExtra = new Set(extraRecs.map(chaveProgramaOrgao)).size;
     const totalDotacao = filtered.reduce((s, r) => s + (Number(r.dotacao_autorizada) || 0), 0);
     const totalPago = filtered.reduce((s, r) => s + (Number(r.pago) || 0), 0);
     const totalLiquidado = filtered.reduce((s, r) => s + (Number(r.liquidado) || 0), 0);
@@ -72,7 +76,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
     const execucaoCanonica = calcularExecucaoOrcamentaria(filtered);
     const execucao = execucaoCanonica.percentual || 0;
     const pagoExtra = extraRecs.reduce((s, r) => s + (Number(r.pago) || 0), 0);
-    return { totalRegistros, totalProgramas: programas.size, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, totalDotacao, totalPago, totalLiquidado, execucao, pagoExtra };
+    return { totalRegistros, programasUnicos, paresAcaoOrgao, totalOrgaos: orgaos.size, acoesOrc, acoesExtra, paresOrc, paresExtra, totalDotacao, totalPago, totalLiquidado, execucao, pagoExtra };
   }, [filtered]);
 
   // Panorama by group
@@ -90,9 +94,9 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
       const p2 = recs.filter(r => r.ano >= 2023 && r.ano <= 2025);
       return {
         ...g,
-        progP1: new Set(p1.map(chaveProgramaOrgao)).size,
-        progP2: new Set(p2.map(chaveProgramaOrgao)).size,
-        progTotal: new Set(recs.map(chaveProgramaOrgao)).size,
+        progP1: new Set(p1.map(r => programaKey(r.programa))).size,
+        progP2: new Set(p2.map(r => programaKey(r.programa))).size,
+        progTotal: new Set(recs.map(r => programaKey(r.programa))).size,
         acoesP1: p1.length, acoesP2: p2.length, acoesTotal: recs.length,
       };
     });
@@ -146,10 +150,10 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   const cards = [
     { label: 'Registros', value: summary.totalRegistros, icon: Database, color: 'border-l-primary', sub: 'Ação × Ano' },
-    { label: 'Programas/Ações', value: summary.totalProgramas, icon: Layers, color: 'border-l-chart-1', sub: 'Distintos' },
+    { label: 'Programas Únicos', value: summary.programasUnicos, icon: Layers, color: 'border-l-chart-1', sub: 'Programas do PPA' },
     { label: 'Órgãos', value: summary.totalOrgaos, icon: Building, color: 'border-l-chart-2', sub: 'Responsáveis' },
-    { label: 'Ações Orçamentárias', value: summary.acoesOrc, icon: DollarSign, color: 'border-l-success', sub: 'LOA/Tesouro' },
-    { label: 'Ações Extraorçamentárias', value: summary.acoesExtra, icon: TrendingUp, color: 'border-l-warning', sub: 'Compensatório' },
+    { label: 'Ações Orçamentárias', value: summary.acoesOrc, icon: DollarSign, color: 'border-l-success', sub: `LOA/Tesouro · ${summary.paresOrc} pares ação+órgão` },
+    { label: 'Ações Extraorçamentárias', value: summary.acoesExtra, icon: TrendingUp, color: 'border-l-warning', sub: `Compensatório · ${summary.paresExtra} pares ação+órgão` },
   ];
 
   const periodLabels = ['2018–2022', '2023–2025', 'Total'];
@@ -233,8 +237,8 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[160px]">Grupo Focal</TableHead>
-                  <TableHead colSpan={3} className="text-center border-l">Programas</TableHead>
-                  <TableHead colSpan={3} className="text-center border-l">Ações / Registros</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l">Programas Únicos</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l">Registros (Ação × Ano)</TableHead>
                 </TableRow>
                 <TableRow>
                   <TableHead />
