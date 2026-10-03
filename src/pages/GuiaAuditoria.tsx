@@ -280,7 +280,7 @@ export default function GuiaAuditoria() {
                             { cod: '5804', nome: 'Igualdade Étnico-Racial', orgao: 'MIR' },
                             { cod: '5803', nome: 'Juventude Negra Viva', orgao: 'MIR' },
                             { cod: '5802', nome: 'Quilombolas e Ciganos', orgao: 'MIR' },
-                            { cod: '5136', nome: 'Proteção Povos Indígenas', orgao: 'MPI' },
+                            { cod: '5136', nome: 'Governança Fundiária e Territórios Quilombolas e Tradicionais', orgao: 'MPI' },
                             { cod: '5034', nome: 'Proteção à Vida e Direitos Humanos', orgao: 'MDHC' },
                           ].map(p => (
                             <a key={p.cod} href={`${PORTAL_TRANSPARENCIA}/despesas/programa-e-acao?paginacaoSimples=true&tamanhoPagina=100&programa=${p.cod}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded border px-2.5 py-1.5 text-xs hover:bg-muted/50 transition-colors">
