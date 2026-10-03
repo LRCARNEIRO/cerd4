@@ -43,7 +43,7 @@ import { ApiRawAuditPanel } from '@/components/dashboard/ApiRawAuditPanel';
 
 import type { DadoOrcamentario } from '@/hooks/useLacunasData';
 import { inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
-import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
+import { calcularExecucaoOrcamentaria, programaKey } from '@/utils/orcamentoCanonico';
 
 // Estrutura de fontes para referência
 const estruturaFederal = [
@@ -419,7 +419,7 @@ export default function Orcamento() {
       const pagoP2 = p2.reduce((s, r) => s + (Number(r.pago) || 0), 0);
 
       const anos = new Set(records.map(r => r.ano));
-      const programas = new Set(records.map(r => r.programa));
+      const programas = new Set(records.map(r => programaKey(r.programa)));
 
       // Sem SESAI
       const nonSesai = records.filter(r => classifyThematic(r) !== 'sesai');
@@ -638,12 +638,16 @@ export default function Orcamento() {
                 {(() => {
                   const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
                   const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
-                  const acoesOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
-                  const acoesExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+                  // Ações únicas = nomes distintos de ação (sem dobrar por órgão); pares = ação + órgão
+                  const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
+                  const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
+                  const paresOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+                  const paresExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+                  const programasUnicos = new Set(filtered.map(r => programaKey(r.programa))).size;
                   return (
                     <div>
                       <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">🗂️ Composição da Base</p>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Card className="border-l-4 border-l-primary">
                           <CardContent className="pt-4 pb-3">
                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Total de Registros</p>
@@ -655,14 +659,21 @@ export default function Orcamento() {
                           <CardContent className="pt-4 pb-3">
                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Ações Orçamentárias</p>
                             <p className="text-2xl font-bold text-foreground mt-1">{acoesOrc}</p>
-                            <p className="text-[10px] text-muted-foreground mt-1">{orcRecs.length} registros · LOA/Tesouro</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">{paresOrc} pares ação+órgão · {orcRecs.length} registros</p>
                           </CardContent>
                         </Card>
                         <Card className="border-l-4 border-l-warning">
                           <CardContent className="pt-4 pb-3">
                             <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Ações Extraorçamentárias</p>
                             <p className="text-2xl font-bold text-foreground mt-1">{acoesExtra}</p>
-                            <p className="text-[10px] text-muted-foreground mt-1">{extraRecs.length} registros · Compensatório</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">{paresExtra} pares ação+órgão · {extraRecs.length} registros</p>
+                          </CardContent>
+                        </Card>
+                        <Card className="border-l-4 border-l-chart-2">
+                          <CardContent className="pt-4 pb-3">
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Programas Únicos</p>
+                            <p className="text-2xl font-bold text-foreground mt-1">{programasUnicos}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1">Programas do PPA · {orgaos} órgãos</p>
                           </CardContent>
                         </Card>
                       </div>
