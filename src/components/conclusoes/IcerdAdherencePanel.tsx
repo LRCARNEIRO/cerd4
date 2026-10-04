@@ -162,9 +162,9 @@ th{background:#f1f5f9}
 <h1>⚖️ Anexo Analítico — Esforço e Impacto por Artigo (ICERD)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
 <p><strong>Esforço Médio:</strong> ${formatScore(avgEsforco)} · <strong>Impacto Evidenciado Médio:</strong> ${formatScore(avgImpacto)}</p>
-<p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas, ${totalStatSeries} séries estatísticas.</p>
+<p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas.</p>
 <p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a ${curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada (planilha CERD_42_BASE auditada).</p>
-<p class="nota"><strong>Nota:</strong> <em>Indicadores</em> = dados pontuais do banco (registros com título, valores e fonte, ex: "Taxa de homicídio negro"). <em>Séries estatísticas</em> = conjuntos temporais temáticos do espelho de dados (ex: série histórica de segurança pública 2018-2025).</p>
+<p class="nota"><strong>Nota:</strong> todas as contagens por artigo vêm da matriz auditada (vínculos curados, sem inferência por palavras-chave). <em>Indicadores estatísticos</em> = evidências estatísticas distintas (indicador + subindicador). <em>Ações orçamentárias</em> = ações únicas (ação + órgão); entre parênteses, os registros Ação×Ano.</p>
 <hr/>
 ${analysis.map(a => {
   const cls = (f: string) => f === 'alto' ? 'green' : f === 'intermediario' ? 'yellow' : 'red';
@@ -177,13 +177,12 @@ ${analysis.map(a => {
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
 <tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>Denominador da média simples do artigo</td></tr>
-<tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoProgramas}</td><td>Nº de ações/programas mapeados por palavras-chave</td></tr>
-<tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados</td></tr>
-<tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s)</td></tr>
-<tr><td>Indicadores estatísticos</td><td>${a.indicadoresCount}</td><td>Registros com título, valores e fonte</td></tr>
-<tr><td>Séries Estatísticas</td><td>${a.seriesEstatisticas}</td><td>Conjuntos temporais temáticos</td></tr>
-<tr><td>Fios Condutores</td><td>${a.fiosTotal}</td><td>${a.fiosAvanco} avanço(s), ${a.fiosRetrocesso} retrocesso(s)</td></tr>
-<tr><td>Conclusões Analíticas</td><td>${a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna}</td><td>${a.conclusoesAvanco} avanço(s), ${a.conclusoesRetrocesso} retrocesso(s), ${a.conclusoesLacuna} lacuna(s)</td></tr>
+<tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoAcoes}</td><td>Ações únicas (ação + órgão) vinculadas pela matriz auditada (${a.orcamentoProgramas} registros Ação×Ano)</td></tr>
+<tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados pela matriz auditada</td></tr>
+<tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s) — contexto, não compõe o score</td></tr>
+<tr><td>Indicadores estatísticos</td><td>${a.indicadoresCount}</td><td>Evidências estatísticas distintas vinculadas pela matriz auditada</td></tr>
+<tr><td>Fios Condutores</td><td>${a.fiosTotal}</td><td>${a.fiosAvanco} avanço(s), ${a.fiosRetrocesso} retrocesso(s) — contexto, não compõe o score</td></tr>
+<tr><td>Conclusões Analíticas</td><td>${a.conclusoesAvanco + a.conclusoesRetrocesso + a.conclusoesLacuna}</td><td>${a.conclusoesAvanco} avanço(s), ${a.conclusoesRetrocesso} retrocesso(s), ${a.conclusoesLacuna} lacuna(s) — contexto, não compõe o score</td></tr>
 </table>
 
 <div class="section" style="border-color:${a.cor}">
@@ -205,7 +204,7 @@ ${analysis.map(a => {
 <p><strong>Realização (R):</strong> média simples das três bases — estatística = % de evidências com evolução não desfavorável (melhorou ou estável = 1; piorou = 0); orçamentária = Σ Liquidado ÷ Σ Dotação autorizada válida; normativa = 100 com presença, 0 sem.</p>
 <p><strong>Impacto Evidenciado (I):</strong> I = E × R ÷ 100.</p>
 <p><strong>Faixas (iguais para Esforço e Impacto):</strong> Baixo &lt; ${CORTE_INTERMEDIARIO} · Intermediário ${CORTE_INTERMEDIARIO}–${CORTE_ALTO - 0.1} · Alto ≥ ${CORTE_ALTO}.</p>
-<p class="nota"><strong>Do artigo:</strong> o Esforço e o Impacto de cada artigo são a média simples dos valores das recomendações a ele associadas (mapa relacional + mapa formal), preservando no denominador as recomendações sem evidência, que entram como zero.</p>
+<p class="nota"><strong>Do artigo:</strong> o Esforço e o Impacto de cada artigo são a média simples dos valores das recomendações formalmente associadas a ele (associação recomendação–artigo registrada na base), preservando no denominador as recomendações sem evidência, que entram como zero.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -228,8 +227,8 @@ ${analysis.map(a => {
               <p className="text-sm text-muted-foreground mt-1">
                 Consolida o Esforço e o Impacto das recomendações formalmente associadas a cada artigo:
                 {' '}{stats?.total || 0} recomendações ONU, {totalNormativos} instrumentos normativos,
-                {' '}{orcamentoRecords.length} registros orçamentários,
-                {' '}{rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas oficiais.
+                {' '}{orcamentoRecords.length} registros orçamentários
+                {' '}e {rolEstatistico.total} evidências estatísticas.
               </p>
               <p className="text-[10px] text-muted-foreground mt-1 italic">
                 Nota: Respostas CERD III e Conclusões Analíticas são exibidas como informação contextual, mas <strong>não</strong> compõem o score — são outputs do próprio sistema, não evidências externas.
@@ -241,8 +240,7 @@ ${analysis.map(a => {
                 </Button>
               </div>
               <p className="text-[10px] text-muted-foreground mt-2">
-                <strong>Evidências estatísticas</strong> = rol canônico vinculável (guarda-chuvas sem duplicidade + subindicadores auditados nas abas temáticas). 
-                <strong>Séries Estatísticas</strong> = conjuntos temporais temáticos (segurança, saúde, educação etc.) do espelho de dados.
+                <strong>Evidências estatísticas</strong> = rol canônico vinculável (guarda-chuvas sem duplicidade + subindicadores auditados nas abas temáticas).
               </p>
             </div>
           </div>
@@ -250,7 +248,7 @@ ${analysis.map(a => {
       </Card>
 
       {/* Data Sources Inventory */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
         <Card className="border-chart-1/30">
           <CardContent className="pt-2 pb-2 text-center">
             <Database className="w-4 h-4 mx-auto text-chart-1 mb-1" />
@@ -284,13 +282,6 @@ ${analysis.map(a => {
             <Users className="w-4 h-4 mx-auto text-chart-5 mb-1" />
             <p className="text-lg font-bold">{rolEstatistico.total}</p>
             <p className="text-[10px] text-muted-foreground">Evidências Estatísticas</p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/30">
-          <CardContent className="pt-2 pb-2 text-center">
-            <BarChart3 className="w-4 h-4 mx-auto text-primary mb-1" />
-            <p className="text-lg font-bold">{totalStatSeries}</p>
-            <p className="text-[10px] text-muted-foreground">Séries Estatísticas</p>
           </CardContent>
         </Card>
       </div>
@@ -487,7 +478,7 @@ ${analysis.map(a => {
             Síntese: Priorização Histórica dos Artigos pelo Estado Brasileiro
           </CardTitle>
           <CardDescription className="text-xs">
-            Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários, {rolEstatistico.total} evidências estatísticas e {totalStatSeries} séries estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
+            Painel informativo com {stats?.total || 0} recomendações ONU, {totalNormativos} normativos, {orcamentoRecords.length} registros orçamentários e {rolEstatistico.total} evidências estatísticas; respostas CERD III entram apenas como contexto narrativo e não compõem o score.
             {' '}Matriz auditada: <strong>{matrizTotals.all.toLocaleString('pt-BR')} vínculos</strong> Artigo × Recomendação × Evidência ({matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · {matrizTotals.est.toLocaleString('pt-BR')} estatística · {matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a {curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada.
           </CardDescription>
         </CardHeader>
