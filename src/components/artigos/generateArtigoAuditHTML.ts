@@ -215,6 +215,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
   }).join('') || `<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:12px">Sem ações orçamentárias agregadas.</td></tr>`;
 
   const totalRecs = recsDoArtigo.length;
+  const acoesUnicas = new Set(Array.from(orcByKey.values()).map(({ o }) => `${o.programa || ''}|${o.orgao || ''}`)).size;
   const esforcoArtigo = mediaSimples(recsDoArtigo.map(r => diagnosticMap.get(r.id)?.auditoria.esforcoImpacto.esforco ?? 0));
   const impactoArtigo = mediaSimples(recsDoArtigo.map(r => diagnosticMap.get(r.id)?.auditoria.esforcoImpacto.impacto ?? 0));
 
@@ -244,7 +245,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
   <p><strong>Total de recomendações vinculadas a este Artigo:</strong> ${totalRecs}</p>
   <p><strong>Esforço do Artigo:</strong> ${formatScore(esforcoArtigo)} · <strong>Impacto Evidenciado do Artigo:</strong> ${formatScore(impactoArtigo)}</p>
   <p>Os dois resultados são a média simples das recomendações formalmente associadas ao artigo, incluindo com valor zero as recomendações sem evidência. Isso evita favorecer artigos com maior número de recomendações.</p>
-  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${orcByKey.size} ação(ões) orçamentária(s) — evidências distintas da matriz auditada, sem duplo conto por Artigo.</p>
+  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${acoesUnicas} ação(ões) orçamentária(s) única(s) (${orcByKey.size} registros Ação×Ano) — evidências distintas da matriz auditada, sem dupla contagem por Artigo.</p>
   ${curado?.vinculosPorBase ? `<p style="font-size:10px;color:#475569">Matriz auditada: ${curado.vinculosPorBase.orcamentaria + curado.vinculosPorBase.estatistica + curado.vinculosPorBase.normativa} vínculos Artigo × Recomendação × Evidência (${curado.vinculosPorBase.orcamentaria} orçamentária · ${curado.vinculosPorBase.estatistica} estatística · ${curado.vinculosPorBase.normativa} normativa). Os números acima contam cada evidência uma única vez.</p>` : ''}
 </div>
 
@@ -277,7 +278,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
   <tbody>${normRows}</tbody>
 </table>
 
-<h2>💰 Orçamento agregado (${orcByKey.size} ações)</h2>
+<h2>💰 Orçamento agregado (${acoesUnicas} ações únicas · ${orcByKey.size} registros Ação×Ano)</h2>
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>

@@ -666,7 +666,7 @@ export function useDiagnosticSensor(recomendacoes: LacunaIdentificada[] | undefi
 
   /**
    * ARTIGOS — média simples dos resultados das recomendações formalmente
-   * associadas ao artigo (mapa relacional + mapa formal), preservando
+   * associadas ao artigo (associação formal recomendação–artigo), preservando
    * recomendações sem evidência (entram com score 0).
    * I=6 · II=7 · III=4 · IV=2 · V=21 · VI=6 · VII=4
    */
