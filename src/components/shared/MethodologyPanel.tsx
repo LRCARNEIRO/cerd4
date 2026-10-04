@@ -106,8 +106,23 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <BarChart3 className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-xs font-semibold text-foreground">Composição da Realização</span>
+                  <span className="text-xs font-semibold text-foreground">Cálculo do artigo</span>
                 </div>
+                <div className="bg-background/80 rounded-md p-3 border border-border/50 space-y-2">
+                  <p className="text-[11px] font-mono text-foreground break-words">Esforço do artigo = Σ Esforço das recomendações associadas ÷ N</p>
+                  <p className="text-[11px] font-mono text-foreground break-words">Impacto do artigo = Σ Impacto das recomendações associadas ÷ N</p>
+                  <p className="text-[10px] text-muted-foreground">N é o número de recomendações formalmente associadas ao artigo, inclusive as sem evidência (valor zero). Cada recomendação tem Esforço e Impacto calculados antes da média; não se multiplica o Esforço médio do artigo pela Realização média.</p>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <BarChart3 className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">Cálculo de cada recomendação</span>
+                </div>
+                <div className="bg-background/80 rounded-md p-3 border border-border/50 space-y-1">
+                  <p className="text-[11px] font-mono text-muted-foreground break-words">Esforço = [100 × min(nEst/{TETOS_ESFORCO.estatistica}; 1) + 100 × min(nOrç/{TETOS_ESFORCO.orcamentaria}; 1) + 100 × min(nNorm/{TETOS_ESFORCO.normativa}; 1)] ÷ 3</p>
+                  <p className="text-[11px] font-mono text-muted-foreground">Realização = (R_est + R_orç + R_norm) ÷ 3</p>
+                  <p className="text-[11px] font-mono text-muted-foreground">Impacto = Esforço × Realização ÷ 100</p>
+                </div>
+                <p className="text-xs font-semibold text-foreground">Componentes da Realização</p>
                 <div className="bg-background/80 rounded-md p-3 border border-border/50 space-y-1.5">
                   {realizacaoBases.map((w) => (
                     <div key={w.label} className="flex items-start gap-1.5">

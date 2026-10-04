@@ -140,6 +140,9 @@ cumprimento ou descumprimento da Convenção ou das recomendações do Comitê C
 <p>Cada Artigo recebe a <strong>média simples</strong> do Esforço e do Impacto das recomendações formalmente associadas a ele. Recomendações sem
 evidência permanecem no denominador com valor zero, evitando favorecer artigos com maior número de recomendações. Evidências repetidas
 para a mesma recomendação em artigos diferentes são contadas uma única vez.</p>
+<div class="formula"><strong>Esforço do artigo = Σ Esforço das recomendações associadas ÷ N</strong><br/>
+<strong>Impacto do artigo = Σ Impacto das recomendações associadas ÷ N</strong></div>
+<p>N é o número de recomendações formalmente associadas ao artigo, inclusive as sem evidência (valor zero). Primeiro calcula-se Esforço, Realização e Impacto de cada recomendação; depois são feitas duas médias separadas. O Impacto do artigo não é obtido multiplicando o Esforço médio pela Realização média.</p>
 
 <h2>Como ler os indicadores — resumo</h2>
 <ul>

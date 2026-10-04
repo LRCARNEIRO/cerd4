@@ -205,6 +205,8 @@ ${analysis.map(a => {
 <p><strong>Impacto Evidenciado (I):</strong> I = E × R ÷ 100.</p>
 <p><strong>Faixas (iguais para Esforço e Impacto):</strong> Baixo &lt; ${CORTE_INTERMEDIARIO} · Intermediário ${CORTE_INTERMEDIARIO}–${CORTE_ALTO - 0.1} · Alto ≥ ${CORTE_ALTO}.</p>
 <p class="nota"><strong>Do artigo:</strong> o Esforço e o Impacto de cada artigo são a média simples dos valores das recomendações formalmente associadas a ele (associação recomendação–artigo registrada na base), preservando no denominador as recomendações sem evidência, que entram como zero.</p>
+<p><strong>Esforço do artigo = Σ Esforço das recomendações associadas ÷ N</strong><br/><strong>Impacto do artigo = Σ Impacto das recomendações associadas ÷ N</strong></p>
+<p class="nota">N é o número de recomendações formalmente associadas ao artigo, incluindo as sem evidência. Calculam-se os resultados de cada recomendação antes das duas médias; o Impacto do artigo não é o produto do Esforço médio pela Realização média.</p>
 </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
