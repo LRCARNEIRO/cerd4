@@ -433,7 +433,7 @@ ${analysis.map(a => {
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('orcamento'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{vb ? vb.orcamentaria : a.orcamentoProgramas}</p>
                   <p className="text-[10px] text-muted-foreground">Vínc. Orçam. 🔍</p>
-                  <p className="text-[9px] text-muted-foreground/70">{a.orcamentoProgramas} ações distintas</p>
+                  <p className="text-[9px] text-muted-foreground/70">{a.orcamentoAcoes} ações únicas · {a.orcamentoProgramas} registros Ação×Ano</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('normativos'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{vb ? vb.normativa : a.normativosCount}</p>

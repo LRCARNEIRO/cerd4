@@ -209,7 +209,7 @@ export function DualPerspectivePanel({
           </h3>
           <p className="text-[11px] text-muted-foreground mb-4 leading-relaxed">
             O resultado de cada <strong>Artigo da Convenção (I–VII)</strong> é a <strong>média simples</strong> dos
-            índices das recomendações a ele associadas pelo mapa relacional e pelo mapa formal —
+            índices das recomendações a ele formalmente associadas (associação recomendação–artigo registrada na base) —
             inclusive as recomendações sem evidência vinculada, que entram com zero.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
