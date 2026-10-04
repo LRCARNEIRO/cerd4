@@ -36,7 +36,10 @@ export type ArtigoAnalysis = {
   conclusoesRetrocesso: number;
   conclusoesLacuna: number;
   orcamentoLiquidado: number;
+  /** Registros Ação×Ano vinculados */
   orcamentoProgramas: number;
+  /** Ações únicas (ação + órgão) */
+  orcamentoAcoes: number;
   indicadoresCount: number;
   respostasTotal: number;
   respostasCumpridas: number;
@@ -175,8 +178,9 @@ export function determineTrend(a: Omit<ArtigoAnalysis, 'grauAderencia' | 'tenden
 export function generateVerdict(a: ArtigoAnalysis): string {
   const normText = a.normativosCount > 0 ? `, respaldado por ${a.normativosCount} instrumento(s) normativo(s)` : '';
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
-  const statsText = a.seriesEstatisticas > 0 ? ` ${a.seriesEstatisticas} série(s) estatística(s) fundamentam a avaliação.` : '';
-  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoProgramas} ação(ões) orçamentária(s) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
+  // Séries do espelho BD não são fonte de evidência — não entram no veredito.
+  const statsText = '';
+  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoAcoes} ação(ões) orçamentária(s) única(s) (${a.orcamentoProgramas} registros Ação×Ano) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
 
   if (a.faixaImpacto === 'alto') {
     return `Impacto alto. ${base} O esforço mobilizado converteu-se em realização comprovada.${respText}${statsText}`;
@@ -268,6 +272,7 @@ export function useIcerdArtigoAnalysis({ lacunas, fiosCondutores = [], conclusoe
         conclusoesLacuna: artConc.filter(c => c.tipo === 'lacuna_persistente').length,
         orcamentoLiquidado: 0,
         orcamentoProgramas: orcSet.size,
+        orcamentoAcoes: new Set(Array.from(orcSet.values()).map(o => `${o.programa}|${o.orgao}`)).size,
         indicadoresCount: indSet.size,
         respostasTotal: artRespostas.length,
         respostasCumpridas: artRespostas.filter(r => r.grau_atendimento === 'cumprido' || r.grau_atendimento === 'parcialmente_cumprido').length,

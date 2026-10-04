@@ -121,8 +121,8 @@ export function MethodologyPanel({ variant, className }: MethodologyPanelProps) 
             )}
 
             <p className="text-[10px] text-muted-foreground italic">
-              Por artigo, o Esforço e o Impacto são a média simples dos valores das recomendações associadas
-              (mapa relacional somado ao mapa formal), preservando no denominador as recomendações sem evidência,
+              Por artigo, o Esforço e o Impacto são a média simples dos valores das recomendações formalmente associadas
+              a ele (associação recomendação–artigo registrada na base), preservando no denominador as recomendações sem evidência,
               que entram como zero. Evidências repetidas para a mesma recomendação em artigos diferentes são contadas uma única vez.
             </p>
           </CardContent>
