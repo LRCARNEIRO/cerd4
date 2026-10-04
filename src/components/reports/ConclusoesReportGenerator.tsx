@@ -441,7 +441,7 @@ ${retrocessos.map(c => `
 ${icerdData.map(a => `
 <div class="card" style="border-left:4px solid ${a.cor};">
   <h4>Art. ${a.numero} — ${a.tituloCompleto}</h4>
-  <p style="font-size:10px;color:#64748b;">${a.total} recomendações vinculadas | ${a.indicadoresCount} indicadores, ${a.orcamentoProgramas} ações orçamentárias, ${a.normativosCount} normativos (evidências distintas) | Matriz auditada: ${a.vinculos.orcamentaria + a.vinculos.estatistica + a.vinculos.normativa} vínculos | Aderência: <strong style="color:${a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626'}">${a.score}%</strong></p>
+  <p style="font-size:10px;color:#64748b;">${a.total} recomendações vinculadas | ${a.indicadoresCount} indicadores, ${a.orcamentoAcoes} ações orçamentárias únicas (${a.orcamentoProgramas} registros Ação×Ano), ${a.normativosCount} normativos (evidências distintas) | Matriz auditada: ${a.vinculos.orcamentaria + a.vinculos.estatistica + a.vinculos.normativa} vínculos | Esforço ${formatScore(a.esforcoArtigo)} · Impacto ${formatScore(a.impactoArtigo)}</p>
   <div class="aderencia-bar"><div class="aderencia-fill" style="width:${a.score}%;background:${a.score >= 60 ? '#16a34a' : a.score >= 40 ? '#f59e0b' : '#dc2626'}">${a.score}%</div></div>
   <p style="font-size:9px;color:#475569;margin-top:6px;">${a.veredito}</p>
 </div>`).join('')}
