@@ -11,6 +11,7 @@ import { useRegisterExport } from '@/utils/exportRegistry';
 import { ARTIGOS_CONVENCAO, EIXO_PARA_ARTIGOS, inferArtigosOrcamento, type ArtigoConvencao } from '@/utils/artigosConvencao';
 import { useMirrorData } from '@/hooks/useMirrorData';
 import { useIcerdArtigoAnalysis } from '@/hooks/useIcerdArtigoAnalysis';
+import { formatScore } from '@/utils/esforcoImpacto';
 
 const eixoLabels: Record<string, string> = {
   legislacao_justica: 'Legislação e Justiça',
