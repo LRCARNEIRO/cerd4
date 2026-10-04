@@ -261,6 +261,8 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
 <p><strong>Realização:</strong> R = [R_est + R_orç + R_norm] ÷ 3, onde R_est = (melhorou + estável) ÷ total com tendência mensurável × 100; R_orç = Σ Liquidado ÷ Σ Dotação autorizada válida × 100; R_norm = 100 com presença e 0 sem presença.</p>
 <p><strong>Estável não significa fracasso:</strong> melhorou = 1, estável = 1 e piorou = 0. A pergunta é se a evidência demonstra manutenção ou evolução favorável, em vez de deterioração.</p>
 <p><strong>Impacto Evidenciado:</strong> I = E × R ÷ 100. <strong>Artigo:</strong> médias simples de E e I das recomendações formalmente associadas.</p>
+<p><strong>Esforço do artigo = Σ Esforço das recomendações associadas ÷ N</strong><br/><strong>Impacto do artigo = Σ Impacto das recomendações associadas ÷ N</strong></p>
+<p>N = ${totalRecs} recomendação(ões) formalmente associada(s) a este artigo, inclusive as sem evidência (valor zero). O Impacto do artigo é a média dos impactos individuais, não o produto do Esforço médio pela Realização média.</p>
 
 <h2>📊 Indicadores agregados (${indByNome.size})</h2>
 <p class="legend">Evidências estatísticas distintas da matriz auditada para este Artigo, preservando cards fixos e subindicadores.</p>
