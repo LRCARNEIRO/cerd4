@@ -137,7 +137,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
     // Cards fixos e subindicadores não trazem id/código/dados no vínculo
     // curado: recuperamos o registro equivalente no BD (nome, alias ou
     // guarda-chuva) para nunca exibir evidência anônima e sem valor.
-    const { id, codigo, detail, unico } = resolveIndicadorReportData(li, {
+    const { id, codigo, detail, unico, leitura } = resolveIndicadorReportData(li, {
       indicadorIdByNome,
       indicadorCodigoByNome,
       indicadorRegByNome,
@@ -166,7 +166,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
       <td style="text-align:center">${anoRecente ?? '—'}</td>
       <td style="text-align:right">${celulaRecente}</td>
-      <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
+      <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}${leitura ? `<div style="font-size:9px;color:#64748b;font-weight:400">${leitura}</div>` : ""}</td>
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores agregados.</td></tr>`;
 
