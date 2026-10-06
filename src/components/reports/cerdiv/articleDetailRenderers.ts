@@ -32,7 +32,7 @@ const eixoLabels: Record<string, string> = {
 };
 
 // ═══════════════════════════════════════════
-// FULL INDICATOR TABLE WITH EVOLUTION
+// FULL INDICATOR TABLE WITH AUDITED RESULT
 // ═══════════════════════════════════════════
 
 export function renderFullIndicatorTable(indicadores: IndicadorInterseccional[]): string {
@@ -53,18 +53,9 @@ export function renderFullIndicatorTable(indicadores: IndicadorInterseccional[])
       neutro: 'badge-warning',
     };
 
-    const valorAntigoStr = detail.valorAntigo != null && detail.anoAntigo
-      ? `${detail.valorAntigo % 1 === 0 ? fmtNum(detail.valorAntigo) : detail.valorAntigo.toFixed(1)} (${detail.anoAntigo})`
-      : '—';
-    const valorRecenteStr = detail.valorRecente != null && detail.anoRecente
-      ? `${detail.valorRecente % 1 === 0 ? fmtNum(detail.valorRecente) : detail.valorRecente.toFixed(1)} (${detail.anoRecente})`
-      : '—';
-
     return `<tr>
       <td>${ind.nome}</td>
       <td style="font-size:8.5pt">${eixoLabels[ind.categoria] || ind.categoria}</td>
-      <td style="text-align:center">${valorAntigoStr}</td>
-      <td style="text-align:center">${valorRecenteStr}</td>
       <td style="text-align:center"><span class="badge ${resultBadge[detail.result]}">${resultLabel[detail.result]}</span></td>
       <td style="font-size:8pt">${ind.fonte}</td>
     </tr>`;
@@ -85,7 +76,7 @@ export function renderFullIndicatorTable(indicadores: IndicadorInterseccional[])
       <span class="badge badge-warning">${summary.neutro || 0} neutro(s)</span>
     </p>
     <table>
-      <thead><tr><th>Indicador</th><th>Categoria</th><th>Valor Antigo</th><th>Valor Recente</th><th>Evolução</th><th>Fonte</th></tr></thead>
+      <thead><tr><th>Indicador</th><th>Categoria</th><th>Resultado</th><th>Fonte</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }

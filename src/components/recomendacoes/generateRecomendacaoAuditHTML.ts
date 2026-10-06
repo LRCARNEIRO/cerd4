@@ -12,14 +12,6 @@ import { resolveIndicadorReportData } from '@/utils/resolveIndicadorReportData';
 import { FAIXA_LABEL, TETOS_ESFORCO, formatScore } from '@/utils/esforcoImpacto';
 import { extractOrgaoNormativo, buildNormativoLink } from '@/utils/normativoDisplay';
 
-function fmtNum(v: number | undefined): string {
-  if (v === undefined || v === null || Number.isNaN(v)) return '—';
-  if (Math.abs(v) >= 1e6) return `${(v / 1e6).toFixed(2)}M`;
-  if (Math.abs(v) >= 1e3) return `${(v / 1e3).toFixed(1)}k`;
-  if (v % 1 !== 0) return v.toFixed(4);
-  return v.toLocaleString('pt-BR');
-}
-
 function extractAno(d: any): string {
   if (!d) return '—';
   const m = String(d).match(/(19|20)\d{2}/);
@@ -124,21 +116,11 @@ export function generateRecomendacaoAuditHTML({
     const temUnico = !!(unico && (unico.valor !== undefined || unico.texto));
     const resultColor = detail.result === 'favoravel' ? '#16a34a' : detail.result === 'desfavoravel' ? '#dc2626' : detail.result === 'novo' ? '#2563eb' : temUnico ? '#0f766e' : '#6b7280';
     const resultLabel = detail.result === 'favoravel' ? '↑ Melhoria' : detail.result === 'desfavoravel' ? '↓ Piora' : detail.result === 'novo' ? '★ Novo' : temUnico ? '• Dado único' : '— Neutro';
-    const anoRecente = detail.anoRecente ?? unico?.ano;
-    const valorRecente = detail.valorRecente !== undefined ? detail.valorRecente : unico?.valor;
-    const unidade = unico?.unidade ? ` ${unico.unidade}` : '';
-    const celulaRecente = valorRecente !== undefined
-      ? `${fmtNum(valorRecente)}${unidade}`
-      : (unico?.texto || '—');
     return `<tr>
       <td>${nomeCell}</td>
-      <td style="text-align:center">${detail.anoAntigo ?? '—'}</td>
-      <td style="text-align:right">${detail.valorAntigo !== undefined ? fmtNum(detail.valorAntigo) : '—'}</td>
-      <td style="text-align:center">${anoRecente ?? '—'}</td>
-      <td style="text-align:right">${celulaRecente}</td>
       <td style="text-align:center;color:${resultColor};font-weight:600">${resultLabel}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores vinculados.</td></tr>`;
+  }).join('') || `<tr><td colspan="2" style="text-align:center;color:#94a3b8;padding:12px">Sem indicadores vinculados.</td></tr>`;
 
   // ── Normativos ─────────────────────────────────────────────────
   const normRows = linkedNorm.map(n => {
@@ -218,8 +200,7 @@ ${ei ? `<div class="summary">
 <p style="font-size:10px;color:#64748b;margin:4px 0">Clique no nome do indicador para abrir o registro exato no sistema (com rolagem automática).</p>
 <table>
   <thead><tr>
-    <th>Indicador</th><th style="text-align:center">Ano Antigo</th><th style="text-align:right">Valor Antigo</th>
-    <th style="text-align:center">Ano Recente</th><th style="text-align:right">Valor Recente</th><th style="text-align:center">Resultado</th>
+    <th>Indicador</th><th style="text-align:center">Resultado</th>
   </tr></thead>
   <tbody>${indRows}</tbody>
 </table>
