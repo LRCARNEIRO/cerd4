@@ -2,6 +2,7 @@ import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
 import { useState } from 'react';
 import { tendenciaPadrao, tendenciaLabelFrom } from '@/utils/tendenciaPadronizada';
+import { getLeituraCanonica } from '@/utils/leituraCanonica';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -119,7 +120,8 @@ function indicadorToHTML(ind: any): string {
   // Tendência sempre recalculada pelos dados do próprio indicador
   // (série histórica + polaridade) — nunca o rótulo gravado.
   const tendCalc = tendenciaPadrao(ind as any);
-  const tendBadge = `<span class="badge ${tendCalc === 'melhorou' ? 'badge-green' : tendCalc === 'piorou' ? 'badge-red' : 'badge-amber'}">${tendenciaLabelFrom(tendCalc)}</span>`;
+  const leit = getLeituraCanonica((ind as any).nome, (ind as any).sub ?? null);
+  const tendBadge = `<span class="badge ${tendCalc === 'melhorou' ? 'badge-green' : tendCalc === 'piorou' ? 'badge-red' : 'badge-amber'}">${tendenciaLabelFrom(tendCalc)}</span>${leit ? ` <span class="badge" title="${leit.base.replace(/"/g, '&quot;')}">Leitura: ${leit.leitura}</span>` : ''}`;
   // Código curto IND-NNN (canônico, gerado em useIndicadoresInterseccionais)
   // — facilita citação cruzada em relatórios e auditoria humana.
   const codigoBadge = ind.codigo
