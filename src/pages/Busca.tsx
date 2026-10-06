@@ -113,7 +113,7 @@ export default function Busca() {
             const aba = abasDoIndicador(i.categoria, i.subcategoria, i.nome, undefined, codigo)[0];
             return aba && codigo
               ? `/estatisticas?tab=${aba.tabValue}&ind=${encodeURIComponent(codigo)}#ind-${codigo}`
-              : `/estatisticas?tab=indicadores-db&ind=${encodeURIComponent(codigo || i.id)}`;
+              : `/estatisticas?ind=${encodeURIComponent(codigo || i.id)}`;
           })(),
         });
       }
