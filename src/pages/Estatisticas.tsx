@@ -24,7 +24,6 @@ import {
   JuventudeTab, 
   ClasseSocialTab 
 } from '@/components/estatisticas/InterseccionalTabs';
-import { IndicadoresDbTab } from '@/components/estatisticas/IndicadoresDbTab';
 
 
 
@@ -260,25 +259,18 @@ export default function Estatisticas() {
 
 
       {/* Deep-link vindo da planilha/busca: mostra o MESMO ID do Espelho (BD) na aba temática */}
-      {deepLink && deepLink.tabValue !== 'indicadores-db' && (
+      {deepLink && deepLink.tabValue !== 'pendente' && (
         <Card className="mb-4 border-l-4 border-l-primary" data-deeplink-banner>
           <CardContent className="py-3 flex flex-wrap items-center gap-3">
             <Badge className="bg-primary text-primary-foreground font-mono">{deepLink.codigo}</Badge>
             <span className="text-sm font-medium">
-              {deepLinkIndicador?.nome || 'Carregando indicador do Espelho Seguro (BD)…'}
+              {deepLinkIndicador?.nome || 'Carregando indicador…'}
             </span>
             <span className="text-xs text-muted-foreground">
               {deepLinkStatus === 'buscando' && 'Localizando nesta aba…'}
               {deepLinkStatus === 'ok' && '✓ Realçado nesta aba'}
-              {deepLinkStatus === 'nao-encontrado' && 'Não há bloco visual correspondente nesta aba — abra no Espelho Seguro (BD)'}
+              {deepLinkStatus === 'nao-encontrado' && 'Não há bloco visual correspondente nesta aba'}
             </span>
-            <button
-              type="button"
-              className="text-xs underline text-primary ml-auto"
-              onClick={() => { setActiveTab('indicadores-db'); setDeepLink({ ...deepLink, tabValue: 'indicadores-db' }); }}
-            >
-              Abrir no Espelho Seguro (BD)
-            </button>
           </CardContent>
         </Card>
       )}
@@ -343,8 +335,6 @@ export default function Estatisticas() {
           <SegurancaSaudeEducacaoTab />
           <LegadosBloco codigos={LEGADOS_SEGURANCA_SAUDE} />
         </TabsContent>
-        
-        <TabsContent value="indicadores-db"><IndicadoresDbTab filtroAuditoria={filtroAuditoria} initialSearchTerm={initialIndicatorQuery} /></TabsContent>
         <TabsContent value="adm-publica"><AdmPublicaSection /></TabsContent>
         <TabsContent value="covid-racial"><CovidRacialSection /></TabsContent>
         <TabsContent value="grupos-focais">

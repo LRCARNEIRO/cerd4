@@ -35,7 +35,7 @@ function extractOrgao(titulo: string): string {
  */
 function buildIndicadorLink(id: string, codigo: string | undefined, origin: string, sub?: string): string {
   const subParam = sub ? `&sub=${encodeURIComponent(sub)}` : '';
-  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&tab=indicadores-db&q=${encodeURIComponent(codigo)}${subParam}#ind-${codigo}`;
+  if (codigo) return `${origin}/estatisticas?ind=${encodeURIComponent(codigo)}&q=${encodeURIComponent(codigo)}${subParam}#ind-${codigo}`;
   return `${origin}/estatisticas?ind=${id}#indicador-${id}`;
 }
 
