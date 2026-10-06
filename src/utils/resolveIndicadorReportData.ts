@@ -50,5 +50,5 @@ export function resolveIndicadorReportData(li: LinkedIndicadorReport, lookups: I
     ? extractDadoUnico(dados, li.sub, li.nome)
     : undefined;
 
-  return { id, codigo, detail, unico };
+  return { id, codigo, detail, unico, leitura };
 }
