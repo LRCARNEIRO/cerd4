@@ -592,13 +592,10 @@ ${getExportToolbarHTML('Conclusoes-Integral-CERD-IV')}
 </div>
 
 <table>
-  <thead><tr><th>Indicador</th><th>2018</th><th>2024</th><th>Variação</th><th>Tendência</th><th>Fonte</th></tr></thead>
+  <thead><tr><th>Indicador</th><th>Resultado</th><th>Fonte</th></tr></thead>
   <tbody>
   ${sinteseRows.map(r => `<tr>
     <td style="font-weight:500">${r.ind}</td>
-    <td style="text-align:center">${r.v18}</td>
-    <td style="text-align:center;font-weight:700">${r.v24}</td>
-    <td style="text-align:center" class="${r.tend === 'melhora' ? 'stat-pos' : 'stat-neg'}">${r.var}</td>
     <td style="text-align:center"><span class="badge ${r.tend === 'melhora' ? 'badge-success' : 'badge-destructive'}">${r.tend === 'melhora' ? '↑ Melhora' : '↓ Piora'}</span></td>
     <td style="text-align:center;font-size:9px;color:#94a3b8">${r.fonte}</td>
   </tr>`).join('')}
