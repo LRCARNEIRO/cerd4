@@ -1,5 +1,6 @@
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
 import { extractDadoUnico, extractSerieSub, resolveRegistroEstatico, type DadoUnico } from '@/utils/indicadorDadoUnico';
+import { getLeituraCanonica } from '@/utils/leituraCanonica';
 
 interface LinkedIndicadorReport {
   id?: string;
@@ -38,7 +39,9 @@ export function resolveIndicadorReportData(li: LinkedIndicadorReport, lookups: I
     categoria: li.categoria,
     tendencia: li.tendencia ?? reg?.tendencia,
     dados,
+    sub: li.sub,
   });
+  const leitura = getLeituraCanonica(li.nome, li.sub ?? null)?.leitura;
   const serieSub = extractSerieSub(dados, li.sub, li.nome);
   const detail = serieSub?.valorRecente !== undefined
     ? { ...base, ...serieSub, result: base.result }
