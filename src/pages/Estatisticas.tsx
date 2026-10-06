@@ -37,7 +37,7 @@ import { MirrorIngestionPanel } from '@/components/estatisticas/MirrorIngestionP
 import { ComplementoCerd3Tab } from '@/components/estatisticas/ComplementoCerd3Tab';
 import { COMPLEMENTO_CERD3_COUNT } from '@/components/estatisticas/ComplementoCerd3Data';
 import { KeywordSearch } from '@/components/estatisticas/KeywordSearch';
-import { focusIndicadorNaAba } from '@/utils/indicadorLocator';
+import { focusIndicadorNaAba, abasDoIndicador } from '@/utils/indicadorLocator';
 import { useStaticIndicadorCodigos } from '@/hooks/useStaticIndicadorCodigos';
 import { autoTagIndCodes, clearAutoTags } from '@/utils/indCodeAutoTag';
 import { LegadosBloco } from '@/components/estatisticas/LegadosCards';
@@ -53,7 +53,7 @@ import {
 export default function Estatisticas() {
   const [filtroAuditoria, setFiltroAuditoria] = useState<'todos' | 'auditados' | 'pendentes'>('todos');
   const [activeTab, setActiveTab] = useState('complemento-cerd3');
-  const handleSearchNav = useCallback((tabValue: string) => setActiveTab(tabValue), []);
+  const handleSearchNav = useCallback((tabValue: string) => { if (tabValue !== 'indicadores-db') setActiveTab(tabValue); }, []);
   const { data: indicadores } = useIndicadoresInterseccionais();
   const { data: odsRacialFromDb = [] } = useOdsRacialData();
   const [deepLink, setDeepLink] = useState<{ codigo: string; tabValue: string } | null>(null);
@@ -89,16 +89,17 @@ export default function Estatisticas() {
     const tabParam = params.get('tab');
     const serieAnchor = params.get('serie') || rawHash.replace(/^#/, '');
     // Lista de abas válidas para deep-link via ?tab=
+    // A tela "Indicadores (BD)" foi desativada: não é destino válido.
     const VALID_TABS = new Set([
       'complemento-cerd3','dados-gerais','seguranca-saude-educacao',
-      'indicadores-db','adm-publica','covid-racial','grupos-focais','ods-racial',
+      'adm-publica','covid-racial','grupos-focais','ods-racial',
       'vulnerabilidades','raca-genero','lgbtqia','deficiencia','juventude','classe',
     ]);
     if (indId) {
-      // Respeita a aba pedida no link (?tab=). Sem ?tab=, cai no Espelho Seguro (BD),
-      // que é a fonte canônica com âncora garantida para todo IND-NNN.
-      const alvo = tabParam && VALID_TABS.has(tabParam) ? tabParam : 'indicadores-db';
-      setActiveTab(alvo);
+      // Respeita a aba pedida no link (?tab=). Sem aba válida, resolve a aba
+      // temática onde o indicador tem bloco visual (ver efeito abaixo).
+      const alvo = tabParam && VALID_TABS.has(tabParam) ? tabParam : 'pendente';
+      if (alvo !== 'pendente') setActiveTab(alvo);
       setDeepLink({ codigo: indId.toUpperCase(), tabValue: alvo });
       return;
     }
@@ -114,16 +115,24 @@ export default function Estatisticas() {
 
   }, []);
 
-  // Indicador-alvo do deep-link, resolvido no Espelho Seguro (BD) — mesmo ID e
-  // mesmo nome canônico exibidos na aba temática.
   const deepLinkIndicador = useMemo(() => {
     if (!deepLink) return null;
     return (indicadores || []).find(i => (i.codigo || '').toUpperCase() === deepLink.codigo) || null;
   }, [deepLink, indicadores]);
 
+  // Resolve a aba temática do indicador quando o link não indicou uma válida.
   useEffect(() => {
-    if (!deepLink) return;
-    if (deepLink.tabValue !== 'indicadores-db' && !deepLinkIndicador) return; // aguarda o BD
+    if (!deepLink || deepLink.tabValue !== 'pendente' || !indicadores) return;
+    const ind: any = deepLinkIndicador;
+    const abas = ind ? abasDoIndicador(ind.categoria, ind.subcategoria, ind.nome, ind.documento_origem, ind.codigo) : [];
+    const tab = abas.find(a => a.tabValue !== 'indicadores-db')?.tabValue || 'complemento-cerd3';
+    setActiveTab(tab);
+    setDeepLink({ ...deepLink, tabValue: tab });
+  }, [deepLink, deepLinkIndicador, indicadores]);
+
+  useEffect(() => {
+    if (!deepLink || deepLink.tabValue === 'pendente') return;
+    if (!deepLinkIndicador) return; // aguarda o carregamento
     setDeepLinkStatus('buscando');
     const timer = window.setTimeout(() => {
       focusIndicadorNaAba({
