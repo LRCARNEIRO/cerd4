@@ -14,6 +14,8 @@ import {
 } from '@/data/odsRacialIndicators';
 import { useOdsRacialData } from '@/hooks/useOdsRacialData';
 import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
+import { getLeituraCanonica } from '@/utils/leituraCanonica';
+import { LeituraCanonicaBadge } from './LeituraCanonicaBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -324,6 +326,10 @@ export function OdsRacialTab() {
                             <p className="text-sm font-medium text-foreground leading-tight">
                               {ind.name}
                             </p>
+                            {(() => {
+                              const lc = getLeituraCanonica(ind.name);
+                              return lc ? <LeituraCanonicaBadge entry={lc} /> : null;
+                            })()}
                           </div>
                           <div className="flex flex-wrap items-center gap-2 mt-1.5">
                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
