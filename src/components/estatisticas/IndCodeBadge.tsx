@@ -10,6 +10,8 @@
 import { Badge } from '@/components/ui/badge';
 import { useStaticIndicadorCodigos, lookupCodigo } from '@/hooks/useStaticIndicadorCodigos';
 import { getSubIndicadorAnchor } from '@/utils/indicadorSubs';
+import { getLeituraCanonica, getLeiturasPorCodigo } from '@/utils/leituraCanonica';
+import { LeituraCanonicaBadge } from './LeituraCanonicaBadge';
 
 interface IndCodeBadgeProps {
   /** nome exato do registro no banco */
@@ -29,7 +31,10 @@ export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }:
   const codigos = useStaticIndicadorCodigos();
   const codigo = lookupCodigo(codigos, nome) || codigoPersistido || null;
   if (!codigo) return null;
+  const canon = getLeituraCanonica(nome, sub ?? null)
+    ?? (getLeiturasPorCodigo(codigo).length === 1 && !sub ? getLeiturasPorCodigo(codigo)[0] : undefined);
   return (
+    <>
     <Badge
       id={sub ? getSubIndicadorAnchor(codigo, sub) : `ind-${codigo}`}
       data-codigo={codigo}
@@ -45,6 +50,8 @@ export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }:
     >
       {sub ? `${codigo} · sub: ${sub}` : codigo}
     </Badge>
+    {canon && <LeituraCanonicaBadge entry={canon} className={className} />}
+    </>
   );
 }
 

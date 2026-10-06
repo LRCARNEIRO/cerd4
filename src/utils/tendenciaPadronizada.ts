@@ -12,6 +12,7 @@
  */
 import { extractSerieSub } from '@/utils/indicadorDadoUnico';
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { getLeituraCanonica } from '@/utils/leituraCanonica';
 
 export type TendenciaPadrao = 'melhorou' | 'estável' | 'piorou' | null;
 
@@ -33,6 +34,15 @@ export function tendenciaPadraoDetalhada(ind: {
   sub?: string | null;
 }): TendenciaDetalhe {
   const nome = ind?.nome || '';
+  // Leitura canônica auditada (v20 — 130 indicadores de IMPACTO) prevalece.
+  const canon = getLeituraCanonica(nome, ind?.sub ?? null);
+  if (canon) {
+    return {
+      tendencia: canon.tendencia,
+      temSerie: true,
+      base: `${canon.base} [forma de leitura: ${canon.leitura}]`,
+    };
+  }
   const serie: any = extractSerieSub(ind?.dados, ind?.sub ?? undefined, nome);
   let vAnt = serie?.valorAntigo as number | undefined;
   let vRec = serie?.valorRecente as number | undefined;

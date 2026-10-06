@@ -101,6 +101,7 @@ export interface IndicadorEvalDetail {
 // Polaridade vem da SSoT única (src/utils/indicadorPolaridade.ts) para não
 // divergir da tendência exibida nas abas, no inventário e nos relatórios.
 import { isLowerBetterNome } from '@/utils/indicadorPolaridade';
+import { getLeituraCanonica } from '@/utils/leituraCanonica';
 
 /**
  * Evaluates whether an indicator counts as "favorable" for the farol.
@@ -112,6 +113,18 @@ export function evaluateIndicador(ind: any): IndicadorEvalResult {
 
 export function evaluateIndicadorDetailed(ind: any): IndicadorEvalDetail {
   const dados = ind.dados;
+  const canon = getLeituraCanonica(ind?.nome, ind?.sub ?? null);
+  if (canon) {
+    const ts = dados ? extractTimeSeries(dados) : null;
+    return {
+      result: canon.tendencia === 'melhorou' ? 'favoravel' : canon.tendencia === 'piorou' ? 'desfavoravel' : 'neutro',
+      valorAntigo: ts?.[0]?.value,
+      valorRecente: ts?.[ts.length - 1]?.value,
+      anoAntigo: ts?.[0]?.year,
+      anoRecente: ts?.[ts.length - 1]?.year,
+      seriesLength: ts?.length,
+    };
+  }
   if (!dados) return { result: 'neutro' };
 
   const timeSeries = extractTimeSeries(dados);
