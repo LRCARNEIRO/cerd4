@@ -7,7 +7,7 @@
 
 import type { LacunaIdentificada, IndicadorInterseccional, DadoOrcamentario } from '@/hooks/useLacunasData';
 import { evaluateIndicadorDetailed } from '@/components/conclusoes/evaluateIndicador';
-import { fmtBRL, fmtNum, svgBarChart, svgLineChart } from './chartUtils';
+import { fmtBRL, svgBarChart, svgLineChart } from './chartUtils';
 import { calcularExecucaoOrcamentaria } from '@/utils/orcamentoCanonico';
 
 function num(v: unknown): number {
