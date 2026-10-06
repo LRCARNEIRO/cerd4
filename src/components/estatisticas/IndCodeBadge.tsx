@@ -34,7 +34,7 @@ export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }:
   const canon = getLeituraCanonica(nome, sub ?? null)
     ?? (getLeiturasPorCodigo(codigo).length === 1 && !sub ? getLeiturasPorCodigo(codigo)[0] : undefined);
   return (
-    <>
+    <span className={`inline-flex flex-wrap items-center gap-1 align-middle ${className || ''}`}>
     <Badge
       id={sub ? getSubIndicadorAnchor(codigo, sub) : `ind-${codigo}`}
       data-codigo={codigo}
@@ -46,12 +46,12 @@ export function IndCodeBadge({ nome, className, sub, codigo: codigoPersistido }:
           ? `Série "${sub}" gravada dentro do registro canônico ${codigo} (${nome}). Não possui código próprio na Base Estatística.`
           : `Código canônico do indicador na Base Estatística (${nome})`
       }
-      className={`font-mono text-[10px] ${className || ''}`}
+      className="font-mono text-[10px]"
     >
       {sub ? `${codigo} · sub: ${sub}` : codigo}
     </Badge>
-    {canon && <LeituraCanonicaBadge entry={canon} className={className} />}
-    </>
+    {canon && <LeituraCanonicaBadge entry={canon} />}
+    </span>
   );
 }
 
