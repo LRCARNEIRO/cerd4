@@ -23,4 +23,4 @@
 - [x] Retirar comparações de anos/valores das tabelas de indicadores nos relatórios, preservando identificação e Resultado auditado.
 - [x] Validar relatórios de Artigos, Recomendações e tabelas equivalentes, sem alterar dados nem publicar o anexo metodológico.
 - [x] Destacar todas as denominações de fonte em cartões por instituição, separando portais e preservando fontes sem URL; busca, filtros e HTML validados com 90 fontes estatísticas, 10 denominações orçamentárias e 32 referências normativas.
-- [ ] Agregar cartões por portal, preservando denominações e links individuais; validar filtros e fontes sem endereço.
+- [x] Agregar cartões por portal, preservando denominações e links individuais; testes e página validados, com tabelas SIDRA reunidas e fontes sem endereço preservadas.
