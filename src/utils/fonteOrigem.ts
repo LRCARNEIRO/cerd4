@@ -46,6 +46,9 @@ const MAPA: Array<{ match: RegExp; nome: string; orgao: string }> = [
   { match: /cnj\.jus\.br/i, nome: 'Justiça em Números', orgao: 'CNJ' },
   { match: /agenciabrasil\.ebc\.com\.br/i, nome: 'Agência Brasil', orgao: 'EBC' },
   { match: /fiocruz\.br/i, nome: 'Fiocruz — Informes epidemiológicos', orgao: 'Fiocruz' },
+  { match: /planalto\.gov\.br/i, nome: 'Legislação Federal (Planalto)', orgao: 'Presidência da República' },
+  { match: /stf\.jus\.br/i, nome: 'Supremo Tribunal Federal', orgao: 'STF' },
+  { match: /tse\.jus\.br/i, nome: 'Dados Eleitorais', orgao: 'TSE' },
   { match: /drive\.google\.com|docs\.google\.com/i, nome: 'Arquivo público (Google Drive)', orgao: 'Fonte institucional' },
 ];
 
@@ -63,6 +66,12 @@ export function portalFromUrl(url?: string | null): PortalOrigem | null {
   const host = hostFromUrl(url);
   if (!host) return null;
   const hit = MAPA.find(m => m.match.test(url));
-  if (hit) return { nome: hit.nome, orgao: hit.orgao, host };
+  // Portais sob "gov.br" compartilham o host: a chave de agrupamento passa a
+  // incluir o órgão (1º segmento do caminho) para não fundir fontes distintas.
+  let chave = host;
+  if (host === 'gov.br') {
+    try { chave = `gov.br/${new URL(url).pathname.split('/').filter(Boolean)[0] || ''}`; } catch { /* mantém host */ }
+  }
+  if (hit) return { nome: hit.nome, orgao: hit.orgao, host: hit.nome === 'Justiça em Números' || hit.nome.startsWith('Atlas') || hit.nome.startsWith('Anuário') || hit.nome === 'Portal IBGE' || hit.nome.startsWith('Dados Eleitorais') ? hit.nome : chave };
   return { nome: host, orgao: 'Fonte oficial', host };
 }
