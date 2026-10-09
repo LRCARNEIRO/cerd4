@@ -12,6 +12,7 @@ import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
 import { LacunaCard } from '@/components/dashboard/LacunaCard';
 import { RelacaoRecomendacoesTab } from '@/components/recomendacoes/RelacaoRecomendacoesTab';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
+import { MapaRecomendacoesButton } from '@/components/recomendacoes/MapaRecomendacoesButton';
 import type { ArtigoConvencao } from '@/utils/artigosConvencao';
 
 const ObservacoesFinaisTab = lazy(() => import('@/components/recomendacoes/ObservacoesFinaisTab').then(m => ({ default: m.ObservacoesFinaisTab })));
@@ -154,6 +155,7 @@ export default function Recomendacoes() {
               <Badge variant="secondary" className="text-xs font-semibold">
                  Total: {totalGeral} recomendações com índices de Esforço e Impacto
               </Badge>
+              <div className="ml-auto" data-export-ignore="true"><MapaRecomendacoesButton /></div>
             </div>
           </>
         );
