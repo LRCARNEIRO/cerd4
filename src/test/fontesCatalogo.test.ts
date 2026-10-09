@@ -12,16 +12,16 @@ describe('Diretório de fontes citadas', () => {
     expect(grupos[0].fontes.map(f => f.nome)).toEqual(fontes.map(f => f.nome));
     expect(grupos[0].fontes.flatMap(f => f.urls)).toHaveLength(2);
   });
-  it('separa URLs de portais diferentes e preserva fontes sem endereço e bases', () => {
+  it('separa portais e bases sem criar cartões para fontes sem endereço', () => {
     const grupos = agruparFontesPorPortal(construirCatalogoFontes([
       { nome: 'IBGE', base: 'Estatística', url: 'https://sidra.ibge.gov.br/tabela/1' },
       { nome: 'IBGE', base: 'Estatística', url: 'https://www.ibge.gov.br/publicacao' },
       { nome: 'IBGE', base: 'Orçamentária', url: 'https://sidra.ibge.gov.br/tabela/1' },
       { nome: 'Sem endereço', base: 'Normativa' },
     ]));
-    expect(grupos).toHaveLength(4);
+    expect(grupos).toHaveLength(3);
     expect(grupos.flatMap(g => g.fontes.flatMap(f => f.urls))).toHaveLength(3);
-    expect(grupos.find(g => g.base === 'Normativa')?.fontes[0].nome).toBe('Sem endereço');
+    expect(grupos.some(g => g.base === 'Normativa')).toBe(false);
   });
   it('mantém fontes primárias diferentes servidas pelo mesmo portal', () => {
     const catalogo = construirCatalogoFontes([
