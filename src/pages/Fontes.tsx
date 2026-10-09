@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { useIndicadoresInterseccionais } from '@/hooks/useLacunasData';
+import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/useLacunasData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { portalFromUrl } from '@/utils/fonteOrigem';
 import { isDuplicata } from '@/utils/indicadorAliases';
 import { Search, Database, Globe, FileText, Download, Check, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
@@ -113,41 +116,53 @@ const statusLabels: Record<string, string> = {
   parcial: 'Parcial',
   pendente: 'Pendente',
 };
+type Base = 'Estatística' | 'Orçamentária' | 'Normativa';
 interface FonteEvidencia {
   host: string;
   nome: string;
   orgao: string;
   urls: Set<string>;
-  indicadores: Array<{ codigo?: string; nome: string; fonte?: string; url: string }>;
+  bases: Set<Base>;
+  indicadores: Array<{ codigo?: string; nome: string; fonte?: string; url: string; base: Base }>;
 }
 
 export default function Fontes() {
   const [searchTerm, setSearchTerm] = useState('');
   const { data: indicadores = [], isLoading: loadingIndicadores } = useIndicadoresInterseccionais();
 
-  // Catálogo dinâmico: toda URL original registrada na Base Estatística vira fonte listada.
+  const { data: orcamento = [], isLoading: loadingOrc } = useOrcamentoCanonico();
+  const { data: normativos = [], isLoading: loadingNorm } = useQuery({
+    queryKey: ['fontes-normativos'],
+    queryFn: async () => (await supabase.from('documentos_normativos').select('titulo, url_origem')).data || [],
+  });
+  const rol = useMemo(() => buildRolEstatistico(indicadores as any[]), [indicadores]);
+
+  // Catálogo dinâmico: toda URL original registrada nas 3 bases vira fonte listada.
   const fontesDaBase = useMemo(() => {
     const mapa = new Map<string, FonteEvidencia>();
-    (indicadores as any[]).forEach((ind) => {
-      const url: string | undefined = ind.url_fonte || undefined;
+    const add = (url: string | null | undefined, base: Base, item: { codigo?: string; nome: string; fonte?: string }) => {
       const portal = portalFromUrl(url);
       if (!portal || !url) return;
-      if (isDuplicata(ind.codigo)) return;
-      const atual = mapa.get(portal.host) || {
-        host: portal.host,
-        nome: portal.nome,
-        orgao: portal.orgao,
-        urls: new Set<string>(),
-        indicadores: [],
-      };
-      atual.urls.add(url);
-      atual.indicadores.push({ codigo: ind.codigo, nome: ind.nome, fonte: ind.fonte, url });
+      const atual = mapa.get(portal.host) || { host: portal.host, nome: portal.nome, orgao: portal.orgao, urls: new Set<string>(), bases: new Set<Base>(), indicadores: [] };
+      atual.urls.add(url); atual.bases.add(base);
+      atual.indicadores.push({ ...item, url, base });
       mapa.set(portal.host, atual);
+    };
+    (indicadores as any[]).forEach((ind) => {
+      if (isDuplicata(ind.codigo)) return;
+      add(ind.url_fonte, 'Estatística', { codigo: ind.codigo, nome: ind.nome, fonte: ind.fonte });
     });
+    (orcamento as any[]).forEach((o) => add(o.url_fonte, 'Orçamentária', { nome: `${o.programa} (${o.ano})`, fonte: o.fonte_dados }));
+    (normativos as any[]).forEach((n) => add(n.url_origem, 'Normativa', { nome: n.titulo }));
     return Array.from(mapa.values())
-      .map(f => ({ ...f, indicadores: f.indicadores.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')) }))
+      .map(f => ({ ...f, indicadores: f.indicadores.sort((a, b) => a.base.localeCompare(b.base) || a.nome.localeCompare(b.nome, 'pt-BR')) }))
       .sort((a, b) => b.indicadores.length - a.indicadores.length);
-  }, [indicadores]);
+  }, [indicadores, orcamento, normativos]);
+  const porBase = (b: Base) => fontesDaBase.filter(f => f.bases.has(b)).length;
+  const semUrlEst = useMemo(() => (indicadores as any[]).filter(i => !isDuplicata(i.codigo) && !i.url_fonte).map(i => i.codigo).filter(Boolean), [indicadores]);
+  const carregandoBases = loadingIndicadores || loadingOrc || loadingNorm;
+  const integradas = fontesOficiais.flatMap(c => c.fontes).filter(f => f.status === 'integrado').length;
+  const parciais = fontesOficiais.flatMap(c => c.fontes).filter(f => f.status === 'parcial').length;
 
   const termo = searchTerm.trim().toLowerCase();
   const matchTexto = (...campos: Array<string | undefined>) =>
@@ -243,13 +258,16 @@ export default function Fontes() {
 
       {/* Fontes derivadas da Base Estatística */}
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
-        <h2 className="text-lg font-semibold">Fontes de Origem das Evidências Estatísticas</h2>
+        <h2 className="text-lg font-semibold">Fontes de Origem das Evidências — 3 Bases</h2>
         <span className="text-xs text-muted-foreground">
-          {loadingIndicadores
-            ? 'Carregando base…'
-            : `${fontesDaBase.length} fontes · ${totalEvidenciasComFonte} evidências com URL de origem`}
+          {carregandoBases
+            ? 'Carregando bases…'
+            : `${fontesDaBase.length} fontes distintas (Estatística ${porBase('Estatística')} · Orçamentária ${porBase('Orçamentária')} · Normativa ${porBase('Normativa')}) · ${totalEvidenciasComFonte} registros com URL de origem`}
         </span>
       </div>
+      {!carregandoBases && semUrlEst.length > 0 && (
+        <p className="text-xs text-muted-foreground mb-3">Sem URL de origem registrada na Base Estatística: {semUrlEst.join(', ')}.</p>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {fontesFiltradas.length === 0 && !loadingIndicadores && (
           <p className="text-sm text-muted-foreground">Nenhuma fonte encontrada para "{searchTerm}".</p>
@@ -265,7 +283,8 @@ export default function Fontes() {
                 </CardTitle>
                 <CardDescription className="flex flex-wrap items-center gap-2">
                   <span>{fonte.orgao}</span>
-                  <Badge variant="outline" className="text-[10px]">{fonte.indicadores.length} evidência(s)</Badge>
+                  <Badge variant="outline" className="text-[10px]">{fonte.indicadores.length} registro(s)</Badge>
+                  {[...fonte.bases].map(b => <Badge key={b} variant="secondary" className="text-[10px]">{b}</Badge>)}
                   <span className="font-mono text-[10px]">{fonte.host}</span>
                 </CardDescription>
               </CardHeader>
@@ -282,7 +301,7 @@ export default function Fontes() {
                         {ind.codigo && (
                           <Badge variant="secondary" className="text-[10px] font-mono px-1 py-0 shrink-0">{ind.codigo}</Badge>
                         )}
-                        <span className="flex-1">{ind.nome}</span>
+                        <span className="flex-1">{ind.nome}{fonte.bases.size > 1 && <span className="text-muted-foreground"> · {ind.base}</span>}</span>
                         <ExternalLink className="w-3 h-3 mt-0.5 shrink-0 text-muted-foreground" />
                       </a>
                     </li>
@@ -305,6 +324,7 @@ export default function Fontes() {
 
       {/* Additional Sources by Category */}
       <h2 className="text-lg font-semibold mb-4">Fontes Complementares por Área Temática</h2>
+      <p className="text-xs text-muted-foreground -mt-3 mb-4">Lista de referência para consulta; não é derivada do inventário das 3 bases.</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {additionalSources.map(category => (
           <Card key={category.categoria}>
@@ -337,6 +357,7 @@ export default function Fontes() {
 
       {/* Fontes Oficiais com Status de Integração */}
       <h2 className="text-lg font-semibold mt-8 mb-4">Fontes Oficiais por Área Temática — Status de Integração</h2>
+      <p className="text-xs text-muted-foreground -mt-3 mb-4">Lista de referência das principais fontes oficiais; a relação completa e atualizada está em “Fontes de Origem das Evidências — 3 Bases”.</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="border-l-4 border-l-success">
           <CardContent className="pt-4">
@@ -344,7 +365,7 @@ export default function Fontes() {
               <Check className="w-5 h-5 text-success" />
               <div>
                 <p className="text-xs text-muted-foreground">Fontes Integradas</p>
-                <p className="text-2xl font-bold">19</p>
+                <p className="text-2xl font-bold">{integradas}</p>
               </div>
             </div>
           </CardContent>
@@ -355,7 +376,7 @@ export default function Fontes() {
               <RefreshCw className="w-5 h-5 text-warning" />
               <div>
                 <p className="text-xs text-muted-foreground">Integração Parcial</p>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">{parciais}</p>
               </div>
             </div>
           </CardContent>
@@ -366,7 +387,7 @@ export default function Fontes() {
               <Database className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-xs text-muted-foreground">Evidências Estatísticas</p>
-                <p className="text-2xl font-bold">278</p>
+                <p className="text-2xl font-bold">{loadingIndicadores ? '…' : rol.total}</p>
               </div>
             </div>
           </CardContent>
