@@ -32,7 +32,7 @@ export function useMapaRecomendacoes() {
       const p = l.paragrafo.trim();
       return {
         ordem: i + 1, rec: p.startsWith('§') ? p : `§${p}`, titulo: l.tema,
-        artigos: (l.artigos_convencao || []).join(', '),
+        artigos: (((l as { artigos_convencao?: string[] | null }).artigos_convencao) || []).join(', '),
         est, norm, orc, total: est + norm + orc,
         esforco: ei?.esforco ?? 0, classeEsforco: ei ? FAIXA_LABEL[ei.faixaEsforco] : '—',
         impacto: ei?.impacto ?? 0, classeImpacto: ei ? FAIXA_LABEL[ei.faixaImpacto] : '—',
