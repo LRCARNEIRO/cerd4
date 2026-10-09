@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
+import { exportFontesWorkbook, type VinculoFonteExport } from '@/utils/exportFontesWorkbook';
+import { toast } from 'sonner';
 
 function enderecoLegivel(url: string) {
   try {
@@ -28,13 +30,18 @@ type Base = BaseFonte;
 
 export default function Fontes() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [exportando, setExportando] = useState(false);
   const [baseSelecionada, setBaseSelecionada] = useState<Base | 'Todas'>('Todas');
   const { data: indicadores = [], isLoading: loadingIndicadores } = useIndicadoresInterseccionais();
 
   const { data: orcamento = [], isLoading: loadingOrc } = useOrcamentoCanonico();
   const { data: normativos = [], isLoading: loadingNorm } = useQuery({
-    queryKey: ['fontes-normativos'],
-    queryFn: async () => (await supabase.from('documentos_normativos').select('titulo, url_origem')).data || [],
+    queryKey: ['fontes-normativos-completos'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('documentos_normativos').select('id, titulo, url_origem');
+      if (error) throw error;
+      return data || [];
+    },
   });
   const rol = useMemo(() => buildRolEstatistico(indicadores as any[]), [indicadores]);
 
@@ -64,10 +71,30 @@ export default function Fontes() {
   });
   const totalInventario = rol.total + orcamento.length + normativos.length;
   const filtros: Array<Base | 'Todas'> = ['Todas', 'Estatística', 'Orçamentária', 'Normativa'];
+  async function baixarFontes() {
+    setExportando(true);
+    try {
+      const estatisticas: VinculoFonteExport[] = rol.itens.map(item => {
+        const registro = indicadores.find(ind => ind.id === item.key || ind.codigo === item.codigo.split(' · ')[0]);
+        return { base: 'Estatística', fonte: item.fonte, url: registro?.url_fonte || '', codigo: item.codigo,
+          nome: item.titulo, detalhe: item.detalhe };
+      });
+      await exportFontesWorkbook(fontesDaBase, [
+        ...estatisticas,
+        ...orcamento.map(o => ({ base: 'Orçamentária' as const, fonte: o.fonte_dados, url: o.url_fonte || '',
+          codigo: o.programa, nome: o.descritivo || o.programa, programa: o.programa, orgao: o.orgao, ano: o.ano })),
+        ...normativos.map(n => ({ base: 'Normativa' as const, fonte: n.titulo, url: n.url_origem || '', codigo: n.id, nome: n.titulo })),
+      ]);
+    } catch { toast.error('Não foi possível gerar a planilha de fontes. Tente novamente.'); }
+    finally { setExportando(false); }
+  }
 
   return (
     <DashboardLayout title="Fontes de Dados" subtitle="Instituições, portais e publicações utilizados nas três bases de evidências">
-      <div className="flex justify-end mb-3">
+      <div className="flex flex-wrap justify-end gap-2 mb-3">
+        <Button variant="outline" size="sm" disabled={carregandoBases || exportando} onClick={baixarFontes}>
+          <Download className="h-4 w-4 mr-2" />{exportando ? 'Gerando planilha…' : 'Baixar fontes completas (XLSX)'}
+        </Button>
         <ExportTabButtons targetSelector="#export-fontes-dados" fileName="Fontes-de-Dados" compact />
       </div>
       <div id="export-fontes-dados">
