@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Acrescentar datas disponíveis de coleta/consulta ou cadastro à planilha completa de Fontes, com identificação clara da origem e validação do download.
+
 - [x] Centralizar a resolução de códigos, séries e dados pontuais para os relatórios de evidências por Artigo e por Recomendação.
 - [x] Eliminar linhas estatísticas vazias no relatório da §25 e validar anos, valores e resultados.
 - [x] Carregar e exibir o valor empenhado nos relatórios de auditoria.
