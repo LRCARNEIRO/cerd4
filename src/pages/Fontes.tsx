@@ -10,8 +10,9 @@ import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { hostFromUrl } from '@/utils/fonteOrigem';
 import { construirCatalogoFontes, agruparFontesPorPortal, type BaseFonte } from '@/utils/fontesCatalogo';
 import { isDuplicata } from '@/utils/indicadorAliases';
-import { Search, Globe, Download, ExternalLink, Library, Landmark } from 'lucide-react';
+import { Search, Globe, Download, ExternalLink, Library, Landmark, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
 
@@ -126,7 +127,7 @@ export default function Fontes() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {portaisFiltrados.filter(f => f.instituicao === grupo).map(portal => {
             return (
-              <Card key={portal.chave} data-source-base={portal.base} className="flex flex-col overflow-hidden hover:border-primary/50 transition-colors">
+              <Card key={portal.chave} data-source-base={portal.base} className="flex h-[420px] flex-col overflow-hidden hover:border-primary/50 transition-colors">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
@@ -136,11 +137,11 @@ export default function Fontes() {
                       <Badge variant="outline" className="text-xs">{portal.base}</Badge>
                     </div>
                   </div>
-                  <CardTitle className="text-lg leading-snug break-words">{portal.nome}</CardTitle>
+                  <CardTitle className="text-lg leading-snug break-words line-clamp-2 min-h-12" title={portal.nome}>{portal.nome}</CardTitle>
                   <p className="text-xs text-muted-foreground">{portal.fontes.length} {portal.fontes.length === 1 ? 'denominação de fonte' : 'denominações de fontes'}</p>
                 </CardHeader>
-                <CardContent className="flex flex-col flex-1 pt-0">
-                  <ul className="divide-y border-t">
+                <CardContent className="flex flex-col flex-1 min-h-0 pt-0">
+                  <ul className="divide-y border-t flex-1 min-h-0 overflow-y-auto pr-2" aria-label={`Fontes de ${portal.nome}`}>
                     {portal.fontes.map(fonte => <li key={fonte.chave} className="py-4 space-y-2">
                       <h4 className="text-sm font-semibold break-words">{fonte.nome}</h4>
                       {fonte.urls.length === 0 && <span className="text-xs text-warning">Endereço não registrado</span>}
@@ -152,6 +153,29 @@ export default function Fontes() {
                       </a>)}
                     </li>)}
                   </ul>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="mt-3 w-full shrink-0" aria-label={`Ver todas as fontes de ${portal.nome}`}>
+                        <List className="h-4 w-4 mr-2" />Ver todas ({portal.fontes.length})
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl w-[calc(100%-2rem)] max-h-[85vh] flex flex-col">
+                      <DialogHeader className="shrink-0 pr-6">
+                        <DialogTitle className="leading-snug tracking-normal">{portal.nome}</DialogTitle>
+                        <DialogDescription>{portal.base} · {portal.fontes.length} denominações de fontes</DialogDescription>
+                      </DialogHeader>
+                      <ul className="divide-y overflow-y-auto min-h-0 pr-2">
+                        {portal.fontes.map(fonte => <li key={fonte.chave} className="py-4 space-y-2">
+                          <h4 className="text-sm font-semibold break-words">{fonte.nome}</h4>
+                          {fonte.urls.map(url => <a key={url} href={url} target="_blank" rel="noopener noreferrer"
+                            className="flex items-start gap-2 text-sm text-primary hover:underline">
+                            <ExternalLink className="h-4 w-4 shrink-0 mt-0.5" />
+                            <span className="break-all">{enderecoLegivel(url)}</span>
+                          </a>)}
+                        </li>)}
+                      </ul>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
             );
