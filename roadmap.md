@@ -22,4 +22,4 @@
 - [x] Integrar Escopo e Conclusões integrais atuais ao botão “Baixar tudo” e validar o arquivo gerado.
 - [x] Retirar comparações de anos/valores das tabelas de indicadores nos relatórios, preservando identificação e Resultado auditado.
 - [x] Validar relatórios de Artigos, Recomendações e tabelas equivalentes, sem alterar dados nem publicar o anexo metodológico.
-- [ ] Destacar todas as denominações de fonte em cartões por instituição, separando portais e preservando fontes sem URL; validar busca, filtros e exportação da página.
+- [x] Destacar todas as denominações de fonte em cartões por instituição, separando portais e preservando fontes sem URL; busca, filtros e HTML validados com 90 fontes estatísticas, 10 denominações orçamentárias e 32 referências normativas.

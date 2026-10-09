@@ -25,7 +25,7 @@ const instituicoes: Array<[RegExp, string]> = [
   [/\bCNJ\b|CONSELHO NACIONAL DE JUSTIÇA/i, 'Conselho Nacional de Justiça'],
   [/\bSTF\b/i, 'Supremo Tribunal Federal'],
   [/\bFBSP\b|Fórum Brasileiro de Segurança Pública/i, 'Fórum Brasileiro de Segurança Pública'],
-  [/\bIPEA\b/i, 'IPEA'],
+  [/\bIPEA\b|Atlas da Violência/i, 'IPEA'],
   [/ANTRA/i, 'ANTRA'],
   [/Fiocruz/i, 'Fiocruz'],
   [/\bINCRA\b/i, 'INCRA'],
