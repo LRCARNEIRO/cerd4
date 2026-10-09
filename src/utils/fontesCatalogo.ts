@@ -1,0 +1,66 @@
+import { portalFromUrl, type PortalOrigem } from './fonteOrigem';
+
+export type BaseFonte = 'Estatística' | 'Orçamentária' | 'Normativa';
+export interface RegistroFonte {
+  nome: string;
+  base: BaseFonte;
+  url?: string | null;
+}
+export interface FonteCatalogo {
+  chave: string;
+  nome: string;
+  base: BaseFonte;
+  instituicao: string;
+  urls: string[];
+  portais: PortalOrigem[];
+}
+
+const instituicoes: Array<[RegExp, string]> = [
+  [/IBGE|SIDRA|PNAD|ESTADIC/i, 'IBGE'],
+  [/INEP|ENEM|IDEB|InepData/i, 'INEP'],
+  [/DataSUS|SINASC|SINAN|SIVEP|\bSIM\b|\bSIH\b/i, 'DataSUS / Ministério da Saúde'],
+  [/\bRAIS\b|\bMTE\b|CAGED/i, 'Ministério do Trabalho e Emprego'],
+  [/\bMDS\b|CadÚnico|CadUnico/i, 'Ministério do Desenvolvimento e Assistência Social'],
+  [/\bTSE\b/i, 'Tribunal Superior Eleitoral'],
+  [/\bCNJ\b|CONSELHO NACIONAL DE JUSTIÇA/i, 'Conselho Nacional de Justiça'],
+  [/\bSTF\b/i, 'Supremo Tribunal Federal'],
+  [/\bFBSP\b|Fórum Brasileiro de Segurança Pública/i, 'Fórum Brasileiro de Segurança Pública'],
+  [/\bIPEA\b|Atlas da Violência/i, 'IPEA'],
+  [/ANTRA/i, 'ANTRA'],
+  [/Fiocruz/i, 'Fiocruz'],
+  [/\bINCRA\b/i, 'INCRA'],
+  [/Palmares/i, 'Fundação Cultural Palmares'],
+  [/\bFUNAI\b/i, 'FUNAI'],
+  [/\bISA\b/i, 'Instituto Socioambiental'],
+  [/DIEESE/i, 'DIEESE'],
+  [/\bFJP\b|Fundação João Pinheiro/i, 'Fundação João Pinheiro'],
+  [/\bMDHC\b|\bMDH\b|\bONDH\b|Disque 100/i, 'Ministério dos Direitos Humanos e da Cidadania'],
+  [/\bMIR\b|SENAPIR|SENAPPIR|SENAPIR/i, 'Ministério da Igualdade Racial'],
+];
+
+export function instituicaoDaFonte(nome: string, portais: PortalOrigem[]): string {
+  const nomes = instituicoes.filter(([pattern]) => pattern.test(nome)).map(([, label]) => label);
+  if (nomes.length > 1) return 'Fontes combinadas';
+  if (nomes.length === 1) return nomes[0];
+  const orgaos = [...new Set(portais.map(p => p.orgao).filter(o => !o.startsWith('Fonte')))];
+  return orgaos.length === 1 ? orgaos[0] : 'Outras fontes citadas';
+}
+
+export function construirCatalogoFontes(registros: RegistroFonte[]) {
+  const mapa = new Map<string, { nome: string; base: BaseFonte; urls: Set<string> }>();
+  for (const registro of registros) {
+    const chave = `${registro.base}:${registro.nome}`;
+    const fonte = mapa.get(chave) || { nome: registro.nome, base: registro.base, urls: new Set<string>() };
+    if (registro.url?.trim()) fonte.urls.add(registro.url);
+    mapa.set(chave, fonte);
+  }
+  return [...mapa.entries()].map(([chave, fonte]): FonteCatalogo => {
+    const portais = new Map<string, PortalOrigem>();
+    for (const url of fonte.urls) {
+      const portal = portalFromUrl(url);
+      if (portal) portais.set(portal.host, portal);
+    }
+    const lista = [...portais.values()];
+    return { chave, nome: fonte.nome, base: fonte.base, urls: [...fonte.urls], portais: lista, instituicao: instituicaoDaFonte(fonte.nome, lista) };
+  }).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+}
