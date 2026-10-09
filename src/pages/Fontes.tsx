@@ -7,7 +7,7 @@ import { useIndicadoresInterseccionais, useOrcamentoCanonico } from '@/hooks/use
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
-import { portalFromUrl, hostFromUrl } from '@/utils/fonteOrigem';
+import { hostFromUrl } from '@/utils/fonteOrigem';
 import { construirCatalogoFontes, type BaseFonte } from '@/utils/fontesCatalogo';
 import { isDuplicata } from '@/utils/indicadorAliases';
 import { Search, Globe, Download, ExternalLink, Library, ChevronDown, Landmark } from 'lucide-react';
