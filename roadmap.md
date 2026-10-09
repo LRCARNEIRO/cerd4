@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Acrescentar datas disponíveis de coleta/consulta ou cadastro à planilha completa de Fontes; download validado com datas de cadastro/alteração nas 512 evidências e 243 endereços, sem inventar datas de consulta.
+
 - [x] Centralizar a resolução de códigos, séries e dados pontuais para os relatórios de evidências por Artigo e por Recomendação.
 - [x] Eliminar linhas estatísticas vazias no relatório da §25 e validar anos, valores e resultados.
 - [x] Carregar e exibir o valor empenhado nos relatórios de auditoria.

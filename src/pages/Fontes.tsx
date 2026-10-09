@@ -38,7 +38,7 @@ export default function Fontes() {
   const { data: normativos = [], isLoading: loadingNorm } = useQuery({
     queryKey: ['fontes-normativos-completos'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('documentos_normativos').select('id, titulo, url_origem');
+      const { data, error } = await supabase.from('documentos_normativos').select('id, titulo, url_origem, created_at, updated_at');
       if (error) throw error;
       return data || [];
     },
@@ -77,13 +77,15 @@ export default function Fontes() {
       const estatisticas: VinculoFonteExport[] = rol.itens.map(item => {
         const registro = indicadores.find(ind => ind.id === item.key || ind.codigo === item.codigo.split(' · ')[0]);
         return { base: 'Estatística', fonte: item.fonte, url: registro?.url_fonte || '', codigo: item.codigo,
-          nome: item.titulo, detalhe: item.detalhe };
+          nome: item.titulo, detalhe: item.detalhe, dataCadastro: registro?.created_at, dataAtualizacao: registro?.updated_at };
       });
       await exportFontesWorkbook(fontesDaBase, [
         ...estatisticas,
         ...orcamento.map(o => ({ base: 'Orçamentária' as const, fonte: o.fonte_dados, url: o.url_fonte || '',
-          codigo: o.programa, nome: o.descritivo || o.programa, programa: o.programa, orgao: o.orgao, ano: o.ano })),
-        ...normativos.map(n => ({ base: 'Normativa' as const, fonte: n.titulo, url: n.url_origem || '', codigo: n.id, nome: n.titulo })),
+          codigo: o.programa, nome: o.descritivo || o.programa, programa: o.programa, orgao: o.orgao, ano: o.ano,
+          dataCadastro: o.created_at, dataAtualizacao: o.updated_at })),
+        ...normativos.map(n => ({ base: 'Normativa' as const, fonte: n.titulo, url: n.url_origem || '', codigo: n.id, nome: n.titulo,
+          dataCadastro: n.created_at, dataAtualizacao: n.updated_at })),
       ]);
     } catch { toast.error('Não foi possível gerar a planilha de fontes. Tente novamente.'); }
     finally { setExportando(false); }
