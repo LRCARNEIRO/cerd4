@@ -2,8 +2,8 @@
  * METODOLOGIA v7 — Esforço Governamental × Impacto Evidenciado
  * ============================================================
  * Fonte: matriz relacional auditada (2.122 endereços Artigo × Recomendação ×
- * Evidência) sobre o inventário canônico de 514 evidências
- * (278 estatísticas · 204 orçamentárias · 32 normativas).
+ * Evidência) sobre o inventário canônico de 512 evidências
+ * (278 estatísticas · 202 orçamentárias · 32 normativas).
  *
  * ESFORÇO (0–100) — quanta evidência distinta foi efetivamente vinculada,
  * com teto por base (P75 da distribuição observada) e pesos iguais (1/3):

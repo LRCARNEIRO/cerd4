@@ -88,7 +88,7 @@ export function FontesDadosTab() {
             Inventário das 3 Bases de Evidências
           </CardTitle>
           <CardDescription>
-            Planilha auditada com 278 evidências estatísticas, 32 normativas e 204 orçamentárias —
+            Planilha auditada com 278 evidências estatísticas, 32 normativas e 202 orçamentárias —
             com código, localização no sistema, fonte, série histórica, tendência padronizada
             (melhorou · estável · piorou), função no método (esforço/impacto) e recomendações vinculadas.
           </CardDescription>
