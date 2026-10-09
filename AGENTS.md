@@ -1,6 +1,6 @@
 # Project decisions
 
-- The Sources page derives its directory from original URLs across all three bases and keeps source-level navigation separate from evidence listings, so its exports and counts remain aligned with the live catalog.
+- The Sources directory preserves exact source labels per base (normative document titles where no source field exists), including URL-less entries; institution grouping and access-portal counts are separate projections, so publications are never collapsed into their delivery portal.
 
 - Collect tab-mounted exports by activating their tabs in an isolated iframe and waiting for export registration before assembling “Baixar tudo”; inactive Radix tab content is not mounted, so reading only the current page registry silently omits those reports.
 - Recommendation compliance status is always the live sensor result: LiveStatusSync (mounted in App) overlays it on cached lacunas data and persists diffs when permitted; reports must never rely on the stored status alone, because it goes stale when evidence links change.
