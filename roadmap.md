@@ -17,6 +17,8 @@
 - [x] Conferir os oito códigos IND no “Baixar tudo” e imprimir o código canônico no inventário exportado.
 - [x] Retirar da Base Normativa as referências à divisão antiga Meta 1/Meta 2, inclusive na revisão de importações.
 
+- [x] Corrigir vínculos de Mortalidade Materna (por 100 mil NV) apontados ao card da COVID (IND-173); tela e relatório por Artigo agora exibem 249/218 consistentemente.
+
 - [x] Integrar Escopo e Conclusões integrais atuais ao botão “Baixar tudo” e validar o arquivo gerado.
 - [x] Retirar comparações de anos/valores das tabelas de indicadores nos relatórios, preservando identificação e Resultado auditado.
 - [x] Validar relatórios de Artigos, Recomendações e tabelas equivalentes, sem alterar dados nem publicar o anexo metodológico.

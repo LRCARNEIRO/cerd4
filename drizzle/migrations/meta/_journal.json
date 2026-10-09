@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791553133639,
+      "tag": "0000_corrigir_vinculo_rmm_geral_card_covid",
+      "breakpoints": true
+    }
+  ]
+}
