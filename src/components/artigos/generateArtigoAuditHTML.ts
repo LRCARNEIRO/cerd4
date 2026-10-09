@@ -69,6 +69,7 @@ export function generateArtigoAuditHTML({ artigo, recomendacoes, diagnosticMap, 
       // Não reaplicar o guard aqui: os registros sintéticos dos cards fixos
       // não carregam todos os metadados administrativos do registro original.
       const key = `${li.id || li.nome}|${li.sub || ''}`;
+      if (indByNome.has(key)) console.warn('[DBG-ARTIGO]', artigo, 'COLISAO', key, 'NOVO=', li.nome, 'SUB=', li.sub, 'ID=', li.id, 'EXISTENTE=', indByNome.get(key)?.nome);
       indByNome.set(key, { ...li, recomendacoes: ['Matriz auditada'] });
     }
     for (const ln of curado.normativos || []) {
