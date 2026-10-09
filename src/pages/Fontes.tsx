@@ -8,9 +8,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { buildRolEstatistico } from '@/utils/rolEstatisticoCanonico';
 import { hostFromUrl } from '@/utils/fonteOrigem';
-import { construirCatalogoFontes, type BaseFonte } from '@/utils/fontesCatalogo';
+import { construirCatalogoFontes, agruparFontesPorPortal, type BaseFonte } from '@/utils/fontesCatalogo';
 import { isDuplicata } from '@/utils/indicadorAliases';
-import { Search, Globe, Download, ExternalLink, Library, ChevronDown, Landmark } from 'lucide-react';
+import { Search, Globe, Download, ExternalLink, Library, Landmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import inventarioAsset from '@/assets/inventario-v19.xlsx.asset.json';
@@ -54,7 +54,8 @@ export default function Fontes() {
   const totalEnderecos = new Set(fontesDaBase.flatMap(fonte => fonte.urls)).size;
   const totalPortais = new Set(fontesDaBase.flatMap(fonte => fonte.portais.map(p => p.host))).size;
   const semEndereco = fontesDaBase.filter(fonte => fonte.urls.length === 0).length;
-  const grupos = [...new Set(fontesFiltradas.map(f => f.instituicao))].sort((a, b) => {
+  const portaisFiltrados = agruparFontesPorPortal(fontesFiltradas);
+  const grupos = [...new Set(portaisFiltrados.map(f => f.instituicao))].sort((a, b) => {
     const prioritarios = ['IBGE', 'INEP', 'DataSUS / Ministério da Saúde'];
     const ia = prioritarios.indexOf(a), ib = prioritarios.indexOf(b);
     if (ia >= 0 || ib >= 0) return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
@@ -120,52 +121,37 @@ export default function Fontes() {
             <div className="flex items-center gap-3 border-b pb-3 mb-4">
               <Landmark className="h-5 w-5 text-primary shrink-0" />
               <h3 className="text-lg font-semibold break-words">{grupo}</h3>
-              <Badge variant="secondary" className="ml-auto shrink-0">{fontesFiltradas.filter(f => f.instituicao === grupo).length}</Badge>
+              <Badge variant="secondary" className="ml-auto shrink-0">{portaisFiltrados.filter(f => f.instituicao === grupo).length} cartões</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {fontesFiltradas.filter(f => f.instituicao === grupo).map(fonte => {
-            const urls = [...fonte.urls];
-            const principal = urls[0];
+          {portaisFiltrados.filter(f => f.instituicao === grupo).map(portal => {
             return (
-              <Card key={fonte.chave} data-source-base={fonte.base} className="flex flex-col overflow-hidden hover:border-primary/50 transition-colors">
+              <Card key={portal.chave} data-source-base={portal.base} className="flex flex-col overflow-hidden hover:border-primary/50 transition-colors">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-secondary text-primary">
-                      {fonte.base === 'Normativa' ? <Landmark className="h-6 w-6" /> : <Library className="h-6 w-6" />}
+                      <Globe className="h-6 w-6" />
                     </div>
                     <div className="flex flex-wrap justify-end gap-1">
-                      <Badge variant="outline" className="text-xs">{fonte.base}</Badge>
+                      <Badge variant="outline" className="text-xs">{portal.base}</Badge>
                     </div>
                   </div>
-                  <CardTitle className="text-lg leading-snug break-words">{fonte.nome}</CardTitle>
-                  {fonte.portais.map(portal => <p key={portal.host} className="text-xs text-muted-foreground break-words flex items-start gap-2"><Globe className="h-3.5 w-3.5 shrink-0 mt-0.5" />Disponível por {portal.nome}</p>)}
-                  {!principal && <Badge variant="outline" className="text-warning border-warning/40 w-fit">Endereço não registrado</Badge>}
+                  <CardTitle className="text-lg leading-snug break-words">{portal.nome}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{portal.fontes.length} {portal.fontes.length === 1 ? 'denominação de fonte' : 'denominações de fontes'}</p>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-1 pt-0">
-                  <div className="flex items-center justify-between gap-3 mt-auto border-t pt-4">
-                    <span className="text-xs text-muted-foreground">{urls.length > 0 ? `${urls.length} ${urls.length === 1 ? 'endereço' : 'endereços'}` : 'Fonte preservada no inventário'}</span>
-                    {principal && <Button variant="outline" size="sm" asChild>
-                      <a href={principal} target="_blank" rel="noopener noreferrer" aria-label={`Acessar ${fonte.nome}`}>
-                        Acessar fonte <ExternalLink className="h-3.5 w-3.5 ml-2" />
-                      </a>
-                    </Button>}
-                  </div>
-                  {principal && <details className="mt-4 group">
-                    <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-primary list-none">
-                      Endereços consultados <ChevronDown className="h-4 w-4 group-open:rotate-180 transition-transform" />
-                    </summary>
-                    <ul className="mt-3 space-y-3 max-h-64 overflow-auto">
-                      {urls.map(url => (
-                        <li key={url}>
-                          <a href={url} target="_blank" rel="noopener noreferrer"
-                            className="flex items-start gap-2 text-xs text-muted-foreground hover:text-primary">
-                            <ExternalLink className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                            <span className="break-all">{enderecoLegivel(url)}</span>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>}
+                  <ul className="divide-y border-t">
+                    {portal.fontes.map(fonte => <li key={fonte.chave} className="py-4 space-y-2">
+                      <h4 className="text-sm font-semibold break-words">{fonte.nome}</h4>
+                      {fonte.urls.length === 0 && <span className="text-xs text-warning">Endereço não registrado</span>}
+                      {fonte.urls.map(url => <a key={url} href={url} target="_blank" rel="noopener noreferrer"
+                        aria-label={`Acessar ${fonte.nome}: ${enderecoLegivel(url)}`}
+                        className="flex items-start gap-2 text-xs text-primary hover:underline">
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                        <span className="break-all">{enderecoLegivel(url)}</span>
+                      </a>)}
+                    </li>)}
+                  </ul>
                 </CardContent>
               </Card>
             );

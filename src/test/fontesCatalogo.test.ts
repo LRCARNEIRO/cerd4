@@ -1,7 +1,28 @@
 import { describe, it, expect } from 'vitest';
-import { construirCatalogoFontes } from '@/utils/fontesCatalogo';
+import { construirCatalogoFontes, agruparFontesPorPortal } from '@/utils/fontesCatalogo';
 
 describe('Diretório de fontes citadas', () => {
+  it('agrega tabelas SIDRA sem perder denominações ou links individuais', () => {
+    const fontes = construirCatalogoFontes([
+      { nome: 'IBGE/SIDRA Tabela 1', base: 'Estatística', url: 'https://sidra.ibge.gov.br/tabela/1' },
+      { nome: 'IBGE/SIDRA Tabela 2', base: 'Estatística', url: 'https://sidra.ibge.gov.br/tabela/2' },
+    ]);
+    const grupos = agruparFontesPorPortal(fontes);
+    expect(grupos).toHaveLength(1);
+    expect(grupos[0].fontes.map(f => f.nome)).toEqual(fontes.map(f => f.nome));
+    expect(grupos[0].fontes.flatMap(f => f.urls)).toHaveLength(2);
+  });
+  it('separa URLs de portais diferentes e preserva fontes sem endereço e bases', () => {
+    const grupos = agruparFontesPorPortal(construirCatalogoFontes([
+      { nome: 'IBGE', base: 'Estatística', url: 'https://sidra.ibge.gov.br/tabela/1' },
+      { nome: 'IBGE', base: 'Estatística', url: 'https://www.ibge.gov.br/publicacao' },
+      { nome: 'IBGE', base: 'Orçamentária', url: 'https://sidra.ibge.gov.br/tabela/1' },
+      { nome: 'Sem endereço', base: 'Normativa' },
+    ]));
+    expect(grupos).toHaveLength(4);
+    expect(grupos.flatMap(g => g.fontes.flatMap(f => f.urls))).toHaveLength(3);
+    expect(grupos.find(g => g.base === 'Normativa')?.fontes[0].nome).toBe('Sem endereço');
+  });
   it('mantém fontes primárias diferentes servidas pelo mesmo portal', () => {
     const catalogo = construirCatalogoFontes([
       { nome: 'RAIS/MTE', base: 'Estatística', url: 'https://odsr.lema.ufpb.br/rais' },
