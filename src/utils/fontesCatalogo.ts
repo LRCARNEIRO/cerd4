@@ -15,6 +15,39 @@ export interface FonteCatalogo {
   portais: PortalOrigem[];
 }
 
+export interface GrupoPortalFontes {
+  chave: string;
+  nome: string;
+  instituicao: string;
+  base: BaseFonte;
+  fontes: FonteCatalogo[];
+}
+
+/** Projeção visual: os registros originais e suas contagens permanecem intactos. */
+export function agruparFontesPorPortal(fontes: FonteCatalogo[]): GrupoPortalFontes[] {
+  const grupos = new Map<string, GrupoPortalFontes>();
+  for (const fonte of fontes) {
+    const destinos = fonte.portais.length > 0 ? fonte.portais : [null];
+    for (const portal of destinos) {
+      const chave = `${fonte.base}:${portal?.host ?? `sem-url:${fonte.instituicao}`}`;
+      let grupo = grupos.get(chave);
+      if (!grupo) {
+        grupo = {
+          chave, base: fonte.base,
+          nome: portal?.nome ?? 'Fontes sem endereço registrado',
+          instituicao: portal?.orgao ?? fonte.instituicao,
+          fontes: [],
+        };
+        grupos.set(chave, grupo);
+      }
+      grupo.fontes.push({ ...fonte, urls: portal
+        ? fonte.urls.filter(url => portalFromUrl(url)?.host === portal.host)
+        : [] });
+    }
+  }
+  return [...grupos.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+}
+
 const instituicoes: Array<[RegExp, string]> = [
   [/IBGE|SIDRA|PNAD|ESTADIC/i, 'IBGE'],
   [/INEP|ENEM|IDEB|InepData/i, 'INEP'],
