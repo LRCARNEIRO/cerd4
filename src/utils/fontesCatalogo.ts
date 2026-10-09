@@ -27,22 +27,19 @@ export interface GrupoPortalFontes {
 export function agruparFontesPorPortal(fontes: FonteCatalogo[]): GrupoPortalFontes[] {
   const grupos = new Map<string, GrupoPortalFontes>();
   for (const fonte of fontes) {
-    const destinos = fonte.portais.length > 0 ? fonte.portais : [null];
-    for (const portal of destinos) {
-      const chave = `${fonte.base}:${portal?.host ?? `sem-url:${fonte.instituicao}`}`;
+    for (const portal of fonte.portais) {
+      const chave = `${fonte.base}:${portal.host}`;
       let grupo = grupos.get(chave);
       if (!grupo) {
         grupo = {
           chave, base: fonte.base,
-          nome: portal?.nome ?? 'Fontes sem endereço registrado',
-          instituicao: portal?.orgao ?? fonte.instituicao,
+          nome: portal.nome,
+          instituicao: portal.orgao,
           fontes: [],
         };
         grupos.set(chave, grupo);
       }
-      grupo.fontes.push({ ...fonte, urls: portal
-        ? fonte.urls.filter(url => portalFromUrl(url)?.host === portal.host)
-        : [] });
+      grupo.fontes.push({ ...fonte, urls: fonte.urls.filter(url => portalFromUrl(url)?.host === portal.host) });
     }
   }
   return [...grupos.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
