@@ -1,5 +1,7 @@
 # Project decisions
 
+- Dashboard budget charts split the canonical inventory by tipo_dotacao before yearly aggregation; LOA shows authorized, committed, liquidated and paid amounts, while extra-LOA shows paid amounts separately to avoid implying an execution rate.
+
 - Indicator title corrections preserve UUIDs and short codes; legacy labels resolve through indicadorAliases, including fixed-card measurements, so renaming never recreates records or evidence links.
 
 - The Sources directory preserves exact source labels per base (normative titles where no source field exists) and counts independently from its portal-grouped card projection; cards contain only registered portals and individual source URLs, while URL-less references remain in the inventory and counts, so presentation never deletes inventory references.

@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Explicitar médias das recomendações e dos artigos no Painel Geral e em Artigos; conferidas em tela e anexo.
+- [x] Corrigir a unidade do rótulo orçamentário por artigo, preservando contagens; Art. V exibe 88 pares ação + órgão e 202 registros Ação×Ano, inclusive no veredito.
+- [x] Separar extraorçamentários no gráfico do Painel e incluir Liquidado; apresentação, valores reais de 2024 e 11 testes validados.
+
 - [x] Renomear IND-009 e IND-010 preservando códigos, vínculos e medições; compatibilidade e cartões validados. Teste de localização legado ainda espera aba BD removida (fora deste ajuste).
 
 - [x] Acrescentar datas disponíveis de coleta/consulta ou cadastro à planilha completa de Fontes; download validado com datas de cadastro/alteração nas 512 evidências e 243 endereços, sem inventar datas de consulta.
