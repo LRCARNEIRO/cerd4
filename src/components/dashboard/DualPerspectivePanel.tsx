@@ -9,7 +9,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { type ArtigoConvencao } from '@/utils/artigosConvencao';
 import {
   CORTE_ALTO, CORTE_INTERMEDIARIO, FAIXA_CLASSE, FAIXA_LABEL, TETOS_ESFORCO,
-  classificarFaixa, formatScore, type Faixa,
+  classificarFaixa, formatScore, mediaSimples, type Faixa,
 } from '@/utils/esforcoImpacto';
 
 interface FaixaDistribuicao {
@@ -113,13 +113,13 @@ export function DualPerspectivePanel({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardContent className="pt-5">
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
               <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
                 <ShieldCheck className="w-4 h-4 text-primary" />
                 Esforço Governamental
               </h3>
               <Badge variant="outline" className="text-xs">
-                média {formatScore(mediaEsforco)}/100
+                Média das {totalEsforco} recomendações: {formatScore(mediaEsforco)}/100
               </Badge>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
@@ -157,13 +157,13 @@ export function DualPerspectivePanel({
 
         <Card>
           <CardContent className="pt-5">
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
               <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
                 <BarChart3 className="w-4 h-4 text-success" />
                 Impacto Evidenciado
               </h3>
               <Badge variant="outline" className="text-xs">
-                média {formatScore(mediaImpacto)}/100
+                Média das {totalImpacto} recomendações: {formatScore(mediaImpacto)}/100
               </Badge>
             </div>
             <p className="text-[11px] text-muted-foreground mb-3">
@@ -211,6 +211,14 @@ export function DualPerspectivePanel({
             O resultado de cada <strong>Artigo da Convenção (I–VII)</strong> é a <strong>média simples</strong> dos
             índices das recomendações a ele formalmente associadas (associação recomendação–artigo registrada na base) —
             inclusive as recomendações sem evidência vinculada, que entram com zero.
+          </p>
+          <p className="text-sm text-foreground mb-1">
+            <strong>Média simples dos {artigosSummary.length} artigos:</strong>{' '}
+            Esforço {formatScore(mediaSimples(artigosSummary.map(a => a.esforcoScore)))}/100 ·{' '}
+            Impacto {formatScore(mediaSimples(artigosSummary.map(a => a.impactoScore)))}/100
+          </p>
+          <p className="text-[11px] text-muted-foreground mb-4">
+            Cada artigo tem o mesmo peso nesta média; ela não equivale à média das {totalEsforco} recomendações mostrada acima.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {artigosSummary.map(art => {

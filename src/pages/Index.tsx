@@ -3,6 +3,8 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { DataUploadButton } from '@/components/dashboard/DataUploadButton';
 import { SnapshotManager } from '@/components/dashboard/SnapshotManager';
 import { BudgetChart } from '@/components/dashboard/BudgetChart';
+import { useOrcamentoCanonico } from '@/hooks/useLacunasData';
+import { dashboardBudgetSeries } from '@/utils/dashboardBudgetSeries';
 import { DualPerspectivePanel } from '@/components/dashboard/DualPerspectivePanel';
 
 import { MethodologyExportButton } from '@/components/dashboard/MethodologyExportButton';
@@ -26,7 +28,8 @@ export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
   const [historyAccordionValue, setHistoryAccordionValue] = useState('');
   const queryClient = useQueryClient();
-  const { stats, isLoading, orcamentoStats } = useDashboardStats();
+  const { stats, isLoading } = useDashboardStats();
+  const { data: orcamentoCanonico } = useOrcamentoCanonico();
   // Single source: useEvolucaoSummary already runs useDiagnosticSensor internally
   const { summary: evolSummary, artigosSummary: evolArtigosSummary, isLoading: loadingEvol, sensorSummary, sensorReady } = useEvolucaoSummary();
 
@@ -52,15 +55,7 @@ export default function Index() {
     toast.success('Dados atualizados!', { description: 'Todas as estatísticas foram recarregadas.' });
   };
 
-  const activeSource = orcamentoStats?.porAnoDetalhado;
-  const budgetTrendData = activeSource
-    ? Object.entries(activeSource).map(([ano, v]) => ({
-        ano: parseInt(ano),
-        autorizado: v.dotacao || 0,
-        empenhado: v.empenhado || 0,
-        pago: v.pago || 0
-      })).sort((a, b) => a.ano - b.ano)
-    : [];
+  const budgetSeries = useMemo(() => dashboardBudgetSeries(orcamentoCanonico), [orcamentoCanonico]);
 
   return (
     <DashboardLayout
@@ -135,7 +130,7 @@ export default function Index() {
 
       {/* Budget */}
       <div className="grid grid-cols-1 gap-6 mb-6">
-        <BudgetChart data={budgetTrendData} />
+        <BudgetChart data={budgetSeries.orcamentario} extraData={budgetSeries.extraorcamentario} />
       </div>
 
       {/* Methodology Export Button */}
