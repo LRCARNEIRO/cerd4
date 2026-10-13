@@ -1021,7 +1021,7 @@ export const educacaoRacaGenero = [
     nota: 'Ensino médio completo + superior incompleto. Negros têm maior % neste nível por serem minoria no superior completo.',
   },
   {
-    indicador: 'Desemprego graduado (%)',
+    indicador: 'Taxa de desocupação (superior completo) (%)',
     mulherNegra: 3.96,
     mulherBranca: 2.85,
     homemNegro: 2.41,
@@ -1031,7 +1031,7 @@ export const educacaoRacaGenero = [
     nota: "Taxa de desocupação (superior completo) = desocupados ÷ força de trabalho. Somar pretos + pardos antes da divisão. Substitui medida de 'desemprego graduado' por taxa com denominador explícito.",
   },
   {
-    indicador: 'Inatividade qualificada (%)',
+    indicador: 'Proporção fora da força de trabalho (superior completo) (%)',
     mulherNegra: 22.25,
     mulherBranca: 26.09,
     homemNegro: 13.38,

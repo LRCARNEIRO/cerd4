@@ -214,7 +214,11 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
 
 /** Cartão fixo com número congelado na interface da aba de origem. */
 export function cardFixoSerie(nome?: string | null): (SerieSub & { unidade?: string }) | undefined {
-  return CARDS_FIXOS[norm(nome)];
+  const direto = CARDS_FIXOS[norm(nome)];
+  if (direto || !nome) return direto;
+  const canonico = norm(nomeCanonico(nome));
+  const legado = Object.keys(CARDS_FIXOS).find(chave => norm(nomeCanonico(chave)) === canonico);
+  return legado ? CARDS_FIXOS[legado] : undefined;
 }
 
 /**

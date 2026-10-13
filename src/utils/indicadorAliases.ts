@@ -12,7 +12,12 @@ const norm = (s: string) =>
     .toLowerCase().replace(/\s+/g, ' ').trim();
 
 /** título exibido → nome canônico no banco */
-const ALIASES: Record<string, string> = {};
+const ALIASES: Record<string, string> = {
+  'Desemprego graduado (%)': 'Taxa de desocupação (superior completo) (%)',
+  'Taxa de desemprego graduado por raça e gênero — Censo 2022 (%)': 'Taxa de desocupação (superior completo) (%)',
+  'Inatividade qualificada (%)': 'Proporção fora da força de trabalho (superior completo) (%)',
+  'Taxa de inatividade qualificada por raça e gênero — Censo 2022 (%)': 'Proporção fora da força de trabalho (superior completo) (%)',
+};
 
 /**
  * Registros DUPLICADOS na base: descrevem exatamente o mesmo dado de um
