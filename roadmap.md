@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Explicitar médias das recomendações e dos artigos no Painel Geral e em Artigos.
+- [ ] Corrigir a unidade do rótulo orçamentário por artigo, preservando contagens.
+- [ ] Separar extraorçamentários no gráfico do Painel e incluir Liquidado; validar apresentação e somas.
+
 - [x] Renomear IND-009 e IND-010 preservando códigos, vínculos e medições; compatibilidade e cartões validados. Teste de localização legado ainda espera aba BD removida (fora deste ajuste).
 
 - [x] Acrescentar datas disponíveis de coleta/consulta ou cadastro à planilha completa de Fontes; download validado com datas de cadastro/alteração nas 512 evidências e 243 endereços, sem inventar datas de consulta.
