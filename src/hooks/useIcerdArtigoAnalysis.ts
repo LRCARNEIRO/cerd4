@@ -38,7 +38,7 @@ export type ArtigoAnalysis = {
   orcamentoLiquidado: number;
   /** Registros Ação×Ano vinculados */
   orcamentoProgramas: number;
-  /** Ações únicas (ação + órgão) */
+  /** Pares distintos ação + órgão (não códigos de ação únicos) */
   orcamentoAcoes: number;
   indicadoresCount: number;
   respostasTotal: number;
@@ -180,7 +180,7 @@ export function generateVerdict(a: ArtigoAnalysis): string {
   const respText = a.respostasTotal > 0 ? ` O CERD III registra ${a.respostasCumpridas} de ${a.respostasTotal} respostas com atendimento satisfatório.` : '';
   // Séries do espelho BD não são fonte de evidência — não entram no veredito.
   const statsText = '';
-  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoAcoes} ação(ões) orçamentária(s) única(s) (${a.orcamentoProgramas} registros Ação×Ano) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
+  const base = `Art. ${a.numero} — Esforço ${formatScore(a.esforcoArtigo)} (${FAIXA_LABEL[a.faixaEsforco]}) e Impacto ${formatScore(a.impactoArtigo)} (${FAIXA_LABEL[a.faixaImpacto]}), média das ${a.lacunasTotal} recomendação(ões) associada(s), com ${a.orcamentoAcoes} pares distintos ação + órgão (${a.orcamentoProgramas} registros Ação×Ano) e ${a.indicadoresCount} indicador(es) vinculado(s)${normText}.`;
 
   if (a.faixaImpacto === 'alto') {
     return `Impacto alto. ${base} O esforço mobilizado converteu-se em realização comprovada.${respText}${statsText}`;

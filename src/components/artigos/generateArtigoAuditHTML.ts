@@ -228,7 +228,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
   <p><strong>Total de recomendações vinculadas a este Artigo:</strong> ${totalRecs}</p>
   <p><strong>Esforço do Artigo:</strong> ${formatScore(esforcoArtigo)} · <strong>Impacto Evidenciado do Artigo:</strong> ${formatScore(impactoArtigo)}</p>
   <p>Os dois resultados são a média simples das recomendações formalmente associadas ao artigo, incluindo com valor zero as recomendações sem evidência. Isso evita favorecer artigos com maior número de recomendações.</p>
-  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${acoesUnicas} ação(ões) orçamentária(s) única(s) (${orcByKey.size} registros Ação×Ano) — evidências distintas da matriz auditada, sem dupla contagem por Artigo.</p>
+  <p>📊 ${indByNome.size} indicador(es) · ⚖️ ${normByTitulo.size} normativo(s) · 💰 ${acoesUnicas} pares distintos ação + órgão (${orcByKey.size} registros Ação×Ano) — evidências distintas da matriz auditada, sem dupla contagem por Artigo.</p>
   ${curado?.vinculosPorBase ? `<p style="font-size:10px;color:#475569">Matriz auditada: ${curado.vinculosPorBase.orcamentaria + curado.vinculosPorBase.estatistica + curado.vinculosPorBase.normativa} vínculos Artigo × Recomendação × Evidência (${curado.vinculosPorBase.orcamentaria} orçamentária · ${curado.vinculosPorBase.estatistica} estatística · ${curado.vinculosPorBase.normativa} normativa). Os números acima contam cada evidência uma única vez.</p>` : ''}
 </div>
 
@@ -262,7 +262,7 @@ ${def?.descricao ? `<div class="desc">${def.descricao}</div>` : ''}
   <tbody>${normRows}</tbody>
 </table>
 
-<h2>💰 Orçamento agregado (${acoesUnicas} ações únicas · ${orcByKey.size} registros Ação×Ano)</h2>
+<h2>💰 Orçamento agregado (${acoesUnicas} pares ação + órgão · ${orcByKey.size} registros Ação×Ano)</h2>
 <table>
   <thead><tr>
     <th style="text-align:center">Ano</th><th>Programa</th><th>Órgão</th>
