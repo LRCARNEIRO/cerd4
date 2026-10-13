@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Renomear IND-009 e IND-010 preservando códigos, vínculos e medições; validar compatibilidade e cartões.
+
 - [x] Acrescentar datas disponíveis de coleta/consulta ou cadastro à planilha completa de Fontes; download validado com datas de cadastro/alteração nas 512 evidências e 243 endereços, sem inventar datas de consulta.
 
 - [x] Centralizar a resolução de códigos, séries e dados pontuais para os relatórios de evidências por Artigo e por Recomendação.
