@@ -164,8 +164,8 @@ const CARDS_FIXOS: Record<string, SerieSub & { unidade?: string }> = {
   'indigenas': { anoRecente: 2024, valorRecente: 1, unidade: 'gestor', rotulo: 'Gestores estaduais de igualdade racial — Indígenas' },
   'rendimento/hora negros vs brancos': { anoRecente: 2023, valorRecente: 40, unidade: '% menor', rotulo: 'Defasagem do rendimento/hora de negros frente a brancos' },
   // ── Cartões Raça × Gênero / Educação (StatisticsData — auditado 12/03/2026) ──
-  'taxa de desemprego graduado por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 1.05, unidade: '%', rotulo: 'Mulheres negras graduadas desempregadas (Censo 2022 — SIDRA 9606×9517); homens brancos: 0,56%' },
-  'taxa de inatividade qualificada por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 7.58, unidade: '%', rotulo: 'Mulheres negras com superior fora da PEA (Censo 2022 — SIDRA 9606×9517); homens brancos: 5,59%' },
+  'taxa de desemprego graduado por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 3.96, unidade: '%', rotulo: 'Taxa de desocupação de mulheres negras com superior completo (Censo 2022 — SIDRA 9517); homens brancos: 1,97%' },
+  'taxa de inatividade qualificada por raca e genero — censo 2022 (%)': { anoRecente: 2022, valorRecente: 22.25, unidade: '%', rotulo: 'Mulheres negras com superior completo fora da força de trabalho (Censo 2022 — SIDRA 9517); homens brancos: 16,51%' },
   'educacao por raca × genero': { anoRecente: 2022, valorRecente: 16.01, unidade: '%', rotulo: 'Superior completo — mulheres negras (Censo 2022 — SIDRA 9606×10061); mulheres brancas: 26,76%' },
   'analfabetismo geral — 2024': { anoAntigo: 2018, valorAntigo: 8.4, anoRecente: 2024, valorRecente: 6.9, unidade: '%', rotulo: 'Analfabetismo — negros (PNAD Contínua/SIDRA 7125); brancos 2024: 3,1%' },
   // ── Juventude negra (juventudeNegra — auditado 24/03/2026) ──
