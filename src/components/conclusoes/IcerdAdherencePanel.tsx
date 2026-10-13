@@ -161,10 +161,10 @@ th{background:#f1f5f9}
 </style></head><body>
 <h1>⚖️ Anexo Analítico — Esforço e Impacto por Artigo (ICERD)</h1>
 <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-<p><strong>Esforço Médio:</strong> ${formatScore(avgEsforco)} · <strong>Impacto Evidenciado Médio:</strong> ${formatScore(avgImpacto)}</p>
+<p><strong>Média simples dos ${analysis.length} artigos:</strong> Esforço ${formatScore(avgEsforco)} · Impacto Evidenciado ${formatScore(avgImpacto)}. Cada artigo tem o mesmo peso; esta média não equivale à média das 42 recomendações.</p>
 <p><strong>Fontes:</strong> ${stats?.total || 0} recomendações ONU, ${totalNormativos} normativos, ${orcamentoRecords.length} registros orçamentários, ${totalRespostas} respostas CERD III, ${rolEstatistico.total} evidências estatísticas.</p>
 <p><strong>Matriz auditada:</strong> ${matrizTotals.all.toLocaleString('pt-BR')} vínculos Artigo × Recomendação × Evidência (${matrizTotals.orc.toLocaleString('pt-BR')} orçamentária · ${matrizTotals.est.toLocaleString('pt-BR')} estatística · ${matrizTotals.norm.toLocaleString('pt-BR')} normativa), correspondentes a ${curadosTotal.toLocaleString('pt-BR')} registros físicos da base curada (planilha CERD_42_BASE auditada).</p>
-<p class="nota"><strong>Nota:</strong> todas as contagens por artigo vêm da matriz auditada (vínculos curados, sem inferência por palavras-chave). <em>Indicadores estatísticos</em> = evidências estatísticas distintas (indicador + subindicador). <em>Ações orçamentárias</em> = ações únicas (ação + órgão); entre parênteses, os registros Ação×Ano.</p>
+<p class="nota"><strong>Nota:</strong> todas as contagens por artigo vêm da matriz auditada (vínculos curados, sem inferência por palavras-chave). <em>Indicadores estatísticos</em> = evidências estatísticas distintas (indicador + subindicador). <em>Pares ação + órgão</em> = combinações distintas de ação e órgão; entre parênteses, os registros Ação×Ano. A mesma ação em órgãos diferentes conta como mais de um par.</p>
 <hr/>
 ${analysis.map(a => {
   const cls = (f: string) => f === 'alto' ? 'green' : f === 'intermediario' ? 'yellow' : 'red';
@@ -177,7 +177,7 @@ ${analysis.map(a => {
 <table>
 <tr><th>Dimensão</th><th>Valor</th><th>Detalhe</th></tr>
 <tr><td>Recomendações ONU</td><td>${a.lacunasTotal}</td><td>Denominador da média simples do artigo</td></tr>
-<tr><td>Ações Orçamentárias Vinculadas</td><td>${a.orcamentoAcoes}</td><td>Ações únicas (ação + órgão) vinculadas pela matriz auditada (${a.orcamentoProgramas} registros Ação×Ano)</td></tr>
+<tr><td>Pares ação + órgão vinculados</td><td>${a.orcamentoAcoes}</td><td>Combinações distintas vinculadas pela matriz auditada (${a.orcamentoProgramas} registros Ação×Ano)</td></tr>
 <tr><td>Instrumentos Normativos</td><td>${a.normativosCount}</td><td>Leis, decretos, portarias vinculados pela matriz auditada</td></tr>
 <tr><td>Respostas CERD III</td><td>${a.respostasTotal}</td><td>${a.respostasCumpridas} satisfatória(s), ${a.respostasNaoCumpridas} insatisfatória(s) — contexto, não compõe o score</td></tr>
 <tr><td>Indicadores estatísticos</td><td>${a.indicadoresCount}</td><td>Evidências estatísticas distintas vinculadas pela matriz auditada</td></tr>
@@ -294,14 +294,14 @@ ${analysis.map(a => {
           <CardContent className="pt-3 pb-3 text-center">
             <p className="text-xs text-muted-foreground">Esforço Médio</p>
             <p className="text-2xl font-bold text-primary">{formatScore(avgEsforco)}</p>
-            <p className="text-xs text-muted-foreground">dos 7 artigos</p>
+            <p className="text-xs text-muted-foreground">Média simples dos {analysis.length} artigos</p>
           </CardContent>
         </Card>
         <Card className="border-primary/30">
           <CardContent className="pt-3 pb-3 text-center">
             <p className="text-xs text-muted-foreground">Impacto Evidenciado Médio</p>
             <p className="text-2xl font-bold text-primary">{formatScore(avgImpacto)}</p>
-            <p className="text-xs text-muted-foreground">E × R ÷ 100</p>
+            <p className="text-xs text-muted-foreground">Média simples dos {analysis.length} artigos</p>
           </CardContent>
         </Card>
         <Card>
@@ -321,6 +321,9 @@ ${analysis.map(a => {
       </div>
 
       {/* Radar + Bar charts */}
+      <p className="text-xs text-muted-foreground">
+        Cada artigo tem o mesmo peso nas médias acima. Elas não equivalem à média das 42 recomendações do Painel Geral: primeiro calculam-se as recomendações associadas a cada artigo, depois a média dos {analysis.length} artigos.
+      </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -435,7 +438,7 @@ ${analysis.map(a => {
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('orcamento'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{vb ? vb.orcamentaria : a.orcamentoProgramas}</p>
                   <p className="text-[10px] text-muted-foreground">Vínc. Orçam. 🔍</p>
-                  <p className="text-[9px] text-muted-foreground/70">{a.orcamentoAcoes} ações únicas · {a.orcamentoProgramas} registros Ação×Ano</p>
+                  <p className="text-[9px] text-muted-foreground/70">{a.orcamentoAcoes} pares ação + órgão · {a.orcamentoProgramas} registros Ação×Ano</p>
                 </button>
                 <button onClick={() => { setDrilldownArtigo(a.numero); setDrilldownFocus('normativos'); }} className="bg-muted/50 rounded p-2 text-center hover:bg-muted/80 transition-colors cursor-pointer">
                   <p className="text-lg font-bold">{vb ? vb.normativa : a.normativosCount}</p>
