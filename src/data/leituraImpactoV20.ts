@@ -1189,9 +1189,9 @@ export const LEITURA_IMPACTO_V20: LeituraImpactoEntry[] = [
   "nome": "Violência contra pessoas trans — série ANTRA (2017-2025)",
   "titulo": "Assassinatos de Pessoas Trans e Travestis por Raça — 2017-2025 (%)",
   "leitura": "menor é melhor",
-  "tendencia": "melhorou",
+  "tendencia": "piorou",
   "anterior": "melhorou",
-  "base": "Série do grupo-alvo (negra): 80,00% (2017) → 70,00% (2025) = -12.50%. Como menor é melhor → melhorou. Variação indígena 0%→4% descartada (variação percentual a partir de zero é inválida). Branca fora da média."
+  "base": "Variações 2017→2025: negra -12.50%; indigena +200.00%. Média = +93.75%. Como menor é melhor → piorou. Branca fora da média."
  },
  {
   "codigo": "IND-173",
