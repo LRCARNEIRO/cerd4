@@ -229,10 +229,13 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-3 mb-4">
-            <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">{new Set(records.map(chaveProgramaOrgao)).size} programas/ações por órgão</Badge>
+          <div className="flex flex-wrap gap-3 mb-2 items-center">
+            <Badge className="text-sm px-3 py-1 bg-primary/10 text-primary border-primary/30">{new Set(records.map(chaveProgramaOrgao)).size} pares ação + órgão ({new Set(records.map(r => r.programa)).size} ações distintas)</Badge>
             <Badge className="text-sm px-3 py-1 bg-muted text-foreground border-border">{records.length} registros (Ação × Ano)</Badge>
           </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Contagem por grupo: um programa pode aparecer em mais de um grupo; total sem repetição: {new Set(records.map(r => programaKey(r.programa))).size} programas.
+          </p>
           <div className="overflow-auto">
             <Table>
               <TableHeader>
