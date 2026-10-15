@@ -385,7 +385,7 @@ export default function Orcamento() {
     indigena: classified.federal.byTheme.indigena.length,
     quilombola: classified.federal.byTheme.quilombola.length,
     ciganos: classified.federal.byTheme.ciganos.length,
-    sesai: classified.federal.sesai.length,
+    sesai: classified.sesai.length,
   });
 
   const currentRecords = useMemo(() => {
