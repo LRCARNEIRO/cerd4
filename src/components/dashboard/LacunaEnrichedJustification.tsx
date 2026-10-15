@@ -16,9 +16,10 @@ function formatCurrency(val: number | null): string {
   return `R$ ${val.toFixed(0)}`;
 }
 
-function execPercent(dotacao: number | null, pago: number | null): string {
+function execPercent(dotacao: number | null, liquidado: number | null, tipo?: string | null): string {
+  if (tipo === 'extraorcamentario') return 'n/a';
   if (!dotacao || dotacao === 0) return '—';
-  return `${(((pago || 0) / dotacao) * 100).toFixed(1)}%`;
+  return `${(((liquidado || 0) / dotacao) * 100).toFixed(1)}%`;
 }
 
 export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
@@ -175,7 +176,7 @@ export function LacunaEnrichedJustification({ lacuna, diagnostic }: Props) {
 
               return (
                 <div key={i} className="flex items-start gap-1.5 text-xs">
-                  <span className={cn('font-mono', execColor)}>{execPercent(orc.dotacao_autorizada, orc.pago)}</span>
+                  <span className={cn('font-mono', execColor)}>{execPercent(orc.dotacao_autorizada, (orc as any).liquidado, (orc as any).tipo_dotacao)}</span>
                   <span className="font-medium">{orc.programa}</span>
                   <span className="text-muted-foreground">({orc.orgao}, {orc.ano})</span>
                   <span className="text-muted-foreground">— Autorizado: {formatCurrency(orc.dotacao_autorizada)}, Pago: {formatCurrency(orc.pago)}</span>
