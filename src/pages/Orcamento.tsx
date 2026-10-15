@@ -134,7 +134,7 @@ function ThematicFilterBar({
   onToggle,
 }: {
   filters: Record<ThematicFilter, boolean>;
-  counts: Record<ThematicFilter, number>;
+  counts: Record<ThematicFilter, number> & { sesai: number };
   onToggle: (key: ThematicFilter) => void;
 }) {
   return (
@@ -148,6 +148,9 @@ function ThematicFilterBar({
           />
           {f.label}
           <Badge variant="secondary" className="text-xs">{counts[f.key]}</Badge>
+          {f.key === 'indigena' && counts.sesai > 0 && (
+            <span className="text-[10px] text-muted-foreground">(inclui {counts.sesai} da SESAI)</span>
+          )}
         </label>
       ))}
     </div>
@@ -382,6 +385,7 @@ export default function Orcamento() {
     indigena: classified.federal.byTheme.indigena.length,
     quilombola: classified.federal.byTheme.quilombola.length,
     ciganos: classified.federal.byTheme.ciganos.length,
+    sesai: classified.federal.sesai.length,
   });
 
   const currentRecords = useMemo(() => {
