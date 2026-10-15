@@ -128,17 +128,18 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
 
   // Program table
   const programaRows = useMemo(() => {
-    const map = new Map<string, { programa: string; orgao: string; tipo: string; anos: Set<number>; dotacao: number; liquidado: number; liqComDot: number; pago: number; registros: number }>();
+    const map = new Map<string, { programa: string; orgao: string; tipo: string; anos: Set<number>; dotacao: number; empenhado: number; liquidado: number; liqComDot: number; pago: number; registros: number }>();
     for (const r of filtered) {
       const key = chaveProgramaOrgao(r);
       if (!map.has(key)) {
-        map.set(key, { programa: r.programa, orgao: r.orgao, tipo: r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.', anos: new Set(), dotacao: 0, liquidado: 0, liqComDot: 0, pago: 0, registros: 0 });
+        map.set(key, { programa: r.programa, orgao: r.orgao, tipo: r.tipo_dotacao === 'extraorcamentario' ? 'Extra' : 'Orç.', anos: new Set(), dotacao: 0, empenhado: 0, liquidado: 0, liqComDot: 0, pago: 0, registros: 0 });
       }
       const entry = map.get(key);
       if (!entry) continue;
       entry.anos.add(r.ano);
       const d = Number(r.dotacao_autorizada) || 0;
       entry.dotacao += d;
+      entry.empenhado += Number(r.empenhado) || 0;
       entry.liquidado += Number(r.liquidado) || 0;
       if (d > 0) entry.liqComDot += Number(r.liquidado) || 0;
       if (r.tipo_dotacao !== 'extraorcamentario') entry.tipo = 'Orç.';
@@ -350,6 +351,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                   <TableHead className="text-xs text-center">Anos</TableHead>
                   <TableHead className="text-xs text-center">Registros</TableHead>
                   <TableHead className="text-xs text-right">Dotação</TableHead>
+                  <TableHead className="text-xs text-right">Empenhado</TableHead>
                   <TableHead className="text-xs text-right">Liquidado</TableHead>
                   <TableHead className="text-xs text-right">Pago</TableHead>
                   <TableHead className="text-xs text-center">Execução</TableHead>
@@ -368,6 +370,7 @@ export function UniversoBaseTab({ records }: UniversoBaseTabProps) {
                     </TableCell>
                     <TableCell className="text-xs text-center">{row.registros}</TableCell>
                     <TableCell className="text-xs text-right font-mono">{row.dotacao > 0 ? formatCompact(row.dotacao) : <span className="text-muted-foreground" title="Extraorçamentário: sem dotação LOA">—</span>}</TableCell>
+                    <TableCell className="text-xs text-right font-mono">{formatCompact(row.empenhado)}</TableCell>
                     <TableCell className="text-xs text-right font-mono">{formatCompact(row.liquidado)}</TableCell>
                     <TableCell className="text-xs text-right font-mono font-medium">{formatCompact(row.pago)}</TableCell>
                     <ExecCell dot={row.dotacao} liq={row.liqComDot} />

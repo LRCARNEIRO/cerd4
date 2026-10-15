@@ -66,7 +66,7 @@ export function ProgramCard({ programa, registros, excluded = false, exclusionRe
   const isEstadual = registros[0]?.esfera === 'estadual' || registros[0]?.esfera === 'municipal';
   const latestValue = isEstadual
     ? (latestRecord?.dotacao_inicial || latestRecord?.dotacao_autorizada || latestRecord?.pago || 0)
-    : (latestRecord?.pago || latestRecord?.dotacao_autorizada || 0);
+    : (Number(latestRecord?.pago) || 0);
   const latestLabel = isEstadual ? 'Dot. Inicial' : 'Pago';
   const fonte = registros[0]?.fonte_dados;
   const urlFonte = registros[0]?.url_fonte;
