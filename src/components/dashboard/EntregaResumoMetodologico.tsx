@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  ArrowRight, ArrowDown, Database, Layers, Link2, Gauge, Scale, FileText,
+  ArrowDown, Database, Layers, Link2, Gauge, Scale, FileText,
   BookOpen, ShieldCheck, BarChart3,
 } from 'lucide-react';
 
