@@ -121,6 +121,13 @@ export default function Index() {
       </div>
       )}
 
+      {/* Resumo rápido da dinâmica metodológica — apenas na versão produto, antes da leitura dos índices */}
+      {isEntrega && (
+        <div className="mb-6">
+          <EntregaResumoMetodologico />
+        </div>
+      )}
+
       {/* Dual Perspective Panel */}
       <div className="mb-6">
         <DualPerspectivePanel
@@ -132,13 +139,6 @@ export default function Index() {
           isLoading={isLoading || loadingEvol}
         />
       </div>
-
-      {/* Resumo rápido da dinâmica metodológica — apenas na versão produto */}
-      {isEntrega && (
-        <div className="mb-6">
-          <EntregaResumoMetodologico />
-        </div>
-      )}
 
       {/* Budget */}
       <div className="grid grid-cols-1 gap-6 mb-6">
