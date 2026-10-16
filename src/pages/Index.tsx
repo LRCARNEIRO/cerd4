@@ -23,11 +23,13 @@ import { useDashboardStats } from '@/hooks/useDynamicStats';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { History } from 'lucide-react';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
 
 export default function Index() {
   const [showRollback, setShowRollback] = useState(false);
   const [historyAccordionValue, setHistoryAccordionValue] = useState('');
   const queryClient = useQueryClient();
+  const isEntrega = useIsEntrega();
   const { stats, isLoading } = useDashboardStats();
   const { data: orcamentoCanonico } = useOrcamentoCanonico();
   // Single source: useEvolucaoSummary already runs useDiagnosticSensor internally
@@ -74,7 +76,7 @@ export default function Index() {
               conforme artigo 9º da Convenção Internacional sobre Eliminação de Discriminação Racial.
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
-              <DataUploadButton />
+              {!isEntrega && <DataUploadButton />}
               <Button variant="secondary" size="lg" asChild>
                 <Link to="/recomendacoes">
                   Ver Recomendações
@@ -84,7 +86,7 @@ export default function Index() {
             </div>
           </div>
           <div className="hidden lg:block text-right">
-            <div className="flex items-center gap-2 justify-end mb-2">
+            {!isEntrega && <div className="flex items-center gap-2 justify-end mb-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -107,7 +109,7 @@ export default function Index() {
                   <RefreshCw className="w-4 h-4" />
                 )}
               </Button>
-            </div>
+            </div>}
             <p className="text-white/60 text-sm">Última atualização</p>
             <p className="text-white font-medium">
               {new Date().toLocaleDateString('pt-BR')}
@@ -133,6 +135,7 @@ export default function Index() {
         <BudgetChart data={budgetSeries.orcamentario} extraData={budgetSeries.extraorcamentario} />
       </div>
 
+      {!isEntrega && (<>
       {/* Methodology Export Button */}
       <div className="mb-6">
         <MethodologyExportButton />
@@ -154,6 +157,7 @@ export default function Index() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      </>)}
 
       {/* Rollback Dialog */}
       <Dialog open={showRollback} onOpenChange={setShowRollback}>
