@@ -628,6 +628,14 @@ export default function Orcamento() {
             const programas = new Set(filtered.map(r => r.programa)).size;
             const orgaos = new Set(filtered.map(r => r.orgao)).size;
             const anosCobertura = [...new Set(filtered.map(r => r.ano))].sort();
+
+            // Composição: ações distintas (sem dobrar por órgão) e pares ação + órgão, por tipo
+            const orcRecs = filtered.filter(r => r.tipo_dotacao !== 'extraorcamentario');
+            const extraRecs = filtered.filter(r => r.tipo_dotacao === 'extraorcamentario');
+            const acoesOrc = new Set(orcRecs.map(r => r.programa)).size;
+            const acoesExtra = new Set(extraRecs.map(r => r.programa)).size;
+            const paresOrc = new Set(orcRecs.map(r => `${r.programa}|${r.orgao}`)).size;
+            const paresExtra = new Set(extraRecs.map(r => `${r.programa}|${r.orgao}`)).size;
             const anosRange = anosCobertura.length > 0 ? `${anosCobertura[0]}–${anosCobertura[anosCobertura.length - 1]}` : '—';
 
             // Cenário label
