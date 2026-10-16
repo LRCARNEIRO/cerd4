@@ -15,6 +15,8 @@ import type { ComplianceStatus } from '@/hooks/useLacunasData';
 import { ExportTabButtons } from '@/components/reports/ExportTabButtons';
 import { ParagraphTextDialog } from '@/components/shared/ParagraphTextDialog';
 import { useEvidenceOverrides } from '@/hooks/useEvidenceOverrides';
+import { useIsEntrega } from '@/components/entrega/EntregaContext';
+
 import { ExportAllRecomendacoesButton } from './ExportAllRecomendacoesButton';
 import { ExportSingleRecomendacaoButton } from './ExportSingleRecomendacaoButton';
 
@@ -75,6 +77,8 @@ function getPrioridadeLabel(prioridade: string): string {
 export function RelacaoRecomendacoesTab() {
   const { data: recomendacoes, isLoading } = useLacunasIdentificadas({});
   const [evidenceOverrides, setEvidenceOverrides] = useEvidenceOverrides();
+  const isEntrega = useIsEntrega();
+
   const { diagnosticMap, isReady: sensorReady, rawIndicadores, rawOrcamento, rawNormativos } = useDiagnosticSensor(recomendacoes, evidenceOverrides);
   const { data: matriz } = useMatrizAuditada();
   const [drilldownId, setDrilldownId] = useState<string | null>(null);
@@ -415,7 +419,9 @@ ${renderRows(allItems)}
             allOrcamento={rawOrcamento}
             allNormativos={rawNormativos}
             overrides={evidenceOverrides[drilldownId] || emptyOverride()}
-            onOverridesChange={(ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov }))}
+            /* Versão produto (/entrega): somente visualização — sem edição de vínculos. */
+            onOverridesChange={isEntrega ? undefined : (ov) => setEvidenceOverrides(prev => ({ ...prev, [drilldownId]: ov }))}
+
           />
         </Suspense>
       )}
