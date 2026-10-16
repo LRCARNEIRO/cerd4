@@ -688,12 +688,19 @@ export default function Orcamento() {
                 {/* ROW 1: A narrativa Planejamento → Execução */}
                 <div>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 px-1">📊 Planejamento vs. Execução (acumulado)</p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <Card className="border-l-4 border-l-primary">
                       <CardContent className="pt-4 pb-3">
                         <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Dotação Autorizada</p>
                         <p className="text-xl font-bold text-foreground mt-1">{formatCurrency(totalDotacao)}</p>
                         <p className="text-[10px] text-muted-foreground mt-1">O que foi planejado</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-l-4 border-l-chart-4">
+                      <CardContent className="pt-4 pb-3">
+                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">Total Liquidado</p>
+                        <p className="text-xl font-bold text-foreground mt-1">{formatCurrency(totalLiquidado)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Numerador do % de execução · LOA: {formatCurrency(execucaoCanonica.liquidado)}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-l-4 border-l-success">
